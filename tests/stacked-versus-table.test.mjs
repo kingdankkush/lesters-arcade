@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs';
-import { join, relative } from 'node:path';
+import { join, relative, posix } from 'node:path';
 import { findModuleReferences } from '../scripts/stacked-contract-audit.mjs';
 import {
   STACKED_ATTACK_TABLE,
@@ -46,22 +46,73 @@ const walk = (root, { readdir = readdirSync, stat = statSync, delayMs = 20 } = {
   });
 };
 
+const LOCAL_ENTRY = 'apps/stacked/src/local-entry.mjs';
+const LOCAL_APP = 'apps/stacked/src/local-app.mjs';
+const LOCAL_MATCH = 'apps/stacked/src/local-match.mjs';
+const LOCAL_ACCESS = 'apps/stacked/src/local-access.mjs';
+const LOCAL_TABLE = 'apps/portal/src/stacked-versus-table.mjs';
+const LOCAL_IMPORTERS = new Map([
+  [LOCAL_ENTRY, new Set()], [LOCAL_APP, new Set([LOCAL_ENTRY])],
+  [LOCAL_MATCH, new Set([LOCAL_APP])], [LOCAL_ACCESS, new Set([LOCAL_ENTRY, LOCAL_MATCH])],
+  [LOCAL_TABLE, new Set([LOCAL_MATCH])],
+]);
+
+// Inspect all first-party runtime sources, then follow relative JS edges even
+// into a helper outside those four trees. Forbidding every other inbound edge
+// also forbids a transitive path from solo/portal/Worker/server to the local chain.
+// npm/node builtins and non-JS assets are leaves, not first-party source modules.
+const localVersusImportViolations = (
+  seeds = ['apps', 'server', 'api', 'sdk'].flatMap(root => walk(root)),
+  read = path => settle(() => readFileSync(path, 'utf8')),
+) => {
+  const queue = seeds.filter(path => /\.[cm]?js$/.test(path)).map(path => path.replaceAll('\\', '/'));
+  const seen = new Set(), required = new Set(), violations = [];
+  for (const path of queue) {
+    if (seen.has(path)) continue;
+    let text;
+    try { text = read(path); }
+    catch (cause) { throw new Error(`Cannot audit ${path}: ${cause.message}`, { cause }); }
+    if (text === GONE) {
+      if (required.has(path)) throw new Error(`Cannot audit ${path}: missing dependency`);
+      continue; // A transient fixture vanished before inspection, as in the original walk.
+    }
+    seen.add(path);
+    for (const specifier of moduleSpecifiers(path, text)) {
+      const relativeImport = specifier.startsWith('.');
+      const target = relativeImport ? posix.normalize(posix.join(posix.dirname(path), specifier)) : specifier;
+      const protectedName = [...LOCAL_IMPORTERS.keys()].find(candidate => specifier.includes(posix.basename(candidate)));
+      if (protectedName && (target !== protectedName || !LOCAL_IMPORTERS.get(protectedName).has(path))) {
+        violations.push({ importer: path, target, specifier });
+      }
+      if (!relativeImport || /\.(?:json|css|png|jpe?g|webp|svg|woff2?|wasm)$/.test(target)) continue;
+      if (!/\.[cm]?js$/.test(target)) throw new Error(`Cannot audit ${path}: unresolved relative module ${specifier}`);
+      if (target.startsWith('../') || target.startsWith('/') || target.split('/').includes('node_modules') || target.startsWith('apps/portal/dist/')) {
+        throw new Error(`Cannot audit ${path}: relative module outside first-party source ${specifier}`);
+      }
+      required.add(target);
+      queue.push(target);
+    }
+  }
+  return violations;
+};
+const moduleSpecifiers = (path, text) => {
+  let references;
+  try { references = findModuleReferences(text); }
+  catch (cause) { throw new Error(`Cannot audit ${relative('.', path)}: ${cause.message}`, { cause }); }
+  const unresolved = references.find(reference => typeof reference.source !== 'string');
+  if (unresolved) throw new Error(`Cannot audit ${relative('.', path)}: unresolved ${unresolved.kind} module specifier`);
+  try { return references.map(reference => decodeURIComponent(reference.source.split(/[?#]/, 1)[0])); }
+  catch (cause) { throw new Error(`Cannot audit ${relative('.', path)}: malformed module URL encoding`, { cause }); }
+};
+
+
 const attackTableImporters = () => {
   const importers = [];
   for (const path of walk('apps')) {
     if (!/\.(?:mjs|js)$/.test(path)) continue;
     const text = settle(() => readFileSync(path, 'utf8'));
     if (text === GONE) continue;
-    let references;
-    try { references = findModuleReferences(text); }
-    catch (cause) { throw new Error(`Cannot audit ${relative('.', path)}: ${cause.message}`, { cause }); }
-    const unresolved = references.find((reference) => typeof reference.source !== 'string');
-    if (unresolved) {
-      throw new Error(`Cannot audit ${relative('.', path)}: unresolved ${unresolved.kind} module specifier`);
-    }
-    let specifiers;
-    try { specifiers = references.map((reference) => decodeURIComponent(reference.source.split(/[?#]/, 1)[0])); }
-    catch (cause) { throw new Error(`Cannot audit ${relative('.', path)}: malformed module URL encoding`, { cause }); }
+    const specifiers = moduleSpecifiers(path, text);
     if (specifiers.some((specifier) => specifier.includes('stacked-versus-table.mjs'))) {
       importers.push(relative('.', path).replaceAll('\\', '/'));
     }
@@ -135,8 +186,8 @@ test('garbage exchange cancels oldest rows and never emits a zero-row entry', ()
   assert.ok(Object.isFrozen(send.sent));
 });
 
-test('no application runtime imports the Phase-1 attack table', () => {
-  assert.deepEqual(attackTableImporters(), []);
+test('only the isolated local match driver imports the attack table', () => {
+  assert.deepEqual(attackTableImporters(), [LOCAL_MATCH]);
 });
 
 test('the import-audit walk skips entries that vanish mid-walk and fails on any other error', () => {
@@ -232,7 +283,7 @@ test('import audit inspects nested same-named modules without exemptions', () =>
     writeFileSync(fixture, 'import {', 'utf8');
     assert.throws(() => attackTableImporters(), /Cannot audit/i);
     writeFileSync(fixture, "const label = 'stacked-versus-table.mjs';\n", 'utf8');
-    assert.deepEqual(attackTableImporters(), []);
+    assert.deepEqual(attackTableImporters(), [LOCAL_MATCH]);
   } finally {
     rmSync(directory, { recursive: true, force: true });
   }
@@ -252,4 +303,75 @@ test('import audit catches a real app importer and always cleans its fixture', (
       rmSync(fixture, { force: true });
     }
   }
+});
+
+// Test-local source fixtures do not modify any application entry or require Git.
+const localSourceFixture = () => new Map([
+  ['apps/stacked/src/local-entry.mjs', "import './local-access.mjs'; import('./local-app.mjs');"],
+  ['apps/stacked/src/local-app.mjs', "import './local-match.mjs';"],
+  ['apps/stacked/src/local-match.mjs', "export { allowed } from './local-access.mjs'; import '../../portal/src/stacked-versus-table.mjs';"],
+  ['apps/stacked/src/local-access.mjs', 'export const allowed = true;'],
+  ['apps/portal/src/stacked-versus-table.mjs', 'export const table = {};'],
+]);
+const auditFixture = (sources, seeds = [...sources.keys()]) => localVersusImportViolations(seeds, path => {
+  if (!sources.has(path)) throw Object.assign(new Error(`missing fixture ${path}`), { code: 'ENOENT' });
+  return sources.get(path);
+});
+
+test('local dependency audit allows only the standalone chain and inert labels', () => {
+  const sources = localSourceFixture();
+  sources.set('apps/portal/main.js', "// import '../stacked/src/local-app.mjs';\nconst link = '../stacked/src/local-entry.mjs';");
+  assert.deepEqual(auditFixture(sources), []);
+  // Canonical path resolution accepts a real edge after dot-segment/URL decoding.
+  sources.set('apps/stacked/src/local-app.mjs', "import('./unused/../local%2Dmatch.mjs?study=1#local');");
+  assert.deepEqual(auditFixture(sources), []);
+});
+
+test('local dependency audit rejects transitive solo portal host Worker and server access', () => {
+  const entries = ['apps/stacked/src/main.mjs', 'apps/portal/main.js', 'apps/portal/src/stacked-host.mjs',
+    'apps/stacked/src/verify-worker.mjs', 'server/verify/stacked.mjs', 'api/settle.mjs'];
+  for (const entry of entries) for (const forbidden of ['local-entry.mjs', 'local-app.mjs', 'local-match.mjs', 'local-access.mjs']) {
+    const sources = localSourceFixture();
+    const relativeRoot = '../'.repeat(entry.split('/').length - 1);
+    sources.set(entry, `import '${relativeRoot}scripts/__local-guard-hop.mjs';`);
+    sources.set('scripts/__local-guard-hop.mjs', "export * from '../sdk/__local-guard-hop.cjs';");
+    sources.set('sdk/__local-guard-hop.cjs', `require('../apps/stacked/src/${forbidden.replaceAll('-', '%2D')}?x=1');`);
+    const violations = auditFixture(sources, [entry]);
+    assert.equal(violations.length, 1, `${entry} reaches ${forbidden}`);
+    assert.equal(violations[0].importer, 'sdk/__local-guard-hop.cjs');
+    assert.equal(violations[0].target, `apps/stacked/src/${forbidden}`);
+  }
+});
+
+test('local dependency audit rejects shortcuts and same-named importer exemptions', () => {
+  for (const [importer, target] of [
+    ['apps/stacked/src/local-entry.mjs', 'apps/stacked/src/local-match.mjs'],
+    ['apps/stacked/src/local-app.mjs', 'apps/portal/src/stacked-versus-table.mjs'],
+    ['apps/stacked/src/local-app.mjs', 'apps/stacked/src/local-access.mjs'],
+    ['apps/stacked/src/local-match.mjs', 'apps/stacked/src/local-app.mjs'],
+    ['apps/stacked/src/nested/local-app.mjs', 'apps/stacked/src/local-match.mjs'],
+    ['server/local-match.mjs', 'apps/portal/src/stacked-versus-table.mjs'],
+  ]) {
+    const sources = localSourceFixture();
+    sources.set(importer, `import '${'../'.repeat(importer.split('/').length - 1)}${target}';`);
+    const violations = auditFixture(sources);
+    assert.ok(violations.some(edge => edge.importer === importer && edge.target === target), `${importer} -> ${target}`);
+  }
+});
+
+test('local dependency audit follows helper cycles once and fails closed on unreadable edges', () => {
+  const sources = new Map([
+    ['apps/stacked/src/main.mjs', "import '../../../scripts/__local-guard-a.mjs';"],
+    ['scripts/__local-guard-a.mjs', "import './__local-guard-b.mjs';"],
+    ['scripts/__local-guard-b.mjs', "import './__local-guard-a.mjs';"],
+  ]);
+  assert.deepEqual(auditFixture(sources, ['apps/stacked/src/main.mjs']), []);
+  for (const source of ['import(globalThis.modulePath);', 'import {', "import './bad%2.mjs';", "import './missing.mjs';", "import './extensionless';", "import '../../outside.mjs';"]) {
+    sources.set('scripts/__local-guard-b.mjs', source);
+    assert.throws(() => auditFixture(sources, ['apps/stacked/src/main.mjs']), /Cannot audit|unresolved|missing|outside/i, source);
+  }
+});
+
+test('application and verification sources preserve the isolated local import chain', () => {
+  assert.deepEqual(localVersusImportViolations(), []);
 });

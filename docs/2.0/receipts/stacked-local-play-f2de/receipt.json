@@ -1,0 +1,348 @@
+{
+  "scope": "Opt-in standalone Free local versus; no physical controllers/phone, no release or full performance gate.",
+  "files": [
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\owned-windows-child.mjs",
+      "archive": "owned-windows-child.mjs.gz",
+      "rawBytes": 3475,
+      "gzipBytes": 1360,
+      "sha256": "a5177337fcf6ec41f285fc105b93d0b4b94ee1101cb14a653a91e9b8b075b0d9"
+    },
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\owned-windows-preview-child.mjs",
+      "archive": "owned-windows-preview-child.mjs.gz",
+      "rawBytes": 3476,
+      "gzipBytes": 1360,
+      "sha256": "6f4903a66d324a01a476eebefdfac68663dde2c573f62f637c4b7537ccb0d631"
+    },
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-local-match-source-red-01\\report.json",
+      "archive": "stacked-local-match-source-red-01__report.json.gz",
+      "rawBytes": 15309,
+      "gzipBytes": 2213,
+      "sha256": "42777fe77244996a797a35e3a00620397f1f28d357ab478805d5436168abd400"
+    },
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-local-match-source-green-01\\report.json",
+      "archive": "stacked-local-match-source-green-01__report.json.gz",
+      "rawBytes": 9802,
+      "gzipBytes": 1979,
+      "sha256": "fb243ff7a9e410dcf8a309de90279b138f06133e4f394d959ff5bd28da81b256"
+    },
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-local-setup-source-red-01\\report.json",
+      "archive": "stacked-local-setup-source-red-01__report.json.gz",
+      "rawBytes": 7440,
+      "gzipBytes": 1447,
+      "sha256": "4a09a97f4a6025c620923ec66be91f3556616cc9af4030248493b43fe23ce38c"
+    },
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-local-setup-source-green-01\\report.json",
+      "archive": "stacked-local-setup-source-green-01__report.json.gz",
+      "rawBytes": 5836,
+      "gzipBytes": 1297,
+      "sha256": "8f891a8d3874d1806ce8ab6470e01370e3a4a126a9e0defc5cb37ade948c2968"
+    },
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-local-entry-source-red-01\\report.json",
+      "archive": "stacked-local-entry-source-red-01__report.json.gz",
+      "rawBytes": 6821,
+      "gzipBytes": 1628,
+      "sha256": "f529e5bf89fdc7a16b76687ec15f59407b80975631f5c18afc645665d65034b4"
+    },
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-local-entry-source-green-01\\report.json",
+      "archive": "stacked-local-entry-source-green-01__report.json.gz",
+      "rawBytes": 6106,
+      "gzipBytes": 1413,
+      "sha256": "331fbf48fbf4bcd2883ac118616cf3d05816c530d926cea3406b93b823474033"
+    },
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-local-import-guard-red-01\\report.json",
+      "archive": "stacked-local-import-guard-red-01__report.json.gz",
+      "rawBytes": 214806,
+      "gzipBytes": 88664,
+      "sha256": "b5b1c56298eacb4302f9a3a00268df7a4a9e4f794b0e4d9a176af5378290f177"
+    },
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-local-import-guard-green-01\\report.json",
+      "archive": "stacked-local-import-guard-green-01__report.json.gz",
+      "rawBytes": 212963,
+      "gzipBytes": 88376,
+      "sha256": "bb0ea11e92f0aecb873366caf895ba1ba805a6cf63fbfea390b6394a3e51f57e"
+    },
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\run-stacked-local-match-source.mjs",
+      "archive": "run-stacked-local-match-source.mjs.gz",
+      "rawBytes": 2956,
+      "gzipBytes": 1337,
+      "sha256": "4ebd8ba108288408a46bd4396ee53497884ca898ceb8c11ac7040d3f79bdfdb8"
+    },
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\run-stacked-local-setup-source.mjs",
+      "archive": "run-stacked-local-setup-source.mjs.gz",
+      "rawBytes": 2972,
+      "gzipBytes": 1348,
+      "sha256": "d892ff10a1012a669ead603861476c1562baa534ede56226d1dd396185f5346c"
+    },
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\run-stacked-local-entry-source.mjs",
+      "archive": "run-stacked-local-entry-source.mjs.gz",
+      "rawBytes": 3463,
+      "gzipBytes": 1428,
+      "sha256": "8d1d989057ebbdb58e6c442848231d15796f6c775a03db74b85ed69f24dd1a21"
+    },
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\run-stacked-local-import-guard.mjs",
+      "archive": "run-stacked-local-import-guard.mjs.gz",
+      "rawBytes": 4478,
+      "gzipBytes": 1895,
+      "sha256": "460ed36b742404a105e082be94a4fbe36fec163c4a812774d67d69c4427e1cb2"
+    },
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-local-play-red-01\\report.json",
+      "archive": "stacked-local-play-red-01__report.json.gz",
+      "rawBytes": 8325,
+      "gzipBytes": 2478,
+      "sha256": "bd02fac865c4ca72648866df4b7023855e75db8a7a473dcbf58f55f0031365ff"
+    },
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-local-play-green-01\\report.json",
+      "archive": "stacked-local-play-green-01__report.json.gz",
+      "rawBytes": 41552,
+      "gzipBytes": 10540,
+      "sha256": "1be6b48a191c1909f8330861e1150b46708205af29fa645a217760f3ddf65f69"
+    },
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-local-play-green-02\\report.json",
+      "archive": "stacked-local-play-green-02__report.json.gz",
+      "rawBytes": 56698,
+      "gzipBytes": 13348,
+      "sha256": "5406cd41dfd4a29cc340c55338d3514b9c75ade6f3c2ada2b920a6e2dbfb47ba"
+    },
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-local-play-green-03\\report.json",
+      "archive": "stacked-local-play-green-03__report.json.gz",
+      "rawBytes": 19474,
+      "gzipBytes": 4666,
+      "sha256": "558b549e3f7042e27367652f33a5d0bb92ea69bf4ddc2c17e1975ecd35570dc6"
+    },
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-local-play-green-04\\report.json",
+      "archive": "stacked-local-play-green-04__report.json.gz",
+      "rawBytes": 57232,
+      "gzipBytes": 13448,
+      "sha256": "a7f54c9635441644764c81383d4cf81cef001aabd294cd52b271186bc282b8e1"
+    },
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-local-play-green-05\\report.json",
+      "archive": "stacked-local-play-green-05__report.json.gz",
+      "rawBytes": 15631,
+      "gzipBytes": 4129,
+      "sha256": "3555ee7f19c7be6391d675d44130bd7c467e0c854fefd63d5f581e3d15aa93de"
+    },
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-local-play-green-06\\report.json",
+      "archive": "stacked-local-play-green-06__report.json.gz",
+      "rawBytes": 54443,
+      "gzipBytes": 13039,
+      "sha256": "a00bd444d3c6592b3a7f28c2e1f722456104e3d474a652cc790ef6db7ee870ba"
+    },
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-local-play-green-07\\report.json",
+      "archive": "stacked-local-play-green-07__report.json.gz",
+      "rawBytes": 33593,
+      "gzipBytes": 10242,
+      "sha256": "016d2391c1498fc20731b6752d93f617f84d3c77ab4247f20a8e0e9b2f28bfb0"
+    },
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-local-play-browser-red-01\\report.json",
+      "archive": "stacked-local-play-browser-red-01__report.json.gz",
+      "rawBytes": 970,
+      "gzipBytes": 566,
+      "sha256": "027b9784000e555f98c0ab07e0139071be88b2f32d3bf0b84692d8e554f66532"
+    },
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-local-play-browser-green-01\\report.json",
+      "archive": "stacked-local-play-browser-green-01__report.json.gz",
+      "rawBytes": 10317,
+      "gzipBytes": 2550,
+      "sha256": "77da8820496b0e1045c142614929af96a9bea9ffa227b67e621931f3822b452c"
+    },
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-local-play-browser-green-02\\report.json",
+      "archive": "stacked-local-play-browser-green-02__report.json.gz",
+      "rawBytes": 10617,
+      "gzipBytes": 2691,
+      "sha256": "b3f5e911e6db04674ddd780c92f0fb8e665cd4c8d252f57ccc152880e3244d8e"
+    },
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-local-play-browser-green-03\\report.json",
+      "archive": "stacked-local-play-browser-green-03__report.json.gz",
+      "rawBytes": 10549,
+      "gzipBytes": 2686,
+      "sha256": "8eed19acba5c716abd158a3fe8ed50939bbc5f9d4af91831aa9d52fd220cd9e3"
+    },
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-local-play-browser-green-04\\report.json",
+      "archive": "stacked-local-play-browser-green-04__report.json.gz",
+      "rawBytes": 10910,
+      "gzipBytes": 2777,
+      "sha256": "98e510b9c8c1892989a5f79ab36160c5b56bce713bb87feaf8915bb03f1069da"
+    },
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-local-play-browser-green-05\\report.json",
+      "archive": "stacked-local-play-browser-green-05__report.json.gz",
+      "rawBytes": 7328,
+      "gzipBytes": 2185,
+      "sha256": "ea95d414a7bd258b41e5099ae80c3ccaeda44dbe9bfacac4bdb8fe3dbc6257ed"
+    },
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-local-play-browser-green-06\\report.json",
+      "archive": "stacked-local-play-browser-green-06__report.json.gz",
+      "rawBytes": 8174,
+      "gzipBytes": 2320,
+      "sha256": "4d34f04d153a18f1cd4914f3a94984d90149a76ff6c54dab8f312b0264c946cf"
+    },
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-local-play-browser-green-07\\report.json",
+      "archive": "stacked-local-play-browser-green-07__report.json.gz",
+      "rawBytes": 24558,
+      "gzipBytes": 8340,
+      "sha256": "6908cdb4525f8540eaa063f73c2673a3abfb63f712cf33252ddd107d07cb1248"
+    },
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\run-stacked-local-play.mjs",
+      "archive": "run-stacked-local-play.mjs.gz",
+      "rawBytes": 4773,
+      "gzipBytes": 1722,
+      "sha256": "92444596992a0ca27cfdf590add71c8c560ee44ae33a052d27d2ae50076f2dcc"
+    },
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-local-play-browser.mjs",
+      "archive": "stacked-local-play-browser.mjs.gz",
+      "rawBytes": 10505,
+      "gzipBytes": 3731,
+      "sha256": "57181dd4808b3a50d71064e3e1a86faf7bb7242ceb515b8e5cc7a9ed8f0ec5e7"
+    },
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\run-stacked-local-play-02.mjs",
+      "archive": "run-stacked-local-play-02.mjs.gz",
+      "rawBytes": 5019,
+      "gzipBytes": 1775,
+      "sha256": "31e15ea8263eef22bc3e32bca2d11e44f556e193a3bb64fbc4e4eba1a98afa5a"
+    },
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-local-play-browser-02.mjs",
+      "archive": "stacked-local-play-browser-02.mjs.gz",
+      "rawBytes": 14266,
+      "gzipBytes": 4691,
+      "sha256": "681e85de132742c7505d0cf01b683b9d677c41a8a0fe3e2802f88650dcb7682f"
+    },
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\run-stacked-local-play-03.mjs",
+      "archive": "run-stacked-local-play-03.mjs.gz",
+      "rawBytes": 5272,
+      "gzipBytes": 1838,
+      "sha256": "b691cf50b4b8fc04b2d7538afa136c412139dbd3d22a5fbef22098f4f5eb26bb"
+    },
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-local-play-browser-03.mjs",
+      "archive": "stacked-local-play-browser-03.mjs.gz",
+      "rawBytes": 14370,
+      "gzipBytes": 4701,
+      "sha256": "ab36f606b29f45f6a0e60b4e48f9e0d6aadf574448a1004880053e019f77f497"
+    },
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\run-stacked-local-play-04.mjs",
+      "archive": "run-stacked-local-play-04.mjs.gz",
+      "rawBytes": 5019,
+      "gzipBytes": 1776,
+      "sha256": "f4163a4bb9bd52ce5a203c425f8482a2ccc057ac7266227b273a7c04bfa52cbe"
+    },
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-local-play-browser-04.mjs",
+      "archive": "stacked-local-play-browser-04.mjs.gz",
+      "rawBytes": 14370,
+      "gzipBytes": 4701,
+      "sha256": "7a0496f7790609a9bd67e1cb55ea638032990ea0993c2cb2e0e1051be8f519b6"
+    },
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\run-stacked-local-play-05.mjs",
+      "archive": "run-stacked-local-play-05.mjs.gz",
+      "rawBytes": 5294,
+      "gzipBytes": 1846,
+      "sha256": "fd1e23cfbda0d8a5f568d7a4f28b763f8635e6ae17ec22b119b4051def1905cc"
+    },
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-local-play-browser-05.mjs",
+      "archive": "stacked-local-play-browser-05.mjs.gz",
+      "rawBytes": 14628,
+      "gzipBytes": 4751,
+      "sha256": "fcbc97d1c39ccda19f59c35badd9c90e89634e64e87ce1330e6823d6daa1c66c"
+    },
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\run-stacked-local-play-06.mjs",
+      "archive": "run-stacked-local-play-06.mjs.gz",
+      "rawBytes": 5040,
+      "gzipBytes": 1778,
+      "sha256": "5a7844825ef5feefb8285d450ed68632bf1c705d0f21593e6558a0679edef683"
+    },
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-local-play-browser-06.mjs",
+      "archive": "stacked-local-play-browser-06.mjs.gz",
+      "rawBytes": 15212,
+      "gzipBytes": 4876,
+      "sha256": "20c52e96b290209fc313a65c8b729e02315d4896c680c9458fa3c286df60402c"
+    },
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\run-stacked-local-play-07.mjs",
+      "archive": "run-stacked-local-play-07.mjs.gz",
+      "rawBytes": 5294,
+      "gzipBytes": 1846,
+      "sha256": "098ae48bd9c419fe6629bfd92e992fed0f866f02fa18d61a11c0e61d397f11ff"
+    },
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-local-play-browser-07.mjs",
+      "archive": "stacked-local-play-browser-07.mjs.gz",
+      "rawBytes": 15174,
+      "gzipBytes": 4873,
+      "sha256": "ef55b46e217ff54d37cf2ff2fa271f51023374f1fa19fc407e59a85e00046aa1"
+    },
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-local-disposal-red-01\\report.json",
+      "archive": "stacked-local-disposal-red-01__report.json.gz",
+      "rawBytes": 9240,
+      "gzipBytes": 3028,
+      "sha256": "a4e07bdac97f1a3c3833b63246e5330dfaf2d2a552f0c7867178a17ca0756f11"
+    },
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-local-disposal-browser-red-01\\report.json",
+      "archive": "stacked-local-disposal-browser-red-01__report.json.gz",
+      "rawBytes": 2202,
+      "gzipBytes": 1246,
+      "sha256": "954b3d9923137d99f1616df09b55257880fe1cc85af0c2130e6d03ebed9c92a7"
+    },
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\fix-local-portrait-resume.py",
+      "archive": "fix-local-portrait-resume.py.gz",
+      "rawBytes": 1605,
+      "gzipBytes": 651,
+      "sha256": "5be767d4704ac759dda300140d09315d9779c3fbda9cfe2d22dd1b4bec2c7b5b"
+    },
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\prepare-stacked-local-browser-07.py",
+      "archive": "prepare-stacked-local-browser-07.py.gz",
+      "rawBytes": 715,
+      "gzipBytes": 314,
+      "sha256": "5807f604f2efdbed1a3de9b4ccfbfa2cd94f3044be550951434d63e391506085"
+    }
+  ],
+  "gzipBytes": 341894,
+  "finalFocused": 160,
+  "finalBrowserCases": 17,
+  "finalBuildReport": "stacked-local-play-green-06/report.json",
+  "finalBrowserReport": "stacked-local-play-green-07/report.json",
+  "hmhInitialSharedBytes": 1039992,
+  "stackedInitialBytes": 580861
+}

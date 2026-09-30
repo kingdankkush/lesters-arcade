@@ -775,3 +775,17 @@ landscape labels and portrait helper spacing remain probe limitations.
 No production importer/UI, physical controller/phone, finished-versus, full
 build/release or deployment claim. All children/Chrome/HTTP closed; markers
 released. See slices/STACKED-F2C-LOCAL-INPUT.md and receipts/stacked-local-input-f2c.
+
+### STACKED F2d/e — playable local versus checkpoint
+
+The optional local Free entry now provides two actual boards, validated controls,
+a shared piece sequence, fixed-step driver, results/rematch and responsive HUD.
+Lifecycle and import reviews found and fixed loading/disposal and focus defects.
+160 focused checks and17 actual Chrome cases pass; the built solo Worker retains
+the exact432,000-tick historical tuple. All ten final original PNGs reviewed.
+Portrait blocks Resume; narrow setup scrolls internally. No physical pads/iPhone,
+full release/soak or final visual/audio polish claim. Dark landscape ghost cues
+remain to improve. Fresh initial/shared budgets: HMH1,039,992B, STACKED580,861B.
+All owned children/Chrome/HTTP closed, PIDs absent and markers released. Actual
+failed attempts remain preserved. See slices/STACKED-F2DE-LOCAL-PLAY.md and
+receipts/stacked-local-play-f2de. No version bump, push or deployment.

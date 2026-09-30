@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="color-scheme" content="dark"><meta name="robots" content="noindex"><title>STACKED · Two players — Lester's Arcade</title><link rel="icon" href="../assets/favicon.svg"><link rel="stylesheet" href="./local.css"></head>
+<body>
+<header class="masthead"><a class="brand" href="/?stackedLocal=local-v1" aria-label="Back to Lester's Arcade"><span>LESTER’S ARCADE</span><strong>STACKED</strong></a><span class="mode">TWO PLAYERS <b>FREE</b></span><button id="pause" hidden>Pause</button></header>
+<main id="arena" hidden>
+  <div class="player-headings"><h2>01 <span>Player one</span></h2><h2>02 <span>Player two</span></h2></div>
+  <div id="stage" aria-label="Two local STACKED boards"></div>
+  <div id="hud" aria-hidden="true"></div>
+</main>
+<footer id="matchFooter" hidden><span id="matchClock">0:00</span><span id="matchHint">Escape or controller Menu to pause both boards</span><button id="controls">Controls</button></footer>
+<section id="notice" class="initial"><span class="eyebrow">SIDE BY SIDE</span><h1>Two players. One screen.</h1><p id="noticeCopy" role="status">Preparing your local game…</p><a href="/?stackedLocal=local-v1">Back to arcade</a></section>
+<dialog id="panel" aria-labelledby="panelTitle" aria-describedby="panelCopy">
+  <div class="panel-top"><span class="eyebrow">STACKED · LOCAL VERSUS</span><span class="split-mark" aria-hidden="true">01 / 02</span></div>
+  <h1 id="panelTitle">Two players. One screen.</h1><p id="panelCopy">Same pieces. Separate boards. Clear lines to send rows across. Last player standing wins.</p>
+  <form id="setup">
+    <label class="field" for="deviceChoice">Choose your controls<select id="deviceChoice"><option value="keyboard-pad">Keyboard + controller</option><option value="two-pads">Two controllers</option><option value="split-keyboard">Share one keyboard</option></select></label>
+    <p id="deviceStatus" class="hint" role="status"></p><p id="ghosting" class="warning" hidden>Some keyboards miss simultaneous keys. Two controllers are best. Player two needs a number pad.</p>
+    <div id="controlGuide" class="control-guide"></div>
+    <label class="check"><input id="patterns" type="checkbox" checked> Show piece patterns</label>
+    <p id="setupError" class="error" role="alert"></p>
+    <div class="actions"><button id="start" class="primary" type="submit">Start match <span aria-hidden="true">→</span></button><a href="/?stackedLocal=local-v1">Back to arcade</a></div>
+  </form>
+  <div id="roundActions" hidden><div id="roundStats" class="round-stats"></div><div id="roundControls" hidden></div><div class="actions"><button id="resume" class="primary">Resume match</button><button id="rematch" class="primary" hidden>Play again</button><button id="changeControls">New match / controls</button></div><p class="hint">Changing controls starts a fresh match for both players.</p></div>
+  <p class="local-note">Free, on this screen. No entry fee, saved score or Ranked rewards.</p>
+</dialog>
+<script type="module" src="../dist/stacked/local-entry.js"></script>
+</body></html>

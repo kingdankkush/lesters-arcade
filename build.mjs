@@ -169,6 +169,9 @@ async function run() {
       'hmh-reboot/startup-art': resolve(__dirname, 'apps/portal/src/hmh-startup-art.mjs'),
       'chikun/game': chikunEntry,
       'stacked/game': stackedEntry,
+      // Standalone Free local page: never in the solo or portal import graph.
+      'stacked/local-entry': resolve(__dirname, 'apps/stacked/src/local-entry.mjs'),
+      'stacked/local-app': resolve(__dirname, 'apps/stacked/src/local-app.mjs'),
       // Independently cacheable visual math; the static shared chunk remains
       // included in STACKED's unchanged aggregate initial-JS budget below.
       'stacked/living-field': resolve(__dirname, 'apps/stacked/src/render/living-field.mjs'),

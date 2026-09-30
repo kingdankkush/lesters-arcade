@@ -108,3 +108,6 @@ docs/2.0/receipts/world-woods/** -text
 
 # Compact local two-player controls observations
 docs/2.0/receipts/stacked-local-input-f2c/*.gz -filter -diff -merge -text
+
+# Compact local versus source, browser and failed-attempt receipts
+docs/2.0/receipts/stacked-local-play-f2de/*.gz -filter -diff -merge -text

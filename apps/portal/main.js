@@ -1509,6 +1509,8 @@ let currentSession = null;
 const bootRuntimeSearch = window.location.search;
 const stackedDailyChoices = new URLSearchParams(bootRuntimeSearch).getAll('stackedDaily');
 const stackedDailyPreview = stackedDailyChoices.length === 1 && stackedDailyChoices[0] === 'daily-v1';
+const stackedLocalChoices = new URLSearchParams(bootRuntimeSearch).getAll('stackedLocal');
+const stackedLocalPreview = stackedLocalChoices.length === 1 && stackedLocalChoices[0] === 'local-v1';
 let hmhRebootHost = null;
 let hmhRebootLifecycle = null;
 let hmhRebootActive = false;
@@ -5027,6 +5029,10 @@ const renderOfficialModeSelect = () => {
       const hint = document.createElement('p'); hint.id = 'stackedDailyHint'; hint.textContent = 'Same pieces for everyone each UTC day. Starts at Level 1. Unlimited Free retries; best kept on this device.';
       daily.addEventListener('change', () => { select.disabled = daily.checked; });
       options.append(dailyLabel, hint);
+    }
+    if (stackedLocalPreview) {
+      const local = document.createElement('a'); local.href = '/stacked/local.html?stackedLocal=local-v1&mode=free'; local.className = 'secondary'; local.textContent = 'Two players · Local Free';
+      const row = document.createElement('p'); row.append(local); options.append(row);
     }
     dom.officialModeSelect.append(options);
   }
