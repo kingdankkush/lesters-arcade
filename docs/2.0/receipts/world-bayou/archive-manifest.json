@@ -1,0 +1,294 @@
+{
+  "schema": "world-bayou-raw-archive-v1",
+  "scope": "Exact topology/paint RED/GREEN/copy/diagnostic outputs with input hashes, one native browser attempt with one explicit inspection jump per viewport before local walks, and one fresh normal build/unchanged standard visual regression. Lossless gzip with raw and stored identities. Not a release gate, continuous regional journey, physical-device result or final-art acceptance.",
+  "entries": [
+    {
+      "archive": "red-01/red-report.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-bayou-flow-red-20260930-01\\red-report.json",
+      "bytes": 24106,
+      "sha256": "a5b35b395a29db38e04d2e88be98469133496d65efc805385d1a48aa10084d49",
+      "storedBytes": 3860,
+      "storedSha256": "9775791b0bf52ddd88f23909dac0065e83652be18dbc771f7865b787f166f99d",
+      "compression": "gzip"
+    },
+    {
+      "archive": "red-01/runner.mjs.txt.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-bayou-flow-red-20260930-01\\runner.mjs.txt",
+      "bytes": 6036,
+      "sha256": "d6d85fe9eabdf2f37026d8c5efdad9c69fa024385eb0a10cca7d12de52eff1c3",
+      "storedBytes": 2605,
+      "storedSha256": "ba45b4a823957a3ddf19628fcb906a71e78798cc09e26541ecad65fb21364c29",
+      "compression": "gzip"
+    },
+    {
+      "archive": "red-01/helper.mjs.txt.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-bayou-flow-red-20260930-01\\helper.mjs.txt",
+      "bytes": 3475,
+      "sha256": "a5177337fcf6ec41f285fc105b93d0b4b94ee1101cb14a653a91e9b8b075b0d9",
+      "storedBytes": 1360,
+      "storedSha256": "ade927025e2afbae667182802dfce78d9ddd6b3afea7cfd48a5b40eac5e8ea4b",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-01/gate-report.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-bayou-green-20260930-01\\gate-report.json",
+      "bytes": 54545,
+      "sha256": "e207b392913ae5a037404c70b8c1d0b3b67bd356baf54af31a4a1da48e332c74",
+      "storedBytes": 8268,
+      "storedSha256": "9a2d97b601ff03f4c516b50a09cb894a18bc77fd3c652f711632ceceed9bd9e6",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-01/bindings.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-bayou-green-20260930-01\\bindings.json",
+      "bytes": 24835,
+      "sha256": "913539a2f84f3b35d62cd21e2984bac8292769dbb0fa1b875b4f327828724738",
+      "storedBytes": 3071,
+      "storedSha256": "b0c671fbb9a70659391e8ac7f925a85001af00cb4a56d46777477755a8684707",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-01/runner.mjs.txt.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-bayou-green-20260930-01\\runner.mjs.txt",
+      "bytes": 4970,
+      "sha256": "e8d5b19c22820e89b607354f668c1b8a7f6d9dc1a0f1aa362a2b57b0b621bad5",
+      "storedBytes": 1932,
+      "storedSha256": "72975939b4ee7d34dab97b2bf08eed5a974086d98945698e4e8980a4133a8cf5",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-01/layout-report.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-bayou-green-20260930-01\\layout-report.json",
+      "bytes": 73458,
+      "sha256": "46a71079f57e597671eb938000a0683784014aef4d8068407a14f89fc54dc322",
+      "storedBytes": 6253,
+      "storedSha256": "3bf999864398398269d6431b44ad41bdd2d4267a2ea0a62f30fb9fbc52417d43",
+      "compression": "gzip"
+    },
+    {
+      "archive": "browser-01/gate-report.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-bayou-preview-browser-20260930-01\\gate-report.json",
+      "bytes": 257589,
+      "sha256": "bd159aef2ede11729ddab4469e9ef0b83419f8523f2a2a6fc9f12fbd3c258d54",
+      "storedBytes": 34930,
+      "storedSha256": "2657158fcd5d4a133a629bb05f41f710bbe7ee489a61e70aaeac7aaab00911d0",
+      "compression": "gzip"
+    },
+    {
+      "archive": "browser-01/bindings.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-bayou-preview-browser-20260930-01\\bindings.json",
+      "bytes": 81667,
+      "sha256": "fa0998bff4ddf956fdfce9cb700f4e12666b1e94a8897de52c19ca0244b76185",
+      "storedBytes": 15145,
+      "storedSha256": "354a6397132862b8747ca5f1d24e987da0ae4d016490dc0541a9e61786f12f68",
+      "compression": "gzip"
+    },
+    {
+      "archive": "browser-01/runner.mjs.txt.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-bayou-preview-browser-20260930-01\\runner.mjs.txt",
+      "bytes": 10337,
+      "sha256": "b37daafa16d6a47b3ddc1d59617a5a8fefac8fbff18bad744e76ae63faf48b1a",
+      "storedBytes": 3476,
+      "storedSha256": "ed13d591c966d54f09782144f7e8692e4c766c2a382e0f7d426bdf75169db137",
+      "compression": "gzip"
+    },
+    {
+      "archive": "browser-01/browser/browser-report.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-bayou-preview-browser-20260930-01\\browser\\browser-report.json",
+      "bytes": 120690,
+      "sha256": "fe4ed00d033a5c4e0d62b45af9ce557c4710ae7ec52e6c60bb883058c7b3cda6",
+      "storedBytes": 6643,
+      "storedSha256": "caf4a91201067f65eaee8c6630cbf81ed70107f19f8d8922db38b6047b41adef",
+      "compression": "gzip"
+    },
+    {
+      "archive": "browser-01/harness/hmh-greybox-bayou-browser-smoke.mjs.txt.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\hmh-greybox-bayou-browser-smoke.mjs",
+      "bytes": 19257,
+      "sha256": "ae63267fa690271c6200eb9c83e617873ba1dcee7ca7178e0e3ba4b9ea1492d7",
+      "storedBytes": 6249,
+      "storedSha256": "fbccac0ce2de803016e0301903cc863f282dfc3116305602bee65a71b00b15d6",
+      "compression": "gzip"
+    },
+    {
+      "archive": "browser-01/harness/prepare-world-bayou-browser.mjs.txt.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\prepare-world-bayou-browser.mjs",
+      "bytes": 5756,
+      "sha256": "f7062651277e1ffe3573b9de0263e4c83959c9d27a616a13f844688201ae92bf",
+      "storedBytes": 2354,
+      "storedSha256": "461e1c7b7184afe386aa900182e6e79248c5b65f67abbdcec9df35e429a1c1c9",
+      "compression": "gzip"
+    },
+    {
+      "archive": "browser-01/harness/owned-windows-preview-child.mjs.txt.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\owned-windows-preview-child.mjs",
+      "bytes": 3476,
+      "sha256": "6f4903a66d324a01a476eebefdfac68663dde2c573f62f637c4b7537ccb0d631",
+      "storedBytes": 1360,
+      "storedSha256": "18c5cfc758da42cddbb922c7989a0204d20eb87c1d5d359985932ef89f92c162",
+      "compression": "gzip"
+    },
+    {
+      "archive": "paint-red-01/red-report.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-bayou-paint-red-20260930-01\\red-report.json",
+      "bytes": 9798,
+      "sha256": "813b2e7f7da0b5b2b1c88b6a331ea140364d092ec68a56ce1099a9364ab249d9",
+      "storedBytes": 2239,
+      "storedSha256": "a039772c5978da7da41910b3a027eba2c217553d23349e9da23c0a7faeb5bd58",
+      "compression": "gzip"
+    },
+    {
+      "archive": "paint-red-01/runner.mjs.txt.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-bayou-paint-red-20260930-01\\runner.mjs.txt",
+      "bytes": 4661,
+      "sha256": "a9a7d6007e2dd778df5a7ac17beeabedee83a80153ccab1c0c9fcef885dab098",
+      "storedBytes": 1995,
+      "storedSha256": "93650c8baa00a7ce18a7d756fadb3678e78c7b8c8f830718a32a6a9d77e2e7fc",
+      "compression": "gzip"
+    },
+    {
+      "archive": "paint-red-01/helper.mjs.txt.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-bayou-paint-red-20260930-01\\helper.mjs.txt",
+      "bytes": 3475,
+      "sha256": "a5177337fcf6ec41f285fc105b93d0b4b94ee1101cb14a653a91e9b8b075b0d9",
+      "storedBytes": 1360,
+      "storedSha256": "ade927025e2afbae667182802dfce78d9ddd6b3afea7cfd48a5b40eac5e8ea4b",
+      "compression": "gzip"
+    },
+    {
+      "archive": "paint-green-01/gate-report.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-bayou-paint-green-20260930-01\\gate-report.json",
+      "bytes": 63276,
+      "sha256": "2752fbbed966e374d8946cb6144e4d17f1613289724b9c3b77a9d9a3fb32e0c5",
+      "storedBytes": 9604,
+      "storedSha256": "b73099588905be99f9da3605cef8542c7558ac5d0e66991ebdc141d978fd2c4d",
+      "compression": "gzip"
+    },
+    {
+      "archive": "paint-green-01/bindings.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-bayou-paint-green-20260930-01\\bindings.json",
+      "bytes": 29723,
+      "sha256": "83db1c43b1f186311cf707f5116698dd3c5417cb921ab338e8079a5eb303a670",
+      "storedBytes": 3744,
+      "storedSha256": "00fe6e51786f1d17149636bb1763c02427cd2db4a583353e74a5757fb8720b97",
+      "compression": "gzip"
+    },
+    {
+      "archive": "paint-green-01/runner.mjs.txt.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-bayou-paint-green-20260930-01\\runner.mjs.txt",
+      "bytes": 5108,
+      "sha256": "d43eea4938f8a1198c825bd10f1eb4553498f20a6e272d61fe7b5130d2921142",
+      "storedBytes": 1992,
+      "storedSha256": "27a0b870ed4d6750b4ab674c6addc06191f95047cfff68886b5a96fc7d627f9d",
+      "compression": "gzip"
+    },
+    {
+      "archive": "paint-green-01/layout-report.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-bayou-paint-green-20260930-01\\layout-report.json",
+      "bytes": 73458,
+      "sha256": "46a71079f57e597671eb938000a0683784014aef4d8068407a14f89fc54dc322",
+      "storedBytes": 6253,
+      "storedSha256": "3bf999864398398269d6431b44ad41bdd2d4267a2ea0a62f30fb9fbc52417d43",
+      "compression": "gzip"
+    },
+    {
+      "archive": "default-visual-01/gate-report.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-bayou-default-visual-20260930-01\\gate-report.json",
+      "bytes": 2309301,
+      "sha256": "7608b851225fd92c606c4b7ddf85f9803fd64b79c43193c8cfd51a6a84060e9a",
+      "storedBytes": 528948,
+      "storedSha256": "bb519aee453d93a91a7a15514095ea9b7cc5970f567bdac20ccf18181dc48dc6",
+      "compression": "gzip"
+    },
+    {
+      "archive": "default-visual-01/bindings.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-bayou-default-visual-20260930-01\\bindings.json",
+      "bytes": 1435625,
+      "sha256": "af02b593c6ece743f963781c628bc19d7709c6f37eba43953ad60c3caaca1c58",
+      "storedBytes": 271586,
+      "storedSha256": "4dc4dcc2022ae4ff275fcb11317b70c3bcf1847722f59709cd5f991ed5004f61",
+      "compression": "gzip"
+    },
+    {
+      "archive": "default-visual-01/runner.mjs.txt.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-bayou-default-visual-20260930-01\\runner.mjs.txt",
+      "bytes": 11374,
+      "sha256": "4543b8bcca9f2602fbeb8e1e0cb46cfbb015d4586f492532ba1bfb6490551351",
+      "storedBytes": 3905,
+      "storedSha256": "205cc40c07f49969ef4f800cbd06f66bba9393230473837d61676079a95ef0e2",
+      "compression": "gzip"
+    },
+    {
+      "archive": "default-visual-01/process-lifecycle.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-bayou-default-visual-20260930-01\\process-lifecycle.json",
+      "bytes": 1113,
+      "sha256": "b1177d57a8bbb8e34bd9a51fbf7d35f1a5cd0b9156ff0b78499d8e2b1160c126",
+      "storedBytes": 525,
+      "storedSha256": "8166b0924678f02f9b81bd0d7685fe2fdd7c8c7a4ee882c3a59e8701a7e02263",
+      "compression": "gzip"
+    },
+    {
+      "archive": "default-visual-01/harness/owned-windows-world-visual-child.mjs.txt.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\owned-windows-world-visual-child.mjs",
+      "bytes": 3476,
+      "sha256": "495930361edcac710033be5d2fe3d6b47879c823e6babbbe4ef5adb266b78fc2",
+      "storedBytes": 1361,
+      "storedSha256": "741fc6dba4bb249a7557c3bc3df95a9f4fa0553d5ca7cb507203c43dc6ae7702",
+      "compression": "gzip"
+    },
+    {
+      "archive": "default-visual-01/harness/world-default-visual-process-observer.mjs.txt.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-default-visual-process-observer.mjs",
+      "bytes": 2707,
+      "sha256": "f7da458e82522d6d045bdd399e57e6eb5481fb160f01134477edb40bd581a55e",
+      "storedBytes": 1122,
+      "storedSha256": "0bd6b7cdfc875e7b40932279087254455eb401aa4a7f379adcffefe7586fc908",
+      "compression": "gzip"
+    },
+    {
+      "archive": "default-visual-01/harness/prepare-world-bayou-default-visual.mjs.txt.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\prepare-world-bayou-default-visual.mjs",
+      "bytes": 4494,
+      "sha256": "636eb50e92580dafdf93b8e1c4fefbd61fcf6e32c9373a14c8e329b592294ca0",
+      "storedBytes": 1717,
+      "storedSha256": "49f62572bc45a239d90aa574dd8a0f0242c6fa6ca096929b80bfec64d04068a5",
+      "compression": "gzip"
+    },
+    {
+      "archive": "closure/world-bayou-paint-source-closure.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-bayou-paint-source-closure.json",
+      "bytes": 504,
+      "sha256": "71e73a321679921bb0d1f2148c4b5ef7869f637a44f5e2f34deadcf8a5443952",
+      "storedBytes": 272,
+      "storedSha256": "7b9ea8b35d0b2b3a840e10ccf065ae4accaf966d7889eee9398987395452a57e",
+      "compression": "gzip"
+    },
+    {
+      "archive": "closure/world-bayou-preview-closure.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-bayou-preview-closure.json",
+      "bytes": 1175,
+      "sha256": "8c92ba83a50559d588f59be0c88196f2bc863bb9c60168700a39e48188b7f238",
+      "storedBytes": 461,
+      "storedSha256": "45b96a345917cd3fcd23db16fe906a441506a94ceb6d31cca6aa85ffb1a53ca3",
+      "compression": "gzip"
+    },
+    {
+      "archive": "closure/world-bayou-default-visual-closure.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-bayou-default-visual-closure.json",
+      "bytes": 1884,
+      "sha256": "75e42cddca54fbc34b12d1e3f9114fa585089f13fbcf71484dcc666c061b467a",
+      "storedBytes": 691,
+      "storedSha256": "cfab5b76d8696cdf4cab1d9e6a83e8f7462d14fc30d4d85b5b76da428391a8b0",
+      "compression": "gzip"
+    },
+    {
+      "archive": "author-image-review.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-bayou-author-image-review.json",
+      "bytes": 15442,
+      "sha256": "d2e56abad52cd25bd4e4e20833eba3a2ea81b06d3ad6fec9bd2aa678a81af7cc",
+      "storedBytes": 3272,
+      "storedSha256": "2e7a0eac671c5e4ae689b8c69657306f34201ef471c1474dead8e919bbec7cf7",
+      "compression": "gzip"
+    }
+  ]
+}

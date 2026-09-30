@@ -111,3 +111,6 @@ docs/2.0/receipts/stacked-local-input-f2c/*.gz -filter -diff -merge -text
 
 # Compact local versus source, browser and failed-attempt receipts
 docs/2.0/receipts/stacked-local-play-f2de/*.gz -filter -diff -merge -text
+
+# Compact exact Bayou authoring evidence
+docs/2.0/receipts/world-bayou/** -text

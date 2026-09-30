@@ -1,5 +1,6 @@
 // Explicit local-only navigation preview. There is no score/session/bridge SDK.
 import { createGreyboxWorld } from './greybox-world-v1.mjs';
+import { createGreyboxGroundPaint } from './greybox-ground-presentation.mjs';
 import { createGreyboxNavigator,createGreyboxStepClock } from './greybox-navigation.mjs';
 import { PRODUCTION_HERO_ASSETS,PRODUCTION_HERO_RUNTIME_SCALE } from '../production-hero-assets.mjs';
 import { createProductionHeroAtlasIndex,resolveProductionHeroPose } from '../production-hero-atlas.mjs';
@@ -8,6 +9,7 @@ const contains=(b,p)=>p.x>=b.minX&&p.x<=b.maxX&&p.y>=b.minY&&p.y<=b.maxY;
 const vectors={ArrowUp:[0,-1],KeyW:[0,-1],ArrowDown:[0,1],KeyS:[0,1],ArrowLeft:[-1,0],KeyA:[-1,0],ArrowRight:[1,0],KeyD:[1,0]};
 export function mountGreyboxPlaytest(root){
   const world=createGreyboxWorld(),navigator=createGreyboxNavigator(world),controller=new AbortController();
+  const groundPaint=createGreyboxGroundPaint(world.surfaces);
   let disposed=false,frameId=null,image=new Image(),atlas=null,width=1,height=1,renderFrames=0,visiblePieces=0,nativeEvents=0,planView=false;
   const keys=new Set(),pointers=new Map(),cleanups=[];
   root.innerHTML='<header><div><strong>HMH · TEN-AREA GREYBOX</strong><span>Local Free navigation · No score</span></div><div class="inspection"><label>Inspection jump <select aria-label="Inspection jump"></select></label><button class="jump" aria-label="Inspect selected area">Jump</button></div></header><div class="stage"><canvas aria-label="Playable ten-area greybox" tabindex="0"></canvas><div class="area-label" aria-live="polite"></div><button class="view-toggle" aria-label="Toggle area plan">Area plan</button><output class="position"></output></div><footer><div class="instructions"><b>Walk the world</b><span>WASD / arrows or hold a direction. Roads connect all ten areas.</span><small>Combat, missions, cover and climbing are staged markers. Inspection jumps are separate from walking.</small></div><div class="directions" aria-label="Touch movement"><button data-direction="up" aria-label="Move up">↑</button><button data-direction="left" aria-label="Move left">←</button><button data-direction="down" aria-label="Move down">↓</button><button data-direction="right" aria-label="Move right">→</button></div></footer>';
@@ -37,7 +39,7 @@ export function mountGreyboxPlaytest(root){
     if(disposed)return;clock.advance(now);const view=navigator.view(),area=world.areas.find(area=>contains(area.bounds,view)),scale=planView?Math.min(width/4600,height/4600):Math.max(.35,Math.min(1,height/740)),centre=planView&&area?area.center:view,camera={x:centre.x-width/(2*scale),y:centre.y-height/(2*scale)};
     context.clearRect(0,0,width,height);context.fillStyle='#283032';context.fillRect(0,0,width,height);
     context.save();context.scale(scale,scale);context.translate(-camera.x,-camera.y);
-    for(const surface of world.surfaces)polygon(points(surface.area),surface.priority===15?'#949b97':surface.kind==='ramp'?'#d1d4cb':surface.groundZ>0?'#d9ded5':'#bcc4bb');
+    for(const command of groundPaint)polygon(command.vertices,command.fill,command.stroke);
     // Local path strokes are a presentation guide, not extra collision or ground.
     context.save();context.strokeStyle='#a1ac9b';context.lineWidth=140;context.lineCap='round';context.lineJoin='round';
     for(const area of world.areas)for(const route of area.inspectionRoutes??[]){context.beginPath();route.points.forEach((p,i)=>{if(i===0)context.moveTo(p.x,p.y);else context.lineTo(p.x,p.y);});context.stroke();}

@@ -789,3 +789,25 @@ remain to improve. Fresh initial/shared budgets: HMH1,039,992B, STACKED580,861B.
 All owned children/Chrome/HTTP closed, PIDs absent and markers released. Actual
 failed attempts remain preserved. See slices/STACKED-F2DE-LOCAL-PLAY.md and
 receipts/stacked-local-play-f2de. No version bump, push or deployment.
+
+## 2026-09-30 — W2j local Bayou water and crossings
+
+Scrypt Bayou now has a shaped blocked channel, two dry crossings, machinery
+court with independent northern bypass and a returnable east-bank store path.
+The local kit and cached preview painting reuse the existing water/bridge
+authority and preserve all seven protected files. Genuine topology RED 12/14
+and paint RED 4/4 preceded GREEN 80 then final 93/93 plus identical isolated 93.
+All 98 sites/14 roads pass; conservative walkability 46.956398% stays in budget.
+
+One actual Chrome attempt passed 20 desktop and 5 touch legs, shoreline refusal,
+four denied entries and both cleanups. All 14 original local images were viewed.
+A fresh normal build and standard 12-scene visual regression passed unchanged
+without baseline acceptance; all 15 default scene/enemy images were viewed.
+HMH initial/shared 1,039,992 B; STACKED 576,100 B in this own-worktree build. Exact
+children/Chrome/HTTP closed, were observed absent, and owned markers released.
+
+The result is greybox navigation evidence with flat placeholders, sparse
+entry/court views, tiny overview labels and marker overlap retained honestly.
+No production art, physical-device, encounter or whole-map approval is claimed.
+River is the last template area. Details and compact receipts:
+[W2j Bayou](slices/WORLD-W2J-BAYOU.md). No versions, credits, push or deployment.

@@ -1,6 +1,6 @@
 # Scrypt Bayou — area brief draft
 
-Status: preparatory layout intent; no geometry/nav/playtest/art acceptance yet. Part of the continuous 20,000 × 14,000 world. See [brief index](INDEX.md) for shared scales, authorisation and gates.
+Status: local Bayou W2j geometry/nav/native-browser checkpoint passes; owner playtest, full area design and art acceptance remain open. Part of the continuous 20,000 × 14,000 world. See [brief index](INDEX.md) for shared scales, authorisation and gates.
 
 **Story and flow.** A channel-management settlement built around water, cypress roots and raised timber routes. The lock, winches and walkways form one believable system.
 
@@ -17,3 +17,45 @@ Status: preparatory layout intent; no geometry/nav/playtest/art acceptance yet. 
 **Art sub-palette.** Olive #586451, wet timber #494D3F, water #344C48; board L10/L14/L15.
 
 **Greybox acceptance focus.** Deep water is blocked and visibly distinct. Wet walkable ground uses existing movement in the first greybox; a slowdown is a separate unapproved rules choice. Fog sits behind readable actors/tells. Check boardwalk edges, gate parity and ordinary human scale.
+
+## W2j local layout checkpoint
+
+The channel runs north to south east of the inspection start. Its narrow
+engineered crossing section widens toward the southern marsh. Two separate
+bridges cross it: the lower lock bridge serves the west-bank machinery court,
+while the northern crossing preserves the Coast/River link when that whole
+court is blocked. Both use the existing shallow 24-unit ramp contract. They
+are dry legal surfaces over visibly blocked deep water, with no hidden third
+crossing between them.
+
+The control house and wheel tower face the lower crossing. Controls sit on a
+clear apron outside the house, close to the bridge machinery. The Lockkeeper
+court remains dry, with a quiet centre and two separate exits. A shaped cypress
+root bank frames the northwest approach without blocking the coastal road.
+
+The east-bank stilt store faces a side track that returns by its outer edge to
+the lower bridge. Its inspection point is outside the store footprint, and
+the southern water edge stays visible along the detour. The Coast and River
+road geometries and endpoints are unchanged.
+
+Future terrain and assets should follow the water infrastructure:
+
+- Water narrows at the lock and widens toward the marsh. Place erosion, roots
+  and reeds along those shore conditions, keeping all crossing mouths legible.
+- Put load-bearing timber and mechanical hardware at bridge abutments and
+  wheel/control structures. Avoid unsupported scattered machinery.
+- Use concentrated foot wear on the northern through-crossing and working
+  apron; leave the court centre calm for actors and encounter warnings.
+- The stilt store receives crates at its land-side frontage. Thin reeds and
+  worn plank edges should signal the returning side path rather than obscure
+  its usable width.
+- Keep fog behind readable shore edges, human actors and warning shapes.
+  Deep water, wet walkable ground and raised dry routes must remain distinct
+  at low graphics settings and in the phone camera.
+
+This proposal changes local authoring geometry only. No slow mud, swimming,
+lock states, Lockkeeper trigger, boardwalk collapse, climb control or official
+map/version authority is activated. Local source, native browser and unchanged
+default visual checks pass. Owner playtest and final art approval remain required.
+
+See [W2j evidence and limits](../slices/WORLD-W2J-BAYOU.md) for the actual checks.
