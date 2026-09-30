@@ -7,6 +7,7 @@ import argparse
 import hashlib
 import importlib.util
 import json
+import os
 import sys
 from pathlib import Path
 
@@ -16,7 +17,13 @@ from mathutils import Matrix, Vector
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "scripts/lib"))
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 from hmh_actor_pilot_paths import validate_pilot_output
+from hmh_new_enemy_casting import NEW_ENEMY_IDS
+# Editable .blend sources for the 2.0 enemies live outside Git (the source-art
+# archive lane). Resolution order: the worktree path, then HMH_SOURCE_ART_ROOT,
+# then the owner's archive. Only the committed receipt binds the digest.
+DEFAULT_SOURCE_ART_ROOT = r"C:\Users\just_\Desktop\Projects\LestersArcade-Assets\2.0\Source\Legacy-Integration-04366747"
 ACTORS = {
     "lit-commando": {
         "source": "apps/hmh-reboot/assets/source/models/tripo-gameplay/Lit Commando - Layered Gameplay Pilot v2.blend",
@@ -82,6 +89,33 @@ NATIVE_ENEMY_IDS = ('forkrunner', 'liquidator-agent', 'whale-enforcer', 'gas-bom
 ACTORS.update({'forkrunner': {'source': 'apps/hmh-reboot/assets/source/models/native-enemies/forkrunner/forkrunner.blend', 'sha256': 'a3f56a810c4dde961c9b7d7391bd95d89603a765636a98e522395c5ba6f9dc67', 'rig': 'forkrunner Native Rig', 'clips': {'idle': 'HMH_forkrunner_idle', 'run': 'HMH_forkrunner_run', 'tell': 'HMH_forkrunner_tell', 'attack': 'HMH_forkrunner_attack', 'hit': 'HMH_forkrunner_hit', 'death': 'HMH_forkrunner_death'}, 'groundNativeBody': False}, 'liquidator-agent': {'source': 'apps/hmh-reboot/assets/source/models/native-enemies/liquidator-agent/liquidator-agent.blend', 'sha256': '6a9ac0ba9ae273be91a08cc0f717b0b3190b169b53362075eb8081ac8e0645a6', 'rig': 'liquidator-agent Native Rig', 'clips': {'idle': 'HMH_liquidator-agent_idle', 'run': 'HMH_liquidator-agent_run', 'tell': 'HMH_liquidator-agent_tell', 'attack': 'HMH_liquidator-agent_attack', 'hit': 'HMH_liquidator-agent_hit', 'death': 'HMH_liquidator-agent_death'}, 'groundNativeBody': False}, 'whale-enforcer': {'source': 'apps/hmh-reboot/assets/source/models/native-enemies/whale-enforcer/whale-enforcer.blend', 'sha256': '9e2ded2b63c852e46ea3b49349ca48f8e7fe1eb73804438ea5b306a737fefe50', 'rig': 'whale-enforcer Native Rig', 'clips': {'idle': 'HMH_whale-enforcer_idle', 'run': 'HMH_whale-enforcer_run', 'tell': 'HMH_whale-enforcer_tell', 'attack': 'HMH_whale-enforcer_attack', 'hit': 'HMH_whale-enforcer_hit', 'death': 'HMH_whale-enforcer_death'}, 'groundNativeBody': True}, 'gas-bomber': {'source': 'apps/hmh-reboot/assets/source/models/native-enemies/gas-bomber/gas-bomber.blend', 'sha256': '620289a19cb8e5a025b2c614b90bc938e8db55e846924a92e41e7c679366c6f4', 'rig': 'gas-bomber Native Rig', 'clips': {'idle': 'HMH_gas-bomber_idle', 'run': 'HMH_gas-bomber_run', 'tell': 'HMH_gas-bomber_tell', 'attack': 'HMH_gas-bomber_attack', 'hit': 'HMH_gas-bomber_hit', 'death': 'HMH_gas-bomber_death'}, 'groundNativeBody': True}, 'validator-cultist': {'source': 'apps/hmh-reboot/assets/source/models/native-enemies/validator-cultist/validator-cultist.blend', 'sha256': '202e9ff2487d989655ee3c132e19e8d828f0522bcdadab8e87387c6259658efc', 'rig': 'validator-cultist Native Rig', 'clips': {'idle': 'HMH_validator-cultist_idle', 'run': 'HMH_validator-cultist_run', 'tell': 'HMH_validator-cultist_tell', 'attack': 'HMH_validator-cultist_attack', 'hit': 'HMH_validator-cultist_hit', 'death': 'HMH_validator-cultist_death'}, 'groundNativeBody': True}})
 
 WEIGHTED_HERO_NAMES = {"lilly": "Lilly", "lit-valkyrie": "Lit Valkyrie", "lester-original": "Lester Original"}
+
+
+def new_enemy_spec(actor_id):
+    directory = "apps/hmh-reboot/assets/source/models/native-enemies/" + actor_id
+    receipt = json.loads((ROOT / directory / "source-receipt.json").read_text(encoding="utf-8"))
+    if receipt["actorId"] != actor_id or receipt["runtimeAuthority"] != "projection-only":
+        raise RuntimeError("New enemy source receipt identity mismatch: " + actor_id)
+    return {"source": directory + "/" + receipt["source"], "sha256": receipt["sourceSha256"], "rig": receipt["armature"],
+            "clips": dict(receipt["clipActions"]), "groundNativeBody": True, "newEnemy": True}
+
+
+for _actor_id in NEW_ENEMY_IDS:
+    if (ROOT / "apps/hmh-reboot/assets/source/models/native-enemies" / _actor_id / "source-receipt.json").exists():
+        ACTORS[_actor_id] = new_enemy_spec(_actor_id)
+
+
+def resolve_source(spec):
+    relative = spec["source"]
+    local = ROOT / relative
+    if local.exists():
+        return local
+    if not spec.get("newEnemy"):
+        raise RuntimeError("Immutable source missing: " + relative)
+    archive = Path(os.environ.get("HMH_SOURCE_ART_ROOT", DEFAULT_SOURCE_ART_ROOT)) / relative
+    if not archive.exists():
+        raise RuntimeError("New enemy source missing from worktree and HMH_SOURCE_ART_ROOT: " + relative)
+    return archive
 
 
 def digest(path):
@@ -193,7 +227,7 @@ def inspect(actor_id, source, rig, meshes, spec):
         bounds = []
         # The packed hero sources contain dense equipment. Measure its source
         # inventory once; the optimized GLB receives all 45 existing pose checks.
-        for fraction in ([] if actor_id in (*WEIGHTED_HERO_NAMES, *NATIVE_ENEMY_IDS) else [0, .25, .5, .75, 1]):
+        for fraction in ([] if actor_id in (*WEIGHTED_HERO_NAMES, *NATIVE_ENEMY_IDS, *NEW_ENEMY_IDS) else [0, .25, .5, .75, 1]):
             frame = start + (end - start) * fraction
             scene.frame_set(int(frame), subframe=frame % 1)
             bounds.append({"frame": frame, **evaluated_bounds(meshes)})
@@ -218,7 +252,7 @@ def inspect(actor_id, source, rig, meshes, spec):
             "rigBones": [{"name": bone.name, "parent": bone.parent.name if bone.parent else None} for bone in rig.data.bones],
             "images": [{"name": image.name, "size": list(image.size), "packed": bool(image.packed_file)} for image in bpy.data.images if image.type == "IMAGE"],
             "clips": clips, "gltfSettings": export_settings,
-            "sourcePoseBoundsSampled": actor_id not in (*WEIGHTED_HERO_NAMES, *NATIVE_ENEMY_IDS)}
+            "sourcePoseBoundsSampled": actor_id not in (*WEIGHTED_HERO_NAMES, *NATIVE_ENEMY_IDS, *NEW_ENEMY_IDS)}
 
 
 def simplify(actor_id, rig, meshes):
@@ -242,7 +276,7 @@ def simplify(actor_id, rig, meshes):
             (count for text, count in targets.items() if text in obj.name), source_triangles))
         if hero_prefix:
             target = hero_targets[obj.name]
-        if actor_id in NATIVE_ENEMY_IDS:
+        if actor_id in NATIVE_ENEMY_IDS or actor_id in NEW_ENEMY_IDS:
             if obj.get("hmh_primary_skinned_body"):
                 target = 8000
             elif obj.name.startswith("rugged-rifle__tripo_part_"):
@@ -446,9 +480,73 @@ def prepare_native_enemy(actor_id, rig, meshes):
                     "bakeSemantics": list(images), "nativeMaterialGraphs": graphs, "derivedHeadGearFit": head_fit, "triangles": triangles}
 
 
+def prepare_new_enemy(actor_id, rig, meshes):
+    # Same measured bake as the shipped native enemies, with one difference:
+    # an untextured owner body (palette material) is baked into its own atlas
+    # and stays a separate primitive from the role gear.
+    module_spec = importlib.util.spec_from_file_location("enemy_costume_pack", Path(__file__).with_name("pack-hmh-liquidator-glb.py"))
+    pack = importlib.util.module_from_spec(module_spec)
+    module_spec.loader.exec_module(pack)
+    pack.LANE = ROOT / ".tmp/hmh-actor-3d-pilot" / (actor_id + "-costume")
+    pack.LANE.mkdir(parents=True, exist_ok=False)
+    if rig.animation_data:
+        rig.animation_data.action = None
+        for track in rig.animation_data.nla_tracks:
+            track.mute = True
+    applied = pack.apply_geometry(rig, meshes)
+    optimization = simplify(actor_id, rig, meshes)
+    textured = [obj for obj in meshes if any(slot.material and slot.material.node_tree and any(
+        node.type == "TEX_IMAGE" and node.image for node in slot.material.node_tree.nodes) for slot in obj.material_slots)]
+    body = [obj for obj in meshes if obj.get("hmh_primary_skinned_body")]
+    gear = [obj for obj in meshes if obj not in textured and obj not in body]
+    if len(body) != 1 or not gear:
+        raise RuntimeError("Expected one primary body and role gear for a new enemy")
+    groups = [gear] if body[0] in textured else [body, gear]
+    packed = list(textured)
+    semantics = []
+    graphs = []
+    for group in groups:
+        pack.unwrap(group)
+        for obj in group:
+            pack.selected([obj])
+            modifier = obj.modifiers.new("Native costume bake triangles", "TRIANGULATE")
+            if hasattr(modifier, "keep_custom_normals"):
+                modifier.keep_custom_normals = True
+            bpy.ops.object.modifier_move_to_index(modifier=modifier.name, index=0)
+            bpy.ops.object.modifier_apply(modifier=modifier.name)
+        images, group_graphs = pack.bake(group, rig)
+        graphs.extend(group_graphs)
+        rig.data.pose_position = "REST"
+        label = "Body" if group is body else "Costume"
+        for semantic, image in images.items():
+            image.name = actor_id + " packed " + label.lower() + " " + semantic
+        components = [obj.name for obj in group]
+        pack.selected(group)
+        if len(group) > 1:
+            bpy.ops.object.join()
+        combined = bpy.context.object
+        combined.name = actor_id + " Packed " + label
+        combined.data.materials.clear()
+        material = pack.packed_material(images)
+        material.name = actor_id + " Packed Native " + label
+        combined.data.materials.append(material)
+        for face in combined.data.polygons:
+            face.material_index = 0
+        packed.append(combined)
+        semantics.append({"group": label, "components": components, "bakeSemantics": list(images)})
+    triangles = sum(len(face.vertices) - 2 for obj in packed for face in obj.data.polygons)
+    if triangles > 25000:
+        raise RuntimeError("Packed new enemy exceeds the 25,000 triangle budget")
+    rig.data.pose_position = "POSE"
+    return packed, {**optimization, "appliedGeometryModifiers": applied, "packedGroups": semantics,
+                    "nativeMaterialGraphs": graphs, "triangles": triangles}
+
+
 def export(actor_id, output, rig, meshes, spec):
     material_fallbacks = preserve_authored_constant_pbr(meshes) if actor_id == "the-liquidator" else []
-    if actor_id in NATIVE_ENEMY_IDS:
+    if spec.get("newEnemy"):
+        meshes, optimization = prepare_new_enemy(actor_id, rig, meshes)
+    elif actor_id in NATIVE_ENEMY_IDS:
         meshes, optimization = prepare_native_enemy(actor_id, rig, meshes)
     else:
         optimization = simplify(actor_id, rig, meshes)
@@ -466,7 +564,7 @@ def export(actor_id, output, rig, meshes, spec):
                               export_force_sampling=True, export_optimize_animation_size=False,
                               export_optimize_animation_keep_anim_object=True,
                               export_apply=False, export_image_format="AUTO",
-                              export_extras=actor_id == "the-liquidator", export_tangents=actor_id in (*WEIGHTED_HERO_NAMES, *NATIVE_ENEMY_IDS),
+                              export_extras=actor_id == "the-liquidator", export_tangents=actor_id in (*WEIGHTED_HERO_NAMES, *NATIVE_ENEMY_IDS, *NEW_ENEMY_IDS),
                               use_active_scene=True,
                               use_selection=True, export_cameras=False, export_lights=False)
     return {"output": output.relative_to(ROOT).as_posix(), "sha256": digest(output),
@@ -483,7 +581,7 @@ def main():
     # digest that discovers source destruction after it already happened.
     output = validate_pilot_output(ROOT, args.actor, args.mode, args.output)
     spec = ACTORS[args.actor]
-    source = ROOT / spec["source"]
+    source = resolve_source(spec)
     if digest(source) != spec["sha256"]:
         raise RuntimeError("Immutable source digest mismatch: " + spec["source"])
     bpy.ops.wm.open_mainfile(filepath=str(source), load_ui=False, use_scripts=False)

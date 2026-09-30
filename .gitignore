@@ -90,3 +90,12 @@ skills-lock.json
 # Hardhat 3 in-process chain (hardhat.config.js). network.connect() writes nothing, but a stray
 # `npx hardhat build` would write artifacts/ and cache/ at the root; contracts/artifacts/ stays tracked.
 /artifacts/
+
+# 2.0 enemy editable sources travel through the source-art archive
+# (HMH_SOURCE_ART_ROOT), not Git; only their receipts and runtime GLBs commit.
+/apps/hmh-reboot/assets/source/models/native-enemies/rug-puller/*.blend
+/apps/hmh-reboot/assets/source/models/native-enemies/pump-and-dump-bloater/*.blend
+/apps/hmh-reboot/assets/source/models/native-enemies/tollkeeper/*.blend
+/apps/hmh-reboot/assets/source/models/native-enemies/hodl-revenant/*.blend
+/apps/hmh-reboot/assets/source/models/native-enemies/money-printer/*.blend
+/apps/hmh-reboot/assets/source/models/native-enemies/oracle-marksman/*.blend

@@ -13,7 +13,7 @@ const receiptDirectory = new URL('docs/2.0/receipts/', root);
 mkdirSync(receiptDirectory, { recursive: true });
 const bossOnly = process.argv.slice(2).join(' ') === '--actor=the-liquidator';
 const heroId = ['lilly', 'lit-valkyrie', 'lester-original'].find(id => process.argv.slice(2).join(' ') === `--actor=${id}`);
-const enemyId = ['forkrunner', 'liquidator-agent', 'whale-enforcer', 'gas-bomber', 'validator-cultist'].find(id => process.argv.slice(2).join(' ') === `--actor=${id}`);
+const enemyId = ['forkrunner', 'liquidator-agent', 'whale-enforcer', 'gas-bomber', 'validator-cultist', 'rug-puller', 'pump-and-dump-bloater', 'tollkeeper', 'hodl-revenant', 'money-printer', 'oracle-marksman'].find(id => process.argv.slice(2).join(' ') === `--actor=${id}`);
 if (process.argv.length > 2 && !bossOnly && !heroId && !enemyId) throw new Error('unknown alternate actor export manifest');
 const required = enemyId ? { [enemyId]: ['idle', 'run', 'tell', 'attack', 'hit', 'death'] } : heroId ? { [heroId]: ['idle', 'run', 'aim', 'pistol-fire', 'hurt', 'dash', 'melee', 'grenade', 'death'] } : bossOnly ? { 'the-liquidator': ['idle', 'run', 'tell', 'attack', 'hit', 'death'] } : {
   'lit-commando': ['idle', 'run', 'aim', 'pistol-fire', 'hurt', 'dash', 'melee', 'grenade', 'death'],
