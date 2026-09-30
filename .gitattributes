@@ -92,3 +92,5 @@ docs/2.0/receipts/world-coast/** -text
 
 # Exact small STACKED tutorial observations
 docs/2.0/receipts/stacked-tutorial-f2a/*.gz -filter -diff -merge -text
+# Exact compressed Ridge authoring evidence
+docs/2.0/receipts/world-ridge/** -text

@@ -1,0 +1,447 @@
+{
+  "schema": "world-ridge-raw-archive-v1",
+  "scope": "Exact source RED/GREEN/copy/diagnostic and one native browser attempt with one explicit inspection jump per viewport before local walks. Lossless gzip with raw and stored identities. Not a release gate, continuous regional journey, physical-device result or final-art acceptance.",
+  "entries": [
+    {
+      "archive": "red-01/apps/hmh-reboot/src/blocker-bounds.mjs.txt.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-ridge-flow-red-20260930-01\\apps\\hmh-reboot\\src\\blocker-bounds.mjs.txt",
+      "bytes": 4684,
+      "sha256": "7f94d7f336a697e806ce92d1f5eedf9674d9d948f6366a958ba27e7124d2bf8a",
+      "storedBytes": 1757,
+      "storedSha256": "19850a1a0ba5829abc3f51fcb60578eca29f05e01775452fd2554aad9b8cbfff",
+      "compression": "gzip"
+    },
+    {
+      "archive": "red-01/apps/hmh-reboot/src/dev/greybox-city.mjs.txt.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-ridge-flow-red-20260930-01\\apps\\hmh-reboot\\src\\dev\\greybox-city.mjs.txt",
+      "bytes": 4124,
+      "sha256": "df4e65c70cdd587bf459414db643b7a83fde2b520ad5e88269315cdd82f87c80",
+      "storedBytes": 1703,
+      "storedSha256": "0b537e727676db13a20d09a97b36f6d1b6653c6aec63b5a13da8488b295e4224",
+      "compression": "gzip"
+    },
+    {
+      "archive": "red-01/apps/hmh-reboot/src/dev/greybox-closed-masses.mjs.txt.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-ridge-flow-red-20260930-01\\apps\\hmh-reboot\\src\\dev\\greybox-closed-masses.mjs.txt",
+      "bytes": 5250,
+      "sha256": "f1562f9f5c0be11d4b0c7a397e39187dc536a9546be7497ecfa75ea5ea0826cc",
+      "storedBytes": 1939,
+      "storedSha256": "d9b5425b00cfecfa4ef08ec78723c7b348291665197984e6bb198b18543307de",
+      "compression": "gzip"
+    },
+    {
+      "archive": "red-01/apps/hmh-reboot/src/dev/greybox-coast.mjs.txt.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-ridge-flow-red-20260930-01\\apps\\hmh-reboot\\src\\dev\\greybox-coast.mjs.txt",
+      "bytes": 4850,
+      "sha256": "aecc082923e08ca46aced4f0ee8aed2ea5c85e79ba0cef8ee3511da8e9d88264",
+      "storedBytes": 1810,
+      "storedSha256": "995eacf03d91066dddcc030ebdddeb460a9bee2cdb23db01361a58ada183256b",
+      "compression": "gzip"
+    },
+    {
+      "archive": "red-01/apps/hmh-reboot/src/dev/greybox-farms.mjs.txt.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-ridge-flow-red-20260930-01\\apps\\hmh-reboot\\src\\dev\\greybox-farms.mjs.txt",
+      "bytes": 3861,
+      "sha256": "b5c5e82f417b20c87eed92c5214f9521008193cee6a10b42507670497e090a6a",
+      "storedBytes": 1522,
+      "storedSha256": "e94c8a41912469d5681f8ece0969391dbe7080de0d07dec2cafbc896ec8b413f",
+      "compression": "gzip"
+    },
+    {
+      "archive": "red-01/apps/hmh-reboot/src/dev/greybox-kit.mjs.txt.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-ridge-flow-red-20260930-01\\apps\\hmh-reboot\\src\\dev\\greybox-kit.mjs.txt",
+      "bytes": 5168,
+      "sha256": "b453096397f610445bd8a548e8ed70b883544d947e8cc98518b82fb7c756c349",
+      "storedBytes": 1937,
+      "storedSha256": "b0a44281f5cade14473cbdf1565ba94d4b07d449d8a0107020f0fdfdeede04ac",
+      "compression": "gzip"
+    },
+    {
+      "archive": "red-01/apps/hmh-reboot/src/dev/greybox-meadows.mjs.txt.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-ridge-flow-red-20260930-01\\apps\\hmh-reboot\\src\\dev\\greybox-meadows.mjs.txt",
+      "bytes": 3661,
+      "sha256": "7d69ab91dd7e678af19b14b296d7e977e6ed7fe619a910d9ce9c93f2ed33516e",
+      "storedBytes": 1490,
+      "storedSha256": "54d0cd764c808693a5bad803868c6a1dc71c98ba05a4b031ea448b411ea99bdc",
+      "compression": "gzip"
+    },
+    {
+      "archive": "red-01/apps/hmh-reboot/src/dev/greybox-world-v1.mjs.txt.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-ridge-flow-red-20260930-01\\apps\\hmh-reboot\\src\\dev\\greybox-world-v1.mjs.txt",
+      "bytes": 9773,
+      "sha256": "fafd7e6cf3e242c73c20a03e3ded5a3c21f3a003fd0e1c001b90a04b0ce0e71d",
+      "storedBytes": 3207,
+      "storedSha256": "f42e9456ccf397209f096fdab0e28ad88fcdd27cf959fcbe5d9ffec8a7bb93ab",
+      "compression": "gzip"
+    },
+    {
+      "archive": "red-01/apps/hmh-reboot/src/value-guards.mjs.txt.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-ridge-flow-red-20260930-01\\apps\\hmh-reboot\\src\\value-guards.mjs.txt",
+      "bytes": 2596,
+      "sha256": "8576f65fd1f8a4680578580a150bd3acdec43f555e6c8f1181e54ae92771cb94",
+      "storedBytes": 936,
+      "storedSha256": "91ada625932506cb5e73e391280c7eca3f10cfe9b8a8c8ea867fa68ed72c7b45",
+      "compression": "gzip"
+    },
+    {
+      "archive": "red-01/helper.mjs.txt.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-ridge-flow-red-20260930-01\\helper.mjs.txt",
+      "bytes": 3475,
+      "sha256": "a5177337fcf6ec41f285fc105b93d0b4b94ee1101cb14a653a91e9b8b075b0d9",
+      "storedBytes": 1360,
+      "storedSha256": "ade927025e2afbae667182802dfce78d9ddd6b3afea7cfd48a5b40eac5e8ea4b",
+      "compression": "gzip"
+    },
+    {
+      "archive": "red-01/red-report.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-ridge-flow-red-20260930-01\\red-report.json",
+      "bytes": 12003,
+      "sha256": "1170611eb80137f2d81783d4991abf80ee5e4580fc62370b842fca1bcb1ed04c",
+      "storedBytes": 2646,
+      "storedSha256": "71c49aab6f4162fc95be01ebb31d377e538befb05ee0c31cc6deef6f74955f34",
+      "compression": "gzip"
+    },
+    {
+      "archive": "red-01/runner.mjs.txt.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-ridge-flow-red-20260930-01\\runner.mjs.txt",
+      "bytes": 5342,
+      "sha256": "ca9b9d1acb4acfe020f5524c0793fe91f38e2ca7ef7ec5980abf685242e945cd",
+      "storedBytes": 2337,
+      "storedSha256": "76d4190e5abf50f41625acd7c8de75225004b5647fe674406878ca7c1e2f2e61",
+      "compression": "gzip"
+    },
+    {
+      "archive": "red-01/scripts/lib/hmh-greybox-world-check.mjs.txt.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-ridge-flow-red-20260930-01\\scripts\\lib\\hmh-greybox-world-check.mjs.txt",
+      "bytes": 14521,
+      "sha256": "5e7bc94f8200c15d73cd53e94193464697e8b6c804a793b80b3ce652214e448c",
+      "storedBytes": 4778,
+      "storedSha256": "60f1d9111b5269e40f280ddf6981c8247399ae2c46d02695762e0112c81386de",
+      "compression": "gzip"
+    },
+    {
+      "archive": "red-01/tests/hmh-greybox-ridge-flow.test.mjs.txt.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-ridge-flow-red-20260930-01\\tests\\hmh-greybox-ridge-flow.test.mjs.txt",
+      "bytes": 7631,
+      "sha256": "02fc796a5e3e773d2d4ba5d5ed563d12dfac53693fd92720d6affa27b8c31362",
+      "storedBytes": 2440,
+      "storedSha256": "211446c78d6417a7c77cf54458fc7a6db1ed0e5107589a020ad4accf018effbd",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-01/bindings.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-ridge-green-20260930-01\\bindings.json",
+      "bytes": 16159,
+      "sha256": "40065aaffe1a96c260070459088716074168cd6a337b59a4e73c3dc742e97195",
+      "storedBytes": 2269,
+      "storedSha256": "58fce88626b007d8be47341bed84acfc81e07deb936c8e300b10ef4b64e12562",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-01/gate-report.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-ridge-green-20260930-01\\gate-report.json",
+      "bytes": 34720,
+      "sha256": "35edb39c7c24fa52f34c4b7a3ae26fd276553947d89088f7f6f882e91e8fc730",
+      "storedBytes": 5874,
+      "storedSha256": "ee39c8b713f5e87950099beb92d27a92213bf95f718a11c69d94d9c842cc4a6e",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-01/layout-report.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-ridge-green-20260930-01\\layout-report.json",
+      "bytes": 64024,
+      "sha256": "97bf39602276bdac1ea7fc17cbdc9031948194a444f87d91c6b1b91c599722b2",
+      "storedBytes": 5496,
+      "storedSha256": "cb7977590619063b40e1b9b489e1b92f854252be7e3b97027ed087f72c561a18",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-01/runner.mjs.txt.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-ridge-green-20260930-01\\runner.mjs.txt",
+      "bytes": 4847,
+      "sha256": "2215537f2ed6182bbb561b56e0cb196e4d29b00ae8c31036d3fc3e2d97170ca6",
+      "storedBytes": 1872,
+      "storedSha256": "3ae5011ba530a1221f1e8a3f3a314fbb09d46b816e8d310a85ace20369d53b90",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-01/source-copy/apps/hmh-reboot/src/blocker-bounds.mjs.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-ridge-green-20260930-01\\source-copy\\apps\\hmh-reboot\\src\\blocker-bounds.mjs",
+      "bytes": 4684,
+      "sha256": "7f94d7f336a697e806ce92d1f5eedf9674d9d948f6366a958ba27e7124d2bf8a",
+      "storedBytes": 1757,
+      "storedSha256": "19850a1a0ba5829abc3f51fcb60578eca29f05e01775452fd2554aad9b8cbfff",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-01/source-copy/apps/hmh-reboot/src/collision.mjs.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-ridge-green-20260930-01\\source-copy\\apps\\hmh-reboot\\src\\collision.mjs",
+      "bytes": 18604,
+      "sha256": "94a90d4a68c9e66b54ff0332e8cf60aaeaff06c02734aed07a3e420e7eb52593",
+      "storedBytes": 4972,
+      "storedSha256": "48ee1efefabcbf889f8f99e24c1da389852688febec79de2c6103ca58541082a",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-01/source-copy/apps/hmh-reboot/src/dev/greybox-city.mjs.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-ridge-green-20260930-01\\source-copy\\apps\\hmh-reboot\\src\\dev\\greybox-city.mjs",
+      "bytes": 4124,
+      "sha256": "df4e65c70cdd587bf459414db643b7a83fde2b520ad5e88269315cdd82f87c80",
+      "storedBytes": 1703,
+      "storedSha256": "0b537e727676db13a20d09a97b36f6d1b6653c6aec63b5a13da8488b295e4224",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-01/source-copy/apps/hmh-reboot/src/dev/greybox-closed-masses.mjs.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-ridge-green-20260930-01\\source-copy\\apps\\hmh-reboot\\src\\dev\\greybox-closed-masses.mjs",
+      "bytes": 5250,
+      "sha256": "f1562f9f5c0be11d4b0c7a397e39187dc536a9546be7497ecfa75ea5ea0826cc",
+      "storedBytes": 1939,
+      "storedSha256": "d9b5425b00cfecfa4ef08ec78723c7b348291665197984e6bb198b18543307de",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-01/source-copy/apps/hmh-reboot/src/dev/greybox-coast.mjs.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-ridge-green-20260930-01\\source-copy\\apps\\hmh-reboot\\src\\dev\\greybox-coast.mjs",
+      "bytes": 4850,
+      "sha256": "aecc082923e08ca46aced4f0ee8aed2ea5c85e79ba0cef8ee3511da8e9d88264",
+      "storedBytes": 1810,
+      "storedSha256": "995eacf03d91066dddcc030ebdddeb460a9bee2cdb23db01361a58ada183256b",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-01/source-copy/apps/hmh-reboot/src/dev/greybox-farms.mjs.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-ridge-green-20260930-01\\source-copy\\apps\\hmh-reboot\\src\\dev\\greybox-farms.mjs",
+      "bytes": 3861,
+      "sha256": "b5c5e82f417b20c87eed92c5214f9521008193cee6a10b42507670497e090a6a",
+      "storedBytes": 1522,
+      "storedSha256": "e94c8a41912469d5681f8ece0969391dbe7080de0d07dec2cafbc896ec8b413f",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-01/source-copy/apps/hmh-reboot/src/dev/greybox-kit.mjs.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-ridge-green-20260930-01\\source-copy\\apps\\hmh-reboot\\src\\dev\\greybox-kit.mjs",
+      "bytes": 5168,
+      "sha256": "b453096397f610445bd8a548e8ed70b883544d947e8cc98518b82fb7c756c349",
+      "storedBytes": 1937,
+      "storedSha256": "b0a44281f5cade14473cbdf1565ba94d4b07d449d8a0107020f0fdfdeede04ac",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-01/source-copy/apps/hmh-reboot/src/dev/greybox-meadows.mjs.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-ridge-green-20260930-01\\source-copy\\apps\\hmh-reboot\\src\\dev\\greybox-meadows.mjs",
+      "bytes": 3661,
+      "sha256": "7d69ab91dd7e678af19b14b296d7e977e6ed7fe619a910d9ce9c93f2ed33516e",
+      "storedBytes": 1490,
+      "storedSha256": "54d0cd764c808693a5bad803868c6a1dc71c98ba05a4b031ea448b411ea99bdc",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-01/source-copy/apps/hmh-reboot/src/dev/greybox-ridge.mjs.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-ridge-green-20260930-01\\source-copy\\apps\\hmh-reboot\\src\\dev\\greybox-ridge.mjs",
+      "bytes": 4673,
+      "sha256": "7224207505d038925950c723efbe0bc0843513632f9f3d0cfecfe26d432d9fdc",
+      "storedBytes": 1818,
+      "storedSha256": "37171a9fb7e3226baf3410bca3d378efbd769a71ba84f2744cfd0513f78f4eec",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-01/source-copy/apps/hmh-reboot/src/dev/greybox-world-v1.mjs.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-ridge-green-20260930-01\\source-copy\\apps\\hmh-reboot\\src\\dev\\greybox-world-v1.mjs",
+      "bytes": 9920,
+      "sha256": "84cdf2ba296b37c2115fbedde9e60ce70f57369bb4a58a48bc86f945e0ba3057",
+      "storedBytes": 3228,
+      "storedSha256": "8a85cd39e8554fa8ce23ae63d7e1ecfaf5beb00881d8125bd1e3f7d8da66fae9",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-01/source-copy/apps/hmh-reboot/src/elevation.mjs.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-ridge-green-20260930-01\\source-copy\\apps\\hmh-reboot\\src\\elevation.mjs",
+      "bytes": 19061,
+      "sha256": "afab7fb53ba657f13f1646d533909ae68544754c1de24ccef786ee156a57c4ea",
+      "storedBytes": 5734,
+      "storedSha256": "84f69341733cc434408d92af1b1e759319e4b473e67a257da11bcacfecf7bc92",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-01/source-copy/apps/hmh-reboot/src/enemy-navgrid.mjs.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-ridge-green-20260930-01\\source-copy\\apps\\hmh-reboot\\src\\enemy-navgrid.mjs",
+      "bytes": 30791,
+      "sha256": "da338be023aeeaadf0d5eb00a7ceef0adbd82e3ab7eb1b833fe7171445f595c3",
+      "storedBytes": 8280,
+      "storedSha256": "5e4b59e7d8785f3cc232091828e2e4909ce2cc3bc03cf601bb4f520f817d5c4a",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-01/source-copy/apps/hmh-reboot/src/value-guards.mjs.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-ridge-green-20260930-01\\source-copy\\apps\\hmh-reboot\\src\\value-guards.mjs",
+      "bytes": 2596,
+      "sha256": "8576f65fd1f8a4680578580a150bd3acdec43f555e6c8f1181e54ae92771cb94",
+      "storedBytes": 936,
+      "storedSha256": "91ada625932506cb5e73e391280c7eca3f10cfe9b8a8c8ea867fa68ed72c7b45",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-01/source-copy/scripts/lib/hmh-greybox-layout-check.mjs.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-ridge-green-20260930-01\\source-copy\\scripts\\lib\\hmh-greybox-layout-check.mjs",
+      "bytes": 5996,
+      "sha256": "7296aaf2767d5d77d759c7b7a3c9757dc931ba98e1db126436e11525533fb55e",
+      "storedBytes": 2289,
+      "storedSha256": "1f1291689e31abbcbd2eb0bcefcc248df5cb56d3f758262f5211daa2b6ccfddf",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-01/source-copy/scripts/lib/hmh-greybox-world-check.mjs.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-ridge-green-20260930-01\\source-copy\\scripts\\lib\\hmh-greybox-world-check.mjs",
+      "bytes": 14521,
+      "sha256": "5e7bc94f8200c15d73cd53e94193464697e8b6c804a793b80b3ce652214e448c",
+      "storedBytes": 4778,
+      "storedSha256": "60f1d9111b5269e40f280ddf6981c8247399ae2c46d02695762e0112c81386de",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-01/source-copy/tests/hmh-greybox-city-flow.test.mjs.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-ridge-green-20260930-01\\source-copy\\tests\\hmh-greybox-city-flow.test.mjs",
+      "bytes": 8388,
+      "sha256": "4c736822846ed7fd39486f3ca6c47a98e0776a2c20e704eebc25f0b0f736379e",
+      "storedBytes": 2698,
+      "storedSha256": "bda7508faba5c8e89f76f1b4f718ed4b6353acf078543e1fb18b0c475e823c79",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-01/source-copy/tests/hmh-greybox-closed-masses.test.mjs.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-ridge-green-20260930-01\\source-copy\\tests\\hmh-greybox-closed-masses.test.mjs",
+      "bytes": 3899,
+      "sha256": "b744cb42468d2ee1bc7b0ab776c82afa783cfb8a2d6a5d8a8741ed0387e2e7d3",
+      "storedBytes": 1670,
+      "storedSha256": "fc2f1ba129a56bfdac04332ed2a31fac96cd736169cdac6537357afca9d59ed6",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-01/source-copy/tests/hmh-greybox-coast-flow.test.mjs.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-ridge-green-20260930-01\\source-copy\\tests\\hmh-greybox-coast-flow.test.mjs",
+      "bytes": 8319,
+      "sha256": "ff5796d8641291700835f82aecc01f1659710c089d2c16b59fc406685478c291",
+      "storedBytes": 2631,
+      "storedSha256": "d7a71c9a5f8962493316f7cbd4772e76fe2c3d09b6e31a2d01c7579c80e1b3d9",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-01/source-copy/tests/hmh-greybox-farms-flow.test.mjs.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-ridge-green-20260930-01\\source-copy\\tests\\hmh-greybox-farms-flow.test.mjs",
+      "bytes": 5834,
+      "sha256": "44120d901a9ea16380ccf6b0e0a03f954c671b3d62f304075dfbc3fb5192c30c",
+      "storedBytes": 2005,
+      "storedSha256": "3763b52635efe109a433e31dfeebd3c14cf7b6d372eb25b72f2490ea61ae1b17",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-01/source-copy/tests/hmh-greybox-kit-polygon-contract.test.mjs.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-ridge-green-20260930-01\\source-copy\\tests\\hmh-greybox-kit-polygon-contract.test.mjs",
+      "bytes": 1727,
+      "sha256": "7cda487e835a76ca65a91e308debbb7e1d64e3c06429068f1ea6373794ed0abe",
+      "storedBytes": 744,
+      "storedSha256": "e7fadc55f4ddb121713df8be3f6859c4cd9a20a3fa50e7d825465f7a867775ea",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-01/source-copy/tests/hmh-greybox-meadows-flow.test.mjs.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-ridge-green-20260930-01\\source-copy\\tests\\hmh-greybox-meadows-flow.test.mjs",
+      "bytes": 4638,
+      "sha256": "9a504bb2a95d76cc77d0206c1b7e6c4924a5b6256b2ab88331554c06b364f77f",
+      "storedBytes": 1729,
+      "storedSha256": "57954731488ba3051ff4316b9de19ea1a0894da87e722d83f7f376b74ff691de",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-01/source-copy/tests/hmh-greybox-ridge-flow.test.mjs.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-ridge-green-20260930-01\\source-copy\\tests\\hmh-greybox-ridge-flow.test.mjs",
+      "bytes": 7631,
+      "sha256": "02fc796a5e3e773d2d4ba5d5ed563d12dfac53693fd92720d6affa27b8c31362",
+      "storedBytes": 2440,
+      "storedSha256": "211446c78d6417a7c77cf54458fc7a6db1ed0e5107589a020ad4accf018effbd",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-01/source-copy/tests/hmh-greybox-world.test.mjs.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-ridge-green-20260930-01\\source-copy\\tests\\hmh-greybox-world.test.mjs",
+      "bytes": 10049,
+      "sha256": "0f0893929fc1067cf287dbd48d4140a0366c54e6286cb37f5b9c4d289e6bc0a6",
+      "storedBytes": 3172,
+      "storedSha256": "e528b2bda4f2d86357cf04e3d9c5680c410ef2d8dc34857aa7f81a2b433a6ddb",
+      "compression": "gzip"
+    },
+    {
+      "archive": "browser-01/gate-report.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-ridge-preview-browser-20260930-01\\gate-report.json",
+      "bytes": 227642,
+      "sha256": "f5a6bc0f770b5853ac87fc9b603a0cfc39582948261d60661e175d86b01145f2",
+      "storedBytes": 32886,
+      "storedSha256": "0db2e1bbe04d1409830c2d979f56ce5471b953838f861a33bf757481ae7e1924",
+      "compression": "gzip"
+    },
+    {
+      "archive": "browser-01/bindings.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-ridge-preview-browser-20260930-01\\bindings.json",
+      "bytes": 72840,
+      "sha256": "29bf124ee4e6c6a5b21e305c9b9dd7c0f1b15bc5a5d29a869b5317d5cf7a5c84",
+      "storedBytes": 14287,
+      "storedSha256": "10536eb3b6ee1de0e0fde5c35a6a951592f109f97ed7cc8822e9ea93a8bce3c8",
+      "compression": "gzip"
+    },
+    {
+      "archive": "browser-01/runner.mjs.txt.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-ridge-preview-browser-20260930-01\\runner.mjs.txt",
+      "bytes": 9828,
+      "sha256": "6638e7206424d098f633989e2b8820de5e35b3a7eb5f3dc68d592ae2bb0055a5",
+      "storedBytes": 3292,
+      "storedSha256": "0c819b2be5cc2490e25536e39532f984129dc902f7e4b6ebb8e64cbfbfb72ed1",
+      "compression": "gzip"
+    },
+    {
+      "archive": "browser-01/browser/browser-report.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-ridge-preview-browser-20260930-01\\browser\\browser-report.json",
+      "bytes": 96475,
+      "sha256": "687e7062a15b898068eae088954fce4493cc093e078cf54bfc797dcfbc99b6d7",
+      "storedBytes": 5771,
+      "storedSha256": "a710ed03562958dc302bdddc09c3a9c744490e97c2cf6bbefa51dcf914448a51",
+      "compression": "gzip"
+    },
+    {
+      "archive": "browser-01/harness/hmh-greybox-ridge-browser-smoke.mjs.txt.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\hmh-greybox-ridge-browser-smoke.mjs",
+      "bytes": 18604,
+      "sha256": "9d5a24359aabf9903ef01d5b6cb40a346db713369b75bf20f3ec94e64382c25a",
+      "storedBytes": 6100,
+      "storedSha256": "9f682d2228547536012d856311139d393180ae2b7a5f8d833cc82ae97afed6a4",
+      "compression": "gzip"
+    },
+    {
+      "archive": "browser-01/harness/prepare-world-ridge-browser.mjs.txt.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\prepare-world-ridge-browser.mjs",
+      "bytes": 5502,
+      "sha256": "1bdd16a5fb7f19f75cd68f21c012e35795caaf69ca58c5450400783dc01952d2",
+      "storedBytes": 2302,
+      "storedSha256": "f8c0764c9a599b955c2072b4d3c91788e1e4d823ba6b01fba517ed394675d330",
+      "compression": "gzip"
+    },
+    {
+      "archive": "browser-01/harness/owned-windows-preview-child.mjs.txt.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\owned-windows-preview-child.mjs",
+      "bytes": 3476,
+      "sha256": "6f4903a66d324a01a476eebefdfac68663dde2c573f62f637c4b7537ccb0d631",
+      "storedBytes": 1360,
+      "storedSha256": "18c5cfc758da42cddbb922c7989a0204d20eb87c1d5d359985932ef89f92c162",
+      "compression": "gzip"
+    },
+    {
+      "archive": "author-image-review.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-ridge-author-image-review.json",
+      "bytes": 1361,
+      "sha256": "de38071024626990917803bbd0b5dab5a424eaf2586d290ac2de8a208978dd32",
+      "storedBytes": 786,
+      "storedSha256": "24067c5d530967b773970aa785b8d3dc288fb499494c4e23d30b1b98db16561c",
+      "compression": "gzip"
+    }
+  ]
+}

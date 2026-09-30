@@ -621,3 +621,25 @@ controls below the fold. Fresh built432k Worker tuple stays exact. HMH1,039,992B
 STACKED579,395B; all owned children/Chrome/HTTP closed. Both independent reviews
 found no actionable isolation/lifecycle issue. Default remains off; no physical
 phone, full game/soak/release or live claim. See slices/STACKED-F2A-TUTORIAL.md.
+
+### W2f Ledger Ridge local-flow checkpoint
+
+Ridge now has quarry cuts framing its switchback and inspection junction, a
+lower service bypass, tucked store route and two-sided ramped uplink shelf.
+Fourteen pieces and five paths replace its generic layout. Genuine RED 5 FAIL /
+1 PASS preceded 48/48 focused and the same 48/48 exact 23-file isolated copy.
+Actual 300-unit main-route collision clearance and blocked-switchback bypass
+tests pass. Global nav is 36,191/77,589 (46.6445%), outside 0; all 98 sites,
+14 roads and five Ridge paths pass. Landing is 204/225 open (90.6667%). The
+original River-Woods pacing warning remains; no crowd/combat inference follows.
+
+One preview build and 58.559-second actual Chrome check passed 16 desktop and
+three touch legs after one visible inspection entry each, 11 original captures,
+shelf z24/return z0 and headframe contact y1504. Four denials and pagehide cleanup
+pass. Children 15736/10932/15244 exited normally and were observed absent; HTTP
+closed and marker released. Source/built/served pins match. All originals were
+inspected: phone now has near rock/equipment landmarks; flat masses, sparse
+yard, tiny/overlapping labels and boundary stripes remain. No final area/art,
+owner playtest, physical-phone, official map/verifier or release acceptance.
+See slices/WORLD-W2F-RIDGE.md and receipts/world-ridge. Manual bundle is separate
+at outputs/hmh-ridge-authored-flow-preview.zip. No credits/push/deploy/version.
