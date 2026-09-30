@@ -1195,6 +1195,7 @@ const NODE_CHECK_FILES = [
   "tests/hmh-tripo-props-hd-package.test.mjs",
   "apps/hmh-reboot/src/weapon-model.mjs",
   "tests/hmh-weapon-models-package.test.mjs",
+  "tests/hmh-weapon-attachment.test.mjs",
   "tests/hmh-reboot-dressing-density.test.mjs",
   "tests/hmh-reboot-camp-props.test.mjs",
   "tests/hmh-reboot-contact-shadows.test.mjs",
