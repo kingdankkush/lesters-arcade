@@ -997,3 +997,16 @@ art, compatibility, performance, device and full release gates pass. It does not
 waive those gates or authorize an unfinished interim release. Do not ask again
 for the same scope merely because older entries mention fresh approval. No 2.0
 deployment or promotion has occurred.
+
+
+## H2b static article preview — 2026-09-30
+
+The shared-style, script-free article renderer now passes24 source + identical24
+isolated checks and four actual Chrome case groups across desktop, phone-framed
+and320px screens. Seven original screenshots and containment/type/target metrics
+were inspected. Genuine forged-index and blank-heading bugs from independent
+review were reproduced then fixed. A harness-only parse failure and its closure
+proof remain preserved alongside the successful browser attempt. No public blog
+route, builder, feed, sitemap, game bundle, version or deployment changed.
+The three-game introduction remains an editorial draft. See
+[H2b](slices/BLOG-RENDER-H2B.md) for scope, evidence and remaining publication work.

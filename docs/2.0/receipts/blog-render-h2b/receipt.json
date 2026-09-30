@@ -1,0 +1,906 @@
+{
+  "schema": "blog-render-h2b/v1",
+  "initialRed": 10,
+  "publicationBoundaryRed": 1,
+  "blankHeadingRed": 1,
+  "green": 24,
+  "identicalIsolated": 24,
+  "sourcePins": {
+    "scripts/lib/blog-render.mjs": "3402f0408f99bca60c8b99ca95530aeab94f00c757ebfeacd86e2c22bf0efffd",
+    "scripts\\lib\\blog-content.mjs": "a2490f9e161b690850e98e6cac55a96aaab5a52a7211b873e9094d86c05a1231",
+    "scripts\\lib\\blog-render.mjs": "3402f0408f99bca60c8b99ca95530aeab94f00c757ebfeacd86e2c22bf0efffd",
+    "tests/blog-content.test.mjs": "9095bc921ba33a645fd56967281d33796002c6dda0c0820f242f9c5ccac2aa01",
+    "tests/blog-render.test.mjs": "f099e0d0067ad465464d379372cf7bd114d5d50858565006dd4bb4eef50c6cb9"
+  },
+  "entries": [
+    {
+      "file": "00-work-run-blog-render-source.mjs.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\run-blog-render-source.mjs",
+      "bytes": 3274,
+      "sha256": "f779bfaf1959b9411f7887e53c94226160f1afd1fb622d775a80c72b0f5624b8",
+      "gzipBytes": 1478
+    },
+    {
+      "file": "01-work-run-blog-publication-red.mjs.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\run-blog-publication-red.mjs",
+      "bytes": 3320,
+      "sha256": "d9f034197529bc2726c7877000e3081dd46a55ae8c54f6d499c1054e276af46d",
+      "gzipBytes": 1506
+    },
+    {
+      "file": "02-work-run-blog-heading-red.mjs.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\run-blog-heading-red.mjs",
+      "bytes": 3314,
+      "sha256": "0aa94f4af99b56aefab8246f85f9c7de24b4d6d76f66bcf99436bebbb8d0a924",
+      "gzipBytes": 1500
+    },
+    {
+      "file": "03-work-run-blog-render-green.mjs.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\run-blog-render-green.mjs",
+      "bytes": 3338,
+      "sha256": "22736fbe6196274255653f8bcf6af53aacbecaa5868a85df96f9c5b1b78d3bf4",
+      "gzipBytes": 1493
+    },
+    {
+      "file": "04-work-owned-windows-child.mjs.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\owned-windows-child.mjs",
+      "bytes": 3475,
+      "sha256": "a5177337fcf6ec41f285fc105b93d0b4b94ee1101cb14a653a91e9b8b075b0d9",
+      "gzipBytes": 1360
+    },
+    {
+      "file": "05-work-owned-windows-preview-child.mjs.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\owned-windows-preview-child.mjs",
+      "bytes": 3476,
+      "sha256": "6f4903a66d324a01a476eebefdfac68663dde2c573f62f637c4b7537ccb0d631",
+      "gzipBytes": 1360
+    },
+    {
+      "file": "06-blog-render-source-red-01-report.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\blog-render-source-red-01\\report.json",
+      "bytes": 15285,
+      "sha256": "87db9d019287fc8f2a3cda004b5aac3af63ca6bd3eaa3cf3bf889f9e0f596e98",
+      "gzipBytes": 1809
+    },
+    {
+      "file": "07-blog-publication-source-red-01-report.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\blog-publication-source-red-01\\report.json",
+      "bytes": 2940,
+      "sha256": "cb130bd813546a9b4012418f546b5b35b2ca29aa59273170ee7f28b15ed5498e",
+      "gzipBytes": 1103
+    },
+    {
+      "file": "08-blog-heading-source-red-01-report.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\blog-heading-source-red-01\\report.json",
+      "bytes": 2843,
+      "sha256": "ffc8f4bfc158dada7c05b334cb0441e0b4f5cd603d1ff0a486f53257afe7b983",
+      "gzipBytes": 1077
+    },
+    {
+      "file": "09-blog-render-source-green-01-report.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\blog-render-source-green-01\\report.json",
+      "bytes": 14474,
+      "sha256": "0a8e86ee2c203aa8d8e588b86b70bbafe084d796c16716be0754037ec1bcba85",
+      "gzipBytes": 2422
+    },
+    {
+      "file": "10-work-run-blog-editorial-browser.mjs.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\run-blog-editorial-browser.mjs",
+      "bytes": 4165,
+      "sha256": "f4f26375cfbb5c9579695650e9cbe1dd45a9141e8d42861d3686df9182d3826b",
+      "gzipBytes": 1572
+    },
+    {
+      "file": "11-work-blog-editorial-browser.mjs.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\blog-editorial-browser.mjs",
+      "bytes": 8037,
+      "sha256": "3de4a64c54776e161a74dfbb8dbd6770c2fc2dcead09cd979e0899d7677bedc3",
+      "gzipBytes": 3143
+    },
+    {
+      "file": "12-blog-editorial-window-01-report.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\blog-editorial-window-01\\report.json",
+      "bytes": 6362,
+      "sha256": "069de6578f39ca228c16d87bdcb518cd0979db3da8041f437691555e3a9bf3a6",
+      "gzipBytes": 2165
+    },
+    {
+      "file": "13-blog-editorial-window-01-closure-followup.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\blog-editorial-window-01\\closure-followup.json",
+      "bytes": 189,
+      "sha256": "a129757a749f48169cb4feec0ca1a6837f0b0bff4aa414a96b3cd239facd300b",
+      "gzipBytes": 149
+    },
+    {
+      "file": "14-work-run-blog-editorial-browser-02.mjs.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\run-blog-editorial-browser-02.mjs",
+      "bytes": 4176,
+      "sha256": "5d9b18dd87d4937659f0591fe75b4bbff3575463c940d4c00a7e56173a8964a2",
+      "gzipBytes": 1576
+    },
+    {
+      "file": "15-work-blog-editorial-browser-02.mjs.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\blog-editorial-browser-02.mjs",
+      "bytes": 8038,
+      "sha256": "c2f1e13ac9cb350eb6aca35db071b3335ad6779704cad003b99489d09ced04e4",
+      "gzipBytes": 3147
+    },
+    {
+      "file": "16-blog-editorial-window-02-report.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\blog-editorial-window-02\\report.json",
+      "bytes": 26695,
+      "sha256": "8a953c5c26d6a38d6ec301b48818a1f7436acc3ccca5f5a4ce672083594b16aa",
+      "gzipBytes": 3793
+    },
+    {
+      "file": "17-blog-editorial-browser-02-report.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\blog-editorial-browser-02\\report.json",
+      "bytes": 20460,
+      "sha256": "de10eb38e7f5378c5ef41999eaa860d57662eac4dc0d768f840d8d3e3d1d9b17",
+      "gzipBytes": 2600
+    },
+    {
+      "file": "18-blog-editorial-browser-02-article.html.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\blog-editorial-browser-02\\article.html",
+      "bytes": 4604,
+      "sha256": "b65994d922b14305a3fab27fa20c39ac51f2d6f01fdd319dd81845ef24c50ee3",
+      "gzipBytes": 1987
+    },
+    {
+      "file": "19-work-blog-editorial-draft.md.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\blog-editorial-draft.md",
+      "bytes": 2431,
+      "sha256": "adf3a28f3ef88c55e906629db9054d2a2f7aec57ecedb499f385c920daee1cba",
+      "gzipBytes": 1260
+    },
+    {
+      "file": "20-blog-editorial-browser-02-desktop-end.png.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\blog-editorial-browser-02\\desktop-end.png",
+      "bytes": 64952,
+      "sha256": "9a5335d67815badf2ab33fa32d2e641165432895881d5018133c3364c50ecaaf",
+      "gzipBytes": 58381
+    },
+    {
+      "file": "21-blog-editorial-browser-02-desktop-section.png.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\blog-editorial-browser-02\\desktop-section.png",
+      "bytes": 64959,
+      "sha256": "0ce6c2ffa2ea3fb32de18bac865c222b7c20793dde0ba0f8d5e316a6c3674116",
+      "gzipBytes": 58369
+    },
+    {
+      "file": "22-blog-editorial-browser-02-desktop-top.png.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\blog-editorial-browser-02\\desktop-top.png",
+      "bytes": 87803,
+      "sha256": "d664e876fe579422fd1b31834c2b33f4e73edc67b1844cf20484f9b959dba8a0",
+      "gzipBytes": 81294
+    },
+    {
+      "file": "23-blog-editorial-browser-02-phone-end.png.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\blog-editorial-browser-02\\phone-end.png",
+      "bytes": 226137,
+      "sha256": "3cf7dd7f129380fba42acf77513f2ccaa53db204add996d9c31ba9e7d927fc5d",
+      "gzipBytes": 206877
+    },
+    {
+      "file": "24-blog-editorial-browser-02-phone-section.png.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\blog-editorial-browser-02\\phone-section.png",
+      "bytes": 264904,
+      "sha256": "9dfdc82d191c196e332c4b11bd694480e53d53b76a104017631246f99d3f34e6",
+      "gzipBytes": 246176
+    },
+    {
+      "file": "25-blog-editorial-browser-02-phone-top.png.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\blog-editorial-browser-02\\phone-top.png",
+      "bytes": 272964,
+      "sha256": "0b555bc1512ced580683cb8223b89d2f0c9797c136617a6a4546affa9f760966",
+      "gzipBytes": 255460
+    },
+    {
+      "file": "26-blog-editorial-browser-02-small-phone-top.png.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\blog-editorial-browser-02\\small-phone-top.png",
+      "bytes": 34469,
+      "sha256": "3a00a625d4d91b2aa2f6665240df2a45f6cc95f9c7a0b9430b1fb74f90da97c3",
+      "gzipBytes": 33074
+    }
+  ],
+  "browserCases": [
+    "native keyboard skip link focuses article without JavaScript",
+    "desktop: CSS, logo, readable type, contained layout, all section targets,44px links, reduced-motion anchors and no scripts",
+    "phone: CSS, logo, readable type, contained layout, all section targets,44px links, reduced-motion anchors and no scripts",
+    "320px layout remains contained"
+  ],
+  "captures": [
+    {
+      "name": "desktop-top",
+      "file": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\blog-editorial-browser-02\\desktop-top.png",
+      "sha256": "d664e876fe579422fd1b31834c2b33f4e73edc67b1844cf20484f9b959dba8a0",
+      "metrics": {
+        "width": 1440,
+        "height": 1000,
+        "scrollWidth": 1440,
+        "scrollY": 0,
+        "title": {
+          "x": 240,
+          "y": 219.9375,
+          "width": 960,
+          "height": 68.546875,
+          "top": 219.9375,
+          "right": 1200,
+          "bottom": 288.484375,
+          "left": 240
+        },
+        "textSize": "16px",
+        "toc": [
+          {
+            "text": "Start with a free run",
+            "box": {
+              "x": 240,
+              "y": 484.71875,
+              "width": 132.140625,
+              "height": 44,
+              "top": 484.71875,
+              "right": 372.140625,
+              "bottom": 528.71875,
+              "left": 240
+            },
+            "target": true
+          },
+          {
+            "text": "Hard Money Heroes",
+            "box": {
+              "x": 390.140625,
+              "y": 484.71875,
+              "width": 134.890625,
+              "height": 44,
+              "top": 484.71875,
+              "right": 525.03125,
+              "bottom": 528.71875,
+              "left": 390.140625
+            },
+            "target": true
+          },
+          {
+            "text": "Chikun\u2019s Escape",
+            "box": {
+              "x": 543.03125,
+              "y": 484.71875,
+              "width": 106.328125,
+              "height": 44,
+              "top": 484.71875,
+              "right": 649.359375,
+              "bottom": 528.71875,
+              "left": 543.03125
+            },
+            "target": true
+          },
+          {
+            "text": "STACKED",
+            "box": {
+              "x": 667.359375,
+              "y": 484.71875,
+              "width": 61.09375,
+              "height": 44,
+              "top": 484.71875,
+              "right": 728.453125,
+              "bottom": 528.71875,
+              "left": 667.359375
+            },
+            "target": true
+          },
+          {
+            "text": "Pick your next cabinet",
+            "box": {
+              "x": 746.453125,
+              "y": 484.71875,
+              "width": 147.171875,
+              "height": 44,
+              "top": 484.71875,
+              "right": 893.625,
+              "bottom": 528.71875,
+              "left": 746.453125
+            },
+            "target": true
+          }
+        ],
+        "scriptCount": 0,
+        "logoReady": true,
+        "robots": "noindex, nofollow"
+      }
+    },
+    {
+      "name": "desktop-section",
+      "file": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\blog-editorial-browser-02\\desktop-section.png",
+      "sha256": "0ce6c2ffa2ea3fb32de18bac865c222b7c20793dde0ba0f8d5e316a6c3674116",
+      "metrics": {
+        "width": 1440,
+        "height": 1000,
+        "scrollWidth": 1440,
+        "scrollY": 1165,
+        "title": {
+          "x": 240,
+          "y": -945.0625,
+          "width": 960,
+          "height": 68.546875,
+          "top": -945.0625,
+          "right": 1200,
+          "bottom": -876.515625,
+          "left": 240
+        },
+        "textSize": "16px",
+        "toc": [
+          {
+            "text": "Start with a free run",
+            "box": {
+              "x": 240,
+              "y": -680.28125,
+              "width": 132.140625,
+              "height": 44,
+              "top": -680.28125,
+              "right": 372.140625,
+              "bottom": -636.28125,
+              "left": 240
+            },
+            "target": true
+          },
+          {
+            "text": "Hard Money Heroes",
+            "box": {
+              "x": 390.140625,
+              "y": -680.28125,
+              "width": 134.890625,
+              "height": 44,
+              "top": -680.28125,
+              "right": 525.03125,
+              "bottom": -636.28125,
+              "left": 390.140625
+            },
+            "target": true
+          },
+          {
+            "text": "Chikun\u2019s Escape",
+            "box": {
+              "x": 543.03125,
+              "y": -680.28125,
+              "width": 106.328125,
+              "height": 44,
+              "top": -680.28125,
+              "right": 649.359375,
+              "bottom": -636.28125,
+              "left": 543.03125
+            },
+            "target": true
+          },
+          {
+            "text": "STACKED",
+            "box": {
+              "x": 667.359375,
+              "y": -680.28125,
+              "width": 61.09375,
+              "height": 44,
+              "top": -680.28125,
+              "right": 728.453125,
+              "bottom": -636.28125,
+              "left": 667.359375
+            },
+            "target": true
+          },
+          {
+            "text": "Pick your next cabinet",
+            "box": {
+              "x": 746.453125,
+              "y": -680.28125,
+              "width": 147.171875,
+              "height": 44,
+              "top": -680.28125,
+              "right": 893.625,
+              "bottom": -636.28125,
+              "left": 746.453125
+            },
+            "target": true
+          }
+        ],
+        "scriptCount": 0,
+        "logoReady": true,
+        "robots": "noindex, nofollow"
+      }
+    },
+    {
+      "name": "desktop-end",
+      "file": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\blog-editorial-browser-02\\desktop-end.png",
+      "sha256": "9a5335d67815badf2ab33fa32d2e641165432895881d5018133c3364c50ecaaf",
+      "metrics": {
+        "width": 1440,
+        "height": 1000,
+        "scrollWidth": 1440,
+        "scrollY": 1180,
+        "title": {
+          "x": 240,
+          "y": -960.0625,
+          "width": 960,
+          "height": 68.546875,
+          "top": -960.0625,
+          "right": 1200,
+          "bottom": -891.515625,
+          "left": 240
+        },
+        "textSize": "16px",
+        "toc": [
+          {
+            "text": "Start with a free run",
+            "box": {
+              "x": 240,
+              "y": -695.28125,
+              "width": 132.140625,
+              "height": 44,
+              "top": -695.28125,
+              "right": 372.140625,
+              "bottom": -651.28125,
+              "left": 240
+            },
+            "target": true
+          },
+          {
+            "text": "Hard Money Heroes",
+            "box": {
+              "x": 390.140625,
+              "y": -695.28125,
+              "width": 134.890625,
+              "height": 44,
+              "top": -695.28125,
+              "right": 525.03125,
+              "bottom": -651.28125,
+              "left": 390.140625
+            },
+            "target": true
+          },
+          {
+            "text": "Chikun\u2019s Escape",
+            "box": {
+              "x": 543.03125,
+              "y": -695.28125,
+              "width": 106.328125,
+              "height": 44,
+              "top": -695.28125,
+              "right": 649.359375,
+              "bottom": -651.28125,
+              "left": 543.03125
+            },
+            "target": true
+          },
+          {
+            "text": "STACKED",
+            "box": {
+              "x": 667.359375,
+              "y": -695.28125,
+              "width": 61.09375,
+              "height": 44,
+              "top": -695.28125,
+              "right": 728.453125,
+              "bottom": -651.28125,
+              "left": 667.359375
+            },
+            "target": true
+          },
+          {
+            "text": "Pick your next cabinet",
+            "box": {
+              "x": 746.453125,
+              "y": -695.28125,
+              "width": 147.171875,
+              "height": 44,
+              "top": -695.28125,
+              "right": 893.625,
+              "bottom": -651.28125,
+              "left": 746.453125
+            },
+            "target": true
+          }
+        ],
+        "scriptCount": 0,
+        "logoReady": true,
+        "robots": "noindex, nofollow"
+      }
+    },
+    {
+      "name": "phone-top",
+      "file": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\blog-editorial-browser-02\\phone-top.png",
+      "sha256": "0b555bc1512ced580683cb8223b89d2f0c9797c136617a6a4546affa9f760966",
+      "metrics": {
+        "width": 414,
+        "height": 896,
+        "scrollWidth": 414,
+        "scrollY": 0,
+        "title": {
+          "x": 16,
+          "y": 267.9375,
+          "width": 382,
+          "height": 78.34375,
+          "top": 267.9375,
+          "right": 398,
+          "bottom": 346.28125,
+          "left": 16
+        },
+        "textSize": "16px",
+        "toc": [
+          {
+            "text": "Start with a free run",
+            "box": {
+              "x": 16,
+              "y": 571.890625,
+              "width": 132.140625,
+              "height": 44,
+              "top": 571.890625,
+              "right": 148.140625,
+              "bottom": 615.890625,
+              "left": 16
+            },
+            "target": true
+          },
+          {
+            "text": "Hard Money Heroes",
+            "box": {
+              "x": 166.140625,
+              "y": 571.890625,
+              "width": 134.890625,
+              "height": 44,
+              "top": 571.890625,
+              "right": 301.03125,
+              "bottom": 615.890625,
+              "left": 166.140625
+            },
+            "target": true
+          },
+          {
+            "text": "Chikun\u2019s Escape",
+            "box": {
+              "x": 16,
+              "y": 615.890625,
+              "width": 106.328125,
+              "height": 44,
+              "top": 615.890625,
+              "right": 122.328125,
+              "bottom": 659.890625,
+              "left": 16
+            },
+            "target": true
+          },
+          {
+            "text": "STACKED",
+            "box": {
+              "x": 140.328125,
+              "y": 615.890625,
+              "width": 61.09375,
+              "height": 44,
+              "top": 615.890625,
+              "right": 201.421875,
+              "bottom": 659.890625,
+              "left": 140.328125
+            },
+            "target": true
+          },
+          {
+            "text": "Pick your next cabinet",
+            "box": {
+              "x": 219.421875,
+              "y": 615.890625,
+              "width": 147.171875,
+              "height": 44,
+              "top": 615.890625,
+              "right": 366.59375,
+              "bottom": 659.890625,
+              "left": 219.421875
+            },
+            "target": true
+          }
+        ],
+        "scriptCount": 0,
+        "logoReady": true,
+        "robots": "noindex, nofollow"
+      }
+    },
+    {
+      "name": "phone-section",
+      "file": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\blog-editorial-browser-02\\phone-section.png",
+      "sha256": "9dfdc82d191c196e332c4b11bd694480e53d53b76a104017631246f99d3f34e6",
+      "metrics": {
+        "width": 414,
+        "height": 896,
+        "scrollWidth": 414,
+        "scrollY": 1541,
+        "title": {
+          "x": 16,
+          "y": -1273.0625,
+          "width": 382,
+          "height": 78.34375,
+          "top": -1273.0625,
+          "right": 398,
+          "bottom": -1194.71875,
+          "left": 16
+        },
+        "textSize": "16px",
+        "toc": [
+          {
+            "text": "Start with a free run",
+            "box": {
+              "x": 16,
+              "y": -969.109375,
+              "width": 132.140625,
+              "height": 44,
+              "top": -969.109375,
+              "right": 148.140625,
+              "bottom": -925.109375,
+              "left": 16
+            },
+            "target": true
+          },
+          {
+            "text": "Hard Money Heroes",
+            "box": {
+              "x": 166.140625,
+              "y": -969.109375,
+              "width": 134.890625,
+              "height": 44,
+              "top": -969.109375,
+              "right": 301.03125,
+              "bottom": -925.109375,
+              "left": 166.140625
+            },
+            "target": true
+          },
+          {
+            "text": "Chikun\u2019s Escape",
+            "box": {
+              "x": 16,
+              "y": -925.109375,
+              "width": 106.328125,
+              "height": 44,
+              "top": -925.109375,
+              "right": 122.328125,
+              "bottom": -881.109375,
+              "left": 16
+            },
+            "target": true
+          },
+          {
+            "text": "STACKED",
+            "box": {
+              "x": 140.328125,
+              "y": -925.109375,
+              "width": 61.09375,
+              "height": 44,
+              "top": -925.109375,
+              "right": 201.421875,
+              "bottom": -881.109375,
+              "left": 140.328125
+            },
+            "target": true
+          },
+          {
+            "text": "Pick your next cabinet",
+            "box": {
+              "x": 219.421875,
+              "y": -925.109375,
+              "width": 147.171875,
+              "height": 44,
+              "top": -925.109375,
+              "right": 366.59375,
+              "bottom": -881.109375,
+              "left": 219.421875
+            },
+            "target": true
+          }
+        ],
+        "scriptCount": 0,
+        "logoReady": true,
+        "robots": "noindex, nofollow"
+      }
+    },
+    {
+      "name": "phone-end",
+      "file": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\blog-editorial-browser-02\\phone-end.png",
+      "sha256": "3cf7dd7f129380fba42acf77513f2ccaa53db204add996d9c31ba9e7d927fc5d",
+      "metrics": {
+        "width": 414,
+        "height": 896,
+        "scrollWidth": 414,
+        "scrollY": 1944,
+        "title": {
+          "x": 16,
+          "y": -1676.0625,
+          "width": 382,
+          "height": 78.34375,
+          "top": -1676.0625,
+          "right": 398,
+          "bottom": -1597.71875,
+          "left": 16
+        },
+        "textSize": "16px",
+        "toc": [
+          {
+            "text": "Start with a free run",
+            "box": {
+              "x": 16,
+              "y": -1372.109375,
+              "width": 132.140625,
+              "height": 44,
+              "top": -1372.109375,
+              "right": 148.140625,
+              "bottom": -1328.109375,
+              "left": 16
+            },
+            "target": true
+          },
+          {
+            "text": "Hard Money Heroes",
+            "box": {
+              "x": 166.140625,
+              "y": -1372.109375,
+              "width": 134.890625,
+              "height": 44,
+              "top": -1372.109375,
+              "right": 301.03125,
+              "bottom": -1328.109375,
+              "left": 166.140625
+            },
+            "target": true
+          },
+          {
+            "text": "Chikun\u2019s Escape",
+            "box": {
+              "x": 16,
+              "y": -1328.109375,
+              "width": 106.328125,
+              "height": 44,
+              "top": -1328.109375,
+              "right": 122.328125,
+              "bottom": -1284.109375,
+              "left": 16
+            },
+            "target": true
+          },
+          {
+            "text": "STACKED",
+            "box": {
+              "x": 140.328125,
+              "y": -1328.109375,
+              "width": 61.09375,
+              "height": 44,
+              "top": -1328.109375,
+              "right": 201.421875,
+              "bottom": -1284.109375,
+              "left": 140.328125
+            },
+            "target": true
+          },
+          {
+            "text": "Pick your next cabinet",
+            "box": {
+              "x": 219.421875,
+              "y": -1328.109375,
+              "width": 147.171875,
+              "height": 44,
+              "top": -1328.109375,
+              "right": 366.59375,
+              "bottom": -1284.109375,
+              "left": 219.421875
+            },
+            "target": true
+          }
+        ],
+        "scriptCount": 0,
+        "logoReady": true,
+        "robots": "noindex, nofollow"
+      }
+    },
+    {
+      "name": "small-phone-top",
+      "file": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\blog-editorial-browser-02\\small-phone-top.png",
+      "sha256": "3a00a625d4d91b2aa2f6665240df2a45f6cc95f9c7a0b9430b1fb74f90da97c3",
+      "metrics": {
+        "width": 320,
+        "height": 568,
+        "scrollWidth": 320,
+        "scrollY": 0,
+        "title": {
+          "x": 16,
+          "y": 263.9375,
+          "width": 288,
+          "height": 78.34375,
+          "top": 263.9375,
+          "right": 304,
+          "bottom": 342.28125,
+          "left": 16
+        },
+        "textSize": "16px",
+        "toc": [
+          {
+            "text": "Start with a free run",
+            "box": {
+              "x": 16,
+              "y": 597.265625,
+              "width": 132.140625,
+              "height": 44,
+              "top": 597.265625,
+              "right": 148.140625,
+              "bottom": 641.265625,
+              "left": 16
+            },
+            "target": true
+          },
+          {
+            "text": "Hard Money Heroes",
+            "box": {
+              "x": 166.140625,
+              "y": 597.265625,
+              "width": 134.890625,
+              "height": 44,
+              "top": 597.265625,
+              "right": 301.03125,
+              "bottom": 641.265625,
+              "left": 166.140625
+            },
+            "target": true
+          },
+          {
+            "text": "Chikun\u2019s Escape",
+            "box": {
+              "x": 16,
+              "y": 641.265625,
+              "width": 106.328125,
+              "height": 44,
+              "top": 641.265625,
+              "right": 122.328125,
+              "bottom": 685.265625,
+              "left": 16
+            },
+            "target": true
+          },
+          {
+            "text": "STACKED",
+            "box": {
+              "x": 140.328125,
+              "y": 641.265625,
+              "width": 61.09375,
+              "height": 44,
+              "top": 641.265625,
+              "right": 201.421875,
+              "bottom": 685.265625,
+              "left": 140.328125
+            },
+            "target": true
+          },
+          {
+            "text": "Pick your next cabinet",
+            "box": {
+              "x": 16,
+              "y": 685.265625,
+              "width": 147.171875,
+              "height": 44,
+              "top": 685.265625,
+              "right": 163.171875,
+              "bottom": 729.265625,
+              "left": 16
+            },
+            "target": true
+          }
+        ],
+        "scriptCount": 0,
+        "logoReady": true,
+        "robots": "noindex, nofollow"
+      }
+    }
+  ],
+  "browserWindow": {
+    "child": 22280,
+    "chrome": 29408,
+    "bothAbsent": true,
+    "httpRefused": true,
+    "markerReleased": true
+  },
+  "review": "Art independent review found publication-index forgery and empty-heading bugs; genuine regressions/fixes retained. Root inspected all seven original captures and layout metrics.",
+  "publicRouteActive": false,
+  "fullBuildRun": false,
+  "physicalPhoneTested": false,
+  "releaseGateRun": false,
+  "firstHarnessFailurePreserved": true
+}

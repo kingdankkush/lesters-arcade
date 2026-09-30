@@ -7,6 +7,8 @@ const CATEGORIES = Object.freeze([
 const GAMES = new Set(['lester-blaster','chikun','stacked']);
 const FIELDS = ['slug','title','summary','category','games','date','status','author'];
 const RESERVED = new Set(['index','category','feed']);
+const publicationIndexes = new WeakSet();
+export const isBlogPublicationIndex = value => publicationIndexes.has(value);
 const fail = message => { throw new TypeError('Blog content: '+message); };
 const order = (a,b) => a<b?-1:a>b?1:0;
 const newest = (a,b) => order(b.date,a.date)||order(a.slug,b.slug);
@@ -64,7 +66,9 @@ export function buildBlogIndex(sources,{asOf}={}) {
     .filter(candidate=>candidate.slug!==post.slug&&relatedScore(post,candidate)>0)
     .sort((a,b)=>relatedScore(post,b)-relatedScore(post,a)||newest(a,b))
     .slice(0,3).map(candidate=>candidate.slug))}));
-  return Object.freeze({asOf,posts:Object.freeze(result),categories:Object.freeze(CATEGORIES.map(category=>Object.freeze({
+  const index=Object.freeze({asOf,posts:Object.freeze(result),categories:Object.freeze(CATEGORIES.map(category=>Object.freeze({
     ...category,count:visible.filter(post=>post.category===category.id).length,
   })))});
+  publicationIndexes.add(index);
+  return index;
 }

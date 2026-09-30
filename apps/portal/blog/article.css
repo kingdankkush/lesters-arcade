@@ -1,0 +1,23 @@
+/* Static journal pages reuse the public guide shell and design tokens. */
+.blog-preview { padding: 12px 16px; border: 1px solid var(--guide-gold); color: var(--guide-gold); border-radius: 4px; }
+.blog-byline { color: var(--guide-muted); font-size: .9rem; margin: 22px 0; }
+.blog-byline span { padding-inline: .5em; }
+.blog-prose { max-width: 44rem; padding-block: 24px 40px; }
+.blog-prose h2 { font-size: clamp(1.6rem, 5vw, 2.3rem); line-height: 1.2; margin: 40px 0 18px; letter-spacing: -.03em; }
+.blog-prose h3 { font-size: 1.3rem; margin: 28px 0 12px; }
+.blog-prose h4 { font-size: 1.1rem; margin: 24px 0 12px; }
+.blog-prose :is(h2,h3,h4) { scroll-margin-top: 24px; }
+.blog-prose :is(p,li) { color: var(--guide-muted); }
+.blog-prose p { margin: 0 0 20px; }
+.blog-prose strong { color: var(--guide-paper); }
+.blog-prose li { padding-left: 6px; margin-bottom: 10px; }
+.blog-prose blockquote { border-left: 3px solid var(--guide-gold); padding: 12px 24px; margin: 28px 0; background: var(--guide-panel); }
+.blog-prose blockquote p { margin: 0; color: var(--guide-paper); }
+.blog-prose code { font-family: var(--font-mono, monospace); font-size: .9em; background: var(--guide-panel); padding: .12em .25em; border-radius: 3px; }
+.blog-prose pre { max-width: 100%; overflow-x: auto; padding: 20px; background: var(--guide-panel); border: 1px solid var(--guide-rule); }
+.blog-prose pre code { padding: 0; }
+.blog-related { border-top: 1px solid var(--guide-rule); padding-top: 24px; }
+.blog-related ul { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(auto-fit,minmax(min(100%,240px),1fr)); gap: 20px; }
+.blog-related li { border-top: 2px solid var(--guide-gold); padding-top: 12px; }
+.blog-related a { display: inline-flex; min-height: 44px; align-items: center; font-weight: 700; }
+.blog-related p { color: var(--guide-muted); }
