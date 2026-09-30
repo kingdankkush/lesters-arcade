@@ -1,0 +1,179 @@
+{
+  "schema": 1,
+  "status": "editable-native-candidate",
+  "actorId": "rug-puller",
+  "identityForm": "human",
+  "boss": false,
+  "phaseVisuals": {},
+  "baseSource": "owner-assets/female combatant 3d model.glb",
+  "baseSha256": "f3b693bb5acbd23226103837f6d1313abb29a90e85a5f384b4bba747b507b6ae",
+  "baseBytes": 18138396,
+  "sourceUnchanged": true,
+  "casting": {
+    "name": "Rug Puller",
+    "rationale": "Poppie demolitionist body: the lightest, most agile licensed textured figure; the rolled rug and hook are costume geometry.",
+    "reference": "Enemy and Boss References 03_31_07/03_31_08 (rug, rope and hook)",
+    "textured": true,
+    "sheetFigure": "front"
+  },
+  "figureExtraction": {
+    "looseParts": 8,
+    "clusters": 3,
+    "kept": 1,
+    "discarded": 7,
+    "sheet": true,
+    "largestParts": [
+      {
+        "triangles": 62010,
+        "kept": false,
+        "min": [
+          0.145,
+          -0.098,
+          0.18
+        ],
+        "max": [
+          0.49,
+          0.081,
+          0.514
+        ]
+      },
+      {
+        "triangles": 50410,
+        "kept": true,
+        "min": [
+          -0.49,
+          -0.046,
+          0.0
+        ],
+        "max": [
+          -0.255,
+          0.105,
+          0.551
+        ]
+      },
+      {
+        "triangles": 50224,
+        "kept": false,
+        "min": [
+          -0.079,
+          -0.078,
+          0.0
+        ],
+        "max": [
+          0.14,
+          0.065,
+          0.549
+        ]
+      },
+      {
+        "triangles": 50160,
+        "kept": false,
+        "min": [
+          -0.234,
+          -0.114,
+          0.0
+        ],
+        "max": [
+          -0.106,
+          0.131,
+          0.544
+        ]
+      },
+      {
+        "triangles": 8658,
+        "kept": false,
+        "min": [
+          0.144,
+          -0.121,
+          0.028
+        ],
+        "max": [
+          0.265,
+          0.063,
+          0.178
+        ]
+      },
+      {
+        "triangles": 6726,
+        "kept": false,
+        "min": [
+          0.267,
+          -0.109,
+          0.029
+        ],
+        "max": [
+          0.369,
+          0.018,
+          0.17
+        ]
+      },
+      {
+        "triangles": 6590,
+        "kept": false,
+        "min": [
+          0.146,
+          -0.092,
+          0.184
+        ],
+        "max": [
+          0.252,
+          0.047,
+          0.315
+        ]
+      },
+      {
+        "triangles": 5222,
+        "kept": false,
+        "min": [
+          0.377,
+          -0.131,
+          0.043
+        ],
+        "max": [
+          0.472,
+          -0.039,
+          0.178
+        ]
+      }
+    ]
+  },
+  "importedTriangles": 472498,
+  "sourceTriangles": 50410,
+  "landmarks": {
+    "armDetected": false,
+    "legDetected": false,
+    "neckZ": 0.83,
+    "torsoY": 0.008057882077991962,
+    "rawHeight": 0.5503649650781881,
+    "scale": 3.234217497378531
+  },
+  "weightMethod": "bone-heat",
+  "unweightedVertices": 0,
+  "source": "rug-puller.blend",
+  "sourceSha256": "9d545f3405ba92561088b256fd5ffc33b81849f99ef4377f9216ee7cb42d3d17",
+  "sourceBytes": 16023731,
+  "armature": "rug-puller Native Rig",
+  "bones": 19,
+  "nativeBodyVertices": 25153,
+  "costumeMeshes": 0,
+  "gearMeshes": 6,
+  "clipActions": {
+    "idle": "HMH_rug-puller_idle",
+    "run": "HMH_rug-puller_run",
+    "tell": "HMH_rug-puller_tell",
+    "attack": "HMH_rug-puller_attack",
+    "hit": "HMH_rug-puller_hit",
+    "death": "HMH_rug-puller_death"
+  },
+  "runtimeAuthority": "projection-only",
+  "height": 1.7732999515533447,
+  "animationProfile": {
+    "kind": "forkrunner-quick-fork-slash-v1",
+    "damageResponse": "crossed-fork-guard-break-v1"
+  },
+  "stoop": 0.03,
+  "builderSha256": "89386ac5255d22f969bafd2e1b90e935d86f302922cd655276e264a940491593",
+  "castingSha256": "bb175a1037eeae1cff461358ce6d90c121d56073ce1a03a33b0f9b39ae1f69c3",
+  "poseAuthorSha256": "113c81d1514ec7768361332c9191436ea5171b3fef1d9028aa556711b88c7648",
+  "rights": "Owner-supplied licensed model, read-only; no generation service, credit or new licence was used."
+}

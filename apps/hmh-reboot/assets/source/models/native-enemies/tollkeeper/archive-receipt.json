@@ -1,0 +1,18 @@
+{
+  "schema": 1,
+  "actorId": "tollkeeper",
+  "archivedAt": "2026-09-30T22:58:09.074761+00:00",
+  "repoPath": "apps/hmh-reboot/assets/source/models/native-enemies/tollkeeper",
+  "archiveRoot": "C:\\Users\\just_\\Desktop\\Projects\\LestersArcade-Assets\\2.0\\Source\\Legacy-Integration-04366747",
+  "files": {
+    "tollkeeper.blend": {
+      "sha256": "ca548883b1ff5d1d5e6e740324853403d16f9d20abee6aea5093dd5d8b298e41",
+      "bytes": 13582449
+    },
+    "source-receipt.json": {
+      "sha256": "172c6fd5a0ad93a882bab17332a7933b8f6aff13ea790517d8616ee73ab46ad9",
+      "bytes": 4929
+    }
+  },
+  "resolver": "HMH_SOURCE_ART_ROOT (default: this archive root); the .blend is git-ignored in the repository"
+}

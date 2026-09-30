@@ -1,0 +1,130 @@
+{
+  "schema": 1,
+  "classification": "unapproved-runtime-character-pilot",
+  "activeRuntimeIntegration": false,
+  "cameraDegreesFromVertical": 55,
+  "groundPivot": "existing-world-foot-position",
+  "simulationAuthority": "none",
+  "actors": {
+    "pump-and-dump-bloater": {
+      "file": "pump-and-dump-bloater.glb",
+      "sha256": "555290a568b5f3175594e02ac97047033d24e98c4e2c221ee6689ace79010e58",
+      "sourceSha256": "df553fa58fb63b222bd9f18a7afeffd798bbd042e6dd68bfe1a48da41060a209",
+      "sourceBytes": 13726681,
+      "sourceTriangles": 61060,
+      "requiredClips": [
+        "idle",
+        "run",
+        "tell",
+        "attack",
+        "hit",
+        "death"
+      ],
+      "inspection": {
+        "bytes": 2059084,
+        "vertices": 7990,
+        "triangles": 9348,
+        "skinnedMeshes": 2,
+        "joints": 19,
+        "clips": [
+          {
+            "name": "attack",
+            "durationSeconds": 1,
+            "channels": 63
+          },
+          {
+            "name": "death",
+            "durationSeconds": 1,
+            "channels": 63
+          },
+          {
+            "name": "hit",
+            "durationSeconds": 1,
+            "channels": 63
+          },
+          {
+            "name": "idle",
+            "durationSeconds": 1,
+            "channels": 63
+          },
+          {
+            "name": "run",
+            "durationSeconds": 1,
+            "channels": 63
+          },
+          {
+            "name": "tell",
+            "durationSeconds": 1,
+            "channels": 63
+          }
+        ],
+        "bounds": {
+          "min": [
+            -0.5154462456703186,
+            0.0007508947746828198,
+            -0.30600133538246155
+          ],
+          "max": [
+            0.5166434049606323,
+            1.9219300746917725,
+            0.33075013756752014
+          ]
+        },
+        "embeddedImages": 7,
+        "images": [
+          {
+            "name": "costume-emission",
+            "format": "png",
+            "width": 512,
+            "height": 512,
+            "bytes": 21583
+          },
+          {
+            "name": "costume-normal",
+            "format": "png",
+            "width": 512,
+            "height": 512,
+            "bytes": 25196
+          },
+          {
+            "name": "costume-baseColor",
+            "format": "png",
+            "width": 512,
+            "height": 512,
+            "bytes": 36497
+          },
+          {
+            "name": "costume-metallicRoughness",
+            "format": "png",
+            "width": 512,
+            "height": 512,
+            "bytes": 36033
+          },
+          {
+            "name": "armored+soldier+3d+model_normal",
+            "format": "png",
+            "width": 512,
+            "height": 512,
+            "bytes": 364932
+          },
+          {
+            "name": "armored+soldier+3d+model_basecolor",
+            "format": "png",
+            "width": 512,
+            "height": 512,
+            "bytes": 522382
+          },
+          {
+            "name": "armored+soldier+3d+model_rm",
+            "format": "png",
+            "width": 512,
+            "height": 512,
+            "bytes": 266832
+          }
+        ],
+        "textureBytesRgba8": 7340032,
+        "textureBytesRgba8Mipmaps": 9786700
+      }
+    }
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "schema": 1,
+  "actorId": "pump-and-dump-bloater",
+  "archivedAt": "2026-09-30T22:58:09.169841+00:00",
+  "repoPath": "apps/hmh-reboot/assets/source/models/native-enemies/pump-and-dump-bloater",
+  "archiveRoot": "C:\\Users\\just_\\Desktop\\Projects\\LestersArcade-Assets\\2.0\\Source\\Legacy-Integration-04366747",
+  "files": {
+    "pump-and-dump-bloater.blend": {
+      "sha256": "df553fa58fb63b222bd9f18a7afeffd798bbd042e6dd68bfe1a48da41060a209",
+      "bytes": 13726681
+    },
+    "source-receipt.json": {
+      "sha256": "d17d38d15659b33aefd4ed77fd82b746dd1618bf3451a4f8d23c2685e7bc8c77",
+      "bytes": 3016
+    }
+  },
+  "resolver": "HMH_SOURCE_ART_ROOT (default: this archive root); the .blend is git-ignored in the repository"
+}

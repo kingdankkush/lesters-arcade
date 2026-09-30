@@ -1,0 +1,18 @@
+{
+  "schema": 1,
+  "actorId": "money-printer",
+  "archivedAt": "2026-09-30T22:58:09.103784+00:00",
+  "repoPath": "apps/hmh-reboot/assets/source/models/native-enemies/money-printer",
+  "archiveRoot": "C:\\Users\\just_\\Desktop\\Projects\\LestersArcade-Assets\\2.0\\Source\\Legacy-Integration-04366747",
+  "files": {
+    "money-printer.blend": {
+      "sha256": "95aba5555990af371070b8ec372704d698ebb4bc6a5b982e99061c7feb65400a",
+      "bytes": 14091134
+    },
+    "source-receipt.json": {
+      "sha256": "aa8edd58b5e92639790c65f00fca4a98b5e67e2bb592ef3d3bb9f505d25d4041",
+      "bytes": 3230
+    }
+  },
+  "resolver": "HMH_SOURCE_ART_ROOT (default: this archive root); the .blend is git-ignored in the repository"
+}

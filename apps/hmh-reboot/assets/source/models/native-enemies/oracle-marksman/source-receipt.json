@@ -1,0 +1,137 @@
+{
+  "schema": 1,
+  "status": "editable-native-candidate",
+  "actorId": "oracle-marksman",
+  "identityForm": "human",
+  "boss": false,
+  "phaseVisuals": {},
+  "baseSource": "owner-assets/post apocalyptic warrior 3d model.glb",
+  "baseSha256": "d24f5604e1c239aa1b73213df31cd5522f0b631fadfc558a12f1790f7d02f54b",
+  "baseBytes": 11566180,
+  "sourceUnchanged": true,
+  "casting": {
+    "name": "Oracle Marksman",
+    "rationale": "Dusty blue sniper operative: the only sniper-like licensed figure (long coat, rifle slung on the back); untextured, so it receives a dusty-blue palette bake and an emissive oracle scope.",
+    "reference": "Enemy and Boss References 03_34_13/03_34_14 (ghillie sniper, purple oracle scope)",
+    "textured": false,
+    "sheetFigure": "front"
+  },
+  "figureExtraction": {
+    "looseParts": 5,
+    "clusters": 3,
+    "kept": 1,
+    "discarded": 4,
+    "sheet": true,
+    "largestParts": [
+      {
+        "triangles": 84670,
+        "kept": true,
+        "min": [
+          -0.494,
+          -0.118,
+          0.0
+        ],
+        "max": [
+          -0.155,
+          0.116,
+          0.81
+        ]
+      },
+      {
+        "triangles": 83124,
+        "kept": false,
+        "min": [
+          0.19,
+          -0.09,
+          0.001
+        ],
+        "max": [
+          0.494,
+          0.143,
+          0.811
+        ]
+      },
+      {
+        "triangles": 72204,
+        "kept": false,
+        "min": [
+          -0.093,
+          -0.143,
+          -0.0
+        ],
+        "max": [
+          0.134,
+          0.137,
+          0.805
+        ]
+      },
+      {
+        "triangles": 1,
+        "kept": false,
+        "min": [
+          0.368,
+          0.068,
+          0.433
+        ],
+        "max": [
+          0.368,
+          0.068,
+          0.434
+        ]
+      },
+      {
+        "triangles": 1,
+        "kept": false,
+        "min": [
+          0.368,
+          0.068,
+          0.435
+        ],
+        "max": [
+          0.368,
+          0.068,
+          0.435
+        ]
+      }
+    ]
+  },
+  "importedTriangles": 481960,
+  "sourceTriangles": 60000,
+  "landmarks": {
+    "armDetected": false,
+    "legDetected": false,
+    "neckZ": 0.9,
+    "torsoY": 0.005341758485883474,
+    "rawHeight": 0.8100408346581389,
+    "scale": 2.2468003119473523
+  },
+  "weightMethod": "bone-heat",
+  "unweightedVertices": 0,
+  "source": "oracle-marksman.blend",
+  "sourceSha256": "a0baf24e6241fe5dda31bcf3f26d29ac0640e4a40a2bbf06097b851dfa5a023a",
+  "sourceBytes": 2815083,
+  "armature": "oracle-marksman Native Rig",
+  "bones": 19,
+  "nativeBodyVertices": 29984,
+  "costumeMeshes": 0,
+  "gearMeshes": 8,
+  "clipActions": {
+    "idle": "HMH_oracle-marksman_idle",
+    "run": "HMH_oracle-marksman_run",
+    "tell": "HMH_oracle-marksman_tell",
+    "attack": "HMH_oracle-marksman_attack",
+    "hit": "HMH_oracle-marksman_hit",
+    "death": "HMH_oracle-marksman_death"
+  },
+  "runtimeAuthority": "projection-only",
+  "height": 1.8127000522613526,
+  "animationProfile": {
+    "kind": "suppression-rifle-burst-v1",
+    "damageResponse": "rifle-shoulder-recoil-v1"
+  },
+  "stoop": 0.02,
+  "builderSha256": "89386ac5255d22f969bafd2e1b90e935d86f302922cd655276e264a940491593",
+  "castingSha256": "bb175a1037eeae1cff461358ce6d90c121d56073ce1a03a33b0f9b39ae1f69c3",
+  "poseAuthorSha256": "113c81d1514ec7768361332c9191436ea5171b3fef1d9028aa556711b88c7648",
+  "rights": "Owner-supplied licensed model, read-only; no generation service, credit or new licence was used."
+}
