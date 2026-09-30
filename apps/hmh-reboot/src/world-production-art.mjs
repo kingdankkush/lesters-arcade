@@ -1032,15 +1032,19 @@ export function renderWorldProductionArt({ worldProduction, world, camera, view,
   // shoulder over a plank deck would read as dirt floating on the bridge.
   const deckedSurfaces = world.surfaces.filter((surface) => (surface.kind === 'bridge' || surface.kind === 'ramp') && surface.area?.type === 'rect');
   const overDeck = (x, y) => deckedSurfaces.some((surface) => x >= surface.area.minX && x <= surface.area.maxX && y >= surface.area.minY && y <= surface.area.maxY);
-  const districtAt = (x) => world.districts.find((district) => x >= district.area.minX && x <= district.area.maxX) ?? world.districts[0];
-  const shaderByDistrict = new Map(world.districts.map((district) => [district.id, resolveWorldShaderState({ tick, districtId: district.id })]));
+  // W4a: a district borrows an existing material kit through `materialId`
+  // until its own art lands; legacy districts have none and key themselves.
+  const materialKey = (district) => district.materialId ?? district.id;
+  const districtAt = (x, y) => world.districts.find((district) => x >= district.area.minX && x <= district.area.maxX && y >= district.area.minY && y <= district.area.maxY)
+    ?? world.districts.find((district) => x >= district.area.minX && x <= district.area.maxX) ?? world.districts[0];
+  const shaderByDistrict = new Map(world.districts.map((district) => [district.id, resolveWorldShaderState({ tick, districtId: materialKey(district) })]));
 
   if (drawStatic) for (const district of world.districts) {
-    const kit = DISTRICT_PRODUCTION_MATERIALS[district.id];
+    const kit = DISTRICT_PRODUCTION_MATERIALS[materialKey(district)];
     const a = project({ x: district.area.minX, y: district.area.minY, z: 0 });
     const b = project({ x: district.area.maxX, y: district.area.maxY, z: 0 });
     if (!screenBoundsVisible([a, b], view, performanceProfile.worldCullMargin)) continue;
-    const groundMaterial = DISTRICT_TERRAIN_MATERIAL[district.id];
+    const groundMaterial = DISTRICT_TERRAIN_MATERIAL[materialKey(district)];
     layers.terrain.rect(a.x, a.y, b.x-a.x, b.y-a.y).fill({ color: kit.groundColor, alpha: 1 });
     const groundTiled = tilePlacer?.place(groundMaterial, a.x, a.y, b.x-a.x, b.y-a.y, 0.96) ?? null;
     if (!groundTiled) {
@@ -1064,7 +1068,7 @@ export function renderWorldProductionArt({ worldProduction, world, camera, view,
       const west = ordered[index];
       const east = ordered[index + 1];
       const boundaryX = east.area.minX;
-      const westMaterial = DISTRICT_TERRAIN_MATERIAL[west.id];
+      const westMaterial = DISTRICT_TERRAIN_MATERIAL[materialKey(west)];
       const texture = terrainTiles.fringeTextureFor?.(westMaterial) ?? null;
       if (!texture) continue;
       const top = project({ x: boundaryX, y: east.area.minY, z: 0 });
@@ -1096,7 +1100,7 @@ export function renderWorldProductionArt({ worldProduction, world, camera, view,
     }
   }
 
-  if (drawStatic) for (const route of [...world.routes,...WORLD_DESIGN_GROUND_PATHS]) {
+  if (drawStatic) for (const route of [...world.routes,...(world.groundPaths ?? WORLD_DESIGN_GROUND_PATHS)]) {
     let routeNodes=ROAD_NODE_CACHE.get(route);
     if(!routeNodes){routeNodes=roundedRoadNodes(route.points??route.nodeIds.map(id=>world.routeGraph.nodes.find(n=>n.id===id)),route.width);ROAD_NODE_CACHE.set(route,routeNodes);}
     const routePoints = routeNodes.map((node) => {
@@ -1138,8 +1142,8 @@ export function renderWorldProductionArt({ worldProduction, world, camera, view,
     const vertices=rectVertices(surface.area);
     const points=vertices.map((vertex)=>{const sampled=queryGround(vertex.x,vertex.y); return project({...vertex,z:surface.waterLevel??sampled.groundZ});});
     if (!screenBoundsVisible(points, view, performanceProfile.worldCullMargin)) continue;
-    const district=districtAt(vertices[0].x); const shader=shaderByDistrict.get(district.id); const kit=DISTRICT_PRODUCTION_MATERIALS[district.id];
-    const surfaceBase=resolveWorldSurfaceBase({kind:surface.kind,districtId:district.id});
+    const district=districtAt(vertices[0].x,vertices[0].y); const shader=shaderByDistrict.get(district.id); const kit=DISTRICT_PRODUCTION_MATERIALS[materialKey(district)];
+    const surfaceBase=resolveWorldSurfaceBase({kind:surface.kind,districtId:materialKey(district)});
     // Raised surfaces used to draw as a translucent panel with a bright
     // outline, which read as floating glass over the ground rather than a
     // step up. Ledges and bridges now get a cast shadow, an opaque deck, a

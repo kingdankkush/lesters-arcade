@@ -8,7 +8,6 @@ import { createDeathCamera } from './death-camera.mjs';
 import { loadRuntimeTelemetry } from './runtime-telemetry-loader.mjs';
 import { stepWorldExplosions } from './world-explosives.mjs';
 import { createStartupArtGate } from './startup-art.mjs';
-import { selectLevelEntry } from './level-entry.mjs';
 import { Application, Assets, Container, Graphics, Rectangle, RenderLayer, Sprite, Text, Texture, TilingSprite } from 'pixi.js';
 import { deterministicUnit } from './deterministic-hash.mjs';
 import { WORLD_DESIGN_SITE_PROPS, WORLD_DESIGN_ORCHARD } from './world-design-encounters.mjs';
@@ -160,27 +159,52 @@ import { buildRunResultMessages, getWeb3AdapterStatus } from './run-adapters.mjs
 import {
   createRunSummaryAccumulator,
   finalizeRunSummary,
-  recordRunCollectible,
-  recordRunDamage,
-  recordRunGrenade,
-  recordRunBombletDetonation,
-  recordRunGrenadeDetonation,
-  recordRunHealing,
-  recordRunKill,
-  recordRunLightningLedgerEvent,
-  recordRunBearMarketBurnerEvent,
-  recordRunForkedStandardEvent,
-  recordRunMilestone,
-  recordRunProjectileContacts,
-  recordRunProjectileResolution,
-  recordRunTick,
-  recordRunUpgradeOffer,
-  recordRunUpgradeSelection,
-  recordRunWeaponEvent,
-  recordRunWeaponFire,
-  recordRunWeaponLifecycleEvent,
-  recordRunWeaponTriggerContact,
+  recordRunCollectible as sdkRecordRunCollectible,
+  recordRunDamage as sdkRecordRunDamage,
+  recordRunGrenade as sdkRecordRunGrenade,
+  recordRunBombletDetonation as sdkRecordRunBombletDetonation,
+  recordRunGrenadeDetonation as sdkRecordRunGrenadeDetonation,
+  recordRunHealing as sdkRecordRunHealing,
+  recordRunKill as sdkRecordRunKill,
+  recordRunLightningLedgerEvent as sdkRecordRunLightningLedgerEvent,
+  recordRunBearMarketBurnerEvent as sdkRecordRunBearMarketBurnerEvent,
+  recordRunForkedStandardEvent as sdkRecordRunForkedStandardEvent,
+  recordRunMilestone as sdkRecordRunMilestone,
+  recordRunProjectileContacts as sdkRecordRunProjectileContacts,
+  recordRunProjectileResolution as sdkRecordRunProjectileResolution,
+  recordRunTick as sdkRecordRunTick,
+  recordRunUpgradeOffer as sdkRecordRunUpgradeOffer,
+  recordRunUpgradeSelection as sdkRecordRunUpgradeSelection,
+  recordRunWeaponEvent as sdkRecordRunWeaponEvent,
+  recordRunWeaponFire as sdkRecordRunWeaponFire,
+  recordRunWeaponLifecycleEvent as sdkRecordRunWeaponLifecycleEvent,
+  recordRunWeaponTriggerContact as sdkRecordRunWeaponTriggerContact,
 } from '../../../sdk/hmh-run-summary.mjs';
+// W4a: an unofficial world (the ten-area Free selection) records no run
+// summary at all, the same way evidenceSafe pilots disable evidence; the
+// legacy world calls the SDK recorders directly through these bindings.
+let RUN_SUMMARY_ENABLED = true;
+const runRecorder = (record) => (...args) => (RUN_SUMMARY_ENABLED ? record(...args) : undefined);
+const recordRunCollectible = runRecorder(sdkRecordRunCollectible);
+const recordRunDamage = runRecorder(sdkRecordRunDamage);
+const recordRunGrenade = runRecorder(sdkRecordRunGrenade);
+const recordRunBombletDetonation = runRecorder(sdkRecordRunBombletDetonation);
+const recordRunGrenadeDetonation = runRecorder(sdkRecordRunGrenadeDetonation);
+const recordRunHealing = runRecorder(sdkRecordRunHealing);
+const recordRunKill = runRecorder(sdkRecordRunKill);
+const recordRunLightningLedgerEvent = runRecorder(sdkRecordRunLightningLedgerEvent);
+const recordRunBearMarketBurnerEvent = runRecorder(sdkRecordRunBearMarketBurnerEvent);
+const recordRunForkedStandardEvent = runRecorder(sdkRecordRunForkedStandardEvent);
+const recordRunMilestone = runRecorder(sdkRecordRunMilestone);
+const recordRunProjectileContacts = runRecorder(sdkRecordRunProjectileContacts);
+const recordRunProjectileResolution = runRecorder(sdkRecordRunProjectileResolution);
+const recordRunTick = runRecorder(sdkRecordRunTick);
+const recordRunUpgradeOffer = runRecorder(sdkRecordRunUpgradeOffer);
+const recordRunUpgradeSelection = runRecorder(sdkRecordRunUpgradeSelection);
+const recordRunWeaponEvent = runRecorder(sdkRecordRunWeaponEvent);
+const recordRunWeaponFire = runRecorder(sdkRecordRunWeaponFire);
+const recordRunWeaponLifecycleEvent = runRecorder(sdkRecordRunWeaponLifecycleEvent);
+const recordRunWeaponTriggerContact = runRecorder(sdkRecordRunWeaponTriggerContact);
 import { HMH_RUN_SUMMARY_CATALOGS } from '../../../sdk/hmh-run-summary-schema.mjs';
 import {
   COMBAT_VISUAL_EVENT_LIFETIME_TICKS,
@@ -229,13 +253,15 @@ import {
 } from './weapon-vfx.mjs';
 import { createAtmospherePool, createAtmosphereTextures, renderWorldAtmosphere, resolveAtmosphereBudget, resolveAtmosphereTint } from './world-atmosphere.mjs';
 import {
-  LEVEL_ONE_WORLD,
+  LEVEL_ONE_WORLD as LEGACY_LEVEL_ONE_WORLD,
   createLevelOneGroundQuery,
   createLevelOneRevealState,
   getLevelOneDistrictAt,
   getLevelOneRevealSnapshot,
   revealLevelOneAt,
 } from './level-one-world.mjs';
+import { selectLevelEntry as selectLegacyLevelEntry } from './level-entry.mjs';
+import { resolveHmhWorldContext, sessionAllowedForWorld } from './world-context.mjs';
 import {
   createWorldProductionLayers,
   renderWorldProductionArt,
@@ -360,7 +386,7 @@ const MAX_ACTIVE_PROJECTILES = RUNTIME_MAX_ACTIVE_PROJECTILES;
 const LIQUIDATOR_THREAT_COST = 48;
 // The Liquidation Yard grid goes quiet once the Liquidator falls (S1.5).
 const YARD_GRID_HAZARD_ID = 'yard-liquidation-grid';
-const PACIFIED_HAZARDS = Object.freeze(LEVEL_ONE_WORLD.interactions.hazards.filter((hazard) => hazard.id !== YARD_GRID_HAZARD_ID));
+let PACIFIED_HAZARDS = Object.freeze([]);
 // Bullets fly at chest height above whatever ground is beneath them, so firing
 // from an authored ledge still connects with targets on the level below.
 const PROJECTILE_FLIGHT_HEIGHT = 34;
@@ -405,12 +431,36 @@ const WEAPON_KNOCKBACK = Object.freeze({
 });
 // V-1: the weapon colour table lives with the rest of the weapon VFX identity.
 const WEAPON_COLORS = WEAPON_VFX_COLORS;
-const WORLD_BOUNDS = LEVEL_ONE_WORLD.bounds;
+// W4a: LEVEL_ONE_WORLD is the map this page runs as Level 1. It is resolved
+// once, at the top of boot(), through world-context.mjs: the legacy
+// forked-frontier world by default, the ten-area world only for an explicitly
+// unranked Free `world=ten-area` page. The binding and the tables below are
+// filled by adoptWorldContext before the bridge, the renderer or any session
+// can read them; every legacy call site keeps reading this one name.
+let HMH_WORLD_CONTEXT = null;
+let LEVEL_ONE_WORLD = LEGACY_LEVEL_ONE_WORLD;
+let WORLD_BOUNDS = LEVEL_ONE_WORLD.bounds;
 let WORLD_BLOCKERS = LEVEL_ONE_WORLD.collisionBlockers;
 // V-2: authored blocker id -> visualKind, so a shot stopping on cover can be
 // classed as rock, metal or splintering wood from frozen world data alone.
-const BLOCKER_VISUAL_KIND = new Map(LEVEL_ONE_WORLD.blockers.map((blocker) => [blocker.collisionBlockerId, blocker.visualKind]));
-const queryGround = createLevelOneGroundQuery();
+let BLOCKER_VISUAL_KIND = new Map();
+let queryGround = null;
+const LEGACY_WORLD_REVEAL = Object.freeze({ create: createLevelOneRevealState, at: revealLevelOneAt, snapshot: getLevelOneRevealSnapshot });
+let worldReveal = LEGACY_WORLD_REVEAL;
+// The seed's entry for the adopted world: the legacy table by default, a
+// world-keyed table for an unofficial world.
+const selectLevelEntry = (seed) => (HMH_WORLD_CONTEXT?.gameplay ? HMH_WORLD_CONTEXT.selectEntry(seed) : selectLegacyLevelEntry(seed));
+function adoptWorldContext(context) {
+  HMH_WORLD_CONTEXT = context;
+  LEVEL_ONE_WORLD = context.world;
+  RUN_SUMMARY_ENABLED = context.official === true;
+  worldReveal = context.legacy ? LEGACY_WORLD_REVEAL : context.reveal;
+  PACIFIED_HAZARDS = Object.freeze(LEVEL_ONE_WORLD.interactions.hazards.filter((hazard) => hazard.id !== YARD_GRID_HAZARD_ID));
+  WORLD_BOUNDS = LEVEL_ONE_WORLD.bounds;
+  WORLD_BLOCKERS = LEVEL_ONE_WORLD.collisionBlockers;
+  BLOCKER_VISUAL_KIND = new Map(LEVEL_ONE_WORLD.blockers.map((blocker) => [blocker.collisionBlockerId, blocker.visualKind]));
+  queryGround = context.legacy ? createLevelOneGroundQuery() : context.createGroundQuery();
+}
 // Deterministic navgrid bakes after the first interactive frame; the flow field
 // refreshes on a fixed tick cadence inside the simulation step. The authority
 // (K-7) is the only path a session may take to the grid: `require()` throws
@@ -495,7 +545,12 @@ async function boot() {
   // S0.2: the lazy runtime chunks download while the renderer initialises.
   const lazyRuntimeModules = loadLazyRuntimeModules();
   lazyRuntimeModules.catch(() => {});
+  // W4a: one world per page, decided before the bridge, renderer or session.
+  adoptWorldContext(await resolveHmhWorldContext({ params: new URLSearchParams(window.location.search) }));
   const dataset = stageElement.dataset;
+  dataset.worldId = LEVEL_ONE_WORLD.id;
+  dataset.worldOfficial = String(HMH_WORLD_CONTEXT.official);
+  dataset.worldSelection = HMH_WORLD_CONTEXT.selection.reason;
   const startupPanel = document.querySelector('#hmhStartup');
   const startupCopy = document.querySelector('#hmhStartupCopy');
   const startupContinue = document.querySelector('#hmhStartupContinue');
@@ -650,7 +705,7 @@ async function boot() {
   const runtimeParams = new URLSearchParams(window.location.search);
   const pipelinePilotEnabled = runtimeParams.get('pipelinePilot') === '1';
   // Owner review candidate only. Ordinary sessions never import or fetch it.
-  const artTargetPromise = runtimeParams.get('artTarget') === 'meadows-v1'
+  const artTargetPromise = runtimeParams.get('artTarget') === 'meadows-v1' && HMH_WORLD_CONTEXT.legacy
     ? import('./meadows-art-target.mjs').then(module => module.loadMeadowsArtTarget({ enabled: true, world: LEVEL_ONE_WORLD, mobile: performanceProfile.id !== 'desktop', loadTexture: url => Assets.load(url), unloadTexture: url => Assets.unload(url), isDisposed: () => artTargetDisposed || app.stage.destroyed, onCleanupReport: report => { dataset.artTargetCleanupFailures = String(report.failedResources.length); pendingArtCleanup = report.ok ? null : report; if (!report.ok) console.warn('[HMH] Meadows texture cleanup pending', report.failedResources); } })).catch(error => { dataset.artTargetStatus = 'fallback'; console.warn('[HMH] Meadows art target fallback', error); return null; })
     : Promise.resolve(null);
   // The certified four-layer production hero atlas is the shipped player
@@ -666,7 +721,8 @@ async function boot() {
   // Authored terrain materials. `?flatTerrain=1` restores the flat colour
   // fills for regression comparison.
   const terrainTilesEnabled = runtimeParams.get('flatTerrain') !== '1';
-  const terrainAreaStreamingEnabled = terrainTilesEnabled && runtimeParams.get('areaStreaming') === '1';
+  // Area streaming pages are authored for the legacy six districts only.
+  const terrainAreaStreamingEnabled = terrainTilesEnabled && runtimeParams.get('areaStreaming') === '1' && HMH_WORLD_CONTEXT.legacy;
   const productionPilotEnabled = !grayboxRequested && !pipelinePilotEnabled;
   const requestedProductionHeroId = runtimeParams.get('productionHero');
   const productionHeroId = Object.hasOwn(PRODUCTION_HERO_ASSETS, requestedProductionHeroId)
@@ -910,23 +966,32 @@ async function boot() {
   });
 
 
-  const authoredPointOfInterestPlacements = buildAuthoredPointOfInterestPlacements(LEVEL_ONE_WORLD.pointsOfInterest);
+  const authoredPointOfInterestPlacements = HMH_WORLD_CONTEXT.pointOfInterestPlacements ?? buildAuthoredPointOfInterestPlacements(LEVEL_ONE_WORLD.pointsOfInterest);
+  // W4a: rare biome events pick among legacy districts; an unofficial world
+  // offers its ten caches under the first legacy district id an event accepts.
+  const rareEventCandidates = (districtIds) => (HMH_WORLD_CONTEXT.legacy
+    ? authoredPointOfInterestPlacements.filter((placement) => districtIds.includes(placement.districtId))
+    : authoredPointOfInterestPlacements.map((placement) => Object.freeze({ ...placement, districtId: districtIds[0] })));
   // Baked at build time and fetched, not computed here. The placement logic
   // costs 4,451 B minified against a bundle that had 3,218 B of headroom, and
   // runtime-fetched assets cost no bundle bytes. Decals are pure decoration,
   // so a failed fetch degrades to an empty layer rather than blocking boot --
   // never block boot on art.
   let worldDecals = [];
+  // W4a: the authored dressing, camps, enclosures, town and objective rewards
+  // are legacy-map placements; an unofficial world keeps only its caches.
   const authoredPropPlacements = Object.freeze([
-    ...buildAuthoredWorldPropPlacements({ worldId: LEVEL_ONE_WORLD.id, seed: AUTHORED_DRESSING_SEED, countPerDistrict: 8 }),
-    ...buildAuthoredDistrictLandmarkPlacements({ worldId: LEVEL_ONE_WORLD.id }),
-    // W3: encampments ring the encounter arenas so enemies come from
-    // somewhere. Projection-only, like every other authored placement.
-    ...buildAuthoredEncampmentPlacements({ worldId: LEVEL_ONE_WORLD.id }),
-    // W-10: roofless fence yards with an authored entrance. Dressing only.
-    ...buildAuthoredEnclosurePlacements({ worldId: LEVEL_ONE_WORLD.id }),
+    ...(HMH_WORLD_CONTEXT.legacy ? [
+      ...buildAuthoredWorldPropPlacements({ worldId: LEVEL_ONE_WORLD.id, seed: AUTHORED_DRESSING_SEED, countPerDistrict: 8 }),
+      ...buildAuthoredDistrictLandmarkPlacements({ worldId: LEVEL_ONE_WORLD.id }),
+      // W3: encampments ring the encounter arenas so enemies come from
+      // somewhere. Projection-only, like every other authored placement.
+      ...buildAuthoredEncampmentPlacements({ worldId: LEVEL_ONE_WORLD.id }),
+      // W-10: roofless fence yards with an authored entrance. Dressing only.
+      ...buildAuthoredEnclosurePlacements({ worldId: LEVEL_ONE_WORLD.id }),
+    ] : []),
     ...authoredPointOfInterestPlacements,
-    ...objectiveRewardPlacements(),
+    ...(HMH_WORLD_CONTEXT.legacy ? objectiveRewardPlacements() : []),
   ]);
   worldDepthLayer.attach(actorVisual, heldWeaponLayer, bossVisual);
   dataset.actor3dStatus = 'disabled';
@@ -997,11 +1062,11 @@ async function boot() {
       console.warn('[HMH] World design texture fallback',error);
     }
     if (app.stage.destroyed || !world.parent) return;
-    const worldDesign = buildWorldDesignPlacements(LEVEL_ONE_WORLD,worldDesignAssets);
+    const worldDesign = HMH_WORLD_CONTEXT.legacy ? buildWorldDesignPlacements(LEVEL_ONE_WORLD,worldDesignAssets) : { blockerIds: new Set(), placements: [] };
     const candidateBlockerIds = worldDesign.blockerIds;
     const barrierResult=await barrierPromise;
     if (app.stage.destroyed || !world.parent) return;
-    if(barrierResult){
+    if(barrierResult&&HMH_WORLD_CONTEXT.legacy){
       nativeBarrierModule=barrierResult.module;
       const barriers=nativeBarrierModule.buildNativeBarrierPlacements(LEVEL_ONE_WORLD,barrierResult.assets);
       nativeBarrierPlacements=barriers.placements;
@@ -1009,11 +1074,11 @@ async function boot() {
       for(const [id,asset]of barrierResult.assets)candidateAppearance.set(id,asset);
       dataset.nativeBarrierStatus='ready';dataset.nativeBarrierCount=String(barriers.placements.length);
     }
-    const siteProps = [...WORLD_DESIGN_SITE_PROPS, ...WORLD_DESIGN_ORCHARD, ...WORLD_DESIGN_SECRET_PROPS, ...WORLD_DESTRUCTIBLE_PROPS];
+    const siteProps = HMH_WORLD_CONTEXT.legacy ? [...WORLD_DESIGN_SITE_PROPS, ...WORLD_DESIGN_ORCHARD, ...WORLD_DESIGN_SECRET_PROPS, ...WORLD_DESTRUCTIBLE_PROPS] : [];
     for (const p of siteProps) if(p.collisionBlockerId) candidateBlockerIds.add(p.collisionBlockerId);
     for (const [id, asset] of worldDesignAssets) candidateAppearance.set(id, asset);
     extendWorldDesignLandmarks(candidateAppearance);
-    const townPlacements = buildAuthoredTownPlacements({ worldId: LEVEL_ONE_WORLD.id, index: propIndex }).filter(p=>!candidateBlockerIds.has(p.collisionBlockerId));
+    const townPlacements = HMH_WORLD_CONTEXT.legacy ? buildAuthoredTownPlacements({ worldId: LEVEL_ONE_WORLD.id, index: propIndex }).filter(p=>!candidateBlockerIds.has(p.collisionBlockerId)) : [];
     const candidateArtTarget = await artTargetPromise;
     if (artTargetDisposed || app.stage.destroyed || !world.parent) { await candidateArtTarget?.dispose(); return; }
     const basePlacements = Object.freeze([...authoredPropPlacements, ...townPlacements, ...worldDesign.placements, ...siteProps, ...nativeBarrierPlacements]);
@@ -1822,9 +1887,11 @@ async function boot() {
   // Opens one authored blocker for the rest of the run (a court gate, a seal
   // or broken cover): collision drops it and the navgrid is patched locally.
   // A live boss floor's closed locks join the world's blockers (S1.5).
+  // W4a: a world-keyed boss table brings its own lock capsules.
+  const activeBossLockBlockers = () => HMH_WORLD_CONTEXT.gameplay?.bossLockBlockers ?? BOSS_LOCK_BLOCKERS;
   const bossLockBlockers = () => {
     const closed = bossSlots?.slots.liquidator.closedWalls;
-    return closed?.length ? BOSS_LOCK_BLOCKERS.filter((wall) => closed.includes(wall.id)) : [];
+    return closed?.length ? activeBossLockBlockers().filter((wall) => closed.includes(wall.id)) : [];
   };
   const rebuildWorldBlockers = () => {
     const base = missionActiveBlockers(missionState, LEVEL_ONE_WORLD.collisionBlockers);
@@ -1840,7 +1907,7 @@ async function boot() {
   };
   // Package 4.1 "Lock": the navigation patch closes a lock as well as opening
   // it, one capsule at a time.
-  const BOSS_LOCK_WORLD = Object.freeze({ get collisionBlockers() { return BOSS_LOCK_BLOCKERS; } });
+  const BOSS_LOCK_WORLD = Object.freeze({ get collisionBlockers() { return activeBossLockBlockers(); } });
   const refreshBossLockNavigation = (wallIds) => {
     rebuildWorldBlockers();
     for (const wallId of wallIds) refreshWorldDesignGateNavigation(ENEMY_NAV_GRID, BOSS_LOCK_WORLD, queryGround, wallId, WORLD_BLOCKERS);
@@ -1849,7 +1916,14 @@ async function boot() {
   };
   // The Yard's liquidation grid goes quiet once the Liquidator falls.
   const activeWorldHazards = () => (bossSlots?.slots.liquidator.status === 'defeated' ? PACIFIED_HAZARDS : LEVEL_ONE_WORLD.interactions.hazards);
-  let worldDestructibleState=createWorldDestructibleState();
+  // W4a: the breakables are legacy-map props; an unofficial world starts with
+  // every one already absent so no target or cover exists off-map.
+  const createWorldDestructibles = () => {
+    const state = createWorldDestructibleState();
+    if (!HMH_WORLD_CONTEXT.legacy) state.health.clear();
+    return state;
+  };
+  let worldDestructibleState=createWorldDestructibles();
   let worldPacingState=createWorldDesignPacing();
   let collectibleSnapshot = null;
   let lastCollectibleEvent = null;
@@ -1869,9 +1943,9 @@ async function boot() {
   // dropped under ring pressure. Projection-only counters.
   let lastImpactSurface = '';
   let suppressedGroundImpacts = 0;
-  let revealState = createLevelOneRevealState();
-  revealLevelOneAt(revealState, runtimePlayerSpawn);
-  let revealSnapshot = getLevelOneRevealSnapshot(revealState);
+  let revealState = worldReveal.create();
+  worldReveal.at(revealState, runtimePlayerSpawn);
+  let revealSnapshot = worldReveal.snapshot(revealState);
   const pushCombatVisualEvent = (event) => {
     if (settings.gore && event.point) gorePresentation?.add(event, queryGround(event.point.x, event.point.y).groundZ);
     if (combatVisualEvents.length >= MAX_COMBAT_VISUAL_EVENTS) combatVisualEvents.shift();
@@ -2073,7 +2147,7 @@ async function boot() {
       // hides the pill and the rings inside its arena.
       const bossLive = Boolean(liquidatorBoss?.active && liquidatorBoss.health > 0);
       const worldLifeReport = worldLife.render({mission:missionState,destructibleState:worldDestructibleState,actor:renderState,camera,view,worldToScreen,queryGround,tick:authoredPropTick,reduceMotion:settings.reduceMotion,reduceFlash:settings.reduceFlash,particleBudget:performanceProfile.particlesPerHazard,campfirePlacements:authoredPropPlacements,hazards:activeWorldHazards(),announce:setAccessibleCombatStatus,
-        guidance:{districtId:getLevelOneDistrictAt(renderState.x,renderState.y)?.id??'frontier-relay',collectibles:collectibleState,bossBarVisible:bossLive,
+        guidance:{districtId:HMH_WORLD_CONTEXT.getDistrictAt(renderState.x,renderState.y)?.id??HMH_WORLD_CONTEXT.defaultDistrictId,collectibles:collectibleState,bossBarVisible:bossLive,
           canCollect:effect=>canAcceptCollectible(effect,{health:playerHealth,maxHealth:maxPlayerHealth,grenades:grenadeSystem.handCharges,maxGrenades:grenadeSystem.maxHandCharges,loadout:weaponLoadout,progressionByWeapon:buildProgressionByWeapon(runProgression.ranks,runProgression.evolutions)})},
         bossArena:bossLive?bossFloorCircle(liquidatorBoss.arena):null,mobile:performanceProfile.id!=='desktop'});
       if(releaseTelemetryEnabled) {
@@ -3369,9 +3443,9 @@ async function boot() {
     previousDash = false;
     previousWeaponNext = false;
     lastInputWeaponSlot = 0;
-    revealState = createLevelOneRevealState();
-    revealLevelOneAt(revealState, runtimePlayerSpawn);
-    revealSnapshot = getLevelOneRevealSnapshot(revealState);
+    revealState = worldReveal.create();
+    worldReveal.at(revealState, runtimePlayerSpawn);
+    revealSnapshot = worldReveal.snapshot(revealState);
   };
 
   const initializeSession = (payload) => {
@@ -3379,6 +3453,13 @@ async function boot() {
     // authority holds the completed grid before bridge.activate() or the
     // standalone payload can reach here; this is the invariant, not a wait.
     const navGrid = navGridAuthority.require();
+    // W4a: an unofficial world accepts only an explicitly unranked Free
+    // session; a Ranked or rankedEligible payload never gets a run here.
+    if (!sessionAllowedForWorld(HMH_WORLD_CONTEXT, payload)) {
+      setStatus('Unofficial world refused', `${LEVEL_ONE_WORLD.id} accepts only explicit unranked Free sessions`);
+      try { bridge?.send('game:error', { code: 'unofficial-world-session', message: 'This world accepts only unranked Free sessions' }); } catch { /* the parent is told or already gone */ }
+      return;
+    }
     stopCurrentSession();
     combatAudio.pause();
     evidenceGameplayEnabled = evidenceSafeEnabled && payload.mode !== 'ranked';
@@ -3386,13 +3467,14 @@ async function boot() {
     // for review under evidenceSafe, outside Ranked only.
     const prisonersEnabled = PRISONERS_LIVE_DEFAULT || (evidenceGameplayEnabled && runtimeParams.get('prisoners') === '1');
     runtimePlayerSpawn = evidenceGameplayEnabled ? evidencePlayerSpawn : selectLevelEntry(payload.session.seed);
-    revealState = createLevelOneRevealState();
-    revealLevelOneAt(revealState, runtimePlayerSpawn);
-    revealSnapshot = getLevelOneRevealSnapshot(revealState);
+    revealState = worldReveal.create();
+    worldReveal.at(revealState, runtimePlayerSpawn);
+    revealSnapshot = worldReveal.snapshot(revealState);
     dataset.entryId = runtimePlayerSpawn.id ?? 'evidence';
     const entryLabel = startupPanel?.querySelector?.('[data-level-entry]');
     if (entryLabel) entryLabel.textContent = runtimePlayerSpawn.name ?? 'Frontier Relay';
     applyLevelBriefing(startupPanel, resolveLevelBriefing({ entryId: runtimePlayerSpawn.id, seed: payload.session.seed }));
+    if (HMH_WORLD_CONTEXT.briefing) applyLevelBriefing(startupPanel, resolveLevelBriefing({ entryId: runtimePlayerSpawn.id, seed: payload.session.seed, briefing: HMH_WORLD_CONTEXT.briefing }));
     startupGate = createStartupArtGate(performance.now(), { requireEntry: !evidenceSafeEnabled });
     const entryButton = startupPanel?.querySelector?.('#hmhStartupEnter');
     if (entryButton) { entryButton.disabled = true; entryButton.textContent = 'Preparing Level 1…'; }
@@ -3405,8 +3487,11 @@ async function boot() {
     for(const wallId of bossSlots?.slots.liquidator.closedWalls??[]) refreshWorldDesignGateNavigation(navGrid,BOSS_LOCK_WORLD,queryGround,wallId,LEVEL_ONE_WORLD.collisionBlockers);
     WORLD_BLOCKERS=LEVEL_ONE_WORLD.collisionBlockers;
     missionState=createMissionState(payload.session.seed,{prisoners:prisonersEnabled?prisonerMissionRows(payload.session.seed):[]});
-    bossSlots=createBossSlots({ seed: payload.session.seed });
-    worldDestructibleState=createWorldDestructibleState();
+    // W4a: a world-keyed mission owns its own objective and boss-zone rows and
+    // has no prisoner cages; the legacy tables above stay untouched.
+    if (HMH_WORLD_CONTEXT.gameplay) missionState=createMissionState(payload.session.seed,{objectives:HMH_WORLD_CONTEXT.gameplay.missionObjectives,bossZones:HMH_WORLD_CONTEXT.gameplay.missionBossZones});
+    bossSlots=createBossSlots({ seed: payload.session.seed, ...(HMH_WORLD_CONTEXT.gameplay ? { definitions: HMH_WORLD_CONTEXT.gameplay.bossDefinitions } : {}) });
+    worldDestructibleState=createWorldDestructibles();
     worldPacingState=createWorldDesignPacing();
     // The flow field is per-run simulation state: a restart resets the tick
     // counter, so carrying the previous run's field would steer blocked
@@ -3450,6 +3535,8 @@ async function boot() {
       schemaVersion: summaryV7.RUN_SUMMARY_SCHEMA_VERSION,
       catalogs: summaryV7.HMH_RUN_SUMMARY_CATALOGS_V7,
     });
+    // W4a: an unofficial world keeps no accumulator; its recorders are no-ops.
+    if (!RUN_SUMMARY_ENABLED) runSummaryAccumulator = null;
     lastGround = queryGround(actor.x, actor.y);
     actor.groundZ = lastGround.groundZ;
     actor.z = lastGround.groundZ;
@@ -3570,7 +3657,7 @@ async function boot() {
     dashState = createDashState({ cooldownTier: 0, cooldownScale: heroModifiers.dashCooldownScale });
     let lightningLedgerEvent = createLightningLedgerRareEvent({
       seed: payload.session.seed,
-      candidates: authoredPointOfInterestPlacements.filter((placement) => ['liquidity-crossing', 'hashwood', 'mining-camp'].includes(placement.districtId)),
+      candidates: rareEventCandidates(['liquidity-crossing', 'hashwood', 'mining-camp']),
       protectedPoints: authoredPointOfInterestPlacements,
       queryGround,
       isBlocked: spawnPointBlocked,
@@ -3591,7 +3678,7 @@ async function boot() {
     }
     let bearMarketBurnerEvent = createBearMarketBurnerEvent({
       seed: payload.session.seed,
-      candidates: authoredPointOfInterestPlacements.filter((placement) => ['rugpull-ravine', 'mining-camp', 'liquidation-yard'].includes(placement.districtId)),
+      candidates: rareEventCandidates(['rugpull-ravine', 'mining-camp', 'liquidation-yard']),
       protectedPoints: [...authoredPointOfInterestPlacements, lightningLedgerEvent],
       queryGround,
       isBlocked: spawnPointBlocked,
@@ -3612,7 +3699,7 @@ async function boot() {
     }
     let forkedStandardEvent = createForkedStandardEvent({
       seed: payload.session.seed,
-      candidates: authoredPointOfInterestPlacements.filter((placement) => ['hashwood', 'mining-camp', 'liquidation-yard'].includes(placement.districtId)),
+      candidates: rareEventCandidates(['hashwood', 'mining-camp', 'liquidation-yard']),
       protectedPoints: [...authoredPointOfInterestPlacements, lightningLedgerEvent, bearMarketBurnerEvent],
       queryGround,
       isBlocked: spawnPointBlocked,
@@ -4040,7 +4127,7 @@ async function boot() {
         combatAudio.play(supply.reward==='heal'?'health-pickup':'pickup',{volume:.11});
         setAccessibleCombatStatus(`${supply.name}. ${supply.lore}`);
       }
-      if (tick % 6 === 0 && revealLevelOneAt(revealState, actor) > 0) revealSnapshot = getLevelOneRevealSnapshot(revealState);
+      if (tick % 6 === 0 && worldReveal.at(revealState, actor) > 0) revealSnapshot = worldReveal.snapshot(revealState);
 
       // S1.5 boss slots (package 4.1): after the mission step, which records
       // the Dark Pool's logbook first, and before the director and the boss.
@@ -4071,7 +4158,7 @@ async function boot() {
       const worldPacing=stepWorldDesignPacing(worldPacingState,{tick,player:actor,enemies:grayboxEnemies,arenas:LEVEL_ONE_WORLD.encounterArenas});
       if(releaseTelemetryEnabled) dataset.worldEncounterPhase=worldPacing.phase;
       const bossOverlay = bossDirectorOverlay(bossSlots, tick);
-      const directorDistrictId = getLevelOneDistrictAt(actor.x, actor.y)?.id ?? 'frontier-relay';
+      const directorDistrictId = HMH_WORLD_CONTEXT.getDistrictAt(actor.x, actor.y)?.id ?? HMH_WORLD_CONTEXT.defaultDistrictId;
       lastDirectorStep = endurancePressurePilotEnabled
         ? Object.freeze({ inserted: false, reason: 'endurance-pressure-pilot', tick, bandId: runtimeEncounterSnapshot(tick).bandId })
         : rosterPreviewEnabled
@@ -4098,6 +4185,8 @@ async function boot() {
           isBlocked: spawnPointBlocked,
           isRouteReachable: (point) => point.routeValid === true,
           visualMode: 'normal',
+          // W4a: a world-keyed role table; the legacy table is the default.
+          ...(HMH_WORLD_CONTEXT.gameplay ? { roleGates: HMH_WORLD_CONTEXT.gameplay.roleGates } : {}),
         });
       if (lastDirectorStep.inserted) syncEnemyMarkers(grayboxEnemies);
 
@@ -4453,7 +4542,7 @@ async function boot() {
               hitKind: 'ground',
               surfaceKind: ground.kind,
               deepWater: ground.deepWater,
-              districtId: getLevelOneDistrictAt(shot.x, shot.y)?.id,
+              districtId: HMH_WORLD_CONTEXT.getDistrictAt(shot.x, shot.y)?.id,
             }),
           });
         }
@@ -5338,7 +5427,8 @@ async function boot() {
           combatAudio.play('game-over', { volume: 0.18 });
           setStatus('Run ended', 'Defeated // restart from the portal or reload standalone mode');
           let heldResult = null;
-          if (bridge?.initialized) {
+          // W4a: an unofficial world builds no summary and submits nothing.
+          if (bridge?.initialized && RUN_SUMMARY_ENABLED) {
             const runSnapshot = getRunProgressionSnapshot(runProgression);
             const runSummary = finalizeRunSummary(runSummaryAccumulator, {
               endTick: simulation.tick,

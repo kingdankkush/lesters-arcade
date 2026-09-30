@@ -101,8 +101,10 @@ export function createEncounterDirector({ nextSpawnTick = 0, seed = 0 } = {}) {
 
 // `leanRole` doubles one eligible role's weight (slice S1.5: the Yard leans
 // to Agents while the Liquidator lives). Off by default.
-export function selectEncounterArchetype({ districtId, bandId, spawnOrdinal, seed = 0, requestedRole = null, leanRole = null } = {}) {
-  const districtRoles = DISTRICT_ROLE_GATES[districtId];
+// `roleGates` is the district role table for the run's world (W4a); the
+// legacy table is the default.
+export function selectEncounterArchetype({ districtId, bandId, spawnOrdinal, seed = 0, requestedRole = null, leanRole = null, roleGates = DISTRICT_ROLE_GATES } = {}) {
+  const districtRoles = roleGates[districtId];
   if (!districtRoles) throw new TypeError('districtId must identify an authored district');
   const band = ENCOUNTER_BANDS.find((entry) => entry.id === bandId);
   if (!band) throw new TypeError('bandId must identify an encounter band');
@@ -182,6 +184,7 @@ export function stepEncounterDirector({
   isRouteReachable,
   visualMode = 'normal',
   leanRole = null,
+  roleGates = DISTRICT_ROLE_GATES,
 } = {}) {
   if (!state?.schedule || !population?.active || !(population.seenIds instanceof Set)) throw new TypeError('director state and enemy population are required');
   nonNegativeInteger(tick, 'tick');
@@ -194,7 +197,7 @@ export function stepEncounterDirector({
   if (nearRewardPoi && isEncounterRestWindow(tick)) return reject(state, tick, band, 'reward-rest-window');
   if (population.active.length >= snapshot.ordinaryBodyCap) return reject(state, tick, band, 'reserved-body-cap');
 
-  const selection = selectEncounterArchetype({ districtId, bandId: band.id, spawnOrdinal: state.spawnOrdinal, seed: state.seed, leanRole });
+  const selection = selectEncounterArchetype({ districtId, bandId: band.id, spawnOrdinal: state.spawnOrdinal, seed: state.seed, leanRole, roleGates });
   const selectedRole = getEnemyArchetype(selection.archetypeId).role;
   const rangedCount = population.active.reduce((count, enemy) => count + (RANGED_ROLES.has(getEnemyArchetype(enemy.archetypeId).role) ? 1 : 0), 0);
   if (RANGED_ROLES.has(selectedRole) && rangedCount >= band.budgets.rangedCap) {

@@ -1383,3 +1383,25 @@ scenes passed, removing the inner dirt stamps and showing clear phone instructio
 text. The broader already-running visual job failed its Chrome-close deadline;
 all recorded children were confirmed absent and owned marker released. No rerun.
 No release, version change, production art acceptance or physical-phone claim.
+
+W4a (2026-09-30, `claude/200-world-runtime`): the authored ten-area world now
+runs inside the real HMH game as an explicitly unranked Free selection.
+`world-v2-runtime-world.mjs` builds a frozen `ten-area-frontier` v2 object in the
+exact `LEVEL_ONE_WORLD` contract shape (ten 2D districts, 14 roads plus local
+paths, 581 blockers, 28 audited spawn points, ten caches, ten courts with four
+boss sites) with `auditWorldV2()`; `world-context.mjs` resolves one world per
+page (`mode=free&world=ten-area`, else the legacy default) before the bridge or
+renderer exists, refuses any Ranked/rankedEligible session on an unofficial
+world, and turns every run-summary recorder into a no-op so nothing is submitted.
+`main.mjs` rebinds `LEVEL_ONE_WORLD` to the adopted world once at boot while
+every legacy call site stays byte-identical; world-keyed role gates, two mission rings (Meadows relay, Woods
+supply winch) and a City exchange floor for the Liquidator reach the existing
+seams (`createMissionState`, `createBossSlots({ definitions })`,
+`stepEncounterDirector({ roleGates })`). The renderer draws borrowed material
+kits via `district.materialId` (`world.artPlans` is the art hook). Verifier map
+contexts stay schema 6/7 → forked-frontier v1. New tests 20/20, syntax check
+passes, normal build resolves with the world as a lazy chunk (HMH initial +
+shared 1,046,146 B, 2,430 B under the cap); full `npm test`: 6431 tests, 6357 pass, 74 fail, and the same 74 asset/LFS/dist and pinned-source failures fail on the untouched base commit 7ddfb0ea5 (6411/6337/74), so this slice adds 20 passing tests and no failure.
+Baron, Lockkeeper and Foreman remain sites without bosses; no browser smoke,
+visual run, release gate, version or deployment happened here. See
+[W4a](slices/WORLD-W4A-RUNTIME-WORLD.md).
