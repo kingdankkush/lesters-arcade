@@ -16,6 +16,7 @@ import { createCanonicalSessionIdentity, canonicalSessionJson, sha256Hex } from 
 import { deriveRankedSeed } from '../../apps/portal/src/session-seed.mjs';
 import { RANKED_CHAIN_ID, RANKED_GAMES, RANKED_IDENTITY_KEYS, sha256BytesHex, validateRankedIdentity } from '../../apps/portal/src/ranked-identity.mjs';
 import { checkSeedTicket } from './seed-ticket.mjs';
+import { officialChikunEvidenceEncodings } from '../../apps/portal/src/chikun-official-course.mjs';
 
 const GAME_MODULES = Object.freeze({
   chikun: () => import('./chikun.mjs').then((module) => ({ verify: module.verifyChikunRun, parse: module.parseChikunEvidenceText })),
@@ -26,6 +27,11 @@ const GAME_MODULES = Object.freeze({
 const fail = (error, detail) => Object.freeze({ ok: false, status: 400, error, ...(detail ? { detail } : {}) });
 const isPlainObject = (value) => value !== null && typeof value === 'object' && !Array.isArray(value)
   && [Object.prototype, null].includes(Object.getPrototypeOf(value));
+
+// The §5.1 encodings a game accepts. Chikun lists its course-two encoding only
+// when that course is official (chikun-official-course.mjs; the gate is
+// closed by default, and `courseTwoEnabled` is the test injection point).
+const acceptedEncodings = (game, courseTwoEnabled) => (game.gameId === 'chikun' ? officialChikunEvidenceEncodings(courseTwoEnabled === undefined ? {} : { courseTwoEnabled }) : [game.evidenceEncoding]);
 
 // §5.2 → { ok:true, gameId, identity /* canonical, with version and sessionKey */ }
 //      | { ok:false, status:400, error }
@@ -65,12 +71,12 @@ async function gameModule(gameId) {
 }
 
 // §5.3 → Promise<VerifiedRun | { ok:false, status, error, detail?, flags? }>
-export async function verifyRankedRun(body, { chainId = RANKED_CHAIN_ID, scoreRegistryAddress, wallet, nowMs, seedSecret, crypto, bound } = {}) {
+export async function verifyRankedRun(body, { chainId = RANKED_CHAIN_ID, scoreRegistryAddress, wallet, nowMs, seedSecret, crypto, bound, courseTwoEnabled } = {}) {
   const binding = bound ?? await bindRankedIdentity(body, { chainId, scoreRegistryAddress, wallet, nowMs, seedSecret, crypto });
   if (!binding?.ok) return binding ?? fail('identity-invalid');
   if (!isPlainObject(body) || binding.gameId !== body.gameId || binding.identity?.sessionKey !== body.sessionId32) return fail('session-key-mismatch');
   const { verify } = await gameModule(binding.gameId);
-  return verify({ identity: binding.identity, evidence: body.evidence, nowMs });
+  return verify({ identity: binding.identity, evidence: body.evidence, nowMs, ...(courseTwoEnabled === undefined ? {} : { courseTwoEnabled }) });
 }
 
 function utf8Bytes(text) {
@@ -81,11 +87,11 @@ function utf8Bytes(text) {
 // { ok:true, encoding, text, bytes, digest } or a 400 failure. Malformed
 // evidence gets the same code here as from verifyRankedRun (STACKED decoding
 // answers the verifier's own evidence-invalid); anything else is invalid-evidence.
-export async function computeEvidenceDigest(body) {
+export async function computeEvidenceDigest(body, { courseTwoEnabled } = {}) {
   const game = isPlainObject(body) && Object.hasOwn(RANKED_GAMES, body.gameId) ? RANKED_GAMES[body.gameId] : null;
   const evidence = isPlainObject(body) ? body.evidence : null;
-  if (!game || !isPlainObject(evidence) || evidence.encoding !== game.evidenceEncoding) return fail('invalid-evidence');
-  const done = (text, digest) => Object.freeze({ ok: true, encoding: game.evidenceEncoding, text, bytes: utf8Bytes(text), digest });
+  if (!game || !isPlainObject(evidence) || !acceptedEncodings(game, courseTwoEnabled).includes(evidence.encoding)) return fail('invalid-evidence');
+  const done = (text, digest) => Object.freeze({ ok: true, encoding: evidence.encoding, text, bytes: utf8Bytes(text), digest });
   try {
     if (game.gameId === 'chikun') {
       if (!isPlainObject(evidence.flap)) return fail('invalid-evidence');
@@ -113,7 +119,7 @@ export async function computeEvidenceDigest(body) {
 // preimage keys hash to. `nowMs` only stamps verifiedAt, which the re-sign
 // rule does not compare; it defaults to the clock because §5.3 gives this
 // function no clock argument.
-export async function reverifyStoredRun({ gameId, identity, evidence } = {}, { nowMs = Date.now() } = {}) {
+export async function reverifyStoredRun({ gameId, identity, evidence } = {}, { nowMs = Date.now(), courseTwoEnabled } = {}) {
   if (!Object.hasOwn(RANKED_GAMES, gameId)) return fail('identity-game-unknown');
   if (!isPlainObject(identity) || identity.gameId !== gameId) return fail('identity-invalid');
   const preimage = Object.fromEntries(RANKED_IDENTITY_KEYS.map((key) => [key, identity[key]]));
@@ -124,15 +130,17 @@ export async function reverifyStoredRun({ gameId, identity, evidence } = {}, { n
     return fail('identity-invalid');
   }
   if (canonical.sessionKey !== identity.sessionKey) return fail('session-key-mismatch');
-  if (!isPlainObject(evidence) || evidence.encoding !== RANKED_GAMES[gameId].evidenceEncoding || typeof evidence.text !== 'string') return fail('invalid-evidence');
+  if (!isPlainObject(evidence) || !acceptedEncodings(RANKED_GAMES[gameId], courseTwoEnabled).includes(evidence.encoding) || typeof evidence.text !== 'string') return fail('invalid-evidence');
   const { verify, parse } = await gameModule(gameId);
   let parsed;
   try {
-    parsed = parse(evidence.text);
+    // The stored encoding column is authoritative: the text is verified under it.
+    parsed = parse(evidence.text, evidence.encoding);
   } catch {
     return fail('invalid-evidence');
   }
-  const verified = await verify({ identity: canonical, evidence: parsed, nowMs });
+  const verified = await verify({ identity: canonical, evidence: parsed, nowMs, ...(courseTwoEnabled === undefined ? {} : { courseTwoEnabled }) });
   if (verified.ok && verified.evidence.text !== evidence.text) return fail('invalid-evidence', 'stored evidence text is not canonical');
+  if (verified.ok && verified.evidence.encoding !== evidence.encoding) return fail('invalid-evidence', 'stored evidence encoding does not match its text');
   return verified;
 }

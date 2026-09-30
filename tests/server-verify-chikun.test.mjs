@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
-import { verifyRankedRun } from '../server/verify/index.mjs';
+import { reverifyStoredRun, verifyRankedRun } from '../server/verify/index.mjs';
 import { verifyChikunRun } from '../server/verify/chikun.mjs';
 import { replayChikunRun, decodeFlapDeltas, CHIKUN_RUNTIME_VERSION } from '../apps/portal/src/chikun-cabinet.mjs';
 import { canonicalSessionJson } from '../apps/portal/src/session-integrity.mjs';
@@ -173,4 +173,12 @@ test('the per-game verifier binds nothing itself and replays the canonical copy'
 
 test('the committed Chikun fixture rebuilds from build-fixtures.mjs', async () => {
   assert.deepEqual(await buildFixture('chikun-valid'), fixture);
+});
+
+test('re-sign of a stored v6 row whose text carries a course-two version keeps the base refusal', async () => {
+  const run = await verify(fixture.body);
+  const smuggled = { ...fixture.body.evidence.flap, version: 'chikun-input-evidence-v7', glideDeltas: [] };
+  const stored = (text) => ({ gameId: 'chikun', identity: run.identity, evidence: { encoding: 'chikun-flap-evidence-v6+json', text } });
+  assert.deepEqual(await reverifyStoredRun(stored(canonicalSessionJson(smuggled)), { nowMs: FIXTURE_VERIFY_AT_MS }), { ok: false, status: 400, error: 'evidence-version-unsupported', detail: 'Ranked accepts only chikun-flap-evidence-v6' });
+  assert.deepEqual(await reverifyStoredRun(stored(run.evidence.text), { nowMs: FIXTURE_VERIFY_AT_MS }), run);
 });
