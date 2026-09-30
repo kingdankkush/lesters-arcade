@@ -1,0 +1,89 @@
+{
+  "schema": "achievement-collection-model-checkpoint/v1",
+  "scope": "Read-only display projection, not mounted UI, granting rewards or earning rules",
+  "red": 9,
+  "green": 9,
+  "identicalNoGitNoModulesEmptyPathCopy": 9,
+  "closed": true,
+  "markersReleased": true,
+  "inputs": [
+    {
+      "file": "C:\\Users\\just_\\lesters-arcade-wt\\visual-overhaul-200\\tests\\achievement-collection-model.test.mjs",
+      "sha256": "42a02ca35487e7497843405175d2f013329460a0c29e31354d35a96be3557902"
+    },
+    {
+      "file": "C:\\Users\\just_\\lesters-arcade-wt\\visual-overhaul-200\\apps\\portal\\src\\achievements\\index.mjs",
+      "sha256": "6a37dec6e6c3e1be89fa08992a08fda4bed9e030626379270e92c5c043743e47"
+    },
+    {
+      "file": "C:\\Users\\just_\\lesters-arcade-wt\\visual-overhaul-200\\apps\\portal\\src\\achievements\\entry.mjs",
+      "sha256": "a4e55551ae0b7aca76bda548659155ab22294e049fdcd02bf9462f224ce8b98e"
+    },
+    {
+      "file": "C:\\Users\\just_\\lesters-arcade-wt\\visual-overhaul-200\\apps\\portal\\src\\achievements\\hmh.mjs",
+      "sha256": "044a813a78829bf0c27eff8a94cefaf94dd7af3a1802e13624b79c6c79916751"
+    },
+    {
+      "file": "C:\\Users\\just_\\lesters-arcade-wt\\visual-overhaul-200\\apps\\portal\\src\\achievements\\chikun.mjs",
+      "sha256": "219d8481b6bd6e1beae6c98d548a36da840a89766eff8da5444d7c1dd2c952a1"
+    },
+    {
+      "file": "C:\\Users\\just_\\lesters-arcade-wt\\visual-overhaul-200\\apps\\portal\\src\\achievements\\stacked.mjs",
+      "sha256": "63856acea2d35637f7250ee81e4ef9d5c396788e5588bc59c4154750bf67b911"
+    },
+    {
+      "file": "C:\\Users\\just_\\lesters-arcade-wt\\visual-overhaul-200\\apps\\portal\\src\\achievements\\rarity.mjs",
+      "sha256": "158c3b51b208661af762f42252bdf0683a731a79278e2e3dd68e29419c8bd28f"
+    },
+    {
+      "file": "C:\\Users\\just_\\lesters-arcade-wt\\visual-overhaul-200\\apps\\portal\\src\\achievement-progress.mjs",
+      "sha256": "c5a53b9ac40339295f18d44d6f9548566367a7423574e030d178f3f5220276b1"
+    },
+    {
+      "file": "C:\\Users\\just_\\lesters-arcade-wt\\visual-overhaul-200\\apps\\portal\\src\\achievements\\collection-model.mjs",
+      "sha256": "3e81c351e35d76cd227cdd4bfaf63b2e3653092bf9f5d3de33ce381ae4097683"
+    },
+    {
+      "file": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\run-achievement-collection-source.mjs",
+      "sha256": "90335d7548a3301fd5b545394b3de9f547ac6fe0092c6a0a365887f1187148bb"
+    },
+    {
+      "file": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\owned-windows-child.mjs",
+      "sha256": "a5177337fcf6ec41f285fc105b93d0b4b94ee1101cb14a653a91e9b8b075b0d9"
+    }
+  ],
+  "archives": [
+    {
+      "original": "achievement-collection-red-01/report.json",
+      "stored": "achievement-collection-red-01--report.json.gz",
+      "originalBytes": 18486,
+      "originalSha256": "a9b244a912f0a29d5d3d5b3896225b811dfd87247c40d9b44d61ced45b97670c",
+      "storedBytes": 2405,
+      "storedSha256": "4a2596635da14ed7f4b06c7032150ec9ef165d02410062ad150fea377e4f9c5e"
+    },
+    {
+      "original": "achievement-collection-green-01/report.json",
+      "stored": "achievement-collection-green-01--report.json.gz",
+      "originalBytes": 11709,
+      "originalSha256": "164a961a0b81ab18187eab5109fabead7e310894d72cefef52bfe6e00ff6e7ca",
+      "storedBytes": 2102,
+      "storedSha256": "7874c36bcb3637d0aa1f4701ec28442379bae9a8830ac4220dcf8e4dddf04fd5"
+    },
+    {
+      "original": "run-achievement-collection-source.mjs",
+      "stored": "run-achievement-collection-source.mjs.gz",
+      "originalBytes": 3739,
+      "originalSha256": "90335d7548a3301fd5b545394b3de9f547ac6fe0092c6a0a365887f1187148bb",
+      "storedBytes": 1542,
+      "storedSha256": "cdb3f72e686a26269684adb313e372a4d6750589c9c97ef7ec3e66501a54720b"
+    },
+    {
+      "original": "owned-windows-child.mjs",
+      "stored": "owned-windows-child.mjs.gz",
+      "originalBytes": 3475,
+      "originalSha256": "a5177337fcf6ec41f285fc105b93d0b4b94ee1101cb14a653a91e9b8b075b0d9",
+      "storedBytes": 1360,
+      "storedSha256": "ade927025e2afbae667182802dfce78d9ddd6b3afea7cfd48a5b40eac5e8ea4b"
+    }
+  ]
+}

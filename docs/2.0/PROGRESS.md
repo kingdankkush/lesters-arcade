@@ -467,3 +467,8 @@ copy pass with zero skips/cancels and actual child closure/matching marker relea
 Seven old authority helpers and the existing authored layout stay unchanged.
 See slices/WORLD-KIT-CONTRACT.md and exact tiny raw receipt archive. No new world
 nav/browser/performance acceptance; Meadows flow and actor-scale review remain next.
+
+
+## Owner-requested pause, 2026-09-30
+
+Pause for ChatGPT update. Pure collection projection9+identical9sourcecopy passes, with genuine9RED archived; see slices/ACHIEVEMENT-COLLECTION-G2B.md. UI/CSS drafts saved but unmounted:initial4+copy4 pass; two new adversarial cases remain unrun and malformed-snapshot status needs correction. No new jobs should start until owner resumes. Shared heavy checks/Chrome/servers closed and matching markers released. Root source-only greybox gathers b82c1118/bf8357fd and rarity1578307a are committed; newer Meadows/art/character lane checkpoints stay on their own branches until reviewed/gathered. Versions/production unchanged.
