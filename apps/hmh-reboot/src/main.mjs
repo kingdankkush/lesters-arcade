@@ -2120,7 +2120,8 @@ async function boot() {
       }
       if (pickupPresentation) {
         const pickupMarkers = pickupPresentation.pickupIndicators({state:collectibleState,tick:authoredPropTick,camera,view,worldToScreen,queryGround,
-          reduceMotion:settings.reduceMotion || performanceProfile.particlesPerHazard === 0});
+          reduceMotion:settings.reduceMotion || performanceProfile.particlesPerHazard === 0,
+          display:authoredPropDisplay,Assets:textureAssets,Texture,Rectangle,collectedEvent:lastCollectibleEvent,hidden:hiddenCollectibleIds(collectibleState,authoredPropTick)});
         pickupPresentation.drawPickupIndicators(pickupSignals,pickupMarkers,camera.zoom);
         dataset.pickupMarkers = String(pickupMarkers.length);
       }
