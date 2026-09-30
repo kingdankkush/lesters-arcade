@@ -1168,6 +1168,7 @@ const NODE_CHECK_FILES = [
   "tests/hmh-tripo-adoption.test.mjs",
   "tests/hmh-tripo-production-asset-qa.test.mjs",
   "scripts/hmh-tripo-production-asset-qa.mjs",
+  "tests/hmh-tripo-props-hd-package.test.mjs",
   "tests/hmh-reboot-dressing-density.test.mjs",
   "tests/hmh-reboot-camp-props.test.mjs",
   "tests/hmh-reboot-contact-shadows.test.mjs",
