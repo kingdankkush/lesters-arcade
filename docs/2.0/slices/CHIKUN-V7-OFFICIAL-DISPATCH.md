@@ -4,7 +4,9 @@ September 30, 2026. Follows `CHIKUN-COURSE-TWO.md`, which left "official
 game-version-to-evidence dispatch in its release slice; parent/server review for
 that dispatch" open. This slice adds that dispatch and keeps it closed. No
 cabinet, site, game or service-worker version changed. Nothing here makes
-course two public, Ranked-eligible or settleable.
+course two public, Ranked-eligible or settleable. Independent verifier review
+(same day) returned "safe to integrate with the gate closed"; its findings are
+fixed in this slice and its gate-open preconditions are listed below.
 
 ## What is implemented
 
@@ -52,17 +54,24 @@ six-key v7 object as evidence text, and stats keyed exactly
 for v6 (kills = forks passed, maxCombo, survivalSeconds, no boss).
 
 `server/verify/index.mjs` threads the same `courseTwoEnabled` option through
-`verifyRankedRun`, `computeEvidenceDigest` (which now reports the body's own
-accepted encoding) and `reverifyStoredRun`; `parseChikunEvidenceText` picks the
-stored version's encoding. `server/verify/verified-run.mjs` accepts an optional
-`runtimeId` that must extend the game's runtimeId with `:`; every other caller
-is unchanged.
+`verifyRankedRun`, `computeEvidenceDigest` (which reports the body's own
+accepted encoding) and `reverifyStoredRun`. The re-sign path treats the stored
+`encoding` column as authoritative: `parseChikunEvidenceText(text, encoding)`
+keeps that column, the verifier checks the text's version belongs to it, and a
+verified run whose derived encoding differs from the column is refused
+(`invalid-evidence`, "stored evidence encoding does not match its text"). A v7
+text under the v6 column therefore answers `evidence-version-unsupported` with
+the base detail text while the gate is closed, and is refused with the gate
+open too. `server/verify/verified-run.mjs` accepts an optional `runtimeId` that
+must extend the game's runtimeId with `:`; every other caller is unchanged.
 
 `apps/portal/src/ranked-identity.mjs` lists both Chikun encodings under a new
 `evidenceEncodings` array (the single `evidenceEncoding` default is unchanged),
 so the one `rankedEnvelopeHash` / `evidenceDigestFor` implementation covers a
 v7 envelope without a second copy of the formula. Listing is hashing, not
-acceptance: acceptance is the verifier's gate.
+acceptance: acceptance is the verifier's gate. The interface-contract handoff
+(`docs/handoffs/pre-deployment-interface-contract-20260922.md` §7.1) records
+the new field.
 
 **Portal host** (`apps/portal/src/chikun-host.mjs`): takes `courseTwoEnabled`
 (default: the shared constant), exposes `officialCourse()` and forwards
@@ -71,14 +80,22 @@ private unranked Free preview via `?course=2` is untouched, and no URL can move
 a Ranked session off course one while the gate is closed.
 
 **Fixture** `tests/fixtures/ranked/chikun-course-two.json` (built by
-`buildChikunCourseTwoEvidence` in `build-fixtures.mjs`, kept apart from
-`FIXTURE_NAMES` like the HMH schema-7 fixtures): a real course-two run from
-`createChikunRuntime` — two minutes of the region autopilot with the jump key
-held while airborne and falling (182 flaps, 314 held-glide transitions, a
-Scrypt Shield taken and spent, ending in a real collision), then no input until
-the course ends it. Its `expected` block records the gate-closed refusal and the
-gate-open VerifiedRun. `node tests/fixtures/ranked/build-fixtures.mjs` rebuilds
-and compares it with the others.
+`buildChikunCourseTwoEvidence` / `courseTwoFixturePilot` in
+`build-fixtures.mjs`, kept apart from `FIXTURE_NAMES` like the HMH schema-7
+fixtures): a real course-two run from `createChikunRuntime`. The pilot reads
+only the public snapshot: it starts on the ground (first Scrypt Shield), flies
+the region autopilot's high line, stays on the ground while a Glide Feather is
+ahead so it collects one (tick 2771), and at the next gap dives with the jump
+key held so the feather's gap glide is spent and caps the fall; otherwise the
+key is held whenever Chikun is airborne and falling. The committed run has 149
+flaps and 248 held-glide transitions, one shield used, two power-ups, and ends
+in a real collision (`town`, tick 6709, score 7473). The glide is
+load-bearing: the builder refuses a run whose feather was not collected or
+whose glide was not spent, and refuses one where the same flaps without the
+glides replay to the same final state. Its `expected` block records the
+gate-closed refusal and the gate-open VerifiedRun.
+`node tests/fixtures/ranked/build-fixtures.mjs` rebuilds and compares it with
+the others.
 
 ## What is frozen
 
@@ -91,8 +108,8 @@ and compares it with the others.
   gate is closed (`Ranked accepts only chikun-flap-evidence-v6`), and stay
   refused when it is open.
 - With the gate closed a v7 body is refused exactly as before: `invalid-evidence`
-  under its own encoding, `evidence-version-unsupported` when smuggled under the
-  v6 encoding; the digest and re-sign paths refuse it too.
+  under its own encoding, `evidence-version-unsupported` (base detail) when
+  smuggled under the v6 encoding, in settle, digest and re-sign paths alike.
 - The bridge protocol still validates only v6 evidence and the child sends no
   `game:result` for course two; `ranked-requests.mjs` still settles only v6.
 
@@ -100,14 +117,20 @@ and compares it with the others.
 
 Independent verifier review and a release decision are still required for:
 
-1. **Settle and storage paths outside `server/verify`** (not touched here):
-   `server/settle/settle-core.mjs` `EVIDENCE_KEYS.chikun.encoding` is the v6
-   string; `server/neon/migrations.mjs` has a `CHECK (encoding IN (...))` on the
-   three v6-era encodings; `server/neon/rows.mjs` `INDEX_GAMES.chikun.runtimeId`
-   and the on-chain `runtimeId32` are the course-one id. A course-two settle
-   needs the encoding allowed there, a migration, and a decision on whether
-   `chikun:canvas-runtime-v7:course-2` gets its own on-chain runtime id or is
-   folded into the existing one.
+1. **Settle and storage paths outside `server/verify`** (deliberately not
+   touched here; the reviewer's gate-open preconditions):
+   - `server/settle/settle-core.mjs` `EVIDENCE_KEYS.chikun` must become a
+     per-encoding allowlist (today `encoding` is the single v6 string, with
+     `required: ['flap']` / `allowed: ['encoding', 'flap']`), so a
+     `chikun-input-evidence-v7+json` body passes the settle body check.
+   - `server/neon/migrations.mjs` `session_evidence.encoding` has a
+     `CHECK (encoding IN (...))` over the three v6-era encodings; a migration
+     must add `chikun-input-evidence-v7+json` before any v7 row can be stored.
+   - `server/neon/rows.mjs` `INDEX_GAMES.chikun.runtimeId`, its `runtimeId32`
+     (`ethers.id`) and the index-chain reverse map know only
+     `chikun:canvas-runtime-v7`. `chikun:canvas-runtime-v7:course-2` needs its
+     own `runtimeId32`, reverse-map entry and a decision on whether it is
+     registered on chain as a separate runtime or folded into the existing one.
 2. **Child and bridge**: `chikun-bridge-protocol.mjs` `validateEvidence` accepts
    only v6; `apps/chikun/src/main.mjs` activates course two only for unranked
    Free and never sends its result; `ranked-requests.mjs` builds only a v6 body.
@@ -140,10 +163,13 @@ versions per the release checklist. Rolling back is the reverse literal.
   against `CHIKUN_RUNTIME_VERSION`, `RANKED_GAMES` and the course-two runtime,
   version dispatch under both gate states, envelope hashing of both encodings,
   host offering (closed: never; open: official sessions; preview unchanged).
-- `tests/server-verify-chikun-course-two.test.mjs`: fixture realism, gate-off
-  refusal on every path, gate-on acceptance with stats equal to a local replay,
-  v6 untouched with the gate open, v1–v5 refused, encoding/version mismatch,
-  claim ignored, seed mismatch, other-wallet copy, budgets and stream shape,
-  inputs at/after the terminal tick, replay-file parity and fixture rebuild.
-- `tests/server-verify-chikun.test.mjs` and the ranked fixture check prove the
-  v6 path is unchanged.
+- `tests/server-verify-chikun-course-two.test.mjs`: fixture realism (feather
+  collected, glide spent), gate-off refusal on every path, gate-on acceptance
+  with stats equal to a local replay, v6 untouched with the gate open, v1–v5
+  refused, encoding/version mismatch, claim ignored, seed mismatch,
+  other-wallet copy, budgets and stream shape, inputs at/after the terminal
+  tick, load-bearing glide (dropped or inverted holds are refused or scored as
+  another run), re-sign encoding-column checks in both gate states,
+  replay-file parity and fixture rebuild.
+- `tests/server-verify-chikun.test.mjs`: the v6 path unchanged, plus the
+  re-sign pin for a v7 text under a v6 column with the gate closed.
