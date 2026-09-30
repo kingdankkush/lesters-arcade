@@ -880,3 +880,12 @@ Start/volume reachability. All failed attempts remain in the compact archive.
 Current budgets remain HMH1,039,992B/STACKED580,861B. No physics/input/evidence,
 solo or Ranked change. Physical devices, listening review, soak and full release
 gate remain open. See slices/STACKED-F2G-LOCAL-AUDIO.md.
+## W3b — dormant ten-area geometry context
+
+A pure, inactive geometry adapter now preserves authored ground/collision/nav,
+stable two-coordinate area ownership and exact inspection endpoints. Genuine
+missing-adapter RED and the independently found shared-edge RED are retained,
+including the latter wrapper's honest filtered-test count mismatch. The repaired
+source passes 31/31 and identical 31/31 isolated checks. No gameplay, runtime
+entry, new schema/map registration, seed, settlement or release is activated.
+See [W3b checks and limits](slices/WORLD-W3B-DORMANT-GEOMETRY.md).

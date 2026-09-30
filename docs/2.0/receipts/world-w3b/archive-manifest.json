@@ -1,0 +1,141 @@
+{
+  "schema": "world-w3b-compact-archive-v1",
+  "scope": "Lossless actual missing-adapter RED, independently found shared-edge RED including original wrapper failure, final source/no-Git gate, closure and review. No duplicate source tree, runtime activation, browser or release claims.",
+  "entries": [
+    {
+      "archive": "red-01/red-report.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3b-geometry-red-20260930-01\\red-report.json",
+      "bytes": 28400,
+      "sha256": "9aeb42f82f08f96d41ca7c3c4ffb8f1beefcbebf8b15d8bb3c1dabb2d6a45f24",
+      "storedBytes": 4543,
+      "storedSha256": "de3d83630d7e5207626734df277dd196edf8dc065ae0a47d09ae60956c3c84ef",
+      "compression": "gzip"
+    },
+    {
+      "archive": "red-01/bindings.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3b-geometry-red-20260930-01\\bindings.json",
+      "bytes": 22017,
+      "sha256": "db0e68f42f999560b6785a7b53f3ab412b8f9ec3a335c77078ba9ceb1a6d78e6",
+      "storedBytes": 3429,
+      "storedSha256": "b7a1882b4e46f28c4afdb09de7a54328c6d491297f3a673e8ab95be8c39abb70",
+      "compression": "gzip"
+    },
+    {
+      "archive": "red-01/runner.mjs.txt.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3b-geometry-red-20260930-01\\runner.mjs.txt",
+      "bytes": 4083,
+      "sha256": "8f9f5affaae5c293337405c446d34edffb7ca174e556877300dbd6ba5e1a2e9f",
+      "storedBytes": 1639,
+      "storedSha256": "be265e1a9be1bb38b05ffc722de78e73e4b70aa469ffe90abf312e69ff3311dd",
+      "compression": "gzip"
+    },
+    {
+      "archive": "boundary-red-01/red-report.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3b-boundary-red-20260930-01\\red-report.json",
+      "bytes": 13016,
+      "sha256": "2733443130b32988241ca0137b7ed47749814d349f48d8dec99c59c8145df1d2",
+      "storedBytes": 3528,
+      "storedSha256": "e78bffbd694a1a4205af8606b3906d5a393d19cc95430841abf7a8933fecb05c",
+      "compression": "gzip"
+    },
+    {
+      "archive": "boundary-red-01/bindings.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3b-boundary-red-20260930-01\\bindings.json",
+      "bytes": 22509,
+      "sha256": "4998f85ef0a4869765f874bec16a89abf545a216e9786171df17e17669bde274",
+      "storedBytes": 3484,
+      "storedSha256": "9461d6cec5a6da6b125205b8a83bfa85f34d34df0c4b72531babc65738167cd1",
+      "compression": "gzip"
+    },
+    {
+      "archive": "boundary-red-01/runner.mjs.txt.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3b-boundary-red-20260930-01\\runner.mjs.txt",
+      "bytes": 4698,
+      "sha256": "f0223f18083a9621703131908a698b2ded39f49c41ce9607f569e5ae6a69270c",
+      "storedBytes": 1861,
+      "storedSha256": "2dd3d1e0b2dd36228822a5efa6e0728e8caf3743065805b5b309dc283ee4b98e",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-02/gate-report.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3b-geometry-green-20260930-02\\gate-report.json",
+      "bytes": 33145,
+      "sha256": "f5fc53e70c17fffe254708a5c051ca0532e50ffea4dda9aa4740d4024860c871",
+      "storedBytes": 5709,
+      "storedSha256": "c6492a53733d13df0e5fa29ad53cbd72ec5ace0fc8c3fc8178d5707ffac16e49",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-02/bindings.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3b-geometry-green-20260930-02\\bindings.json",
+      "bytes": 22509,
+      "sha256": "1e5894062b5b9c67c55772c147ed2c130e4f7746f8a35ff9778a32b14beb7aa4",
+      "storedBytes": 3485,
+      "storedSha256": "fc08f21892210b5ae3f7daa7826b1146faf4a210d9af688d308c80783b3a99e1",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-02/runner.mjs.txt.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3b-geometry-green-20260930-02\\runner.mjs.txt",
+      "bytes": 6197,
+      "sha256": "cfa8a9686b9631c7046979023da36d9d4bfbcb0f2cad74647402ff100caa3244",
+      "storedBytes": 2264,
+      "storedSha256": "0452dba471b60eba27ef24269021e53a48081feecdc51d3dc5195ced39ac8b6b",
+      "compression": "gzip"
+    },
+    {
+      "archive": "world-w3b-red-closure.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3b-red-closure.json",
+      "bytes": 402,
+      "sha256": "80c174bf5ee2934958d530003deb841667efa25d452b9a8da9d167038e09c890",
+      "storedBytes": 251,
+      "storedSha256": "4823e767e8b845e5cb7ef656f7b02376d8e50f11aa2f92146966fa4d72d9852f",
+      "compression": "gzip"
+    },
+    {
+      "archive": "world-w3b-boundary-red-closure.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3b-boundary-red-closure.json",
+      "bytes": 634,
+      "sha256": "62f1f4121f056314ae7617c669f261ce9724aec6e25700b37f980e94efd94874",
+      "storedBytes": 392,
+      "storedSha256": "db218ecf7c63ffadfbb6d60b35a0b5881d0fd070b47fb4b9f17ffdd534902751",
+      "compression": "gzip"
+    },
+    {
+      "archive": "world-w3b-green-closure.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3b-green-closure.json",
+      "bytes": 1149,
+      "sha256": "b6f4e4d06c2f2d61db2c1df4f87b78fbefc3cc0d7241794e8ea6017be3e58788",
+      "storedBytes": 323,
+      "storedSha256": "7dbf3fc7e471147979d40acd21ab2eaba1d9b0f9e4d708aa5a3373c9a52289d1",
+      "compression": "gzip"
+    },
+    {
+      "archive": "world-w3b-review.md.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3b-review.md",
+      "bytes": 1898,
+      "sha256": "f6c91f62b084a46b33404fc0f1e2d182e38587cd36bf77be884bd905423b7cac",
+      "storedBytes": 990,
+      "storedSha256": "a719486da8bee9adde82cfb61a8b04390856e6282e80d75fcef3c096fb350897",
+      "compression": "gzip"
+    },
+    {
+      "archive": "world-w3b-boundary-red-helper.mjs.txt.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3b-boundary-red-helper.mjs.txt",
+      "bytes": 5710,
+      "sha256": "ba32a3d98a995f9ed49f243e79e2020ea25db6cd167bab4b356dd3e21fdfe523",
+      "storedBytes": 2040,
+      "storedSha256": "9b51415dfe5ebd60c2f0e43bd1abf0506a6bf264353caa81dadc38bae2fcbe20",
+      "compression": "gzip"
+    },
+    {
+      "archive": "owned-windows-child.mjs.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\owned-windows-child.mjs",
+      "bytes": 3475,
+      "sha256": "a5177337fcf6ec41f285fc105b93d0b4b94ee1101cb14a653a91e9b8b075b0d9",
+      "storedBytes": 1353,
+      "storedSha256": "02e4475db1d22cb3a147a2e8df889e12f6857d38c4c60a8b4be99e5a04b4e2e7",
+      "compression": "gzip"
+    }
+  ]
+}
