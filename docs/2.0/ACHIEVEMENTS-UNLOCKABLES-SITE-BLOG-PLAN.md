@@ -93,6 +93,18 @@ check is claimed for these items, and no real wallet has earned anything.
   is ignored under reduced motion, during a drag and while the dialog is
   closed. Five source tests cover the mapping, bounds, default-off, permission
   outcomes and reduced motion. No browser or physical-phone run is claimed.
+- **Retained archive-label assertion — root cause fixed at the source.** The
+  portal's global `button { text-transform: uppercase }` (`apps/portal/styles.css`)
+  renders the Locker's `Archived look` control as `ARCHIVED LOOK`, so a browser
+  check reading `innerText` compared the CSS rendering with the source string.
+  `routes/unlockables-panel.mjs` now exports the source labels
+  (`UNLOCKABLES_EQUIP_LABELS`) and `unlockablesLabelMatches(rendered, label)`,
+  a case- and whitespace-insensitive comparison; the source test compares the
+  DOM `textContent` against the exported string and proves the matcher accepts
+  the upper-case rendering. The browser-review harness itself lives outside
+  this repository (the shared Codex workspace `outputs/replacement-rewards-review/`);
+  its archive check must read `textContent` or use the matcher. That browser
+  run has not been repeated here; no other assertion changed.
 
 ## G4 replacement package — implementation recommendation (September 30)
 
