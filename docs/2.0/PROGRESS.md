@@ -1,6 +1,17 @@
 # Lester's Arcade 2.0 progress
 
-Updated: 2026-09-29. Stage: reviewed replay diagnostics, default-off two-actor3D and Chikun pickup prototypes gathered locally; terrain and revised art are in their gated lanes. No 2.0 runtime feature is accepted or deployed.
+Updated: 2026-09-30. Current combined checkpoint: eight distinct local HMH area
+layouts are gathered through Woods; optional STACKED tutorial and daily challenge
+are browser-checked; local two-player input is checked in a private two-board
+probe. Final art, roster/animation, remaining game content and device/release
+checks remain open. No 2.0 release is deployed. The earlier kickoff sections below
+are historical observations; later slice entries record subsequent work.
+
+Latest gathered commits: daily `36a775b83`, Fortress `72c789ac0`, Woods `0ef54cdfa`,
+local input `982343e92`. Character's costume shading repair and Bayou water/bridge
+work remain in their owned lanes. Art native A12 completes technically but its
+flat ground and continuous gravel stripe are rejected visually. Do not gather
+those lane ancestors wholesale or describe their private assets as accepted.
 
 ## Authority and continuation
 
