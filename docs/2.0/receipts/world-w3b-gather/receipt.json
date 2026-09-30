@@ -1,0 +1,29 @@
+{
+  "files": [
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3b-root-gather.json",
+      "archive": "world-w3b-root-gather.json.gz",
+      "rawSha256": "0ce841f14813f098052bfe156b4bf324ce05e4715e04d40c83026d6549e310a2",
+      "gzipBytes": 2986
+    },
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3b-root-check-01\\report.json",
+      "archive": "world-w3b-root-check-01__report.json.gz",
+      "rawSha256": "0221a4b584fb51e6c0d3b77f280349032d428ebbab6f30487d6e6282d6197cc0",
+      "gzipBytes": 2508
+    },
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\verify-w3b-gather.py",
+      "archive": "verify-w3b-gather.py.gz",
+      "rawSha256": "1288e76e7887d454c6bd1d7873e8405940ea88a471d6ff486104e8ab5ac8cd62",
+      "gzipBytes": 686
+    },
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\run-root-world-w3b.mjs",
+      "archive": "run-root-world-w3b.mjs.gz",
+      "rawSha256": "3d11ca68dc320d286066197f02459c89610ffe54f82cdfae6bbd94e446c9a534",
+      "gzipBytes": 1105
+    }
+  ],
+  "gzipBytes": 7285
+}

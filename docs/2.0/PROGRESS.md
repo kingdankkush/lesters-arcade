@@ -1,25 +1,41 @@
 # Lester's Arcade 2.0 progress
 
-Updated: 2026-09-30. All ten distinct local HMH greybox layouts are gathered,
-including Bayou and River. Optional STACKED tutorial, daily challenge and playable
-local versus are browser-checked. Versus now includes results/rematch, lifecycle
-cleanup, readable control guides and hollow landing guides. Final art, roster,
-animation, content and device/release checks remain open. No 2.0 release deployed.
+Updated: 2026-09-30. All ten distinct local HMH greyboxes are gathered. Optional
+STACKED tutorial, daily challenge and playable local versus are browser-checked.
+Versus includes results/rematch, clean lifecycle ownership, readable landing
+guides, game sounds and an accessible volume slider. Final art, roster, clips,
+content, device checks and the full release remain open. No 2.0 release deployed.
 Earlier entries below are historical observations, not current completion claims.
 
-Latest gathered milestones: local versus `3e3d57eb0`, Bayou `ba3428bf8`, River
-`32102bf96`, area-status correction `e74f81245`, ghost polish `dfd3d2b9b`.
-Combined world/versus checks passed260; later ghost polish passed163 focused,
-3 exact isolated, fresh build and17 actual Chrome cases. Initial/shared budgets
-remain HMH1,039,992B and STACKED580,861B. Full release gate remains open.
+Latest gathered milestones: local sound/UI `49700f469`, legacy verifier context
+`2b0362905`, dormant world geometry `99afb4fef`; all ten greyboxes include Bayou
+`ba3428bf8` and River `32102bf96`. Final local-versus source checks pass 178;
+audio passes 8 plus identical isolated 8; browser passes 24 cases with the exact
+432,000-tick solo Worker tuple. Both observed playback contexts closed with zero
+connected nodes. Initial/shared budgets remain HMH 1,039,992 B and STACKED
+580,861 B. These are local Windows checks, not physical iPhone certification.
 
-Character's private tangent repair `7b431ee56` passes custody/30-pose checks.
-Private boss desktop correctness now passes animation/state/evidence/context
-recovery; phone framing is still under correction. Current rear-facing narrow
-boss art is unaccepted. Art A13 completes technically but mottled ground remains
-rejected; A14 farmhouse context is being corrected against actual saved object
-identity. These private lane assets are not admitted to runtime; do not gather
-lane histories wholesale. W3a legacy map-context compatibility is in progress.
+W3a passed 150 plus identical isolated 150; all 146 gathered closure files are
+byte-identical. W3b passed 31 plus identical isolated 31 and a fresh gathered-root
+31. Its 34-file closure differs only by known checkout CRLF conversion in the
+greybox module; all 17 protected authority hashes match. Dormant geometry retains
+actual ground/collision/nav, stable area ownership and inert inspection metadata.
+No new map/schema/runtime default is activated. W3c is the next integration slice.
+
+Private character checkpoint `1dd82309a` passes actual desktop and phone-framed
+boss facing, animation, state/evidence parity and graphics-context recovery.
+Facing is corrected; narrow/dark material detail remains unaccepted. Matched-pose
+diagnostic helper `ce38d5852` passes 25 plus identical isolated 25; its native
+source/derivative comparison is being prepared, not yet completed.
+
+Private art A14 checkpoint `0ba091364` passes source 10 plus isolated 10 and its
+native/pixel checks after correcting saved-object identity, list aliasing and
+unevaluated imported transforms. Original farmhouse/plant sources are intact.
+The coherent yard study still fails final art quality: orphan wear spur, soft
+ground transitions and a dark hedge. A15 prepares a rigid turn toward the actual
+existing doorway, a logical wear route and trunk gaps. Its native witness remains
+open. No private lane assets are admitted to runtime; do not gather whole lane
+histories. Failed attempts and independent review findings remain preserved.
 
 ## Authority and continuation
 
@@ -889,3 +905,19 @@ including the latter wrapper's honest filtered-test count mismatch. The repaired
 source passes 31/31 and identical 31/31 isolated checks. No gameplay, runtime
 entry, new schema/map registration, seed, settlement or release is activated.
 See [W3b checks and limits](slices/WORLD-W3B-DORMANT-GEOMETRY.md).
+
+### Gathered checkpoint and private art/character continuation
+
+W3b gathered as99afb4fef. Strict raw-byte comparison first stopped at the known
+greybox checkout line-ending conversion; the append-only progress merge had
+already retained both entries and commit gathering completed. Comparison against
+the pinned World closure confirms only CRLF/LF differs in that one file. A fresh
+root31/31 then passed under the shared lock; child25400 closed0/null and was
+independently absent before exact marker release. The17 protected authority files
+are byte-identical. Evidence: receipts/world-w3b-gather. No new build was needed
+for this unimported geometry module; current built runtime budgets remain valid.
+
+Private boss04 correctness and A14 composition checkpoints are referenced in the
+opening summary, with art rejection and next measurements explicit. Current user
+checkpoint and local-versus screenshots were refreshed. No credits, push, version
+bump, production probe or deploy in this continuation.

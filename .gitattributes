@@ -120,3 +120,6 @@ docs/2.0/receipts/stacked-local-ghost-f2f/*.gz -filter -diff -merge -text
 
 # Compact local-versus sound, UI review and failed-attempt receipts
 docs/2.0/receipts/stacked-local-audio-f2g/*.gz -filter -diff -merge -text
+
+# Compact gathered world source parity and focused check
+docs/2.0/receipts/world-w3b-gather/*.gz -filter -diff -merge -text
