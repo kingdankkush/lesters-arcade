@@ -1,0 +1,235 @@
+{
+  "schema": 1,
+  "status": "editable-native-candidate",
+  "actorId": "hodl-revenant",
+  "identityForm": "zombie",
+  "boss": false,
+  "phaseVisuals": {},
+  "baseSource": "owner-assets/zombie warrior 3d model.glb",
+  "baseSha256": "f45683a9bf3932f3a083800e7d2d91e8db4331d6aa6e3f8a9b890e28cafcb64b",
+  "baseBytes": 11694692,
+  "sourceUnchanged": true,
+  "casting": {
+    "name": "HODL Revenant",
+    "rationale": "Untextured zombie warrior figure (the brief's Revenant = zombie warrior); receives a pale undead/rag palette bake, an open hood and chain rings so it does not read as the Bagholder.",
+    "reference": "Enemy and Boss References 03_32_30/03_32_31 (hooded, chained, ragged wraith)",
+    "textured": false,
+    "sheetFigure": "front"
+  },
+  "figureExtraction": {
+    "looseParts": 15,
+    "clusters": 3,
+    "kept": 5,
+    "discarded": 10,
+    "sheet": true,
+    "largestParts": [
+      {
+        "triangles": 41448,
+        "kept": false,
+        "min": [
+          -0.112,
+          -0.169,
+          0.001
+        ],
+        "max": [
+          0.14,
+          0.204,
+          0.449
+        ]
+      },
+      {
+        "triangles": 40500,
+        "kept": true,
+        "min": [
+          -0.473,
+          -0.204,
+          0.001
+        ],
+        "max": [
+          -0.134,
+          0.094,
+          0.417
+        ]
+      },
+      {
+        "triangles": 39099,
+        "kept": false,
+        "min": [
+          0.173,
+          -0.115,
+          -0.0
+        ],
+        "max": [
+          0.482,
+          0.089,
+          0.42
+        ]
+      },
+      {
+        "triangles": 20860,
+        "kept": true,
+        "min": [
+          -0.414,
+          -0.052,
+          0.286
+        ],
+        "max": [
+          -0.235,
+          0.113,
+          0.598
+        ]
+      },
+      {
+        "triangles": 20712,
+        "kept": false,
+        "min": [
+          0.25,
+          -0.053,
+          0.289
+        ],
+        "max": [
+          0.419,
+          0.104,
+          0.599
+        ]
+      },
+      {
+        "triangles": 19424,
+        "kept": false,
+        "min": [
+          -0.035,
+          -0.093,
+          0.366
+        ],
+        "max": [
+          0.126,
+          0.09,
+          0.603
+        ]
+      },
+      {
+        "triangles": 7625,
+        "kept": true,
+        "min": [
+          -0.288,
+          -0.026,
+          0.29
+        ],
+        "max": [
+          -0.159,
+          0.077,
+          0.586
+        ]
+      },
+      {
+        "triangles": 7539,
+        "kept": true,
+        "min": [
+          -0.37,
+          -0.139,
+          0.501
+        ],
+        "max": [
+          -0.276,
+          0.006,
+          0.679
+        ]
+      },
+      {
+        "triangles": 7331,
+        "kept": false,
+        "min": [
+          0.17,
+          -0.015,
+          0.297
+        ],
+        "max": [
+          0.297,
+          0.079,
+          0.587
+        ]
+      },
+      {
+        "triangles": 6737,
+        "kept": false,
+        "min": [
+          -0.117,
+          -0.081,
+          0.51
+        ],
+        "max": [
+          0.02,
+          0.008,
+          0.677
+        ]
+      },
+      {
+        "triangles": 6169,
+        "kept": false,
+        "min": [
+          0.004,
+          -0.159,
+          0.291
+        ],
+        "max": [
+          0.106,
+          -0.053,
+          0.581
+        ]
+      },
+      {
+        "triangles": 6068,
+        "kept": true,
+        "min": [
+          -0.489,
+          -0.042,
+          0.296
+        ],
+        "max": [
+          -0.371,
+          0.06,
+          0.584
+        ]
+      }
+    ]
+  },
+  "importedTriangles": 484912,
+  "sourceTriangles": 59999,
+  "landmarks": {
+    "armDetected": true,
+    "legDetected": true,
+    "neckZ": 0.9,
+    "torsoY": 0.18612989783287048,
+    "rawHeight": 0.6780040863668546,
+    "scale": 2.5958545610412425
+  },
+  "weightMethod": "bone-heat",
+  "unweightedVertices": 0,
+  "source": "hodl-revenant.blend",
+  "sourceSha256": "5e244deded49a9568f3eae70d982d403578ccdf4d3862c818f4e689c2983098f",
+  "sourceBytes": 2652379,
+  "armature": "hodl-revenant Native Rig",
+  "bones": 19,
+  "nativeBodyVertices": 30502,
+  "costumeMeshes": 0,
+  "gearMeshes": 13,
+  "clipActions": {
+    "idle": "HMH_hodl-revenant_idle",
+    "run": "HMH_hodl-revenant_run",
+    "tell": "HMH_hodl-revenant_tell",
+    "attack": "HMH_hodl-revenant_attack",
+    "hit": "HMH_hodl-revenant_hit",
+    "death": "HMH_hodl-revenant_death"
+  },
+  "runtimeAuthority": "projection-only",
+  "height": 1.7536000204086304,
+  "animationProfile": {
+    "kind": "undead-straight-lunge-v1",
+    "damageResponse": "snapback-stumble-v1"
+  },
+  "stoop": 0.26,
+  "builderSha256": "89386ac5255d22f969bafd2e1b90e935d86f302922cd655276e264a940491593",
+  "castingSha256": "bb175a1037eeae1cff461358ce6d90c121d56073ce1a03a33b0f9b39ae1f69c3",
+  "poseAuthorSha256": "113c81d1514ec7768361332c9191436ea5171b3fef1d9028aa556711b88c7648",
+  "rights": "Owner-supplied licensed model, read-only; no generation service, credit or new licence was used."
+}

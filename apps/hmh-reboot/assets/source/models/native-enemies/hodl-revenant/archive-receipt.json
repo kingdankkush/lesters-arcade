@@ -1,0 +1,18 @@
+{
+  "schema": 1,
+  "actorId": "hodl-revenant",
+  "archivedAt": "2026-09-30T22:58:09.176844+00:00",
+  "repoPath": "apps/hmh-reboot/assets/source/models/native-enemies/hodl-revenant",
+  "archiveRoot": "C:\\Users\\just_\\Desktop\\Projects\\LestersArcade-Assets\\2.0\\Source\\Legacy-Integration-04366747",
+  "files": {
+    "hodl-revenant.blend": {
+      "sha256": "5e244deded49a9568f3eae70d982d403578ccdf4d3862c818f4e689c2983098f",
+      "bytes": 2652379
+    },
+    "source-receipt.json": {
+      "sha256": "1bce25db24b9dc7995f87897c3072dff62b8212fb58a383f3390b156e677ba16",
+      "bytes": 5002
+    }
+  },
+  "resolver": "HMH_SOURCE_ART_ROOT (default: this archive root); the .blend is git-ignored in the repository"
+}
