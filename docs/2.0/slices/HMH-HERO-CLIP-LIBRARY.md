@@ -74,7 +74,7 @@ All under the 9,000,000 B cap (the previous hero test cap was 8 MiB; it moved wi
 
 ## Contact sheet
 
-`docs/2.0/receipts/hmh-hero-clips-20260930/lilly-clip-contact-sheet-runtime.png`: every library clip of Lilly at t = 0.25 / 0.5 / 0.75, rasterised by `scripts/hmh-hero-clip-preview.mjs` with the runtime's own decoder and skinning math (CPU only, no heavy lock). It was inspected clip by clip; notes are in `lilly-clip-sheet-review.md` beside it. The Blender Eevee sheet (`render-hmh-hero-clip-sheet.py`) needs the shared GPU lock and is added when a render slot is free; its first pass exposed the unkeyed-bone re-import caveat above.
+`docs/2.0/receipts/hmh-hero-clips-20260930/lilly-clip-contact-sheet-runtime.png`: every library clip of Lilly at t = 0.25 / 0.5 / 0.75, rasterised by `scripts/hmh-hero-clip-preview.mjs` with the runtime's own decoder and skinning math (CPU only, no heavy lock). It was inspected clip by clip; notes are in `lilly-clip-sheet-review.md` beside it. The Blender Eevee sheet `lilly-clip-contact-sheet.png` (`render-hmh-hero-clip-sheet.py`, textured, rendered under the shared GPU lock) shows the same poses from re-import and agrees with the runtime sheet clip for clip; its first pass exposed the unkeyed-bone re-import caveat above.
 
 ## What root must verify in the browser
 

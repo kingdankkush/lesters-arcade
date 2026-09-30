@@ -1,6 +1,6 @@
 # Lilly clip contact sheet review (2026-09-30)
 
-Sheet: `lilly-clip-contact-sheet-runtime.png` (71 library clips x t = 0.25 / 0.5 / 0.75, runtime decoder + CPU skinning, three-quarter orthographic view, floor line at y = 0).
+Sheets: `lilly-clip-contact-sheet.png` (Blender Eevee re-import, textured) and `lilly-clip-contact-sheet-runtime.png` (71 library clips x t = 0.25 / 0.5 / 0.75, runtime decoder + CPU skinning, three-quarter orthographic view, floor line at y = 0).
 
 Checked for: limb intersections, feet leaving the floor in grounded clips, flipped hands/props, mirrored variants matching, prop visibility.
 
