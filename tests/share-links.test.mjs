@@ -342,7 +342,10 @@ test('without the Web Share API the menu has no native button and a missing clip
   assert.throws(() => createShareRow({ documentRef, links: { text: 'x' } }), /buildShareLinks/);
 });
 
-const read = (relative) => readFile(new URL(relative, import.meta.url), 'utf8');
+// Sources are read with LF line endings whatever the checkout's core.autocrlf
+// produced: the extraction anchors and multi-line pins below are written in LF,
+// and .gitattributes stores every source as LF.
+const read = async (relative) => (await readFile(new URL(relative, import.meta.url), 'utf8')).replaceAll('\r\n', '\n');
 
 test('all three cabinets mount the share row and the child hosts allow popups, share and clipboard', async () => {
   const [portalMain, chikunMain, stackedMain, chikunHtml, stackedHtml, chikunHost, stackedHost, portalHtml] = await Promise.all([

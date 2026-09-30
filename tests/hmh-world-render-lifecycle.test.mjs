@@ -160,10 +160,12 @@ function assetLoadSubject(failure) {
   const catcher=all.filter(node=>node.type==='ArrowFunctionExpression'&&source.slice(node.start,node.end).includes('authoredPropLoadError = error')).sort((a,b)=>(a.end-a.start)-(b.end-b.start))[0];assert.ok(catcher);
   // Every art-target stub below mirrors a binding declared in a scope enclosing the
   // asset load in main.mjs; a stub for an unbound name would hide a runtime ReferenceError.
-  for(const name of ['artTargetPromise','artTargetDisposed']){
+  for(const name of ['artTargetPromise','artTargetDisposed','HMH_WORLD_CONTEXT']){
+    if(!new RegExp(`\\b${name}\\b`).test(source.slice(nativeLoad.start,nativeLoad.end)))continue; // not read by this asset load
     const declarator=all.find(node=>node.type==='VariableDeclarator'&&node.id.name===name);assert.ok(declarator,`main.mjs declares ${name}`);
-    const scope=all.filter(node=>/Function/.test(node.type)&&node.start<=declarator.start&&node.end>=declarator.end).sort((a,b)=>(a.end-a.start)-(b.end-b.start))[0];
-    assert.ok(scope&&scope.start<=nativeLoad.start&&scope.end>=nativeLoad.end,`${name} is declared in a scope enclosing the asset load`);
+    // Module-level bindings (no enclosing function) enclose every function in the file.
+    const scope=all.filter(node=>/Function/.test(node.type)&&node.start<=declarator.start&&node.end>=declarator.end).sort((a,b)=>(a.end-a.start)-(b.end-b.start))[0]??ast;
+    assert.ok(scope.start<=nativeLoad.start&&scope.end>=nativeLoad.end,`${name} is declared in a scope enclosing the asset load`);
   }
   const depth=new RenderLayer({sortableChildren:true});let disposed=0;
   const ctx=vm.createContext({
@@ -176,6 +178,8 @@ function assetLoadSubject(failure) {
     lightningLedgerEventPlacement:null,bearMarketBurnerEventPlacement:null,forkedStandardEventPlacement:null,
     // The Meadows art target is opt-in (artTarget=meadows-v1); a default start resolves it to null.
     artTargetPromise:Promise.resolve(null),artTargetDisposed:false,
+    // W4a world selection: the authored Level 1 asset path is the legacy world context.
+    HMH_WORLD_CONTEXT:{legacy:true,official:true,gameplay:null},
     createAuthoredPropDisplay:()=>{if(failure==='props')throw new Error('fixture props failure');const container=new Container();const sprite=new Container();container.addChild(sprite);depth.attach(sprite);return {container,entries:[],addPlacement:()=>{},destroy(){disposed++;depth.detach(sprite);container.destroy({children:true});}};},
     createAuthoredHeldWeaponDisplay:()=>{throw new Error('fixture held failure');},console:{warn(){}},
   });
