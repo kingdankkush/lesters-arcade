@@ -79,3 +79,36 @@
 @media (prefers-reduced-motion: reduce) {
  .achievement-collection-v1 * { animation: none !important; transition: none !important; }
 }
+
+.achievement-detail {
+  --detail-metal: #c5a47a;
+  box-sizing: border-box; width: min(520px, calc(100vw - 32px)); max-height: calc(100dvh - 32px);
+  overflow: auto; padding: 24px; border: 1px solid var(--detail-metal); border-radius: 20px;
+  background: radial-gradient(ellipse at 50% 45%, #344742, #111e24 75%); color: #f0ead8;
+  box-shadow: 0 24px 100px #0009; font-family: inherit;
+}
+.achievement-detail::backdrop { background: #03090ddd; }
+.achievement-detail[data-tier="silver"] { --detail-metal: #b6c9d0; }
+.achievement-detail[data-tier="gold"] { --detail-metal: #f0c676; }
+.achievement-detail[data-tier="platinum"] { --detail-metal: #aad8d6; }
+.achievement-detail[data-tier="diamond"] { --detail-metal: #a0c7f6; }
+.achievement-detail[data-tier="mythic"] { --detail-metal: #d9a0e8; }
+.achievement-detail-heading { position: relative; padding-right: 74px; }
+.achievement-detail-game { margin: 0; color: var(--detail-metal); font-size: 12px; text-transform: uppercase; letter-spacing: .05em; }
+.achievement-detail-title { margin: 8px 0 0; font-size: clamp(22px, 5vw, 32px); line-height: 1.15; overflow-wrap: anywhere; }
+.achievement-detail-close { position: absolute; top: 0; right: 0; min-width: 64px; min-height: 44px; border: 1px solid #9aae99; border-radius: 8px; background: #14252d; color: #fff3d8; font: inherit; font-size: 14px; cursor: pointer; }
+.achievement-detail-stage { display: grid; place-items: center; margin: 24px 0 10px; min-height: 256px; perspective: 700px; touch-action: none; user-select: none; border-radius: 50%; background: radial-gradient(ellipse, #fff0c60e, transparent 65%); }
+.achievement-detail-art { padding: 14px; border: 2px solid var(--detail-metal); border-radius: 22%; background: linear-gradient(135deg, #e6d5b22b, #040c1277); box-shadow: inset 0 0 0 5px #040c1244, 0 18px 24px #0005; }
+.achievement-detail-image { display: block; width: min(52vw, 220px); height: min(52vw, 220px); object-fit: contain; pointer-events: none; }
+.achievement-detail[data-earned="false"] .achievement-detail-image { filter: grayscale(.7); opacity: .7; }
+.achievement-detail-hint { margin: 12px 0 24px; text-align: center; color: #b9c8bb; font-size: 12px; line-height: 1.5; }
+.achievement-detail-requirement { font-size: 16px; line-height: 1.6; }
+.achievement-detail-record { padding-top: 16px; border-top: 1px solid #768e7344; color: #c8d3c5; font-size: 13px; line-height: 1.6; }
+.achievement-detail :focus-visible { outline: 3px solid #a3d2ce; outline-offset: 4px; }
+.achievement-collection-v1 .collection-detail-button { display: block; width: 100%; min-height: 44px; margin-top: 12px; border: 1px solid #768e73; border-radius: 8px; background: #122b31; color: #f0ead8; font: inherit; font-size: 13px; cursor: pointer; }
+.achievement-collection-v1 .collection-detail-button:focus-visible { outline: 3px solid #a3d2ce; outline-offset: 3px; }
+@media (max-width: 480px) { .achievement-detail { padding: 20px; } .achievement-detail-stage { min-height: 232px; } }
+@media (prefers-reduced-motion: reduce) { .achievement-detail-art { transform: none !important; transition: none !important; } .achievement-detail-stage { touch-action: auto; } }
+
+/* Keep the close control a direct tap target after manipulating a badge. */
+.achievement-detail-close { touch-action: manipulation; }

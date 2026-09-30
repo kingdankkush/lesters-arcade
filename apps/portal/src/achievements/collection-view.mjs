@@ -8,15 +8,17 @@ const percent=rate=>rate===0?'0%':rate<.1?'Less than 0.1%':`${rate.toFixed(1).re
 // prompt, ownership write or earning-rule evaluation is created by this view.
 export function createAchievementCollectionView({el,appendText,renderAchievementIcon,
  documentRef=globalThis.document,fetchImpl=globalThis.fetch,now=()=>Date.now(),
- setTimeoutImpl=globalThis.setTimeout,clearTimeoutImpl=globalThis.clearTimeout}={}) {
+ setTimeoutImpl=globalThis.setTimeout,clearTimeoutImpl=globalThis.clearTimeout,
+ loadDetail=()=>import('./detail-view.mjs')}={}) {
  let disposed=false,card=null,inputs={unlocks:[]},inFlight=null;
+ let detail=null,detailEpoch=0;const detailButtons=new Map();
  const statsByGame={},expires=new Map(),requests=new Set(),disclosures=new Map();
  const selection={gameId:'all',filter:'all',sort:'catalog',query:''};
  let summary,resultCount,results,populationNote;
 
  function ensureStyle(){
   if(!documentRef?.head||!documentRef.createElement||documentRef.getElementById?.('achievement-collection-css'))return;
-  const link=documentRef.createElement('link');link.id='achievement-collection-css';link.rel='stylesheet';link.href='/src/styles/achievement-collection.css?v=collection-v1';documentRef.head.append(link);
+  const link=documentRef.createElement('link');link.id='achievement-collection-css';link.rel='stylesheet';link.href='/src/styles/achievement-collection.css?v=collection-detail-v1';documentRef.head.append(link);
  }
  function field(label,name,options){
   const wrapper=el('label',{className:'collection-control'});appendText(wrapper,'span',label);
@@ -47,7 +49,7 @@ export function createAchievementCollectionView({el,appendText,renderAchievement
   return renderKeepingFocus(results,()=>paintContents(opened),{documentRef});
  }
  function paintContents(opened){
-  disclosures.clear();
+  disclosures.clear();detailButtons.clear();
   const model=buildAchievementCollection({...selection,unlocks:inputs.unlocks,statsByGame});
   const overview=el('div',{className:'collection-overview'});
   appendText(overview,'strong',`${model.unlocked} / ${model.total}`,'collection-total');appendText(overview,'span','achievements earned');
@@ -69,7 +71,16 @@ export function createAchievementCollectionView({el,appendText,renderAchievement
    const disclosureKey=`${row.gameId}:${row.id}`;details.open=opened.has(disclosureKey);disclosures.set(disclosureKey,details);toggle.setAttribute('aria-label',`${row.title}. ${row.unlocked?'Earned':'Locked'}. Show requirement`);
    toggle.append(renderAchievementIcon({iconSrc:row.image,icon:row.unlocked?'🏅':'🔒',label:row.title}));
    appendText(toggle,'span',row.title,'collection-badge-title');appendText(toggle,'small',row.gameTitle,'collection-badge-game');details.append(toggle);
-   appendText(details,'p',row.description,'collection-requirement');badge.append(details);
+   appendText(details,'p',row.description,'collection-requirement');
+   const inspect=el('button',{className:'collection-detail-button',textContent:'Inspect badge',dataset:{achievement:row.id,game:row.gameId}});inspect.type='button';
+   const detailStatus=el('small');detailStatus.setAttribute('role','status');detailButtons.set(disclosureKey,inspect);
+   inspect.addEventListener('click',async()=>{
+    const epoch=++detailEpoch;detailStatus.textContent='';
+    try{const module=await loadDetail();if(disposed||epoch!==detailEpoch)return;
+     detail??=module.createAchievementDetail({documentRef});
+     detail.open(row,{returnFocus:()=>detailButtons.get(disclosureKey)?.focus?.({preventScroll:true})});
+    }catch{if(!disposed&&epoch===detailEpoch)detailStatus.textContent='Preview unavailable. You can still read the requirement here.';}
+   });details.append(inspect,detailStatus);badge.append(details);
    const record=el('div',{className:'collection-badge-record'});appendText(record,'span',row.unlocked?'Earned':'To earn','collection-ownership');
    if(row.nft)appendText(record,'small','Trophy achievement','collection-trophy-label');
    if(row.rarity){const label=el('small',{className:`collection-rarity rarity-${row.rarity.rarity}`});label.textContent=row.rarity.percentage===null?`Early · ${row.rarity.unlockedPlayers} players`:`${row.rarity.label} · ${percent(row.rarity.percentage)}`;label.setAttribute('title',`${row.rarity.unlockedPlayers} of ${row.rarity.rankedPlayers} eligible Ranked players in this cabinet`);record.append(label);}
@@ -104,8 +115,8 @@ export function createAchievementCollectionView({el,appendText,renderAchievement
   inFlight=Promise.all(due.map(game=>readPopulation(game.gameId))).finally(()=>{inFlight=null;paint();});return inFlight;
  }
  function render(options={}){
-  if(disposed)throw new Error('achievement collection disposed');inputs={unlocks:options.unlocks??[],decorateOwnedBadge:options.decorateOwnedBadge};if(!card)createCard();void hydrate();paint();return card;
+  if(disposed)throw new Error('achievement collection disposed');detailEpoch++;detail?.dispose();detail=null;inputs={unlocks:options.unlocks??[],decorateOwnedBadge:options.decorateOwnedBadge};if(!card)createCard();void hydrate();paint();return card;
  }
- function dispose(){if(disposed)return;disposed=true;for(const request of requests)request.cancel();}
+ function dispose(){if(disposed)return;disposed=true;detailEpoch++;detail?.dispose();detail=null;detailButtons.clear();for(const request of requests)request.cancel();}
  return Object.freeze({render,dispose,whenStatsReady:()=>inFlight??Promise.resolve()});
 }

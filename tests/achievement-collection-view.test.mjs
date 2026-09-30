@@ -122,3 +122,27 @@ test('collection sets native option and search properties with the portal DOM fa
  const search=all(card).find(item=>item.dataset?.collectionControl==='search');
  assert.equal(search.maxLength,120);assert.equal(search.placeholder,'Find an achievement');view.dispose();
 });
+
+test('badge detail loads only after inspection and resolves a current focus target',async()=>{
+ const {createAchievementCollectionView}=await load();let loads=0,opened,returnedTo;
+ const view=createAchievementCollectionView({...deps,fetchImpl:null,loadDetail:async()=>{loads++;return{createAchievementDetail:()=>({open:(row,options)=>{opened={row,options};},dispose(){}})};}});
+ const card=view.render({unlocks:owned});assert.equal(loads,0);
+ const button=byClass(card,'collection-detail-button')[0];assert.ok(button);await button.listeners.click();
+ assert.equal(loads,1);assert.equal(opened.row.id,catalogFor('lester-blaster')[0].id);
+ button.focus=()=>{returnedTo=button;};opened.options.returnFocus();assert.equal(returnedTo,button);view.dispose();
+});
+test('pending badge import cannot open after collection disposal or profile replacement',async()=>{
+ const {createAchievementCollectionView}=await load();
+ for(const replacement of [false,true]){
+  let resolve,created=0;const view=createAchievementCollectionView({...deps,fetchImpl:null,loadDetail:()=>new Promise(done=>{resolve=done;})});
+  const card=view.render({unlocks:owned}),button=byClass(card,'collection-detail-button')[0];assert.ok(button);const pending=button.listeners.click();
+  if(replacement)view.render({unlocks:[]});else view.dispose();
+  resolve({createAchievementDetail:()=>{created++;return{open(){},dispose(){}};}});await pending;
+  assert.equal(created,0);view.dispose();
+ }
+});
+test('optional badge viewer failure retains requirements and communicates the fallback',async()=>{
+ const {createAchievementCollectionView}=await load();const view=createAchievementCollectionView({...deps,fetchImpl:null,loadDetail:async()=>{throw Error('offline');}});
+ const card=view.render({unlocks:owned}),button=byClass(card,'collection-detail-button')[0];assert.ok(button);await button.listeners.click();
+ assert.match(text(card),/Preview unavailable/);assert.match(text(card),/Rarity unavailable/);assert.equal(byClass(card,'collection-badge').length,124);view.dispose();
+});

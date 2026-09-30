@@ -1,0 +1,361 @@
+{
+  "scope": "Optional focused badge presentation; synthetic public profile data; not final art or release certification",
+  "observations": [
+    {
+      "source": "achievement-detail-source-red-01/report.json",
+      "stored": "01-report.json.gz",
+      "bytes": 11098,
+      "sha256": "dfa239ed12f11a96722b3c4c84edbdbc09ec996ffa59da4d6d303d89d9533431",
+      "storedBytes": 1595,
+      "storedSha256": "91c53fbcacc7f763fddaeeec340d1e08617d5375d7978cc5cffd6d187259fa90"
+    },
+    {
+      "source": "achievement-detail-source-red-02/report.json",
+      "stored": "02-report.json.gz",
+      "bytes": 4162,
+      "sha256": "739ed8c7875fd22e3ecd2055cf7b830eb5be951a486118f4ed12c29b479f51ca",
+      "storedBytes": 1515,
+      "storedSha256": "2aadce20160aa0b628aa21d099fb81745f24f2867ff3d5bb38b65ce39894c75e"
+    },
+    {
+      "source": "achievement-detail-source-green-02/report.json",
+      "stored": "03-report.json.gz",
+      "bytes": 3530,
+      "sha256": "7f38378d633a0255e88b92dd5c26328cf8b364af25ff9f86d92ae6de2b7e20c2",
+      "storedBytes": 1248,
+      "storedSha256": "c4d288c5b621da419212acc13c1e3813a19668538a30f57228a596b26c8402a7"
+    },
+    {
+      "source": "achievement-detail-source-red-03/report.json",
+      "stored": "04-report.json.gz",
+      "bytes": 4670,
+      "sha256": "6f4e4bf7f93a0e861b1ad086e6bdfaee3f44d222c3b84f9a2600d54f59919337",
+      "storedBytes": 1639,
+      "storedSha256": "9807091d0fdd4b4aa1f338c34041d55c128cbc6278fd789f483ec797b636f559"
+    },
+    {
+      "source": "achievement-detail-source-green-03/report.json",
+      "stored": "05-report.json.gz",
+      "bytes": 4038,
+      "sha256": "68f788f1189775e70c2976f87580895949860cbcd5e77a49d9a20185c8ce648a",
+      "storedBytes": 1363,
+      "storedSha256": "699874790b733bd33b49c79b797e2ff76917765f15a68ce35bdf88b12921aa09"
+    },
+    {
+      "source": "achievement-detail-integration-red-01/report.json",
+      "stored": "06-report.json.gz",
+      "bytes": 15967,
+      "sha256": "3adc895c7505b7114c4df825983fea617d4cc9ae983b065c0a1e7118ce9a7bcf",
+      "storedBytes": 3880,
+      "storedSha256": "9645a77cac3ac9c3ca69169de0bfa43b266370bc1fb047914b88df36ea8bc45e"
+    },
+    {
+      "source": "achievement-detail-integration-green-01/report.json",
+      "stored": "07-report.json.gz",
+      "bytes": 14016,
+      "sha256": "68b2ae4367ec4420a7c0a152935e35a95b31f2c8c27a88d542a0745edc02b3a1",
+      "storedBytes": 3566,
+      "storedSha256": "775c03baf8b5f054cd2c1d6be2719159475de8c95de89cf24312b2b4dc38975f"
+    },
+    {
+      "source": "achievement-detail-source-copy-01/report.json",
+      "stored": "08-report.json.gz",
+      "bytes": 11598,
+      "sha256": "bd3dd8df8e639e81d440dac6defd68794a745452cf39cecb4c25dc3f4cfc1e42",
+      "storedBytes": 3016,
+      "storedSha256": "0095c6f960c45efb4512fd5f0314e5d7a160462f3ade3bad630258392606838e"
+    },
+    {
+      "source": "achievement-detail-source-copy-02/report.json",
+      "stored": "09-report.json.gz",
+      "bytes": 12096,
+      "sha256": "750e9750795e36f3a125251bd21852d7c6bd5dcde40debe7a038edf500b8db05",
+      "storedBytes": 3131,
+      "storedSha256": "add2f2b55b053b75eea9623bc53ab5cdaf397721f60b8fc9b66d85e4e70cd4de"
+    },
+    {
+      "source": "run-achievement-detail-source.mjs",
+      "stored": "10-run-achievement-detail-source.mjs.gz",
+      "bytes": 2740,
+      "sha256": "882120ffd31fc8e569830d250487f7da547e86b5e80947f1f8b2ec4b808250fc",
+      "storedBytes": 1222,
+      "storedSha256": "22ccdfb6aa0db9a9b2d6becc013ca6d1125fcd901127f0e13d01108444cadb94"
+    },
+    {
+      "source": "run-achievement-detail-source-02.mjs",
+      "stored": "11-run-achievement-detail-source-02.mjs.gz",
+      "bytes": 2716,
+      "sha256": "b3196b36db92aa59459738fe21d446fde257c23e7fc963b2608c44517e4bb29d",
+      "storedBytes": 1206,
+      "storedSha256": "caf012a1e9030fc257c8fe20e25e21c390b2acd336d965b6be46942ae776c42b"
+    },
+    {
+      "source": "run-achievement-detail-source-03.mjs",
+      "stored": "12-run-achievement-detail-source-03.mjs.gz",
+      "bytes": 2719,
+      "sha256": "7e4f53b36389b1da6ef477887b2f7abe6b4f3da80b955030d73eb25e4410a76f",
+      "storedBytes": 1206,
+      "storedSha256": "ad639707bc88ea0a646eca0ecc2f92872dd43c6ef65a0b9111012167052de61a"
+    },
+    {
+      "source": "run-detail-integration.mjs",
+      "stored": "13-run-detail-integration.mjs.gz",
+      "bytes": 3051,
+      "sha256": "4002c81711bd1debe3de4acd27eba01272adfbcb4576533ce505525da0681323",
+      "storedBytes": 1288,
+      "storedSha256": "1c3cc6c5eb4aaff9e26b8a61630ee881337cd391387528957f430d828901cf09"
+    },
+    {
+      "source": "run-detail-source-copy.mjs",
+      "stored": "14-run-detail-source-copy.mjs.gz",
+      "bytes": 3247,
+      "sha256": "fef6948c89c6eeaf124ac3318292e8e7177fab8d564ab1bdb0404c3123dd8e19",
+      "storedBytes": 1285,
+      "storedSha256": "5b92eab096356795ede1f6fa515a158299650a0039f39f984790c76dfeec0780"
+    },
+    {
+      "source": "run-detail-source-copy-02.mjs",
+      "stored": "15-run-detail-source-copy-02.mjs.gz",
+      "bytes": 3249,
+      "sha256": "718d72f0a263431dce9f893c076491ef9f2c658305d867fdf463364e86933f45",
+      "storedBytes": 1287,
+      "storedSha256": "72efe2cf14226fb5fd5e4d966b8c2aa439316577c61364f9288468ace9a5e5da"
+    },
+    {
+      "source": "owned-windows-child.mjs",
+      "stored": "16-owned-windows-child.mjs.gz",
+      "bytes": 3475,
+      "sha256": "a5177337fcf6ec41f285fc105b93d0b4b94ee1101cb14a653a91e9b8b075b0d9",
+      "storedBytes": 1360,
+      "storedSha256": "ade927025e2afbae667182802dfce78d9ddd6b3afea7cfd48a5b40eac5e8ea4b"
+    },
+    {
+      "source": "owned-windows-preview-child.mjs",
+      "stored": "17-owned-windows-preview-child.mjs.gz",
+      "bytes": 3476,
+      "sha256": "6f4903a66d324a01a476eebefdfac68663dde2c573f62f637c4b7537ccb0d631",
+      "storedBytes": 1360,
+      "storedSha256": "18c5cfc758da42cddbb922c7989a0204d20eb87c1d5d359985932ef89f92c162"
+    },
+    {
+      "source": "achievement-detail-browser-01/report.json",
+      "stored": "18-report.json.gz",
+      "bytes": 38797,
+      "sha256": "70f79ead61c5779223a4a659714f36d6cba1252350ab3d50475ff741c6a19baf",
+      "storedBytes": 7929,
+      "storedSha256": "a364e01023122180449b88f4d9472db82fa4b77d02c2c1d43349f4b212ee9660"
+    },
+    {
+      "source": "achievement-detail-built-gate-01/report.json",
+      "stored": "19-report.json.gz",
+      "bytes": 52848,
+      "sha256": "fcb3c495a435e915dc27e54f5d3a2a641e7ee585d0a47df2172c0090bd3b3b3d",
+      "storedBytes": 11513,
+      "storedSha256": "e26b9141658043dd0a65712f9ab5a8e616c031a5a7bb6cd6a33ef10df53958c0"
+    },
+    {
+      "source": "achievement-detail-browser-01.mjs",
+      "stored": "20-achievement-detail-browser-01.mjs.gz",
+      "bytes": 15135,
+      "sha256": "2e9edac760c205679d0bd1d0fcdfd03f02b8649987ecdffa316b1ffe03964384",
+      "storedBytes": 4968,
+      "storedSha256": "2eb52da401a853e849be91edb1da064caf168852563c900c47fdf262ecf8fedf"
+    },
+    {
+      "source": "run-achievement-detail-browser-01.mjs",
+      "stored": "21-run-achievement-detail-browser-01.mjs.gz",
+      "bytes": 4734,
+      "sha256": "f123ad5f3adfd92ce0108e38c819114f28da8fee409f10b6c61e33e25444f6ae",
+      "storedBytes": 1779,
+      "storedSha256": "42009aab4e082afa5c6425a865f07db6fcd2b86de731ff75cbde20411a100324"
+    },
+    {
+      "source": "achievement-detail-browser-02/report.json",
+      "stored": "22-report.json.gz",
+      "bytes": 53284,
+      "sha256": "8074933d48134e1dcf02b15e7003324e455cf29d7989bb64d9463356fb84ddd5",
+      "storedBytes": 8853,
+      "storedSha256": "2ec4321cdef3443af866fb672d3051089a0877c8c46c471236e1c7c34db917d3"
+    },
+    {
+      "source": "achievement-detail-built-gate-02/report.json",
+      "stored": "23-report.json.gz",
+      "bytes": 66366,
+      "sha256": "49f889c1fbf40f337011392f0bef20d0b2c2b61490c59e62a8063bc89ba9d7a8",
+      "storedBytes": 11762,
+      "storedSha256": "3bd54a435855b2c90b7b9ef102d00de0a3eabf05c34cdf445faa66919add59e6"
+    },
+    {
+      "source": "achievement-detail-browser-02.mjs",
+      "stored": "24-achievement-detail-browser-02.mjs.gz",
+      "bytes": 16578,
+      "sha256": "6e7738139aeb888c1d82a5a239cf938ab45091efc790ce46186208eff53349e5",
+      "storedBytes": 5383,
+      "storedSha256": "f78b695227b6ecd1a5603f8a658a971fcd16c5a8653922ba3890f053b08ae042"
+    },
+    {
+      "source": "run-achievement-detail-browser-02.mjs",
+      "stored": "25-run-achievement-detail-browser-02.mjs.gz",
+      "bytes": 5172,
+      "sha256": "5fb538cc0f11842f8a565dea89e5b06684a2f7294816b3a4b0b4d4fd83fd008d",
+      "storedBytes": 1880,
+      "storedSha256": "93f9e050c74579f0b2013ac0828af09c9972153b846a16b2f793a56773491aba"
+    },
+    {
+      "source": "achievement-detail-browser-03/report.json",
+      "stored": "26-report.json.gz",
+      "bytes": 53340,
+      "sha256": "07112d00e3b9e4904a2f30d89c523293a9ecc46ee8a0402cd4ac3e01af65d077",
+      "storedBytes": 8861,
+      "storedSha256": "90fa0e1cf3136ae8968f6803bced500e77de95e219e1f57c97245e29c455a1ee"
+    },
+    {
+      "source": "achievement-detail-built-gate-03/report.json",
+      "stored": "27-report.json.gz",
+      "bytes": 66432,
+      "sha256": "543d42eff09b88424862626efdb2137e683a1c9731e56810c285b35d7c7bc2ca",
+      "storedBytes": 11775,
+      "storedSha256": "c4e4251ff6b3591a681f263daaf6a514557733bf2b30802012201d0093b2b694"
+    },
+    {
+      "source": "achievement-detail-browser-03.mjs",
+      "stored": "28-achievement-detail-browser-03.mjs.gz",
+      "bytes": 16826,
+      "sha256": "c47091730e73fc4eac577305047c13ea5aa04a4818498fdc8f000f6172b8fbe4",
+      "storedBytes": 5419,
+      "storedSha256": "c855344ce035b98e824c00bf07a8d2fb25bf151ec11687a17f28c42a570b3804"
+    },
+    {
+      "source": "run-achievement-detail-browser-03.mjs",
+      "stored": "29-run-achievement-detail-browser-03.mjs.gz",
+      "bytes": 5174,
+      "sha256": "97e6eb6e004274d4eec32966ff2e7cb3d0c83ae7941daf1ccf57c6c2bbadc490",
+      "storedBytes": 1883,
+      "storedSha256": "0903324975a1e4b0354abd525ec7d6f8df2271024ff6bda4f5eb354da0e43c27"
+    },
+    {
+      "source": "achievement-detail-browser-04/report.json",
+      "stored": "30-report.json.gz",
+      "bytes": 53245,
+      "sha256": "a44fd8de88f9008c96ac5199cf0ea76946545c8eb002abe7343de1c00455cf29",
+      "storedBytes": 8868,
+      "storedSha256": "4983d9102c03f03c18414f4f568ba988b6abfdba08aa69eea64982bd99ec8477"
+    },
+    {
+      "source": "achievement-detail-built-gate-04/report.json",
+      "stored": "31-report.json.gz",
+      "bytes": 68479,
+      "sha256": "97d064eeb6b3dcda15002ef74069f66ba380496c9a856701b30e474862bf02db",
+      "storedBytes": 12511,
+      "storedSha256": "54df0ad77d9a762017fc25ca9c36d463b09bcf6b3956679a86d7ae1e26073373"
+    },
+    {
+      "source": "achievement-detail-browser-04.mjs",
+      "stored": "32-achievement-detail-browser-04.mjs.gz",
+      "bytes": 16580,
+      "sha256": "d5c77fb837deb5545eedf586521979a20a1184c67f079870e05553440594bad8",
+      "storedBytes": 5385,
+      "storedSha256": "c356db5fb007b69d1f5678f04f56557731b68756659fe27ff2a28d17e061ab14"
+    },
+    {
+      "source": "run-achievement-detail-browser-04.mjs",
+      "stored": "33-run-achievement-detail-browser-04.mjs.gz",
+      "bytes": 4736,
+      "sha256": "2909bf981232e7a63ba53b356445c73247d1762fcdb9c4f7327e77a23211599e",
+      "storedBytes": 1782,
+      "storedSha256": "2d320bcef9ad4ca14a7a27dd9a5449a0433520b90b67fc8c465c961e2c882498"
+    },
+    {
+      "source": "achievement-detail-browser-05/report.json",
+      "stored": "34-report.json.gz",
+      "bytes": 43501,
+      "sha256": "45e3abad14262016df55f56c508ddc5f9e1afe3453fdca0671ce5a9605ae545d",
+      "storedBytes": 8170,
+      "storedSha256": "54c3116cebe75db2e56743f9f1028b6add4d54700a485347f14869144e9c0fe5"
+    },
+    {
+      "source": "achievement-detail-built-gate-05/report.json",
+      "stored": "35-report.json.gz",
+      "bytes": 57182,
+      "sha256": "1c1465a93c71d44ad1e6cf37febbb9ed09f3f8b485bc02356341a19b2e22bb06",
+      "storedBytes": 11440,
+      "storedSha256": "6384cd108e68dce1b001cc89a54a647f168bdd6cec5e0085ffa3062c88ab07b2"
+    },
+    {
+      "source": "achievement-detail-browser-05.mjs",
+      "stored": "36-achievement-detail-browser-05.mjs.gz",
+      "bytes": 16582,
+      "sha256": "f198cbcdcebe1ccb2788db1e21025511cb6ea811230670d957a8a63a49aba42a",
+      "storedBytes": 5385,
+      "storedSha256": "47653dda60e9472a1278667d567d164d84dd1f78c5793ac199eff578c5b2aa7a"
+    },
+    {
+      "source": "run-achievement-detail-browser-05.mjs",
+      "stored": "37-run-achievement-detail-browser-05.mjs.gz",
+      "bytes": 4738,
+      "sha256": "77986f27fdc2c4585d82d82500cc4d8cd56ad4401aa0dce10a9530be0b184b6f",
+      "storedBytes": 1782,
+      "storedSha256": "14d4ae447e91b0509a8c0ee656176438bb964471d76db158305ad938efe42cde"
+    },
+    {
+      "source": "achievement-detail-built-gate-05/meta.json",
+      "stored": "38-meta.json.gz",
+      "bytes": 4458661,
+      "sha256": "60d9b66f58688ad9a3d2f949b1389afc0ac345ab5819ab67eeda1374f82839df",
+      "storedBytes": 211767,
+      "storedSha256": "5e47c34368c9d484faab209771f37f0b0deb0eaaf2b93aa697a9b08c8dfc5f46"
+    }
+  ],
+  "finalCases": [
+    "delayed population keeps requirement and keyboard focus",
+    "detail loads on demand supports keyboard and restores current caller focus",
+    "game ownership and search filters",
+    "page lifecycle disposal and restored controller",
+    "phone framing touch-size controls and reduced motion",
+    "phone reduced motion detail fits viewport and stays static",
+    "phone native touch tilt is bounded and resets on release",
+    "default profile stays lazy",
+    "duplicate option stays off",
+    "malformed population preserves earned badges"
+  ],
+  "captures": [
+    {
+      "name": "desktop-owned",
+      "file": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\achievement-detail-browser-05\\desktop-owned.png",
+      "bytes": 1377047,
+      "sha256": "8620b5b79d9852a55b7abd616d93ca4a61c97648dad45b941bea840ee8ee7147",
+      "width": 1440,
+      "height": 2706
+    },
+    {
+      "name": "desktop-detail",
+      "file": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\achievement-detail-browser-05\\desktop-detail.png",
+      "sha256": "bb3823571d1acf23f826875aefd1be52c87a56dd08df1f6457ee51b00044726f"
+    },
+    {
+      "name": "phone-owned",
+      "file": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\achievement-detail-browser-05\\phone-owned.png",
+      "bytes": 1976078,
+      "sha256": "8b1c8c6e0ddf5e74ab9a41d2583ce749644bfca331c81db955deb2ea8a4393b9",
+      "width": 828,
+      "height": 8286
+    },
+    {
+      "name": "phone-detail",
+      "file": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\achievement-detail-browser-05\\phone-detail.png",
+      "sha256": "24adf71ba176241a77897d48213f987b79ac270c7c8ef5bad7e3ff198281bf01"
+    }
+  ],
+  "sourceTests": {
+    "detail": 10,
+    "related": 48,
+    "isolatedCopy": 32
+  },
+  "budgets": {
+    "hmhInitialPlusShared": 1039992,
+    "stackedInitial": 577431
+  },
+  "nativePhone": false,
+  "artAccepted": false,
+  "deployed": false
+}

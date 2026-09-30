@@ -572,3 +572,16 @@ This is local navigation design, not final art, complete world acceptance,
 physical-phone performance, official map/verifier or release certification.
 See slices/WORLD-W2D-CITY.md and receipts/world-city. Manual bundle is separate
 at outputs/hmh-city-authored-flow-preview.zip. No credits/push/deploy/version.
+
+
+## G1a focused badge preview — 2026-09-30
+
+Lazy focused dialog added behind the existing optional collection switch. Keyboard,
+±35° touch tilt, reduced motion, current-caller focus and import/disposal protection
+pass. Browser exposed a missing post-drag compatibility click; four failed attempts
+remain, deliberate guarded touch release fixes it. Final10detail +48related checks,
+same32 isolated copy and10actual Chrome cases pass with actual resource closure.
+Fresh build HMH1,039,992B/STACKED577,431B. Existing low-resolution art remains provisional;
+no physical phone, final art, full release or deployment acceptance. See
+slices/ACHIEVEMENT-DETAIL-G1A.md. City W2d gathered at4be0d105 after lead image review;
+world/terrain variation remains a priority. Other seven area art passes remain open.

@@ -20,6 +20,8 @@ const root = fileURLToPath(new URL('..', import.meta.url));
 
 // Every .mjs / .js module that must parse cleanly (node --check).
 const NODE_CHECK_FILES = [
+  'apps/portal/src/achievements/detail-view.mjs',
+  'tests/achievement-detail.test.mjs',
   'tests/achievement-collection-view.test.mjs',
   'apps/portal/src/achievements/collection-view.mjs',
   'apps/portal/src/achievements/collection-model.mjs',
