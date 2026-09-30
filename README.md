@@ -1,8 +1,19 @@
-# Lester's Arcade — 1.9.4: faster share previews on X
+# Lester's Arcade — 2.0.0: the visual overhaul, first drop
 
-Owner-reported follow-up to 1.9.3. Every run's share link is new to X, and X's post composer shows the card image only after X has fetched the page and its image; a fresh card took about 2 seconds to draw the first time, so the composer often opened without a picture. The results screen now fetches its own share page and card in the background once it has been on screen for about a second, so both are already cached when X asks. X still decides when it fetches, so a composer can occasionally open before the picture; the published post fetches the card again. No game runtime or Ranked verification change.
+The first live drop of the 2.0 overhaul. It ships everything that was complete and verified on the overhaul branch; the remaining 2.0 work (final area art for all ten areas, the three new bosses, the six new enemies in play, weapon models on the hero by default, cover and traversal in the simulation, Chikun course two as an official course) continues in the next update.
 
-Site/game version `1.9.4`; cache marker `lesters-arcade-v64-share-warm`. Continue on `fable/master-list-20260916`.
+What players see:
+
+- **Hard Money Heroes:** a three-level **Gore** setting (Off / Reduced / Full, default Full) in the pause menu; share cards stay gore-free. The four heroes carry a new 80-clip animation library (movement, evasion, cover, traversal, weapon, melee, damage, death, ceremony and four idle fidgets each) behind the optional 3D character mode. A **New Frontier (preview)** button in the Free Mode start opens the new ten-area 20,000 × 14,000 world in the real game: unranked, no leaderboard, no result and no share card. It is an unfinished preview so the owner and players can playtest layout and routes; its art is still the greybox pass except where area plans have landed.
+- **Chikun's Escape:** the course-two preview (shield, magnet, held-feather glide, fork lanes and seeded chases) is playable in Free Mode from `/play/chikun?course=2`. Official Ranked verification stays on course one; the course-two dispatch is code-complete but gated closed pending certification.
+- **STACKED:** the worst-case legal replay (432,000 ticks, 1,296,028 bytes) is now a committed fixture and verifies under the 250 ms budget locally.
+- **Achievements and rewards:** the parent-owned **Early Supporter** badge (awarded for any server-verified Ranked run before the cutoff), optional device-tilt on the focused badge (off by default), five new trophy catalog entries (two live only when their stats exist), and the twelve replacement rewards from the previous batch.
+
+Under the hood: the 96-model HD prop kit rendered from the owner's Tripo batches, the ten-area runtime world contract with a precomputed navigation grid, cover-v1 and traversal-v1 rule modules (not yet wired into the tick), six rigged 2.0 enemy models registered in a lazy table (not yet spawnable), the gated Chikun course-two verifier dispatch, and the exporter tooling reconciled so every hero and enemy GLB is reproducible.
+
+Not in this drop: nothing here changes contracts, fees, settlement, jackpot configuration or Ranked verification of existing runs. Testnet verification is not real-money settlement.
+
+Site/game version `2.0.0`; cache marker `lesters-arcade-v65-frontier-preview`. Continue on `codex/visual-overhaul-200-20260929`.
 
 ## How to play
 
@@ -119,6 +130,12 @@ Runtime source `81a03ef6` on `fable/master-list-20260916`; production deployment
 The homepage and game browser redesign, HMH mobile optimization and world presentation, Chikun mixed flight passages, and STACKED mobile aquatic music visuals are live at https://lestersarcade.io. Chikun's repeating white-noise ambience is removed, and town, forest and canopy collisions now produce normal results and allow another run.
 
 Runtime source `a0e6b2a5866f13c5cf3ee2a78070e9281d679b71`; deployment `dpl_Gnf2tetZUqK5fsfH7Pgcy4gERe7B`; site/game version `1.5.1`. The hosted gate passes 3,760 of 3,811 tests with exactly 51 unchanged retired exceptions. All 98 public file and route hashes match. Public desktop and 414×896 touch-layout checks cover all three collision types, exact replay results, retries and action audio with zero looping sources or runtime errors. Returning-cache migration from v49 to v50 passes. [Release receipt](docs/qa/chikun-fixes-release-20260914.json). Retained rollback: `dpl_14Wqtwjo1XZbCb6ne13cgovTd7hF`. Continue on `codex/mobile-worlds-aquatic-20260914`. Physical-device acceptance and the broader roadmap remain open.
+
+## 1.9.4: faster share previews on X — live predecessor
+
+Owner-reported follow-up to 1.9.3. Every run's share link is new to X, and X's post composer shows the card image only after X has fetched the page and its image; a fresh card took about 2 seconds to draw the first time, so the composer often opened without a picture. The results screen now fetches its own share page and card in the background once it has been on screen for about a second, so both are already cached when X asks. X still decides when it fetches, so a composer can occasionally open before the picture; the published post fetches the card again. No game runtime or Ranked verification change.
+
+Site/game version `1.9.4`; cache marker `lesters-arcade-v64-share-warm`. Continue on `fable/master-list-20260916`.
 
 ## Homepage and discovery — preceding release
 

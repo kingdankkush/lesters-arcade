@@ -1,7 +1,7 @@
 {
   "schema": "hmh-release-facts/v1",
   "scope": "Offline source snapshot; not a release certificate or public-byte verification",
-  "sourceSnapshotSha256": "18ad4769d6467ff207c86993ba085be33b7e76f1b4fd78c8f4331170b9197d05",
+  "sourceSnapshotSha256": "dc53e576e8c3459c1ce5d02dacdce7d0983d50e61d5914d22f2ce6ade88b9410",
   "sourceInputs": [
     {
       "path": "apps/portal/games/chikun/game.manifest.json",
@@ -15,18 +15,18 @@
     },
     {
       "path": "apps/portal/index.html",
-      "sha256": "46fd65f56dd98cb13f006cfbd251c8bfb7732c76de1f1cb24726fc210695bd5a",
-      "bytes": 43507
+      "sha256": "383838a87cbbf4b94c02de9d3818943fbff3acd298b921845179a6dc9ac1c146",
+      "bytes": 43554
     },
     {
       "path": "apps/portal/main.js",
-      "sha256": "d80d0afa473f675176b0c2a06f3d42a59f9859d7f538a24773e307f0a796c163",
-      "bytes": 451336
+      "sha256": "55076772fb1157511f6d3ddce3b3e7a3a8085247351fb806b42394d2ccaf7e55",
+      "bytes": 455645
     },
     {
       "path": "apps/portal/src/arcade-core.mjs",
-      "sha256": "8ec2fc3f0345f6e2c7230b77ee96117a5d4ba74a2a97ca7a35a5250efed1a517",
-      "bytes": 366522
+      "sha256": "9780be6ac53a2798fef661071d0d56b03be307337ee7202df21d05fa7b5cb658",
+      "bytes": 367182
     },
     {
       "path": "apps/portal/src/hmh-challenge-ui.mjs",
@@ -45,8 +45,8 @@
     },
     {
       "path": "apps/portal/src/routes/official-profile-route.mjs",
-      "sha256": "c96243efe4a297590d28af215eb567bfd180c55ece93a77a5fba437a007c0eea",
-      "bytes": 55678
+      "sha256": "8aa19012139d7f7c6d83f4a66c9c7d250bfe4483abcd457a26eaf231fcd31bbe",
+      "bytes": 55870
     },
     {
       "path": "apps/portal/src/settlement.mjs",
@@ -55,8 +55,8 @@
     },
     {
       "path": "apps/portal/styles-arcade-polish.css",
-      "sha256": "5193c346e6d5d652a139e9815633673fc8e53623482c541f8ac143ea2677d69d",
-      "bytes": 99833
+      "sha256": "0f98a996622bc5649afdd2b96224235168df22bd43f80e5faaf462a911f10a4d",
+      "bytes": 100586
     },
     {
       "path": "docs/hmh-reboot/OPEN-WORK-CURRENT-STATUS.json",
@@ -90,8 +90,8 @@
     },
     {
       "path": "README.md",
-      "sha256": "076f3d9c4773d56ff2c882217a1022247b11f6fc50ca86adf9d1286ada41055d",
-      "bytes": 64187
+      "sha256": "08b1feb8844a2a674f3462eb6456ae3ec5e2e54f2d18fcc5bff1728fb766352e",
+      "bytes": 66838
     },
     {
       "path": "scripts/hmh-release-facts.mjs",
@@ -100,12 +100,12 @@
     },
     {
       "path": "scripts/syntax-check.mjs",
-      "sha256": "be60a8765a89aafe8290c1a4da380dec0a93c308af52f82159d80216e0d4b824",
-      "bytes": 60971
+      "sha256": "f221032ceed5151ff1f5bcc7b4aeb8aac36b4a426742d980002ce255ca528e48",
+      "bytes": 71416
     },
     {
       "path": "tests/arcade-core.test.mjs",
-      "sha256": "a3c84e40675d40b5d9b28ed0b063a2a71c8238c7f5773afb216604b905243760",
+      "sha256": "3be5608edafbaeb1de3f5327bb9ecd1411c0a4f7075f1064690c612c78e5cc59",
       "bytes": 194223
     },
     {
