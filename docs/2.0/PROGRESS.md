@@ -358,3 +358,38 @@ Original sources and all failed receipts/arrays are preserved; no corrected
 GLB, complete animation fleet, three texture tiers or phone3Dgate is claimed.
 Read-only shading-error measurement is next. The separate failed-asset Desktop
 archive copy remains unexecuted after automatic approval review rejected it.
+
+
+## Rewards, site and blog scope added
+
+The owner explicitly added the companion achievements/unlockables/site/blog guide
+to the same combined2.0 release. The attached guide was read in full. The bounded
+workstream inventory is ACHIEVEMENTS-UNLOCKABLES-SITE-BLOG-PLAN.md. No new feature,
+migration, earning rule, publication, minting, contract action or deployment is
+claimed by this update. The original attachment path is no longer present for
+a raw filesystem copy; no exact archived-byte identity is claimed.
+
+Actual pure-catalog audit confirms124available achievements(44HMH/40Chikun/
+40STACKED),57HMH total rows and13existingNFT candidates. The actual unlockable
+catalog has27entries: two retained character unlocks and25cosmetics(8/10/7),
+not the guide's22. Retirement uses exact IDs and retains earned achievement
+history. Open reward package choices are pending the owner's answer; safe UI/
+art/API design and source audits can proceed. Blog drafts remain in the owner's
+combined-release scope instead of interpreting the guide's early-publication
+recommendation as authorization. The additional substantial scope stays open.
+
+## Chikun E1 native correction checkpoint
+
+The first8frame eagle render failed exact restoration, with source unchanged.
+A read-only native diagnostic proves matrix round-trips perturb15feather native
+channels and matrices by up to1.49e-7; direct restoration of original native
+properties yields zero difference. Four real-helper cases and two actual finally-
+body failure-custody regressions pass; primary and cleanup errors stay distinct.
+Actual portal boot-query/draw integration adds3passing behavior fixtures.
+
+The independently reviewed corrected8frame render completes in21.2033s, restores
+mesh/matrix-inclusive identity exactly(6c7f2ea3...), retains original source
+SHA375640a1..., and closes its owned native child/marker. Previous failure and
+corrected proposal/receipts are preserved separately. No source model was saved.
+This simple existing bird remains placeholder art below the final target; actual
+three-tier packing/game replay checks and production art admission remain open.

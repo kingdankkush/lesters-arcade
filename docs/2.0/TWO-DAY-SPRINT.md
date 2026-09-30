@@ -18,3 +18,9 @@ The current combined candidate is local, at dc94f016. Its fresh syntax and build
 Owner checkpoints still required: art bible and target-quality slice; physical 3D performance results; playable ten-area greybox before area art; approval for the specific final release. The phone is an iPhone XS Max using Chrome. Desktop phone-sized captures do not satisfy the physical-phone checks, including HMH's 30-minute memory run and STACKED's 60-minute soak.
 
 There is no generation-credit spend, dependency installation, version bump, deployment or promotion in this sprint plan. The proposed failed boss archive copy is still pending its specific answer; the originals remain safe and other work continues.
+
+
+The owner subsequently added the companion rewards/site/blog overhaul. See
+ACHIEVEMENTS-UNLOCKABLES-SITE-BLOG-PLAN.md for G1-G4/H1-H2 slices and actual catalog
+counts. The expanded scope remains part of the combined release; no additional
+features or owner decisions are considered completed by the schedule.
