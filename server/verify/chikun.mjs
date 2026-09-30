@@ -22,7 +22,6 @@ import {
 } from '../../apps/portal/src/chikun-cabinet.mjs';
 import { courseV2InputTicks } from '../../apps/portal/src/chikun-course-v2-runtime.mjs';
 import {
-  CHIKUN_OFFICIAL_COURSES_BY_VERSION,
   CHIKUN_OFFICIAL_COURSE_TWO_ENABLED,
   CHIKUN_OFFICIAL_MAX_TRANSITIONS,
   officialChikunCourseForEvidence,
@@ -166,10 +165,10 @@ export async function verifyChikunRun({ identity, evidence, nowMs, courseTwoEnab
 }
 
 // Stored evidence text → the §5.1 evidence object (reverifyStoredRun). The
-// encoding follows the stored version's course; anything else keeps the v6
-// encoding and fails the verifier's version check as before.
-export function parseChikunEvidenceText(text) {
-  const flap = JSON.parse(text);
-  const course = isPlainObject(flap) && typeof flap.version === 'string' && Object.hasOwn(CHIKUN_OFFICIAL_COURSES_BY_VERSION, flap.version) ? CHIKUN_OFFICIAL_COURSES_BY_VERSION[flap.version] : null;
-  return { encoding: course?.encoding ?? CHIKUN_EVIDENCE_ENCODING, flap };
+// stored encoding column is kept as it is (v6 for every row until course two
+// is official); the verifier then checks that the text's version belongs to
+// that encoding, so a v7 text under the v6 column answers
+// evidence-version-unsupported exactly as it did before the dispatch table.
+export function parseChikunEvidenceText(text, encoding = CHIKUN_EVIDENCE_ENCODING) {
+  return { encoding, flap: JSON.parse(text) };
 }

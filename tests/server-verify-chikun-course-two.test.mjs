@@ -6,7 +6,7 @@ import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import { computeEvidenceDigest, reverifyStoredRun, verifyRankedRun } from '../server/verify/index.mjs';
 import { CHIKUN_V6_STATS_KEYS, CHIKUN_V7_STATS_KEYS, parseChikunEvidenceText, verifyChikunRun } from '../server/verify/chikun.mjs';
-import { CHIKUN_RUNTIME_VERSION, replayChikunRun } from '../apps/portal/src/chikun-cabinet.mjs';
+import { CHIKUN_RUNTIME_VERSION, createChikunRuntime, replayChikunRun } from '../apps/portal/src/chikun-cabinet.mjs';
 import { replayCourseV2 } from '../apps/portal/src/chikun-course-v2-runtime.mjs';
 import { exportChikunReplay, importChikunReplay } from '../apps/chikun/src/replay-file.mjs';
 import { canonicalSessionJson } from '../apps/portal/src/session-integrity.mjs';
@@ -45,7 +45,7 @@ test('the committed course-two fixture is a real course-two run with flaps and h
   assert.ok(flap.flapDeltas.length > 100 && flap.glideDeltas.length > 100, `${flap.flapDeltas.length} flaps, ${flap.glideDeltas.length} glide transitions`);
   const result = replayCourseV2(flap);
   assert.equal(result.score, fixture.expected.score);
-  assert.ok(result.shieldsUsed >= 1 && result.powerupsCollected >= 1, 'the run took and spent a Scrypt Shield');
+  assert.ok(result.shieldsUsed >= 1 && result.powerupsCollected >= 2, 'the run took a Scrypt Shield and a Glide Feather');
   assert.ok(result.crashed, 'the run ends on the course, not at maxTicks');
   assert.equal(fixture.expected.runtimeId, `chikun:${CHIKUN_RUNTIME_VERSION}:course-2`);
 });
@@ -108,7 +108,7 @@ test('gate open: a course-two run verifies with server-derived stats equal to a 
   // The per-game verifier, the digest and the re-sign path agree with the settle path.
   assert.deepEqual(await verifyChikunRun({ identity: run.identity, evidence: fixture.body.evidence, nowMs: FIXTURE_VERIFY_AT_MS, courseTwoEnabled: true }), run);
   assert.deepEqual(await computeEvidenceDigest(fixture.body, OPEN), { ok: true, encoding: V7_ENCODING, text: run.evidence.text, bytes: run.evidence.bytes, digest: run.evidence.digest });
-  assert.deepEqual(parseChikunEvidenceText(run.evidence.text), { encoding: V7_ENCODING, flap });
+  assert.deepEqual(parseChikunEvidenceText(run.evidence.text, V7_ENCODING), { encoding: V7_ENCODING, flap });
   assert.deepEqual(await reverifyStoredRun({ gameId: 'chikun', identity: run.identity, evidence: { encoding: run.evidence.encoding, text: run.evidence.text } }, { nowMs: FIXTURE_VERIFY_AT_MS, courseTwoEnabled: true }), run);
 });
 
@@ -153,7 +153,7 @@ test('gate open: a seed other than the bound ticket seed is rejected', async () 
 
 test("gate open: course-two evidence copied from another wallet's ticket does not verify", async () => {
   const otherWallet = '0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc';
-  const other = await buildFixtureBody({ gameId: 'chikun', wallet: otherWallet, salt: fixtureSalt('another wallet, course two'), evidence: { course: 2, maxMinutes: 0.5 } });
+  const other = await buildFixtureBody({ gameId: 'chikun', wallet: otherWallet, salt: fixtureSalt('another wallet, course two'), evidence: { course: 2, maxMinutes: 2 } });
   assert.equal(other.body.evidence.encoding, V7_ENCODING);
   assert.equal((await verifyOpen(other.body, { wallet: otherWallet })).ok, true, 'the other wallet verifies its own run');
   assert.equal((await verifyClosed(other.body, { wallet: otherWallet })).ok, false, 'and only through the gate');
@@ -248,4 +248,65 @@ test('the course-two fixture round-trips through the replay file and rebuilds fr
   assert.deepEqual(JSON.parse(JSON.stringify(imported.evidence)), flap, 'the file carries exactly the verified evidence');
   assert.equal((await verifyOpen(bodyWith((body) => { body.evidence.flap = JSON.parse(JSON.stringify(imported.evidence)); }))).score, fixture.expected.score);
   assert.deepEqual(await buildFixture('chikun-course-two'), fixture);
+});
+
+test('the held glide is load-bearing: dropping or inverting it changes the run', async () => {
+  const flap = fixture.body.evidence.flap;
+  const honest = replayCourseV2(flap);
+  // A Glide Feather was collected and its gap glide spent, so the same flap
+  // ticks without the held transitions fall into the gap: the replay ends
+  // early and the remaining flaps sit at or after its terminal tick.
+  assert.throws(() => replayCourseV2({ ...flap, glideDeltas: [] }), /terminal tick/);
+  const droppedRun = await verifyOpen(bodyWith((body) => { body.evidence.flap.glideDeltas = []; }));
+  assert.equal(droppedRun.status, 422);
+  assert.equal(droppedRun.error, 'replay-rejected');
+  // Inverting the held state (a toggle at tick 0, or removing one that is there) is another run too.
+  const inverted = flap.glideDeltas[0] === 0 ? [flap.glideDeltas[1], ...flap.glideDeltas.slice(2)] : [0, ...flap.glideDeltas];
+  let invertedResult = null;
+  try { invertedResult = replayCourseV2({ ...flap, glideDeltas: inverted }); } catch { invertedResult = null; }
+  assert.ok(invertedResult === null || JSON.stringify(invertedResult.finalState) !== JSON.stringify(honest.finalState), 'an inverted hold never reproduces the honest run');
+  const invertedRun = await verifyOpen(bodyWith((body) => { body.evidence.flap.glideDeltas = inverted; }));
+  if (invertedRun.ok) {
+    assert.notEqual(invertedRun.evidence.digest, fixture.expected.evidenceDigest);
+    assert.ok(invertedRun.score !== honest.score || JSON.stringify(invertedRun.stats) !== JSON.stringify(fixture.expected.stats), 'an accepted inverted hold is scored as its own run');
+  } else {
+    assert.deepEqual([invertedRun.status, invertedRun.error], [422, 'replay-rejected']);
+  }
+  // The honest run really used the feather: a glide was active on the way through a gap.
+  const ticksOf = (deltas) => deltas.reduce((ticks, delta, i) => { ticks.push(i === 0 ? delta : ticks[i - 1] + delta); return ticks; }, []);
+  const flaps = new Set(ticksOf(flap.flapDeltas));
+  const holds = new Set(ticksOf(flap.glideDeltas));
+  const runtime = createChikunRuntime({ seed: flap.seed, maxTicks: flap.maxTicks, evidenceVersion: V7 });
+  let held = false; let glided = false; let feather = false;
+  while (!runtime.terminal) {
+    const snapshot = runtime.snapshot();
+    feather ||= snapshot.powers.feather;
+    glided ||= snapshot.powers.gliding;
+    if (holds.has(snapshot.tick)) held = !held;
+    runtime.step({ flap: flaps.has(snapshot.tick), glide: held });
+  }
+  assert.equal(feather && glided, true, 'the fixture collected a Glide Feather and glided through a gap');
+  assert.deepEqual(runtime.result(), honest);
+});
+
+test('reverifyStoredRun checks the stored encoding column against the text in both gate states', async () => {
+  const open = await verifyOpen(fixture.body);
+  const v6 = await verifyClosed(v6Fixture.body);
+  const stored = (run, encoding = run.evidence.encoding) => ({ gameId: 'chikun', identity: run.identity, evidence: { encoding, text: run.evidence.text } });
+  const at = { nowMs: FIXTURE_VERIFY_AT_MS };
+  // Honest columns round-trip.
+  assert.deepEqual(await reverifyStoredRun(stored(open), { ...at, courseTwoEnabled: true }), open);
+  assert.deepEqual(await reverifyStoredRun(stored(v6), at), v6);
+  assert.deepEqual(await reverifyStoredRun(stored(v6), { ...at, courseTwoEnabled: true }), v6);
+  // A v7 text under the v6 column: gate closed answers exactly what the base did; gate open refuses it too.
+  const v7TextUnderV6 = stored(open, V6_ENCODING);
+  assert.deepEqual(await reverifyStoredRun(v7TextUnderV6, at), { ok: false, status: 400, error: 'evidence-version-unsupported', detail: 'Ranked accepts only chikun-flap-evidence-v6' });
+  assert.deepEqual(await reverifyStoredRun(v7TextUnderV6, { ...at, courseTwoEnabled: true }), { ok: false, status: 400, error: 'evidence-version-unsupported', detail: 'Ranked accepts only chikun-flap-evidence-v6, chikun-input-evidence-v7' });
+  // A v6 text under the v7 column: the closed gate never lists v7; the open gate refuses the mismatch.
+  const v6TextUnderV7 = stored(v6, V7_ENCODING);
+  assert.deepEqual(await reverifyStoredRun(v6TextUnderV7, at), { ok: false, status: 400, error: 'invalid-evidence' });
+  assert.equal((await reverifyStoredRun(v6TextUnderV7, { ...at, courseTwoEnabled: true })).error, 'evidence-version-unsupported');
+  // The parser keeps whatever column it is given; the verifier does the matching.
+  assert.deepEqual(parseChikunEvidenceText(open.evidence.text, V7_ENCODING), { encoding: V7_ENCODING, flap: fixture.body.evidence.flap });
+  assert.deepEqual(parseChikunEvidenceText(open.evidence.text), { encoding: V6_ENCODING, flap: fixture.body.evidence.flap });
 });

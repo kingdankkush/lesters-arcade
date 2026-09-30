@@ -34,6 +34,7 @@ import { isDeepStrictEqual } from 'node:util';
 import * as liveCourse from '../../../apps/portal/src/chikun-ground-course.mjs';
 import { GROUND_PHYSICS } from '../../../apps/portal/src/chikun-ground-runtime.mjs';
 import { createChikunRuntime } from '../../../apps/portal/src/chikun-cabinet.mjs';
+import { replayCourseV2 } from '../../../apps/portal/src/chikun-course-v2-runtime.mjs';
 import { botProfile, createChikunBot } from '../../../scripts/lib/chikun-bots.mjs';
 import { routePilot } from '../../../scripts/chikun-course-pilot.mjs';
 import { CHIKUN_OFFICIAL_COURSES_BY_ID } from '../../../apps/portal/src/chikun-official-course.mjs';
@@ -141,24 +142,45 @@ export function buildChikunEvidence({ seed, profile = 'expert', maxMinutes = 2, 
   return { flap: plain(result.evidence), score: result.score, survivalTicks: result.survivalTicks };
 }
 
-// Course two (chikun-input-evidence-v7): the run starts on the ground long
-// enough to take the first Scrypt Shield, then the region autopilot flies the
-// high line; the jump key is held whenever Chikun is airborne and falling, so
-// the evidence carries real held-glide transitions alongside the flaps. After
-// `maxMinutes` nothing is pressed and the run ends on the course.
-export function buildChikunCourseTwoEvidence({ seed, maxMinutes = 2, maxTicks = 216_000, groundTicks = 120 } = {}) {
+// Course two (chikun-input-evidence-v7). The pilot reads only the public
+// snapshot: it starts on the ground (taking the first Scrypt Shield), flies the
+// region autopilot's high line, stays on or returns to the ground while a Glide
+// Feather is ahead so it collects one, and at the next gap after that dives
+// with the jump key held (no flaps until y 430) so the feather's gap glide is
+// spent and caps the fall. Otherwise the key is held whenever Chikun is airborne
+// and falling. The glide is load-bearing: without the held transitions the dive
+// falls into the gap and the same flap ticks no longer replay (the tests prove
+// it). After `maxMinutes` nothing is pressed and the run ends on the course.
+export function courseTwoFixturePilot(snapshot, { groundTicks = 120, featherLeadPx = 1_100, diveFloorY = 430 } = {}) {
+  const chikun = snapshot.chikun;
+  const featherAhead = snapshot.powerups.find((pickup) => pickup.kind === 'feather' && !pickup.collected && pickup.x > chikun.x && pickup.x - chikun.x < featherLeadPx);
+  const overGap = snapshot.forks.some((obstacle) => obstacle.family === 'gap' && chikun.x > obstacle.x && chikun.x < obstacle.x + obstacle.width);
+  const diving = overGap && (snapshot.powers.feather || snapshot.powers.gliding) && chikun.y < diveFloorY;
+  const glide = diving || (chikun.locomotion !== 'run' && chikun.velocityY > 0.5);
+  if (snapshot.tick < groundTicks || (featherAhead && !snapshot.powers.feather) || diving) return { flap: false, glide };
+  return { flap: routePilot(snapshot), glide };
+}
+
+export function buildChikunCourseTwoEvidence({ seed, maxMinutes = 2, maxTicks = 216_000 } = {}) {
   const course = CHIKUN_OFFICIAL_COURSES_BY_ID[2];
   const runtime = createChikunRuntime({ seed, maxTicks, evidenceVersion: course.evidenceVersion });
   const stopTick = Math.round(maxMinutes * TICKS_PER_MINUTE);
+  let featherTaken = false;
+  let glided = false;
   while (!runtime.terminal) {
     const snapshot = runtime.snapshot();
-    const active = snapshot.tick < stopTick;
-    const flap = active && snapshot.tick >= groundTicks ? routePilot(snapshot) : false;
-    const glide = active && snapshot.chikun.locomotion !== 'run' && snapshot.chikun.velocityY > 0.5;
+    featherTaken ||= snapshot.powers.feather;
+    glided ||= snapshot.powers.gliding;
+    const { flap, glide } = snapshot.tick < stopTick ? courseTwoFixturePilot(snapshot) : { flap: false, glide: false };
     runtime.step({ flap, glide });
   }
   const result = runtime.result();
   if (result.evidence.version !== course.evidenceVersion || !result.evidence.glideDeltas.length || !result.evidence.flapDeltas.length) throw new Error('course-two evidence must carry flaps and held-glide transitions');
+  if (!featherTaken || !glided) throw new Error('course-two evidence must collect a Glide Feather and spend a gap glide');
+  // The held input must decide the run: the same flaps without the glides do not replay to this result.
+  let inert = true;
+  try { inert = JSON.stringify(replayCourseV2({ ...result.evidence, glideDeltas: [] }).finalState) === JSON.stringify(result.finalState); } catch { inert = false; }
+  if (inert) throw new Error('course-two evidence glides are inert');
   return { flap: plain(result.evidence), score: result.score, survivalTicks: result.survivalTicks };
 }
 
@@ -816,7 +838,7 @@ export const HMH_V7_FIXTURE_NAMES = Object.freeze(Object.keys(HMH_V7_FIXTURE_SPE
 // default settle refuses it (CHIKUN_OFFICIAL_COURSE_TWO_ENABLED is false), so
 // the builder verifies it with the gate injected open and records that run.
 export const CHIKUN_V7_FIXTURE_SPECS = Object.freeze({
-  'chikun-course-two': Object.freeze({ gameId: 'chikun', note: 'GATED (course two, chikun-input-evidence-v7): 2 minutes of the region autopilot with held glides on the course-two runtime, then no presses until the run ends. Verifies only with courseTwoEnabled: true.', evidence: { course: 2, maxMinutes: 2 } }),
+  'chikun-course-two': Object.freeze({ gameId: 'chikun', note: 'GATED (course two, chikun-input-evidence-v7): up to 2 minutes of the fixture pilot on the course-two runtime (region autopilot, a Glide Feather collected on the ground, a held-glide dive through the next gap), then no presses until the run ends. Verifies only with courseTwoEnabled: true.', evidence: { course: 2, maxMinutes: 2 } }),
 });
 export const CHIKUN_V7_FIXTURE_NAMES = Object.freeze(Object.keys(CHIKUN_V7_FIXTURE_SPECS));
 

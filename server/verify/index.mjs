@@ -134,11 +134,13 @@ export async function reverifyStoredRun({ gameId, identity, evidence } = {}, { n
   const { verify, parse } = await gameModule(gameId);
   let parsed;
   try {
-    parsed = parse(evidence.text);
+    // The stored encoding column is authoritative: the text is verified under it.
+    parsed = parse(evidence.text, evidence.encoding);
   } catch {
     return fail('invalid-evidence');
   }
   const verified = await verify({ identity: canonical, evidence: parsed, nowMs, ...(courseTwoEnabled === undefined ? {} : { courseTwoEnabled }) });
   if (verified.ok && verified.evidence.text !== evidence.text) return fail('invalid-evidence', 'stored evidence text is not canonical');
+  if (verified.ok && verified.evidence.encoding !== evidence.encoding) return fail('invalid-evidence', 'stored evidence encoding does not match its text');
   return verified;
 }
