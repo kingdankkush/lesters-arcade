@@ -540,7 +540,7 @@ function setStatus(status, detail = '') {
 }
 
 async function boot() {
-  let artTarget = null, artTargetDisposed = false, pendingArtCleanup = null;
+  let artTarget = null, artTargetDisposed = false, pendingArtCleanup = null, areaArt = null;
   if (!stageElement) throw new Error('HMH reboot stage is missing');
   // S0.2: the lazy runtime chunks download while the renderer initialises.
   const lazyRuntimeModules = loadLazyRuntimeModules();
@@ -637,6 +637,7 @@ async function boot() {
         } else if (message.type === 'portal:dispose') {
           artTargetDisposed = true;
           void artTarget?.dispose();
+          areaArt?.dispose(); areaArt = null;
           void pendingArtCleanup?.retry();
           actor3dDisposed = true;
           actor3dPilot?.dispose();
@@ -964,6 +965,8 @@ async function boot() {
     worldProduction, world: LEVEL_ONE_WORLD, render: renderWorldProductionArt,
     ContainerClass: Container, GraphicsClass: Graphics, extraLayers: [worldDecalLayer],
   });
+  // Ten-area area art (projection-only lazy chunk); `?areaArt=0` keeps the greybox kit.
+  if (LEVEL_ONE_WORLD.artPlans?.authored && runtimeParams.get('areaArt') !== '0') import('./world-v2-area-art-binding.mjs').then(m => m.bindWorldV2AreaArt({ world: LEVEL_ONE_WORLD, host: world, depthLayer: worldDepthLayer, before: worldDecalLayer, loadTexture: url => Assets.load(url), unloadTexture: url => Assets.unload(url), resolution: performanceProfile.id !== 'desktop' ? 'half' : 'full', worldToScreen, ContainerClass: Container, depthKey: worldDepthKey })).then(binding => { if (!binding) return; if (artTargetDisposed || app.stage.destroyed) { binding.dispose(); return; } areaArt = binding; dataset.areaArtStatus = 'ready'; }).catch(error => { dataset.areaArtStatus = 'fallback'; console.warn('[HMH] Area art fallback', error); });
 
 
   const authoredPointOfInterestPlacements = HMH_WORLD_CONTEXT.pointOfInterestPlacements ?? buildAuthoredPointOfInterestPlacements(LEVEL_ONE_WORLD.pointsOfInterest);
@@ -1997,9 +2000,9 @@ async function boot() {
   const renderAuthoredTerrain = (view) => {
     if (terrainAreaStreaming && camera) terrainAreaStreaming.update({ camera: { x: camera.x, y: camera.y, groundZ: camera.groundZ, zoom: camera.zoom }, view: { ...view } });
     const gates = missionState.openGates;
-    if (nativeBlockers?.ids !== worldDesignBlockerIds || nativeBlockers.gates !== gates || nativeBlockers.size !== gates.size) {
-      const set = new Set([...worldDesignBlockerIds, ...gates]);
-      nativeBlockers = { ids: worldDesignBlockerIds, gates, size: gates.size, set, key: [...set].join(',') };
+    if (nativeBlockers?.ids !== worldDesignBlockerIds || nativeBlockers.gates !== gates || nativeBlockers.size !== gates.size || nativeBlockers.art !== areaArt) {
+      const set = new Set([...worldDesignBlockerIds, ...gates, ...(areaArt?.blockerIds ?? [])]);
+      nativeBlockers = { ids: worldDesignBlockerIds, gates, size: gates.size, art: areaArt, set, key: [...set].join(',') };
     }
     worldArtReport = worldBake.render({
       worldProduction,
@@ -2080,6 +2083,7 @@ async function boot() {
     }
     if (renderState && camera) {
       renderAuthoredTerrain(view);
+      areaArt?.update(camera, view, renderState);
       // W-13: the layer position (above the bodies) fixes the draw order; the
       // pass only needs the camera. Reduce motion (runtime toggle or the boot
       // profile) empties it the same way it stills the props; the grade is a

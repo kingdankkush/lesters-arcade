@@ -5,7 +5,10 @@ import { createGreyboxPropResidency } from './greybox-prop-residency.mjs';
 import { createWorldV2Geometry } from '../world-v2-geometry.mjs';
 import { createWorldV2LocalRuntime } from './world-v2-local-runtime.mjs';
 import { createLocalMeadowsRelayPlan } from './world-v2-local-relay.mjs';
-import { createWoodsArt } from './world-v2-woods-art.mjs';
+import { createAreaArt, createAreaArtTextureCache } from '../world-v2-area-art.mjs';
+import { createRugpullWoodsArtPlan } from '../world-v2-area-plans/rugpull-woods.mjs';
+import { createMwebMeadowsArtPlan } from '../world-v2-area-plans/mweb-meadows.mjs';
+import { createWorldRoadsArtPlan } from '../world-v2-area-plans/world-roads.mjs';
 import { quantizeDirection } from '../movement.mjs';
 import { InputState, createBrowserInputController } from '../input.mjs';
 import { TouchControlState } from '../touch-controls.mjs';
@@ -19,10 +22,13 @@ const points=area=>area.type==='polygon'?area.vertices:[{x:area.minX,y:area.minY
 
 // Match the existing launch lifetime's synchronous mount contract. Every async
 // resource is owned here; no default game, parent session or legacy hooks load.
-export function mountGreyboxPlaytest(root){
+// Area art is a presentation switch (default on, like the Meadows art target);
+// disabling it leaves the flat greybox and loads no kit page or tile.
+export function mountGreyboxPlaytest(root,{areaArt=true}={}){
   const authored=createGreyboxWorld(),abort=new AbortController(),input=new InputState(),touch=new TouchControlState({stickRadius:64});
   const relayPlan=createLocalMeadowsRelayPlan(authored);
-  const woodsArt=createWoodsArt({world:authored,signal:abort.signal});
+  const textureCache=areaArt?createAreaArtTextureCache():null;
+  const arts=areaArt?[['rugpull-woods',createRugpullWoodsArtPlan],['mweb-meadows',createMwebMeadowsArtPlan],['world-roads',createWorldRoadsArtPlan]].flatMap(([areaId,make])=>{const plan=make(authored);return plan?[createAreaArt({world:authored,areaId,plan,textureCache,signal:abort.signal,resolution:window.innerWidth<768?'half':'full'})]:[];}):[];
   let geometry=createWorldV2Geometry(authored),runtime=createWorldV2LocalRuntime({geometry,relayPlan});
   let disposed=false,failure=null,initialized=false,initSettled=false,appDestroyed=false,atlasTexture=null,image=null,hero=null,inputController=null;
   let frameId=null,lastTime=null,generation=0,inspectionJumps=0,renderFrames=0,nativeEvents=0,navWaitMs=null,width=1,height=1,shown=false;
@@ -33,7 +39,7 @@ export function mountGreyboxPlaytest(root){
     bounds:{left:piece.visible.bounds.minX,right:piece.visible.bounds.maxX,top:piece.visible.bounds.minY-piece.visible.height,bottom:piece.visible.bounds.maxY}})),
     create:drawSolid,setVisible:(graphic,visible)=>{graphic.visible=visible;},destroy:graphic=>{if(!graphic.destroyed)graphic.destroy({children:true});}});
   const startedAt=performance.now();
-  root.innerHTML='<header class="world-header"><div class="world-title"><strong>HMH · LOCAL FREE WORLD TEST</strong><span>Greybox routes · Rugpull Woods art · No score or rewards</span></div><div class="world-tools"><label>Inspection jump<select data-area-select aria-label="Inspection jump"></select></label><button data-inspect>Inspect</button><button data-start>Begin</button><button data-pause>Pause</button><button data-close>Close</button></div></header><section class="world-stage" data-stage aria-label="Local world"><div class="world-badge"><span data-area-name></span><output data-position></output></div><p class="world-status" data-status role="status" aria-live="polite">Preparing human art and navigation…</p></section><footer class="world-footer"><div class="world-instructions"><b>Walk with WASD / arrows or the movement stick.</b><span data-relay-task role="status" aria-live="polite">Restore the Meadows relay.</span><small>Other objectives, combat and climbing are staged. Inspection jumps reset the relay.</small><output data-nav>Building static return-to-inspection navigation…</output></div><button class="world-stick" data-stick aria-label="Movement stick"><span data-stick-knob></span></button></footer>';
+  root.innerHTML='<header class="world-header"><div class="world-title"><strong>HMH · LOCAL FREE WORLD TEST</strong><span>Greybox routes · Meadows, Woods and road art · No score or rewards</span></div><div class="world-tools"><label>Inspection jump<select data-area-select aria-label="Inspection jump"></select></label><button data-inspect>Inspect</button><button data-start>Begin</button><button data-pause>Pause</button><button data-close>Close</button></div></header><section class="world-stage" data-stage aria-label="Local world"><div class="world-badge"><span data-area-name></span><output data-position></output></div><p class="world-status" data-status role="status" aria-live="polite">Preparing human art and navigation…</p></section><footer class="world-footer"><div class="world-instructions"><b>Walk with WASD / arrows or the movement stick.</b><span data-relay-task role="status" aria-live="polite">Restore the Meadows relay.</span><small>Other objectives, combat and climbing are staged. Inspection jumps reset the relay.</small><output data-nav>Building static return-to-inspection navigation…</output></div><button class="world-stick" data-stick aria-label="Movement stick"><span data-stick-knob></span></button></footer>';
   const stage=root.querySelector('[data-stage]'),start=root.querySelector('[data-start]'),pauseButton=root.querySelector('[data-pause]'),closeButton=root.querySelector('[data-close]');
   const inspect=root.querySelector('[data-inspect]'),select=root.querySelector('[data-area-select]'),status=root.querySelector('[data-status]');
   const areaName=root.querySelector('[data-area-name]'),position=root.querySelector('[data-position]'),navLabel=root.querySelector('[data-nav]'),relayTask=root.querySelector('[data-relay-task]');
@@ -62,7 +68,7 @@ export function mountGreyboxPlaytest(root){
   }
   function dispose(){
     if(disposed){safe(()=>propResidency.dispose());return;}disposed=true;generation++;stopFrame();abort.abort();clearInput('local-world-disposed');
-    safe(()=>inputController?.destroy());inputController=null;runtime.dispose();safe(()=>propResidency.dispose());safe(()=>woodsArt?.dispose());destroyApp();
+    safe(()=>inputController?.destroy());inputController=null;runtime.dispose();safe(()=>propResidency.dispose());for(const art of arts)safe(()=>art.dispose());safe(()=>textureCache?.dispose());destroyApp();
     if(atlasTexture){safe(()=>atlasTexture.destroy(true));atlasTexture=null;}
     if(image){image.removeAttribute('src');image=null;}hero=null;
     for(const button of root.querySelectorAll('button'))button.disabled=true;
@@ -109,9 +115,9 @@ export function mountGreyboxPlaytest(root){
   const polygon=(graphic,vertices,color,stroke=null)=>{graphic.poly(vertices.flatMap(point=>[point.x,point.y])).fill(color);if(stroke)graphic.stroke({color:stroke,width:2});};
   function drawSolid(record){
     const piece=piecesById.get(record.id),b=piece.visible.bounds,vertices=piece.visible.vertices??points({type:'rect',...b}),height=piece.visible.height;
-    const graphic=woodsArt?.createSolid(piece)??new Graphics(),roof=vertices.map(point=>({x:point.x,y:point.y-height}));
+    let graphic=null;for(const art of arts){graphic=art.createSolid(piece);if(graphic)break;}graphic??=new Graphics();const roof=vertices.map(point=>({x:point.x,y:point.y-height}));
     try{
-      if(!graphic.woodsDecorated){
+      if(!graphic.areaArtDecorated){
         for(let i=0;i<vertices.length;i++){const j=(i+1)%vertices.length;polygon(graphic,[vertices[i],vertices[j],roof[j],roof[i]],'#43565a');}
         polygon(graphic,roof,piece.kind==='cover-short'?'#a0aaa0':'#718582','#b8c8bf');
       }graphic.zIndex=b.maxY;graphic.label=`local-prop-${piece.id}`;propOrder.set(graphic,record.ordinal);
@@ -128,13 +134,13 @@ export function mountGreyboxPlaytest(root){
     const surfaces=[authored.baseSurface,...authored.surfaces],byId=new Map(surfaces.map(surface=>[surface.id,surface]));
     for(const command of createGreyboxGroundPaint(surfaces)){
       const surface=byId.get(command.surfaceId);if(!surface.walkable&&surface.kind!=='water')continue;
-      if(woodsArt?.paintSurface({target:ground,surface,vertices:command.vertices}))continue;
+      if(arts.some(art=>art.paintSurface({target:ground,surface,vertices:command.vertices})))continue;
       const query=createAuthoredGroundQuery({baseSurface:surface});const graphic=new Graphics();
       polygon(graphic,command.vertices.map(point=>({x:point.x,y:point.y-query(point.x,point.y).groundZ})),command.fill,command.stroke);ground.addChild(graphic);
     }
     relayRing=new Graphics();relayRing.label='local-relay-ring';ground.addChild(relayRing);
     relayLamp=new Graphics();relayLamp.label='local-relay-lamp';relayLamp.zIndex=relayPlan.lamp.y+.01;depthLayer.addChild(relayLamp);
-    depthLayer.addChild(hero.container);woodsArt?.mount(depthLayer);
+    depthLayer.addChild(hero.container);for(const art of arts)art.mount(depthLayer,ground);
   }
   function drawRelay(state){
     const relay=state.relay,done=relay.completionTick!==null;
@@ -163,7 +169,7 @@ export function mountGreyboxPlaytest(root){
     hero.applyPose({simulationTick:reduced?0:state.tick,action:operating?'interact':'aim',actionTick:operating&&!reduced?Math.max(0,state.tick-state.relay.commitTick):0,
       locomotion:actor.locomotion,legDirection:actor.legDirection,torsoDirection});
     hero.setLayerVisible('weapon',!operating);drawRelay(state);
-    visiblePieces=propResidency.update({camera,view});woodsArt?.update(camera,view,render);
+    visiblePieces=propResidency.update({camera,view});for(const art of arts)art.update(camera,view,render);
     areaName.textContent=geometry.getAreaAt(actor.x,actor.y)?.name??'Connecting road';position.textContent=`${Math.round(actor.x)}, ${Math.round(actor.y)} · height ${Math.round(actor.groundZ)}`;
     app.render();renderFrames++;
   }
@@ -209,7 +215,7 @@ export function mountGreyboxPlaytest(root){
   })();
   const ready=(async()=>{
     try{
-      const [,,atlas]=await Promise.all([initTask,runtime.ready,atlasTask,woodsArt?.ready]);if(disposed)return;
+      const [,,atlas]=await Promise.all([initTask,runtime.ready,atlasTask,...arts.map(art=>art.ready)]);if(disposed)return;
       navWaitMs=performance.now()-startedAt;
       atlasTexture=Texture.from(image,true);hero=createProductionHeroDisplay({index:atlas,atlasTexture,ContainerClass:Container,SpriteClass:Sprite,TextureClass:Texture,RectangleClass:Rectangle});
       createWorldGraphics();resize();stage.appendChild(app.canvas);app.canvas.setAttribute('aria-label','Playable local Free world');app.canvas.tabIndex=0;
@@ -224,5 +230,5 @@ export function mountGreyboxPlaytest(root){
   return Object.freeze({ready,dispose,snapshot:()=>Object.freeze({disposed,failure,cleanupErrors:Object.freeze([...cleanupErrors]),inspectionJumps,renderFrames,nativeEvents,navWaitMs,
     frameScheduled:frameId!==null,width,height,visiblePieces,assetsReady:Boolean(hero&&atlasTexture),rendererType:appDestroyed?null:app.renderer?.type??null,
     heroArtSource:hero?.artSource??null,heroFrameIds:hero?.container.frameIds??'',bodyScale:PRODUCTION_HERO_RUNTIME_SCALE,cameraZoom:camera?.zoom??null,
-    heldKeys:input.keys.size,heldPointers:touch.pointers.size,woodsArt:woodsArt?.snapshot()??null,propResidency:propResidency.snapshot(),runtime:runtime.snapshot()})});
+    heldKeys:input.keys.size,heldPointers:touch.pointers.size,areaArt:Object.freeze(arts.map(art=>art.snapshot())),textureCache:textureCache?.snapshot()??null,propResidency:propResidency.snapshot(),runtime:runtime.snapshot()})});
 }

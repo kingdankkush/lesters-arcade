@@ -119,10 +119,14 @@ test('presentation hooks resolve to existing production kits and ten valid cache
     assert.ok(DISTRICT_PRODUCTION_MATERIALS[district.materialId], `${district.id} material kit`);
     assert.ok(DISTRICT_TERRAIN_MATERIAL[district.materialId], `${district.id} terrain material`);
     assert.equal(world.artPlans.districts[district.id].materialId, district.materialId);
-    assert.equal(world.artPlans.districts[district.id].artTarget, null);
+    const hook = world.artPlans.districts[district.id].artTarget;
+    if (['mweb-meadows', 'rugpull-woods'].includes(district.id)) { assert.equal(hook.kind, 'area-art-plan'); assert.equal(hook.planId, district.id); assert.equal(typeof hook.load, 'function'); }
+    else assert.equal(hook, null);
     assert.ok(world.districts.filter((other) => other !== district).every((other) => !(district.area.minX < other.area.maxX && other.area.minX < district.area.maxX && district.area.minY < other.area.maxY && other.area.minY < district.area.maxY)));
   }
   assert.equal(world.artPlans.mode, 'greybox-fallback');
+  assert.equal(world.artPlans.roads.planId, 'world-roads');
+  assert.equal(world.artPlans.authored.mapId, 'visual-overhaul-greybox-v1');
   for (const blocker of world.blockers) assert.ok(BLOCKER_PRODUCTION_KITS[blocker.visualKind], `${blocker.id} ${blocker.visualKind}`);
   for (const landmark of world.landmarks) assert.ok(LANDMARK_PRODUCTION_KITS[landmark.visualKind], landmark.id);
   for (const poi of world.pointsOfInterest) assert.ok(INTERACTION_PRODUCTION_KITS[poi.hook], poi.id);

@@ -1,0 +1,3351 @@
+{
+  "url": "http://127.0.0.1:49249/dist/hmh-world-v2-local/index.html?mode=free&world=world-v2-local",
+  "viewports": [
+    {
+      "name": "desktop",
+      "captures": [
+        {
+          "scene": "meadows-center",
+          "file": "desktop-meadows-center.png",
+          "position": {
+            "x": 12500,
+            "y": 6700
+          },
+          "snapshot": {
+            "areaArt": [
+              {
+                "areaId": "rugpull-woods",
+                "resolution": "full",
+                "pages": [
+                  "tripo-props-hd-plants-00.webp",
+                  "tripo-props-hd-structures-01.webp",
+                  "tripo-props-hd-props-00.webp"
+                ],
+                "tiles": [
+                  "forest-floor",
+                  "packed-earth",
+                  "wet-bank"
+                ],
+                "counts": {
+                  "zones": 3,
+                  "trails": 30,
+                  "decals": 0,
+                  "roads": 0,
+                  "props": 381,
+                  "solids": 10
+                },
+                "budget": {
+                  "kitPages": 3,
+                  "exclusiveKitPages": 2,
+                  "kitPageBudget": 2,
+                  "encodedBytes": 6170898,
+                  "decodedBytes": 50331648,
+                  "halfEncodedBytes": 614744,
+                  "halfDecodedBytes": 12582912,
+                  "tilePages": 6,
+                  "tileDecodedBytes": 3932160
+                },
+                "residency": {
+                  "live": 0,
+                  "visible": 0,
+                  "peak": 0
+                }
+              },
+              {
+                "areaId": "mweb-meadows",
+                "resolution": "full",
+                "pages": [
+                  "tripo-props-hd-plants-00.webp",
+                  "tripo-props-hd-structures-00.webp",
+                  "tripo-props-hd-props-00.webp"
+                ],
+                "tiles": [
+                  "crushed-ore",
+                  "forest-floor",
+                  "packed-earth"
+                ],
+                "counts": {
+                  "zones": 7,
+                  "trails": 14,
+                  "decals": 144,
+                  "roads": 0,
+                  "props": 84,
+                  "solids": 10
+                },
+                "budget": {
+                  "kitPages": 3,
+                  "exclusiveKitPages": 2,
+                  "kitPageBudget": 2,
+                  "encodedBytes": 6582428,
+                  "decodedBytes": 50331648,
+                  "halfEncodedBytes": 646884,
+                  "halfDecodedBytes": 12582912,
+                  "tilePages": 7,
+                  "tileDecodedBytes": 4194304
+                },
+                "residency": {
+                  "live": 12,
+                  "visible": 0,
+                  "peak": 12
+                }
+              },
+              {
+                "areaId": "world-roads",
+                "resolution": "full",
+                "pages": [
+                  "tripo-props-hd-props-00.webp"
+                ],
+                "tiles": [
+                  "crushed-ore",
+                  "packed-earth",
+                  "road"
+                ],
+                "counts": {
+                  "zones": 0,
+                  "trails": 0,
+                  "decals": 0,
+                  "roads": 14,
+                  "props": 63,
+                  "solids": 0
+                },
+                "budget": {
+                  "kitPages": 1,
+                  "exclusiveKitPages": 1,
+                  "kitPageBudget": 1,
+                  "encodedBytes": 2093182,
+                  "decodedBytes": 16777216,
+                  "halfEncodedBytes": 201074,
+                  "halfDecodedBytes": 4194304,
+                  "tilePages": 6,
+                  "tileDecodedBytes": 3932160
+                },
+                "residency": {
+                  "live": 7,
+                  "visible": 0,
+                  "peak": 7
+                }
+              }
+            ],
+            "textureCache": {
+              "disposed": false,
+              "urls": [
+                "/assets/generated/hmh-art-target/ground-details.webp",
+                "/assets/generated/hmh-reboot-tripo-props-hd/tripo-props-hd-plants-00.webp",
+                "/assets/generated/hmh-reboot-tripo-props-hd/tripo-props-hd-props-00.webp",
+                "/assets/generated/hmh-reboot-tripo-props-hd/tripo-props-hd-structures-00.webp",
+                "/assets/generated/hmh-reboot-tripo-props-hd/tripo-props-hd-structures-01.webp",
+                "/assets/generated/hmh-terrain-tiles/crushed-ore-fringe.png",
+                "/assets/generated/hmh-terrain-tiles/crushed-ore.png",
+                "/assets/generated/hmh-terrain-tiles/forest-floor-fringe.png",
+                "/assets/generated/hmh-terrain-tiles/forest-floor.png",
+                "/assets/generated/hmh-terrain-tiles/packed-earth-fringe.png",
+                "/assets/generated/hmh-terrain-tiles/packed-earth.png",
+                "/assets/generated/hmh-terrain-tiles/road-fringe.png",
+                "/assets/generated/hmh-terrain-tiles/road.png",
+                "/assets/generated/hmh-terrain-tiles/wet-bank-fringe.png",
+                "/assets/generated/hmh-terrain-tiles/wet-bank.png"
+              ],
+              "references": 26
+            },
+            "visiblePieces": 1,
+            "cameraZoom": 0.7928042763157894
+          }
+        },
+        {
+          "scene": "meadows-relay-court",
+          "file": "desktop-meadows-relay-court.png",
+          "position": {
+            "x": 12998,
+            "y": 6450
+          },
+          "snapshot": {
+            "areaArt": [
+              {
+                "areaId": "rugpull-woods",
+                "resolution": "full",
+                "pages": [
+                  "tripo-props-hd-plants-00.webp",
+                  "tripo-props-hd-structures-01.webp",
+                  "tripo-props-hd-props-00.webp"
+                ],
+                "tiles": [
+                  "forest-floor",
+                  "packed-earth",
+                  "wet-bank"
+                ],
+                "counts": {
+                  "zones": 3,
+                  "trails": 30,
+                  "decals": 0,
+                  "roads": 0,
+                  "props": 381,
+                  "solids": 10
+                },
+                "budget": {
+                  "kitPages": 3,
+                  "exclusiveKitPages": 2,
+                  "kitPageBudget": 2,
+                  "encodedBytes": 6170898,
+                  "decodedBytes": 50331648,
+                  "halfEncodedBytes": 614744,
+                  "halfDecodedBytes": 12582912,
+                  "tilePages": 6,
+                  "tileDecodedBytes": 3932160
+                },
+                "residency": {
+                  "live": 0,
+                  "visible": 0,
+                  "peak": 0
+                }
+              },
+              {
+                "areaId": "mweb-meadows",
+                "resolution": "full",
+                "pages": [
+                  "tripo-props-hd-plants-00.webp",
+                  "tripo-props-hd-structures-00.webp",
+                  "tripo-props-hd-props-00.webp"
+                ],
+                "tiles": [
+                  "crushed-ore",
+                  "forest-floor",
+                  "packed-earth"
+                ],
+                "counts": {
+                  "zones": 7,
+                  "trails": 14,
+                  "decals": 144,
+                  "roads": 0,
+                  "props": 84,
+                  "solids": 10
+                },
+                "budget": {
+                  "kitPages": 3,
+                  "exclusiveKitPages": 2,
+                  "kitPageBudget": 2,
+                  "encodedBytes": 6582428,
+                  "decodedBytes": 50331648,
+                  "halfEncodedBytes": 646884,
+                  "halfDecodedBytes": 12582912,
+                  "tilePages": 7,
+                  "tileDecodedBytes": 4194304
+                },
+                "residency": {
+                  "live": 15,
+                  "visible": 0,
+                  "peak": 15
+                }
+              },
+              {
+                "areaId": "world-roads",
+                "resolution": "full",
+                "pages": [
+                  "tripo-props-hd-props-00.webp"
+                ],
+                "tiles": [
+                  "crushed-ore",
+                  "packed-earth",
+                  "road"
+                ],
+                "counts": {
+                  "zones": 0,
+                  "trails": 0,
+                  "decals": 0,
+                  "roads": 14,
+                  "props": 63,
+                  "solids": 0
+                },
+                "budget": {
+                  "kitPages": 1,
+                  "exclusiveKitPages": 1,
+                  "kitPageBudget": 1,
+                  "encodedBytes": 2093182,
+                  "decodedBytes": 16777216,
+                  "halfEncodedBytes": 201074,
+                  "halfDecodedBytes": 4194304,
+                  "tilePages": 6,
+                  "tileDecodedBytes": 3932160
+                },
+                "residency": {
+                  "live": 7,
+                  "visible": 0,
+                  "peak": 7
+                }
+              }
+            ],
+            "textureCache": {
+              "disposed": false,
+              "urls": [
+                "/assets/generated/hmh-art-target/ground-details.webp",
+                "/assets/generated/hmh-reboot-tripo-props-hd/tripo-props-hd-plants-00.webp",
+                "/assets/generated/hmh-reboot-tripo-props-hd/tripo-props-hd-props-00.webp",
+                "/assets/generated/hmh-reboot-tripo-props-hd/tripo-props-hd-structures-00.webp",
+                "/assets/generated/hmh-reboot-tripo-props-hd/tripo-props-hd-structures-01.webp",
+                "/assets/generated/hmh-terrain-tiles/crushed-ore-fringe.png",
+                "/assets/generated/hmh-terrain-tiles/crushed-ore.png",
+                "/assets/generated/hmh-terrain-tiles/forest-floor-fringe.png",
+                "/assets/generated/hmh-terrain-tiles/forest-floor.png",
+                "/assets/generated/hmh-terrain-tiles/packed-earth-fringe.png",
+                "/assets/generated/hmh-terrain-tiles/packed-earth.png",
+                "/assets/generated/hmh-terrain-tiles/road-fringe.png",
+                "/assets/generated/hmh-terrain-tiles/road.png",
+                "/assets/generated/hmh-terrain-tiles/wet-bank-fringe.png",
+                "/assets/generated/hmh-terrain-tiles/wet-bank.png"
+              ],
+              "references": 26
+            },
+            "visiblePieces": 3,
+            "cameraZoom": 0.7928042763157894
+          }
+        },
+        {
+          "scene": "meadows-garden-lane",
+          "file": "desktop-meadows-garden-lane.png",
+          "position": {
+            "x": 11228,
+            "y": 6416
+          },
+          "snapshot": {
+            "areaArt": [
+              {
+                "areaId": "rugpull-woods",
+                "resolution": "full",
+                "pages": [
+                  "tripo-props-hd-plants-00.webp",
+                  "tripo-props-hd-structures-01.webp",
+                  "tripo-props-hd-props-00.webp"
+                ],
+                "tiles": [
+                  "forest-floor",
+                  "packed-earth",
+                  "wet-bank"
+                ],
+                "counts": {
+                  "zones": 3,
+                  "trails": 30,
+                  "decals": 0,
+                  "roads": 0,
+                  "props": 381,
+                  "solids": 10
+                },
+                "budget": {
+                  "kitPages": 3,
+                  "exclusiveKitPages": 2,
+                  "kitPageBudget": 2,
+                  "encodedBytes": 6170898,
+                  "decodedBytes": 50331648,
+                  "halfEncodedBytes": 614744,
+                  "halfDecodedBytes": 12582912,
+                  "tilePages": 6,
+                  "tileDecodedBytes": 3932160
+                },
+                "residency": {
+                  "live": 0,
+                  "visible": 0,
+                  "peak": 0
+                }
+              },
+              {
+                "areaId": "mweb-meadows",
+                "resolution": "full",
+                "pages": [
+                  "tripo-props-hd-plants-00.webp",
+                  "tripo-props-hd-structures-00.webp",
+                  "tripo-props-hd-props-00.webp"
+                ],
+                "tiles": [
+                  "crushed-ore",
+                  "forest-floor",
+                  "packed-earth"
+                ],
+                "counts": {
+                  "zones": 7,
+                  "trails": 14,
+                  "decals": 144,
+                  "roads": 0,
+                  "props": 84,
+                  "solids": 10
+                },
+                "budget": {
+                  "kitPages": 3,
+                  "exclusiveKitPages": 2,
+                  "kitPageBudget": 2,
+                  "encodedBytes": 6582428,
+                  "decodedBytes": 50331648,
+                  "halfEncodedBytes": 646884,
+                  "halfDecodedBytes": 12582912,
+                  "tilePages": 7,
+                  "tileDecodedBytes": 4194304
+                },
+                "residency": {
+                  "live": 6,
+                  "visible": 1,
+                  "peak": 15
+                }
+              },
+              {
+                "areaId": "world-roads",
+                "resolution": "full",
+                "pages": [
+                  "tripo-props-hd-props-00.webp"
+                ],
+                "tiles": [
+                  "crushed-ore",
+                  "packed-earth",
+                  "road"
+                ],
+                "counts": {
+                  "zones": 0,
+                  "trails": 0,
+                  "decals": 0,
+                  "roads": 14,
+                  "props": 63,
+                  "solids": 0
+                },
+                "budget": {
+                  "kitPages": 1,
+                  "exclusiveKitPages": 1,
+                  "kitPageBudget": 1,
+                  "encodedBytes": 2093182,
+                  "decodedBytes": 16777216,
+                  "halfEncodedBytes": 201074,
+                  "halfDecodedBytes": 4194304,
+                  "tilePages": 6,
+                  "tileDecodedBytes": 3932160
+                },
+                "residency": {
+                  "live": 19,
+                  "visible": 6,
+                  "peak": 19
+                }
+              }
+            ],
+            "textureCache": {
+              "disposed": false,
+              "urls": [
+                "/assets/generated/hmh-art-target/ground-details.webp",
+                "/assets/generated/hmh-reboot-tripo-props-hd/tripo-props-hd-plants-00.webp",
+                "/assets/generated/hmh-reboot-tripo-props-hd/tripo-props-hd-props-00.webp",
+                "/assets/generated/hmh-reboot-tripo-props-hd/tripo-props-hd-structures-00.webp",
+                "/assets/generated/hmh-reboot-tripo-props-hd/tripo-props-hd-structures-01.webp",
+                "/assets/generated/hmh-terrain-tiles/crushed-ore-fringe.png",
+                "/assets/generated/hmh-terrain-tiles/crushed-ore.png",
+                "/assets/generated/hmh-terrain-tiles/forest-floor-fringe.png",
+                "/assets/generated/hmh-terrain-tiles/forest-floor.png",
+                "/assets/generated/hmh-terrain-tiles/packed-earth-fringe.png",
+                "/assets/generated/hmh-terrain-tiles/packed-earth.png",
+                "/assets/generated/hmh-terrain-tiles/road-fringe.png",
+                "/assets/generated/hmh-terrain-tiles/road.png",
+                "/assets/generated/hmh-terrain-tiles/wet-bank-fringe.png",
+                "/assets/generated/hmh-terrain-tiles/wet-bank.png"
+              ],
+              "references": 26
+            },
+            "visiblePieces": 5,
+            "cameraZoom": 0.7928042763157894
+          }
+        },
+        {
+          "scene": "meadows-woods-road",
+          "file": "desktop-meadows-woods-road.png",
+          "position": {
+            "x": 14166,
+            "y": 7646
+          },
+          "snapshot": {
+            "areaArt": [
+              {
+                "areaId": "rugpull-woods",
+                "resolution": "full",
+                "pages": [
+                  "tripo-props-hd-plants-00.webp",
+                  "tripo-props-hd-structures-01.webp",
+                  "tripo-props-hd-props-00.webp"
+                ],
+                "tiles": [
+                  "forest-floor",
+                  "packed-earth",
+                  "wet-bank"
+                ],
+                "counts": {
+                  "zones": 3,
+                  "trails": 30,
+                  "decals": 0,
+                  "roads": 0,
+                  "props": 381,
+                  "solids": 10
+                },
+                "budget": {
+                  "kitPages": 3,
+                  "exclusiveKitPages": 2,
+                  "kitPageBudget": 2,
+                  "encodedBytes": 6170898,
+                  "decodedBytes": 50331648,
+                  "halfEncodedBytes": 614744,
+                  "halfDecodedBytes": 12582912,
+                  "tilePages": 6,
+                  "tileDecodedBytes": 3932160
+                },
+                "residency": {
+                  "live": 0,
+                  "visible": 0,
+                  "peak": 0
+                }
+              },
+              {
+                "areaId": "mweb-meadows",
+                "resolution": "full",
+                "pages": [
+                  "tripo-props-hd-plants-00.webp",
+                  "tripo-props-hd-structures-00.webp",
+                  "tripo-props-hd-props-00.webp"
+                ],
+                "tiles": [
+                  "crushed-ore",
+                  "forest-floor",
+                  "packed-earth"
+                ],
+                "counts": {
+                  "zones": 7,
+                  "trails": 14,
+                  "decals": 144,
+                  "roads": 0,
+                  "props": 84,
+                  "solids": 10
+                },
+                "budget": {
+                  "kitPages": 3,
+                  "exclusiveKitPages": 2,
+                  "kitPageBudget": 2,
+                  "encodedBytes": 6582428,
+                  "decodedBytes": 50331648,
+                  "halfEncodedBytes": 646884,
+                  "halfDecodedBytes": 12582912,
+                  "tilePages": 7,
+                  "tileDecodedBytes": 4194304
+                },
+                "residency": {
+                  "live": 28,
+                  "visible": 12,
+                  "peak": 38
+                }
+              },
+              {
+                "areaId": "world-roads",
+                "resolution": "full",
+                "pages": [
+                  "tripo-props-hd-props-00.webp"
+                ],
+                "tiles": [
+                  "crushed-ore",
+                  "packed-earth",
+                  "road"
+                ],
+                "counts": {
+                  "zones": 0,
+                  "trails": 0,
+                  "decals": 0,
+                  "roads": 14,
+                  "props": 63,
+                  "solids": 0
+                },
+                "budget": {
+                  "kitPages": 1,
+                  "exclusiveKitPages": 1,
+                  "kitPageBudget": 1,
+                  "encodedBytes": 2093182,
+                  "decodedBytes": 16777216,
+                  "halfEncodedBytes": 201074,
+                  "halfDecodedBytes": 4194304,
+                  "tilePages": 6,
+                  "tileDecodedBytes": 3932160
+                },
+                "residency": {
+                  "live": 2,
+                  "visible": 0,
+                  "peak": 19
+                }
+              }
+            ],
+            "textureCache": {
+              "disposed": false,
+              "urls": [
+                "/assets/generated/hmh-art-target/ground-details.webp",
+                "/assets/generated/hmh-reboot-tripo-props-hd/tripo-props-hd-plants-00.webp",
+                "/assets/generated/hmh-reboot-tripo-props-hd/tripo-props-hd-props-00.webp",
+                "/assets/generated/hmh-reboot-tripo-props-hd/tripo-props-hd-structures-00.webp",
+                "/assets/generated/hmh-reboot-tripo-props-hd/tripo-props-hd-structures-01.webp",
+                "/assets/generated/hmh-terrain-tiles/crushed-ore-fringe.png",
+                "/assets/generated/hmh-terrain-tiles/crushed-ore.png",
+                "/assets/generated/hmh-terrain-tiles/forest-floor-fringe.png",
+                "/assets/generated/hmh-terrain-tiles/forest-floor.png",
+                "/assets/generated/hmh-terrain-tiles/packed-earth-fringe.png",
+                "/assets/generated/hmh-terrain-tiles/packed-earth.png",
+                "/assets/generated/hmh-terrain-tiles/road-fringe.png",
+                "/assets/generated/hmh-terrain-tiles/road.png",
+                "/assets/generated/hmh-terrain-tiles/wet-bank-fringe.png",
+                "/assets/generated/hmh-terrain-tiles/wet-bank.png"
+              ],
+              "references": 26
+            },
+            "visiblePieces": 25,
+            "cameraZoom": 0.7928042763157894
+          }
+        },
+        {
+          "scene": "highway-city-meadows",
+          "file": "desktop-highway-city-meadows.png",
+          "position": {
+            "x": 11218,
+            "y": 6700
+          },
+          "snapshot": {
+            "areaArt": [
+              {
+                "areaId": "rugpull-woods",
+                "resolution": "full",
+                "pages": [
+                  "tripo-props-hd-plants-00.webp",
+                  "tripo-props-hd-structures-01.webp",
+                  "tripo-props-hd-props-00.webp"
+                ],
+                "tiles": [
+                  "forest-floor",
+                  "packed-earth",
+                  "wet-bank"
+                ],
+                "counts": {
+                  "zones": 3,
+                  "trails": 30,
+                  "decals": 0,
+                  "roads": 0,
+                  "props": 381,
+                  "solids": 10
+                },
+                "budget": {
+                  "kitPages": 3,
+                  "exclusiveKitPages": 2,
+                  "kitPageBudget": 2,
+                  "encodedBytes": 6170898,
+                  "decodedBytes": 50331648,
+                  "halfEncodedBytes": 614744,
+                  "halfDecodedBytes": 12582912,
+                  "tilePages": 6,
+                  "tileDecodedBytes": 3932160
+                },
+                "residency": {
+                  "live": 0,
+                  "visible": 0,
+                  "peak": 0
+                }
+              },
+              {
+                "areaId": "mweb-meadows",
+                "resolution": "full",
+                "pages": [
+                  "tripo-props-hd-plants-00.webp",
+                  "tripo-props-hd-structures-00.webp",
+                  "tripo-props-hd-props-00.webp"
+                ],
+                "tiles": [
+                  "crushed-ore",
+                  "forest-floor",
+                  "packed-earth"
+                ],
+                "counts": {
+                  "zones": 7,
+                  "trails": 14,
+                  "decals": 144,
+                  "roads": 0,
+                  "props": 84,
+                  "solids": 10
+                },
+                "budget": {
+                  "kitPages": 3,
+                  "exclusiveKitPages": 2,
+                  "kitPageBudget": 2,
+                  "encodedBytes": 6582428,
+                  "decodedBytes": 50331648,
+                  "halfEncodedBytes": 646884,
+                  "halfDecodedBytes": 12582912,
+                  "tilePages": 7,
+                  "tileDecodedBytes": 4194304
+                },
+                "residency": {
+                  "live": 9,
+                  "visible": 0,
+                  "peak": 38
+                }
+              },
+              {
+                "areaId": "world-roads",
+                "resolution": "full",
+                "pages": [
+                  "tripo-props-hd-props-00.webp"
+                ],
+                "tiles": [
+                  "crushed-ore",
+                  "packed-earth",
+                  "road"
+                ],
+                "counts": {
+                  "zones": 0,
+                  "trails": 0,
+                  "decals": 0,
+                  "roads": 14,
+                  "props": 63,
+                  "solids": 0
+                },
+                "budget": {
+                  "kitPages": 1,
+                  "exclusiveKitPages": 1,
+                  "kitPageBudget": 1,
+                  "encodedBytes": 2093182,
+                  "decodedBytes": 16777216,
+                  "halfEncodedBytes": 201074,
+                  "halfDecodedBytes": 4194304,
+                  "tilePages": 6,
+                  "tileDecodedBytes": 3932160
+                },
+                "residency": {
+                  "live": 19,
+                  "visible": 10,
+                  "peak": 19
+                }
+              }
+            ],
+            "textureCache": {
+              "disposed": false,
+              "urls": [
+                "/assets/generated/hmh-art-target/ground-details.webp",
+                "/assets/generated/hmh-reboot-tripo-props-hd/tripo-props-hd-plants-00.webp",
+                "/assets/generated/hmh-reboot-tripo-props-hd/tripo-props-hd-props-00.webp",
+                "/assets/generated/hmh-reboot-tripo-props-hd/tripo-props-hd-structures-00.webp",
+                "/assets/generated/hmh-reboot-tripo-props-hd/tripo-props-hd-structures-01.webp",
+                "/assets/generated/hmh-terrain-tiles/crushed-ore-fringe.png",
+                "/assets/generated/hmh-terrain-tiles/crushed-ore.png",
+                "/assets/generated/hmh-terrain-tiles/forest-floor-fringe.png",
+                "/assets/generated/hmh-terrain-tiles/forest-floor.png",
+                "/assets/generated/hmh-terrain-tiles/packed-earth-fringe.png",
+                "/assets/generated/hmh-terrain-tiles/packed-earth.png",
+                "/assets/generated/hmh-terrain-tiles/road-fringe.png",
+                "/assets/generated/hmh-terrain-tiles/road.png",
+                "/assets/generated/hmh-terrain-tiles/wet-bank-fringe.png",
+                "/assets/generated/hmh-terrain-tiles/wet-bank.png"
+              ],
+              "references": 26
+            },
+            "visiblePieces": 5,
+            "cameraZoom": 0.7928042763157894
+          }
+        },
+        {
+          "scene": "woods-center",
+          "file": "desktop-woods-center.png",
+          "position": {
+            "x": 17500,
+            "y": 11600
+          },
+          "snapshot": {
+            "areaArt": [
+              {
+                "areaId": "rugpull-woods",
+                "resolution": "full",
+                "pages": [
+                  "tripo-props-hd-plants-00.webp",
+                  "tripo-props-hd-structures-01.webp",
+                  "tripo-props-hd-props-00.webp"
+                ],
+                "tiles": [
+                  "forest-floor",
+                  "packed-earth",
+                  "wet-bank"
+                ],
+                "counts": {
+                  "zones": 3,
+                  "trails": 30,
+                  "decals": 0,
+                  "roads": 0,
+                  "props": 381,
+                  "solids": 10
+                },
+                "budget": {
+                  "kitPages": 3,
+                  "exclusiveKitPages": 2,
+                  "kitPageBudget": 2,
+                  "encodedBytes": 6170898,
+                  "decodedBytes": 50331648,
+                  "halfEncodedBytes": 614744,
+                  "halfDecodedBytes": 12582912,
+                  "tilePages": 6,
+                  "tileDecodedBytes": 3932160
+                },
+                "residency": {
+                  "live": 174,
+                  "visible": 92,
+                  "peak": 174
+                }
+              },
+              {
+                "areaId": "mweb-meadows",
+                "resolution": "full",
+                "pages": [
+                  "tripo-props-hd-plants-00.webp",
+                  "tripo-props-hd-structures-00.webp",
+                  "tripo-props-hd-props-00.webp"
+                ],
+                "tiles": [
+                  "crushed-ore",
+                  "forest-floor",
+                  "packed-earth"
+                ],
+                "counts": {
+                  "zones": 7,
+                  "trails": 14,
+                  "decals": 144,
+                  "roads": 0,
+                  "props": 84,
+                  "solids": 10
+                },
+                "budget": {
+                  "kitPages": 3,
+                  "exclusiveKitPages": 2,
+                  "kitPageBudget": 2,
+                  "encodedBytes": 6582428,
+                  "decodedBytes": 50331648,
+                  "halfEncodedBytes": 646884,
+                  "halfDecodedBytes": 12582912,
+                  "tilePages": 7,
+                  "tileDecodedBytes": 4194304
+                },
+                "residency": {
+                  "live": 0,
+                  "visible": 0,
+                  "peak": 38
+                }
+              },
+              {
+                "areaId": "world-roads",
+                "resolution": "full",
+                "pages": [
+                  "tripo-props-hd-props-00.webp"
+                ],
+                "tiles": [
+                  "crushed-ore",
+                  "packed-earth",
+                  "road"
+                ],
+                "counts": {
+                  "zones": 0,
+                  "trails": 0,
+                  "decals": 0,
+                  "roads": 14,
+                  "props": 63,
+                  "solids": 0
+                },
+                "budget": {
+                  "kitPages": 1,
+                  "exclusiveKitPages": 1,
+                  "kitPageBudget": 1,
+                  "encodedBytes": 2093182,
+                  "decodedBytes": 16777216,
+                  "halfEncodedBytes": 201074,
+                  "halfDecodedBytes": 4194304,
+                  "tilePages": 6,
+                  "tileDecodedBytes": 3932160
+                },
+                "residency": {
+                  "live": 0,
+                  "visible": 0,
+                  "peak": 19
+                }
+              }
+            ],
+            "textureCache": {
+              "disposed": false,
+              "urls": [
+                "/assets/generated/hmh-art-target/ground-details.webp",
+                "/assets/generated/hmh-reboot-tripo-props-hd/tripo-props-hd-plants-00.webp",
+                "/assets/generated/hmh-reboot-tripo-props-hd/tripo-props-hd-props-00.webp",
+                "/assets/generated/hmh-reboot-tripo-props-hd/tripo-props-hd-structures-00.webp",
+                "/assets/generated/hmh-reboot-tripo-props-hd/tripo-props-hd-structures-01.webp",
+                "/assets/generated/hmh-terrain-tiles/crushed-ore-fringe.png",
+                "/assets/generated/hmh-terrain-tiles/crushed-ore.png",
+                "/assets/generated/hmh-terrain-tiles/forest-floor-fringe.png",
+                "/assets/generated/hmh-terrain-tiles/forest-floor.png",
+                "/assets/generated/hmh-terrain-tiles/packed-earth-fringe.png",
+                "/assets/generated/hmh-terrain-tiles/packed-earth.png",
+                "/assets/generated/hmh-terrain-tiles/road-fringe.png",
+                "/assets/generated/hmh-terrain-tiles/road.png",
+                "/assets/generated/hmh-terrain-tiles/wet-bank-fringe.png",
+                "/assets/generated/hmh-terrain-tiles/wet-bank.png"
+              ],
+              "references": 26
+            },
+            "visiblePieces": 1,
+            "cameraZoom": 0.7928042763157894
+          }
+        },
+        {
+          "scene": "woods-camp",
+          "file": "desktop-woods-camp.png",
+          "position": {
+            "x": 18177,
+            "y": 11347
+          },
+          "snapshot": {
+            "areaArt": [
+              {
+                "areaId": "rugpull-woods",
+                "resolution": "full",
+                "pages": [
+                  "tripo-props-hd-plants-00.webp",
+                  "tripo-props-hd-structures-01.webp",
+                  "tripo-props-hd-props-00.webp"
+                ],
+                "tiles": [
+                  "forest-floor",
+                  "packed-earth",
+                  "wet-bank"
+                ],
+                "counts": {
+                  "zones": 3,
+                  "trails": 30,
+                  "decals": 0,
+                  "roads": 0,
+                  "props": 381,
+                  "solids": 10
+                },
+                "budget": {
+                  "kitPages": 3,
+                  "exclusiveKitPages": 2,
+                  "kitPageBudget": 2,
+                  "encodedBytes": 6170898,
+                  "decodedBytes": 50331648,
+                  "halfEncodedBytes": 614744,
+                  "halfDecodedBytes": 12582912,
+                  "tilePages": 6,
+                  "tileDecodedBytes": 3932160
+                },
+                "residency": {
+                  "live": 187,
+                  "visible": 24,
+                  "peak": 187
+                }
+              },
+              {
+                "areaId": "mweb-meadows",
+                "resolution": "full",
+                "pages": [
+                  "tripo-props-hd-plants-00.webp",
+                  "tripo-props-hd-structures-00.webp",
+                  "tripo-props-hd-props-00.webp"
+                ],
+                "tiles": [
+                  "crushed-ore",
+                  "forest-floor",
+                  "packed-earth"
+                ],
+                "counts": {
+                  "zones": 7,
+                  "trails": 14,
+                  "decals": 144,
+                  "roads": 0,
+                  "props": 84,
+                  "solids": 10
+                },
+                "budget": {
+                  "kitPages": 3,
+                  "exclusiveKitPages": 2,
+                  "kitPageBudget": 2,
+                  "encodedBytes": 6582428,
+                  "decodedBytes": 50331648,
+                  "halfEncodedBytes": 646884,
+                  "halfDecodedBytes": 12582912,
+                  "tilePages": 7,
+                  "tileDecodedBytes": 4194304
+                },
+                "residency": {
+                  "live": 0,
+                  "visible": 0,
+                  "peak": 38
+                }
+              },
+              {
+                "areaId": "world-roads",
+                "resolution": "full",
+                "pages": [
+                  "tripo-props-hd-props-00.webp"
+                ],
+                "tiles": [
+                  "crushed-ore",
+                  "packed-earth",
+                  "road"
+                ],
+                "counts": {
+                  "zones": 0,
+                  "trails": 0,
+                  "decals": 0,
+                  "roads": 14,
+                  "props": 63,
+                  "solids": 0
+                },
+                "budget": {
+                  "kitPages": 1,
+                  "exclusiveKitPages": 1,
+                  "kitPageBudget": 1,
+                  "encodedBytes": 2093182,
+                  "decodedBytes": 16777216,
+                  "halfEncodedBytes": 201074,
+                  "halfDecodedBytes": 4194304,
+                  "tilePages": 6,
+                  "tileDecodedBytes": 3932160
+                },
+                "residency": {
+                  "live": 0,
+                  "visible": 0,
+                  "peak": 19
+                }
+              }
+            ],
+            "textureCache": {
+              "disposed": false,
+              "urls": [
+                "/assets/generated/hmh-art-target/ground-details.webp",
+                "/assets/generated/hmh-reboot-tripo-props-hd/tripo-props-hd-plants-00.webp",
+                "/assets/generated/hmh-reboot-tripo-props-hd/tripo-props-hd-props-00.webp",
+                "/assets/generated/hmh-reboot-tripo-props-hd/tripo-props-hd-structures-00.webp",
+                "/assets/generated/hmh-reboot-tripo-props-hd/tripo-props-hd-structures-01.webp",
+                "/assets/generated/hmh-terrain-tiles/crushed-ore-fringe.png",
+                "/assets/generated/hmh-terrain-tiles/crushed-ore.png",
+                "/assets/generated/hmh-terrain-tiles/forest-floor-fringe.png",
+                "/assets/generated/hmh-terrain-tiles/forest-floor.png",
+                "/assets/generated/hmh-terrain-tiles/packed-earth-fringe.png",
+                "/assets/generated/hmh-terrain-tiles/packed-earth.png",
+                "/assets/generated/hmh-terrain-tiles/road-fringe.png",
+                "/assets/generated/hmh-terrain-tiles/road.png",
+                "/assets/generated/hmh-terrain-tiles/wet-bank-fringe.png",
+                "/assets/generated/hmh-terrain-tiles/wet-bank.png"
+              ],
+              "references": 26
+            },
+            "visiblePieces": 1,
+            "cameraZoom": 0.7928042763157894
+          }
+        },
+        {
+          "scene": "woods-stores",
+          "file": "desktop-woods-stores.png",
+          "position": {
+            "x": 16614,
+            "y": 12887
+          },
+          "snapshot": {
+            "areaArt": [
+              {
+                "areaId": "rugpull-woods",
+                "resolution": "full",
+                "pages": [
+                  "tripo-props-hd-plants-00.webp",
+                  "tripo-props-hd-structures-01.webp",
+                  "tripo-props-hd-props-00.webp"
+                ],
+                "tiles": [
+                  "forest-floor",
+                  "packed-earth",
+                  "wet-bank"
+                ],
+                "counts": {
+                  "zones": 3,
+                  "trails": 30,
+                  "decals": 0,
+                  "roads": 0,
+                  "props": 381,
+                  "solids": 10
+                },
+                "budget": {
+                  "kitPages": 3,
+                  "exclusiveKitPages": 2,
+                  "kitPageBudget": 2,
+                  "encodedBytes": 6170898,
+                  "decodedBytes": 50331648,
+                  "halfEncodedBytes": 614744,
+                  "halfDecodedBytes": 12582912,
+                  "tilePages": 6,
+                  "tileDecodedBytes": 3932160
+                },
+                "residency": {
+                  "live": 185,
+                  "visible": 31,
+                  "peak": 231
+                }
+              },
+              {
+                "areaId": "mweb-meadows",
+                "resolution": "full",
+                "pages": [
+                  "tripo-props-hd-plants-00.webp",
+                  "tripo-props-hd-structures-00.webp",
+                  "tripo-props-hd-props-00.webp"
+                ],
+                "tiles": [
+                  "crushed-ore",
+                  "forest-floor",
+                  "packed-earth"
+                ],
+                "counts": {
+                  "zones": 7,
+                  "trails": 14,
+                  "decals": 144,
+                  "roads": 0,
+                  "props": 84,
+                  "solids": 10
+                },
+                "budget": {
+                  "kitPages": 3,
+                  "exclusiveKitPages": 2,
+                  "kitPageBudget": 2,
+                  "encodedBytes": 6582428,
+                  "decodedBytes": 50331648,
+                  "halfEncodedBytes": 646884,
+                  "halfDecodedBytes": 12582912,
+                  "tilePages": 7,
+                  "tileDecodedBytes": 4194304
+                },
+                "residency": {
+                  "live": 0,
+                  "visible": 0,
+                  "peak": 38
+                }
+              },
+              {
+                "areaId": "world-roads",
+                "resolution": "full",
+                "pages": [
+                  "tripo-props-hd-props-00.webp"
+                ],
+                "tiles": [
+                  "crushed-ore",
+                  "packed-earth",
+                  "road"
+                ],
+                "counts": {
+                  "zones": 0,
+                  "trails": 0,
+                  "decals": 0,
+                  "roads": 14,
+                  "props": 63,
+                  "solids": 0
+                },
+                "budget": {
+                  "kitPages": 1,
+                  "exclusiveKitPages": 1,
+                  "kitPageBudget": 1,
+                  "encodedBytes": 2093182,
+                  "decodedBytes": 16777216,
+                  "halfEncodedBytes": 201074,
+                  "halfDecodedBytes": 4194304,
+                  "tilePages": 6,
+                  "tileDecodedBytes": 3932160
+                },
+                "residency": {
+                  "live": 0,
+                  "visible": 0,
+                  "peak": 19
+                }
+              }
+            ],
+            "textureCache": {
+              "disposed": false,
+              "urls": [
+                "/assets/generated/hmh-art-target/ground-details.webp",
+                "/assets/generated/hmh-reboot-tripo-props-hd/tripo-props-hd-plants-00.webp",
+                "/assets/generated/hmh-reboot-tripo-props-hd/tripo-props-hd-props-00.webp",
+                "/assets/generated/hmh-reboot-tripo-props-hd/tripo-props-hd-structures-00.webp",
+                "/assets/generated/hmh-reboot-tripo-props-hd/tripo-props-hd-structures-01.webp",
+                "/assets/generated/hmh-terrain-tiles/crushed-ore-fringe.png",
+                "/assets/generated/hmh-terrain-tiles/crushed-ore.png",
+                "/assets/generated/hmh-terrain-tiles/forest-floor-fringe.png",
+                "/assets/generated/hmh-terrain-tiles/forest-floor.png",
+                "/assets/generated/hmh-terrain-tiles/packed-earth-fringe.png",
+                "/assets/generated/hmh-terrain-tiles/packed-earth.png",
+                "/assets/generated/hmh-terrain-tiles/road-fringe.png",
+                "/assets/generated/hmh-terrain-tiles/road.png",
+                "/assets/generated/hmh-terrain-tiles/wet-bank-fringe.png",
+                "/assets/generated/hmh-terrain-tiles/wet-bank.png"
+              ],
+              "references": 26
+            },
+            "visiblePieces": 3,
+            "cameraZoom": 0.7928042763157894
+          }
+        }
+      ],
+      "consoleErrors": [
+        "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+      ],
+      "snapshot": {
+        "access": {
+          "allowed": true,
+          "reason": "local-free-test",
+          "officialRun": false,
+          "rankedEligible": false
+        },
+        "phase": "ready",
+        "disposed": false,
+        "failure": null,
+        "cleanupFailure": null,
+        "playtest": {
+          "disposed": false,
+          "failure": null,
+          "cleanupErrors": [],
+          "inspectionJumps": 8,
+          "renderFrames": 5980,
+          "nativeEvents": 11,
+          "navWaitMs": 1634.300000011921,
+          "frameScheduled": false,
+          "width": 1280,
+          "height": 602.53125,
+          "visiblePieces": 3,
+          "assetsReady": true,
+          "rendererType": 1,
+          "heroArtSource": "packed-textured-blend",
+          "heroFrameIds": "lit-commando__shadow__idle__south__000,lit-commando__lower-body__idle__south__000,lit-commando__torso-head__aim__south__000,lit-commando__weapon__aim__south__000",
+          "bodyScale": 0.58,
+          "cameraZoom": 0.7928042763157894,
+          "heldKeys": 0,
+          "heldPointers": 0,
+          "areaArt": [
+            {
+              "artId": "world-v2-area-art/v1",
+              "areaId": "rugpull-woods",
+              "resolution": "full",
+              "disposed": false,
+              "mounted": true,
+              "pages": [
+                "tripo-props-hd-plants-00.webp",
+                "tripo-props-hd-structures-01.webp",
+                "tripo-props-hd-props-00.webp"
+              ],
+              "tiles": [
+                "forest-floor",
+                "packed-earth",
+                "wet-bank"
+              ],
+              "counts": {
+                "zones": 3,
+                "trails": 30,
+                "decals": 0,
+                "roads": 0,
+                "props": 381,
+                "solids": 10
+              },
+              "budget": {
+                "kitPages": 3,
+                "exclusiveKitPages": 2,
+                "kitPageBudget": 2,
+                "encodedBytes": 6170898,
+                "decodedBytes": 50331648,
+                "halfEncodedBytes": 614744,
+                "halfDecodedBytes": 12582912,
+                "tilePages": 6,
+                "tileDecodedBytes": 3932160
+              },
+              "ownedUrls": [
+                "/assets/generated/hmh-reboot-tripo-props-hd/tripo-props-hd-plants-00.webp",
+                "/assets/generated/hmh-reboot-tripo-props-hd/tripo-props-hd-props-00.webp",
+                "/assets/generated/hmh-reboot-tripo-props-hd/tripo-props-hd-structures-01.webp",
+                "/assets/generated/hmh-terrain-tiles/forest-floor-fringe.png",
+                "/assets/generated/hmh-terrain-tiles/forest-floor.png",
+                "/assets/generated/hmh-terrain-tiles/packed-earth-fringe.png",
+                "/assets/generated/hmh-terrain-tiles/packed-earth.png",
+                "/assets/generated/hmh-terrain-tiles/wet-bank-fringe.png",
+                "/assets/generated/hmh-terrain-tiles/wet-bank.png"
+              ],
+              "painted": 7,
+              "residency": {
+                "disposed": false,
+                "catalogCount": 381,
+                "liveCount": 185,
+                "visibleCount": 31,
+                "peakCount": 231,
+                "createdCount": 285,
+                "destroyedCount": 100,
+                "residentIds": [
+                  "rugpull-woods-art-119",
+                  "rugpull-woods-art-120",
+                  "rugpull-woods-art-121",
+                  "rugpull-woods-art-122",
+                  "rugpull-woods-art-123",
+                  "rugpull-woods-art-124",
+                  "rugpull-woods-art-125",
+                  "rugpull-woods-art-126",
+                  "rugpull-woods-art-127",
+                  "rugpull-woods-art-128",
+                  "rugpull-woods-art-129",
+                  "rugpull-woods-art-130",
+                  "rugpull-woods-art-131",
+                  "rugpull-woods-art-132",
+                  "rugpull-woods-art-133",
+                  "rugpull-woods-art-134",
+                  "rugpull-woods-art-135",
+                  "rugpull-woods-art-136",
+                  "rugpull-woods-art-16",
+                  "rugpull-woods-art-164",
+                  "rugpull-woods-art-165",
+                  "rugpull-woods-art-166",
+                  "rugpull-woods-art-167",
+                  "rugpull-woods-art-168",
+                  "rugpull-woods-art-169",
+                  "rugpull-woods-art-17",
+                  "rugpull-woods-art-170",
+                  "rugpull-woods-art-171",
+                  "rugpull-woods-art-172",
+                  "rugpull-woods-art-173",
+                  "rugpull-woods-art-174",
+                  "rugpull-woods-art-18",
+                  "rugpull-woods-art-188",
+                  "rugpull-woods-art-189",
+                  "rugpull-woods-art-19",
+                  "rugpull-woods-art-190",
+                  "rugpull-woods-art-191",
+                  "rugpull-woods-art-192",
+                  "rugpull-woods-art-193",
+                  "rugpull-woods-art-194",
+                  "rugpull-woods-art-195",
+                  "rugpull-woods-art-196",
+                  "rugpull-woods-art-197",
+                  "rugpull-woods-art-198",
+                  "rugpull-woods-art-199",
+                  "rugpull-woods-art-20",
+                  "rugpull-woods-art-200",
+                  "rugpull-woods-art-201",
+                  "rugpull-woods-art-202",
+                  "rugpull-woods-art-203",
+                  "rugpull-woods-art-204",
+                  "rugpull-woods-art-205",
+                  "rugpull-woods-art-206",
+                  "rugpull-woods-art-21",
+                  "rugpull-woods-art-219",
+                  "rugpull-woods-art-22",
+                  "rugpull-woods-art-220",
+                  "rugpull-woods-art-221",
+                  "rugpull-woods-art-222",
+                  "rugpull-woods-art-223",
+                  "rugpull-woods-art-224",
+                  "rugpull-woods-art-225",
+                  "rugpull-woods-art-226",
+                  "rugpull-woods-art-227",
+                  "rugpull-woods-art-228",
+                  "rugpull-woods-art-229",
+                  "rugpull-woods-art-23",
+                  "rugpull-woods-art-230",
+                  "rugpull-woods-art-231",
+                  "rugpull-woods-art-232",
+                  "rugpull-woods-art-233",
+                  "rugpull-woods-art-234",
+                  "rugpull-woods-art-235",
+                  "rugpull-woods-art-236",
+                  "rugpull-woods-art-237",
+                  "rugpull-woods-art-238",
+                  "rugpull-woods-art-239",
+                  "rugpull-woods-art-24",
+                  "rugpull-woods-art-240",
+                  "rugpull-woods-art-241",
+                  "rugpull-woods-art-242",
+                  "rugpull-woods-art-243",
+                  "rugpull-woods-art-244",
+                  "rugpull-woods-art-25",
+                  "rugpull-woods-art-258",
+                  "rugpull-woods-art-259",
+                  "rugpull-woods-art-26",
+                  "rugpull-woods-art-260",
+                  "rugpull-woods-art-261",
+                  "rugpull-woods-art-262",
+                  "rugpull-woods-art-263",
+                  "rugpull-woods-art-264",
+                  "rugpull-woods-art-265",
+                  "rugpull-woods-art-266",
+                  "rugpull-woods-art-267",
+                  "rugpull-woods-art-27",
+                  "rugpull-woods-art-28",
+                  "rugpull-woods-art-29",
+                  "rugpull-woods-art-294",
+                  "rugpull-woods-art-295",
+                  "rugpull-woods-art-296",
+                  "rugpull-woods-art-297",
+                  "rugpull-woods-art-298",
+                  "rugpull-woods-art-299",
+                  "rugpull-woods-art-30",
+                  "rugpull-woods-art-300",
+                  "rugpull-woods-art-31",
+                  "rugpull-woods-art-314",
+                  "rugpull-woods-art-315",
+                  "rugpull-woods-art-316",
+                  "rugpull-woods-art-317",
+                  "rugpull-woods-art-318",
+                  "rugpull-woods-art-319",
+                  "rugpull-woods-art-32",
+                  "rugpull-woods-art-320",
+                  "rugpull-woods-art-321",
+                  "rugpull-woods-art-322",
+                  "rugpull-woods-art-323",
+                  "rugpull-woods-art-324",
+                  "rugpull-woods-art-325",
+                  "rugpull-woods-art-326",
+                  "rugpull-woods-art-327",
+                  "rugpull-woods-art-328",
+                  "rugpull-woods-art-329",
+                  "rugpull-woods-art-33",
+                  "rugpull-woods-art-330",
+                  "rugpull-woods-art-331",
+                  "rugpull-woods-art-332",
+                  "rugpull-woods-art-333",
+                  "rugpull-woods-art-334",
+                  "rugpull-woods-art-335",
+                  "rugpull-woods-art-34",
+                  "rugpull-woods-art-349",
+                  "rugpull-woods-art-35",
+                  "rugpull-woods-art-350",
+                  "rugpull-woods-art-351",
+                  "rugpull-woods-art-352",
+                  "rugpull-woods-art-353",
+                  "rugpull-woods-art-354",
+                  "rugpull-woods-art-355",
+                  "rugpull-woods-art-356",
+                  "rugpull-woods-art-357",
+                  "rugpull-woods-art-358",
+                  "rugpull-woods-art-359",
+                  "rugpull-woods-art-36",
+                  "rugpull-woods-art-360",
+                  "rugpull-woods-art-361",
+                  "rugpull-woods-art-362",
+                  "rugpull-woods-art-363",
+                  "rugpull-woods-art-364",
+                  "rugpull-woods-art-365",
+                  "rugpull-woods-art-366",
+                  "rugpull-woods-art-367",
+                  "rugpull-woods-art-368",
+                  "rugpull-woods-art-369",
+                  "rugpull-woods-art-37",
+                  "rugpull-woods-art-370",
+                  "rugpull-woods-art-371",
+                  "rugpull-woods-art-373",
+                  "rugpull-woods-art-374",
+                  "rugpull-woods-art-376",
+                  "rugpull-woods-art-378",
+                  "rugpull-woods-art-379",
+                  "rugpull-woods-art-38",
+                  "rugpull-woods-art-39",
+                  "rugpull-woods-art-40",
+                  "rugpull-woods-art-41",
+                  "rugpull-woods-art-42",
+                  "rugpull-woods-art-43",
+                  "rugpull-woods-art-44",
+                  "rugpull-woods-art-46",
+                  "rugpull-woods-art-47",
+                  "rugpull-woods-art-48",
+                  "rugpull-woods-art-51",
+                  "rugpull-woods-art-52",
+                  "rugpull-woods-art-66",
+                  "rugpull-woods-art-67",
+                  "rugpull-woods-art-68",
+                  "rugpull-woods-art-69",
+                  "rugpull-woods-art-70",
+                  "rugpull-woods-art-71",
+                  "rugpull-woods-art-72",
+                  "rugpull-woods-art-73",
+                  "rugpull-woods-art-74",
+                  "rugpull-woods-art-75"
+                ],
+                "visibleIds": [
+                  "rugpull-woods-art-120",
+                  "rugpull-woods-art-121",
+                  "rugpull-woods-art-122",
+                  "rugpull-woods-art-123",
+                  "rugpull-woods-art-124",
+                  "rugpull-woods-art-125",
+                  "rugpull-woods-art-126",
+                  "rugpull-woods-art-127",
+                  "rugpull-woods-art-128",
+                  "rugpull-woods-art-129",
+                  "rugpull-woods-art-130",
+                  "rugpull-woods-art-204",
+                  "rugpull-woods-art-206",
+                  "rugpull-woods-art-239",
+                  "rugpull-woods-art-24",
+                  "rugpull-woods-art-244",
+                  "rugpull-woods-art-258",
+                  "rugpull-woods-art-259",
+                  "rugpull-woods-art-261",
+                  "rugpull-woods-art-263",
+                  "rugpull-woods-art-265",
+                  "rugpull-woods-art-267",
+                  "rugpull-woods-art-27",
+                  "rugpull-woods-art-28",
+                  "rugpull-woods-art-30",
+                  "rugpull-woods-art-31",
+                  "rugpull-woods-art-33",
+                  "rugpull-woods-art-34",
+                  "rugpull-woods-art-36",
+                  "rugpull-woods-art-37",
+                  "rugpull-woods-art-39"
+                ],
+                "areaIds": [
+                  "rugpull-woods"
+                ]
+              },
+              "runtimeAuthority": "projection-only"
+            },
+            {
+              "artId": "world-v2-area-art/v1",
+              "areaId": "mweb-meadows",
+              "resolution": "full",
+              "disposed": false,
+              "mounted": true,
+              "pages": [
+                "tripo-props-hd-plants-00.webp",
+                "tripo-props-hd-structures-00.webp",
+                "tripo-props-hd-props-00.webp"
+              ],
+              "tiles": [
+                "crushed-ore",
+                "forest-floor",
+                "packed-earth"
+              ],
+              "counts": {
+                "zones": 7,
+                "trails": 14,
+                "decals": 144,
+                "roads": 0,
+                "props": 84,
+                "solids": 10
+              },
+              "budget": {
+                "kitPages": 3,
+                "exclusiveKitPages": 2,
+                "kitPageBudget": 2,
+                "encodedBytes": 6582428,
+                "decodedBytes": 50331648,
+                "halfEncodedBytes": 646884,
+                "halfDecodedBytes": 12582912,
+                "tilePages": 7,
+                "tileDecodedBytes": 4194304
+              },
+              "ownedUrls": [
+                "/assets/generated/hmh-art-target/ground-details.webp",
+                "/assets/generated/hmh-reboot-tripo-props-hd/tripo-props-hd-plants-00.webp",
+                "/assets/generated/hmh-reboot-tripo-props-hd/tripo-props-hd-props-00.webp",
+                "/assets/generated/hmh-reboot-tripo-props-hd/tripo-props-hd-structures-00.webp",
+                "/assets/generated/hmh-terrain-tiles/crushed-ore-fringe.png",
+                "/assets/generated/hmh-terrain-tiles/crushed-ore.png",
+                "/assets/generated/hmh-terrain-tiles/forest-floor-fringe.png",
+                "/assets/generated/hmh-terrain-tiles/forest-floor.png",
+                "/assets/generated/hmh-terrain-tiles/packed-earth-fringe.png",
+                "/assets/generated/hmh-terrain-tiles/packed-earth.png"
+              ],
+              "painted": 156,
+              "residency": {
+                "disposed": false,
+                "catalogCount": 84,
+                "liveCount": 0,
+                "visibleCount": 0,
+                "peakCount": 38,
+                "createdCount": 61,
+                "destroyedCount": 61,
+                "residentIds": [],
+                "visibleIds": [],
+                "areaIds": []
+              },
+              "runtimeAuthority": "projection-only"
+            },
+            {
+              "artId": "world-v2-area-art/v1",
+              "areaId": "world-roads",
+              "resolution": "full",
+              "disposed": false,
+              "mounted": true,
+              "pages": [
+                "tripo-props-hd-props-00.webp"
+              ],
+              "tiles": [
+                "crushed-ore",
+                "packed-earth",
+                "road"
+              ],
+              "counts": {
+                "zones": 0,
+                "trails": 0,
+                "decals": 0,
+                "roads": 14,
+                "props": 63,
+                "solids": 0
+              },
+              "budget": {
+                "kitPages": 1,
+                "exclusiveKitPages": 1,
+                "kitPageBudget": 1,
+                "encodedBytes": 2093182,
+                "decodedBytes": 16777216,
+                "halfEncodedBytes": 201074,
+                "halfDecodedBytes": 4194304,
+                "tilePages": 6,
+                "tileDecodedBytes": 3932160
+              },
+              "ownedUrls": [
+                "/assets/generated/hmh-reboot-tripo-props-hd/tripo-props-hd-props-00.webp",
+                "/assets/generated/hmh-terrain-tiles/crushed-ore-fringe.png",
+                "/assets/generated/hmh-terrain-tiles/crushed-ore.png",
+                "/assets/generated/hmh-terrain-tiles/packed-earth-fringe.png",
+                "/assets/generated/hmh-terrain-tiles/packed-earth.png",
+                "/assets/generated/hmh-terrain-tiles/road-fringe.png",
+                "/assets/generated/hmh-terrain-tiles/road.png"
+              ],
+              "painted": 36,
+              "residency": {
+                "disposed": false,
+                "catalogCount": 63,
+                "liveCount": 0,
+                "visibleCount": 0,
+                "peakCount": 19,
+                "createdCount": 41,
+                "destroyedCount": 41,
+                "residentIds": [],
+                "visibleIds": [],
+                "areaIds": []
+              },
+              "runtimeAuthority": "projection-only"
+            }
+          ],
+          "textureCache": {
+            "disposed": false,
+            "urls": [
+              "/assets/generated/hmh-art-target/ground-details.webp",
+              "/assets/generated/hmh-reboot-tripo-props-hd/tripo-props-hd-plants-00.webp",
+              "/assets/generated/hmh-reboot-tripo-props-hd/tripo-props-hd-props-00.webp",
+              "/assets/generated/hmh-reboot-tripo-props-hd/tripo-props-hd-structures-00.webp",
+              "/assets/generated/hmh-reboot-tripo-props-hd/tripo-props-hd-structures-01.webp",
+              "/assets/generated/hmh-terrain-tiles/crushed-ore-fringe.png",
+              "/assets/generated/hmh-terrain-tiles/crushed-ore.png",
+              "/assets/generated/hmh-terrain-tiles/forest-floor-fringe.png",
+              "/assets/generated/hmh-terrain-tiles/forest-floor.png",
+              "/assets/generated/hmh-terrain-tiles/packed-earth-fringe.png",
+              "/assets/generated/hmh-terrain-tiles/packed-earth.png",
+              "/assets/generated/hmh-terrain-tiles/road-fringe.png",
+              "/assets/generated/hmh-terrain-tiles/road.png",
+              "/assets/generated/hmh-terrain-tiles/wet-bank-fringe.png",
+              "/assets/generated/hmh-terrain-tiles/wet-bank.png"
+            ],
+            "references": 26
+          },
+          "propResidency": {
+            "disposed": false,
+            "catalogCount": 581,
+            "liveCount": 36,
+            "visibleCount": 3,
+            "peakCount": 50,
+            "createdCount": 184,
+            "destroyedCount": 148,
+            "residentIds": [
+              "closed-mass-360",
+              "closed-mass-365",
+              "closed-mass-370",
+              "closed-mass-375",
+              "closed-mass-380",
+              "closed-mass-385",
+              "closed-mass-390",
+              "closed-mass-395",
+              "closed-mass-400",
+              "closed-mass-405",
+              "closed-mass-410",
+              "closed-mass-415",
+              "closed-mass-420",
+              "closed-mass-425",
+              "closed-mass-429",
+              "closed-mass-433",
+              "closed-mass-437",
+              "closed-mass-441",
+              "closed-mass-445",
+              "closed-mass-449",
+              "closed-mass-453",
+              "closed-mass-457",
+              "closed-mass-460",
+              "closed-mass-463",
+              "closed-mass-466",
+              "closed-mass-469",
+              "closed-mass-472",
+              "closed-mass-474",
+              "closed-mass-477",
+              "rugpull-woods-abandoned-lean-to",
+              "rugpull-woods-abandoned-store",
+              "rugpull-woods-east-palisade",
+              "rugpull-woods-south-windbreak",
+              "rugpull-woods-southeast-bank",
+              "rugpull-woods-supply-stack",
+              "rugpull-woods-western-woodland-edge"
+            ],
+            "visibleIds": [
+              "rugpull-woods-abandoned-lean-to",
+              "rugpull-woods-abandoned-store",
+              "rugpull-woods-western-woodland-edge"
+            ],
+            "areaIds": []
+          },
+          "runtime": {
+            "phase": "paused",
+            "mode": "local-free-test",
+            "officialRun": false,
+            "rankedEligible": false,
+            "tick": 488,
+            "fixedStepMs": 16.666666666666668,
+            "actor": {
+              "x": 16613.65065796277,
+              "y": 12886.528748194583,
+              "vx": 0,
+              "vy": 0,
+              "groundZ": 0,
+              "legDirection": 2,
+              "torsoDirection": 2,
+              "locomotion": "idle",
+              "heading": 1.5707963267948966
+            },
+            "previousActor": {
+              "x": 16613.65065796277,
+              "y": 12886.528748194583,
+              "vx": 0,
+              "vy": 0,
+              "groundZ": 0,
+              "legDirection": 2,
+              "torsoDirection": 2,
+              "locomotion": "idle",
+              "heading": 1.5707963267948966
+            },
+            "nav": {
+              "columns": 334,
+              "rows": 234,
+              "cellSize": 60,
+              "walkableCells": 36749,
+              "gridBytes": 156312,
+              "flowBytes": 390780
+            },
+            "lastStep": {
+              "contacts": 0,
+              "traversalAllowed": true
+            },
+            "failure": null,
+            "relay": {
+              "id": "local-meadows-relay",
+              "insideTicks": 0,
+              "committed": false,
+              "commitTick": -1,
+              "progressTicks": 0,
+              "completionTick": null,
+              "operating": false,
+              "eligible": false,
+              "disposed": false
+            }
+          }
+        }
+      },
+      "afterClose": {
+        "disposed": true,
+        "cleanupErrors": [],
+        "textureCache": {
+          "disposed": true,
+          "urls": [],
+          "references": 0
+        },
+        "areaArt": [
+          {
+            "areaId": "rugpull-woods",
+            "disposed": true,
+            "ownedUrls": 0
+          },
+          {
+            "areaId": "mweb-meadows",
+            "disposed": true,
+            "ownedUrls": 0
+          },
+          {
+            "areaId": "world-roads",
+            "disposed": true,
+            "ownedUrls": 0
+          }
+        ]
+      }
+    },
+    {
+      "name": "phone",
+      "captures": [
+        {
+          "scene": "meadows-center",
+          "file": "phone-meadows-center.png",
+          "position": {
+            "x": 12500,
+            "y": 6700
+          },
+          "snapshot": {
+            "areaArt": [
+              {
+                "areaId": "rugpull-woods",
+                "resolution": "half",
+                "pages": [
+                  "tripo-props-hd-plants-00.webp",
+                  "tripo-props-hd-structures-01.webp",
+                  "tripo-props-hd-props-00.webp"
+                ],
+                "tiles": [
+                  "forest-floor",
+                  "packed-earth",
+                  "wet-bank"
+                ],
+                "counts": {
+                  "zones": 3,
+                  "trails": 30,
+                  "decals": 0,
+                  "roads": 0,
+                  "props": 381,
+                  "solids": 10
+                },
+                "budget": {
+                  "kitPages": 3,
+                  "exclusiveKitPages": 2,
+                  "kitPageBudget": 2,
+                  "encodedBytes": 6170898,
+                  "decodedBytes": 50331648,
+                  "halfEncodedBytes": 614744,
+                  "halfDecodedBytes": 12582912,
+                  "tilePages": 6,
+                  "tileDecodedBytes": 3932160
+                },
+                "residency": {
+                  "live": 0,
+                  "visible": 0,
+                  "peak": 0
+                }
+              },
+              {
+                "areaId": "mweb-meadows",
+                "resolution": "half",
+                "pages": [
+                  "tripo-props-hd-plants-00.webp",
+                  "tripo-props-hd-structures-00.webp",
+                  "tripo-props-hd-props-00.webp"
+                ],
+                "tiles": [
+                  "crushed-ore",
+                  "forest-floor",
+                  "packed-earth"
+                ],
+                "counts": {
+                  "zones": 7,
+                  "trails": 14,
+                  "decals": 144,
+                  "roads": 0,
+                  "props": 84,
+                  "solids": 10
+                },
+                "budget": {
+                  "kitPages": 3,
+                  "exclusiveKitPages": 2,
+                  "kitPageBudget": 2,
+                  "encodedBytes": 6582428,
+                  "decodedBytes": 50331648,
+                  "halfEncodedBytes": 646884,
+                  "halfDecodedBytes": 12582912,
+                  "tilePages": 7,
+                  "tileDecodedBytes": 4194304
+                },
+                "residency": {
+                  "live": 0,
+                  "visible": 0,
+                  "peak": 0
+                }
+              },
+              {
+                "areaId": "world-roads",
+                "resolution": "half",
+                "pages": [
+                  "tripo-props-hd-props-00.webp"
+                ],
+                "tiles": [
+                  "crushed-ore",
+                  "packed-earth",
+                  "road"
+                ],
+                "counts": {
+                  "zones": 0,
+                  "trails": 0,
+                  "decals": 0,
+                  "roads": 14,
+                  "props": 63,
+                  "solids": 0
+                },
+                "budget": {
+                  "kitPages": 1,
+                  "exclusiveKitPages": 1,
+                  "kitPageBudget": 1,
+                  "encodedBytes": 2093182,
+                  "decodedBytes": 16777216,
+                  "halfEncodedBytes": 201074,
+                  "halfDecodedBytes": 4194304,
+                  "tilePages": 6,
+                  "tileDecodedBytes": 3932160
+                },
+                "residency": {
+                  "live": 0,
+                  "visible": 0,
+                  "peak": 0
+                }
+              }
+            ],
+            "textureCache": {
+              "disposed": false,
+              "urls": [
+                "/assets/generated/hmh-art-target/ground-details.webp",
+                "/assets/generated/hmh-reboot-tripo-props-hd/tripo-props-hd-plants-00@0.5x.webp",
+                "/assets/generated/hmh-reboot-tripo-props-hd/tripo-props-hd-props-00@0.5x.webp",
+                "/assets/generated/hmh-reboot-tripo-props-hd/tripo-props-hd-structures-00@0.5x.webp",
+                "/assets/generated/hmh-reboot-tripo-props-hd/tripo-props-hd-structures-01@0.5x.webp",
+                "/assets/generated/hmh-terrain-tiles/crushed-ore-fringe.png",
+                "/assets/generated/hmh-terrain-tiles/crushed-ore.png",
+                "/assets/generated/hmh-terrain-tiles/forest-floor-fringe.png",
+                "/assets/generated/hmh-terrain-tiles/forest-floor.png",
+                "/assets/generated/hmh-terrain-tiles/packed-earth-fringe.png",
+                "/assets/generated/hmh-terrain-tiles/packed-earth.png",
+                "/assets/generated/hmh-terrain-tiles/road-fringe.png",
+                "/assets/generated/hmh-terrain-tiles/road.png",
+                "/assets/generated/hmh-terrain-tiles/wet-bank-fringe.png",
+                "/assets/generated/hmh-terrain-tiles/wet-bank.png"
+              ],
+              "references": 26
+            },
+            "visiblePieces": 0,
+            "cameraZoom": 0.8578947368421053
+          }
+        },
+        {
+          "scene": "meadows-relay-court",
+          "file": "phone-meadows-relay-court.png",
+          "position": {
+            "x": 13008,
+            "y": 6464
+          },
+          "snapshot": {
+            "areaArt": [
+              {
+                "areaId": "rugpull-woods",
+                "resolution": "half",
+                "pages": [
+                  "tripo-props-hd-plants-00.webp",
+                  "tripo-props-hd-structures-01.webp",
+                  "tripo-props-hd-props-00.webp"
+                ],
+                "tiles": [
+                  "forest-floor",
+                  "packed-earth",
+                  "wet-bank"
+                ],
+                "counts": {
+                  "zones": 3,
+                  "trails": 30,
+                  "decals": 0,
+                  "roads": 0,
+                  "props": 381,
+                  "solids": 10
+                },
+                "budget": {
+                  "kitPages": 3,
+                  "exclusiveKitPages": 2,
+                  "kitPageBudget": 2,
+                  "encodedBytes": 6170898,
+                  "decodedBytes": 50331648,
+                  "halfEncodedBytes": 614744,
+                  "halfDecodedBytes": 12582912,
+                  "tilePages": 6,
+                  "tileDecodedBytes": 3932160
+                },
+                "residency": {
+                  "live": 0,
+                  "visible": 0,
+                  "peak": 0
+                }
+              },
+              {
+                "areaId": "mweb-meadows",
+                "resolution": "half",
+                "pages": [
+                  "tripo-props-hd-plants-00.webp",
+                  "tripo-props-hd-structures-00.webp",
+                  "tripo-props-hd-props-00.webp"
+                ],
+                "tiles": [
+                  "crushed-ore",
+                  "forest-floor",
+                  "packed-earth"
+                ],
+                "counts": {
+                  "zones": 7,
+                  "trails": 14,
+                  "decals": 144,
+                  "roads": 0,
+                  "props": 84,
+                  "solids": 10
+                },
+                "budget": {
+                  "kitPages": 3,
+                  "exclusiveKitPages": 2,
+                  "kitPageBudget": 2,
+                  "encodedBytes": 6582428,
+                  "decodedBytes": 50331648,
+                  "halfEncodedBytes": 646884,
+                  "halfDecodedBytes": 12582912,
+                  "tilePages": 7,
+                  "tileDecodedBytes": 4194304
+                },
+                "residency": {
+                  "live": 2,
+                  "visible": 0,
+                  "peak": 2
+                }
+              },
+              {
+                "areaId": "world-roads",
+                "resolution": "half",
+                "pages": [
+                  "tripo-props-hd-props-00.webp"
+                ],
+                "tiles": [
+                  "crushed-ore",
+                  "packed-earth",
+                  "road"
+                ],
+                "counts": {
+                  "zones": 0,
+                  "trails": 0,
+                  "decals": 0,
+                  "roads": 14,
+                  "props": 63,
+                  "solids": 0
+                },
+                "budget": {
+                  "kitPages": 1,
+                  "exclusiveKitPages": 1,
+                  "kitPageBudget": 1,
+                  "encodedBytes": 2093182,
+                  "decodedBytes": 16777216,
+                  "halfEncodedBytes": 201074,
+                  "halfDecodedBytes": 4194304,
+                  "tilePages": 6,
+                  "tileDecodedBytes": 3932160
+                },
+                "residency": {
+                  "live": 0,
+                  "visible": 0,
+                  "peak": 0
+                }
+              }
+            ],
+            "textureCache": {
+              "disposed": false,
+              "urls": [
+                "/assets/generated/hmh-art-target/ground-details.webp",
+                "/assets/generated/hmh-reboot-tripo-props-hd/tripo-props-hd-plants-00@0.5x.webp",
+                "/assets/generated/hmh-reboot-tripo-props-hd/tripo-props-hd-props-00@0.5x.webp",
+                "/assets/generated/hmh-reboot-tripo-props-hd/tripo-props-hd-structures-00@0.5x.webp",
+                "/assets/generated/hmh-reboot-tripo-props-hd/tripo-props-hd-structures-01@0.5x.webp",
+                "/assets/generated/hmh-terrain-tiles/crushed-ore-fringe.png",
+                "/assets/generated/hmh-terrain-tiles/crushed-ore.png",
+                "/assets/generated/hmh-terrain-tiles/forest-floor-fringe.png",
+                "/assets/generated/hmh-terrain-tiles/forest-floor.png",
+                "/assets/generated/hmh-terrain-tiles/packed-earth-fringe.png",
+                "/assets/generated/hmh-terrain-tiles/packed-earth.png",
+                "/assets/generated/hmh-terrain-tiles/road-fringe.png",
+                "/assets/generated/hmh-terrain-tiles/road.png",
+                "/assets/generated/hmh-terrain-tiles/wet-bank-fringe.png",
+                "/assets/generated/hmh-terrain-tiles/wet-bank.png"
+              ],
+              "references": 26
+            },
+            "visiblePieces": 1,
+            "cameraZoom": 0.8578947368421053
+          }
+        },
+        {
+          "scene": "meadows-garden-lane",
+          "file": "phone-meadows-garden-lane.png",
+          "position": {
+            "x": 11222,
+            "y": 6402
+          },
+          "snapshot": {
+            "areaArt": [
+              {
+                "areaId": "rugpull-woods",
+                "resolution": "half",
+                "pages": [
+                  "tripo-props-hd-plants-00.webp",
+                  "tripo-props-hd-structures-01.webp",
+                  "tripo-props-hd-props-00.webp"
+                ],
+                "tiles": [
+                  "forest-floor",
+                  "packed-earth",
+                  "wet-bank"
+                ],
+                "counts": {
+                  "zones": 3,
+                  "trails": 30,
+                  "decals": 0,
+                  "roads": 0,
+                  "props": 381,
+                  "solids": 10
+                },
+                "budget": {
+                  "kitPages": 3,
+                  "exclusiveKitPages": 2,
+                  "kitPageBudget": 2,
+                  "encodedBytes": 6170898,
+                  "decodedBytes": 50331648,
+                  "halfEncodedBytes": 614744,
+                  "halfDecodedBytes": 12582912,
+                  "tilePages": 6,
+                  "tileDecodedBytes": 3932160
+                },
+                "residency": {
+                  "live": 0,
+                  "visible": 0,
+                  "peak": 0
+                }
+              },
+              {
+                "areaId": "mweb-meadows",
+                "resolution": "half",
+                "pages": [
+                  "tripo-props-hd-plants-00.webp",
+                  "tripo-props-hd-structures-00.webp",
+                  "tripo-props-hd-props-00.webp"
+                ],
+                "tiles": [
+                  "crushed-ore",
+                  "forest-floor",
+                  "packed-earth"
+                ],
+                "counts": {
+                  "zones": 7,
+                  "trails": 14,
+                  "decals": 144,
+                  "roads": 0,
+                  "props": 84,
+                  "solids": 10
+                },
+                "budget": {
+                  "kitPages": 3,
+                  "exclusiveKitPages": 2,
+                  "kitPageBudget": 2,
+                  "encodedBytes": 6582428,
+                  "decodedBytes": 50331648,
+                  "halfEncodedBytes": 646884,
+                  "halfDecodedBytes": 12582912,
+                  "tilePages": 7,
+                  "tileDecodedBytes": 4194304
+                },
+                "residency": {
+                  "live": 1,
+                  "visible": 0,
+                  "peak": 2
+                }
+              },
+              {
+                "areaId": "world-roads",
+                "resolution": "half",
+                "pages": [
+                  "tripo-props-hd-props-00.webp"
+                ],
+                "tiles": [
+                  "crushed-ore",
+                  "packed-earth",
+                  "road"
+                ],
+                "counts": {
+                  "zones": 0,
+                  "trails": 0,
+                  "decals": 0,
+                  "roads": 14,
+                  "props": 63,
+                  "solids": 0
+                },
+                "budget": {
+                  "kitPages": 1,
+                  "exclusiveKitPages": 1,
+                  "kitPageBudget": 1,
+                  "encodedBytes": 2093182,
+                  "decodedBytes": 16777216,
+                  "halfEncodedBytes": 201074,
+                  "halfDecodedBytes": 4194304,
+                  "tilePages": 6,
+                  "tileDecodedBytes": 3932160
+                },
+                "residency": {
+                  "live": 8,
+                  "visible": 3,
+                  "peak": 8
+                }
+              }
+            ],
+            "textureCache": {
+              "disposed": false,
+              "urls": [
+                "/assets/generated/hmh-art-target/ground-details.webp",
+                "/assets/generated/hmh-reboot-tripo-props-hd/tripo-props-hd-plants-00@0.5x.webp",
+                "/assets/generated/hmh-reboot-tripo-props-hd/tripo-props-hd-props-00@0.5x.webp",
+                "/assets/generated/hmh-reboot-tripo-props-hd/tripo-props-hd-structures-00@0.5x.webp",
+                "/assets/generated/hmh-reboot-tripo-props-hd/tripo-props-hd-structures-01@0.5x.webp",
+                "/assets/generated/hmh-terrain-tiles/crushed-ore-fringe.png",
+                "/assets/generated/hmh-terrain-tiles/crushed-ore.png",
+                "/assets/generated/hmh-terrain-tiles/forest-floor-fringe.png",
+                "/assets/generated/hmh-terrain-tiles/forest-floor.png",
+                "/assets/generated/hmh-terrain-tiles/packed-earth-fringe.png",
+                "/assets/generated/hmh-terrain-tiles/packed-earth.png",
+                "/assets/generated/hmh-terrain-tiles/road-fringe.png",
+                "/assets/generated/hmh-terrain-tiles/road.png",
+                "/assets/generated/hmh-terrain-tiles/wet-bank-fringe.png",
+                "/assets/generated/hmh-terrain-tiles/wet-bank.png"
+              ],
+              "references": 26
+            },
+            "visiblePieces": 1,
+            "cameraZoom": 0.8578947368421053
+          }
+        },
+        {
+          "scene": "meadows-woods-road",
+          "file": "phone-meadows-woods-road.png",
+          "position": {
+            "x": 14177,
+            "y": 7637
+          },
+          "snapshot": {
+            "areaArt": [
+              {
+                "areaId": "rugpull-woods",
+                "resolution": "half",
+                "pages": [
+                  "tripo-props-hd-plants-00.webp",
+                  "tripo-props-hd-structures-01.webp",
+                  "tripo-props-hd-props-00.webp"
+                ],
+                "tiles": [
+                  "forest-floor",
+                  "packed-earth",
+                  "wet-bank"
+                ],
+                "counts": {
+                  "zones": 3,
+                  "trails": 30,
+                  "decals": 0,
+                  "roads": 0,
+                  "props": 381,
+                  "solids": 10
+                },
+                "budget": {
+                  "kitPages": 3,
+                  "exclusiveKitPages": 2,
+                  "kitPageBudget": 2,
+                  "encodedBytes": 6170898,
+                  "decodedBytes": 50331648,
+                  "halfEncodedBytes": 614744,
+                  "halfDecodedBytes": 12582912,
+                  "tilePages": 6,
+                  "tileDecodedBytes": 3932160
+                },
+                "residency": {
+                  "live": 0,
+                  "visible": 0,
+                  "peak": 0
+                }
+              },
+              {
+                "areaId": "mweb-meadows",
+                "resolution": "half",
+                "pages": [
+                  "tripo-props-hd-plants-00.webp",
+                  "tripo-props-hd-structures-00.webp",
+                  "tripo-props-hd-props-00.webp"
+                ],
+                "tiles": [
+                  "crushed-ore",
+                  "forest-floor",
+                  "packed-earth"
+                ],
+                "counts": {
+                  "zones": 7,
+                  "trails": 14,
+                  "decals": 144,
+                  "roads": 0,
+                  "props": 84,
+                  "solids": 10
+                },
+                "budget": {
+                  "kitPages": 3,
+                  "exclusiveKitPages": 2,
+                  "kitPageBudget": 2,
+                  "encodedBytes": 6582428,
+                  "decodedBytes": 50331648,
+                  "halfEncodedBytes": 646884,
+                  "halfDecodedBytes": 12582912,
+                  "tilePages": 7,
+                  "tileDecodedBytes": 4194304
+                },
+                "residency": {
+                  "live": 13,
+                  "visible": 1,
+                  "peak": 18
+                }
+              },
+              {
+                "areaId": "world-roads",
+                "resolution": "half",
+                "pages": [
+                  "tripo-props-hd-props-00.webp"
+                ],
+                "tiles": [
+                  "crushed-ore",
+                  "packed-earth",
+                  "road"
+                ],
+                "counts": {
+                  "zones": 0,
+                  "trails": 0,
+                  "decals": 0,
+                  "roads": 14,
+                  "props": 63,
+                  "solids": 0
+                },
+                "budget": {
+                  "kitPages": 1,
+                  "exclusiveKitPages": 1,
+                  "kitPageBudget": 1,
+                  "encodedBytes": 2093182,
+                  "decodedBytes": 16777216,
+                  "halfEncodedBytes": 201074,
+                  "halfDecodedBytes": 4194304,
+                  "tilePages": 6,
+                  "tileDecodedBytes": 3932160
+                },
+                "residency": {
+                  "live": 0,
+                  "visible": 0,
+                  "peak": 8
+                }
+              }
+            ],
+            "textureCache": {
+              "disposed": false,
+              "urls": [
+                "/assets/generated/hmh-art-target/ground-details.webp",
+                "/assets/generated/hmh-reboot-tripo-props-hd/tripo-props-hd-plants-00@0.5x.webp",
+                "/assets/generated/hmh-reboot-tripo-props-hd/tripo-props-hd-props-00@0.5x.webp",
+                "/assets/generated/hmh-reboot-tripo-props-hd/tripo-props-hd-structures-00@0.5x.webp",
+                "/assets/generated/hmh-reboot-tripo-props-hd/tripo-props-hd-structures-01@0.5x.webp",
+                "/assets/generated/hmh-terrain-tiles/crushed-ore-fringe.png",
+                "/assets/generated/hmh-terrain-tiles/crushed-ore.png",
+                "/assets/generated/hmh-terrain-tiles/forest-floor-fringe.png",
+                "/assets/generated/hmh-terrain-tiles/forest-floor.png",
+                "/assets/generated/hmh-terrain-tiles/packed-earth-fringe.png",
+                "/assets/generated/hmh-terrain-tiles/packed-earth.png",
+                "/assets/generated/hmh-terrain-tiles/road-fringe.png",
+                "/assets/generated/hmh-terrain-tiles/road.png",
+                "/assets/generated/hmh-terrain-tiles/wet-bank-fringe.png",
+                "/assets/generated/hmh-terrain-tiles/wet-bank.png"
+              ],
+              "references": 26
+            },
+            "visiblePieces": 0,
+            "cameraZoom": 0.8578947368421053
+          }
+        },
+        {
+          "scene": "highway-city-meadows",
+          "file": "phone-highway-city-meadows.png",
+          "position": {
+            "x": 11230,
+            "y": 6700
+          },
+          "snapshot": {
+            "areaArt": [
+              {
+                "areaId": "rugpull-woods",
+                "resolution": "half",
+                "pages": [
+                  "tripo-props-hd-plants-00.webp",
+                  "tripo-props-hd-structures-01.webp",
+                  "tripo-props-hd-props-00.webp"
+                ],
+                "tiles": [
+                  "forest-floor",
+                  "packed-earth",
+                  "wet-bank"
+                ],
+                "counts": {
+                  "zones": 3,
+                  "trails": 30,
+                  "decals": 0,
+                  "roads": 0,
+                  "props": 381,
+                  "solids": 10
+                },
+                "budget": {
+                  "kitPages": 3,
+                  "exclusiveKitPages": 2,
+                  "kitPageBudget": 2,
+                  "encodedBytes": 6170898,
+                  "decodedBytes": 50331648,
+                  "halfEncodedBytes": 614744,
+                  "halfDecodedBytes": 12582912,
+                  "tilePages": 6,
+                  "tileDecodedBytes": 3932160
+                },
+                "residency": {
+                  "live": 0,
+                  "visible": 0,
+                  "peak": 0
+                }
+              },
+              {
+                "areaId": "mweb-meadows",
+                "resolution": "half",
+                "pages": [
+                  "tripo-props-hd-plants-00.webp",
+                  "tripo-props-hd-structures-00.webp",
+                  "tripo-props-hd-props-00.webp"
+                ],
+                "tiles": [
+                  "crushed-ore",
+                  "forest-floor",
+                  "packed-earth"
+                ],
+                "counts": {
+                  "zones": 7,
+                  "trails": 14,
+                  "decals": 144,
+                  "roads": 0,
+                  "props": 84,
+                  "solids": 10
+                },
+                "budget": {
+                  "kitPages": 3,
+                  "exclusiveKitPages": 2,
+                  "kitPageBudget": 2,
+                  "encodedBytes": 6582428,
+                  "decodedBytes": 50331648,
+                  "halfEncodedBytes": 646884,
+                  "halfDecodedBytes": 12582912,
+                  "tilePages": 7,
+                  "tileDecodedBytes": 4194304
+                },
+                "residency": {
+                  "live": 4,
+                  "visible": 0,
+                  "peak": 18
+                }
+              },
+              {
+                "areaId": "world-roads",
+                "resolution": "half",
+                "pages": [
+                  "tripo-props-hd-props-00.webp"
+                ],
+                "tiles": [
+                  "crushed-ore",
+                  "packed-earth",
+                  "road"
+                ],
+                "counts": {
+                  "zones": 0,
+                  "trails": 0,
+                  "decals": 0,
+                  "roads": 14,
+                  "props": 63,
+                  "solids": 0
+                },
+                "budget": {
+                  "kitPages": 1,
+                  "exclusiveKitPages": 1,
+                  "kitPageBudget": 1,
+                  "encodedBytes": 2093182,
+                  "decodedBytes": 16777216,
+                  "halfEncodedBytes": 201074,
+                  "halfDecodedBytes": 4194304,
+                  "tilePages": 6,
+                  "tileDecodedBytes": 3932160
+                },
+                "residency": {
+                  "live": 8,
+                  "visible": 4,
+                  "peak": 8
+                }
+              }
+            ],
+            "textureCache": {
+              "disposed": false,
+              "urls": [
+                "/assets/generated/hmh-art-target/ground-details.webp",
+                "/assets/generated/hmh-reboot-tripo-props-hd/tripo-props-hd-plants-00@0.5x.webp",
+                "/assets/generated/hmh-reboot-tripo-props-hd/tripo-props-hd-props-00@0.5x.webp",
+                "/assets/generated/hmh-reboot-tripo-props-hd/tripo-props-hd-structures-00@0.5x.webp",
+                "/assets/generated/hmh-reboot-tripo-props-hd/tripo-props-hd-structures-01@0.5x.webp",
+                "/assets/generated/hmh-terrain-tiles/crushed-ore-fringe.png",
+                "/assets/generated/hmh-terrain-tiles/crushed-ore.png",
+                "/assets/generated/hmh-terrain-tiles/forest-floor-fringe.png",
+                "/assets/generated/hmh-terrain-tiles/forest-floor.png",
+                "/assets/generated/hmh-terrain-tiles/packed-earth-fringe.png",
+                "/assets/generated/hmh-terrain-tiles/packed-earth.png",
+                "/assets/generated/hmh-terrain-tiles/road-fringe.png",
+                "/assets/generated/hmh-terrain-tiles/road.png",
+                "/assets/generated/hmh-terrain-tiles/wet-bank-fringe.png",
+                "/assets/generated/hmh-terrain-tiles/wet-bank.png"
+              ],
+              "references": 26
+            },
+            "visiblePieces": 0,
+            "cameraZoom": 0.8578947368421053
+          }
+        },
+        {
+          "scene": "woods-center",
+          "file": "phone-woods-center.png",
+          "position": {
+            "x": 17500,
+            "y": 11600
+          },
+          "snapshot": {
+            "areaArt": [
+              {
+                "areaId": "rugpull-woods",
+                "resolution": "half",
+                "pages": [
+                  "tripo-props-hd-plants-00.webp",
+                  "tripo-props-hd-structures-01.webp",
+                  "tripo-props-hd-props-00.webp"
+                ],
+                "tiles": [
+                  "forest-floor",
+                  "packed-earth",
+                  "wet-bank"
+                ],
+                "counts": {
+                  "zones": 3,
+                  "trails": 30,
+                  "decals": 0,
+                  "roads": 0,
+                  "props": 381,
+                  "solids": 10
+                },
+                "budget": {
+                  "kitPages": 3,
+                  "exclusiveKitPages": 2,
+                  "kitPageBudget": 2,
+                  "encodedBytes": 6170898,
+                  "decodedBytes": 50331648,
+                  "halfEncodedBytes": 614744,
+                  "halfDecodedBytes": 12582912,
+                  "tilePages": 6,
+                  "tileDecodedBytes": 3932160
+                },
+                "residency": {
+                  "live": 104,
+                  "visible": 37,
+                  "peak": 104
+                }
+              },
+              {
+                "areaId": "mweb-meadows",
+                "resolution": "half",
+                "pages": [
+                  "tripo-props-hd-plants-00.webp",
+                  "tripo-props-hd-structures-00.webp",
+                  "tripo-props-hd-props-00.webp"
+                ],
+                "tiles": [
+                  "crushed-ore",
+                  "forest-floor",
+                  "packed-earth"
+                ],
+                "counts": {
+                  "zones": 7,
+                  "trails": 14,
+                  "decals": 144,
+                  "roads": 0,
+                  "props": 84,
+                  "solids": 10
+                },
+                "budget": {
+                  "kitPages": 3,
+                  "exclusiveKitPages": 2,
+                  "kitPageBudget": 2,
+                  "encodedBytes": 6582428,
+                  "decodedBytes": 50331648,
+                  "halfEncodedBytes": 646884,
+                  "halfDecodedBytes": 12582912,
+                  "tilePages": 7,
+                  "tileDecodedBytes": 4194304
+                },
+                "residency": {
+                  "live": 0,
+                  "visible": 0,
+                  "peak": 18
+                }
+              },
+              {
+                "areaId": "world-roads",
+                "resolution": "half",
+                "pages": [
+                  "tripo-props-hd-props-00.webp"
+                ],
+                "tiles": [
+                  "crushed-ore",
+                  "packed-earth",
+                  "road"
+                ],
+                "counts": {
+                  "zones": 0,
+                  "trails": 0,
+                  "decals": 0,
+                  "roads": 14,
+                  "props": 63,
+                  "solids": 0
+                },
+                "budget": {
+                  "kitPages": 1,
+                  "exclusiveKitPages": 1,
+                  "kitPageBudget": 1,
+                  "encodedBytes": 2093182,
+                  "decodedBytes": 16777216,
+                  "halfEncodedBytes": 201074,
+                  "halfDecodedBytes": 4194304,
+                  "tilePages": 6,
+                  "tileDecodedBytes": 3932160
+                },
+                "residency": {
+                  "live": 0,
+                  "visible": 0,
+                  "peak": 8
+                }
+              }
+            ],
+            "textureCache": {
+              "disposed": false,
+              "urls": [
+                "/assets/generated/hmh-art-target/ground-details.webp",
+                "/assets/generated/hmh-reboot-tripo-props-hd/tripo-props-hd-plants-00@0.5x.webp",
+                "/assets/generated/hmh-reboot-tripo-props-hd/tripo-props-hd-props-00@0.5x.webp",
+                "/assets/generated/hmh-reboot-tripo-props-hd/tripo-props-hd-structures-00@0.5x.webp",
+                "/assets/generated/hmh-reboot-tripo-props-hd/tripo-props-hd-structures-01@0.5x.webp",
+                "/assets/generated/hmh-terrain-tiles/crushed-ore-fringe.png",
+                "/assets/generated/hmh-terrain-tiles/crushed-ore.png",
+                "/assets/generated/hmh-terrain-tiles/forest-floor-fringe.png",
+                "/assets/generated/hmh-terrain-tiles/forest-floor.png",
+                "/assets/generated/hmh-terrain-tiles/packed-earth-fringe.png",
+                "/assets/generated/hmh-terrain-tiles/packed-earth.png",
+                "/assets/generated/hmh-terrain-tiles/road-fringe.png",
+                "/assets/generated/hmh-terrain-tiles/road.png",
+                "/assets/generated/hmh-terrain-tiles/wet-bank-fringe.png",
+                "/assets/generated/hmh-terrain-tiles/wet-bank.png"
+              ],
+              "references": 26
+            },
+            "visiblePieces": 0,
+            "cameraZoom": 0.8578947368421053
+          }
+        },
+        {
+          "scene": "woods-camp",
+          "file": "phone-woods-camp.png",
+          "position": {
+            "x": 18184,
+            "y": 11344
+          },
+          "snapshot": {
+            "areaArt": [
+              {
+                "areaId": "rugpull-woods",
+                "resolution": "half",
+                "pages": [
+                  "tripo-props-hd-plants-00.webp",
+                  "tripo-props-hd-structures-01.webp",
+                  "tripo-props-hd-props-00.webp"
+                ],
+                "tiles": [
+                  "forest-floor",
+                  "packed-earth",
+                  "wet-bank"
+                ],
+                "counts": {
+                  "zones": 3,
+                  "trails": 30,
+                  "decals": 0,
+                  "roads": 0,
+                  "props": 381,
+                  "solids": 10
+                },
+                "budget": {
+                  "kitPages": 3,
+                  "exclusiveKitPages": 2,
+                  "kitPageBudget": 2,
+                  "encodedBytes": 6170898,
+                  "decodedBytes": 50331648,
+                  "halfEncodedBytes": 614744,
+                  "halfDecodedBytes": 12582912,
+                  "tilePages": 6,
+                  "tileDecodedBytes": 3932160
+                },
+                "residency": {
+                  "live": 58,
+                  "visible": 2,
+                  "peak": 111
+                }
+              },
+              {
+                "areaId": "mweb-meadows",
+                "resolution": "half",
+                "pages": [
+                  "tripo-props-hd-plants-00.webp",
+                  "tripo-props-hd-structures-00.webp",
+                  "tripo-props-hd-props-00.webp"
+                ],
+                "tiles": [
+                  "crushed-ore",
+                  "forest-floor",
+                  "packed-earth"
+                ],
+                "counts": {
+                  "zones": 7,
+                  "trails": 14,
+                  "decals": 144,
+                  "roads": 0,
+                  "props": 84,
+                  "solids": 10
+                },
+                "budget": {
+                  "kitPages": 3,
+                  "exclusiveKitPages": 2,
+                  "kitPageBudget": 2,
+                  "encodedBytes": 6582428,
+                  "decodedBytes": 50331648,
+                  "halfEncodedBytes": 646884,
+                  "halfDecodedBytes": 12582912,
+                  "tilePages": 7,
+                  "tileDecodedBytes": 4194304
+                },
+                "residency": {
+                  "live": 0,
+                  "visible": 0,
+                  "peak": 18
+                }
+              },
+              {
+                "areaId": "world-roads",
+                "resolution": "half",
+                "pages": [
+                  "tripo-props-hd-props-00.webp"
+                ],
+                "tiles": [
+                  "crushed-ore",
+                  "packed-earth",
+                  "road"
+                ],
+                "counts": {
+                  "zones": 0,
+                  "trails": 0,
+                  "decals": 0,
+                  "roads": 14,
+                  "props": 63,
+                  "solids": 0
+                },
+                "budget": {
+                  "kitPages": 1,
+                  "exclusiveKitPages": 1,
+                  "kitPageBudget": 1,
+                  "encodedBytes": 2093182,
+                  "decodedBytes": 16777216,
+                  "halfEncodedBytes": 201074,
+                  "halfDecodedBytes": 4194304,
+                  "tilePages": 6,
+                  "tileDecodedBytes": 3932160
+                },
+                "residency": {
+                  "live": 0,
+                  "visible": 0,
+                  "peak": 8
+                }
+              }
+            ],
+            "textureCache": {
+              "disposed": false,
+              "urls": [
+                "/assets/generated/hmh-art-target/ground-details.webp",
+                "/assets/generated/hmh-reboot-tripo-props-hd/tripo-props-hd-plants-00@0.5x.webp",
+                "/assets/generated/hmh-reboot-tripo-props-hd/tripo-props-hd-props-00@0.5x.webp",
+                "/assets/generated/hmh-reboot-tripo-props-hd/tripo-props-hd-structures-00@0.5x.webp",
+                "/assets/generated/hmh-reboot-tripo-props-hd/tripo-props-hd-structures-01@0.5x.webp",
+                "/assets/generated/hmh-terrain-tiles/crushed-ore-fringe.png",
+                "/assets/generated/hmh-terrain-tiles/crushed-ore.png",
+                "/assets/generated/hmh-terrain-tiles/forest-floor-fringe.png",
+                "/assets/generated/hmh-terrain-tiles/forest-floor.png",
+                "/assets/generated/hmh-terrain-tiles/packed-earth-fringe.png",
+                "/assets/generated/hmh-terrain-tiles/packed-earth.png",
+                "/assets/generated/hmh-terrain-tiles/road-fringe.png",
+                "/assets/generated/hmh-terrain-tiles/road.png",
+                "/assets/generated/hmh-terrain-tiles/wet-bank-fringe.png",
+                "/assets/generated/hmh-terrain-tiles/wet-bank.png"
+              ],
+              "references": 26
+            },
+            "visiblePieces": 1,
+            "cameraZoom": 0.8578947368421053
+          }
+        },
+        {
+          "scene": "woods-stores",
+          "file": "phone-woods-stores.png",
+          "position": {
+            "x": 16614,
+            "y": 12891
+          },
+          "snapshot": {
+            "areaArt": [
+              {
+                "areaId": "rugpull-woods",
+                "resolution": "half",
+                "pages": [
+                  "tripo-props-hd-plants-00.webp",
+                  "tripo-props-hd-structures-01.webp",
+                  "tripo-props-hd-props-00.webp"
+                ],
+                "tiles": [
+                  "forest-floor",
+                  "packed-earth",
+                  "wet-bank"
+                ],
+                "counts": {
+                  "zones": 3,
+                  "trails": 30,
+                  "decals": 0,
+                  "roads": 0,
+                  "props": 381,
+                  "solids": 10
+                },
+                "budget": {
+                  "kitPages": 3,
+                  "exclusiveKitPages": 2,
+                  "kitPageBudget": 2,
+                  "encodedBytes": 6170898,
+                  "decodedBytes": 50331648,
+                  "halfEncodedBytes": 614744,
+                  "halfDecodedBytes": 12582912,
+                  "tilePages": 6,
+                  "tileDecodedBytes": 3932160
+                },
+                "residency": {
+                  "live": 45,
+                  "visible": 6,
+                  "peak": 116
+                }
+              },
+              {
+                "areaId": "mweb-meadows",
+                "resolution": "half",
+                "pages": [
+                  "tripo-props-hd-plants-00.webp",
+                  "tripo-props-hd-structures-00.webp",
+                  "tripo-props-hd-props-00.webp"
+                ],
+                "tiles": [
+                  "crushed-ore",
+                  "forest-floor",
+                  "packed-earth"
+                ],
+                "counts": {
+                  "zones": 7,
+                  "trails": 14,
+                  "decals": 144,
+                  "roads": 0,
+                  "props": 84,
+                  "solids": 10
+                },
+                "budget": {
+                  "kitPages": 3,
+                  "exclusiveKitPages": 2,
+                  "kitPageBudget": 2,
+                  "encodedBytes": 6582428,
+                  "decodedBytes": 50331648,
+                  "halfEncodedBytes": 646884,
+                  "halfDecodedBytes": 12582912,
+                  "tilePages": 7,
+                  "tileDecodedBytes": 4194304
+                },
+                "residency": {
+                  "live": 0,
+                  "visible": 0,
+                  "peak": 18
+                }
+              },
+              {
+                "areaId": "world-roads",
+                "resolution": "half",
+                "pages": [
+                  "tripo-props-hd-props-00.webp"
+                ],
+                "tiles": [
+                  "crushed-ore",
+                  "packed-earth",
+                  "road"
+                ],
+                "counts": {
+                  "zones": 0,
+                  "trails": 0,
+                  "decals": 0,
+                  "roads": 14,
+                  "props": 63,
+                  "solids": 0
+                },
+                "budget": {
+                  "kitPages": 1,
+                  "exclusiveKitPages": 1,
+                  "kitPageBudget": 1,
+                  "encodedBytes": 2093182,
+                  "decodedBytes": 16777216,
+                  "halfEncodedBytes": 201074,
+                  "halfDecodedBytes": 4194304,
+                  "tilePages": 6,
+                  "tileDecodedBytes": 3932160
+                },
+                "residency": {
+                  "live": 0,
+                  "visible": 0,
+                  "peak": 8
+                }
+              }
+            ],
+            "textureCache": {
+              "disposed": false,
+              "urls": [
+                "/assets/generated/hmh-art-target/ground-details.webp",
+                "/assets/generated/hmh-reboot-tripo-props-hd/tripo-props-hd-plants-00@0.5x.webp",
+                "/assets/generated/hmh-reboot-tripo-props-hd/tripo-props-hd-props-00@0.5x.webp",
+                "/assets/generated/hmh-reboot-tripo-props-hd/tripo-props-hd-structures-00@0.5x.webp",
+                "/assets/generated/hmh-reboot-tripo-props-hd/tripo-props-hd-structures-01@0.5x.webp",
+                "/assets/generated/hmh-terrain-tiles/crushed-ore-fringe.png",
+                "/assets/generated/hmh-terrain-tiles/crushed-ore.png",
+                "/assets/generated/hmh-terrain-tiles/forest-floor-fringe.png",
+                "/assets/generated/hmh-terrain-tiles/forest-floor.png",
+                "/assets/generated/hmh-terrain-tiles/packed-earth-fringe.png",
+                "/assets/generated/hmh-terrain-tiles/packed-earth.png",
+                "/assets/generated/hmh-terrain-tiles/road-fringe.png",
+                "/assets/generated/hmh-terrain-tiles/road.png",
+                "/assets/generated/hmh-terrain-tiles/wet-bank-fringe.png",
+                "/assets/generated/hmh-terrain-tiles/wet-bank.png"
+              ],
+              "references": 26
+            },
+            "visiblePieces": 1,
+            "cameraZoom": 0.8578947368421053
+          }
+        }
+      ],
+      "consoleErrors": [],
+      "snapshot": {
+        "access": {
+          "allowed": true,
+          "reason": "local-free-test",
+          "officialRun": false,
+          "rankedEligible": false
+        },
+        "phase": "ready",
+        "disposed": false,
+        "failure": null,
+        "cleanupFailure": null,
+        "playtest": {
+          "disposed": false,
+          "failure": null,
+          "cleanupErrors": [],
+          "inspectionJumps": 8,
+          "renderFrames": 5864,
+          "nativeEvents": 11,
+          "navWaitMs": 1651.2000000476837,
+          "frameScheduled": false,
+          "width": 414,
+          "height": 652,
+          "visiblePieces": 1,
+          "assetsReady": true,
+          "rendererType": 1,
+          "heroArtSource": "packed-textured-blend",
+          "heroFrameIds": "lit-commando__shadow__idle__south__000,lit-commando__lower-body__idle__south__000,lit-commando__torso-head__aim__south__000,lit-commando__weapon__aim__south__000",
+          "bodyScale": 0.58,
+          "cameraZoom": 0.8578947368421053,
+          "heldKeys": 0,
+          "heldPointers": 0,
+          "areaArt": [
+            {
+              "artId": "world-v2-area-art/v1",
+              "areaId": "rugpull-woods",
+              "resolution": "half",
+              "disposed": false,
+              "mounted": true,
+              "pages": [
+                "tripo-props-hd-plants-00.webp",
+                "tripo-props-hd-structures-01.webp",
+                "tripo-props-hd-props-00.webp"
+              ],
+              "tiles": [
+                "forest-floor",
+                "packed-earth",
+                "wet-bank"
+              ],
+              "counts": {
+                "zones": 3,
+                "trails": 30,
+                "decals": 0,
+                "roads": 0,
+                "props": 381,
+                "solids": 10
+              },
+              "budget": {
+                "kitPages": 3,
+                "exclusiveKitPages": 2,
+                "kitPageBudget": 2,
+                "encodedBytes": 6170898,
+                "decodedBytes": 50331648,
+                "halfEncodedBytes": 614744,
+                "halfDecodedBytes": 12582912,
+                "tilePages": 6,
+                "tileDecodedBytes": 3932160
+              },
+              "ownedUrls": [
+                "/assets/generated/hmh-reboot-tripo-props-hd/tripo-props-hd-plants-00@0.5x.webp",
+                "/assets/generated/hmh-reboot-tripo-props-hd/tripo-props-hd-props-00@0.5x.webp",
+                "/assets/generated/hmh-reboot-tripo-props-hd/tripo-props-hd-structures-01@0.5x.webp",
+                "/assets/generated/hmh-terrain-tiles/forest-floor-fringe.png",
+                "/assets/generated/hmh-terrain-tiles/forest-floor.png",
+                "/assets/generated/hmh-terrain-tiles/packed-earth-fringe.png",
+                "/assets/generated/hmh-terrain-tiles/packed-earth.png",
+                "/assets/generated/hmh-terrain-tiles/wet-bank-fringe.png",
+                "/assets/generated/hmh-terrain-tiles/wet-bank.png"
+              ],
+              "painted": 7,
+              "residency": {
+                "disposed": false,
+                "catalogCount": 381,
+                "liveCount": 45,
+                "visibleCount": 6,
+                "peakCount": 116,
+                "createdCount": 204,
+                "destroyedCount": 159,
+                "residentIds": [
+                  "rugpull-woods-art-122",
+                  "rugpull-woods-art-123",
+                  "rugpull-woods-art-124",
+                  "rugpull-woods-art-125",
+                  "rugpull-woods-art-126",
+                  "rugpull-woods-art-127",
+                  "rugpull-woods-art-128",
+                  "rugpull-woods-art-164",
+                  "rugpull-woods-art-165",
+                  "rugpull-woods-art-166",
+                  "rugpull-woods-art-167",
+                  "rugpull-woods-art-168",
+                  "rugpull-woods-art-169",
+                  "rugpull-woods-art-170",
+                  "rugpull-woods-art-171",
+                  "rugpull-woods-art-172",
+                  "rugpull-woods-art-173",
+                  "rugpull-woods-art-174",
+                  "rugpull-woods-art-201",
+                  "rugpull-woods-art-202",
+                  "rugpull-woods-art-203",
+                  "rugpull-woods-art-204",
+                  "rugpull-woods-art-205",
+                  "rugpull-woods-art-206",
+                  "rugpull-woods-art-259",
+                  "rugpull-woods-art-262",
+                  "rugpull-woods-art-263",
+                  "rugpull-woods-art-265",
+                  "rugpull-woods-art-294",
+                  "rugpull-woods-art-295",
+                  "rugpull-woods-art-296",
+                  "rugpull-woods-art-297",
+                  "rugpull-woods-art-298",
+                  "rugpull-woods-art-299",
+                  "rugpull-woods-art-300",
+                  "rugpull-woods-art-326",
+                  "rugpull-woods-art-327",
+                  "rugpull-woods-art-328",
+                  "rugpull-woods-art-329",
+                  "rugpull-woods-art-330",
+                  "rugpull-woods-art-331",
+                  "rugpull-woods-art-332",
+                  "rugpull-woods-art-333",
+                  "rugpull-woods-art-334",
+                  "rugpull-woods-art-335"
+                ],
+                "visibleIds": [
+                  "rugpull-woods-art-124",
+                  "rugpull-woods-art-125",
+                  "rugpull-woods-art-126",
+                  "rugpull-woods-art-127",
+                  "rugpull-woods-art-204",
+                  "rugpull-woods-art-206"
+                ],
+                "areaIds": [
+                  "rugpull-woods"
+                ]
+              },
+              "runtimeAuthority": "projection-only"
+            },
+            {
+              "artId": "world-v2-area-art/v1",
+              "areaId": "mweb-meadows",
+              "resolution": "half",
+              "disposed": false,
+              "mounted": true,
+              "pages": [
+                "tripo-props-hd-plants-00.webp",
+                "tripo-props-hd-structures-00.webp",
+                "tripo-props-hd-props-00.webp"
+              ],
+              "tiles": [
+                "crushed-ore",
+                "forest-floor",
+                "packed-earth"
+              ],
+              "counts": {
+                "zones": 7,
+                "trails": 14,
+                "decals": 144,
+                "roads": 0,
+                "props": 84,
+                "solids": 10
+              },
+              "budget": {
+                "kitPages": 3,
+                "exclusiveKitPages": 2,
+                "kitPageBudget": 2,
+                "encodedBytes": 6582428,
+                "decodedBytes": 50331648,
+                "halfEncodedBytes": 646884,
+                "halfDecodedBytes": 12582912,
+                "tilePages": 7,
+                "tileDecodedBytes": 4194304
+              },
+              "ownedUrls": [
+                "/assets/generated/hmh-art-target/ground-details.webp",
+                "/assets/generated/hmh-reboot-tripo-props-hd/tripo-props-hd-plants-00@0.5x.webp",
+                "/assets/generated/hmh-reboot-tripo-props-hd/tripo-props-hd-props-00@0.5x.webp",
+                "/assets/generated/hmh-reboot-tripo-props-hd/tripo-props-hd-structures-00@0.5x.webp",
+                "/assets/generated/hmh-terrain-tiles/crushed-ore-fringe.png",
+                "/assets/generated/hmh-terrain-tiles/crushed-ore.png",
+                "/assets/generated/hmh-terrain-tiles/forest-floor-fringe.png",
+                "/assets/generated/hmh-terrain-tiles/forest-floor.png",
+                "/assets/generated/hmh-terrain-tiles/packed-earth-fringe.png",
+                "/assets/generated/hmh-terrain-tiles/packed-earth.png"
+              ],
+              "painted": 156,
+              "residency": {
+                "disposed": false,
+                "catalogCount": 84,
+                "liveCount": 0,
+                "visibleCount": 0,
+                "peakCount": 18,
+                "createdCount": 25,
+                "destroyedCount": 25,
+                "residentIds": [],
+                "visibleIds": [],
+                "areaIds": []
+              },
+              "runtimeAuthority": "projection-only"
+            },
+            {
+              "artId": "world-v2-area-art/v1",
+              "areaId": "world-roads",
+              "resolution": "half",
+              "disposed": false,
+              "mounted": true,
+              "pages": [
+                "tripo-props-hd-props-00.webp"
+              ],
+              "tiles": [
+                "crushed-ore",
+                "packed-earth",
+                "road"
+              ],
+              "counts": {
+                "zones": 0,
+                "trails": 0,
+                "decals": 0,
+                "roads": 14,
+                "props": 63,
+                "solids": 0
+              },
+              "budget": {
+                "kitPages": 1,
+                "exclusiveKitPages": 1,
+                "kitPageBudget": 1,
+                "encodedBytes": 2093182,
+                "decodedBytes": 16777216,
+                "halfEncodedBytes": 201074,
+                "halfDecodedBytes": 4194304,
+                "tilePages": 6,
+                "tileDecodedBytes": 3932160
+              },
+              "ownedUrls": [
+                "/assets/generated/hmh-reboot-tripo-props-hd/tripo-props-hd-props-00@0.5x.webp",
+                "/assets/generated/hmh-terrain-tiles/crushed-ore-fringe.png",
+                "/assets/generated/hmh-terrain-tiles/crushed-ore.png",
+                "/assets/generated/hmh-terrain-tiles/packed-earth-fringe.png",
+                "/assets/generated/hmh-terrain-tiles/packed-earth.png",
+                "/assets/generated/hmh-terrain-tiles/road-fringe.png",
+                "/assets/generated/hmh-terrain-tiles/road.png"
+              ],
+              "painted": 36,
+              "residency": {
+                "disposed": false,
+                "catalogCount": 63,
+                "liveCount": 0,
+                "visibleCount": 0,
+                "peakCount": 8,
+                "createdCount": 16,
+                "destroyedCount": 16,
+                "residentIds": [],
+                "visibleIds": [],
+                "areaIds": []
+              },
+              "runtimeAuthority": "projection-only"
+            }
+          ],
+          "textureCache": {
+            "disposed": false,
+            "urls": [
+              "/assets/generated/hmh-art-target/ground-details.webp",
+              "/assets/generated/hmh-reboot-tripo-props-hd/tripo-props-hd-plants-00@0.5x.webp",
+              "/assets/generated/hmh-reboot-tripo-props-hd/tripo-props-hd-props-00@0.5x.webp",
+              "/assets/generated/hmh-reboot-tripo-props-hd/tripo-props-hd-structures-00@0.5x.webp",
+              "/assets/generated/hmh-reboot-tripo-props-hd/tripo-props-hd-structures-01@0.5x.webp",
+              "/assets/generated/hmh-terrain-tiles/crushed-ore-fringe.png",
+              "/assets/generated/hmh-terrain-tiles/crushed-ore.png",
+              "/assets/generated/hmh-terrain-tiles/forest-floor-fringe.png",
+              "/assets/generated/hmh-terrain-tiles/forest-floor.png",
+              "/assets/generated/hmh-terrain-tiles/packed-earth-fringe.png",
+              "/assets/generated/hmh-terrain-tiles/packed-earth.png",
+              "/assets/generated/hmh-terrain-tiles/road-fringe.png",
+              "/assets/generated/hmh-terrain-tiles/road.png",
+              "/assets/generated/hmh-terrain-tiles/wet-bank-fringe.png",
+              "/assets/generated/hmh-terrain-tiles/wet-bank.png"
+            ],
+            "references": 26
+          },
+          "propResidency": {
+            "disposed": false,
+            "catalogCount": 581,
+            "liveCount": 4,
+            "visibleCount": 1,
+            "peakCount": 6,
+            "createdCount": 27,
+            "destroyedCount": 23,
+            "residentIds": [
+              "closed-mass-469",
+              "closed-mass-472",
+              "rugpull-woods-abandoned-lean-to",
+              "rugpull-woods-abandoned-store"
+            ],
+            "visibleIds": [
+              "rugpull-woods-abandoned-store"
+            ],
+            "areaIds": []
+          },
+          "runtime": {
+            "phase": "paused",
+            "mode": "local-free-test",
+            "officialRun": false,
+            "rankedEligible": false,
+            "tick": 483,
+            "fixedStepMs": 16.666666666666668,
+            "actor": {
+              "x": 16613.65065796277,
+              "y": 12890.528748194583,
+              "vx": 0,
+              "vy": 0,
+              "groundZ": 0,
+              "legDirection": 2,
+              "torsoDirection": 2,
+              "locomotion": "idle",
+              "heading": 1.5707963267948966
+            },
+            "previousActor": {
+              "x": 16613.65065796277,
+              "y": 12890.528748194583,
+              "vx": 0,
+              "vy": 0,
+              "groundZ": 0,
+              "legDirection": 2,
+              "torsoDirection": 2,
+              "locomotion": "idle",
+              "heading": 1.5707963267948966
+            },
+            "nav": {
+              "columns": 334,
+              "rows": 234,
+              "cellSize": 60,
+              "walkableCells": 36749,
+              "gridBytes": 156312,
+              "flowBytes": 390780
+            },
+            "lastStep": {
+              "contacts": 0,
+              "traversalAllowed": true
+            },
+            "failure": null,
+            "relay": {
+              "id": "local-meadows-relay",
+              "insideTicks": 0,
+              "committed": false,
+              "commitTick": -1,
+              "progressTicks": 0,
+              "completionTick": null,
+              "operating": false,
+              "eligible": false,
+              "disposed": false
+            }
+          }
+        }
+      },
+      "afterClose": {
+        "disposed": true,
+        "cleanupErrors": [],
+        "textureCache": {
+          "disposed": true,
+          "urls": [],
+          "references": 0
+        },
+        "areaArt": [
+          {
+            "areaId": "rugpull-woods",
+            "disposed": true,
+            "ownedUrls": 0
+          },
+          {
+            "areaId": "mweb-meadows",
+            "disposed": true,
+            "ownedUrls": 0
+          },
+          {
+            "areaId": "world-roads",
+            "disposed": true,
+            "ownedUrls": 0
+          }
+        ]
+      }
+    }
+  ],
+  "errors": []
+}
