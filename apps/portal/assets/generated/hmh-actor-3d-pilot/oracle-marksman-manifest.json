@@ -1,0 +1,137 @@
+{
+  "schema": 1,
+  "classification": "unapproved-runtime-character-pilot",
+  "activeRuntimeIntegration": false,
+  "cameraDegreesFromVertical": 55,
+  "groundPivot": "existing-world-foot-position",
+  "simulationAuthority": "none",
+  "actors": {
+    "oracle-marksman": {
+      "file": "oracle-marksman.glb",
+      "sha256": "80a435948383a772cd7ed51c1d472728d4e670dc3310c64c417f2322630fb10f",
+      "sourceSha256": "a0baf24e6241fe5dda31bcf3f26d29ac0640e4a40a2bbf06097b851dfa5a023a",
+      "sourceBytes": 2815083,
+      "sourceTriangles": 60580,
+      "requiredClips": [
+        "idle",
+        "run",
+        "tell",
+        "attack",
+        "hit",
+        "death"
+      ],
+      "inspection": {
+        "bytes": 1755868,
+        "vertices": 12529,
+        "triangles": 9156,
+        "skinnedMeshes": 2,
+        "joints": 19,
+        "clips": [
+          {
+            "name": "attack",
+            "durationSeconds": 1,
+            "channels": 63
+          },
+          {
+            "name": "death",
+            "durationSeconds": 1,
+            "channels": 63
+          },
+          {
+            "name": "hit",
+            "durationSeconds": 1,
+            "channels": 63
+          },
+          {
+            "name": "idle",
+            "durationSeconds": 1,
+            "channels": 63
+          },
+          {
+            "name": "run",
+            "durationSeconds": 1,
+            "channels": 63
+          },
+          {
+            "name": "tell",
+            "durationSeconds": 1,
+            "channels": 63
+          }
+        ],
+        "bounds": {
+          "min": [
+            -0.3779749572277069,
+            -0.0005774719174951315,
+            -0.3180084526538849
+          ],
+          "max": [
+            0.38003188371658325,
+            1.8192685842514038,
+            0.25874030590057373
+          ]
+        },
+        "embeddedImages": 8,
+        "images": [
+          {
+            "name": "costume-emission",
+            "format": "png",
+            "width": 512,
+            "height": 512,
+            "bytes": 5807
+          },
+          {
+            "name": "costume-normal",
+            "format": "png",
+            "width": 512,
+            "height": 512,
+            "bytes": 145327
+          },
+          {
+            "name": "costume-baseColor",
+            "format": "png",
+            "width": 512,
+            "height": 512,
+            "bytes": 203424
+          },
+          {
+            "name": "costume-metallicRoughness",
+            "format": "png",
+            "width": 512,
+            "height": 512,
+            "bytes": 104058
+          },
+          {
+            "name": "costume-emission",
+            "format": "png",
+            "width": 512,
+            "height": 512,
+            "bytes": 12115
+          },
+          {
+            "name": "costume-normal",
+            "format": "png",
+            "width": 512,
+            "height": 512,
+            "bytes": 22232
+          },
+          {
+            "name": "costume-baseColor",
+            "format": "png",
+            "width": 512,
+            "height": 512,
+            "bytes": 23277
+          },
+          {
+            "name": "costume-metallicRoughness",
+            "format": "png",
+            "width": 512,
+            "height": 512,
+            "bytes": 23127
+          }
+        ],
+        "textureBytesRgba8": 8388608,
+        "textureBytesRgba8Mipmaps": 11184800
+      }
+    }
+  }
+}
