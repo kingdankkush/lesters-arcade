@@ -1537,7 +1537,7 @@ async function mountStackedSession() {
     musicOn: () => !arcadeMusic.muted,
   });
   stackedHost = createStackedHost({
-    mount: dom.officialCombatMount, session: boundSession, startLevel, settlementLive: SETTLEMENT_LIVE,
+    mount: dom.officialCombatMount, session: boundSession, search: bootRuntimeSearch, startLevel, settlementLive: SETTLEMENT_LIVE,
     profile: { displayName: profile ? resolveDisplayName(profile, connectedWallet) : 'Guest', locale: document.documentElement.lang || 'en' },
     settings: { ...readStackedSettings(window.localStorage, Boolean(gameSettings.reduceMotion)), ...childCosmetics('stacked') }, music: arcadeMusicAudio(),
     onReady() { combat.active = true; combat.gameOver = false; combat.paused = false; },

@@ -1,3 +1,4 @@
+import {createPresentationAtmosphere} from './living-journey-loader.mjs';
 import { computeLayout } from '../../../portal/src/stacked-layout.mjs';
 import { createStackedBoardView } from './board-view.mjs';
 import { createLayerStack } from './layers.mjs';
@@ -14,9 +15,9 @@ import { createBoardMotionView } from './board-motion.mjs';
 import { PIECE_COLORS } from './board-view.mjs';
 import { createVisualizerGovernor, deviceStartTier } from './visualizer-governor.mjs';
 
-export function createStackedRenderer({ app, stageElement, geometry, Container, Graphics, Text, onFrameReleased = () => {}, startTier = deviceStartTier, isMobile = () => mobilePresentation({width:globalThis.innerWidth,coarsePointer:globalThis.matchMedia?.('(pointer: coarse)').matches}) }) {
+export function createStackedRenderer({ app, stageElement, geometry, Container, Graphics, Text, onFrameReleased = () => {}, startTier = deviceStartTier, createAtmosphere = createStackedAtmosphere, isMobile = () => mobilePresentation({width:globalThis.innerWidth,coarsePointer:globalThis.matchMedia?.('(pointer: coarse)').matches}) }) {
   const tree = createLayerStack({ stage: app.stage, Container, Graphics });
-  let atmosphere=null, particles=null, pieceFx=null, mobile=null;
+  let atmosphere=null, particles=null, pieceFx=null, mobile=null, atmosphereFactory=createAtmosphere;
   const board = createStackedBoardView({ index: 0, cells: 10, rows: 24, frame: 'wide', geometry, Container, Graphics, Text, onFrameReleased });
   tree.boardSlots[0].addChild(board.root);
   const feedback = createGameplayFeedback(), accents = createBoardFeedback({board, Graphics, Text});
@@ -43,7 +44,7 @@ export function createStackedRenderer({ app, stageElement, geometry, Container, 
     if(nextMobile!==mobile) {
       mobile=nextMobile;
       atmosphere?.destroy(); atmosphere=null;
-      atmosphere=createStackedAtmosphere({layer:tree.layers.layerParticleFar,sceneLayer:tree.layers.layerBackdrop,Graphics,mobile});
+      atmosphere=createPresentationAtmosphere(atmosphereFactory,{layer:tree.layers.layerParticleFar,sceneLayer:tree.layers.layerBackdrop,Container,Graphics,Text,mobile},{fallback:createStackedAtmosphere,onFallback:()=>{atmosphereFactory=createStackedAtmosphere;stageElement.dataset.livingJourneyStatus='fallback';}});
       particles?.destroy(); particles=createBoardParticles({board,Graphics,geometry,mobile});
       // ST-N03 piece presentation (hold, level, ledger, perfect, top-out, danger, lock thud).
       pieceFx?.destroy(); pieceFx=createBoardPiecePresentation({board,Graphics,mobile});
@@ -88,6 +89,7 @@ export function createStackedRenderer({ app, stageElement, geometry, Container, 
       stageElement.dataset.visualizerMode = info.mode;
       stageElement.dataset.visualizerScene = info.scene;
       stageElement.dataset.sceneTransitions = String(info.sceneTransitions);
+      if(info.journeyVersion){stageElement.dataset.journeyDistance=String(info.journeyDistance);stageElement.dataset.portalRadius=String(info.portalRadius);}
       stageElement.dataset.feedback = response.labelAge < 2.2 ? response.label : '';
       board.layers.ghostLayer.visible = settings.video.ghostPiece;
       board.setGridLines(settings.video.gridLines);

@@ -1,0 +1,1068 @@
+{
+  "schema": "stacked-f1b-lazy-journey-slice-v1",
+  "scope": "Default-off presentation candidate; no final art, physical phone, soak, full release or deployment acceptance",
+  "sources": {
+    "apps/portal/main.js": {
+      "bytes": 451363,
+      "sha256": "eef74c8066f97f53abc7a9d3ecf448ac69b6eae2e9a954543f3dda6b9f2c1253"
+    },
+    "apps/portal/src/stacked-host.mjs": {
+      "bytes": 8270,
+      "sha256": "32683a22a582cbc4c2fc1ddbe1ae3cb6e6f4e373d6de1700ca93076e3ded6e09"
+    },
+    "apps/portal/src/stacked-presentation-switch.mjs": {
+      "bytes": 285,
+      "sha256": "d88af5b7eb5794c963a5e4a74e18fec38030fe14aba316ea659a93e6ed7c4191"
+    },
+    "apps/stacked/src/main.mjs": {
+      "bytes": 24968,
+      "sha256": "5a4af798b05d5f885165b6146275280daa561065cf99b97ef06253d69ea42bff"
+    },
+    "apps/stacked/src/render/atmosphere.mjs": {
+      "bytes": 8199,
+      "sha256": "ecdefcec47496f0cfa014d8c172b04df693ecd8fd565c7cf2c7fe6563a3bd410"
+    },
+    "apps/stacked/src/render/renderer.mjs": {
+      "bytes": 9796,
+      "sha256": "ae6e41ab4879ece9c5c86d6cff58b779b86596ce19720ba0bee8a52d55f38905"
+    },
+    "apps/stacked/src/render/living-journey-loader.mjs": {
+      "bytes": 1013,
+      "sha256": "1d2860507617d4d56a41f5faea8a8d9a67b937f54d8ec020c1cbde7e38742762"
+    },
+    "apps/stacked/src/render/living-journey-view.mjs": {
+      "bytes": 8233,
+      "sha256": "e0294e7d2fe1507c3112143380872bccb0af048623d0c2cb09c047cf5200c093"
+    },
+    "tests/lib/stacked-pixi-test-fixture.mjs": {
+      "bytes": 1592,
+      "sha256": "d1fc97034a58d8d5c7ee7bda94fc5b2a82026eea075112cdafa8879f02444149"
+    },
+    "tests/stacked-atmosphere-projection.test.mjs": {
+      "bytes": 2525,
+      "sha256": "61dcb9a30bfde513003597b3808f0af9f3a29792a43a7c9522b019a2f0c95fd6"
+    },
+    "tests/stacked-journey-host-search.test.mjs": {
+      "bytes": 1733,
+      "sha256": "7db52b7cd08f2b813fdb1e6a0c56d332889136137a20a4ee5b7da7cd55c8fc7c"
+    },
+    "tests/stacked-living-journey-loader.test.mjs": {
+      "bytes": 3848,
+      "sha256": "d55945a668472f1586e61da819a5e76946aefd5dc5eda392fdfb5767a5a3f014"
+    },
+    "tests/stacked-living-journey-view.test.mjs": {
+      "bytes": 6430,
+      "sha256": "700410b6be712a5ab064234bc9cb4287dae75bc82eda8d3519a8f7145901b0fe"
+    },
+    "scripts/syntax-check.mjs": {
+      "bytes": 63954,
+      "sha256": "ef9b3ad77638e4accae1282449db7959d9a930a996985089fd47632fcdb899dd"
+    }
+  },
+  "rawProofs": {
+    "work/stacked-journey-view-green-04/report.json": {
+      "bytes": 18461,
+      "sha256": "cefe195df3b7d64c144c7206545ed2788d946979a42ae78656657f9af62347e4"
+    },
+    "work/stacked-journey-build-browser-20260929-02/build-browser-report.json": {
+      "bytes": 5455495,
+      "sha256": "cda904948d77e46945db693920de69c02d702a94ea2a5c60a48b5328c485f17b"
+    },
+    "work/stacked-journey-browser-20260929-02/browser-report.json": {
+      "bytes": 2633179,
+      "sha256": "97ceb9c14315ebb33e9a1e18981f16feb6577c2109118cf6d8514b59bbc7c6d0"
+    },
+    "work/stacked-f1b-default-visual-02/report.json": {
+      "bytes": 12632,
+      "sha256": "0a43d8ee37d1a6a92bd51b7cecec7f4ca11396fa1f2cbc5d480d391691752ab8"
+    },
+    "work/stacked-journey-browser-bindings-02.json": {
+      "bytes": 1439551,
+      "sha256": "6121305cab12a64de49a3c1cb06d094fb40d21ac6bb67f54606117346dc0f289"
+    }
+  },
+  "source": {
+    "focusedPass": 23,
+    "cleanCopyPass": 23,
+    "copyFiles": 26,
+    "noGit": true,
+    "noModules": true,
+    "emptyPATH": true,
+    "commands": [
+      {
+        "name": "root",
+        "pid": 48760,
+        "exitCode": 0,
+        "closureConfirmed": true
+      },
+      {
+        "name": "source-copy",
+        "pid": 15884,
+        "exitCode": 0,
+        "closureConfirmed": true
+      }
+    ]
+  },
+  "build": {
+    "scopedParseCount": 14,
+    "relatedPresentationTestsPass": 49,
+    "budgets": {
+      "hmh-reboot": {
+        "files": [
+          {
+            "file": "apps/portal/dist/hmh-reboot/game.js",
+            "bytes": 317647,
+            "sha256": "6034706fd1c3cb54e83405232ae61a466866dc1f098f9575922e2bea6a0795f3"
+          },
+          {
+            "file": "apps/portal/dist/chunks/chunk-2BH2DUJT.js",
+            "bytes": 28251,
+            "sha256": "b46a980688107505e390484d081e257045cab2db851b020bb3b989ddce936828"
+          },
+          {
+            "file": "apps/portal/dist/chunks/chunk-2GEB7OBA.js",
+            "bytes": 4219,
+            "sha256": "70a65bc4522fc364187cf2e23a1673dad5cc19d199e4c823fecd18f976813d9f"
+          },
+          {
+            "file": "apps/portal/dist/chunks/chunk-2WGYLO4P.js",
+            "bytes": 655,
+            "sha256": "fe5865361e105c752963ffcabdae4f585e39639d8f0a1167a65ce795bfd94776"
+          },
+          {
+            "file": "apps/portal/dist/chunks/chunk-35BRWECB.js",
+            "bytes": 3356,
+            "sha256": "902447d40ec443e1cdfad763ac26008351d9e6b5f949b2a1c887c0a50173ada9"
+          },
+          {
+            "file": "apps/portal/dist/chunks/chunk-54K7V4IX.js",
+            "bytes": 20539,
+            "sha256": "a18ce9bf1ff8c9f06e8b462eea3f0260bbbdfce6d3f6ca102ccd37413eb2b087"
+          },
+          {
+            "file": "apps/portal/dist/chunks/chunk-6DDQFTGU.js",
+            "bytes": 5708,
+            "sha256": "86ee5aaba5bc334fcdef63133cedea9b897a4dc5c73e8896e6f95160c6a1be47"
+          },
+          {
+            "file": "apps/portal/dist/chunks/chunk-74RWV2R2.js",
+            "bytes": 1275,
+            "sha256": "0e58e1f13487f162562313478c6ebcfd099a69049a8bf6ade3ef5c654f757f58"
+          },
+          {
+            "file": "apps/portal/dist/chunks/chunk-74ZJNIIV.js",
+            "bytes": 35584,
+            "sha256": "d6a7ec2d2df9af1c7f3c5f2d3e796a2010ed5b371810208cb07432c2b225845e"
+          },
+          {
+            "file": "apps/portal/dist/chunks/chunk-B2364FTF.js",
+            "bytes": 12061,
+            "sha256": "757de212e9fddbcb84d2423308a3168473d81822d1c52d145cd32354cb9e00cd"
+          },
+          {
+            "file": "apps/portal/dist/chunks/chunk-EKYRYSFG.js",
+            "bytes": 8142,
+            "sha256": "80a236e8f7ba1e0c0a27ce41f3a79030a0dce726377f9a722b77dff47f39dac8"
+          },
+          {
+            "file": "apps/portal/dist/chunks/chunk-ESDQIMBA.js",
+            "bytes": 965,
+            "sha256": "b8b27a8e8a339ff957517d24f55d5e43e19257a3d84afa800dcb6a4a36335ae6"
+          },
+          {
+            "file": "apps/portal/dist/chunks/chunk-FJSVRC2T.js",
+            "bytes": 3368,
+            "sha256": "9db85111ba86baf3c2c56720931ce6de6b09fdc11dfff016afa2da664970923c"
+          },
+          {
+            "file": "apps/portal/dist/chunks/chunk-HRT7TI5W.js",
+            "bytes": 1590,
+            "sha256": "4024f32d830d0a10cab912a25fb48fc25e7e66cce3cb4e6bd4e11bd2047397ee"
+          },
+          {
+            "file": "apps/portal/dist/chunks/chunk-IZH6NDGR.js",
+            "bytes": 8119,
+            "sha256": "717cc54567e4da4278370a10d392edd2f55566d58cf010a0bd909a3addae26d5"
+          },
+          {
+            "file": "apps/portal/dist/chunks/chunk-JW3WZOLP.js",
+            "bytes": 481,
+            "sha256": "1408f3bf522dca3a38a8506c8bed7426ce280669de684ec106feddc04993357b"
+          },
+          {
+            "file": "apps/portal/dist/chunks/chunk-KIEFYNSW.js",
+            "bytes": 1478,
+            "sha256": "6c1187374a3f5b26b4f25f12a9aac90068325e6cf7ef8f3a3154d52b9d90d136"
+          },
+          {
+            "file": "apps/portal/dist/chunks/chunk-MMSI7XOT.js",
+            "bytes": 10801,
+            "sha256": "628c514e29dfeaf75b2d2139eca21c246025185d4bf3cb2222897eaf3a5a2770"
+          },
+          {
+            "file": "apps/portal/dist/chunks/chunk-NSYVAXWR.js",
+            "bytes": 13104,
+            "sha256": "a8ec51079fd382283f7a361f482ce8ea6e36eacc2e97ff38bdff86338779d315"
+          },
+          {
+            "file": "apps/portal/dist/chunks/chunk-OQWCW7H2.js",
+            "bytes": 524,
+            "sha256": "d63df405a33525fdfc80c5840831f92e1a192e401fe482f6a13bb537fb270ee6"
+          },
+          {
+            "file": "apps/portal/dist/chunks/chunk-PBEL7OZC.js",
+            "bytes": 1800,
+            "sha256": "e02b932100995c4ed0eade95ef56e213187ea60f7719bc4db3f3e13b3ef3ef18"
+          },
+          {
+            "file": "apps/portal/dist/chunks/chunk-QYXQOKRI.js",
+            "bytes": 235,
+            "sha256": "a40d7c3ec735b2c20abaa218335ad1b4dce39965152eb352d0a5136f324bd3b2"
+          },
+          {
+            "file": "apps/portal/dist/chunks/chunk-QZQQZ67Q.js",
+            "bytes": 24953,
+            "sha256": "cc5ac6a3fb21aa7a9dc7a24975ccd630c96430beaf305425d477403417de791d"
+          },
+          {
+            "file": "apps/portal/dist/chunks/chunk-TH556TFN.js",
+            "bytes": 4375,
+            "sha256": "b98e4b917d2fa6e05401cab2f934e57b7e7969b6c60d7db59a08a0bbb9463ae5"
+          },
+          {
+            "file": "apps/portal/dist/chunks/chunk-UJHJCWV2.js",
+            "bytes": 4574,
+            "sha256": "5858b9b450a5ba4d382bb385423239c040f7480386c850addd930620265b0332"
+          },
+          {
+            "file": "apps/portal/dist/chunks/chunk-V6Q2KNOM.js",
+            "bytes": 3416,
+            "sha256": "1562970a6389619131513d12c918168ecc54c5acb83b588413019b7ab311a797"
+          },
+          {
+            "file": "apps/portal/dist/chunks/chunk-VDJRWC6L.js",
+            "bytes": 1904,
+            "sha256": "b9e0b429ca20baee726d10c1939d6f4d3ea2cc8ebc571a462521ce1df75792ff"
+          },
+          {
+            "file": "apps/portal/dist/chunks/chunk-WNDYD35G.js",
+            "bytes": 2376,
+            "sha256": "56836055d2a51efe654caf08e95b85e600979fcbf209eefb90415a30d39d0023"
+          },
+          {
+            "file": "apps/portal/dist/chunks/chunk-YKUM7VFD.js",
+            "bytes": 42284,
+            "sha256": "fa12b6d0b7e7346b6515c4b5d64eebffaac4a12cb73535dcce4a63c395278b82"
+          },
+          {
+            "file": "apps/portal/dist/chunks/chunk-ZZUUWCQ6.js",
+            "bytes": 5350,
+            "sha256": "cd49e6283a95a6da18e97138e31d4e95c3050817823a3a87cf748d0ea2795f8f"
+          },
+          {
+            "file": "apps/portal/dist/chunks/hmh-pixi.js",
+            "bytes": 470858,
+            "sha256": "f2fb9550f7afe643b73cc4c21eb0063f8c8f8d239b411cf33e4353e5b4930c66"
+          }
+        ],
+        "totalBytes": 1039992,
+        "capBytes": 1048576,
+        "headroomBytes": 8584
+      },
+      "stacked": {
+        "files": [
+          {
+            "file": "apps/portal/dist/stacked/game.js",
+            "bytes": 26507,
+            "sha256": "2a55785ebc00e9f06b9d94f030da0d046db54c9a513f13e719c6a6b0d42fc13d"
+          },
+          {
+            "file": "apps/portal/dist/chunks/chunk-2WGYLO4P.js",
+            "bytes": 655,
+            "sha256": "fe5865361e105c752963ffcabdae4f585e39639d8f0a1167a65ce795bfd94776"
+          },
+          {
+            "file": "apps/portal/dist/chunks/chunk-7Z3MKT4T.js",
+            "bytes": 7859,
+            "sha256": "a706e9a16fd93e22cf9a4c3101837669926361d02d6c70cd722f81310c9f204b"
+          },
+          {
+            "file": "apps/portal/dist/chunks/chunk-DYBTERKK.js",
+            "bytes": 12714,
+            "sha256": "7fed14e18bd73c121d602f3f331929b85489e533a1e6541cacf032f8b53d3176"
+          },
+          {
+            "file": "apps/portal/dist/chunks/chunk-EFO3OE3W.js",
+            "bytes": 1459,
+            "sha256": "339f0e742f9487c98332783aaa14d94ba8bf2c6bcf31b90b64408ef57e5c73b2"
+          },
+          {
+            "file": "apps/portal/dist/chunks/chunk-N53BCL72.js",
+            "bytes": 2605,
+            "sha256": "ac20fc0af4052d9370a3cb5cba303399a2f0877306e17ab7dd8dd10ad4990a42"
+          },
+          {
+            "file": "apps/portal/dist/chunks/chunk-Q5BBAG26.js",
+            "bytes": 3926,
+            "sha256": "38f2f066d499163c6ba0ef6b6ea49d9c81614bfec5d709b134301c9c97def98d"
+          },
+          {
+            "file": "apps/portal/dist/chunks/chunk-RYWCMRCK.js",
+            "bytes": 156,
+            "sha256": "afb91a05f9de60b3381e0be53783ecb6d24349878dc9a8f510f1a7d850b717f8"
+          },
+          {
+            "file": "apps/portal/dist/chunks/chunk-YH74QWYW.js",
+            "bytes": 1928,
+            "sha256": "6bbd0214c84876118404897dccedb5f3e03588f9cf5428c76788d53ed0d18076"
+          },
+          {
+            "file": "apps/portal/dist/chunks/chunk-Z6AGTUFW.js",
+            "bytes": 23007,
+            "sha256": "b4d6f116bb9c92f93537f2765c9bb7214978f31a3a3cfe1e50d3e82be14df924"
+          },
+          {
+            "file": "apps/portal/dist/stacked/stacked-pixi-v1.js",
+            "bytes": 496615,
+            "sha256": "6c9a15983644f0883e50c0723874e3e6e88f8cd8968f881253d15143c1732db3"
+          }
+        ],
+        "totalBytes": 577431,
+        "capBytes": 607000,
+        "headroomBytes": 29569
+      }
+    },
+    "commands": [
+      {
+        "phase": "scoped-syntax",
+        "pid": 19208,
+        "exitCode": 0,
+        "closureConfirmed": true
+      },
+      {
+        "phase": "related-render-regressions",
+        "pid": 16152,
+        "exitCode": 0,
+        "closureConfirmed": true
+      },
+      {
+        "phase": "actual-build",
+        "pid": 7996,
+        "exitCode": 0,
+        "closureConfirmed": true
+      },
+      {
+        "phase": "actual-browser",
+        "pid": 20444,
+        "exitCode": 0,
+        "closureConfirmed": true
+      }
+    ]
+  },
+  "browser": {
+    "worker": {
+      "rawBytes": 757272,
+      "sha256": "9ae11c4d47455bf92aed1424e9cd730ece503cf3f1f5fa2e00a18f9affb95ca4",
+      "requestId": "transport-s0c-v1",
+      "response": {
+        "requestId": "transport-s0c-v1",
+        "ok": true,
+        "tuple": {
+          "v": "stacked-result-v1",
+          "gameId": "stacked",
+          "seed": 3978027289,
+          "buildHash": "site-1.7.0:game-1.7.0:cabinet-0.2.0",
+          "seasonId": "stacked-season-preview-1",
+          "ticks": 432000,
+          "pieces": 52900,
+          "lines": 23989,
+          "level": 30,
+          "score": 96604870,
+          "quadClears": 66,
+          "spins": 0,
+          "perfectClears": 6,
+          "maxCombo": 6,
+          "maxBackToBack": 1,
+          "garbageRowsReceived": 3148,
+          "garbageGroups": 3271,
+          "garbageRowsCleared": 3146,
+          "holdsUsed": 0,
+          "bagRefills": 7559,
+          "bagDraws": 45354,
+          "garbageDraws": 4614,
+          "transitionCount": 432000,
+          "boardHash": "0x6c3f0fc121eb6504f9cd00f47bf69146f6428b0e7d52a801d97fc7ac3f547342",
+          "terminalReason": "tick-ceiling"
+        }
+      },
+      "workerTerminationRequested": true
+    },
+    "cases": [
+      {
+        "name": "fallback-desktop",
+        "viewport": {
+          "width": 1440,
+          "height": 1000
+        },
+        "passed": true,
+        "before": {
+          "livingJourneyStatus": "fallback",
+          "mobileGameplay": "false",
+          "particleCapacity": "384",
+          "pieceFxCapacity": "288",
+          "rootScale": "0.702",
+          "assetsReady": "true",
+          "visualizerTier": "full",
+          "renderScale": "1",
+          "visualizerPhase": "swimming",
+          "visualizerGeneration": "0",
+          "visualizerMode": "living",
+          "visualizerScene": "tunnel",
+          "sceneTransitions": "0",
+          "feedback": "",
+          "gameplayParticles": "0",
+          "particleEvent": "",
+          "clearTier": "0",
+          "lockGlows": "0",
+          "visualizerParticles": "648",
+          "visualizerOrganisms": "9",
+          "particlesEmitted": "0",
+          "pieceFx": "0",
+          "pieceFxEvent": "",
+          "pieceFxShake": "0.00",
+          "boardTrauma": "0.00",
+          "rowSquash": "0",
+          "boardPulse": "0.053",
+          "renderedCells": "6",
+          "simulationTick": "32",
+          "runScore": "0",
+          "renderedParticles": "648",
+          "audioAvailable": "true"
+        },
+        "after": {
+          "livingJourneyStatus": "fallback",
+          "mobileGameplay": "false",
+          "particleCapacity": "384",
+          "pieceFxCapacity": "288",
+          "rootScale": "0.702",
+          "assetsReady": "true",
+          "visualizerTier": "full",
+          "renderScale": "1",
+          "visualizerPhase": "swimming",
+          "visualizerGeneration": "0",
+          "visualizerMode": "living",
+          "visualizerScene": "tunnel",
+          "sceneTransitions": "0",
+          "feedback": "",
+          "gameplayParticles": "4",
+          "particleEvent": "drop",
+          "clearTier": "0",
+          "lockGlows": "0",
+          "visualizerParticles": "648",
+          "visualizerOrganisms": "9",
+          "particlesEmitted": "19",
+          "pieceFx": "0",
+          "pieceFxEvent": "",
+          "pieceFxShake": "0.00",
+          "boardTrauma": "0.00",
+          "rowSquash": "0",
+          "boardPulse": "0.054",
+          "renderedCells": "8",
+          "simulationTick": "63",
+          "runScore": "10",
+          "renderedParticles": "648",
+          "audioAvailable": "true"
+        },
+        "controls": {
+          "visible": false,
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "viewportWidth": 1400,
+          "viewportHeight": 840
+        },
+        "nativeExitObserved": true,
+        "contextClosed": true,
+        "intentionalConstructorFailureFixture": true,
+        "errors": []
+      },
+      {
+        "name": "default-desktop",
+        "viewport": {
+          "width": 1440,
+          "height": 1000
+        },
+        "passed": true,
+        "before": {
+          "livingJourneyStatus": "off",
+          "mobileGameplay": "false",
+          "particleCapacity": "384",
+          "pieceFxCapacity": "288",
+          "rootScale": "0.702",
+          "assetsReady": "true",
+          "visualizerTier": "full",
+          "renderScale": "1",
+          "visualizerPhase": "swimming",
+          "visualizerGeneration": "0",
+          "visualizerMode": "living",
+          "visualizerScene": "tunnel",
+          "sceneTransitions": "0",
+          "feedback": "",
+          "gameplayParticles": "0",
+          "particleEvent": "",
+          "clearTier": "0",
+          "lockGlows": "0",
+          "visualizerParticles": "648",
+          "visualizerOrganisms": "9",
+          "particlesEmitted": "0",
+          "pieceFx": "0",
+          "pieceFxEvent": "",
+          "pieceFxShake": "0.00",
+          "boardTrauma": "0.00",
+          "rowSquash": "0",
+          "boardPulse": "0.069",
+          "renderedCells": "7",
+          "simulationTick": "31",
+          "runScore": "0",
+          "renderedParticles": "648",
+          "audioAvailable": "true"
+        },
+        "after": {
+          "livingJourneyStatus": "off",
+          "mobileGameplay": "false",
+          "particleCapacity": "384",
+          "pieceFxCapacity": "288",
+          "rootScale": "0.702",
+          "assetsReady": "true",
+          "visualizerTier": "full",
+          "renderScale": "1",
+          "visualizerPhase": "swimming",
+          "visualizerGeneration": "0",
+          "visualizerMode": "living",
+          "visualizerScene": "tunnel",
+          "sceneTransitions": "0",
+          "feedback": "",
+          "gameplayParticles": "4",
+          "particleEvent": "drop",
+          "clearTier": "0",
+          "lockGlows": "0",
+          "visualizerParticles": "648",
+          "visualizerOrganisms": "9",
+          "particlesEmitted": "19",
+          "pieceFx": "0",
+          "pieceFxEvent": "",
+          "pieceFxShake": "0.00",
+          "boardTrauma": "0.00",
+          "rowSquash": "0",
+          "boardPulse": "0.068",
+          "renderedCells": "8",
+          "simulationTick": "62",
+          "runScore": "10",
+          "renderedParticles": "648",
+          "audioAvailable": "true"
+        },
+        "controls": {
+          "visible": false,
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "viewportWidth": 1400,
+          "viewportHeight": 840
+        },
+        "nativeExitObserved": true,
+        "contextClosed": true,
+        "intentionalConstructorFailureFixture": null,
+        "errors": []
+      },
+      {
+        "name": "desktop",
+        "viewport": {
+          "width": 1440,
+          "height": 1000
+        },
+        "passed": true,
+        "before": {
+          "livingJourneyStatus": "ready",
+          "mobileGameplay": "false",
+          "particleCapacity": "384",
+          "pieceFxCapacity": "288",
+          "rootScale": "0.702",
+          "assetsReady": "true",
+          "visualizerTier": "full",
+          "renderScale": "1",
+          "visualizerPhase": "ambient",
+          "visualizerGeneration": "0",
+          "visualizerMode": "aurora",
+          "visualizerScene": "aurora",
+          "sceneTransitions": "0",
+          "journeyDistance": "8.087333832271266",
+          "portalRadius": "0",
+          "feedback": "",
+          "gameplayParticles": "0",
+          "particleEvent": "",
+          "clearTier": "0",
+          "lockGlows": "0",
+          "visualizerParticles": "192",
+          "visualizerOrganisms": "9",
+          "particlesEmitted": "0",
+          "pieceFx": "0",
+          "pieceFxEvent": "",
+          "pieceFxShake": "0.00",
+          "boardTrauma": "0.00",
+          "rowSquash": "0",
+          "boardPulse": "0.059",
+          "renderedCells": "6",
+          "simulationTick": "31",
+          "runScore": "0",
+          "renderedParticles": "192",
+          "audioAvailable": "true"
+        },
+        "after": {
+          "livingJourneyStatus": "ready",
+          "mobileGameplay": "false",
+          "particleCapacity": "384",
+          "pieceFxCapacity": "288",
+          "rootScale": "0.702",
+          "assetsReady": "true",
+          "visualizerTier": "full",
+          "renderScale": "1",
+          "visualizerPhase": "ambient",
+          "visualizerGeneration": "0",
+          "visualizerMode": "aurora",
+          "visualizerScene": "aurora",
+          "sceneTransitions": "0",
+          "journeyDistance": "14.362602697585045",
+          "portalRadius": "0",
+          "feedback": "",
+          "gameplayParticles": "4",
+          "particleEvent": "drop",
+          "clearTier": "0",
+          "lockGlows": "0",
+          "visualizerParticles": "192",
+          "visualizerOrganisms": "9",
+          "particlesEmitted": "19",
+          "pieceFx": "0",
+          "pieceFxEvent": "",
+          "pieceFxShake": "0.00",
+          "boardTrauma": "0.00",
+          "rowSquash": "0",
+          "boardPulse": "0.059",
+          "renderedCells": "8",
+          "simulationTick": "62",
+          "runScore": "10",
+          "renderedParticles": "192",
+          "audioAvailable": "true"
+        },
+        "controls": {
+          "visible": false,
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "viewportWidth": 1400,
+          "viewportHeight": 840
+        },
+        "nativeExitObserved": true,
+        "contextClosed": true,
+        "intentionalConstructorFailureFixture": null,
+        "errors": []
+      },
+      {
+        "name": "phone-proxy",
+        "viewport": {
+          "width": 414,
+          "height": 896
+        },
+        "passed": true,
+        "before": {
+          "livingJourneyStatus": "ready",
+          "mobileGameplay": "true",
+          "particleCapacity": "256",
+          "pieceFxCapacity": "192",
+          "rootScale": "0.696",
+          "assetsReady": "true",
+          "visualizerTier": "full",
+          "renderScale": "1",
+          "visualizerPhase": "ambient",
+          "visualizerGeneration": "0",
+          "visualizerMode": "aurora",
+          "visualizerScene": "aurora",
+          "sceneTransitions": "0",
+          "journeyDistance": "7.754878366666892",
+          "portalRadius": "0",
+          "feedback": "",
+          "gameplayParticles": "0",
+          "particleEvent": "",
+          "clearTier": "0",
+          "lockGlows": "0",
+          "visualizerParticles": "192",
+          "visualizerOrganisms": "9",
+          "particlesEmitted": "0",
+          "pieceFx": "0",
+          "pieceFxEvent": "",
+          "pieceFxShake": "0.00",
+          "boardTrauma": "0.00",
+          "rowSquash": "0",
+          "boardPulse": "0.067",
+          "renderedCells": "6",
+          "simulationTick": "31",
+          "runScore": "0",
+          "renderedParticles": "192",
+          "audioAvailable": "true"
+        },
+        "after": {
+          "livingJourneyStatus": "ready",
+          "mobileGameplay": "true",
+          "particleCapacity": "256",
+          "pieceFxCapacity": "192",
+          "rootScale": "0.696",
+          "assetsReady": "true",
+          "visualizerTier": "full",
+          "renderScale": "1",
+          "visualizerPhase": "ambient",
+          "visualizerGeneration": "0",
+          "visualizerMode": "aurora",
+          "visualizerScene": "aurora",
+          "sceneTransitions": "0",
+          "journeyDistance": "13.94727157916188",
+          "portalRadius": "0",
+          "feedback": "",
+          "gameplayParticles": "4",
+          "particleEvent": "drop",
+          "clearTier": "0",
+          "lockGlows": "0",
+          "visualizerParticles": "192",
+          "visualizerOrganisms": "9",
+          "particlesEmitted": "19",
+          "pieceFx": "0",
+          "pieceFxEvent": "",
+          "pieceFxShake": "0.00",
+          "boardTrauma": "0.00",
+          "rowSquash": "0",
+          "boardPulse": "0.068",
+          "renderedCells": "8",
+          "simulationTick": "62",
+          "runScore": "10",
+          "renderedParticles": "192",
+          "audioAvailable": "true"
+        },
+        "controls": {
+          "visible": true,
+          "x": 0,
+          "y": 784,
+          "width": 414,
+          "height": 112,
+          "viewportWidth": 414,
+          "viewportHeight": 896
+        },
+        "nativeExitObserved": true,
+        "contextClosed": true,
+        "intentionalConstructorFailureFixture": null,
+        "errors": []
+      }
+    ],
+    "sceneReview": {
+      "nodeCount": 4178,
+      "pointCapacity": 1296,
+      "glyphCount": 384,
+      "controlledCosmeticClock": true,
+      "hasGameRun": false,
+      "scenes": [
+        {
+          "scene": "aurora",
+          "mix": 1,
+          "distance": 46.800000000000026,
+          "phase": "ambient"
+        },
+        {
+          "scene": "particles",
+          "mix": 1,
+          "distance": 430.79999999999734,
+          "phase": "ambient"
+        },
+        {
+          "scene": "horizon",
+          "mix": 1,
+          "distance": 814.800000000008,
+          "phase": "ambient"
+        },
+        {
+          "scene": "orbit",
+          "mix": 1,
+          "distance": 1198.8000000000225,
+          "phase": "ambient"
+        },
+        {
+          "scene": "living",
+          "mix": 1,
+          "distance": 1582.800000000037,
+          "phase": "ambient"
+        },
+        {
+          "scene": "tunnel",
+          "mix": 1,
+          "distance": 1966.8000000000516,
+          "phase": "ambient"
+        },
+        {
+          "scene": "matrix",
+          "mix": 1,
+          "distance": 2350.800000000009,
+          "phase": "ambient"
+        },
+        {
+          "scene": "spectrum",
+          "mix": 1,
+          "distance": 2734.7999999999506,
+          "phase": "ambient"
+        }
+      ],
+      "portals": [
+        {
+          "scene": "particles",
+          "mix": 0.7840000000000001,
+          "distance": 400.7999999999976,
+          "phase": "portal"
+        },
+        {
+          "scene": "horizon",
+          "mix": 0.7840000000000001,
+          "distance": 784.8000000000069,
+          "phase": "portal"
+        },
+        {
+          "scene": "orbit",
+          "mix": 0.7840000000000001,
+          "distance": 1170.0000000000214,
+          "phase": "portal"
+        },
+        {
+          "scene": "living",
+          "mix": 0.7840000000000001,
+          "distance": 1555.200000000036,
+          "phase": "portal"
+        },
+        {
+          "scene": "tunnel",
+          "mix": 0.7840000000000001,
+          "distance": 1940.4000000000506,
+          "phase": "portal"
+        },
+        {
+          "scene": "matrix",
+          "mix": 0.7840000000000001,
+          "distance": 2325.6000000000126,
+          "phase": "portal"
+        },
+        {
+          "scene": "spectrum",
+          "mix": 0.7840000000000001,
+          "distance": 2710.7999999999543,
+          "phase": "portal"
+        }
+      ],
+      "physicalPhone": false
+    },
+    "chromePid": 21844,
+    "chromeCloseObserved": true,
+    "serverCloseObserved": true,
+    "cleanupErrors": []
+  },
+  "defaultVisual": {
+    "results": [
+      {
+        "sceneId": "frontier-relay-desktop",
+        "observedTick": 90,
+        "status": "unchanged",
+        "meanDelta": 0.003,
+        "maxDelta": 2,
+        "changedCells": 0,
+        "enemyCrops": {
+          "status": "unchanged",
+          "count": 1,
+          "crops": [
+            {
+              "archetypeId": "bagholder-rusher",
+              "meanLumaDelta": 0,
+              "maxCellDelta": 0,
+              "status": "unchanged"
+            }
+          ]
+        },
+        "errors": []
+      },
+      {
+        "sceneId": "frontier-relay-mobile",
+        "observedTick": 240,
+        "status": "unchanged",
+        "meanDelta": 0.005,
+        "maxDelta": 3,
+        "changedCells": 1,
+        "enemyCrops": {
+          "status": "unchanged",
+          "count": 2,
+          "crops": [
+            {
+              "archetypeId": "bagholder-rusher",
+              "meanLumaDelta": 0,
+              "maxCellDelta": 0,
+              "status": "unchanged"
+            },
+            {
+              "archetypeId": "forkrunner",
+              "meanLumaDelta": 0,
+              "maxCellDelta": 0,
+              "status": "unchanged"
+            }
+          ]
+        },
+        "errors": []
+      },
+      {
+        "sceneId": "combat-engaged-desktop",
+        "observedTick": 420,
+        "status": "unchanged",
+        "meanDelta": 0.019,
+        "maxDelta": 4,
+        "changedCells": 3,
+        "enemyCrops": {
+          "status": "unchanged",
+          "count": 1,
+          "crops": [
+            {
+              "archetypeId": "bagholder-rusher",
+              "meanLumaDelta": 0,
+              "maxCellDelta": 0,
+              "status": "unchanged"
+            }
+          ]
+        },
+        "errors": []
+      },
+      {
+        "sceneId": "ravine-overlook-desktop",
+        "observedTick": 180,
+        "status": "unchanged",
+        "meanDelta": 0.003,
+        "maxDelta": 2,
+        "changedCells": 0,
+        "errors": []
+      },
+      {
+        "sceneId": "mining-camp-desktop",
+        "observedTick": 180,
+        "status": "unchanged",
+        "meanDelta": 0.003,
+        "maxDelta": 2,
+        "changedCells": 0,
+        "errors": []
+      },
+      {
+        "sceneId": "liquidity-bridge-desktop",
+        "observedTick": 180,
+        "status": "unchanged",
+        "meanDelta": 0.003,
+        "maxDelta": 2,
+        "changedCells": 0,
+        "errors": []
+      },
+      {
+        "sceneId": "hashwood-foliage-desktop",
+        "observedTick": 180,
+        "status": "unchanged",
+        "meanDelta": 0.003,
+        "maxDelta": 2,
+        "changedCells": 0,
+        "errors": []
+      },
+      {
+        "sceneId": "liquidation-yard-desktop",
+        "observedTick": 180,
+        "status": "unchanged",
+        "meanDelta": 0.003,
+        "maxDelta": 2,
+        "changedCells": 0,
+        "errors": []
+      },
+      {
+        "sceneId": "liquidation-market-desktop",
+        "observedTick": 180,
+        "status": "unchanged",
+        "meanDelta": 0.003,
+        "maxDelta": 2,
+        "changedCells": 0,
+        "errors": []
+      },
+      {
+        "sceneId": "liquidation-residential-desktop",
+        "observedTick": 180,
+        "status": "unchanged",
+        "meanDelta": 0.003,
+        "maxDelta": 2,
+        "changedCells": 0,
+        "errors": []
+      },
+      {
+        "sceneId": "hashwood-camp-desktop",
+        "observedTick": 180,
+        "status": "unchanged",
+        "meanDelta": 0.003,
+        "maxDelta": 2,
+        "changedCells": 0,
+        "errors": []
+      },
+      {
+        "sceneId": "crossing-water-desktop",
+        "observedTick": 180,
+        "status": "unchanged",
+        "meanDelta": 0.005,
+        "maxDelta": 3,
+        "changedCells": 1,
+        "errors": []
+      }
+    ],
+    "elapsedMs": 43526.0808,
+    "closure": {
+      "scope": "Actual unchanged npm visual:reboot script with transparent native-server and Chrome close observers; no acceptance/baseline update",
+      "browsers": [
+        {
+          "pid": 616,
+          "processCloseObserved": true,
+          "serverCloseCompleted": true,
+          "code": 0,
+          "signal": null
+        }
+      ],
+      "servers": [
+        {
+          "listeningObserved": true,
+          "closeObserved": true
+        }
+      ]
+    },
+    "baselineUnchanged": true
+  },
+  "preservedFailures": [
+    "work/stacked-journey-view-red-01",
+    "work/stacked-journey-view-red-02 (aliased-info witness error)",
+    "work/stacked-journey-view-red-03",
+    "work/stacked-journey-view-red-04",
+    "work/stacked-journey-view-red-05",
+    "work/stacked-journey-build-browser-20260929-01 (boot flag lost during navigation)",
+    "work/stacked-f1b-default-visual-01 (watchdog rejected before child launch)"
+  ],
+  "markersReleased": true,
+  "independentReview": {
+    "reviewer": "/root/stacked_replay_audit",
+    "scope": "Read-only source and preserved actual reports/full-resolution captures; no new execution",
+    "verdict": "PASS for safe default-off incremental candidate; final visual quality and phone acceptance open",
+    "findings": [
+      "Mask allocation is owned before fallible drawing and rollback visits/destroys its contexts.",
+      "Captured bootRuntimeSearch is explicitly forwarded and the exact-one living-v1 whitelist remains.",
+      "Saved23+23source checks exit0 with actual closure; browser02 verifies4Freeboots,exact432ktickWorker result,8WebGLscenes andactualChrome/HTTPclose.",
+      "Desktop and414x896DPR3proxy board/control hierarchy stays readable. Matrix is sparse/dim; horizon wire forms need further art polish."
+    ]
+  }
+}

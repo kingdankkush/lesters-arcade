@@ -16,7 +16,7 @@ export const STACKED_EPOCHS = Object.freeze([
 ]);
 const boundaries = [0, 10800, 25200, 43200, 64800, 90000];
 const mixColor = (a, b, t) => [16, 8, 0].reduce((n, shift) => n | Math.round(((a >> shift) & 255) * (1 - t) + ((b >> shift) & 255) * t) << shift, 0);
-export function createStackedAtmosphere({ layer, sceneLayer = null, Graphics, mobile=false }) {
+export function createStackedAtmosphere({ layer, sceneLayer = null, Graphics, mobile=false, project=null }) {
   // Shared immutable geometry avoids rebuilding/triangulating every particle
   // and membrane every frame. Only transforms, tint and alpha change.
   const dot = new Graphics().circle(0, 0, 3).fill({ color: 0xffffff, alpha: 0.045 })
@@ -54,6 +54,13 @@ export function createStackedAtmosphere({ layer, sceneLayer = null, Graphics, mo
       const fade = reduced ? 1 : Math.min(1, 0.25 + (time - changedAt) * 2.5);
       const living = field.update({ now: time * 1000, width, height, lines, reducedMotion: reduced, reducedEffects: settings.video.reducedEffects, level, bass, high, beat });
       const shapes = mode === 'living' ? living : world.update({ mode, time, width, height, minimal: settings.video.reducedEffects, reducedMotion: reduced, bass, high, level, beat, ...feedback, generation: living.generation });
+      // Optional presentation projection owns separate buffers. Default frames
+      // retain the original coordinates and allocation behavior.
+      const coordinates=project ? project(shapes,{mode,perOrganism:living.pointsPerOrganism,width,height}) : shapes;
+      if(project) {
+        if(!coordinates?.x || !coordinates?.y || coordinates.x.length<shapes.count || coordinates.y.length<shapes.count) throw new TypeError('invalid atmosphere projection buffers');
+        for(let i=0;i<shapes.count;i++)if(!Number.isFinite(coordinates.x[i])||!Number.isFinite(coordinates.y[i]))throw new TypeError('non-finite atmosphere projection coordinates');
+      }
       const count = intensity > 0 ? shapes.count : 0;
       const cohesion = mode === 'living' ? living.cohesion : 1;
       // Membranes dissolve with the particles, then reappear as new organisms.
@@ -64,22 +71,22 @@ export function createStackedAtmosphere({ layer, sceneLayer = null, Graphics, mo
         link.visible = i < count && !!shapes.connected[i] && (mode !== 'living' || living.cohesion > 0);
         if (!point.visible) continue;
         if (link.visible) {
-          const dx = shapes.x[i] - shapes.x[i - 1], dy = shapes.y[i] - shapes.y[i - 1];
+          const dx = coordinates.x[i] - coordinates.x[i - 1], dy = coordinates.y[i] - coordinates.y[i - 1];
           const distance = Math.hypot(dx, dy);
           if (mode === 'living') link.visible = distance < Math.min(width, height) * 0.095;
-          link.position.set(shapes.x[i - 1], shapes.y[i - 1]);
+          link.position.set(coordinates.x[i - 1], coordinates.y[i - 1]);
           link.scale.set(distance, mode === 'spectrum' ? (settings.video.reducedEffects ? 5 : 4) : mode === 'aurora' ? 3.6 : 1.4); link.rotation = Math.atan2(dy, dx);
           link.tint = i % 5 ? color : palette.accent;
           link.alpha = intensity * fade * (mode === 'living' ? living.cohesion : shapes.weight[i]) * (0.42 + level * 0.22);
         }
         // Beat onsets scale the organisms and constellations; they never brighten them.
         const size = 1.4 + (i % 3) * 0.55 + (reduced ? 0 : high * 1.4 + beat * 0.5 + (1 - living.cohesion) * 1.2);
-        point.position.set(shapes.x[i], shapes.y[i]);
+        point.position.set(coordinates.x[i], coordinates.y[i]);
         point.scale.set(mode === 'living' ? size : mode === 'orbit' ? 1.4 + shapes.weight[i] * 0.8 + beat * 0.4 : mode === 'aurora' ? 1.1 + beat * 0.3 : 0.85 + beat * 0.3);
         point.tint = (i + living.generation) % 4 ? color : palette.accent;
         point.alpha = (0.48 + level * 0.25) * intensity * fade;
       }
-      const webs = forms.draw({ mode, x: shapes.x, y: shapes.y, weight: mode === 'living' ? null : shapes.weight, count, perOrganism: living.pointsPerOrganism, cohesion, generation: living.generation, width, height, time, level, bass, high, beat, intensity, fade, minimal: !!settings.video.reducedEffects, reduceFlash: !!settings.accessibility.reduceFlash, palette });
+      const webs = forms.draw({ mode, x: coordinates.x, y: coordinates.y, weight: mode === 'living' ? null : shapes.weight, count, perOrganism: living.pointsPerOrganism, cohesion, generation: living.generation, width, height, time, level, bass, high, beat, intensity, fade, minimal: !!settings.video.reducedEffects, reduceFlash: !!settings.accessibility.reduceFlash, palette });
       const scene = scenes ? scenes.draw({ mode: settings.video.scene ?? 'auto', time, width, height, level, bass, high, beat, lines, intensity, fade: 1, minimal: !!settings.video.reducedEffects, reduceFlash: !!settings.accessibility.reduceFlash, reducedMotion: reduced, palette }) : null;
       // No full-screen flashes or strobe, including on beat onsets.
       return { name: zone.name, color, palette, signals: motion.state, particles: count, webs, available: !!available, phase: living.phase, generation: living.generation, organisms: living.organisms, mode, visualizerName: MUSIC_WORLD_NAMES[mode], scene: scene?.scene ?? 'off', sceneName: scene?.name ?? 'Off', sceneTransitions: scene?.transitions ?? 0, sceneMix: scene?.mix ?? 1 };

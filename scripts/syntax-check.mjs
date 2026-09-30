@@ -20,6 +20,15 @@ const root = fileURLToPath(new URL('..', import.meta.url));
 
 // Every .mjs / .js module that must parse cleanly (node --check).
 const NODE_CHECK_FILES = [
+  'apps/portal/src/stacked-presentation-switch.mjs',
+  'apps/stacked/src/render/living-journey-loader.mjs',
+  'apps/stacked/src/render/living-journey-view.mjs',
+  'tests/stacked-journey-host-search.test.mjs',
+  'tests/stacked-atmosphere-projection.test.mjs',
+  'tests/stacked-living-journey-loader.test.mjs',
+  'tests/stacked-living-journey-view.test.mjs',
+  'tests/lib/stacked-pixi-test-fixture.mjs',
+
   'apps/stacked/src/render/living-journey.mjs',
   'tests/stacked-living-journey.test.mjs',
   'scripts/lib/stacked-codec-boundary.mjs',

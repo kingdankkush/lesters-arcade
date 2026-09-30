@@ -1,3 +1,4 @@
+import {loadLivingJourneyFactory} from './render/living-journey-loader.mjs';
 import { Application, Container, Graphics, Text } from 'pixi.js';
 import { PIECE_CELLS, cellsFor, collides } from '../../portal/src/stacked-sim.mjs';
 import { createStackedPlaySession } from './play-session.mjs';
@@ -23,7 +24,7 @@ const pauseClock = createStackedPauseClock();
 // Game sounds load lazily with the renderer (entry budget); until then every call is a no-op.
 let sfxImpl = null, soundForStep = () => null;
 const sfx = { play: (cue, prefs, combo) => sfxImpl?.play(cue, prefs, combo), stop: () => sfxImpl?.stop(), destroy: () => sfxImpl?.destroy() };
-let preview = null, haptics = null;
+let preview = null, haptics = null, livingJourneyActive = false;
 // Set from the init settings: a pre-preset (1.8.1-1.8.3) host must never be sent the preset keys.
 let parentPresets = false;
 // One settings card (settings simplification 2026-09-24). Every choice is a
@@ -75,11 +76,13 @@ function syncPreferences() {
   $('flashToggle').checked = settings.accessibility.reduceFlash;
   $('leftHandToggle').checked = settings.controls.touchLeftHanded;
   $('touchControls').dataset.leftHanded=String(settings.controls.touchLeftHanded);
-  $('visualizerSelect').value = settings.video.visualizer ?? 'journey';
+  $('visualizerSelect').value = livingJourneyActive?'journey':settings.video.visualizer??'journey';
+  $('visualizerSelect').disabled=livingJourneyActive;
+  if(livingJourneyActive)$('visualizerSelect').options[0].textContent='Living journey · automatic worlds';
   for (const tile of [$('freeModeTile'), $('rankedModeTile')]) tile.setAttribute('aria-current', String(tile.dataset.mode === init?.mode));
   $('volumeRange').value = String(Math.round((settings.audio.sfxVolume ?? 0) * 100));
   showVolume();
-  $('visualizerHint').textContent = preset === 'off' ? 'Effects are Off, so your music world is hidden. Choose Calm or higher to see it.' : WORLD_HINTS[$('visualizerSelect').value];
+  $('visualizerHint').textContent = preset === 'off' ? 'Effects are Off, so your music world is hidden. Choose Calm or higher to see it.' : livingJourneyActive?'Fly through worlds that morph with the music. Halvings open a portal to the next scene.':WORLD_HINTS[$('visualizerSelect').value];
   if (!(settings.audio.sfxVolume > 0)) sfx.stop();
 }
 // One game-sounds slider: 0 reads (and is announced) as Off.
@@ -198,6 +201,7 @@ function frame(now) {
     if (run.snapshot.terminal) void finish();
   }
   if (run && renderer) {
+    if(livingJourneyActive&&stage.dataset.livingJourneyStatus==='fallback'){livingJourneyActive=false;syncPreferences();}
     // Sub-tick alpha for the active piece's travel (projection only). Paused, unstarted and
     // finished frames render the committed tick state; the accumulator is already reset there.
     const alpha = started && !run.paused && !run.snapshot.terminal ? accumulator / TICK_MS : 1;
@@ -214,8 +218,9 @@ function frame(now) {
   raf = requestAnimationFrame(frame);
 }
 async function boot() {
-  const [{ createStackedRenderer }, { createVisualizerPreview }, { createStackedHaptics }, sounds] = await Promise.all([import('./render/renderer.mjs'), import('./render/visualizer-preview.mjs'), import('./haptics.mjs'), import('./sound-effects.mjs')]);
+  const [{ createStackedRenderer }, { createVisualizerPreview }, { createStackedHaptics }, sounds, journey] = await Promise.all([import('./render/renderer.mjs'), import('./render/visualizer-preview.mjs'), import('./haptics.mjs'), import('./sound-effects.mjs'), loadLivingJourneyFactory(globalThis.location?.search??'',{isDisposed:()=>disposed})]);
   if (disposed) return;
+  stage.dataset.livingJourneyStatus=journey.status;livingJourneyActive=!!journey.factory;
   sfxImpl = sounds.createStackedSoundEffects(); soundForStep = sounds.stackedSoundForStep;
   preview = createVisualizerPreview($('visualizerPreview'));
   haptics = createStackedHaptics({ getSettings: () => settings });
@@ -225,7 +230,8 @@ async function boot() {
   if (disposed) { app.destroy(true, { children: true }); return; }
   app.ticker.stop(); app.canvas.tabIndex = 0; app.canvas.setAttribute('aria-label', 'Falling block board. Keyboard controls are listed below.');
   stage.prepend(app.canvas);
-  renderer = createStackedRenderer({ app, stageElement: stage, geometry: { PIECE_CELLS, cellsFor, collides }, Container, Graphics, Text });
+  renderer = createStackedRenderer({ app, stageElement: stage, geometry: { PIECE_CELLS, cellsFor, collides }, Container, Graphics, Text, ...(journey.factory?{createAtmosphere:journey.factory}:{}) });
+  livingJourneyActive=stage.dataset.livingJourneyStatus==='ready';
   input = createStackedInput({ target: window, controls: $('touchControls'), settings, onPause: () => run.paused ? resume() : pause(), onUndo: undo, isMenuOpen: () => !overlay.hidden, onMenuAction: menuAction });
   $('modeLabel').textContent = init.mode === 'ranked' ? 'RANKED' : 'FREE MODE';
   $('undoButton').hidden = init.mode === 'ranked';
@@ -255,7 +261,7 @@ function updatePreferences() {
   Object.assign(settings.video, expandStackedEffectsPreset(effectRadios().find(radio => radio.checked)?.value));
   settings.accessibility.reduceMotion = $('motionToggle').checked;
   settings.video.ghostPiece = $('ghostToggle').checked; settings.video.gridLines = $('gridToggle').checked;
-  settings.video.visualizer = $('visualizerSelect').value;
+  if(!livingJourneyActive)settings.video.visualizer = $('visualizerSelect').value;
   settings.audio.sfxVolume = Number($('volumeRange').value) / 100; settings.audio.sfxEnabled = settings.audio.sfxVolume > 0;
   settings.accessibility.colorblindPieces = $('pieceMarksToggle').checked;
   settings.accessibility.reduceFlash=$('flashToggle').checked; settings.controls.touchLeftHanded=$('leftHandToggle').checked;

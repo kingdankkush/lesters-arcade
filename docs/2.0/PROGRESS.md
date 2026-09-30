@@ -306,3 +306,55 @@ settings, simulation, verifier, versions or evidence changed, and no browser or
 physical acceptance is claimed. Actual lazy integration/Matrix/portal aperture/
 resource pools, combined game parity, final art/flash review and modes remain open.
 See slices/STACKED-F1A-JOURNEY-SOURCE.md.
+
+
+## STACKED F1b — actual optional journey preview
+
+F1a is now mounted lazily behind the exact livingJourney=living-v1 boot query.
+Automatic eight-scene cycling, projected forward flight, Matrix glyphs and
+circular portal transitions run in actual Chrome. Constructor/download fallback,
+closure and pool continuity are tested. Final23focused plus identical23in a
+26-file emptyPATH/noGit/noModules copy pass;14scoped parses and49related tests
+pass. The first real browser attempt lost its query during portal navigation;
+that failure is preserved and the explicit boot-search fix passes four native
+Free boots/controls/exits. The actual old432000tickWorker tuple remains exact.
+All eight WebGL scenes use4178fixeddesktopnodes/384glyphs on a controlled cosmetic
+clock, not a game run or phone performance test. Full-resolution desktop and
+phone-size captures were inspected. Phone controls fit414x896. Fresh initialJS
+is HMH1039992B/8584headroom andSTACKED577431B/29569headroom. Required visual:reboot
+passes all12unchanged scenes/crops with baselines unchanged. Every actual child,
+Chrome process and server closed; owned markers released. A first visual wrapper
+rejected its deadline before launching and remains preserved. See slices/
+STACKED-F1B-LAZY-JOURNEY.md and receipts/stacked-f1b-lazy-journey-passed.json.
+
+This is an incremental default-off candidate, not final art acceptance. Matrix
+contrast/space polish, real phone timing/60minsoak, versus/daily/tutorial and the
+full release gate stay open. No version bump or deployment occurred.
+
+## Parallel sprint checkpoints
+
+Owner requests the full model/rig/action set, three texture tiers and world/
+mission/interactivity scope; this remains the active target. Owner will play
+on the XS Max when the combined candidate is production-ready. No physical
+device proof is claimed or inferred from Windows viewport checks.
+
+World W1b isolated source/layout passes18cases and the identical18clean-copy
+cases; actual diagnostic finds zero issues,48.0326percentwalkable,98sites
+reachable/returnable and14roads. A staged-only local playable ten-area greybox
+with approved human atlas, native movement and separate Area plan is being
+prepared for actual browser review; neither official simulation nor verifier
+map v2 is mounted. Area art/owner playtest remain open.
+
+A6 reused tree55 native preview passes one19.038stwo-threadwindow; native source
+identities unchanged. The next selective tree pack reuses hash-pinned A5ground/
+house to avoid another full bake. It has not yet passed in-game art acceptance.
+A5visual quality rejection remains preserved.
+
+Character R2b failed the original tessellation guard; the CPU-only exact-copy
+diagnosis proved retessellation and exposed cleared named skin groups. The
+minimal ordered-group restoration passed19Python cases; one corrective native
+window now succeeds at groups/topology but fails the original normal tolerance.
+Original sources and all failed receipts/arrays are preserved; no corrected
+GLB, complete animation fleet, three texture tiers or phone3Dgate is claimed.
+Read-only shading-error measurement is next. The separate failed-asset Desktop
+archive copy remains unexecuted after automatic approval review rejected it.
