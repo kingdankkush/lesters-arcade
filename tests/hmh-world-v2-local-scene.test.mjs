@@ -4,6 +4,7 @@ import fs from 'node:fs';
 import vm from 'node:vm';
 import { InputState, createBrowserInputController } from '../apps/hmh-reboot/src/input.mjs';
 import { TouchControlState } from '../apps/hmh-reboot/src/touch-controls.mjs';
+import { quantizeDirection } from '../apps/hmh-reboot/src/movement.mjs';
 import * as projection from '../apps/hmh-reboot/src/world-space.mjs';
 import { createWorldV2Geometry } from '../apps/hmh-reboot/src/world-v2-geometry.mjs';
 import { createWorldV2LocalRuntime } from '../apps/hmh-reboot/src/dev/world-v2-local-runtime.mjs';
@@ -56,15 +57,16 @@ function fixture({appGate,decodeGate,navGates=[],metadataFailure=null,partialIni
   const source=read(sceneUrl); assert.ok(source.includes('export function mountGreyboxPlaytest'), 'actual private Pixi scene required');
   const root=new Element(), stage=new Element(), start=new Element('BUTTON'), pause=new Element('BUTTON'), close=new Element('BUTTON'), inspect=new Element('BUTTON'), select=new Element('SELECT');
   const nodes={'[data-stage]':stage,'[data-start]':start,'[data-pause]':pause,'[data-close]':close,'[data-inspect]':inspect,'[data-area-select]':select,
-    '[data-status]':new Element(),'[data-area-name]':new Element(),'[data-position]':new Element(),'[data-nav]':new Element(),'[data-stick]':new Element('BUTTON'),'[data-stick-knob]':new Element()};
+    '[data-relay-task]':new Element(),'[data-status]':new Element(),'[data-area-name]':new Element(),'[data-position]':new Element(),'[data-nav]':new Element(),'[data-stick]':new Element('BUTTON'),'[data-stick-knob]':new Element()};
   root.querySelector=selector=>nodes[selector]; root.querySelectorAll=selector=>selector==='button'?[start,pause,close,inspect,nodes['[data-stick]']]:[];
   const document=new Element(); document.hidden=false; document.visibilityState='visible'; document.createElement=tag=>new Element(tag.toUpperCase());
   const window=new Element(); window.devicePixelRatio=1; window.innerWidth=1000; window.innerHeight=900; window.matchMedia=()=>({matches:false});
   root.ownerDocument=document;
   for(const node of Object.values(nodes))node.ownerDocument=document;
   let now=0,nextFrame=0,appDestroys=0,textureCreates=0,textureDestroys=0,draws=0,initDone=false;
-  const frames=new Map(), runtimes=[], images=[], graphics=[];
-  class Graphic extends Display { constructor(){super();graphics.push(this);} }
+  const frames=new Map(), runtimes=[], images=[], graphics=[], poses=[], layers=[];
+  const relayPlan=Object.freeze({id:'local-meadows-relay',operate:Object.freeze({x:600,y:400}),lamp:Object.freeze({x:600,y:336,z:66}),ringRadius:72,fillTicks:30,blockerId:'fixture-equipment'});
+  class Graphic extends Display { constructor(){super();graphics.push(this);} circle(x,y,r){this.lastCircle={x,y,r};return this;} fill(value){this.lastFill=value;return this;} }
   class Application {
     constructor(){this.stage=new Display();this.canvas=new Element('CANVAS');this.canvas.ownerDocument=document;this.ticker={stop(){}};this.screen={width:1000,height:700};}
     async init(){if(partialInit){initDone=true;this.renderer={type:1,resize(){},render(){draws++;}};}await(appGate?.promise??Promise.resolve()); initDone=true;this.renderer={type:1,resize(){},render(){draws++;}};}
@@ -79,26 +81,27 @@ function fixture({appGate,decodeGate,navGates=[],metadataFailure=null,partialIni
   class Texture {
     static from(){textureCreates++;return {source:{width:1024,height:1024},destroy(){textureDestroys++;}};}
   }
-  function createRuntime({geometry}) {
+  function createRuntime({geometry,relayPlan:receivedPlan}) {
     const gate=navGates[runtimes.length], records=[];
     let phase='preparing',tick=0,disposed=0;
     const actor=Object.freeze({x:geometry.inspectionStart.x,y:geometry.inspectionStart.y,groundZ:0,vx:0,vy:0,heading:0,legDirection:0,torsoDirection:0,locomotion:'idle'});
     const ready=(gate?.promise??Promise.resolve()).then(()=>{if(phase!=='disposed')phase='ready';});
-    const runtime={ready,records,geometry,start(){assert.equal(phase,'ready');phase='active';},pause(){if(phase==='active')phase='paused';},resume(){if(phase==='paused')phase='active';},
+    const runtime={ready,records,geometry,relayPlan:receivedPlan,relay:{committed:false,progressTicks:0,completionTick:null,eligible:false,operating:false,commitTick:-1},start(){assert.equal(phase,'ready');phase='active';},pause(){if(phase==='active')phase='paused';},resume(){if(phase==='paused')phase='active';},
       dispose(){if(phase!=='disposed'){disposed++;phase='disposed';}},get disposed(){return disposed;},
       advance(delta,input){assert.equal(phase,'active');records.push({delta,input});tick++;return {steps:1,alpha:1};},
-      snapshot(){return Object.freeze({phase,tick,actor,previousActor:actor,nav:phase==='preparing'||phase==='disposed'?null:{columns:34,rows:17,walkableCells:578,gridBytes:1156,flowBytes:2890},lastStep:{contacts:0,traversalAllowed:true}});},
+      snapshot(){return Object.freeze({phase,tick,actor,previousActor:actor,relay:runtime.relay,nav:phase==='preparing'||phase==='disposed'?null:{columns:34,rows:17,walkableCells:578,gridBytes:1156,flowBytes:2890},lastStep:{contacts:0,traversalAllowed:true}});},
       navigationAt(){return Object.freeze({returnDistance:0});}};
     runtimes.push(runtime);return runtime;
   }
   const imports={Application,Container:Display,Graphics:Graphic,Sprite:Display,Texture,Rectangle:class{},
     createGreyboxWorld:()=>testWorld,createGreyboxGroundPaint,createWorldV2Geometry,createWorldV2LocalRuntime:createRuntime,
     createGreyboxPropResidency:residencyModule.createGreyboxPropResidency,
-    InputState,createBrowserInputController,TouchControlState,...projection,createAuthoredGroundQuery,
+    createLocalMeadowsRelayPlan:world=>{assert.equal(world,testWorld);return relayPlan;},
+    InputState,createBrowserInputController,TouchControlState,quantizeDirection,...projection,createAuthoredGroundQuery,
     PRODUCTION_HERO_ASSETS:{'lit-commando':{actorId:'lit-commando',metadataUrl:'/human.json',imageUrl:'/human.webp'}},PRODUCTION_HERO_RUNTIME_SCALE:.58,
-    createProductionHeroAtlasIndex:()=>({}),createProductionHeroDisplay:()=>({container:new Display(),artSource:'packed-textured-blend',applyPose(){}})};
+    createProductionHeroAtlasIndex:()=>({}),createProductionHeroDisplay:()=>({container:new Display(),artSource:'packed-textured-blend',applyPose(pose){poses.push(pose);},setLayerVisible(layer,visible){layers.push({layer,visible});}})};
   const allowed=new Set(['pixi.js','./greybox-world-v1.mjs','./greybox-ground-presentation.mjs','../world-v2-geometry.mjs','./world-v2-local-runtime.mjs',
-    '../input.mjs','../touch-controls.mjs','../world-space.mjs','../elevation.mjs','../production-hero-atlas.mjs','../production-hero-assets.mjs','./greybox-prop-residency.mjs']);
+    '../input.mjs','../touch-controls.mjs','../world-space.mjs','../elevation.mjs','../production-hero-atlas.mjs','../production-hero-assets.mjs','./greybox-prop-residency.mjs','./world-v2-local-relay.mjs','../movement.mjs']);
   const executable=source.replace(/^import\s*\{([^}]+)\}\s*from\s*['"]([^'"]+)['"];?\s*$/gm,(_line,names,specifier)=>{
     assert.ok(allowed.has(specifier),specifier);for(const name of names.split(',').map(x=>x.trim()).filter(Boolean))assert.ok(Object.hasOwn(imports,name),name);return '';
   }).replace('export function mountGreyboxPlaytest','function mountGreyboxPlaytest');
@@ -107,7 +110,7 @@ function fixture({appGate,decodeGate,navGates=[],metadataFailure=null,partialIni
     fetch:async()=>{if(metadataFailure)throw Error(metadataFailure);return {ok:true,json:async()=>({})};},
     requestAnimationFrame:callback=>{const id=++nextFrame;frames.set(id,callback);return id;},cancelAnimationFrame:id=>frames.delete(id),console};
   vm.createContext(context);vm.runInContext(executable,context);const handle=context.mountGreyboxPlaytest(root);
-  const result={root,nodes,window,document,runtimes,images,graphics,handle,frames,
+  const result={root,nodes,window,document,runtimes,images,graphics,handle,frames,poses,layers,relayPlan,
     focusToolbar(selector){const node=nodes[selector];node.focus();root.emit('focusin',{target:node});},
     key(code){let stopped=false;const target=document.activeElement??root;root.emit('keydown',{target,code,stopPropagation(){stopped=true;}});if(!stopped)window.emit('keydown',{target,code});},
     async frame(delta=16){now+=delta;const pending=[...frames.values()];frames.clear();for(const callback of pending)callback(now);await flush();},
@@ -237,4 +240,29 @@ test('presentation previous actor is the last admitted tick through catch-up and
     assert.equal(view.tick,4);assert.ok(view.previousActor.x<view.actor.x);assert.ok(Math.abs(view.actor.x-view.previousActor.x-view.actor.vx/60)<1e-9);
     assert.throws(()=>{view.previousActor.x=0;},TypeError);const x=view.previousActor.x;runtime.advance(1000/60,{move:{x:1,y:0}});assert.equal(view.previousActor.x,x);
   }finally{runtime.dispose();}
+});
+
+test('the playable scene binds one relay and presents reach, press and completion without an action button',async()=>{
+  const f=fixture();await f.handle.ready;
+  assert.equal(f.runtimes[0].relayPlan,f.relayPlan,'the actual scene must pass its local plan to the runtime');
+  assert.match(f.root.innerHTML,/data-relay-task/);assert.match(f.nodes['[data-relay-task]'].textContent,/Restore the Meadows relay/);
+  const ring=f.graphics.find(g=>g.label==='local-relay-ring'),lamp=f.graphics.find(g=>g.label==='local-relay-lamp');assert.ok(ring&&lamp,'actual owned relay cues required');
+  assert.deepEqual(ring.lastCircle,{x:600,y:400,r:72});
+  f.nodes['[data-start]'].emit('click');f.runtimes[0].relay={...f.runtimes[0].relay,eligible:true};await f.frame();
+  assert.match(f.nodes['[data-relay-task]'].textContent,/stay nearby/i);
+  f.runtimes[0].relay={...f.runtimes[0].relay,committed:true,progressTicks:1,operating:true,commitTick:1};await f.frame();
+  assert.equal(f.poses.at(-1).action,'interact');assert.equal(f.poses.at(-1).torsoDirection,7,'side approach faces the equipment');assert.equal(f.poses.at(-1).legDirection,0,'gameplay leg direction is unchanged');assert.equal(f.poses.at(-1).actionTick,f.runtimes[0].snapshot().tick-1);
+  assert.deepEqual(f.layers.at(-1),{layer:'weapon',visible:false});assert.match(f.nodes['[data-relay-task]'].textContent,/starting/i);
+  f.runtimes[0].relay={...f.runtimes[0].relay,operating:false,eligible:false,progressTicks:30,completionTick:3};await f.frame();
+  assert.equal(f.poses.at(-1).action,'aim');assert.deepEqual(f.layers.at(-1),{layer:'weapon',visible:true});
+  assert.match(f.nodes['[data-relay-task]'].textContent,/restored.*no rewards/i);assert.equal(lamp.lastFill,'#b8ef9c');
+  f.nodes['[data-pause]'].emit('click');const poseCount=f.poses.length;await f.frame(1000);assert.equal(f.poses.length,poseCount);
+});
+test('inspection replacement resets only the temporary relay and close releases its actual graphics',async()=>{
+  const f=fixture();await f.handle.ready;f.runtimes[0].relay={...f.runtimes[0].relay,completionTick:41,progressTicks:30};
+  f.nodes['[data-area-select]'].value='silver-coast';f.nodes['[data-inspect]'].emit('click');await flush();
+  assert.equal(f.runtimes[0].disposed,1);assert.equal(f.runtimes[1].relayPlan,f.relayPlan);
+  assert.equal(f.runtimes[1].snapshot().relay.completionTick,null);assert.match(f.nodes['[data-relay-task]'].textContent,/Restore/);
+  const cues=f.graphics.filter(g=>['local-relay-ring','local-relay-lamp'].includes(g.label));assert.equal(cues.length,2);
+  f.close();assert.ok(cues.every(g=>g.destroyed));assert.equal(f.frames.size,0);
 });

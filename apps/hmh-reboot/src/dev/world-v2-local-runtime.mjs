@@ -1,4 +1,5 @@
 import { DeterministicSimulation, FIXED_STEP_MS } from '../simulation.mjs';
+import { createLocalRelay } from './world-v2-local-relay.mjs';
 import { createPlayerMotionState, stepPlayerMovement } from '../movement.mjs';
 import { createCollisionBody, resolveSweptCircleMotion } from '../collision.mjs';
 import { movementSpeedMultiplierForTransition, resolveSweptTraversalPath } from '../elevation.mjs';
@@ -10,14 +11,15 @@ const finite = (value, label) => {
   return value;
 };
 
-// A movement-only local lifetime. No sessions, seed entry, encounters or rewards.
+// A local movement lifetime with one optional no-reward relay. No sessions,
+// seed entry or encounters.
 // The unchanged runtime primitives remain authoritative; nav is diagnostic and
 // never substitutes its coarse cells for swept player collision/traversal.
 export function createWorldV2LocalRuntime(options = {}) {
-  if (!options || typeof options !== 'object' || Reflect.ownKeys(options).some(key => key !== 'geometry' && key !== 'scheduleYield')) {
-    throw new TypeError('only local geometry and an optional construction scheduler are accepted');
+  if (!options || typeof options !== 'object' || Reflect.ownKeys(options).some(key => key !== 'geometry' && key !== 'scheduleYield' && key !== 'relayPlan')) {
+    throw new TypeError('only local geometry, a relay plan and an optional construction scheduler are accepted');
   }
-  const { geometry, scheduleYield = yieldToHost } = options;
+  const { geometry, scheduleYield = yieldToHost, relayPlan = null } = options;
   if (!geometry || !Object.isFrozen(geometry) || geometry.officialRun !== false || geometry.rankedEligible !== false
     || geometry.rulesVersion !== null || !Object.isFrozen(geometry.bounds) || !Object.isFrozen(geometry.collisionBlockers)
     || typeof geometry.queryGround !== 'function' || typeof scheduleYield !== 'function') {
@@ -33,6 +35,8 @@ export function createWorldV2LocalRuntime(options = {}) {
     throw new TypeError('inspection start must be walkable and clear for the current human body');
   }
 
+  const relay = relayPlan === null ? null : createLocalRelay({ plan: relayPlan, geometry });
+
   // Fixed diagnostic seed only; this lifetime never consumes a random stream.
   const simulation = new DeterministicSimulation({ seed: 0 });
   let phase = 'preparing', failure = null, authority = createNavGridAuthority(), flow = null, nav = null;
@@ -41,7 +45,7 @@ export function createWorldV2LocalRuntime(options = {}) {
     legDirection: motion.legDirection, torsoDirection: motion.torsoDirection, locomotion: motion.locomotion,
     heading: Math.atan2(motion.aimDirection.y, motion.aimDirection.x) });
   let previousActor = actorView();
-  const unsubscribe = simulation.onStep(({ dtSeconds, input }) => {
+  const unsubscribe = simulation.onStep(({ tick, dtSeconds, input }) => {
     previousActor = actorView(); // Presentation-only last admitted tick, including catch-up.
     const start = { x: motion.x, y: motion.y, z: ground.groundZ };
     const magnitude = Math.hypot(input.move.x, input.move.y);
@@ -64,6 +68,7 @@ export function createWorldV2LocalRuntime(options = {}) {
       const recoil = motion.recoilVx * contact.normal.x + motion.recoilVy * contact.normal.y;
       if (recoil < 0) { motion.recoilVx -= contact.normal.x * recoil; motion.recoilVy -= contact.normal.y * recoil; }
     }
+    relay?.step({ tick, player: { x: motion.x, y: motion.y, groundZ: ground.groundZ }, move: input.move });
     zeroDisplacementFrames = collision.telemetry.zeroDisplacementFrames;
     lastStep = Object.freeze({ contacts: collision.contacts.length, traversalAllowed: traversal.allowed });
   });
@@ -88,7 +93,7 @@ export function createWorldV2LocalRuntime(options = {}) {
     } catch (error) {
       if (phase === 'disposed') return;
       phase = 'failed'; failure = String(error?.message ?? error); authority = null; flow = null; nav = null;
-      simulation.exit(); unsubscribe(); throw error;
+      simulation.exit(); unsubscribe(); relay?.dispose(); throw error;
     }
   })();
 
@@ -109,11 +114,11 @@ export function createWorldV2LocalRuntime(options = {}) {
     resume() { if (phase === 'paused') { simulation.resume(); phase = 'active'; } },
     dispose() {
       if (phase === 'disposed') return;
-      phase = 'disposed'; simulation.exit(); unsubscribe(); authority = null; flow = null; nav = null;
+      phase = 'disposed'; simulation.exit(); unsubscribe(); relay?.dispose(); authority = null; flow = null; nav = null;
     },
     snapshot() {
       return Object.freeze({ phase, mode: 'local-free-test', officialRun: false, rankedEligible: false, tick: simulation.tick, fixedStepMs: FIXED_STEP_MS,
-        actor: actorView(), previousActor, nav, lastStep, failure });
+        actor: actorView(), previousActor, nav, lastStep, failure, relay: relay?.snapshot() ?? null });
     },
     navigationAt(x, y) {
       finite(x, 'navigation x'); finite(y, 'navigation y');

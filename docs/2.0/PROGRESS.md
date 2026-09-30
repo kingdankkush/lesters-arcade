@@ -1111,3 +1111,20 @@ The16k character candidate is not admitted: its first corrective export safely
 rejected a topology mismatch. New seam evidence corrects the diagnosis to two leg
 patches and two hand patches with cross-limb contamination. The precise weight
 repair and one usable private-world Meadows relay are next. Nothing deployed.
+
+## Delivery workflow reset and integration — September 30
+
+Owner explicitly prioritizes high-impact player-facing work and shipping over
+new harnesses, expanded testing and repeated prototype cycles. All three agents
+stopped with no active children/locks. Follow RELEASE-CHECKLIST.md; do not reuse
+the subjective60–75% remaining estimate as a measured completion score.
+
+Integrated the already-built private Meadows relay, including its stationary
+interaction facing and completion cue, preserving all other root changes.
+Corrected the standalone objective pointer covering tracker text; the inline
+bearing remains, and side pointers still show where space permits. Existing
+10+2 pointer checks and prior45+45 relay checks are reused. A22 actual-game six
+scenes passed, removing the inner dirt stamps and showing clear phone instruction
+text. The broader already-running visual job failed its Chrome-close deadline;
+all recorded children were confirmed absent and owned marker released. No rerun.
+No release, version change, production art acceptance or physical-phone claim.

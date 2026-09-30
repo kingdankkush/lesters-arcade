@@ -292,7 +292,10 @@ export function createWorldDesignLife({ContainerClass,GraphicsClass,TextClass,ca
       pill.circle(view.width/2-width/2+13,y,4.5).fill({color:track.glyph==='station'?MISSION_PALETTE.lamp.done:ivory});
       tracker.position.set(view.width/2+7,y);tracker.visible=true;
       const chevron=missionChevron({target:project(track.x,track.y,queryGround(track.x,track.y).groundZ),view,band});
-      if(chevron) {
+      // The inline arrow keeps the bearing when the edge pointer would cover
+      // its own instruction. Include the pointer and panel stroke extents.
+      const coversTracker=chevron && Math.abs(chevron.x-view.width/2)<width/2+12 && Math.abs(chevron.y-y)<24;
+      if(chevron && !coversTracker) {
         const {x,y:cy,angle:a}=chevron,size=10;
         pill.moveTo(x+Math.cos(a)*size,cy+Math.sin(a)*size).lineTo(x+Math.cos(a+2.5)*size,cy+Math.sin(a+2.5)*size).lineTo(x+Math.cos(a-2.5)*size,cy+Math.sin(a-2.5)*size).lineTo(x+Math.cos(a)*size,cy+Math.sin(a)*size)
           .fill({color:ivory,alpha:.9}).stroke({color:outline,width:2});

@@ -24,7 +24,7 @@ export function authorMeadowsKit(area,{pieces,sites,arenas},roads){
   area.landmark='Old oak / relay green';
   area.flowLabels=[['Entry green',0,80],['Garden lane',-1350,-350],['Relay court',720,-430],['Porch',-800,180]].map(([label,x,y])=>({label,...point(x,y)}));
   for(const[kind,x,y,label]of[['area',0,0,'Entry green'],['landmark-view',-390,-930,'Old oak'],['secret',-1400,-700,'Garden loop'],['height-option',-800,200,'Porch']])sites.push({id:`${area.id}-${kind}`,kind,areaId:area.id,...point(x,y),label,runtimeEffect:'none'});
-  const objective={id:`${area.id}-objective`,kind:'objective',areaId:area.id,...point(700,-960),label:'Relay switch',approach:point(700,-1210),runtimeEffect:'none'};
+  const objective={id:`${area.id}-objective`,kind:'objective',areaId:area.id,...point(520,-491),label:'Relay switch',approach:point(520,-300),runtimeEffect:'none'};
   sites.push(objective);
   const arena={id:`${area.id}-court`,areaId:area.id,center:point(600,-450),width:1800,depth:1800,bossId:null,exits:[{id:`${area.id}-court-exit-0`,...point(-220,320)},{id:`${area.id}-court-exit-1`,...point(1350,350)}],runtimeEffect:'none'};
   arenas.push(arena);arena.exits.forEach(exit=>sites.push({...exit,kind:'arena-exit',areaId:area.id,arenaId:arena.id,runtimeEffect:'none'}));
@@ -34,7 +34,7 @@ export function authorMeadowsKit(area,{pieces,sites,arenas},roads){
   const route=(name,kind,fromSiteId,toSiteId,points)=>({id:`${area.id}-${name}`,kind,fromSiteId,toSiteId,points,runtimeEffect:'none'});
   area.inspectionRoutes=[
     route('city-green','main',entranceId,`${area.id}-area`,[entrance,point(0,0)]),
-    route('green-relay','main',`${area.id}-area`,objective.id,[point(0,0),point(0,-420),point(260,-930),point(700,-960)]),
+    route('green-relay','main',`${area.id}-area`,objective.id,[point(0,0),point(0,-420),point(520,-491)]),
     route('garden-out','optional',entranceId,`${area.id}-secret`,[entrance,point(-1350,0),point(-1350,-700),point(-1400,-700)]),
     route('garden-rejoin','optional',`${area.id}-secret`,`${area.id}-area`,[point(-1400,-700),point(-1400,-1050),point(-800,-1050),point(-80,-930),point(-80,0),point(0,0)]),
     route('porch-approach','optional',entranceId,`${area.id}-height-option`,[entrance,point(-1440,0),point(-1440,200),point(-1300,200),point(-800,200)])

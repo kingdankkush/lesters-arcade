@@ -66,6 +66,7 @@ const NODE_CHECK_FILES = [
   'apps/hmh-reboot/src/world-v2-geometry.mjs',
   'apps/hmh-reboot/src/dev/world-v2-local-access.mjs',
   'apps/hmh-reboot/src/dev/world-v2-local-runtime.mjs',
+  'apps/hmh-reboot/src/dev/world-v2-local-relay.mjs',
   'apps/hmh-reboot/src/dev/world-v2-local-scene.mjs',
   'apps/hmh-reboot/src/dev/greybox-prop-residency.mjs',
   'apps/hmh-reboot/src/dev/world-v2-local-entry.mjs',
