@@ -5125,3 +5125,7 @@ html[data-embedded-cabinet="chikun"] .arcade-music-player[data-surface="pause-me
  html[data-embedded-cabinet="stacked"] .crt-overlay,html[data-embedded-cabinet="stacked"] .official-scanline{display:none}
  html[data-embedded-cabinet="stacked"] .arcade-music-player[data-surface="pause-menu"][data-expanded="false"]{display:none!important}
 }
+
+.stacked-daily-choice { display:flex;align-items:center;gap:12px;min-height:48px;margin-top:12px;cursor:pointer; }
+.stacked-daily-choice input { width:20px;height:20px;accent-color:#67d4e5; }
+#stackedDailyHint { margin:4px 0 0;color:#bed7df;font-size:14px;line-height:1.5; }

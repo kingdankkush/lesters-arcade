@@ -1,3 +1,4 @@
+import {STACKED_DAILY_VERSION, validStackedDailyDay} from './stacked-daily-date.mjs';
 import {
   STACKED_GAME_ID, STACKED_BRIDGE_PROTOCOL, STACKED_MAX_MESSAGE_BYTES,
   STACKED_ACTIONS, STACKED_CAPABILITIES, STACKED_RESULT_TUPLE_TAG, STACKED_TERMINAL_REASONS,
@@ -123,12 +124,13 @@ const validators = {
   'game:restart-request': p => exact(p, []),
   'game:exit-request': p => exact(p, []),
   'portal:result-status': p => fields(p, { accepted: bool, message: v => string(v, 1, 512) }),
-  'portal:init': p => fields(p, {
+  'portal:init': p => presentationFields(p, {
     gameId: v => v === STACKED_GAME_ID, mode: v => ['free', 'ranked'].includes(v),
     profile: v => fields(v, { displayName: x => string(x, 1, 96), locale: x => typeof x === 'string' && /^[A-Za-z]{2,8}(?:-[A-Za-z0-9]{1,8})*$/.test(x) && x.length <= 35 }),
     session: v => fields(v, { seed: x => integer(x, 0, 0xffffffff), buildHash: token, seasonId: season, rankedEligible: bool }),
     settings: v => validateStackedBridgeSettings(v, { initial: true }),
-  }) && p.session.rankedEligible === (p.mode === 'ranked') && (p.mode !== 'ranked' || p.settings.startLevel === 1),
+  }, {dailyChallenge: value => fields(value, {version: v => v === STACKED_DAILY_VERSION, dayKey: validStackedDailyDay, bestScore: v => v === null || score(v)})}) && p.session.rankedEligible === (p.mode === 'ranked') && (p.mode !== 'ranked' || p.settings.startLevel === 1)
+    && (!Object.hasOwn(p, 'dailyChallenge') || p.mode === 'free' && p.settings.startLevel === 1),
   'portal:settings': p => fields(p, { settings: v => validateStackedBridgeSettings(v) }),
   'portal:pause': p => exact(p, []), 'portal:resume': p => exact(p, []), 'portal:exit': p => exact(p, []),
   'portal:audio-frame': p => fields(p, { audio: a => fields(a, {

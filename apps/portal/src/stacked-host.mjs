@@ -1,3 +1,5 @@
+import {dailyChallengeForSession, readStackedDailyBest, completeStackedDaily} from './stacked-daily-challenge.mjs';
+export {bindStackedDailyChallenge} from './stacked-daily-challenge.mjs';
 import {stackedPresentationSuffix} from './stacked-presentation-switch.mjs';
 import { STACKED_BRIDGE_PROTOCOL, STACKED_MAX_EVIDENCE_CHUNKS } from './stacked-contracts.mjs';
 import { validateStackedBridgeMessage } from './stacked-bridge-protocol.mjs';
@@ -17,6 +19,11 @@ export const stackedRankedResultCopy = (result, settlementLive) => STACKED_RANKE
 
 export function createStackedHost({ mount, session, search = globalThis.location?.search ?? '', startLevel = 1, profile, settings, music, settlementLive = false, onReady = () => {}, onState = () => {}, onResult = () => {}, onRestart = () => {}, onExit = () => {}, onError = () => {}, persistRanked }) {
   const sessionId = session.urlSessionId ?? session.sessionId;
+  const daily = dailyChallengeForSession(session);
+  if (daily && startLevel !== 1) throw new Error('Daily starts at level 1');
+  const dailySession = daily ? Object.freeze({...session, dailyChallenge: Object.freeze({...daily})}) : null;
+  let dailyStorage; try { dailyStorage = window.localStorage; } catch {}
+  const dailyDisplay = daily ? {version: daily.version, dayKey: daily.dayKey, bestScore: readStackedDailyBest(dailyStorage, dailySession)} : null;
   const iframe = document.createElement('iframe');
   iframe.className = 'stacked-game-frame'; iframe.title = "STACKED — Lester's Arcade"; iframe.src = '/stacked/index.html'+stackedPresentationSuffix(search);
   // Popups escape the sandbox for the results share row (x.com/Facebook intents, rel=noopener); web-share/clipboard feed the native and Discord paths.
@@ -72,8 +79,9 @@ export function createStackedHost({ mount, session, search = globalThis.location
         if (digest !== data.payload.evidenceDigest || evidence.length !== data.payload.totalRawBytes) throw new Error('Evidence digest mismatch');
         const result = await lifecycle.finish(evidence, data.payload.tuple, { inputDevice: data.payload.summary.handling.inputDevice, evidenceDigest: digest });
         if (disposed) return;
-        send('portal:result-status', { accepted: result.ok, message: result.ok ? result.ranked ? stackedRankedResultCopy(result, settlementLive) :'Replay verified locally. Free Mode did not write to your profile, achievements or score boards.' : 'Not saved: ' + result.reason });
-        onResult(result);
+        const dailyResult = dailySession ? completeStackedDaily(dailySession, result, dailyStorage) : null;
+        send('portal:result-status', { accepted: result.ok, message: result.ok ? result.ranked ? stackedRankedResultCopy(result, settlementLive) : dailyResult?.message ?? 'Replay verified locally. Free Mode did not write to your profile, achievements or score boards.' : 'Not saved: ' + result.reason });
+        onResult(dailyResult ? {...result, daily: dailyResult} : result);
       } else if (data.type === 'game:preferences-request') {
         const p = data.payload;
         settings = applyStackedPresentationPreferences(settings, p);
@@ -93,7 +101,7 @@ export function createStackedHost({ mount, session, search = globalThis.location
   iframe.addEventListener('load', () => {
     if (disposed) return;
     iframe.contentWindow.postMessage({ protocol: STACKED_BRIDGE_PROTOCOL, type: 'portal:connect' }, location.origin, [channel.port2]);
-    send('portal:init', { gameId: 'stacked', mode: session.leaderboardEligible ? 'ranked' : 'free', profile, session: { seed: session.seed, buildHash: session.buildHash, seasonId: session.seasonId, rankedEligible: !!session.leaderboardEligible }, settings: { ...settings, startLevel } });
+    send('portal:init', { gameId: 'stacked', mode: session.leaderboardEligible ? 'ranked' : 'free', profile, session: { seed: session.seed, buildHash: session.buildHash, seasonId: session.seasonId, rankedEligible: !!session.leaderboardEligible }, settings: { ...settings, startLevel }, ...(dailyDisplay ? {dailyChallenge: dailyDisplay} : {}) });
   }, { once: true });
   function destroy() {
     if (disposed) return;

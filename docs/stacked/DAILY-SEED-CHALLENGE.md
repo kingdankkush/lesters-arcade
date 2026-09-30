@@ -1,6 +1,6 @@
-# STACKED daily seed challenge (design, not implemented)
+# STACKED daily seed challenge — original design and current checkpoint
 
-Status: proposal written for 1.9.0. None of it ships in 1.9.0: STACKED's Free and Ranked seeds are unchanged, and this note adds no code, storage key, bridge message or leaderboard.
+Original proposal written for 1.9.0; it did not ship then. The optional Free-only 2.0 implementation is now checked locally: [F2b checkpoint](../2.0/slices/STACKED-F2B-DAILY.md). It remains off by default. The ghost and any Ranked daily board below remain future design; ordinary Free and Ranked seeds are unchanged.
 
 ## What it is
 

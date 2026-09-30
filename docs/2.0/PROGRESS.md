@@ -672,3 +672,22 @@ frontage read, while flat masses, sparse ground and tiny/clipped labels remain.
 See slices/WORLD-W2G-PINES.md and receipts/world-pines; manual local bundle at
 outputs/hmh-pines-authored-flow-preview.zip. No full regional journey, physical
 phone, final art/owner acceptance, official map/verifier, version or deploy claim.
+
+
+### STACKED F2b — optional Free daily challenge
+
+Parent-owned UTC daily seed, Level 1 and unlimited Free retries now have a local
+best and date/best display behind `?stackedDaily=daily-v1`. Verified canonical
+results alone write the bounded device store; Ranked and assisted runs cannot.
+The issued day survives midnight and old paused results remain retained. Long
+phone panels are contained and scrollable. Independent review covered storage,
+session lifetime, cancellation, seed/level and old-init compatibility.
+
+16 source tests + same isolated16, related63 and final actual Chrome16 pass.
+First browser stopped after13 passed on a hidden-desktop-Undo harness error;
+it is preserved. Corrected actual KeyU and a panel-height polish were checked
+in the fresh successful build. Seven originals reviewed across five widths.
+432,000-tick built Worker tuple remains exact. HMH1,039,992B; STACKED580,438B.
+All children/Chrome/HTTP closed, PIDs absent and owned markers released.
+See slices/STACKED-F2B-DAILY.md and receipts/stacked-daily-f2b. No physical phone,
+soak, release gate, owner acceptance, version, push or deployment claimed.

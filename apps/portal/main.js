@@ -1507,6 +1507,8 @@ function hasRememberedWalletConnector() {
 }
 let currentSession = null;
 const bootRuntimeSearch = window.location.search;
+const stackedDailyChoices = new URLSearchParams(bootRuntimeSearch).getAll('stackedDaily');
+const stackedDailyPreview = stackedDailyChoices.length === 1 && stackedDailyChoices[0] === 'daily-v1';
 let hmhRebootHost = null;
 let hmhRebootLifecycle = null;
 let hmhRebootActive = false;
@@ -1522,11 +1524,14 @@ function destroyStackedSession() { stackedMountGeneration++; stackedRunMusic?.di
 async function mountStackedSession() {
   if (!currentSession || currentSession.gameId !== 'stacked') return;
   destroyHmhRebootSession(); destroyChikunSession(); destroyStackedSession();
-  const generation = stackedMountGeneration, boundSession = currentSession;
-  const { createStackedHost } = await import('./src/stacked-host.mjs');
-  if (generation !== stackedMountGeneration || currentSession !== boundSession) return;
+  const generation = stackedMountGeneration, pendingSession = currentSession;
+  const dailyRequested = stackedDailyPreview && document.querySelector('#stackedDailyChoice')?.checked === true;
+  const { createStackedHost, bindStackedDailyChallenge } = await import('./src/stacked-host.mjs');
+  if (generation !== stackedMountGeneration || currentSession !== pendingSession) return;
+  if (dailyRequested) currentSession = bindStackedDailyChallenge(pendingSession, {now: pendingSession.startedAt});
+  const boundSession = currentSession;
   const profile = connectedWallet ? state.profiles?.[connectedWallet] : null;
-  const startLevel = boundSession.leaderboardEligible ? 1 : Number(document.querySelector('#stackedStartLevel')?.value ?? 1);
+  const startLevel = boundSession.leaderboardEligible || boundSession.dailyChallenge ? 1 : Number(document.querySelector('#stackedStartLevel')?.value ?? 1);
   // Music follows the game: the song the Free click started is kept; a paused
   // player (Ranked, a rejected click start) is started at mount and, if still
   // paused, once more on the first running (the child's Start click).
@@ -1547,7 +1552,7 @@ async function mountStackedSession() {
       if (!dom.officialGameStateCopy) return;
       // A live Ranked run's line follows its settlement handle (trackRankedSettlement).
       if (!result.ok) dom.officialGameStateCopy.textContent = 'STACKED run not saved: ' + result.reason;
-      else if (!result.ranked) dom.officialGameStateCopy.textContent = 'STACKED replay verified locally. Free Mode did not write to your profile or score boards.';
+      else if (!result.ranked) dom.officialGameStateCopy.textContent = result.daily?.message ?? 'STACKED replay verified locally. Free Mode did not write to your profile or score boards.';
       else if (!SETTLEMENT_LIVE) dom.officialGameStateCopy.textContent = 'Canonical Ranked preview saved locally. No transaction was sent; verified on-chain publishing remains disabled.';
     },
     // Local archive (persistStackedScore), then for a live run the replay
@@ -5014,7 +5019,16 @@ const renderOfficialModeSelect = () => {
     const label = document.createElement('label'); label.textContent = 'Free Mode starting level ';
     const select = document.createElement('select'); select.id = 'stackedStartLevel';
     for (let level = 1; level <= 15; level++) { const option = document.createElement('option'); option.value = String(level); option.textContent = 'Level ' + level; select.append(option); }
-    label.append(select); options.append(label); dom.officialModeSelect.append(options);
+    label.append(select); options.append(label);
+    if (stackedDailyPreview) {
+      const dailyLabel = document.createElement('label'); dailyLabel.className = 'stacked-daily-choice';
+      const daily = document.createElement('input'); daily.type = 'checkbox'; daily.id = 'stackedDailyChoice'; daily.setAttribute('aria-describedby', 'stackedDailyHint');
+      dailyLabel.append(daily, ' Play today’s daily challenge');
+      const hint = document.createElement('p'); hint.id = 'stackedDailyHint'; hint.textContent = 'Same pieces for everyone each UTC day. Starts at Level 1. Unlimited Free retries; best kept on this device.';
+      daily.addEventListener('change', () => { select.disabled = daily.checked; });
+      options.append(dailyLabel, hint);
+    }
+    dom.officialModeSelect.append(options);
   }
   options.hidden = selectedGameId !== 'stacked';
 };

@@ -1,0 +1,198 @@
+{
+  "scope": "Optional parent-owned Free daily challenge; not a public/physical-device acceptance",
+  "sourceTests": 16,
+  "isolatedSameTests": 16,
+  "relatedTests": 63,
+  "finalBrowserCases": [
+    "actual Free daily at level1, worker replay and local best only",
+    "same-day retry keeps seed and shows saved best",
+    "run across midnight stays on its issued day",
+    "retry after midnight starts new UTC day",
+    "real touch controls finish daily and verify replay",
+    "contained daily UI 414",
+    "contained daily UI 320",
+    "contained daily UI 768",
+    "contained daily UI 1024",
+    "daily off default",
+    "daily off ?stackedDaily=bad",
+    "daily off ?stackedDaily=daily-v1&stackedDaily=daily-v1",
+    "storage failure preserves completed game and retry",
+    "Undo assistance cannot create a daily best",
+    "close while verification is pending prevents daily write",
+    "actual built Worker preserves 432000-tick tuple"
+  ],
+  "firstBrowserFailure": "Harness tried to click desktop-hidden Undo. Preserved; corrected to actual KeyU. Long panel containment polished before new build.",
+  "unusedAttempt02": "Continuation prepared but never executed; superseded by CSS polish and fresh build03.",
+  "budgets": {
+    "hmh-reboot": {
+      "total": 1039992,
+      "cap": 1048576,
+      "headroom": 8584
+    },
+    "stacked": {
+      "total": 580438,
+      "cap": 607000,
+      "headroom": 26562
+    }
+  },
+  "imagesReviewedOriginal": [
+    {
+      "name": "desktop-daily-start",
+      "file": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-daily-browser-03\\desktop-daily-start.png",
+      "sha256": "9b00ebb8f787d3296058ebdb0b00647f2303c167ae2a5fa850243b1926c6fb13"
+    },
+    {
+      "name": "desktop-daily-result",
+      "file": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-daily-browser-03\\desktop-daily-result.png",
+      "sha256": "85327d34a2173f9f1e1ddb8a2b6d304d4613fe4f36d21d985789eb1e20b190e6"
+    },
+    {
+      "name": "daily-layout-414",
+      "file": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-daily-browser-03\\daily-layout-414.png",
+      "sha256": "a76a56feb257b12b6400c440f8bffbaa18c734133be0100045abb34bed0cf9ca"
+    },
+    {
+      "name": "phone-daily-result",
+      "file": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-daily-browser-03\\phone-daily-result.png",
+      "sha256": "2ed3d4560d740bdfbf8f9affefd45a3f155d1270d042713d0ed085ea14f9d42d"
+    },
+    {
+      "name": "daily-layout-320",
+      "file": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-daily-browser-03\\daily-layout-320.png",
+      "sha256": "fe7e0176481467b86b3868fa6b50e1fc6ce01ae8215f8c0ee640d418e7ae3e4b"
+    },
+    {
+      "name": "daily-layout-768",
+      "file": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-daily-browser-03\\daily-layout-768.png",
+      "sha256": "b54e7a238966218bdb4879f65a5bad1232fa803d59e52995d7bdba122242018e"
+    },
+    {
+      "name": "daily-layout-1024",
+      "file": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-daily-browser-03\\daily-layout-1024.png",
+      "sha256": "6709c1a318269ebe9afe8ef1762a9ee25dfa01107f0f9d5de167e2ff99c81f26"
+    }
+  ],
+  "independentReview": [
+    "world_resume found old-day retention mismatch, fixed with genuine preimplementation RED",
+    "character_resume found no actionable host/lifecycle/bridge isolation issue"
+  ],
+  "physicalPhoneTested": false,
+  "fullReleaseGate": false,
+  "productionDeployed": false,
+  "artAccepted": false,
+  "entries": [
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-daily-source-red-01\\report.json",
+      "archive": "stacked-daily-source-red-01/report.json.gz",
+      "bytes": 23125,
+      "sha256": "22bb3a22b993f29f3c761ff84d2bfa450357c9f289d42b69abd4b28cd940504c",
+      "archiveBytes": 2922,
+      "archiveSha256": "d60ff48b155baf1168d3627e356abb51470c2ceba980cc1d1d56f065a31ec63e"
+    },
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-daily-source-green-01\\report.json",
+      "archive": "stacked-daily-source-green-01/report.json.gz",
+      "bytes": 12541,
+      "sha256": "883550884cf3dc737d050f9165221d8da42049bfc976b89c48da0ed86673499a",
+      "archiveBytes": 2460,
+      "archiveSha256": "d0f5cd2f5454957731c19192e58c14d8bd0dd05088637f6add80bb3809649ad3"
+    },
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-daily-built-01\\report.json",
+      "archive": "stacked-daily-built-01/report.json.gz",
+      "bytes": 57963,
+      "sha256": "d02051e0d8bd726b8938e40e22fd94820de6bd2536ca1e8faceff3a7fd9e9f05",
+      "archiveBytes": 17169,
+      "archiveSha256": "0899f5c93aed74d78bce30ae050248710e58252134d817b6a67fcd879f95f180"
+    },
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-daily-browser-01\\report.json",
+      "archive": "stacked-daily-browser-01/report.json.gz",
+      "bytes": 28809,
+      "sha256": "40befa939755b4ecc3a0e38befbacfbd4528f143f52eb40ffedc11a87c93c004",
+      "archiveBytes": 9737,
+      "archiveSha256": "a2738c7447e7bda9688334e92482d804dfaea01680a2a95f74c67832269a9fb9"
+    },
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-daily-built-03\\report.json",
+      "archive": "stacked-daily-built-03/report.json.gz",
+      "bytes": 58314,
+      "sha256": "19940c7934e8a75992d0aad53860a097b2da30b4146f7c939fa244826a0e4fe4",
+      "archiveBytes": 17523,
+      "archiveSha256": "27d64c970b35e74fa856b0e2addf0a296c7ea1e2133daf4eb3eecb6065462405"
+    },
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-daily-built-03\\meta.json",
+      "archive": "stacked-daily-built-03/meta.json.gz",
+      "bytes": 4461659,
+      "sha256": "11dfdde3ff2572a00da4ceaa270208ad4255d22aeb30fb9049a910543de33129",
+      "archiveBytes": 212013,
+      "archiveSha256": "f41cb56c378cb72546cdd8b12ad874cadfced2eb104b8a692396d29e2cbf5c4b"
+    },
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-daily-browser-03\\report.json",
+      "archive": "stacked-daily-browser-03/report.json.gz",
+      "bytes": 30657,
+      "sha256": "669b0ef2c36f8fd2f1c14cd00f2c15b64b7df8855d6624bc87509069e080841c",
+      "archiveBytes": 10415,
+      "archiveSha256": "57cda84d6ef0c3bdadd9063e44655c34b6df320e8eaa36ae7666fd8452011afe"
+    },
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\run-stacked-daily-source.mjs",
+      "archive": "run-stacked-daily-source.mjs.gz",
+      "bytes": 2992,
+      "sha256": "4a14c7f8ea533ca61f95f37f6293c7aab1eae643d5ac85726e2be0e75fb0b74e",
+      "archiveBytes": 1346,
+      "archiveSha256": "c761d9f1c6bea031fedceb86f6781743bb09139f122f9f18d96ebf0fbb6da3fa"
+    },
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\run-stacked-daily-built-01.mjs",
+      "archive": "run-stacked-daily-built-01.mjs.gz",
+      "bytes": 5109,
+      "sha256": "22f291e28d43b07e422f09e95fc04c559df551732bed231cae68615eba9b173a",
+      "archiveBytes": 1901,
+      "archiveSha256": "0bf915c74750dc3b2b12cd6d60c958b98b57a805d9102c3601c128eb1ffbcbcc"
+    },
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\run-stacked-daily-built-03.mjs",
+      "archive": "run-stacked-daily-built-03.mjs.gz",
+      "bytes": 5109,
+      "sha256": "f069fae16081144e30c1307ffbaaa5bc5d260085b43c99bc1227df78d9abbaaa",
+      "archiveBytes": 1901,
+      "archiveSha256": "11dc495c22ed4f783e76e7d81da51b5d0b127afc0b8340c8afcd4992bfdfa005"
+    },
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-daily-browser-01.mjs",
+      "archive": "stacked-daily-browser-01.mjs.gz",
+      "bytes": 14274,
+      "sha256": "5199e241f71fc9254c22d65722e2356257e5c0e72c9d03ad65ef9815780a5c1a",
+      "archiveBytes": 4979,
+      "archiveSha256": "47ac6e2b01dfb99f29d92badcc27fb685ff1a443a963e60262d43e7729dc16a4"
+    },
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-daily-browser-03.mjs",
+      "archive": "stacked-daily-browser-03.mjs.gz",
+      "bytes": 14412,
+      "sha256": "409b9cdf7f401c463965c768155d18b520775644429c62ab9d630faeb8857526",
+      "archiveBytes": 5034,
+      "archiveSha256": "055b085fe62b80d591f4185e47fcc8e2164146d59b0adc4a10cb93357eadf1ce"
+    },
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\owned-windows-child.mjs",
+      "archive": "owned-windows-child.mjs.gz",
+      "bytes": 3475,
+      "sha256": "a5177337fcf6ec41f285fc105b93d0b4b94ee1101cb14a653a91e9b8b075b0d9",
+      "archiveBytes": 1360,
+      "archiveSha256": "ade927025e2afbae667182802dfce78d9ddd6b3afea7cfd48a5b40eac5e8ea4b"
+    },
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\owned-windows-preview-child.mjs",
+      "archive": "owned-windows-preview-child.mjs.gz",
+      "bytes": 3476,
+      "sha256": "6f4903a66d324a01a476eebefdfac68663dde2c573f62f637c4b7537ccb0d631",
+      "archiveBytes": 1360,
+      "archiveSha256": "18c5cfc758da42cddbb922c7989a0204d20eb87c1d5d359985932ef89f92c162"
+    }
+  ],
+  "archiveBytes": 290120
+}

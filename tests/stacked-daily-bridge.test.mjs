@@ -1,0 +1,8 @@
+import test from 'node:test';import assert from 'node:assert/strict';
+import {validateStackedBridgeMessage} from '../apps/portal/src/stacked-bridge-protocol.mjs';
+import {defaultStackedSettings} from '../apps/portal/src/stacked-player-settings.mjs';
+const daily=()=>({version:'stacked-daily-v1',dayKey:'2026-09-30',bestScore:null});
+const init=()=>({protocol:'stacked-bridge/v1',type:'portal:init',sessionId:'daily-test',messageId:'portal-1',payload:{gameId:'stacked',mode:'free',profile:{displayName:'Guest',locale:'en'},session:{seed:42,buildHash:'test',seasonId:'test-season',rankedEligible:false},settings:{...defaultStackedSettings(),startLevel:1},dailyChallenge:daily()}});
+test('optional daily display preserves old init and accepts new Free level-one metadata',()=>{const msg=init();assert.equal(validateStackedBridgeMessage(msg).ok,true);delete msg.payload.dailyChallenge;assert.equal(validateStackedBridgeMessage(msg).ok,true);});
+test('daily display rejects Ranked, skipped levels, invalid dates and unknown keys',()=>{for(const change of [p=>{p.mode='ranked';p.session.rankedEligible=true;},p=>p.settings.startLevel=2,p=>p.dailyChallenge.dayKey='2026-02-29',p=>p.dailyChallenge.seed=42,p=>p.dailyChallenge.bestScore=-1,p=>p.dailyChallenge.bestScore=Infinity,p=>p.dailyChallenge.version='other',p=>p.dailyChallenge=null]){const msg=init();change(msg.payload);assert.equal(validateStackedBridgeMessage(msg).ok,false);}});
+test('daily metadata is own data only and cannot invoke a getter',()=>{const msg=init();let hits=0;Object.defineProperty(msg.payload.dailyChallenge,'dayKey',{enumerable:true,get(){hits++;return'2026-09-30';}});assert.equal(validateStackedBridgeMessage(msg).ok,false);assert.equal(hits,0);});

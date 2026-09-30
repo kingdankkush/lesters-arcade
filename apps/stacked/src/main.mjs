@@ -131,6 +131,7 @@ async function finish() {
   $('preferencePanel').open = false; mirrorSettingsTile();
   $('overlayCopy').textContent = run.assisted ? 'Assisted Free practice. No profile or leaderboard write.' : 'Verifying your recorded run…';
   $('resultScore').textContent = s.score.toLocaleString();
+  if (init.dailyChallenge) $('dailyRunBest').textContent = 'Your result is shown below';
   for (const [id, value] of [['statLines', s.lines], ['statLevel', s.level], ['statTime', Math.floor(s.tick / 3600) + ':' + String(Math.floor(s.tick / 60) % 60).padStart(2, '0')], ['statHalvings', s.quadClears], ['statCombo', s.maxCombo]]) $(id).textContent = String(value);
   $('resultStats').hidden = false;
   $('resultCause').textContent = {'block-out':'The next piece had no room to enter. Try keeping the center of the stack low.','lock-out':'A piece locked above the rim. Use your landing guide and hold to make space.','garbage-out':'The rising ledger pushed the stack over the rim. Clear lower rows to leave room.','tick-ceiling':'You reached the end of the ledger.'}[s.terminalReason] ?? 'The stack reached the top. Clear space early and keep a landing route open.';
@@ -234,7 +235,13 @@ async function boot() {
   renderer = createStackedRenderer({ app, stageElement: stage, geometry: { PIECE_CELLS, cellsFor, collides }, Container, Graphics, Text, ...(journey.factory?{createAtmosphere:journey.factory}:{}) });
   livingJourneyActive=stage.dataset.livingJourneyStatus==='ready';
   input = createStackedInput({ target: window, controls: $('touchControls'), settings, onPause: () => run.paused ? resume() : pause(), onUndo: undo, isMenuOpen: () => !overlay.hidden, onMenuAction: menuAction });
-  $('modeLabel').textContent = init.mode === 'ranked' ? 'RANKED' : 'FREE MODE';
+  $('modeLabel').textContent = init.mode === 'ranked' ? 'RANKED' : init.dailyChallenge ? 'FREE DAILY' : 'FREE MODE';
+  if (init.dailyChallenge) {
+    const daily = init.dailyChallenge;
+    $('dailyRunInfo').hidden = false; $('dailyRunDate').textContent = daily.dayKey + ' UTC';
+    $('dailyRunBest').textContent = daily.bestScore === null ? 'Set your first daily best' : 'Your daily best: ' + daily.bestScore.toLocaleString();
+    $('overlayTitle').textContent = 'Today’s daily challenge';
+  }
   $('undoButton').hidden = init.mode === 'ranked';
   $('overlayCopy').textContent = 'Fill a row to clear it. The ledger rises from below, so leave room at the top. Clear four rows together for a HALVING. ' + (renderer.mobile ? 'Use the arrow and rotation buttons below. HOLD saves a piece; DROP places it at the landing guide.' : 'Move with ← →, rotate with ↑ / X, and drop with Space. C holds a piece; Z rotates back. Start right away, or open Settings to choose effects and a music world.');
   $('continueButton').disabled = false; syncPreferences(); stage.dataset.assetsReady = 'true'; state();
