@@ -1104,6 +1104,8 @@ const NODE_CHECK_FILES = [
   "apps/chikun/src/replay-viewer.mjs",
   "tests/chikun-replay-viewer.test.mjs",
   "tests/hmh-reboot-host.test.mjs",
+  "apps/portal/src/hmh-frontier-preview.mjs",
+  "tests/hmh-frontier-preview.test.mjs",
   "tests/hmh-reboot-input.test.mjs",
   "tests/hmh-reboot-mobile-weapon-readability.test.mjs",
   "tests/hmh-reboot-movement.test.mjs",

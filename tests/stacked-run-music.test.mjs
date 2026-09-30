@@ -98,7 +98,7 @@ test('a new game never repeats the previous track when the queue has more than o
 
 test('the STACKED Free click starts the random track before any await; Ranked blesses the element', () => {
   const main = readFileSync(new URL('../apps/portal/main.js', import.meta.url), 'utf8');
-  const start = main.indexOf('async function startOfficialMode(mode) {');
+  const start = main.indexOf('async function startOfficialMode(mode, { frontierPreview = false } = {}) {');
   assert.ok(start > 0);
   const body = main.slice(start, main.indexOf('\n}\n', start));
   const clickMusic = body.indexOf("if (selectedGameId === 'stacked') {");

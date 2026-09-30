@@ -253,6 +253,31 @@
 .hmh-challenge-panel :focus-visible { outline: 2px solid #19f7ff; outline-offset: 3px; }
 .hmh-challenge-panel .tiny-note { overflow-wrap: anywhere; }
 
+/* New Frontier (preview): the second Free start on the HMH mode select. */
+.hmh-frontier-preview {
+  min-width: 0;
+  margin: 16px 0;
+  padding: 14px 18px;
+  border: 1px dashed rgba(255, 200, 87, 0.55);
+  border-radius: 18px;
+  background: rgba(5, 7, 15, 0.88);
+}
+.hmh-frontier-preview[hidden] { display: none; }
+.hmh-frontier-preview button {
+  box-sizing: border-box;
+  max-width: 100%;
+  min-height: 44px;
+  padding: 10px 16px;
+  color: #ffe3ad;
+  background: #171106;
+  border: 1px solid rgba(255, 200, 87, 0.6);
+  border-radius: 8px;
+  font: inherit;
+  cursor: pointer;
+}
+.hmh-frontier-preview button:focus-visible { outline: 2px solid #ffc857; outline-offset: 3px; }
+.hmh-frontier-preview .tiny-note { margin: 8px 0 0; overflow-wrap: anywhere; }
+
 .arcade-floor-view .official-cabinet-grid,
 .mode-select-view .official-mode-grid {
   padding: 18px;

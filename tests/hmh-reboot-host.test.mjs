@@ -108,6 +108,61 @@ test('host only forwards the explicitly gated terminal evidence query to the chi
   assert.equal(ungated.host.mountSession(ungated.session).src, 'https://arcade.test/hmh-reboot/index.html');
 });
 
+// New Frontier (preview): the ten-area world is a host request for one
+// unranked Free session, never a portal URL, never Ranked.
+test('host requests the ten-area world only for an explicitly unranked Free session', () => {
+  const free = fixture();
+  const frame = free.host.mountSession(free.session, { world: 'ten-area' });
+  assert.equal(frame.src, 'https://arcade.test/hmh-reboot/index.html?mode=free&world=ten-area');
+  assert.equal(frame.dataset.world, 'ten-area');
+  const params = new URL(frame.src).searchParams;
+  assert.deepEqual(params.getAll('mode'), ['free']);
+  assert.deepEqual(params.getAll('world'), ['ten-area']);
+  // Without the explicit request a Free session plays the legacy world.
+  const plain = fixture();
+  const plainFrame = plain.host.mountSession(plain.session);
+  assert.equal(plainFrame.src, 'https://arcade.test/hmh-reboot/index.html');
+  assert.equal(plainFrame.dataset.world, undefined);
+  // The gated evidence flags and the world request compose.
+  const gated = fixture({ runtimeSearch: '?evidenceSafe=1' });
+  assert.equal(gated.host.mountSession(gated.session, { world: 'ten-area' }).src, 'https://arcade.test/hmh-reboot/index.html?evidenceSafe=1&mode=free&world=ten-area');
+  // An unknown world request is ignored.
+  const unknown = fixture();
+  assert.equal(unknown.host.mountSession(unknown.session, { world: 'forked-frontier' }).src, 'https://arcade.test/hmh-reboot/index.html');
+});
+
+test('host never requests the ten-area world for a Ranked or rankedEligible session', () => {
+  for (const [label, override] of [
+    ['ranked', { mode: 'ranked', session: { seed: 1, buildHash: 'site-48:game-48', seasonId: 'season-1', rankedEligible: true } }],
+    ['free but rankedEligible', { session: { seed: 1, buildHash: 'site-48:game-48', seasonId: 'season-1', rankedEligible: true } }],
+    ['free with rankedEligible missing', { session: { seed: 1, buildHash: 'site-48:game-48', seasonId: 'season-1' } }],
+  ]) {
+    const { host, session } = fixture({ runtimeSearch: '?evidenceSafe=1' });
+    const frame = host.mountSession({ ...session, ...override }, { world: 'ten-area' });
+    assert.equal(frame.src, 'https://arcade.test/hmh-reboot/index.html?evidenceSafe=1', label);
+    assert.equal(frame.dataset.world, undefined, label);
+  }
+});
+
+test('a world or mode on the portal URL is never forwarded to the child', () => {
+  for (const runtimeSearch of ['?world=ten-area', '?mode=free&world=ten-area', '?world=ten-area&mode=free&evidenceSafe=1']) {
+    const ranked = fixture({ runtimeSearch });
+    const rankedFrame = ranked.host.mountSession({ ...ranked.session, mode: 'ranked', session: { ...ranked.session.session, rankedEligible: true } });
+    const rankedParams = new URL(rankedFrame.src).searchParams;
+    assert.equal(rankedParams.get('world'), null, runtimeSearch);
+    assert.equal(rankedParams.get('mode'), null, runtimeSearch);
+    const free = fixture({ runtimeSearch });
+    const freeParams = new URL(free.host.mountSession(free.session).src).searchParams;
+    assert.equal(freeParams.get('world'), null, runtimeSearch);
+    assert.equal(freeParams.get('mode'), null, runtimeSearch);
+    // Even with the explicit request, the URL contributes nothing extra.
+    const requested = fixture({ runtimeSearch });
+    const requestedParams = new URL(requested.host.mountSession(requested.session, { world: 'ten-area' }).src).searchParams;
+    assert.deepEqual(requestedParams.getAll('world'), ['ten-area'], runtimeSearch);
+    assert.deepEqual(requestedParams.getAll('mode'), ['free'], runtimeSearch);
+  }
+});
+
 test('host routes only recognized child message types to portal callbacks', () => {
   const { host, bridges, ready, states, errors, exits, runEvents, runSummaries, scoreResults, achievements, settingEvents, session } = fixture();
   const iframe = host.mountSession(session);

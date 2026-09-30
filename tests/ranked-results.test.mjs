@@ -720,6 +720,7 @@ async function hmhSummaryHost({ mode = 'ranked', sessionId = SESSION_ID, selecte
     lastCompletedSession: null,
     officialSelectedMode: mode,
     hmhRebootActive: true,
+    hmhFrontierPreviewActive: false,
     el: (tag, props = {}) => Object.assign(documentRef.createElement(tag), props),
     appendText: (parent, tag, text, className) => {
       const node = documentRef.createElement(tag);
