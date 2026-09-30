@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import test from 'node:test';
+const NEW_ENEMY_IDS = ['tollkeeper', 'money-printer', 'pump-and-dump-bloater', 'hodl-revenant', 'rug-puller', 'oracle-marksman'];
 const model = await import('../apps/hmh-reboot/src/actor-3d-model.mjs').catch(() => ({}));
 const bytesFor = id => {
   const bytes = readFileSync(new URL(`../apps/portal/assets/generated/hmh-actor-3d-pilot/${id}.glb`, import.meta.url));
@@ -22,7 +23,7 @@ const changeJson = (bytes, change) => {
 
 test('the bounded runtime loader reads real weighted geometry and clips from the embedded heroes and enemy', () => {
   assert.equal(typeof model.decodeActor3dGlb, 'function');
-  for (const [id, joints, clips] of [['lit-commando', 22, 9], ['lilly', 24, 9], ['lit-valkyrie', 22, 9], ['lester-original', 22, 9], ['bagholder-rusher', 19, 6], ['forkrunner', 24, 6], ['liquidator-agent', 22, 6], ['whale-enforcer', 19, 6], ['gas-bomber', 19, 6], ['validator-cultist', 19, 6]]) {
+  for (const [id, joints, clips] of [['lit-commando', 22, 9], ['lilly', 24, 9], ['lit-valkyrie', 22, 9], ['lester-original', 22, 9], ['bagholder-rusher', 19, 6], ['forkrunner', 24, 6], ['liquidator-agent', 22, 6], ['whale-enforcer', 19, 6], ['gas-bomber', 19, 6], ['validator-cultist', 19, 6], ...NEW_ENEMY_IDS.map(id => [id, 19, 6])]) {
     const bytes = bytesFor(id), before = hash(bytes);
     const asset = model.decodeActor3dGlb(bytes);
     assert.equal(asset.skins[0].joints.length, joints);
@@ -81,7 +82,7 @@ test('corrupt animation samples and mismatched GLB lengths fail the bounded runt
 });
 
 test('CPU skinning independently reproduces the offline Blender reimport bounds for every clip', () => {
-  for (const id of ['lit-commando', 'lilly', 'lit-valkyrie', 'lester-original', 'bagholder-rusher', 'forkrunner', 'liquidator-agent', 'whale-enforcer', 'gas-bomber', 'validator-cultist']) {
+  for (const id of ['lit-commando', 'lilly', 'lit-valkyrie', 'lester-original', 'bagholder-rusher', 'forkrunner', 'liquidator-agent', 'whale-enforcer', 'gas-bomber', 'validator-cultist', ...NEW_ENEMY_IDS]) {
     const asset = model.decodeActor3dGlb(bytesFor(id));
     const receipt = JSON.parse(readFileSync(new URL(`../docs/2.0/receipts/${id}-glb-reimport.json`, import.meta.url)));
     for (const clip of receipt.clips) for (const sample of clip.samples) {

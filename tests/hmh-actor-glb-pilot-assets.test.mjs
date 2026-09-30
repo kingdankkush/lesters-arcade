@@ -70,3 +70,21 @@ for(const [actorId,joints,sourceSha256] of [["forkrunner", 24, "a3f56a810c4dde96
   const receipt=JSON.parse(readFileSync(new URL(`../docs/2.0/receipts/${actorId}-glb-reimport.json`,import.meta.url)));
   assert.equal(receipt.glbSha256,actor.sha256);assert.equal(receipt.clips.length,6);assert.ok(receipt.clips.every(clip=>clip.samples.length===5));
 });
+
+// 2.0 enemies: source identity comes from each committed source receipt (the
+// editable .blend itself lives in the source-art archive, not Git).
+for (const actorId of ['rug-puller', 'pump-and-dump-bloater', 'tollkeeper', 'hodl-revenant', 'money-printer', 'oracle-marksman']) test(`${actorId} keeps its archived source identity, six actions and bounded packed geometry`, () => {
+  const source = JSON.parse(readFileSync(new URL(`../apps/hmh-reboot/assets/source/models/native-enemies/${actorId}/source-receipt.json`, import.meta.url)));
+  assert.equal(source.actorId, actorId); assert.equal(source.runtimeAuthority, 'projection-only'); assert.equal(source.bones, 19);
+  assert.match(source.baseSha256, /^[0-9a-f]{64}$/); assert.equal(['human', 'zombie'].includes(source.identityForm), true);
+  const actor = JSON.parse(readFileSync(new URL(`${actorId}-manifest.json`, directory))).actors[actorId];
+  const bytes = readFileSync(new URL(actor.file, directory));
+  assert.equal(createHash('sha256').update(bytes).digest('hex'), actor.sha256); assert.equal(actor.sourceSha256, source.sourceSha256);
+  const actual = inspectActorGlb(bytes, { requiredClips: actor.requiredClips }); assert.deepEqual(actual, actor.inspection);
+  assert.equal(actual.joints, 19); assert.equal(actual.clips.length, 6);
+  assert.ok(actual.triangles <= 25000 && actual.vertices <= 30000 && actual.bytes <= 6.5 * 1024 * 1024, `${actorId} ${actual.triangles} tri ${actual.bytes} B`);
+  assert.ok(actual.images.every(image => image.width <= 1024 && image.height <= 1024));
+  const receipt = JSON.parse(readFileSync(new URL(`../docs/2.0/receipts/${actorId}-glb-reimport.json`, import.meta.url)));
+  assert.equal(receipt.glbSha256, actor.sha256); assert.equal(receipt.clips.length, 6); assert.ok(receipt.clips.every(clip => clip.samples.length === 5));
+  assert.deepEqual(receipt.clips.map(clip => clip.name).sort(), [...actor.requiredClips].sort());
+});
