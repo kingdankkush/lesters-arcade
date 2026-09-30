@@ -160,7 +160,7 @@ export async function createActor3dPixiBackend({ renderer, signal, maxActors = 2
       }).finally(() => pending.delete(id));
       return false;
     },
-    createDisplay(id) { order.add(id); const display = new Container({ label: `actor-3d:${id}` }); display.eventMode = 'none'; display.pilotId = id; live.add(display); return display; },
+    createDisplay(id) { order.add(id); const display = new Container({ label: `actor-3d:${id}` }); display.pilotId = id; live.add(display); return display; },
     beginFrame(frame) { bands = order.frame(frame); },
     renderActor(display, projection) {
       if (disposed || renderer.gl.isContextLost()) throw new Error('pilot context unavailable');
@@ -186,7 +186,7 @@ export async function createActor3dPixiBackend({ renderer, signal, maxActors = 2
             uNormalTexture: normal.source, uNormalSampler: normal.source.style,
             uMaterialTexture: mr.source, uMaterialSampler: mr.source.style,
           } });
-          const mesh = new ActorPrimitive({ geometry: asset.geometry[i], shader, state, texture: base }); mesh.pilotBounds = new Bounds(); mesh.eventMode = 'none'; display.addChild(mesh);
+          const mesh = new ActorPrimitive({ geometry: asset.geometry[i], shader, state, texture: base }); mesh.pilotBounds = new Bounds(); display.addChild(mesh);
         }
       }
       if (display.pilotAsset !== asset) throw new Error('pilot actor identity immutable');
