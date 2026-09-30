@@ -1,14 +1,20 @@
 // Display verified profile records and population counts. Never evaluate an
 // earning rule, grant ownership, write preferences or infer missing progress.
-import {ACHIEVEMENT_GAME_IDS,catalogFor} from './index.mjs';
+import {ACHIEVEMENT_GAME_IDS,ACHIEVEMENT_PARENT_ID,catalogFor,parentCatalog} from './index.mjs';
 import {achievementRarity,ACHIEVEMENT_RARITY_MIN_PLAYERS} from './rarity.mjs';
 import {normalizeAchievementUnlockDate} from '../achievement-progress.mjs';
 
+// The three cabinets, then the parent-owned section (achievements/arcade.mjs):
+// its entries are earned by any cabinet's verified run and recorded under that
+// cabinet, so an unlock row of a parent-owned id belongs here whatever its gameId.
 export const COLLECTION_GAMES = Object.freeze([
  Object.freeze({gameId:'lester-blaster',title:'Hard Money Heroes',shortTitle:'HMH'}),
  Object.freeze({gameId:'chikun',title:"Chikun’s Escape",shortTitle:'Chikun'}),
  Object.freeze({gameId:'stacked',title:'STACKED',shortTitle:'STACKED'}),
+ Object.freeze({gameId:ACHIEVEMENT_PARENT_ID,title:'Lester’s Arcade',shortTitle:'Arcade'}),
 ]);
+const PARENT_IDS=new Set(parentCatalog().map(entry=>entry.id));
+const SECTION_IDS=new Set([...ACHIEVEMENT_GAME_IDS,ACHIEVEMENT_PARENT_ID]);
 const FILTERS=['all','unlocked','locked','trophies'];
 const SORTS=['catalog','recent','rarity','game'];
 const key=(gameId,id)=>`${gameId}:${id}`;
@@ -35,12 +41,12 @@ function populationFor(gameId,snapshot,catalog) {
 }
 
 export function buildAchievementCollection({unlocks=[],statsByGame={},gameId='all',filter='all',sort='catalog',query=''}={}) {
- if(gameId!=='all'&&!ACHIEVEMENT_GAME_IDS.includes(gameId))throw new TypeError('unknown collection game');
+ if(gameId!=='all'&&!SECTION_IDS.has(gameId))throw new TypeError('unknown collection game');
  if(!FILTERS.includes(filter)||!SORTS.includes(sort))throw new TypeError('unknown collection filter or sort');
  const owned=new Map();
  for(const unlock of Array.isArray(unlocks)?unlocks:[]){
-  if(!unlock||!ACHIEVEMENT_GAME_IDS.includes(unlock.gameId)||typeof unlock.id!=='string')continue;
-  const id=key(unlock.gameId,unlock.id),date=normalizeAchievementUnlockDate(unlock.unlockedAt);
+  if(!unlock||!SECTION_IDS.has(unlock.gameId)||typeof unlock.id!=='string')continue;
+  const id=key(PARENT_IDS.has(unlock.id)?ACHIEVEMENT_PARENT_ID:unlock.gameId,unlock.id),date=normalizeAchievementUnlockDate(unlock.unlockedAt);
   // The earliest recorded valid unlock wins, independent of duplicate order.
   if(!owned.has(id)||(date&&(!owned.get(id)||date<owned.get(id))))owned.set(id,date);
  }

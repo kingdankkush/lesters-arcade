@@ -71,10 +71,12 @@ const clampCount = (value, maximum) => Math.min(maximum, Math.max(0, Math.floor(
 // that throws there is a server-side inconsistency, not the player's fault. It
 // propagates (settle answers a retryable 500) instead of rejecting a paid run
 // for good with a 422. The achievements stats.mjs header states the same rule.
-export async function buildVerifiedRun({ identity, nowMs, score, stats, contract, evidence, plausibility = null }) {
+export async function buildVerifiedRun({ identity, nowMs, score, stats, contract, evidence, plausibility = null, runtimeId = null }) {
   if (!Number.isFinite(nowMs)) throw new TypeError('nowMs is required to stamp verifiedAt');
   const game = RANKED_GAMES[identity.gameId];
   if (!game) throw new TypeError(`unknown ranked gameId: ${String(identity.gameId)}`);
+  // A course variant (Chikun course two) names its own runtimeId; the default is the game's.
+  if (runtimeId !== null && (typeof runtimeId !== 'string' || !runtimeId.startsWith(`${game.runtimeId}:`))) throw new TypeError(`runtimeId must extend ${game.runtimeId}`);
   if (!Number.isSafeInteger(score) || score < 0) return rejected('replay-rejected', { detail: 'score' });
   if (score > MAX_RANKED_SCORE) return scoreOutOfBounds(score);
   const runStats = stats(RUN_STATS_MAPPERS);
@@ -87,7 +89,7 @@ export async function buildVerifiedRun({ identity, nowMs, score, stats, contract
     sessionHandle: identity.sessionId,
     wallet: identity.wallet,
     seasonId: identity.seasonId,
-    runtimeId: game.runtimeId,
+    runtimeId: runtimeId ?? game.runtimeId,
     buildHash: identity.buildHash,
     seed: identity.seed,
     score,

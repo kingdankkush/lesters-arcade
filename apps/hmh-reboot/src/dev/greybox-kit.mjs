@@ -40,7 +40,7 @@ export function createGreyboxPiece(spec = {}) {
   }
   const visible = { id: `greybox-${spec.id}`, kind: spec.kind, bounds, height, ...(spec.vertices!==undefined?{vertices}:{}), areaId: spec.areaId ?? null, annotation: ['climb-marker', 'drop-marker'].includes(spec.kind) ? 'Future traversal annotation; no new control or movement permission' : null };
   const shape = { type: 'polygon', vertices };
-  const blocker = solidKinds.has(spec.kind) ? createStaticBlocker({ id: spec.id, shape, minZ: 0, maxZ: height, visibleAssetId: visible.id, combatCover: spec.kind.startsWith('cover-') }) : null;
+  const blocker = solidKinds.has(spec.kind) ? createStaticBlocker({ id: spec.id, shape, minZ: 0, maxZ: height, visibleAssetId: visible.id, combatCover: spec.kind.startsWith('cover-'), coverKind: spec.kind === 'cover-tall' ? 'tall' : spec.kind === 'cover-short' ? 'short' : null }) : null;
   const surfaceKind = water ? 'water' : spec.kind === 'bridge' ? 'bridge' : spec.kind === 'ramp' ? 'ramp' : spec.kind === 'ledge' ? 'ledge' : 'ground';
   const surface = floorKinds.has(spec.kind) ? createElevationSurface({
     id: spec.id, kind: surfaceKind, area: water && spec.vertices !== undefined ? shape : { type: 'rect', ...bounds },

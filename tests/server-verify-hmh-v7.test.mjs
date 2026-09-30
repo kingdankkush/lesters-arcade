@@ -18,6 +18,7 @@ import { FIXTURE_NAMES, HMH_V7_DARK_CONTENT_REJECTS, HMH_V7_FIXTURE_NAMES, HMH_V
 import { createInitialArcadeState, recordScore, startPlaySession } from '../apps/portal/src/arcade-core.mjs';
 import { catalogFor, deriveEarnedAchievements, emptyHistory, historyFieldsFor } from '../apps/portal/src/achievements/index.mjs';
 import { statAt } from '../apps/portal/src/achievements/entry.mjs';
+import { HMH_2_0_TROPHY_IDS } from '../apps/portal/src/achievements/hmh.mjs';
 import { hmhRecordScoreInputsFromRunSummary, hmhResolverInputsFromRunSummary, statsFromHmhRunSummary } from '../apps/portal/src/achievements/stats.mjs';
 
 const fixtures = Object.fromEntries(HMH_V7_FIXTURE_NAMES.map((name) => [name, readFixture(name)]));
@@ -163,7 +164,8 @@ Object.assign(baronOnly.progression, { sealsFound: 1, sealsBanked: 1 });
 row(baronOnly.collectibles, 'effectId', 'genesis-seal').collected = 1;
 
 const BOSS_IDS = ['beat-level-1-boss', 'boss-breaker', 'getaway-clear'];
-const PARITY_EXEMPT = new Set([...catalogFor('lester-blaster').filter((entry) => !entry.available).map((entry) => entry.id), 'cabinet-pioneer']);
+// The 2.0 trophies are catalog-only and server-derived: no device-local definition to compare.
+const PARITY_EXEMPT = new Set([...catalogFor('lester-blaster').filter((entry) => !entry.available).map((entry) => entry.id), 'cabinet-pioneer', ...HMH_2_0_TROPHY_IDS]);
 const comparable = (list) => list.filter((id) => !PARITY_EXEMPT.has(id)).sort();
 function browserProfile() {
   const state = createInitialArcadeState();
@@ -221,6 +223,9 @@ test('schema 7: district bosses unlock no boss achievement, on the device or the
       assert.equal(local.includes(id), expected, `${name}: ${id} on the device`);
       assert.equal(remote.includes(id), expected, `${name}: ${id} on the server`);
     }
+    // Full Roster Run (2.0 trophy): only the run that defeated all four schema-7 bosses, and only on the server.
+    assert.equal(remote.includes('full-roster-run'), name === 'four bosses', `${name}: full-roster-run on the server`);
+    assert.ok(!local.includes('full-roster-run'), `${name}: the device-local resolver never grants a 2.0 trophy`);
   }
   // All six districts visited without the Liquidator is not a Getaway Clear.
   assert.equal(statsFromHmhRunSummary(districts).districtsVisited, 6);

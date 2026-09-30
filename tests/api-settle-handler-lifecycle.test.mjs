@@ -40,6 +40,11 @@ const numberAt = (stats, path) => {
 test('a second run per game is settled on the stored history: no achievement twice, cumulative counts carried', async () => {
   // player2 settles runs only in this test (see the header).
   const wallet = h.local.chain.wallets.player2;
+  // Parent-owned ids (achievements/arcade.mjs) are earned once per wallet and
+  // recorded under the cabinet of the earning run; the history lists them for
+  // every cabinet from then on.
+  const parentIds = achievements.parentCatalog().map((entry) => entry.id);
+  const held = new Set();
   for (const gameId of RANKED_GAME_IDS) {
     // eslint-disable-next-line no-await-in-loop
     const first = await h.settleAndAssert(gameId, { wallet, evidence: QUICK_EVIDENCE[gameId] });
@@ -47,9 +52,12 @@ test('a second run per game is settled on the stored history: no achievement twi
     const second = await h.settleAndAssert(gameId, { wallet, evidence: QUICK_EVIDENCE[gameId] });
     assert.equal(first.history.runs, 0, `${gameId}: player2's first run`);
     assert.ok(first.unlocks.length > 0, `${gameId}: the first run earns achievements`);
-    // The real readAchievementHistory carries the first run into the second.
+    assert.deepEqual(first.unlocks.filter((id) => parentIds.includes(id) && held.has(id)), [], `${gameId}: a parent-owned id held from another cabinet is not earned again`);
+    for (const id of first.unlocks) held.add(id);
+    // The real readAchievementHistory carries the first run into the second,
+    // plus the parent-owned ids this wallet holds under any cabinet.
     assert.equal(second.history.runs, 1, `${gameId}: the first run is in the history`);
-    assert.deepEqual(second.history.unlockedIds, [...first.unlocks].sort(), `${gameId}: the first run's unlocks are in the history`);
+    assert.deepEqual(second.history.unlockedIds, [...new Set([...first.unlocks, ...parentIds.filter((id) => held.has(id))])].sort(), `${gameId}: the first run's unlocks are in the history`);
     for (const [path, total] of Object.entries(second.history.sums)) {
       assert.ok(Math.abs(total - numberAt(first.expected.stats, path)) < 1e-6, `${gameId}: sum of ${path}`);
     }
@@ -64,6 +72,14 @@ test('a second run per game is settled on the stored history: no achievement twi
     const recorded = await h.db.query('SELECT achievement_id FROM achievement_unlocks WHERE wallet = $1 AND game_id = $2 ORDER BY achievement_id', [wallet.address.toLowerCase(), gameId]);
     assert.deepEqual(recorded.map((unlock) => unlock.achievement_id), [...first.unlocks, ...second.unlocks].sort(), `${gameId}: each achievement recorded once`);
   }
+  // Early Supporter: the first cabinet's first run earns it while the chain
+  // clock is before the placeholder cutoff (never after), recorded once, under
+  // that cabinet, and never again in the five later runs.
+  const early = await h.db.query("SELECT game_id FROM achievement_unlocks WHERE wallet = $1 AND achievement_id = 'early-supporter'", [wallet.address.toLowerCase()]);
+  const beforeCutoff = new Date(h.clockMs).toISOString() < '2026-10-31T00:00:00.000Z';
+  assert.ok(early.length <= 1, 'earned at most once across every cabinet');
+  if (beforeCutoff) assert.deepEqual(early.map((row) => row.game_id), [RANKED_GAME_IDS[0]], 'earned by the first verified run, under its cabinet');
+  else assert.deepEqual(early, [], 'not earned after the cutoff');
 });
 
 

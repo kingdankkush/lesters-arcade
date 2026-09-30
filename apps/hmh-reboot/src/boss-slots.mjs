@@ -67,12 +67,16 @@ export function directorSpawnCapacityV7(tick) {
   return total;
 }
 
-export function createBossSlots({ seed = 0 } = {}) {
+// `definitions` is the boss table for this run's world (W4a). The legacy
+// table is the default, so every existing run and test is unchanged; a
+// world-keyed table must keep the same boss ids and row shape.
+export function createBossSlots({ seed = 0, definitions = BOSS_DEFINITIONS } = {}) {
   return {
     seed: Number(seed) >>> 0,
+    definitions,
     lastTick: -1,
     rows: new Map(HMH_RUN_SUMMARY_CATALOGS_V7.bosses.map((bossId) => [bossId, { initiations: 0, first: 0, last: 0, defeatedTick: 0 }])),
-    slots: Object.fromEntries(Object.values(BOSS_DEFINITIONS).map((definition) => [definition.bossId, {
+    slots: Object.fromEntries(Object.values(definitions).map((definition) => [definition.bossId, {
       bossId: definition.bossId,
       status: 'dormant',
       readyAt: definition.readyTick,
@@ -96,6 +100,7 @@ export function createBossSlots({ seed = 0 } = {}) {
 }
 
 const liveSlot = (slots) => Object.values(slots.slots).find((slot) => slot.status === 'live') ?? null;
+const definitionsOf = (slots) => slots.definitions ?? BOSS_DEFINITIONS;
 
 function triggerArmed(slots, slot, trigger, tick) {
   return (slot.status === 'dormant' || slot.status === 'cooldown') && tick >= slot.readyAt
@@ -107,7 +112,7 @@ export function bossZoneArming(slots, tick) {
   const armed = new Set();
   const status = new Map();
   for (const slot of Object.values(slots.slots)) {
-    const definition = BOSS_DEFINITIONS[slot.bossId];
+    const definition = definitionsOf(slots)[slot.bossId];
     const bell = definition.triggerZone;
     // Once the Dark Pool owns him, the bell shows SETTLED for the rest of the
     // run; a bell fight hides it while live and after the defeat.
@@ -127,7 +132,7 @@ export function bossZoneArming(slots, tick) {
 }
 
 function initiate(slots, slot, { trigger, tick, level, events }) {
-  const definition = BOSS_DEFINITIONS[slot.bossId];
+  const definition = definitionsOf(slots)[slot.bossId];
   const arena = definition.arenas[trigger];
   const row = slots.rows.get(slot.bossId);
   row.initiations += 1;
@@ -192,7 +197,7 @@ export function stepBossSlots(slots, {
   const opened = [];
   const recycle = new Set();
   const slot = slots.slots.liquidator;
-  const definition = BOSS_DEFINITIONS.liquidator;
+  const definition = definitionsOf(slots).liquidator;
 
   for (const event of missionEvents) {
     if (event?.type !== 'boss-zone' || event.bossId !== slot.bossId) continue;
@@ -277,7 +282,7 @@ export function forceBossStart(slots, { bossId, tick, arena, level = 1 }) {
 export function defeatBossSlot(slots, { bossId, tick }) {
   const slot = slots.slots[bossId];
   if (!slot || slot.status !== 'live') throw new Error(`boss ${String(bossId)} is not live`);
-  const definition = BOSS_DEFINITIONS[bossId];
+  const definition = definitionsOf(slots)[bossId];
   const row = slots.rows.get(bossId);
   row.defeatedTick ||= tick;
   const opened = [...slot.closedWalls];
@@ -386,7 +391,7 @@ export function directorBankFull(slots, { tick, directorInserted }) {
 export function bossHudState(slots, tick) {
   const slot = liveSlot(slots);
   if (!slot?.boss?.active) return freezeDeep({ active: false, bossId: null, name: '', ratio: 0, phaseId: '', markers: [] });
-  const definition = BOSS_DEFINITIONS[slot.bossId];
+  const definition = definitionsOf(slots)[slot.bossId];
   return freezeDeep({
     active: tick >= slot.initiatedTick,
     bossId: slot.bossId,

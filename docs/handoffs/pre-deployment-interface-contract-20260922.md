@@ -1151,8 +1151,11 @@ History = { wallet, gameId,
 Pure, no DOM. It imports only `session-integrity.mjs` and `session-seed.mjs`.
 
 ```
-export const RANKED_GAMES = Object.freeze({ 'lester-blaster': { gameId, slug:'hard-money-heroes', title, seasonId, runtimeId, buildHashPattern, evidenceEncoding },
+export const RANKED_GAMES = Object.freeze({ 'lester-blaster': { gameId, slug:'hard-money-heroes', title, seasonId, runtimeId, buildHashPattern, evidenceEncoding, evidenceEncodings },
                                             chikun: {…}, stacked: {…} });   // values from §2.1/§2.2/§2.6
+    // evidenceEncodings (course-two dispatch slice, 2026-09-30): the encodings the game hashes in rankedEnvelopeHash /
+    // evidenceDigestFor. evidenceEncoding stays the default and the only one a settle accepts until a course gate opens.
+    // chikun lists chikun-flap-evidence-v6+json and chikun-input-evidence-v7+json; the other games list only their evidenceEncoding.
 export const RANKED_SETTLE_VERSION = 'lesters-ranked-settle-v1';
 export const RANKED_ENVELOPE_VERSION = 'lesters-ranked-envelope-v2';
 export function rankedIdentityFor(session, { chainId = 4441, scoreRegistryAddress }) → identity preimage (§2.4, sync)

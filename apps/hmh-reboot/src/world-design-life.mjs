@@ -250,6 +250,7 @@ export function createWorldDesignLife({ContainerClass,GraphicsClass,TextClass,ca
       if(!open||mission.prisonerStations?.has(row.id)) dot(p.x+(row.operate.facing==='east'?-22:22)*z,p.y-30*z,4*z,lantern,.95);
     }
     for(const site of WORLD_DESIGN_SITES) {
+      if(mission.rowsById?.has(site.id)===false) continue; // W4a: another world's mission owns none of these sites.
       const groundZ=queryGround(site.x,site.y).groundZ,p=project(site.x,site.y,groundZ);
       if(!onScreen(p,260)) continue;
       if(mission.completed.has(site.id)&&!hidden(site.x,site.y)) {

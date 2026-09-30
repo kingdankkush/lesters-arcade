@@ -1,5 +1,7 @@
-// Chikun's Escape achievement catalog (gameId 'chikun', contract §6.1): 40 entries,
-// 14 bronze, 11 silver, 9 gold, 6 platinum. Owner checkpoint O1 (2026-09-23) moved
+// Chikun's Escape achievement catalog (gameId 'chikun', contract §6.1): 41 entries,
+// 14 bronze, 11 silver, 9 gold, 7 platinum (one unavailable: the 2.0 completion
+// trophy chikun-escape-complete waits for a course finish the replayed result
+// can record; today the course loops and laps >= 1 is chikun-loop-1). Owner checkpoint O1 (2026-09-23) moved
 // chikun-survive-6m silver->gold and chikun-survive-12m gold->platinum to match the
 // difficulty harness; chikun-survive-12m is platinum but not an NFT candidate. Criteria read statsFromChikunResult
 // (§6.3) of a replay-verified v6 run plus verified history (§6.5).
@@ -71,7 +73,13 @@ const specs = [
   { id: 'chikun-coins-375', title: 'Golden Hoard', tier: 'platinum', category: 'coins', nft: true, description: 'Collected 375 Litecoin in one Ranked run.', rule: best('coinsCollected', 375) },
   { id: 'chikun-flawless-20', title: 'Flawless Flyer', tier: 'platinum', category: 'flawless', nft: true, description: 'Cleared 20 regions without a single near miss in one Ranked run.', rule: best('flawlessRegions', 20) },
   { id: 'chikun-combo-40', title: 'Combo Legend', tier: 'platinum', category: 'combo', nft: true, description: 'Built a 40-obstacle combo in one Ranked run: a coin or a near miss at every obstacle in a row.', rule: best('bestCombo', 40) },
+
+  // 2.0 completion trophy: unavailable until the replayed result records a course
+  // finish (an `escaped` terminal state); statsFromChikunResult has none, the
+  // course loops, and a finished loop is already chikun-loop-1.
+  { id: 'chikun-escape-complete', title: 'Escape Complete', tier: 'platinum', category: 'escape', description: 'Escaped for good: reached the end of the course in one Ranked run. Coming with a course finish.', rule: null },
 ];
+export const CHIKUN_2_0_TROPHY_IDS = Object.freeze(['chikun-escape-complete']);
 
 const catalog = defineCatalog('chikun', specs, ({ tier }) => ({
   image: `/assets/generated/achievement-badges/chikun/${tier}.png`,

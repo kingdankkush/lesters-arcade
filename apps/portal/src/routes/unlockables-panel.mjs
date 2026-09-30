@@ -31,6 +31,17 @@ import {
 
 export const UNLOCKABLES_PANEL_STYLESHEET = './src/styles/unlockables-panel.css?v=locker-rewards-20260930';
 export const UNLOCKABLES_PANEL_ID = 'unlockablesPanel';
+// The equip control's source labels. The portal's global `button` rule renders
+// them upper-case (apps/portal/styles.css `text-transform: uppercase`), so a
+// browser check that reads `innerText` sees "ARCHIVED LOOK" while `textContent`
+// keeps the source string. Compare against these strings, or through
+// unlockablesLabelMatches, never against the rendered transform.
+export const UNLOCKABLES_EQUIP_LABELS = Object.freeze({ archived: 'Archived look', equipped: 'Equipped', equip: 'Equip look', locked: 'Locked' });
+const collapseLabel = (value) => String(value ?? '').replace(/\s+/g, ' ').trim().toLowerCase();
+export function unlockablesLabelMatches(rendered, label) {
+  const expected = collapseLabel(label);
+  return expected.length > 0 && collapseLabel(rendered) === expected;
+}
 export const UNLOCKABLES_GAME_TITLES = Object.freeze({ 'lester-blaster': 'Hard Money Heroes', chikun: 'Chikun’s Escape', stacked: 'STACKED' });
 export const UNLOCKABLES_SLOT_LABELS = Object.freeze({
   'hero-skin': 'Hero skin',
@@ -360,7 +371,8 @@ function renderInspection(host, state, game, slot, option) {
     if (option.description) copy.append(text(documentRef, 'p', option.description, 'unlockables-goal'));
     if (option.progress) copy.append(renderProgress(documentRef, option.progress, option.title));
   }
-  const equip = text(documentRef, 'button', option.retired?'Archived look':option.status === 'selected' ? 'Equipped' : option.status === 'unlocked' ? 'Equip look' : 'Locked', 'unlockables-equip');
+  const labels = UNLOCKABLES_EQUIP_LABELS;
+  const equip = text(documentRef, 'button', option.retired ? labels.archived : option.status === 'selected' ? labels.equipped : option.status === 'unlocked' ? labels.equip : labels.locked, 'unlockables-equip');
   equip.type = 'button'; equip.id = 'locker-equip'; equip.disabled = option.retired || option.status !== 'unlocked';
   equip.addEventListener('click', () => {
     if (option.status !== 'unlocked' || equip.disabled) return;
