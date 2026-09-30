@@ -226,7 +226,15 @@ export function createAuthoredPropDisplay({ index, atlasTexture, renderAssets = 
       const spriteScale = entry.frame.runtimeScale * (entry.placement.scale ?? 1) * camera.zoom;
       const painted = entry.frame.alphaBounds ?? entry.frame.frame;
       entry.sprite.scale.set(projection.scaleX, projection.scaleY);
-      const life=worldDesignPropPresentation({placement:entry.placement,bounds,focusPoints,tick,reduceMotion});
+      // Transparent card padding cannot hide a focus point. Keep full bounds
+      // for culling, but use the measured painted rectangle for fading.
+      const fadeBounds = entry.frame.alphaBounds ? {
+        left: bounds.left + painted.x * projection.scaleX,
+        right: bounds.left + (painted.x + painted.w) * projection.scaleX,
+        top: bounds.top + painted.y * projection.scaleY,
+        bottom: bounds.top + (painted.y + painted.h) * projection.scaleY,
+      } : bounds;
+      const life=worldDesignPropPresentation({placement:entry.placement,bounds:fadeBounds,focusPoints,tick,reduceMotion});
       entry.sprite.alpha = life.alpha;
       entry.sprite.skew?.set(life.skewX,0);
       entry.sprite.zIndex = entry.placement.y;

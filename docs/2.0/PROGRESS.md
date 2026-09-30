@@ -1095,3 +1095,19 @@ reviewed. Fresh World-worktree normal build and all twelve standard visual scene
 pass unchanged without baseline edits. This bounds display objects, not textures
 or physical-phone memory; no official world/Ranked activation. See
 [W3e checks and limits](slices/WORLD-W3E-PROP-RESIDENCY.md).
+
+## A21 actual-game terrain and painted prop bounds — September 30
+
+Native house/foliage/ground layers now pass six actual desktop/phone-framing
+checks and the standard12-scene visual gate. The first playthrough exposed false
+prop fading from transparent atlas padding. Root corrected it, reproduced RED,
+passed16 focused/existing tests plus3 isolated, and verified a second real-game
+run: the farmhouse stays opaque beside the player while genuine overlap fades.
+Original art pages remain private/unaccepted; neither phone certification nor the
+combined release gate is implied. See [checks, failures and remaining art work](slices/MEADOWS-A21-PAINTED-BOUNDS.md).
+
+A22 now targets natural house/root ground blending without changing collision.
+The16k character candidate is not admitted: its first corrective export safely
+rejected a topology mismatch. New seam evidence corrects the diagnosis to two leg
+patches and two hand patches with cross-limb contamination. The precise weight
+repair and one usable private-world Meadows relay are next. Nothing deployed.

@@ -1,0 +1,256 @@
+{
+  "sourceSha256": "1e9bb490950aa294536e2892efbcf10c33800e415c7e4f1b3c343f67624fa06a",
+  "files": [
+    {
+      "file": "00-pack-a21-preview.py.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\pack-a21-preview.py",
+      "sha256": "2025e0f2604a601421a2efcc7607dc2410e52f94ac1ab2a8e77396109bca98f9",
+      "bytes": 7697,
+      "compressedBytes": 2746
+    },
+    {
+      "file": "01-meadows_preview_pack.py.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\meadows_preview_pack.py",
+      "sha256": "35e6747393b6bfce14cec3bec5cd2b0c4ca881970bda94a3455cea3b10ad7b2c",
+      "bytes": 3920,
+      "compressedBytes": 1522
+    },
+    {
+      "file": "02-meadows-preview-pack.test.py.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\meadows-preview-pack.test.py",
+      "sha256": "52b4a946df613d880f2557600987dac305910ae10203f0172b96ffa7651ab181",
+      "bytes": 5461,
+      "compressedBytes": 1831
+    },
+    {
+      "file": "03-hmh-meadows-a21-browser.mjs.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\hmh-meadows-a21-browser.mjs",
+      "sha256": "7cacf800e5bcf0c682d009610e5a495ee2050676b3e377e8872f998b599c511e",
+      "bytes": 13827,
+      "compressedBytes": 4430
+    },
+    {
+      "file": "04-run-a21-game-preview.mjs.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\run-a21-game-preview.mjs",
+      "sha256": "8d71ddec2ad1fb6ea7a153490b50e5e25070dabf5d7f265ac0d07e871c8bfcee",
+      "bytes": 6469,
+      "compressedBytes": 2503
+    },
+    {
+      "file": "05-run-painted-occlusion-tests.mjs.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\run-painted-occlusion-tests.mjs",
+      "sha256": "04047784bcbfb0d6e2410d1c87b47bd4220675449f3f7d7fb7ccb34c130dbbc3",
+      "bytes": 3055,
+      "compressedBytes": 1374
+    },
+    {
+      "file": "06-receipt.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\root-a21-pack-red-01\\receipt.json",
+      "sha256": "210aebf3c322c084d3107ae6c1636c75688a36c99912aa2933eed2fb53c386c0",
+      "bytes": 6482,
+      "compressedBytes": 1200
+    },
+    {
+      "file": "07-receipt.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\root-a21-pack-green-01\\receipt.json",
+      "sha256": "05f25ff7f78d5c285dea81f7f285bdbec9fd6b9584b8b6a3524bbae68810e674",
+      "bytes": 2792,
+      "compressedBytes": 747
+    },
+    {
+      "file": "08-receipt.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\a21-loader-source\\red-01\\receipt.json",
+      "sha256": "e21f2092e043e00b040979797fb544fe256a5b43fbc62bc48e3519a3189acd48",
+      "bytes": 5547,
+      "compressedBytes": 1514
+    },
+    {
+      "file": "09-receipt.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\a21-loader-source\\green-01\\receipt.json",
+      "sha256": "a3a754bf94a77a69915f6d388585148957d025520bcd22079f6a966ee32c3a1a",
+      "bytes": 4785,
+      "compressedBytes": 1113
+    },
+    {
+      "file": "10-calibration-provenance.test.mjs.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\a21-loader-source\\calibration-provenance.test.mjs",
+      "sha256": "69aa2d74ce78e79aaa50bb9592123f2bdd89b938e4f3700ab2b8ddec2ea0feb3",
+      "bytes": 3183,
+      "compressedBytes": 1331
+    },
+    {
+      "file": "11-receipt.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\painted-occlusion-red-01\\receipt.json",
+      "sha256": "cb4d723bfe6047dd8382a53a862a57a7818945f4447045fe41e5c4289cac19d8",
+      "bytes": 5763,
+      "compressedBytes": 2559
+    },
+    {
+      "file": "12-receipt.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\painted-occlusion-green-01\\receipt.json",
+      "sha256": "2d75bc293899b295fd8790dfb001491dd1edef15a0427bb6afac5bb4c4ff84ca",
+      "bytes": 9676,
+      "compressedBytes": 3103
+    },
+    {
+      "file": "13-receipt.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\art-a21-camera-probe01\\receipt.json",
+      "sha256": "e487af3f44daa57245adfb0b42ac6cd8baba2f76a51ce6681f0372d9d2dc8508",
+      "bytes": 2746,
+      "compressedBytes": 944
+    },
+    {
+      "file": "14-receipt.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\art-contact-preview-pixels03\\receipt.json",
+      "sha256": "9d200f530609547441607fb76fe1d6a327c0002c7e017cd6cd7ee1b562f14376",
+      "bytes": 103783,
+      "compressedBytes": 21008
+    },
+    {
+      "file": "15-receipt.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\outputs\\hmh-a21-game-preview-01\\receipt.json",
+      "sha256": "5206eb73a8c0151cde3bb5585b49daf75adf5ce5018e39cb577f5c7e951ceaff",
+      "bytes": 24366,
+      "compressedBytes": 4298
+    },
+    {
+      "file": "16-default-visual-metrics.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\outputs\\hmh-a21-game-preview-01\\default-visual-metrics.json",
+      "sha256": "c2f3bf3f528dd25686e023a107273aaee070e3e47f3de0f6825c28b557f876a7",
+      "bytes": 4404,
+      "compressedBytes": 811
+    },
+    {
+      "file": "17-manifest.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\outputs\\hmh-a21-game-preview-01\\packed\\manifest.json",
+      "sha256": "0e46149ac9ff7feb6aaf9f13fbe867563c7a92fd5c6e68ccc6b15d7c36347975",
+      "bytes": 7425,
+      "compressedBytes": 1869
+    },
+    {
+      "file": "18-pack-proof.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\outputs\\hmh-a21-game-preview-01\\packed\\pack-proof.json",
+      "sha256": "98cf8863acaa68b60ebee44464731cde4fa492a1eff26887d29a2f7af926206c",
+      "bytes": 434,
+      "compressedBytes": 279
+    },
+    {
+      "file": "19-ART-A21-browser.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\outputs\\hmh-a21-game-preview-01\\screens\\ART-A21-browser.json",
+      "sha256": "e17b9ac92a14c69a10272e620c06e1d0786bc287df71c409fd5f22ee205d3560",
+      "bytes": 104790,
+      "compressedBytes": 8478
+    },
+    {
+      "file": "20-ART-A21-browser-closure.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\outputs\\hmh-a21-game-preview-01\\screens\\ART-A21-browser-closure.json",
+      "sha256": "99c4e77cfdfa366171779223516bee6c3cf743dea31fe44ed0af5f1b4a8b3a91",
+      "bytes": 518,
+      "compressedBytes": 276
+    },
+    {
+      "file": "21-receipt.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\outputs\\hmh-a21-game-preview-02\\receipt.json",
+      "sha256": "678102ccbe7abaa2716e2f04d1c2bae6e4cd5534420ed58782d6d91523596708",
+      "bytes": 24358,
+      "compressedBytes": 4300
+    },
+    {
+      "file": "22-default-visual-metrics.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\outputs\\hmh-a21-game-preview-02\\default-visual-metrics.json",
+      "sha256": "134c4d687151a55a673f22a5141a9a8ce908f03de47e7da41fc84e5d950255a4",
+      "bytes": 4404,
+      "compressedBytes": 810
+    },
+    {
+      "file": "23-manifest.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\outputs\\hmh-a21-game-preview-02\\packed\\manifest.json",
+      "sha256": "0e46149ac9ff7feb6aaf9f13fbe867563c7a92fd5c6e68ccc6b15d7c36347975",
+      "bytes": 7425,
+      "compressedBytes": 1869
+    },
+    {
+      "file": "24-pack-proof.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\outputs\\hmh-a21-game-preview-02\\packed\\pack-proof.json",
+      "sha256": "98cf8863acaa68b60ebee44464731cde4fa492a1eff26887d29a2f7af926206c",
+      "bytes": 434,
+      "compressedBytes": 279
+    },
+    {
+      "file": "25-ART-A21-browser.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\outputs\\hmh-a21-game-preview-02\\screens\\ART-A21-browser.json",
+      "sha256": "80e05c17362c3a0596e14cc3b932ebdd62332e79ea99cbb6b3ae43c86e0766fa",
+      "bytes": 104742,
+      "compressedBytes": 8439
+    },
+    {
+      "file": "26-ART-A21-browser-closure.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\outputs\\hmh-a21-game-preview-02\\screens\\ART-A21-browser-closure.json",
+      "sha256": "0a4792389d85d87575fabf219f795c37aff66f215ff441b58b8f284bbc642efd",
+      "bytes": 517,
+      "compressedBytes": 273
+    }
+  ],
+  "screenshots": [
+    {
+      "path": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\outputs\\hmh-a21-game-preview-01\\screens\\meadows-before-desktop.png",
+      "bytes": 1207875,
+      "sha256": "4ae8dcab14e5aaa5e4da0a7b926ac2b04953cd0499694605a7b062c7d34ebc22"
+    },
+    {
+      "path": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\outputs\\hmh-a21-game-preview-01\\screens\\meadows-candidate-desktop-north.png",
+      "bytes": 1464089,
+      "sha256": "b4f212684bd6fa12b11c7dd7a5b70709568087095225a5493ca73bddf9e0d98d"
+    },
+    {
+      "path": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\outputs\\hmh-a21-game-preview-01\\screens\\meadows-candidate-desktop.png",
+      "bytes": 1452591,
+      "sha256": "d801651347f5ba496af0f0feab1b258359bd49d82b73c08a19f31d82422fe30a"
+    },
+    {
+      "path": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\outputs\\hmh-a21-game-preview-01\\screens\\meadows-candidate-fail-safe.png",
+      "bytes": 1206946,
+      "sha256": "bdde25a2cb156229f6f2d427ce6dc7cb17386d2147943d2f39fc47f5480d6081"
+    },
+    {
+      "path": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\outputs\\hmh-a21-game-preview-01\\screens\\meadows-candidate-phone-house.png",
+      "bytes": 2097610,
+      "sha256": "887dcf49d66d721af0af48c496ced1686c96f7dcca03de21153aa5d96dcd679c"
+    },
+    {
+      "path": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\outputs\\hmh-a21-game-preview-01\\screens\\meadows-candidate-phone-oak-crossing.png",
+      "bytes": 2291986,
+      "sha256": "1be320c48b3a74ae0867cae3f4dffe3aeed4ac1c31cec43b5de203b403251e72"
+    },
+    {
+      "path": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\outputs\\hmh-a21-game-preview-02\\screens\\meadows-before-desktop.png",
+      "bytes": 1207105,
+      "sha256": "1adc648255b87190b07c5965a35822383b2dfe4f8f56fb27e976f518d531d426"
+    },
+    {
+      "path": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\outputs\\hmh-a21-game-preview-02\\screens\\meadows-candidate-desktop-north.png",
+      "bytes": 1463223,
+      "sha256": "1c5566267f06e79b5672bf42a38669b75995af2fb65fee2cd4823a8109f8f11e"
+    },
+    {
+      "path": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\outputs\\hmh-a21-game-preview-02\\screens\\meadows-candidate-desktop.png",
+      "bytes": 1452383,
+      "sha256": "1d77376f65019e5dd2b3acee80e647761914b51c2dcedf780761349499335b4e"
+    },
+    {
+      "path": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\outputs\\hmh-a21-game-preview-02\\screens\\meadows-candidate-fail-safe.png",
+      "bytes": 1207875,
+      "sha256": "4ae8dcab14e5aaa5e4da0a7b926ac2b04953cd0499694605a7b062c7d34ebc22"
+    },
+    {
+      "path": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\outputs\\hmh-a21-game-preview-02\\screens\\meadows-candidate-phone-house.png",
+      "bytes": 2146958,
+      "sha256": "853d37fb242eb8159c9191cfa179579f5b7bd066140679def4aa2fc973d66556"
+    },
+    {
+      "path": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\outputs\\hmh-a21-game-preview-02\\screens\\meadows-candidate-phone-oak-crossing.png",
+      "bytes": 2325325,
+      "sha256": "5cee15b32ead2da62e879ef53699e59ac7724226f7a2bc73def9de91352ccaff"
+    }
+  ]
+}
