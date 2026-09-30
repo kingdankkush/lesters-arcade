@@ -148,10 +148,34 @@ masts (`b2-52`, neutral tint) and wrecks (`b2-54/55/56/58/61`); gravel roads get
 an occasional wreck. Props never enter blockers, water, another road's
 clearance, spawn or site clearance (test-enforced).
 
-## Evidence
+## Evidence (private scene, under the heavy lock)
 
-See `docs/2.0/receipts/area-art-20260930/` (screenshots + `browser-report.json`).
-The screenshot section below records what was inspected and changed.
+`docs/2.0/receipts/area-art-20260930/`: sixteen captures from the private
+loopback world (`dist/hmh-world-v2-local`, headless Chrome, WebGL) at desktop
+1280×800 @1x and phone framing 414×896 @3x (the phone tier loads the `@0.5x`
+pages), plus `browser-report.json` with positions, plan snapshots and residency
+counts. Scenes: `meadows-center`, `meadows-relay-court`, `meadows-garden-lane`,
+`meadows-woods-road`, `highway-city-meadows`, `woods-center`, `woods-camp`,
+`woods-stores` (`desktop-*.png` / `phone-*.png`). One console 404 (favicon);
+no page errors; every plan reports `disposed` with zero owned URLs after Close.
+
+First pass, inspected and rejected: zone fringes rendered as opaque bands
+(local texture space rescaled the gradient), trail halos read as broad flat
+paths, the two Meadows gravel aprons dominated the green, aggregate detail
+decals read as dark blobs and the tent's contact shadow was a heavy pool. The
+second pass (commit "feather zone fringes…") fixes all five; the 768 px camp
+card is crisp at ~300 px, the human (~70 world units on screen) sits correctly
+against 34–52-unit ferns and the 1.75 m hedgerows, guardrails and the traffic
+mast read at the right scale along the 600-unit highway, and UI stays
+contained at phone framing. Still open from the inspection: the camp court is
+sparse (four clutter props), the Meadows porch ramp/deck surfaces keep their
+greybox paint (the plan does not claim elevated surfaces), and the cracked
+asphalt patch reads as a slab rather than a decal.
+
+Real-child captures (`/hmh-reboot/index.html?mode=free&world=ten-area`) were
+not taken in this lane: they need a normal `node build.mjs`, which this lane
+does not run; the binding path is covered by the headless binding test and
+the private-scene captures above. Owner acceptance is not claimed.
 
 ## Tests
 
