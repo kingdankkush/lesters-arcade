@@ -1,0 +1,100 @@
+{
+  "schema": "world-w1b-w2a-raw-observation-archive-extension-v1",
+  "scope": "Lossless exact native build/failed pre-browser invocation/default visual-only continuation observations. Gzip is storage only; raw SHA and length preserve exact producer bytes. No new scene execution, baseline acceptance, performance/physical/owner/W3 or full release claim.",
+  "originalManifest": {
+    "bytes": 5662,
+    "sha256": "131c59e16532320421b8f02b86bd57bf3408e1d49b3eee9b2ee06a4a7cd31b7d"
+  },
+  "files": {
+    "world-w2a-default-visual-20260929-01/gate-report.json.gz": {
+      "bytes": 498047,
+      "sha256": "c269853e763931dc0a4b24e2dd74ad87aac1b4ebdbcf156657b250c368df6465",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w2a-default-visual-20260929-01\\gate-report.json",
+      "encoding": "gzip",
+      "raw": {
+        "bytes": 2288576,
+        "sha256": "76a5aaa95fdbf502d9da6bc94d6ac260d2d2803508371ce710dd6f0eecec1c3e"
+      }
+    },
+    "world-w2a-default-visual-20260929-01/bindings.json.gz": {
+      "bytes": 258008,
+      "sha256": "d379b486336a353fa9137425f2e89de217263c41b0078d493af356f3369dbbb0",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w2a-default-visual-20260929-01\\bindings.json",
+      "encoding": "gzip",
+      "raw": {
+        "bytes": 1430859,
+        "sha256": "fceec71bbf6deebc5be6544448edf5c53458610dda1cb4c281a529c400a36851"
+      }
+    },
+    "world-w2a-default-visual-20260929-01/closure-after-preload-failure.json": {
+      "bytes": 301,
+      "sha256": "be670324f7dab679f984278421c7ad6a7b491ce7c546cc465f1ac4725457a5d5",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w2a-default-visual-20260929-01\\closure-after-preload-failure.json"
+    },
+    "world-w2a-default-visual-20260929-01/marker-followup-release.json": {
+      "bytes": 426,
+      "sha256": "014baba310bb25739894b8aba33afd1033be8ac68eb61273724f5a215fe9bc5a",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w2a-default-visual-20260929-01\\marker-followup-release.json"
+    },
+    "world-w2a-default-visual-20260929-01/marker-followup-release-confirmed.json": {
+      "bytes": 627,
+      "sha256": "f4230ff0dfe45e78f7a546a3beb9da98aa2918aeea7a7c35c0ec0cfe006967e2",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w2a-default-visual-20260929-01\\marker-followup-release-confirmed.json"
+    },
+    "world-w2a-default-visual-20260929-02/gate-report.json.gz": {
+      "bytes": 500359,
+      "sha256": "3bdbf7da0aead3afb32988f876a6e60741523e701396bd9b5f8b3fb1d986bf1f",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w2a-default-visual-20260929-02\\gate-report.json",
+      "encoding": "gzip",
+      "raw": {
+        "bytes": 2306924,
+        "sha256": "18d3193be547168efe2849ae91bac54d46e2bf2a1fcd5721f920f0560dac0eb6"
+      }
+    },
+    "world-w2a-default-visual-20260929-02/bindings.json.gz": {
+      "bytes": 258008,
+      "sha256": "d379b486336a353fa9137425f2e89de217263c41b0078d493af356f3369dbbb0",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w2a-default-visual-20260929-02\\bindings.json",
+      "encoding": "gzip",
+      "raw": {
+        "bytes": 1430859,
+        "sha256": "fceec71bbf6deebc5be6544448edf5c53458610dda1cb4c281a529c400a36851"
+      }
+    },
+    "world-w2a-default-visual-20260929-02/process-lifecycle.json": {
+      "bytes": 1113,
+      "sha256": "a52be70256125e906958424e06ec24695053ddca98cb0402924929e7cbcd5b91",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w2a-default-visual-20260929-02\\process-lifecycle.json"
+    },
+    "harness/run-world-w2a-default-visual.mjs.txt": {
+      "bytes": 10134,
+      "sha256": "fc32e3c1bbf37f756c510be5c27da194b02c073c2567f23a425a5889df4239fc",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\run-world-w2a-default-visual.mjs"
+    },
+    "harness/run-world-w2a-default-visual-continuation.mjs.txt": {
+      "bytes": 10722,
+      "sha256": "4bb9dedf7fef8ace4499ebde8f287798ade0ea1f0ccbc0f4757fb5b3828e62e3",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\run-world-w2a-default-visual-continuation.mjs"
+    },
+    "harness/world-default-visual-process-observer.mjs.txt": {
+      "bytes": 2707,
+      "sha256": "f7da458e82522d6d045bdd399e57e6eb5481fb160f01134477edb40bd581a55e",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-default-visual-process-observer.mjs"
+    },
+    "harness/owned-windows-world-visual-child.mjs.txt": {
+      "bytes": 3476,
+      "sha256": "495930361edcac710033be5d2fe3d6b47879c823e6babbbe4ef5adb266b78fc2",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\owned-windows-world-visual-child.mjs"
+    },
+    "harness/prepare-world-w2a-default-visual.mjs.txt": {
+      "bytes": 4535,
+      "sha256": "6098630d566f26dc085400ae658eaf66bb3d74a029cfdbfe4126f6a9b10a7ec5",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\prepare-world-w2a-default-visual.mjs"
+    },
+    "harness/check-world-preview-syntax.mjs.txt": {
+      "bytes": 1459,
+      "sha256": "7955642012768a7489f882e88ea13659875d075b1bcc058892c19ee37b1ad531",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\check-world-preview-syntax.mjs"
+    }
+  }
+}

@@ -1,0 +1,61 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import assert from 'node:assert/strict';
+import {createHash,randomUUID} from 'node:crypto';
+const repo='C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0',marker='C:\\Users\\just_\\lesters-arcade-wt\\.locks\\heavy.lock';
+const output=path.resolve('work/world-w2a-preview-browser-20260929-01'),binding=path.resolve('work/world-w2a-browser-bindings.json');
+const hash=bytes=>createHash('sha256').update(bytes).digest('hex');
+const item=file=>{const bytes=fs.readFileSync(file);return{bytes:bytes.length,sha256:hash(bytes)};};
+assert.equal(hash(fs.readFileSync(binding)),'23e82291034d348a1cd7af8523429f064fd9e11f593719e4212d632bac4e7cb3');
+const manifest=JSON.parse(fs.readFileSync(binding));
+const groups=['sources','protectedFiles','assets','dependencies','harness'];
+function captureInputs(){const result={};for(const group of groups){result[group]={};for(const[rel,expected]of Object.entries(manifest[group])){const file=['sources','protectedFiles','assets'].includes(group)?path.join(repo,rel):rel;const actual=item(file);assert.deepEqual(actual,expected,`${group}:${rel}`);result[group][rel]=actual;}}for(const name of ['node','chrome'])assert.deepEqual(item(manifest[name].executable),{bytes:manifest[name].bytes,sha256:manifest[name].sha256},name);return result;}
+const before=captureInputs();
+assert.equal(fs.existsSync(output),false,'single frozen attempt output never overwritten');assert.equal(fs.existsSync(marker),false,'shared heavy slot must be free');
+const {runOwnedWindowsChild}=await import('./owned-windows-preview-child.mjs');
+const token=`world-w2a-native-${randomUUID()}`;
+fs.mkdirSync(marker);fs.writeFileSync(path.join(marker,'owner.json'),JSON.stringify({owner:'/root/world_w0_audit',task:'W2a one preview build + native browser',token}),{flag:'wx'});
+let certain=true;
+const report={schema:'world-w2a-one-preview-build-native-browser-v1',scope:'One separate ignored local Free navigation preview build. No normal production build, initial production budget, physical phone, performance, full simulation, W3/verifier, owner map approval or release gate claim.',passed:false,bindingSha256:hash(fs.readFileSync(binding)),runner:item(new URL(import.meta.url)),before,after:null,commands:[],builtBefore:null,builtAfter:null,browser:null,errors:[]};
+const save=()=>fs.writeFileSync(path.join(output,'gate-report.json'),JSON.stringify(report,null,2));
+const previewDir=path.join(repo,'apps/portal/dist/hmh-greybox');
+function builtCapture(){
+  const metaFile=path.join(previewDir,'meta.json'),meta=JSON.parse(fs.readFileSync(metaFile));
+  for(const[rel,input]of Object.entries(meta.inputs)){assert.ok(manifest.sources[rel],`unexpected actual preview build input:${rel}`);assert.equal(input.bytes,manifest.sources[rel].bytes,rel);assert.deepEqual(item(path.join(repo,rel)),manifest.sources[rel],rel);}
+  const outputNames=Object.keys(meta.outputs);
+  const files=[...outputNames,...['meta.json','index.html','preview.css'].map(name=>path.relative(repo,path.join(previewDir,name)).replaceAll('\\','/'))];
+  const items={};for(const rel of new Set(files)){const file=path.resolve(repo,rel);assert.ok(file.startsWith(previewDir+path.sep),'actual preview artifact stays in explicit own dist/hmh-greybox');items[rel]=item(file);}
+  assert.ok(outputNames.some(rel=>rel.endsWith('/entry.js')));assert.ok(outputNames.some(rel=>rel.includes('/chunks/')));
+  return{inputs:Object.keys(meta.inputs),outputs:items};
+}
+try{
+  fs.mkdirSync(output);fs.copyFileSync(binding,path.join(output,'bindings.json'));fs.copyFileSync(new URL(import.meta.url),path.join(output,'runner.mjs.txt'));
+  for(const group of ['sources','protectedFiles','assets','harness'])for(const[rel]of Object.entries(manifest[group])){const source=['sources','protectedFiles','assets'].includes(group)?path.join(repo,rel):rel,target=path.join(output,'inputs',group,['harness'].includes(group)?path.basename(rel):rel);fs.mkdirSync(path.dirname(target),{recursive:true});fs.copyFileSync(source,target);assert.deepEqual(item(target),manifest[group][rel]);}
+  save();
+  const build=await runOwnedWindowsChild(process.execPath,['scripts/build-hmh-greybox-preview.mjs'],{cwd:repo,watchdogMs:30_000});report.commands.push({phase:'preview-build',command:build});certain=build.childClosureConfirmed;save();
+  assert.ok(certain,'preview build actual child closure uncertain');assert.ok(build.normalExit,'preview build failed; no automatic retry or browser');
+  report.builtBefore=builtCapture();
+  for(const rel of Object.keys(report.builtBefore.outputs)){const target=path.join(output,'built',rel);fs.mkdirSync(path.dirname(target),{recursive:true});fs.copyFileSync(path.join(repo,rel),target);assert.deepEqual(item(target),report.builtBefore.outputs[rel]);}
+  captureInputs();save();
+  const command=await runOwnedWindowsChild(process.execPath,[path.resolve('work/hmh-greybox-browser-smoke.mjs'),repo,path.join(output,'browser')],{cwd:process.cwd(),watchdogMs:120_000});report.commands.push({phase:'native-preview-browser',command});certain=command.childClosureConfirmed;save();
+  const browserFile=path.join(output,'browser/browser-report.json');
+  if(fs.existsSync(browserFile))report.browser=JSON.parse(fs.readFileSync(browserFile));
+  // A normally closed Node parent alone cannot prove an unobserved Chrome/server cleanup.
+  if(!command.watchdogTriggered&&command.childClosureConfirmed&&!report.browser?.chromeProcess?.closeObserved)certain=false;
+  assert.ok(certain,'actual browser child/owned Chrome closure not proven; retain marker');
+  assert.ok(command.normalExit,'native browser gate failed; evidence remains immutable');
+  assert.equal(report.browser.passed,true);assert.equal(report.browser.chromeProcess.closeObserved,true);assert.equal(report.browser.serverLifecycle.closeObserved,true);assert.equal(report.browser.cleanupErrors.length,0);
+  assert.equal(report.browser.viewports.length,2);assert.equal(report.browser.safety.length,4);
+  assert.deepEqual(report.browser.viewports.map(record=>record.captures.length),[13,12]);
+  const byUrl=new Map();for(const[rel,record]of Object.entries({...report.builtBefore.outputs,...manifest.assets})){const url='/'+path.relative(path.join(repo,'apps/portal'),path.join(repo,rel)).replaceAll('\\','/');byUrl.set(url,record);}
+  for(const response of report.browser.responses){const pathname=new URL(response.url).pathname;if(pathname==='/__greybox-iframe-test'){assert.equal(response.status,200);continue;}if(pathname==='/favicon.ico'){assert.equal(response.status,204);assert.equal(response.bytes,0);continue;}const expected=byUrl.get(pathname);assert.ok(expected,`served unexpected response:${pathname}`);assert.equal(response.status,200);assert.equal(response.bytes,expected.bytes);assert.equal(response.sha256,expected.sha256);}
+  for(const record of report.browser.viewports)for(const picture of record.captures){assert.deepEqual(item(picture.path),{bytes:picture.bytes,sha256:picture.sha256});const bytes=fs.readFileSync(picture.path);assert.equal(bytes.subarray(1,4).toString(),'PNG');assert.equal(bytes.readUInt32BE(16),record.viewport.width*record.viewport.deviceScaleFactor);assert.equal(bytes.readUInt32BE(20),record.viewport.height*record.viewport.deviceScaleFactor);assert.deepEqual(picture.overflow,{horizontal:false,vertical:false});}
+  report.builtAfter=builtCapture();assert.deepEqual(report.builtAfter,report.builtBefore);report.after=captureInputs();assert.deepEqual(report.after,before);report.passed=true;
+}catch(error){report.errors.push({message:error.message,stack:error.stack});process.exitCode=1;}
+finally{
+  // Preserve custody even on a failed assertion when the owned children are closed.
+  try{report.after=captureInputs();assert.deepEqual(report.after,before);if(report.builtBefore){report.builtAfter=builtCapture();assert.deepEqual(report.builtAfter,report.builtBefore);}}catch(error){report.errors.push({phase:'final-custody',message:error.message,stack:error.stack});report.passed=false;process.exitCode=1;}
+  report.markerRetainedForUnconfirmedShutdown=!certain;
+  if(certain){assert.equal(JSON.parse(fs.readFileSync(path.join(marker,'owner.json'))).token,token);fs.unlinkSync(path.join(marker,'owner.json'));fs.rmdirSync(marker);report.markerReleased=true;}
+  save();console.log(JSON.stringify({output,passed:report.passed,commands:report.commands.map(record=>({phase:record.phase,normalExit:record.command.normalExit,closed:record.command.childClosureConfirmed})),viewports:report.browser?.viewports.length??0,safety:report.browser?.safety.length??0,markerReleased:report.markerReleased??false,errors:report.errors.map(error=>error.message)}));if(!certain)process.exit(1);
+}

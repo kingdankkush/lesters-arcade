@@ -1,0 +1,9 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import assert from 'node:assert/strict';
+import {spawnSync} from 'node:child_process';
+const repo=process.argv[2];
+const names=['apps/hmh-reboot/src/dev/greybox-kit.mjs','apps/hmh-reboot/src/dev/greybox-world-v1.mjs','apps/hmh-reboot/src/dev/greybox-closed-masses.mjs','apps/hmh-reboot/src/dev/greybox-access.mjs','apps/hmh-reboot/src/dev/greybox-navigation.mjs','apps/hmh-reboot/src/dev/greybox-preview-launch.mjs','apps/hmh-reboot/src/dev/greybox-entry.mjs','apps/hmh-reboot/src/dev/greybox-playtest.mjs','scripts/build-hmh-greybox-preview.mjs','scripts/lib/hmh-greybox-world-check.mjs','tests/hmh-greybox-world.test.mjs','tests/hmh-greybox-closed-masses.test.mjs','tests/hmh-greybox-playtest.test.mjs'];
+const registered=fs.readFileSync(path.join(repo,'scripts/syntax-check.mjs'),'utf8');
+for(const name of names){assert.equal(registered.split(`'${name}'`).length,2,`exactly one new source registration:${name}`);const result=spawnSync(process.execPath,['--check',name],{cwd:repo,windowsHide:true,encoding:'utf8',timeout:10_000});assert.ok(result.status===0&&!result.error&&!result.signal,JSON.stringify({name,status:result.status,error:String(result.error??''),stdout:result.stdout,stderr:result.stderr}));}
+console.log(JSON.stringify({checked:names.length,registered:names.length,allPassed:true,scope:'Only the13 new modules and exact single registration; not the full repository syntax gate.'}));

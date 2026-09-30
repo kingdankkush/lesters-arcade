@@ -1,0 +1,2018 @@
+{
+  "schema": "hmh-greybox-world-layout-check-v1",
+  "passed": false,
+  "scope": "Authored geometry/navigation/clearance/staged sightlines; not mission, actual cover/climb controls, boss AI, pacing playtest, verifier/version, streaming/device/performance acceptance",
+  "areas": [
+    {
+      "id": "mweb-meadows",
+      "distinctEntrances": 4,
+      "separateByAtLeast300": true
+    },
+    {
+      "id": "litecoin-city",
+      "distinctEntrances": 4,
+      "separateByAtLeast300": true
+    },
+    {
+      "id": "halving-farms",
+      "distinctEntrances": 2,
+      "separateByAtLeast300": true
+    },
+    {
+      "id": "silver-coast",
+      "distinctEntrances": 2,
+      "separateByAtLeast300": true
+    },
+    {
+      "id": "scrypt-bayou",
+      "distinctEntrances": 2,
+      "separateByAtLeast300": true
+    },
+    {
+      "id": "hashwood-river",
+      "distinctEntrances": 4,
+      "separateByAtLeast300": true
+    },
+    {
+      "id": "hollow-pines",
+      "distinctEntrances": 2,
+      "separateByAtLeast300": true
+    },
+    {
+      "id": "ledger-ridge",
+      "distinctEntrances": 2,
+      "separateByAtLeast300": true
+    },
+    {
+      "id": "fork-fortress",
+      "distinctEntrances": 2,
+      "separateByAtLeast300": true
+    },
+    {
+      "id": "rugpull-woods",
+      "distinctEntrances": 4,
+      "separateByAtLeast300": true
+    }
+  ],
+  "navigation": {
+    "schema": "hmh-greybox-navigation-check-v1",
+    "scope": "canonical conservative enemy lattice, not a playable map, player-traversal/arena/sightline/spawn/performance or verifier acceptance",
+    "passed": true,
+    "bounds": {
+      "minX": 0,
+      "minY": 0,
+      "maxX": 20000,
+      "maxY": 14000
+    },
+    "cellSize": 60,
+    "navSha256": "776435d22b0139ffc54c654de8fb4e81f25f317508b5581468c8db702df76ab9",
+    "distanceBasis": "Shortest directed lattice steps between cell centres, not actor paths or exact point-to-point distances",
+    "metrics": {
+      "columns": 334,
+      "rows": 234,
+      "inBoundsCells": 77589,
+      "walkableCells": 37300,
+      "walkableFraction": 0.48073824897859235,
+      "fractionBasis": "cell centres inside exact bounds; lattice estimate, not geometric area fraction",
+      "outsideWalkableCells": 0
+    },
+    "start": {
+      "x": 12500,
+      "y": 6700,
+      "cell": 37282
+    },
+    "targets": [
+      {
+        "id": "mweb-meadows-area",
+        "kind": "area",
+        "x": 12500,
+        "y": 6700,
+        "cell": 37282,
+        "reachable": true,
+        "returnable": true,
+        "pathDistanceUnits": 0,
+        "returnDistanceUnits": 0
+      },
+      {
+        "id": "mweb-meadows-landmark-view",
+        "kind": "landmark-view",
+        "x": 11900,
+        "y": 6100,
+        "cell": 33932,
+        "reachable": true,
+        "returnable": true,
+        "pathDistanceUnits": 1200,
+        "returnDistanceUnits": 1200
+      },
+      {
+        "id": "mweb-meadows-secret",
+        "kind": "secret",
+        "x": 13700,
+        "y": 7350,
+        "cell": 40976,
+        "reachable": true,
+        "returnable": true,
+        "pathDistanceUnits": 1860,
+        "returnDistanceUnits": 1860
+      },
+      {
+        "id": "mweb-meadows-height-option",
+        "kind": "height-option",
+        "x": 11700,
+        "y": 6900,
+        "cell": 38605,
+        "reachable": true,
+        "returnable": true,
+        "pathDistanceUnits": 1500,
+        "returnDistanceUnits": 1860
+      },
+      {
+        "id": "mweb-meadows-objective",
+        "kind": "objective",
+        "x": 13100,
+        "y": 6050,
+        "cell": 33618,
+        "reachable": true,
+        "returnable": true,
+        "pathDistanceUnits": 1260,
+        "returnDistanceUnits": 1260
+      },
+      {
+        "id": "mweb-meadows-court-exit-0",
+        "kind": "arena-exit",
+        "x": 11550,
+        "y": 7400,
+        "cell": 41274,
+        "reachable": true,
+        "returnable": true,
+        "pathDistanceUnits": 1680,
+        "returnDistanceUnits": 1680
+      },
+      {
+        "id": "mweb-meadows-court-exit-1",
+        "kind": "arena-exit",
+        "x": 13450,
+        "y": 7400,
+        "cell": 41306,
+        "reachable": true,
+        "returnable": true,
+        "pathDistanceUnits": 1680,
+        "returnDistanceUnits": 1680
+      },
+      {
+        "id": "litecoin-city-area",
+        "kind": "area",
+        "x": 7500,
+        "y": 6700,
+        "cell": 37199,
+        "reachable": true,
+        "returnable": true,
+        "pathDistanceUnits": 4980,
+        "returnDistanceUnits": 4980
+      },
+      {
+        "id": "litecoin-city-landmark-view",
+        "kind": "landmark-view",
+        "x": 6900,
+        "y": 6100,
+        "cell": 33849,
+        "reachable": true,
+        "returnable": true,
+        "pathDistanceUnits": 6180,
+        "returnDistanceUnits": 6180
+      },
+      {
+        "id": "litecoin-city-secret",
+        "kind": "secret",
+        "x": 8700,
+        "y": 7350,
+        "cell": 40893,
+        "reachable": true,
+        "returnable": true,
+        "pathDistanceUnits": 4440,
+        "returnDistanceUnits": 4440
+      },
+      {
+        "id": "litecoin-city-height-option",
+        "kind": "height-option",
+        "x": 6700,
+        "y": 6900,
+        "cell": 38521,
+        "reachable": true,
+        "returnable": true,
+        "pathDistanceUnits": 6540,
+        "returnDistanceUnits": 6900
+      },
+      {
+        "id": "litecoin-city-objective",
+        "kind": "objective",
+        "x": 8100,
+        "y": 6050,
+        "cell": 33535,
+        "reachable": true,
+        "returnable": true,
+        "pathDistanceUnits": 5040,
+        "returnDistanceUnits": 5040
+      },
+      {
+        "id": "litecoin-city-court-exit-0",
+        "kind": "arena-exit",
+        "x": 6550,
+        "y": 7400,
+        "cell": 41191,
+        "reachable": true,
+        "returnable": true,
+        "pathDistanceUnits": 6660,
+        "returnDistanceUnits": 6660
+      },
+      {
+        "id": "litecoin-city-court-exit-1",
+        "kind": "arena-exit",
+        "x": 8450,
+        "y": 7400,
+        "cell": 41222,
+        "reachable": true,
+        "returnable": true,
+        "pathDistanceUnits": 4800,
+        "returnDistanceUnits": 4800
+      },
+      {
+        "id": "halving-farms-area",
+        "kind": "area",
+        "x": 17500,
+        "y": 6700,
+        "cell": 37365,
+        "reachable": true,
+        "returnable": true,
+        "pathDistanceUnits": 4980,
+        "returnDistanceUnits": 4980
+      },
+      {
+        "id": "halving-farms-landmark-view",
+        "kind": "landmark-view",
+        "x": 16900,
+        "y": 6100,
+        "cell": 34015,
+        "reachable": true,
+        "returnable": true,
+        "pathDistanceUnits": 4980,
+        "returnDistanceUnits": 4980
+      },
+      {
+        "id": "halving-farms-secret",
+        "kind": "secret",
+        "x": 18700,
+        "y": 7350,
+        "cell": 41059,
+        "reachable": true,
+        "returnable": true,
+        "pathDistanceUnits": 6840,
+        "returnDistanceUnits": 6840
+      },
+      {
+        "id": "halving-farms-height-option",
+        "kind": "height-option",
+        "x": 16700,
+        "y": 6900,
+        "cell": 38688,
+        "reachable": true,
+        "returnable": true,
+        "pathDistanceUnits": 4440,
+        "returnDistanceUnits": 4440
+      },
+      {
+        "id": "halving-farms-objective",
+        "kind": "objective",
+        "x": 18100,
+        "y": 6050,
+        "cell": 33701,
+        "reachable": true,
+        "returnable": true,
+        "pathDistanceUnits": 6240,
+        "returnDistanceUnits": 6240
+      },
+      {
+        "id": "halving-farms-court-exit-0",
+        "kind": "arena-exit",
+        "x": 16550,
+        "y": 7400,
+        "cell": 41357,
+        "reachable": true,
+        "returnable": true,
+        "pathDistanceUnits": 4740,
+        "returnDistanceUnits": 4740
+      },
+      {
+        "id": "halving-farms-court-exit-1",
+        "kind": "arena-exit",
+        "x": 18450,
+        "y": 7400,
+        "cell": 41389,
+        "reachable": true,
+        "returnable": true,
+        "pathDistanceUnits": 6660,
+        "returnDistanceUnits": 6660
+      },
+      {
+        "id": "silver-coast-area",
+        "kind": "area",
+        "x": 2500,
+        "y": 6700,
+        "cell": 37115,
+        "reachable": true,
+        "returnable": true,
+        "pathDistanceUnits": 10020,
+        "returnDistanceUnits": 10020
+      },
+      {
+        "id": "silver-coast-landmark-view",
+        "kind": "landmark-view",
+        "x": 1900,
+        "y": 6100,
+        "cell": 33765,
+        "reachable": true,
+        "returnable": true,
+        "pathDistanceUnits": 11220,
+        "returnDistanceUnits": 11220
+      },
+      {
+        "id": "silver-coast-secret",
+        "kind": "secret",
+        "x": 3700,
+        "y": 7350,
+        "cell": 40809,
+        "reachable": true,
+        "returnable": true,
+        "pathDistanceUnits": 9480,
+        "returnDistanceUnits": 9480
+      },
+      {
+        "id": "silver-coast-height-option",
+        "kind": "height-option",
+        "x": 1700,
+        "y": 6900,
+        "cell": 38438,
+        "reachable": true,
+        "returnable": true,
+        "pathDistanceUnits": 11520,
+        "returnDistanceUnits": 11880
+      },
+      {
+        "id": "silver-coast-objective",
+        "kind": "objective",
+        "x": 3100,
+        "y": 6050,
+        "cell": 33451,
+        "reachable": true,
+        "returnable": true,
+        "pathDistanceUnits": 10080,
+        "returnDistanceUnits": 10080
+      },
+      {
+        "id": "silver-coast-court-exit-0",
+        "kind": "arena-exit",
+        "x": 1550,
+        "y": 7400,
+        "cell": 41107,
+        "reachable": true,
+        "returnable": true,
+        "pathDistanceUnits": 11700,
+        "returnDistanceUnits": 11700
+      },
+      {
+        "id": "silver-coast-court-exit-1",
+        "kind": "arena-exit",
+        "x": 3450,
+        "y": 7400,
+        "cell": 41139,
+        "reachable": true,
+        "returnable": true,
+        "pathDistanceUnits": 9780,
+        "returnDistanceUnits": 9780
+      },
+      {
+        "id": "scrypt-bayou-area",
+        "kind": "area",
+        "x": 2500,
+        "y": 11600,
+        "cell": 64503,
+        "reachable": true,
+        "returnable": true,
+        "pathDistanceUnits": 14940,
+        "returnDistanceUnits": 14940
+      },
+      {
+        "id": "scrypt-bayou-landmark-view",
+        "kind": "landmark-view",
+        "x": 1900,
+        "y": 11000,
+        "cell": 61153,
+        "reachable": true,
+        "returnable": true,
+        "pathDistanceUnits": 14940,
+        "returnDistanceUnits": 14940
+      },
+      {
+        "id": "scrypt-bayou-secret",
+        "kind": "secret",
+        "x": 3700,
+        "y": 12250,
+        "cell": 68197,
+        "reachable": true,
+        "returnable": true,
+        "pathDistanceUnits": 14400,
+        "returnDistanceUnits": 14400
+      },
+      {
+        "id": "scrypt-bayou-height-option",
+        "kind": "height-option",
+        "x": 1700,
+        "y": 11800,
+        "cell": 65492,
+        "reachable": true,
+        "returnable": true,
+        "pathDistanceUnits": 16380,
+        "returnDistanceUnits": 16740
+      },
+      {
+        "id": "scrypt-bayou-objective",
+        "kind": "objective",
+        "x": 3100,
+        "y": 10950,
+        "cell": 60839,
+        "reachable": true,
+        "returnable": true,
+        "pathDistanceUnits": 14640,
+        "returnDistanceUnits": 14640
+      },
+      {
+        "id": "scrypt-bayou-court-exit-0",
+        "kind": "arena-exit",
+        "x": 1550,
+        "y": 12300,
+        "cell": 68495,
+        "reachable": true,
+        "returnable": true,
+        "pathDistanceUnits": 16620,
+        "returnDistanceUnits": 16620
+      },
+      {
+        "id": "scrypt-bayou-court-exit-1",
+        "kind": "arena-exit",
+        "x": 3450,
+        "y": 12300,
+        "cell": 68527,
+        "reachable": true,
+        "returnable": true,
+        "pathDistanceUnits": 14700,
+        "returnDistanceUnits": 14700
+      },
+      {
+        "id": "hashwood-river-area",
+        "kind": "area",
+        "x": 7500,
+        "y": 11600,
+        "cell": 64587,
+        "reachable": true,
+        "returnable": true,
+        "pathDistanceUnits": 9900,
+        "returnDistanceUnits": 9900
+      },
+      {
+        "id": "hashwood-river-landmark-view",
+        "kind": "landmark-view",
+        "x": 6900,
+        "y": 11000,
+        "cell": 61237,
+        "reachable": true,
+        "returnable": true,
+        "pathDistanceUnits": 9900,
+        "returnDistanceUnits": 9900
+      },
+      {
+        "id": "hashwood-river-secret",
+        "kind": "secret",
+        "x": 8700,
+        "y": 12250,
+        "cell": 68281,
+        "reachable": true,
+        "returnable": true,
+        "pathDistanceUnits": 11520,
+        "returnDistanceUnits": 11520
+      },
+      {
+        "id": "hashwood-river-height-option",
+        "kind": "height-option",
+        "x": 6700,
+        "y": 11800,
+        "cell": 65575,
+        "reachable": true,
+        "returnable": true,
+        "pathDistanceUnits": 11400,
+        "returnDistanceUnits": 11760
+      },
+      {
+        "id": "hashwood-river-objective",
+        "kind": "objective",
+        "x": 8100,
+        "y": 10950,
+        "cell": 60923,
+        "reachable": true,
+        "returnable": true,
+        "pathDistanceUnits": 9600,
+        "returnDistanceUnits": 9600
+      },
+      {
+        "id": "hashwood-river-court-exit-0",
+        "kind": "arena-exit",
+        "x": 6550,
+        "y": 12300,
+        "cell": 68579,
+        "reachable": true,
+        "returnable": true,
+        "pathDistanceUnits": 11580,
+        "returnDistanceUnits": 11580
+      },
+      {
+        "id": "hashwood-river-court-exit-1",
+        "kind": "arena-exit",
+        "x": 8450,
+        "y": 12300,
+        "cell": 68610,
+        "reachable": true,
+        "returnable": true,
+        "pathDistanceUnits": 11280,
+        "returnDistanceUnits": 11280
+      },
+      {
+        "id": "hollow-pines-area",
+        "kind": "area",
+        "x": 12500,
+        "y": 11600,
+        "cell": 64670,
+        "reachable": true,
+        "returnable": true,
+        "pathDistanceUnits": 11040,
+        "returnDistanceUnits": 11040
+      },
+      {
+        "id": "hollow-pines-landmark-view",
+        "kind": "landmark-view",
+        "x": 11900,
+        "y": 11000,
+        "cell": 61320,
+        "reachable": true,
+        "returnable": true,
+        "pathDistanceUnits": 12000,
+        "returnDistanceUnits": 12000
+      },
+      {
+        "id": "hollow-pines-secret",
+        "kind": "secret",
+        "x": 13700,
+        "y": 12250,
+        "cell": 68364,
+        "reachable": true,
+        "returnable": true,
+        "pathDistanceUnits": 10500,
+        "returnDistanceUnits": 10500
+      },
+      {
+        "id": "hollow-pines-height-option",
+        "kind": "height-option",
+        "x": 11700,
+        "y": 11800,
+        "cell": 65659,
+        "reachable": true,
+        "returnable": true,
+        "pathDistanceUnits": 12480,
+        "returnDistanceUnits": 12840
+      },
+      {
+        "id": "hollow-pines-objective",
+        "kind": "objective",
+        "x": 13100,
+        "y": 10950,
+        "cell": 61006,
+        "reachable": true,
+        "returnable": true,
+        "pathDistanceUnits": 10860,
+        "returnDistanceUnits": 10860
+      },
+      {
+        "id": "hollow-pines-court-exit-0",
+        "kind": "arena-exit",
+        "x": 11550,
+        "y": 12300,
+        "cell": 68662,
+        "reachable": true,
+        "returnable": true,
+        "pathDistanceUnits": 12720,
+        "returnDistanceUnits": 12720
+      },
+      {
+        "id": "hollow-pines-court-exit-1",
+        "kind": "arena-exit",
+        "x": 13450,
+        "y": 12300,
+        "cell": 68694,
+        "reachable": true,
+        "returnable": true,
+        "pathDistanceUnits": 10800,
+        "returnDistanceUnits": 10800
+      },
+      {
+        "id": "ledger-ridge-area",
+        "kind": "area",
+        "x": 7500,
+        "y": 2500,
+        "cell": 13819,
+        "reachable": true,
+        "returnable": true,
+        "pathDistanceUnits": 9180,
+        "returnDistanceUnits": 9180
+      },
+      {
+        "id": "ledger-ridge-landmark-view",
+        "kind": "landmark-view",
+        "x": 6900,
+        "y": 1900,
+        "cell": 10469,
+        "reachable": true,
+        "returnable": true,
+        "pathDistanceUnits": 10380,
+        "returnDistanceUnits": 10380
+      },
+      {
+        "id": "ledger-ridge-secret",
+        "kind": "secret",
+        "x": 8700,
+        "y": 3150,
+        "cell": 17513,
+        "reachable": true,
+        "returnable": true,
+        "pathDistanceUnits": 9480,
+        "returnDistanceUnits": 9480
+      },
+      {
+        "id": "ledger-ridge-height-option",
+        "kind": "height-option",
+        "x": 6700,
+        "y": 2700,
+        "cell": 15141,
+        "reachable": true,
+        "returnable": true,
+        "pathDistanceUnits": 10260,
+        "returnDistanceUnits": 10620
+      },
+      {
+        "id": "ledger-ridge-objective",
+        "kind": "objective",
+        "x": 8100,
+        "y": 1850,
+        "cell": 10155,
+        "reachable": true,
+        "returnable": true,
+        "pathDistanceUnits": 10200,
+        "returnDistanceUnits": 10200
+      },
+      {
+        "id": "ledger-ridge-court-exit-0",
+        "kind": "arena-exit",
+        "x": 6550,
+        "y": 3200,
+        "cell": 17811,
+        "reachable": true,
+        "returnable": true,
+        "pathDistanceUnits": 9420,
+        "returnDistanceUnits": 9420
+      },
+      {
+        "id": "ledger-ridge-court-exit-1",
+        "kind": "arena-exit",
+        "x": 8450,
+        "y": 3200,
+        "cell": 17842,
+        "reachable": true,
+        "returnable": true,
+        "pathDistanceUnits": 9120,
+        "returnDistanceUnits": 9120
+      },
+      {
+        "id": "fork-fortress-area",
+        "kind": "area",
+        "x": 12500,
+        "y": 2500,
+        "cell": 13902,
+        "reachable": true,
+        "returnable": true,
+        "pathDistanceUnits": 8880,
+        "returnDistanceUnits": 8880
+      },
+      {
+        "id": "fork-fortress-landmark-view",
+        "kind": "landmark-view",
+        "x": 11900,
+        "y": 1900,
+        "cell": 10552,
+        "reachable": true,
+        "returnable": true,
+        "pathDistanceUnits": 10080,
+        "returnDistanceUnits": 10080
+      },
+      {
+        "id": "fork-fortress-secret",
+        "kind": "secret",
+        "x": 13700,
+        "y": 3150,
+        "cell": 17596,
+        "reachable": true,
+        "returnable": true,
+        "pathDistanceUnits": 7020,
+        "returnDistanceUnits": 7020
+      },
+      {
+        "id": "fork-fortress-height-option",
+        "kind": "height-option",
+        "x": 11700,
+        "y": 2700,
+        "cell": 15225,
+        "reachable": true,
+        "returnable": true,
+        "pathDistanceUnits": 9900,
+        "returnDistanceUnits": 10260
+      },
+      {
+        "id": "fork-fortress-objective",
+        "kind": "objective",
+        "x": 13100,
+        "y": 1850,
+        "cell": 10238,
+        "reachable": true,
+        "returnable": true,
+        "pathDistanceUnits": 8940,
+        "returnDistanceUnits": 8940
+      },
+      {
+        "id": "fork-fortress-court-exit-0",
+        "kind": "arena-exit",
+        "x": 11550,
+        "y": 3200,
+        "cell": 17894,
+        "reachable": true,
+        "returnable": true,
+        "pathDistanceUnits": 9120,
+        "returnDistanceUnits": 9120
+      },
+      {
+        "id": "fork-fortress-court-exit-1",
+        "kind": "arena-exit",
+        "x": 13450,
+        "y": 3200,
+        "cell": 17926,
+        "reachable": true,
+        "returnable": true,
+        "pathDistanceUnits": 7200,
+        "returnDistanceUnits": 7200
+      },
+      {
+        "id": "rugpull-woods-area",
+        "kind": "area",
+        "x": 17500,
+        "y": 11600,
+        "cell": 64753,
+        "reachable": true,
+        "returnable": true,
+        "pathDistanceUnits": 9900,
+        "returnDistanceUnits": 9900
+      },
+      {
+        "id": "rugpull-woods-landmark-view",
+        "kind": "landmark-view",
+        "x": 16900,
+        "y": 11000,
+        "cell": 61403,
+        "reachable": true,
+        "returnable": true,
+        "pathDistanceUnits": 8700,
+        "returnDistanceUnits": 8700
+      },
+      {
+        "id": "rugpull-woods-secret",
+        "kind": "secret",
+        "x": 18700,
+        "y": 12250,
+        "cell": 68447,
+        "reachable": true,
+        "returnable": true,
+        "pathDistanceUnits": 11760,
+        "returnDistanceUnits": 11760
+      },
+      {
+        "id": "rugpull-woods-height-option",
+        "kind": "height-option",
+        "x": 16700,
+        "y": 11800,
+        "cell": 65742,
+        "reachable": true,
+        "returnable": true,
+        "pathDistanceUnits": 9300,
+        "returnDistanceUnits": 9300
+      },
+      {
+        "id": "rugpull-woods-objective",
+        "kind": "objective",
+        "x": 18100,
+        "y": 10950,
+        "cell": 61089,
+        "reachable": true,
+        "returnable": true,
+        "pathDistanceUnits": 9840,
+        "returnDistanceUnits": 9840
+      },
+      {
+        "id": "rugpull-woods-court-exit-0",
+        "kind": "arena-exit",
+        "x": 16550,
+        "y": 12300,
+        "cell": 68745,
+        "reachable": true,
+        "returnable": true,
+        "pathDistanceUnits": 9660,
+        "returnDistanceUnits": 9660
+      },
+      {
+        "id": "rugpull-woods-court-exit-1",
+        "kind": "arena-exit",
+        "x": 18450,
+        "y": 12300,
+        "cell": 68777,
+        "reachable": true,
+        "returnable": true,
+        "pathDistanceUnits": 11580,
+        "returnDistanceUnits": 11580
+      },
+      {
+        "id": "coast-city-silver-coast-entrance",
+        "kind": "entrance",
+        "x": 3400,
+        "y": 6700,
+        "cell": 37130,
+        "reachable": true,
+        "returnable": true,
+        "pathDistanceUnits": 9120,
+        "returnDistanceUnits": 9120
+      },
+      {
+        "id": "coast-city-litecoin-city-entrance",
+        "kind": "entrance",
+        "x": 6600,
+        "y": 6700,
+        "cell": 37184,
+        "reachable": true,
+        "returnable": true,
+        "pathDistanceUnits": 5880,
+        "returnDistanceUnits": 5880
+      },
+      {
+        "id": "city-meadows-litecoin-city-entrance",
+        "kind": "entrance",
+        "x": 8400,
+        "y": 6700,
+        "cell": 37214,
+        "reachable": true,
+        "returnable": true,
+        "pathDistanceUnits": 4080,
+        "returnDistanceUnits": 4080
+      },
+      {
+        "id": "city-meadows-mweb-meadows-entrance",
+        "kind": "entrance",
+        "x": 11600,
+        "y": 6700,
+        "cell": 37267,
+        "reachable": true,
+        "returnable": true,
+        "pathDistanceUnits": 900,
+        "returnDistanceUnits": 900
+      },
+      {
+        "id": "meadows-farms-mweb-meadows-entrance",
+        "kind": "entrance",
+        "x": 13400,
+        "y": 6700,
+        "cell": 37297,
+        "reachable": true,
+        "returnable": true,
+        "pathDistanceUnits": 900,
+        "returnDistanceUnits": 900
+      },
+      {
+        "id": "meadows-farms-halving-farms-entrance",
+        "kind": "entrance",
+        "x": 16600,
+        "y": 6700,
+        "cell": 37350,
+        "reachable": true,
+        "returnable": true,
+        "pathDistanceUnits": 4080,
+        "returnDistanceUnits": 4080
+      },
+      {
+        "id": "coast-bayou-silver-coast-entrance",
+        "kind": "entrance",
+        "x": 2500,
+        "y": 7600,
+        "cell": 42125,
+        "reachable": true,
+        "returnable": true,
+        "pathDistanceUnits": 10920,
+        "returnDistanceUnits": 10920
+      },
+      {
+        "id": "coast-bayou-scrypt-bayou-entrance",
+        "kind": "entrance",
+        "x": 2500,
+        "y": 10700,
+        "cell": 59493,
+        "reachable": true,
+        "returnable": true,
+        "pathDistanceUnits": 14040,
+        "returnDistanceUnits": 14040
+      },
+      {
+        "id": "city-river-litecoin-city-entrance",
+        "kind": "entrance",
+        "x": 7500,
+        "y": 7600,
+        "cell": 42209,
+        "reachable": true,
+        "returnable": true,
+        "pathDistanceUnits": 5880,
+        "returnDistanceUnits": 5880
+      },
+      {
+        "id": "city-river-hashwood-river-entrance",
+        "kind": "entrance",
+        "x": 7500,
+        "y": 10700,
+        "cell": 59577,
+        "reachable": true,
+        "returnable": true,
+        "pathDistanceUnits": 9000,
+        "returnDistanceUnits": 9000
+      },
+      {
+        "id": "meadows-woods-mweb-meadows-entrance",
+        "kind": "entrance",
+        "x": 14000,
+        "y": 7750,
+        "cell": 43319,
+        "reachable": true,
+        "returnable": true,
+        "pathDistanceUnits": 2580,
+        "returnDistanceUnits": 2580
+      },
+      {
+        "id": "meadows-woods-rugpull-woods-entrance",
+        "kind": "entrance",
+        "x": 16600,
+        "y": 10700,
+        "cell": 59728,
+        "reachable": true,
+        "returnable": true,
+        "pathDistanceUnits": 8100,
+        "returnDistanceUnits": 8100
+      },
+      {
+        "id": "farms-woods-halving-farms-entrance",
+        "kind": "entrance",
+        "x": 17500,
+        "y": 7600,
+        "cell": 42375,
+        "reachable": true,
+        "returnable": true,
+        "pathDistanceUnits": 5880,
+        "returnDistanceUnits": 5880
+      },
+      {
+        "id": "farms-woods-rugpull-woods-entrance",
+        "kind": "entrance",
+        "x": 17500,
+        "y": 10700,
+        "cell": 59743,
+        "reachable": true,
+        "returnable": true,
+        "pathDistanceUnits": 9000,
+        "returnDistanceUnits": 9000
+      },
+      {
+        "id": "bayou-river-scrypt-bayou-entrance",
+        "kind": "entrance",
+        "x": 3400,
+        "y": 11600,
+        "cell": 64518,
+        "reachable": true,
+        "returnable": true,
+        "pathDistanceUnits": 14040,
+        "returnDistanceUnits": 14040
+      },
+      {
+        "id": "bayou-river-hashwood-river-entrance",
+        "kind": "entrance",
+        "x": 6600,
+        "y": 11600,
+        "cell": 64572,
+        "reachable": true,
+        "returnable": true,
+        "pathDistanceUnits": 10800,
+        "returnDistanceUnits": 10800
+      },
+      {
+        "id": "river-pines-hashwood-river-entrance",
+        "kind": "entrance",
+        "x": 8400,
+        "y": 11600,
+        "cell": 64602,
+        "reachable": true,
+        "returnable": true,
+        "pathDistanceUnits": 10560,
+        "returnDistanceUnits": 10560
+      },
+      {
+        "id": "river-pines-hollow-pines-entrance",
+        "kind": "entrance",
+        "x": 11600,
+        "y": 11600,
+        "cell": 64655,
+        "reachable": true,
+        "returnable": true,
+        "pathDistanceUnits": 11940,
+        "returnDistanceUnits": 11940
+      },
+      {
+        "id": "pines-woods-hollow-pines-entrance",
+        "kind": "entrance",
+        "x": 13400,
+        "y": 11600,
+        "cell": 64685,
+        "reachable": true,
+        "returnable": true,
+        "pathDistanceUnits": 10140,
+        "returnDistanceUnits": 10140
+      },
+      {
+        "id": "pines-woods-rugpull-woods-entrance",
+        "kind": "entrance",
+        "x": 16600,
+        "y": 11600,
+        "cell": 64738,
+        "reachable": true,
+        "returnable": true,
+        "pathDistanceUnits": 9000,
+        "returnDistanceUnits": 9000
+      },
+      {
+        "id": "river-woods-hashwood-river-entrance",
+        "kind": "entrance",
+        "x": 9100,
+        "y": 10650,
+        "cell": 59269,
+        "reachable": true,
+        "returnable": true,
+        "pathDistanceUnits": 10260,
+        "returnDistanceUnits": 10260
+      },
+      {
+        "id": "river-woods-rugpull-woods-entrance",
+        "kind": "entrance",
+        "x": 15900,
+        "y": 10650,
+        "cell": 59383,
+        "reachable": true,
+        "returnable": true,
+        "pathDistanceUnits": 7380,
+        "returnDistanceUnits": 7380
+      },
+      {
+        "id": "city-ridge-litecoin-city-entrance",
+        "kind": "entrance",
+        "x": 7500,
+        "y": 5800,
+        "cell": 32189,
+        "reachable": true,
+        "returnable": true,
+        "pathDistanceUnits": 5880,
+        "returnDistanceUnits": 5880
+      },
+      {
+        "id": "city-ridge-ledger-ridge-entrance",
+        "kind": "entrance",
+        "x": 7500,
+        "y": 3400,
+        "cell": 18829,
+        "reachable": true,
+        "returnable": true,
+        "pathDistanceUnits": 8280,
+        "returnDistanceUnits": 8280
+      },
+      {
+        "id": "ridge-fortress-ledger-ridge-entrance",
+        "kind": "entrance",
+        "x": 8400,
+        "y": 2500,
+        "cell": 13834,
+        "reachable": true,
+        "returnable": true,
+        "pathDistanceUnits": 9840,
+        "returnDistanceUnits": 9840
+      },
+      {
+        "id": "ridge-fortress-fork-fortress-entrance",
+        "kind": "entrance",
+        "x": 11600,
+        "y": 2500,
+        "cell": 13887,
+        "reachable": true,
+        "returnable": true,
+        "pathDistanceUnits": 9780,
+        "returnDistanceUnits": 9780
+      },
+      {
+        "id": "fortress-service-fork-fortress-entrance",
+        "kind": "entrance",
+        "x": 14000,
+        "y": 3300,
+        "cell": 18603,
+        "reachable": true,
+        "returnable": true,
+        "pathDistanceUnits": 6540,
+        "returnDistanceUnits": 6540
+      },
+      {
+        "id": "fortress-service-mweb-meadows-entrance",
+        "kind": "entrance",
+        "x": 14000,
+        "y": 5750,
+        "cell": 31963,
+        "reachable": true,
+        "returnable": true,
+        "pathDistanceUnits": 2460,
+        "returnDistanceUnits": 2460
+      }
+    ],
+    "issues": []
+  },
+  "spawn": {
+    "playerRadiusClear": true,
+    "protectedRadiusClear": true
+  },
+  "roadJourneys": [
+    {
+      "id": "coast-city",
+      "actualSweepClear": true,
+      "groundContinuous": true,
+      "pathLengthUnits": 3200,
+      "nominalSecondsAt240": 13.333333333333334
+    },
+    {
+      "id": "city-meadows",
+      "actualSweepClear": true,
+      "groundContinuous": true,
+      "pathLengthUnits": 3200,
+      "nominalSecondsAt240": 13.333333333333334
+    },
+    {
+      "id": "meadows-farms",
+      "actualSweepClear": true,
+      "groundContinuous": true,
+      "pathLengthUnits": 3200,
+      "nominalSecondsAt240": 13.333333333333334
+    },
+    {
+      "id": "coast-bayou",
+      "actualSweepClear": true,
+      "groundContinuous": true,
+      "pathLengthUnits": 3100,
+      "nominalSecondsAt240": 12.916666666666666
+    },
+    {
+      "id": "city-river",
+      "actualSweepClear": true,
+      "groundContinuous": true,
+      "pathLengthUnits": 3100,
+      "nominalSecondsAt240": 12.916666666666666
+    },
+    {
+      "id": "meadows-woods",
+      "actualSweepClear": false,
+      "groundContinuous": true,
+      "pathLengthUnits": 4323.973644303268,
+      "nominalSecondsAt240": 18.016556851263616
+    },
+    {
+      "id": "farms-woods",
+      "actualSweepClear": true,
+      "groundContinuous": true,
+      "pathLengthUnits": 3100,
+      "nominalSecondsAt240": 12.916666666666666
+    },
+    {
+      "id": "bayou-river",
+      "actualSweepClear": true,
+      "groundContinuous": true,
+      "pathLengthUnits": 3200,
+      "nominalSecondsAt240": 13.333333333333334
+    },
+    {
+      "id": "river-pines",
+      "actualSweepClear": true,
+      "groundContinuous": true,
+      "pathLengthUnits": 3200,
+      "nominalSecondsAt240": 13.333333333333334
+    },
+    {
+      "id": "pines-woods",
+      "actualSweepClear": true,
+      "groundContinuous": true,
+      "pathLengthUnits": 3200,
+      "nominalSecondsAt240": 13.333333333333334
+    },
+    {
+      "id": "river-woods",
+      "actualSweepClear": true,
+      "groundContinuous": true,
+      "pathLengthUnits": 9161.418578992168,
+      "nominalSecondsAt240": 38.17257741246737
+    },
+    {
+      "id": "city-ridge",
+      "actualSweepClear": true,
+      "groundContinuous": true,
+      "pathLengthUnits": 2400,
+      "nominalSecondsAt240": 10
+    },
+    {
+      "id": "ridge-fortress",
+      "actualSweepClear": true,
+      "groundContinuous": true,
+      "pathLengthUnits": 3684.4410203711914,
+      "nominalSecondsAt240": 15.351837584879965
+    },
+    {
+      "id": "fortress-service",
+      "actualSweepClear": true,
+      "groundContinuous": true,
+      "pathLengthUnits": 4171.110255092798,
+      "nominalSecondsAt240": 17.379626062886658
+    }
+  ],
+  "sightlines": [
+    {
+      "id": "mweb-meadows-objective",
+      "clear": true,
+      "blockerId": null
+    },
+    {
+      "id": "litecoin-city-objective",
+      "clear": true,
+      "blockerId": null
+    },
+    {
+      "id": "halving-farms-objective",
+      "clear": true,
+      "blockerId": null
+    },
+    {
+      "id": "silver-coast-objective",
+      "clear": true,
+      "blockerId": null
+    },
+    {
+      "id": "scrypt-bayou-objective",
+      "clear": true,
+      "blockerId": null
+    },
+    {
+      "id": "hashwood-river-objective",
+      "clear": true,
+      "blockerId": null
+    },
+    {
+      "id": "hollow-pines-objective",
+      "clear": true,
+      "blockerId": null
+    },
+    {
+      "id": "ledger-ridge-objective",
+      "clear": true,
+      "blockerId": null
+    },
+    {
+      "id": "fork-fortress-objective",
+      "clear": true,
+      "blockerId": null
+    },
+    {
+      "id": "rugpull-woods-objective",
+      "clear": true,
+      "blockerId": null
+    }
+  ],
+  "arenas": [
+    {
+      "id": "mweb-meadows-court",
+      "separateExits": true,
+      "reachableExits": true,
+      "exitJourneys": [
+        {
+          "id": "mweb-meadows-court-exit-0",
+          "boundToCourt": true,
+          "navReachable": true,
+          "actualSweepClear": true,
+          "groundContinuous": true
+        },
+        {
+          "id": "mweb-meadows-court-exit-1",
+          "boundToCourt": true,
+          "navReachable": true,
+          "actualSweepClear": true,
+          "groundContinuous": true
+        }
+      ],
+      "usableCover": [
+        {
+          "id": "mweb-meadows-cover-0",
+          "kind": "cover-short",
+          "standing": {
+            "x": 11657,
+            "y": 6050
+          },
+          "actualSweepClear": true,
+          "groundContinuous": true
+        },
+        {
+          "id": "mweb-meadows-cover-1",
+          "kind": "cover-tall",
+          "standing": {
+            "x": 13343,
+            "y": 6050
+          },
+          "actualSweepClear": true,
+          "groundContinuous": true
+        },
+        {
+          "id": "mweb-meadows-cover-2",
+          "kind": "cover-short",
+          "standing": {
+            "x": 11657,
+            "y": 7550
+          },
+          "actualSweepClear": true,
+          "groundContinuous": true
+        },
+        {
+          "id": "mweb-meadows-cover-3",
+          "kind": "cover-tall",
+          "standing": {
+            "x": 13343,
+            "y": 7550
+          },
+          "actualSweepClear": true,
+          "groundContinuous": true
+        }
+      ],
+      "coverBasis": "Actual matching height/blocker in or within120 units of court, clear player stand-off inside court and straight two-way centre approach; not actual enter/peek/fire control proof",
+      "floorSamples": 289,
+      "openFloorSamples": 283,
+      "openFloorFraction": 0.9792387543252595,
+      "fractionBasis": "120-unit point lattice with actual player-radius collision clearance; not exact geometric area or complete boss avoidance proof"
+    },
+    {
+      "id": "litecoin-city-court",
+      "separateExits": true,
+      "reachableExits": true,
+      "exitJourneys": [
+        {
+          "id": "litecoin-city-court-exit-0",
+          "boundToCourt": true,
+          "navReachable": true,
+          "actualSweepClear": true,
+          "groundContinuous": true
+        },
+        {
+          "id": "litecoin-city-court-exit-1",
+          "boundToCourt": true,
+          "navReachable": true,
+          "actualSweepClear": true,
+          "groundContinuous": true
+        }
+      ],
+      "usableCover": [
+        {
+          "id": "litecoin-city-cover-0",
+          "kind": "cover-short",
+          "standing": {
+            "x": 6657,
+            "y": 6050
+          },
+          "actualSweepClear": true,
+          "groundContinuous": true
+        },
+        {
+          "id": "litecoin-city-cover-1",
+          "kind": "cover-tall",
+          "standing": {
+            "x": 8343,
+            "y": 6050
+          },
+          "actualSweepClear": true,
+          "groundContinuous": true
+        },
+        {
+          "id": "litecoin-city-cover-2",
+          "kind": "cover-short",
+          "standing": {
+            "x": 6657,
+            "y": 7550
+          },
+          "actualSweepClear": true,
+          "groundContinuous": true
+        },
+        {
+          "id": "litecoin-city-cover-3",
+          "kind": "cover-tall",
+          "standing": {
+            "x": 8343,
+            "y": 7550
+          },
+          "actualSweepClear": true,
+          "groundContinuous": true
+        }
+      ],
+      "coverBasis": "Actual matching height/blocker in or within120 units of court, clear player stand-off inside court and straight two-way centre approach; not actual enter/peek/fire control proof",
+      "floorSamples": 289,
+      "openFloorSamples": 283,
+      "openFloorFraction": 0.9792387543252595,
+      "fractionBasis": "120-unit point lattice with actual player-radius collision clearance; not exact geometric area or complete boss avoidance proof"
+    },
+    {
+      "id": "halving-farms-court",
+      "separateExits": true,
+      "reachableExits": true,
+      "exitJourneys": [
+        {
+          "id": "halving-farms-court-exit-0",
+          "boundToCourt": true,
+          "navReachable": true,
+          "actualSweepClear": true,
+          "groundContinuous": true
+        },
+        {
+          "id": "halving-farms-court-exit-1",
+          "boundToCourt": true,
+          "navReachable": true,
+          "actualSweepClear": true,
+          "groundContinuous": true
+        }
+      ],
+      "usableCover": [
+        {
+          "id": "halving-farms-cover-0",
+          "kind": "cover-short",
+          "standing": {
+            "x": 16657,
+            "y": 6050
+          },
+          "actualSweepClear": true,
+          "groundContinuous": true
+        },
+        {
+          "id": "halving-farms-cover-1",
+          "kind": "cover-tall",
+          "standing": {
+            "x": 18343,
+            "y": 6050
+          },
+          "actualSweepClear": true,
+          "groundContinuous": true
+        },
+        {
+          "id": "halving-farms-cover-2",
+          "kind": "cover-short",
+          "standing": {
+            "x": 16657,
+            "y": 7550
+          },
+          "actualSweepClear": true,
+          "groundContinuous": true
+        },
+        {
+          "id": "halving-farms-cover-3",
+          "kind": "cover-tall",
+          "standing": {
+            "x": 18343,
+            "y": 7550
+          },
+          "actualSweepClear": true,
+          "groundContinuous": true
+        }
+      ],
+      "coverBasis": "Actual matching height/blocker in or within120 units of court, clear player stand-off inside court and straight two-way centre approach; not actual enter/peek/fire control proof",
+      "floorSamples": 289,
+      "openFloorSamples": 283,
+      "openFloorFraction": 0.9792387543252595,
+      "fractionBasis": "120-unit point lattice with actual player-radius collision clearance; not exact geometric area or complete boss avoidance proof"
+    },
+    {
+      "id": "silver-coast-court",
+      "separateExits": true,
+      "reachableExits": true,
+      "exitJourneys": [
+        {
+          "id": "silver-coast-court-exit-0",
+          "boundToCourt": true,
+          "navReachable": true,
+          "actualSweepClear": true,
+          "groundContinuous": true
+        },
+        {
+          "id": "silver-coast-court-exit-1",
+          "boundToCourt": true,
+          "navReachable": true,
+          "actualSweepClear": true,
+          "groundContinuous": true
+        }
+      ],
+      "usableCover": [
+        {
+          "id": "silver-coast-cover-0",
+          "kind": "cover-short",
+          "standing": {
+            "x": 1657,
+            "y": 6050
+          },
+          "actualSweepClear": true,
+          "groundContinuous": true
+        },
+        {
+          "id": "silver-coast-cover-1",
+          "kind": "cover-tall",
+          "standing": {
+            "x": 3343,
+            "y": 6050
+          },
+          "actualSweepClear": true,
+          "groundContinuous": true
+        },
+        {
+          "id": "silver-coast-cover-2",
+          "kind": "cover-short",
+          "standing": {
+            "x": 1657,
+            "y": 7550
+          },
+          "actualSweepClear": true,
+          "groundContinuous": true
+        },
+        {
+          "id": "silver-coast-cover-3",
+          "kind": "cover-tall",
+          "standing": {
+            "x": 3343,
+            "y": 7550
+          },
+          "actualSweepClear": true,
+          "groundContinuous": true
+        }
+      ],
+      "coverBasis": "Actual matching height/blocker in or within120 units of court, clear player stand-off inside court and straight two-way centre approach; not actual enter/peek/fire control proof",
+      "floorSamples": 289,
+      "openFloorSamples": 283,
+      "openFloorFraction": 0.9792387543252595,
+      "fractionBasis": "120-unit point lattice with actual player-radius collision clearance; not exact geometric area or complete boss avoidance proof"
+    },
+    {
+      "id": "scrypt-bayou-court",
+      "separateExits": true,
+      "reachableExits": true,
+      "exitJourneys": [
+        {
+          "id": "scrypt-bayou-court-exit-0",
+          "boundToCourt": true,
+          "navReachable": true,
+          "actualSweepClear": true,
+          "groundContinuous": true
+        },
+        {
+          "id": "scrypt-bayou-court-exit-1",
+          "boundToCourt": true,
+          "navReachable": true,
+          "actualSweepClear": true,
+          "groundContinuous": true
+        }
+      ],
+      "usableCover": [
+        {
+          "id": "scrypt-bayou-cover-0",
+          "kind": "cover-short",
+          "standing": {
+            "x": 1657,
+            "y": 10950
+          },
+          "actualSweepClear": true,
+          "groundContinuous": true
+        },
+        {
+          "id": "scrypt-bayou-cover-1",
+          "kind": "cover-tall",
+          "standing": {
+            "x": 3343,
+            "y": 10950
+          },
+          "actualSweepClear": true,
+          "groundContinuous": true
+        },
+        {
+          "id": "scrypt-bayou-cover-2",
+          "kind": "cover-short",
+          "standing": {
+            "x": 1657,
+            "y": 12450
+          },
+          "actualSweepClear": true,
+          "groundContinuous": true
+        },
+        {
+          "id": "scrypt-bayou-cover-3",
+          "kind": "cover-tall",
+          "standing": {
+            "x": 3343,
+            "y": 12450
+          },
+          "actualSweepClear": true,
+          "groundContinuous": true
+        }
+      ],
+      "coverBasis": "Actual matching height/blocker in or within120 units of court, clear player stand-off inside court and straight two-way centre approach; not actual enter/peek/fire control proof",
+      "floorSamples": 289,
+      "openFloorSamples": 283,
+      "openFloorFraction": 0.9792387543252595,
+      "fractionBasis": "120-unit point lattice with actual player-radius collision clearance; not exact geometric area or complete boss avoidance proof"
+    },
+    {
+      "id": "hashwood-river-court",
+      "separateExits": true,
+      "reachableExits": true,
+      "exitJourneys": [
+        {
+          "id": "hashwood-river-court-exit-0",
+          "boundToCourt": true,
+          "navReachable": true,
+          "actualSweepClear": true,
+          "groundContinuous": true
+        },
+        {
+          "id": "hashwood-river-court-exit-1",
+          "boundToCourt": true,
+          "navReachable": true,
+          "actualSweepClear": true,
+          "groundContinuous": true
+        }
+      ],
+      "usableCover": [
+        {
+          "id": "hashwood-river-cover-0",
+          "kind": "cover-short",
+          "standing": {
+            "x": 6657,
+            "y": 10950
+          },
+          "actualSweepClear": true,
+          "groundContinuous": true
+        },
+        {
+          "id": "hashwood-river-cover-1",
+          "kind": "cover-tall",
+          "standing": {
+            "x": 8343,
+            "y": 10950
+          },
+          "actualSweepClear": true,
+          "groundContinuous": true
+        },
+        {
+          "id": "hashwood-river-cover-2",
+          "kind": "cover-short",
+          "standing": {
+            "x": 6657,
+            "y": 12450
+          },
+          "actualSweepClear": true,
+          "groundContinuous": true
+        },
+        {
+          "id": "hashwood-river-cover-3",
+          "kind": "cover-tall",
+          "standing": {
+            "x": 8343,
+            "y": 12450
+          },
+          "actualSweepClear": true,
+          "groundContinuous": true
+        }
+      ],
+      "coverBasis": "Actual matching height/blocker in or within120 units of court, clear player stand-off inside court and straight two-way centre approach; not actual enter/peek/fire control proof",
+      "floorSamples": 289,
+      "openFloorSamples": 283,
+      "openFloorFraction": 0.9792387543252595,
+      "fractionBasis": "120-unit point lattice with actual player-radius collision clearance; not exact geometric area or complete boss avoidance proof"
+    },
+    {
+      "id": "hollow-pines-court",
+      "separateExits": true,
+      "reachableExits": true,
+      "exitJourneys": [
+        {
+          "id": "hollow-pines-court-exit-0",
+          "boundToCourt": true,
+          "navReachable": true,
+          "actualSweepClear": true,
+          "groundContinuous": true
+        },
+        {
+          "id": "hollow-pines-court-exit-1",
+          "boundToCourt": true,
+          "navReachable": true,
+          "actualSweepClear": true,
+          "groundContinuous": true
+        }
+      ],
+      "usableCover": [
+        {
+          "id": "hollow-pines-cover-0",
+          "kind": "cover-short",
+          "standing": {
+            "x": 11657,
+            "y": 10950
+          },
+          "actualSweepClear": true,
+          "groundContinuous": true
+        },
+        {
+          "id": "hollow-pines-cover-1",
+          "kind": "cover-tall",
+          "standing": {
+            "x": 13343,
+            "y": 10950
+          },
+          "actualSweepClear": true,
+          "groundContinuous": true
+        },
+        {
+          "id": "hollow-pines-cover-2",
+          "kind": "cover-short",
+          "standing": {
+            "x": 11657,
+            "y": 12450
+          },
+          "actualSweepClear": true,
+          "groundContinuous": true
+        },
+        {
+          "id": "hollow-pines-cover-3",
+          "kind": "cover-tall",
+          "standing": {
+            "x": 13343,
+            "y": 12450
+          },
+          "actualSweepClear": true,
+          "groundContinuous": true
+        }
+      ],
+      "coverBasis": "Actual matching height/blocker in or within120 units of court, clear player stand-off inside court and straight two-way centre approach; not actual enter/peek/fire control proof",
+      "floorSamples": 289,
+      "openFloorSamples": 283,
+      "openFloorFraction": 0.9792387543252595,
+      "fractionBasis": "120-unit point lattice with actual player-radius collision clearance; not exact geometric area or complete boss avoidance proof"
+    },
+    {
+      "id": "ledger-ridge-court",
+      "separateExits": true,
+      "reachableExits": true,
+      "exitJourneys": [
+        {
+          "id": "ledger-ridge-court-exit-0",
+          "boundToCourt": true,
+          "navReachable": true,
+          "actualSweepClear": true,
+          "groundContinuous": true
+        },
+        {
+          "id": "ledger-ridge-court-exit-1",
+          "boundToCourt": true,
+          "navReachable": true,
+          "actualSweepClear": true,
+          "groundContinuous": true
+        }
+      ],
+      "usableCover": [
+        {
+          "id": "ledger-ridge-cover-0",
+          "kind": "cover-short",
+          "standing": {
+            "x": 6657,
+            "y": 1850
+          },
+          "actualSweepClear": true,
+          "groundContinuous": true
+        },
+        {
+          "id": "ledger-ridge-cover-1",
+          "kind": "cover-tall",
+          "standing": {
+            "x": 8343,
+            "y": 1850
+          },
+          "actualSweepClear": true,
+          "groundContinuous": true
+        },
+        {
+          "id": "ledger-ridge-cover-2",
+          "kind": "cover-short",
+          "standing": {
+            "x": 6657,
+            "y": 3350
+          },
+          "actualSweepClear": true,
+          "groundContinuous": true
+        },
+        {
+          "id": "ledger-ridge-cover-3",
+          "kind": "cover-tall",
+          "standing": {
+            "x": 8343,
+            "y": 3350
+          },
+          "actualSweepClear": true,
+          "groundContinuous": true
+        }
+      ],
+      "coverBasis": "Actual matching height/blocker in or within120 units of court, clear player stand-off inside court and straight two-way centre approach; not actual enter/peek/fire control proof",
+      "floorSamples": 289,
+      "openFloorSamples": 283,
+      "openFloorFraction": 0.9792387543252595,
+      "fractionBasis": "120-unit point lattice with actual player-radius collision clearance; not exact geometric area or complete boss avoidance proof"
+    },
+    {
+      "id": "fork-fortress-court",
+      "separateExits": true,
+      "reachableExits": true,
+      "exitJourneys": [
+        {
+          "id": "fork-fortress-court-exit-0",
+          "boundToCourt": true,
+          "navReachable": true,
+          "actualSweepClear": true,
+          "groundContinuous": true
+        },
+        {
+          "id": "fork-fortress-court-exit-1",
+          "boundToCourt": true,
+          "navReachable": true,
+          "actualSweepClear": true,
+          "groundContinuous": true
+        }
+      ],
+      "usableCover": [
+        {
+          "id": "fork-fortress-cover-0",
+          "kind": "cover-short",
+          "standing": {
+            "x": 11657,
+            "y": 1850
+          },
+          "actualSweepClear": true,
+          "groundContinuous": true
+        },
+        {
+          "id": "fork-fortress-cover-1",
+          "kind": "cover-tall",
+          "standing": {
+            "x": 13343,
+            "y": 1850
+          },
+          "actualSweepClear": true,
+          "groundContinuous": true
+        },
+        {
+          "id": "fork-fortress-cover-2",
+          "kind": "cover-short",
+          "standing": {
+            "x": 11657,
+            "y": 3350
+          },
+          "actualSweepClear": true,
+          "groundContinuous": true
+        },
+        {
+          "id": "fork-fortress-cover-3",
+          "kind": "cover-tall",
+          "standing": {
+            "x": 13343,
+            "y": 3350
+          },
+          "actualSweepClear": true,
+          "groundContinuous": true
+        }
+      ],
+      "coverBasis": "Actual matching height/blocker in or within120 units of court, clear player stand-off inside court and straight two-way centre approach; not actual enter/peek/fire control proof",
+      "floorSamples": 289,
+      "openFloorSamples": 283,
+      "openFloorFraction": 0.9792387543252595,
+      "fractionBasis": "120-unit point lattice with actual player-radius collision clearance; not exact geometric area or complete boss avoidance proof"
+    },
+    {
+      "id": "rugpull-woods-court",
+      "separateExits": true,
+      "reachableExits": true,
+      "exitJourneys": [
+        {
+          "id": "rugpull-woods-court-exit-0",
+          "boundToCourt": true,
+          "navReachable": true,
+          "actualSweepClear": true,
+          "groundContinuous": true
+        },
+        {
+          "id": "rugpull-woods-court-exit-1",
+          "boundToCourt": true,
+          "navReachable": true,
+          "actualSweepClear": true,
+          "groundContinuous": true
+        }
+      ],
+      "usableCover": [
+        {
+          "id": "rugpull-woods-cover-0",
+          "kind": "cover-short",
+          "standing": {
+            "x": 16657,
+            "y": 10950
+          },
+          "actualSweepClear": true,
+          "groundContinuous": true
+        },
+        {
+          "id": "rugpull-woods-cover-1",
+          "kind": "cover-tall",
+          "standing": {
+            "x": 18343,
+            "y": 10950
+          },
+          "actualSweepClear": true,
+          "groundContinuous": true
+        },
+        {
+          "id": "rugpull-woods-cover-2",
+          "kind": "cover-short",
+          "standing": {
+            "x": 16657,
+            "y": 12450
+          },
+          "actualSweepClear": true,
+          "groundContinuous": true
+        },
+        {
+          "id": "rugpull-woods-cover-3",
+          "kind": "cover-tall",
+          "standing": {
+            "x": 18343,
+            "y": 12450
+          },
+          "actualSweepClear": true,
+          "groundContinuous": true
+        }
+      ],
+      "coverBasis": "Actual matching height/blocker in or within120 units of court, clear player stand-off inside court and straight two-way centre approach; not actual enter/peek/fire control proof",
+      "floorSamples": 289,
+      "openFloorSamples": 283,
+      "openFloorFraction": 0.9792387543252595,
+      "fractionBasis": "120-unit point lattice with actual player-radius collision clearance; not exact geometric area or complete boss avoidance proof"
+    }
+  ],
+  "issues": [
+    {
+      "code": "ROAD_SWEEP_BLOCKED",
+      "id": "meadows-woods"
+    }
+  ],
+  "warnings": [
+    {
+      "code": "ROAD_PACING_TARGET",
+      "id": "river-woods",
+      "nominalSecondsAt240": 38.17257741246737,
+      "basis": "Declared gate-to-gate polyline at nominal240, not a timed current-hero run or shortest player path"
+    }
+  ]
+}

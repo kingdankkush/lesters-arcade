@@ -1,0 +1,134 @@
+{
+  "schema": "world-w1b-w2a-raw-observation-archive-v1",
+  "scope": "Original raw correctness/browser observations and failed witnesses. Does not turn harness failures, bare repeated layout or phone-sized captures into accepted full world/performance/owner/release checks.",
+  "files": {
+    "world-w1b-red-20260929-01/red-report.json": {
+      "bytes": 13389,
+      "sha256": "86b3e6a3f181d8f9344514d0af728a43210cc189d35208833e3ff07c62c9ab9c"
+    },
+    "world-w1b-arena-red-20260929-02/red-report.json": {
+      "bytes": 5880,
+      "sha256": "8a4630db46ec23723359667f998524861ff3dd84d799ca3859c42be2a4e0df69"
+    },
+    "world-w1b-arena-red-20260929-03/red-report.json": {
+      "bytes": 4261,
+      "sha256": "1cc40ddfa2c4dba5f86488d231b2f1c0b5d6efc1f4094d9aa74dbf24320cff5f"
+    },
+    "world-w1b-arena-red-20260929-04/red-report.json": {
+      "bytes": 4030,
+      "sha256": "ad889c861d1fc2699e361b6b6a04e6d224e67e41c2c576636c99c2287474ecd4"
+    },
+    "world-w1b-layout-20260929-05/gate-report.json": {
+      "bytes": 12141,
+      "sha256": "6fe1cc7bd272462453f56b00d1861a1960e216cda9d1c8d1fa3b04200de36dbd"
+    },
+    "world-w1b-layout-20260929-05/layout-report.json": {
+      "bytes": 58946,
+      "sha256": "da1559307d067787c67c33cfb4002c0a1d310b45f2c64c2444a09ec0508e471f"
+    },
+    "world-w1b-complement-red-20260929-06/red-report.json": {
+      "bytes": 7872,
+      "sha256": "db198bec33891f9fb8e1576e2cb49a147a86751a2245ce052dde120d123dbba5"
+    },
+    "world-w1b-polygon-red-20260929-07/red-report.json": {
+      "bytes": 3977,
+      "sha256": "cc8477ddfe6bea31631b2c581864930a2c1740cc5768d3269bd41b588ab92831"
+    },
+    "world-w1b-complement-contract-red-20260929-08/red-report.json": {
+      "bytes": 5947,
+      "sha256": "b9209c66e79879a70c15194a525a676338010af12e62e9669056e607b96e9629"
+    },
+    "world-w1b-layout-20260929-09/gate-report.json": {
+      "bytes": 9799,
+      "sha256": "604e19526bd2e8b6d36a151d250249ffcdd45ba9523fbec8871c938200fb5709"
+    },
+    "world-w1b-layout-20260929-09/layout-report.json": {
+      "bytes": 54013,
+      "sha256": "458247764ea4ecdda63d3e85d5764869c48b6e212d1075887a30949c92e5441b"
+    },
+    "world-w1b-layout-20260929-10/gate-report.json": {
+      "bytes": 16523,
+      "sha256": "0ea59707db1302972fb5c5ef1712c3e82f9f97b015e9b6d87bf79d82168e17cf"
+    },
+    "world-w1b-layout-20260929-10/layout-report.json": {
+      "bytes": 54097,
+      "sha256": "4c9a7f51f0a5e100f556b483bd2696e320b440d5d00247e72edc186b6fae081f"
+    },
+    "world-w1b-layout-20260929-10/bindings.json": {
+      "bytes": 7568,
+      "sha256": "9aafbe48ac14d340205c19d412d7d74957369fb88b7ed00aa060273cea63fb4b"
+    },
+    "world-w1b-playtest-red-20260929-11/red-report.json": {
+      "bytes": 10015,
+      "sha256": "ff0f2bd813eb579b980be2dbc34f3df6260dfa91834151fe81d019407a4aa06b"
+    },
+    "world-w2a-lifetime-red-20260929-12/red-report.json": {
+      "bytes": 6280,
+      "sha256": "faee670b4032811007b3aa11d86e972fb1780f6559bb26004edcd42f907d6525"
+    },
+    "world-w2a-playtest-green-20260929-13/gate-report.json": {
+      "bytes": 9844,
+      "sha256": "8039d5379b2ba27e958742a6312fbdf12dc9b5f68da55832b0bd27504d4d3987"
+    },
+    "world-w2a-playtest-green-20260929-13/bindings.json": {
+      "bytes": 5236,
+      "sha256": "1b8769e960ed47a949bf30560f9a215f589af4b99245f8e6809f4bf62965b6ea"
+    },
+    "world-w2a-preview-browser-20260929-01/gate-report.json": {
+      "bytes": 191011,
+      "sha256": "b044e3de7d655145842eb7b436681f31d3482af5a466afe1b0e71aef7361aa98"
+    },
+    "world-w2a-preview-browser-20260929-01/bindings.json": {
+      "bytes": 64305,
+      "sha256": "23e82291034d348a1cd7af8523429f064fd9e11f593719e4212d632bac4e7cb3"
+    },
+    "world-w2a-preview-browser-20260929-01/browser/browser-report.json": {
+      "bytes": 66119,
+      "sha256": "d5ab450bfa9342817469f52df3c9d04d8d1fe10d0afd056cb5b1330050f4731d"
+    },
+    "harness/world-w1b-contract-red-preflight.json.txt": {
+      "bytes": 423,
+      "sha256": "3be8c8d9748ba80fd09a724ed8529719bb65ecb51a11e1ece1701c4e89490ce3"
+    },
+    "harness/run-world-w1b-gate.mjs.txt": {
+      "bytes": 4589,
+      "sha256": "2f257c1b386870422297dbebb1138f8451302b3d92fd5783e0ea59ad93ca1dba"
+    },
+    "harness/world-w1b-diagnostic.mjs.txt": {
+      "bytes": 996,
+      "sha256": "3acd40e7081ad26462471ed1b2979ccee00851b71734eb06d7076365f04b5812"
+    },
+    "harness/prepare-world-w1b-gate.mjs.txt": {
+      "bytes": 1965,
+      "sha256": "990453a95badbb49d32fb136efdc9d2f2ecd712b7ce846f55792429a88257e2f"
+    },
+    "harness/run-world-w2a-playtest-gate.mjs.txt": {
+      "bytes": 4294,
+      "sha256": "0662c8743a2679ad007b0cfa87a127e133c516de21579a4b9bc9cebde108b2a8"
+    },
+    "harness/prepare-world-w2a-playtest-gate.mjs.txt": {
+      "bytes": 1933,
+      "sha256": "66a5d50a22a42ac5ea7d9212373072641830dd5ae98e60c0e19c6e22b0dc330c"
+    },
+    "harness/owned-windows-child.mjs.txt": {
+      "bytes": 3475,
+      "sha256": "a5177337fcf6ec41f285fc105b93d0b4b94ee1101cb14a653a91e9b8b075b0d9"
+    },
+    "harness/run-world-w2a-preview-browser.mjs.txt": {
+      "bytes": 8689,
+      "sha256": "6780d0f5050e4c500c1e8e8c041bff80bf97efbde65a30c1fc85542d0d4a553c"
+    },
+    "harness/hmh-greybox-browser-smoke.mjs.txt": {
+      "bytes": 15149,
+      "sha256": "b27df6edb91234c7807b458991b50a24527970bedb1349b7e6f6f7a848b66127"
+    },
+    "harness/owned-windows-preview-child.mjs.txt": {
+      "bytes": 3476,
+      "sha256": "6f4903a66d324a01a476eebefdfac68663dde2c573f62f637c4b7537ccb0d631"
+    },
+    "harness/prepare-world-w2a-browser.mjs.txt": {
+      "bytes": 5230,
+      "sha256": "2aa41c70faa496608e45d1055e70afa4b2be848c2fdd7c9f9000755691ddc5ea"
+    }
+  }
+}

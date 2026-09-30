@@ -412,3 +412,47 @@ Optional eight-frame Eagle pipeline, three texture tiers, strict lazy loading, s
 ## G2a checkpoint: read-only achievement rarity
 
 Public per-game verified Ranked rarity service completed locally:14 database/classifier/API cases,expanded3-query provenance suite and six actual Guest-portal Chrome HTTP checks pass. Exact pure8-case noGit/noModules copy also passes. Independent review passes; matching earning-game/wallet/session guards tested. All children/Chrome/servers/database closed and matching owned markers released. See slices/ACHIEVEMENT-RARITY-G2A.md and receipts/achievement-rarity/receipt.json. Synthetic fixture only; no live population, profile UI, badge art, reward earning, minting or release acceptance. Versions unchanged and nothing deployed.
+
+### World W1b / local W2a navigation checkpoint
+
+One authored20,000x14,000 ten-area kit/14-road layout now passes18focused checks
+and the same18 in an exact12-file empty-PATH/no-.git/no-node_modules copy.
+These repeated counts are not additive. Actual unchanged conservative nav gives
+37,268/77,589walkable cells(48.0326%),zero outside walkable rounded centres, and
+98declared sites reachable outward and back. Court-bound cover/exits and actual
+radius24 road centre sweeps pass after preserved physical-layout failures.
+Road full-width and sampled120-unit court-floor checks are explicitly limited.
+River-Woods still has a38.17s nominal polyline at240 versus initial10-25s target.
+
+The separate strict-loopback/top-level Free navigation preview passes9focused
+and same9 exact9-file source-copy cases. Actual Windows Chrome native keyboard
+walks Meadows-Farms with no jump and contacts a visible landmark; phone-sized
+414x896DPR3 real touch down/cancel clears input. Two viewport/four denied-entry
+cases and25full-resolution captures pass, with actual ownedChrome48792/HTTP
+closure observed. The20area-plan captures use explicit inspection jumps and
+are geometry/framing evidence, not walks of every route or physical-phone proof.
+The self-contained output bundle has compiled preview/runtime human atlas only,
+manual local launcher and captures; no lingering server or source art.
+
+Thirteen new module parses/exact registrations and one fresh normal build pass.
+HMH initial plus shared is1,039,992B(8,584headroom); STACKED576,100B(30,900headroom).
+Preview/kit/checker are absent from normal game meta inputs. The first default
+visual invocation fails before observer/visual import on Windows preload-path
+format, producing zero scenes/noChrome/noHTTP. ExactPID/descendant absence is
+recorded before releasing the matching marker; a null boolean follow-up record
+is retained alongside separate explicit release confirmation. File-URL-corrected
+visual-only continuation reuses exact successful build custody and passes12/12
+unchanged scenes, maximum meanDelta.019/maxDelta4/changedCells3. ActualChrome32304,
+Node12760 andHTTP all close; no baseline is accepted. All original failures and
+exact raw bytes remain under receipts/world-w1b-w2a; large receipts are lossless
+gzip with both compressed/raw identities. See slices/WORLD-W1B-W2A.md.
+
+Lead and author read full-resolution evidence: this is a usable repetitive
+navigation/kit prototype, not finished ten-area level design or owner approval.
+Objectives/combat/cover/traversal/boss spaces are staged markers. Seven old world,
+movement, collision, elevation, nav/main helpers remain unchanged. No official
+map/rules/version/session/score/verifier/bridge/save/Ranked path is mounted.
+Next: small raw-kit polygon contract, then distinct area flow, landmark approach,
+sightlines/optional paths at human scale. Full HMH Free/W3 integration, world
+streaming, owner greybox approval, physical performance, complete release gate
+and release-specific deployment approval remain open. No push/deploy/version bump.

@@ -1,0 +1,10 @@
+{
+  "schema": "world-w1b-contract-red-prelaunch-block-v1",
+  "runner": "run-world-w1b-complement-contract-red-08.mjs",
+  "outcome": "Shared marker existed; prelaunch assertion stopped before directory creation or child launch.",
+  "blockingOwner": "/root/stacked_replay_audit",
+  "blockingToken": "art-a6-tree55-preview-20260929-01",
+  "ownedMarkerCreated": false,
+  "childStarted": false,
+  "simulationOrTestRun": false
+}

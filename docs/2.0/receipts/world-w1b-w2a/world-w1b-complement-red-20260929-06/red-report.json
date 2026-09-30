@@ -1,0 +1,59 @@
+{
+  "schema": "hmh-world-w1b-complement-missing-module-red-v1",
+  "scope": "Four independent closed-mass geometry cases before helper implementation. No active map, browser or performance acceptance.",
+  "protectedBefore": {
+    "apps/hmh-reboot/src/level-one-world.mjs": "173d43a2718919dc93a5c9e2c5b061a1cb1821fc6969d9f9bd7c4f5d435c69a1",
+    "apps/hmh-reboot/src/enemy-navgrid.mjs": "da338be023aeeaadf0d5eb00a7ceef0adbd82e3ab7eb1b833fe7171445f595c3",
+    "apps/hmh-reboot/src/elevation.mjs": "afab7fb53ba657f13f1646d533909ae68544754c1de24ccef786ee156a57c4ea",
+    "apps/hmh-reboot/src/collision.mjs": "94a90d4a68c9e66b54ff0332e8cf60aaeaff06c02734aed07a3e420e7eb52593",
+    "apps/hmh-reboot/src/movement.mjs": "7fd15d97e91f67fda97b0d0c59b7a128400e4db8494f8b9d7c2fc570cc774480",
+    "apps/hmh-reboot/src/main.mjs": "389e6f9a85c123eeebd3adcfa9a78542165e68b4446b83d9d89be90df7e658a1",
+    "scripts/lib/hmh-greybox-layout-check.mjs": "7296aaf2767d5d77d759c7b7a3c9757dc931ba98e1db126436e11525533fb55e"
+  },
+  "protectedAfter": {
+    "apps/hmh-reboot/src/level-one-world.mjs": "173d43a2718919dc93a5c9e2c5b061a1cb1821fc6969d9f9bd7c4f5d435c69a1",
+    "apps/hmh-reboot/src/enemy-navgrid.mjs": "da338be023aeeaadf0d5eb00a7ceef0adbd82e3ab7eb1b833fe7171445f595c3",
+    "apps/hmh-reboot/src/elevation.mjs": "afab7fb53ba657f13f1646d533909ae68544754c1de24ccef786ee156a57c4ea",
+    "apps/hmh-reboot/src/collision.mjs": "94a90d4a68c9e66b54ff0332e8cf60aaeaff06c02734aed07a3e420e7eb52593",
+    "apps/hmh-reboot/src/movement.mjs": "7fd15d97e91f67fda97b0d0c59b7a128400e4db8494f8b9d7c2fc570cc774480",
+    "apps/hmh-reboot/src/main.mjs": "389e6f9a85c123eeebd3adcfa9a78542165e68b4446b83d9d89be90df7e658a1",
+    "scripts/lib/hmh-greybox-layout-check.mjs": "7296aaf2767d5d77d759c7b7a3c9757dc931ba98e1db126436e11525533fb55e"
+  },
+  "passed": true,
+  "command": {
+    "program": "C:\\Program Files\\nodejs\\node.exe",
+    "args": [
+      "--test",
+      "--test-reporter=tap",
+      "tests/hmh-greybox-closed-masses.test.mjs"
+    ],
+    "cwd": "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0",
+    "startedAt": "2026-09-30T04:16:06.273Z",
+    "stdout": "TAP version 13\n# Subtest: closed volumes partition a sloped footprint without filling its playable interior\nnot ok 1 - closed volumes partition a sloped footprint without filling its playable interior\n  ---\n  duration_ms: 1.5553\n  type: 'test'\n  location: 'C:\\\\Users\\\\just_\\\\lesters-arcade-wt\\\\200-world-w0\\\\tests\\\\hmh-greybox-closed-masses.test.mjs:12:1'\n  failureType: 'testCodeFailure'\n  error: |-\n    Expected values to be strictly equal:\n    + actual - expected\n    \n    + 'undefined'\n    - 'function'\n    \n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected: 'function'\n  actual: 'undefined'\n  operator: 'strictEqual'\n  stack: |-\n    run (file:///C:/Users/just_/lesters-arcade-wt/200-world-w0/tests/hmh-greybox-closed-masses.test.mjs:7:27)\n    TestContext.<anonymous> (file:///C:/Users/just_/lesters-arcade-wt/200-world-w0/tests/hmh-greybox-closed-masses.test.mjs:13:57)\n    Test.runInAsyncScope (node:async_hooks:227:14)\n    Test.run (node:internal/test_runner/test:1306:25)\n    Test.start (node:internal/test_runner/test:1177:17)\n    startSubtestAfterBootstrap (node:internal/test_runner/harness:385:17)\n  ...\n# Subtest: crossing diagonal floors and an interior island leave no invisible hole or overlapping closed mass\nnot ok 2 - crossing diagonal floors and an interior island leave no invisible hole or overlapping closed mass\n  ---\n  duration_ms: 0.195\n  type: 'test'\n  location: 'C:\\\\Users\\\\just_\\\\lesters-arcade-wt\\\\200-world-w0\\\\tests\\\\hmh-greybox-closed-masses.test.mjs:19:1'\n  failureType: 'testCodeFailure'\n  error: |-\n    Expected values to be strictly equal:\n    + actual - expected\n    \n    + 'undefined'\n    - 'function'\n    \n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected: 'function'\n  actual: 'undefined'\n  operator: 'strictEqual'\n  stack: |-\n    run (file:///C:/Users/just_/lesters-arcade-wt/200-world-w0/tests/hmh-greybox-closed-masses.test.mjs:7:27)\n    TestContext.<anonymous> (file:///C:/Users/just_/lesters-arcade-wt/200-world-w0/tests/hmh-greybox-closed-masses.test.mjs:21:20)\n    Test.runInAsyncScope (node:async_hooks:227:14)\n    Test.run (node:internal/test_runner/test:1306:25)\n    Test.processPendingSubtests (node:internal/test_runner/test:897:18)\n    Test.postRun (node:internal/test_runner/test:1447:19)\n    Test.run (node:internal/test_runner/test:1372:12)\n    async startSubtestAfterBootstrap (node:internal/test_runner/harness:385:3)\n  ...\n# Subtest: partition output is owned/frozen and real player sweeps stop at the visible closed boundary\nnot ok 3 - partition output is owned/frozen and real player sweeps stop at the visible closed boundary\n  ---\n  duration_ms: 0.1663\n  type: 'test'\n  location: 'C:\\\\Users\\\\just_\\\\lesters-arcade-wt\\\\200-world-w0\\\\tests\\\\hmh-greybox-closed-masses.test.mjs:24:1'\n  failureType: 'testCodeFailure'\n  error: |-\n    Expected values to be strictly equal:\n    + actual - expected\n    \n    + 'undefined'\n    - 'function'\n    \n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected: 'function'\n  actual: 'undefined'\n  operator: 'strictEqual'\n  stack: |-\n    run (file:///C:/Users/just_/lesters-arcade-wt/200-world-w0/tests/hmh-greybox-closed-masses.test.mjs:7:27)\n    TestContext.<anonymous> (file:///C:/Users/just_/lesters-arcade-wt/200-world-w0/tests/hmh-greybox-closed-masses.test.mjs:25:44)\n    Test.runInAsyncScope (node:async_hooks:227:14)\n    Test.run (node:internal/test_runner/test:1306:25)\n    Test.processPendingSubtests (node:internal/test_runner/test:897:18)\n    Test.postRun (node:internal/test_runner/test:1447:19)\n    Test.run (node:internal/test_runner/test:1372:12)\n    async Test.processPendingSubtests (node:internal/test_runner/test:897:7)\n  ...\n# Subtest: malformed and concave floor footprints cannot silently produce believable closed geometry\nnot ok 4 - malformed and concave floor footprints cannot silently produce believable closed geometry\n  ---\n  duration_ms: 0.1196\n  type: 'test'\n  location: 'C:\\\\Users\\\\just_\\\\lesters-arcade-wt\\\\200-world-w0\\\\tests\\\\hmh-greybox-closed-masses.test.mjs:33:1'\n  failureType: 'testCodeFailure'\n  error: |-\n    Expected values to be strictly equal:\n    + actual - expected\n    \n    + 'undefined'\n    - 'function'\n    \n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected: 'function'\n  actual: 'undefined'\n  operator: 'strictEqual'\n  stack: |-\n    TestContext.<anonymous> (file:///C:/Users/just_/lesters-arcade-wt/200-world-w0/tests/hmh-greybox-closed-masses.test.mjs:34:10)\n    Test.runInAsyncScope (node:async_hooks:227:14)\n    Test.run (node:internal/test_runner/test:1306:25)\n    Test.processPendingSubtests (node:internal/test_runner/test:897:18)\n    Test.postRun (node:internal/test_runner/test:1447:19)\n    Test.run (node:internal/test_runner/test:1372:12)\n    async Test.processPendingSubtests (node:internal/test_runner/test:897:7)\n  ...\n1..4\n# tests 4\n# suites 0\n# pass 0\n# fail 4\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 141.7745\n",
+    "stderr": "",
+    "watchdogMs": 15000,
+    "watchdogTriggered": false,
+    "spawnError": null,
+    "treeStop": null,
+    "shutdownCloseDeadlineMs": 20000,
+    "childClosureConfirmed": true,
+    "outputLimitTriggered": false,
+    "spawnedPid": 5688,
+    "exitCode": 1,
+    "signal": null,
+    "closeObservedAt": "2026-09-30T04:16:06.514Z",
+    "finishedAt": "2026-09-30T04:16:06.514Z",
+    "wholeChildWallMs": 238.94419999999997,
+    "normalExit": false
+  },
+  "counts": {
+    "tests": 4,
+    "pass": 0,
+    "fail": 4,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0
+  },
+  "markerRetainedForUnconfirmedShutdown": false,
+  "markerReleased": true
+}

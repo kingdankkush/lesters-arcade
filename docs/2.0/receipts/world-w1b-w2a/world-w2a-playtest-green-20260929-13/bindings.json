@@ -1,0 +1,134 @@
+{
+  "schema": "world-w1b-source-copy-binding-v1",
+  "roots": [
+    "tests/hmh-greybox-playtest.test.mjs"
+  ],
+  "sources": {
+    "tests/hmh-greybox-playtest.test.mjs": {
+      "bytes": 6723,
+      "sha256": "f97f82199d638f52c01eba264211c264e3225e807ea8f2ed82de02bdae4a4658"
+    },
+    "apps/hmh-reboot/src/collision.mjs": {
+      "bytes": 18604,
+      "sha256": "94a90d4a68c9e66b54ff0332e8cf60aaeaff06c02734aed07a3e420e7eb52593"
+    },
+    "apps/hmh-reboot/src/value-guards.mjs": {
+      "bytes": 2596,
+      "sha256": "8576f65fd1f8a4680578580a150bd3acdec43f555e6c8f1181e54ae92771cb94"
+    },
+    "apps/hmh-reboot/src/blocker-bounds.mjs": {
+      "bytes": 4684,
+      "sha256": "7f94d7f336a697e806ce92d1f5eedf9674d9d948f6366a958ba27e7124d2bf8a"
+    },
+    "apps/hmh-reboot/src/elevation.mjs": {
+      "bytes": 19061,
+      "sha256": "afab7fb53ba657f13f1646d533909ae68544754c1de24ccef786ee156a57c4ea"
+    },
+    "apps/hmh-reboot/src/dev/greybox-access.mjs": {
+      "bytes": 872,
+      "sha256": "222a770f3eb59d670c5804ca6f9e17d9c6c5312ae4fc4d3bbff7c56b08958237"
+    },
+    "apps/hmh-reboot/src/dev/greybox-navigation.mjs": {
+      "bytes": 4687,
+      "sha256": "f4dda425b57cc2810a393efe184ed1f0df4fd23f444887525d60e3dfc776c185"
+    },
+    "apps/hmh-reboot/src/movement.mjs": {
+      "bytes": 8122,
+      "sha256": "7fd15d97e91f67fda97b0d0c59b7a128400e4db8494f8b9d7c2fc570cc774480"
+    },
+    "apps/hmh-reboot/src/dev/greybox-preview-launch.mjs": {
+      "bytes": 1016,
+      "sha256": "0ebe73bd5112241fd5fb7d98b5def88ee2eb44fa91deb1782d71e1a043f2d221"
+    }
+  },
+  "edges": [
+    {
+      "file": "tests/hmh-greybox-playtest.test.mjs",
+      "specifier": "../apps/hmh-reboot/src/collision.mjs",
+      "resolved": "apps/hmh-reboot/src/collision.mjs"
+    },
+    {
+      "file": "apps/hmh-reboot/src/collision.mjs",
+      "specifier": "./value-guards.mjs",
+      "resolved": "apps/hmh-reboot/src/value-guards.mjs"
+    },
+    {
+      "file": "apps/hmh-reboot/src/collision.mjs",
+      "specifier": "./blocker-bounds.mjs",
+      "resolved": "apps/hmh-reboot/src/blocker-bounds.mjs"
+    },
+    {
+      "file": "apps/hmh-reboot/src/blocker-bounds.mjs",
+      "specifier": "./value-guards.mjs",
+      "resolved": "apps/hmh-reboot/src/value-guards.mjs"
+    },
+    {
+      "file": "tests/hmh-greybox-playtest.test.mjs",
+      "specifier": "../apps/hmh-reboot/src/elevation.mjs",
+      "resolved": "apps/hmh-reboot/src/elevation.mjs"
+    },
+    {
+      "file": "apps/hmh-reboot/src/elevation.mjs",
+      "specifier": "./value-guards.mjs",
+      "resolved": "apps/hmh-reboot/src/value-guards.mjs"
+    },
+    {
+      "file": "apps/hmh-reboot/src/elevation.mjs",
+      "specifier": "./blocker-bounds.mjs",
+      "resolved": "apps/hmh-reboot/src/blocker-bounds.mjs"
+    },
+    {
+      "file": "apps/hmh-reboot/src/elevation.mjs",
+      "specifier": "./value-guards.mjs",
+      "resolved": "apps/hmh-reboot/src/value-guards.mjs"
+    },
+    {
+      "file": "tests/hmh-greybox-playtest.test.mjs",
+      "specifier": "../apps/hmh-reboot/src/dev/greybox-access.mjs",
+      "resolved": "apps/hmh-reboot/src/dev/greybox-access.mjs"
+    },
+    {
+      "file": "tests/hmh-greybox-playtest.test.mjs",
+      "specifier": "../apps/hmh-reboot/src/dev/greybox-navigation.mjs",
+      "resolved": "apps/hmh-reboot/src/dev/greybox-navigation.mjs"
+    },
+    {
+      "file": "apps/hmh-reboot/src/dev/greybox-navigation.mjs",
+      "specifier": "../movement.mjs",
+      "resolved": "apps/hmh-reboot/src/movement.mjs"
+    },
+    {
+      "file": "apps/hmh-reboot/src/movement.mjs",
+      "specifier": "./value-guards.mjs",
+      "resolved": "apps/hmh-reboot/src/value-guards.mjs"
+    },
+    {
+      "file": "apps/hmh-reboot/src/dev/greybox-navigation.mjs",
+      "specifier": "../collision.mjs",
+      "resolved": "apps/hmh-reboot/src/collision.mjs"
+    },
+    {
+      "file": "apps/hmh-reboot/src/dev/greybox-navigation.mjs",
+      "specifier": "../elevation.mjs",
+      "resolved": "apps/hmh-reboot/src/elevation.mjs"
+    },
+    {
+      "file": "tests/hmh-greybox-playtest.test.mjs",
+      "specifier": "../apps/hmh-reboot/src/dev/greybox-preview-launch.mjs",
+      "resolved": "apps/hmh-reboot/src/dev/greybox-preview-launch.mjs"
+    }
+  ],
+  "protectedFiles": {
+    "apps/hmh-reboot/src/level-one-world.mjs": "173d43a2718919dc93a5c9e2c5b061a1cb1821fc6969d9f9bd7c4f5d435c69a1",
+    "apps/hmh-reboot/src/enemy-navgrid.mjs": "da338be023aeeaadf0d5eb00a7ceef0adbd82e3ab7eb1b833fe7171445f595c3",
+    "apps/hmh-reboot/src/elevation.mjs": "afab7fb53ba657f13f1646d533909ae68544754c1de24ccef786ee156a57c4ea",
+    "apps/hmh-reboot/src/collision.mjs": "94a90d4a68c9e66b54ff0332e8cf60aaeaff06c02734aed07a3e420e7eb52593",
+    "apps/hmh-reboot/src/movement.mjs": "7fd15d97e91f67fda97b0d0c59b7a128400e4db8494f8b9d7c2fc570cc774480",
+    "apps/hmh-reboot/src/main.mjs": "389e6f9a85c123eeebd3adcfa9a78542165e68b4446b83d9d89be90df7e658a1",
+    "scripts/lib/hmh-greybox-layout-check.mjs": "7296aaf2767d5d77d759c7b7a3c9757dc931ba98e1db126436e11525533fb55e"
+  },
+  "harness": {
+    "work/owned-windows-child.mjs": "a5177337fcf6ec41f285fc105b93d0b4b94ee1101cb14a653a91e9b8b075b0d9",
+    "work/world-w1b-diagnostic.mjs": "3acd40e7081ad26462471ed1b2979ccee00851b71734eb06d7076365f04b5812"
+  }
+}

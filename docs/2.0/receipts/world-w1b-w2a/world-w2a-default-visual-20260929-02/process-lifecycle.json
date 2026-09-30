@@ -1,0 +1,39 @@
+{
+  "schema": "world-default-visual-owned-lifecycle-v1",
+  "scope": "Observed exact Node-spawned child close events and local HTTP server lifecycle. No simulation/clock/API arguments changed. Not unrelated processes, total process-tree CPU, device or release certification.",
+  "parentPid": 12760,
+  "children": [
+    {
+      "index": 0,
+      "program": "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+      "pid": 32304,
+      "spawnReturned": true,
+      "closeObserved": true,
+      "error": null,
+      "isChrome": true,
+      "exitCode": 0,
+      "signal": null,
+      "closeObservedAt": "2026-09-30T05:47:42.455Z"
+    }
+  ],
+  "servers": [
+    {
+      "index": 0,
+      "listeningObserved": true,
+      "closeObserved": true,
+      "error": null,
+      "address": {
+        "address": "127.0.0.1",
+        "family": "IPv4",
+        "port": 56486
+      },
+      "closeObservedAt": "2026-09-30T05:47:42.479Z"
+    }
+  ],
+  "observerErrors": [],
+  "nodeExitObserved": true,
+  "nodeExitCode": 0,
+  "allReturnedChildrenClosed": true,
+  "allListeningServersClosed": true,
+  "actualChromeSpawns": 1
+}

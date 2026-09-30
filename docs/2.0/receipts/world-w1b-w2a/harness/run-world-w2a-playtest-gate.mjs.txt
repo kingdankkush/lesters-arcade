@@ -1,0 +1,40 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import assert from 'node:assert/strict';
+import { createHash,randomUUID } from 'node:crypto';
+const repo='C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0',marker='C:\\Users\\just_\\lesters-arcade-wt\\.locks\\heavy.lock';
+const out=path.resolve('work/world-w2a-playtest-green-20260929-13'),binding=path.resolve('work/world-w2a-playtest-bindings.json');
+const sha=bytes=>createHash('sha256').update(bytes).digest('hex');
+assert.equal(sha(fs.readFileSync(binding)),'1b8769e960ed47a949bf30560f9a215f589af4b99245f8e6809f4bf62965b6ea');
+const manifest=JSON.parse(fs.readFileSync(binding));
+function capture(){return Object.fromEntries([...new Set([...Object.keys(manifest.sources),...Object.keys(manifest.protectedFiles)])].map(file=>[file,sha(fs.readFileSync(path.join(repo,file)))]));}
+const before=capture();
+for(const[file,item]of Object.entries(manifest.sources))assert.equal(before[file],item.sha256,file);
+for(const[file,expected]of Object.entries(manifest.protectedFiles))assert.equal(before[file],expected,file);
+for(const[file,expected]of Object.entries(manifest.harness))assert.equal(sha(fs.readFileSync(file)),expected,file);
+assert.equal(fs.existsSync(out),false);assert.equal(fs.existsSync(marker),false);
+const {runOwnedWindowsChild}=await import('./owned-windows-child.mjs');
+const token=`world-w1b-gate-${randomUUID()}`,report={schema:'world-w2a-local-navigation-source-copy-gate-v1',scope:'Offline authored geometry and exact unchanged conservative lattice; no browser, full gameplay, Ranked map/version, device or performance acceptance.',passed:false,before,after:null,commands:[]};
+fs.mkdirSync(marker);fs.writeFileSync(path.join(marker,'owner.json'),JSON.stringify({owner:'/root/world_w0_audit',task:'W2a9focused+sourcecopy',token}),{flag:'wx'});
+let certain=true;
+const counts=stdout=>Object.fromEntries(['tests','pass','fail','cancelled','skipped','todo'].map(label=>[label,Number(stdout.match(new RegExp(`^# ${label} (\\d+)$`,'m'))?.[1])]));
+try{
+  fs.mkdirSync(out);fs.copyFileSync(binding,path.join(out,'bindings.json'));fs.copyFileSync(new URL(import.meta.url),path.join(out,'runner.mjs.txt'));
+  for(const[file]of Object.entries(manifest.sources)){const target=path.join(out,'source-copy',file);fs.mkdirSync(path.dirname(target),{recursive:true});fs.copyFileSync(path.join(repo,file),target);}
+  const copy=path.join(out,'source-copy');assert.equal(fs.existsSync(path.join(copy,'.git')),false);assert.equal(fs.existsSync(path.join(copy,'node_modules')),false);
+  for(const[file,item]of Object.entries(manifest.sources))assert.equal(sha(fs.readFileSync(path.join(copy,file))),item.sha256,file);
+  for(const[label,cwd,env]of [['focused',repo,process.env],['source-copy-empty-PATH',copy,{...process.env,PATH:'',Path:'',GIT_DIR:'',GIT_WORK_TREE:''}]]){
+    if(!certain)break;const command=await runOwnedWindowsChild(process.execPath,['--test','--test-reporter=tap',...manifest.roots],{cwd,env,watchdogMs:30_000});certain=command.childClosureConfirmed;report.commands.push({label,command,counts:counts(command.stdout)});
+  }
+
+  report.after=capture();assert.deepEqual(report.after,before);
+  for(const[file,item]of Object.entries(manifest.sources))assert.equal(sha(fs.readFileSync(path.join(copy,file))),item.sha256,file);
+  for(const[file,expected]of Object.entries(manifest.harness))assert.equal(sha(fs.readFileSync(file)),expected,file);
+  report.passed=certain&&report.commands.length===2&&report.commands.every(({command,counts:c})=>command.normalExit&&c.tests===9&&c.pass===9&&c.fail===0&&c.cancelled===0&&c.skipped===0&&c.todo===0);
+  if(!report.passed)process.exitCode=1;
+}catch(error){report.failure={message:error.message,stack:error.stack};process.exitCode=1;}
+finally{
+  report.markerRetainedForUnconfirmedShutdown=!certain;
+  if(certain){assert.equal(JSON.parse(fs.readFileSync(path.join(marker,'owner.json'))).token,token);fs.unlinkSync(path.join(marker,'owner.json'));fs.rmdirSync(marker);report.markerReleased=true;}
+  fs.writeFileSync(path.join(out,'gate-report.json'),JSON.stringify(report,null,2));console.log(JSON.stringify({out,passed:report.passed,counts:report.commands.map(item=>({phase:item.label,...item.counts})),markerReleased:report.markerReleased??false}));if(!certain)process.exit(1);
+}

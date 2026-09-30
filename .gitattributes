@@ -66,3 +66,6 @@ docs/2.0/receipts/stacked-transport-copy-paired-raw.json -text
 # Raw E1 execution receipts must retain exact bytes.
 docs/2.0/receipts/chikun-e1/** -text
 docs/2.0/receipts/achievement-rarity/** -text
+
+# Preserve exact World kit/navigation producer and harness witness bytes.
+docs/2.0/receipts/world-w1b-w2a/** -text whitespace=cr-at-eol

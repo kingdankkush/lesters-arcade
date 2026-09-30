@@ -1,0 +1,7 @@
+{
+  "checkedAt": "2026-09-30T05:40:10.5496163Z",
+  "exactOwnedPid": 44240,
+  "activeOwnedOrDirectChildren": 0,
+  "rows": [],
+  "basis": "Read-only Windows process snapshot; no process was killed or targeted by name. Child failed in Node preload URL resolution before observer/target import."
+}

@@ -1,0 +1,28 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import assert from 'node:assert/strict';
+import {createHash} from 'node:crypto';
+const repo='C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0',output=path.resolve('work/world-w2a-default-visual-bindings.json');
+assert.equal(fs.existsSync(output),false,'reviewed bindings are immutable');
+const hash=body=>createHash('sha256').update(body).digest('hex'),item=file=>{const body=fs.readFileSync(file);return{bytes:body.length,sha256:hash(body)};};
+const preview=JSON.parse(fs.readFileSync('work/world-w2a-browser-bindings.json'));
+const manifest={schema:'world-w2a-default-build-visual-binding-v1',repo,scope:'Source-only discovery of actual prior normal build imports plus runtime/build/standard visual code, declared dependencies and unchanged baselines. Prior artifact discovery is not candidate certification.',sources:{},dependencies:{},harness:{},virtualInputs:{},protectedFiles:preview.protectedFiles,priorInputNames:[]};
+const dependencyRoot=fs.realpathSync(path.join(repo,'node_modules'));
+const add=(group,file)=>{group[path.resolve(file)]=item(file);};
+function tree(dir,group,extensions=null){for(const entry of fs.readdirSync(dir,{withFileTypes:true})){const file=path.join(dir,entry.name);if(entry.isDirectory())tree(file,group,extensions);else{assert.ok(entry.isFile()&&!entry.isSymbolicLink(),`unclassified link:${file}`);if(!extensions||extensions.has(path.extname(file)))add(group,file);}}}
+const priorMetaFile=path.join(repo,'apps/portal/dist/meta.json'),prior=JSON.parse(fs.readFileSync(priorMetaFile));manifest.priorMeta={file:priorMetaFile,...item(priorMetaFile),basis:'Input names only; old emitted bytes are not this candidate.'};
+const virtual=new Set(['hmh-pixi-stub:accessibility/init.mjs','hmh-pixi-stub:events/init.mjs','hmh-pixi-stub:filters/init.mjs','hmh-pixi-stub:rendering/renderers/gpu/WebGPURenderer.mjs','hmh-pixi-stub:rendering/renderers/canvas/CanvasRenderer.mjs','reown-stub:safe-apps-provider']);
+for(const[relative,input]of Object.entries(prior.inputs)){manifest.priorInputNames.push(relative);const file=path.resolve(repo,relative);if(!fs.existsSync(file)){assert.ok(virtual.has(relative),`unknown virtual input:${relative}`);manifest.virtualInputs[relative]={bytes:input.bytes};continue;}const dependency=file.startsWith(path.join(repo,'node_modules')+path.sep)||file.startsWith(dependencyRoot+path.sep);assert.ok(file.startsWith(repo+path.sep)||dependency);add(dependency?manifest.dependencies:manifest.sources,file);}
+const ext=new Set(['.mjs','.js','.json','.css','.html','.glsl']);tree(path.join(repo,'scripts'),manifest.sources,ext);
+for(const game of ['portal','hmh-reboot','chikun','stacked'])tree(path.join(repo,'apps',game,'src'),manifest.sources,ext);
+for(const relative of ['build.mjs','package.json','package-lock.json','apps/portal/index.html','apps/portal/stacked/index.html','apps/portal/stacked/game.css','apps/portal/sw.js','apps/portal/sitemap.xml','apps/portal/llms.txt','apps/portal/robots.txt','apps/portal/manifest.webmanifest'])add(manifest.sources,path.join(repo,relative));
+for(const relative of Object.keys(preview.sources))add(manifest.sources,path.join(repo,relative));
+for(const relative of Object.keys(preview.assets))add(manifest.sources,path.join(repo,relative));
+tree(path.join(repo,'docs/testing/VISUAL_BASELINES/hmh-reboot'),manifest.sources);
+for(const name of ['esbuild','@esbuild/win32-x64'])tree(path.join(repo,'node_modules',name),manifest.dependencies);
+for(const name of ['playwright','playwright-core'])tree(path.join(repo,'benchmarks/hmh-engine-bakeoff/node_modules',name),manifest.dependencies);
+for(const relative of ['work/owned-windows-world-visual-child.mjs','work/check-world-preview-syntax.mjs','work/world-default-visual-process-observer.mjs','work/prepare-world-w2a-default-visual.mjs','work/world-w2a-browser-bindings.json','work/world-w2a-preview-browser-20260929-01/gate-report.json'])add(manifest.harness,path.resolve(relative));
+manifest.node=preview.node;manifest.chrome=preview.chrome;
+for(const[relative,expected]of Object.entries(manifest.protectedFiles))assert.deepEqual(item(path.join(repo,relative)),expected,relative);
+fs.writeFileSync(output,JSON.stringify(manifest,null,2));
+console.log(JSON.stringify({output,sha256:hash(fs.readFileSync(output)),sources:Object.keys(manifest.sources).length,dependencies:Object.keys(manifest.dependencies).length,harness:Object.keys(manifest.harness).length,virtualInputs:Object.keys(manifest.virtualInputs).length,sourceOnly:true}));

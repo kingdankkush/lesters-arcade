@@ -1,0 +1,1932 @@
+{
+  "schema": "hmh-greybox-native-browser-v1",
+  "scope": "Local top-level Free navigation-only preview; Windows Chrome desktop/phone framing proxy, not physical phone, FPS, full simulation, combat/mission/cover/climb, W3/verifier or owner greybox approval.",
+  "passed": true,
+  "viewports": [
+    {
+      "viewport": {
+        "name": "desktop",
+        "width": 1280,
+        "height": 800,
+        "deviceScaleFactor": 1,
+        "isMobile": false,
+        "hasTouch": false
+      },
+      "captures": [
+        {
+          "name": "desktop-start",
+          "basis": "Actual initial localFree spawn, no jump",
+          "path": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w2a-preview-browser-20260929-01\\browser\\desktop-start.png",
+          "bytes": 29450,
+          "sha256": "6127993d73d25544c800944de7c729502166557a7ade455ca462c29848384c6a",
+          "snapshot": {
+            "access": {
+              "allowed": true,
+              "reason": "local-free-navigation",
+              "officialRun": false,
+              "rankedEligible": false
+            },
+            "phase": "ready",
+            "disposed": false,
+            "failure": null,
+            "cleanupFailure": null,
+            "playtest": {
+              "mapId": "visual-overhaul-greybox-v1",
+              "view": {
+                "tick": 12,
+                "x": 12500,
+                "y": 6700,
+                "groundZ": 0,
+                "vx": 0,
+                "vy": 0,
+                "locomotion": "idle",
+                "legDirection": 0,
+                "torsoDirection": 0,
+                "contacts": 0,
+                "inspectionJumps": 0,
+                "lastAction": "movement",
+                "officialRun": false,
+                "rankedEligible": false
+              },
+              "assetsReady": true,
+              "disposed": false,
+              "renderFrames": 20,
+              "visiblePieces": 3,
+              "width": 1280,
+              "height": 604,
+              "nativeEvents": 0,
+              "heldKeys": 0,
+              "heldPointers": 0,
+              "planView": false,
+              "previewOnly": true
+            }
+          },
+          "overflow": {
+            "horizontal": false,
+            "vertical": false
+          }
+        },
+        {
+          "name": "desktop-road-crossing",
+          "basis": "Actual native continuous movement; no inspection jump",
+          "path": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w2a-preview-browser-20260929-01\\browser\\desktop-road-crossing.png",
+          "bytes": 30735,
+          "sha256": "53c2cdf2f3df7459cfee12f8c58b7e3ebd58739dae23abe33589bb3d5d43a30d",
+          "snapshot": {
+            "access": {
+              "allowed": true,
+              "reason": "local-free-navigation",
+              "officialRun": false,
+              "rankedEligible": false
+            },
+            "phase": "ready",
+            "disposed": false,
+            "failure": null,
+            "cleanupFailure": null,
+            "playtest": {
+              "mapId": "visual-overhaul-greybox-v1",
+              "view": {
+                "tick": 795,
+                "x": 15605.666666666666,
+                "y": 6700,
+                "groundZ": 0,
+                "vx": 0,
+                "vy": 0,
+                "locomotion": "idle",
+                "legDirection": 0,
+                "torsoDirection": 0,
+                "contacts": 0,
+                "inspectionJumps": 0,
+                "lastAction": "movement",
+                "officialRun": false,
+                "rankedEligible": false
+              },
+              "assetsReady": true,
+              "disposed": false,
+              "renderFrames": 1898,
+              "visiblePieces": 69,
+              "width": 1280,
+              "height": 604,
+              "nativeEvents": 2,
+              "heldKeys": 0,
+              "heldPointers": 0,
+              "planView": false,
+              "previewOnly": true
+            }
+          },
+          "overflow": {
+            "horizontal": false,
+            "vertical": false
+          }
+        },
+        {
+          "name": "desktop-landmark-collision",
+          "basis": "Actual native player-radius wall contact after labelled area jump",
+          "path": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w2a-preview-browser-20260929-01\\browser\\desktop-landmark-collision.png",
+          "bytes": 33204,
+          "sha256": "a38d1d571dfae6e3bd8199923a91d865b2465f7925311463143f14d4b8a63e38",
+          "snapshot": {
+            "access": {
+              "allowed": true,
+              "reason": "local-free-navigation",
+              "officialRun": false,
+              "rankedEligible": false
+            },
+            "phase": "ready",
+            "disposed": false,
+            "failure": null,
+            "cleanupFailure": null,
+            "playtest": {
+              "mapId": "visual-overhaul-greybox-v1",
+              "view": {
+                "tick": 1147,
+                "x": 11902.333333333334,
+                "y": 5934.000001,
+                "groundZ": 0,
+                "vx": 0,
+                "vy": 0,
+                "locomotion": "idle",
+                "legDirection": 6,
+                "torsoDirection": 6,
+                "contacts": 0,
+                "inspectionJumps": 1,
+                "lastAction": "movement",
+                "officialRun": false,
+                "rankedEligible": false
+              },
+              "assetsReady": true,
+              "disposed": false,
+              "renderFrames": 2744,
+              "visiblePieces": 2,
+              "width": 1280,
+              "height": 604,
+              "nativeEvents": 6,
+              "heldKeys": 0,
+              "heldPointers": 0,
+              "planView": false,
+              "previewOnly": true
+            }
+          },
+          "overflow": {
+            "horizontal": false,
+            "vertical": false
+          }
+        },
+        {
+          "name": "desktop-mweb-meadows",
+          "basis": "Explicit inspection jump/area plan; demonstrates full geometry/framing, not route traversal or close actor scale",
+          "path": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w2a-preview-browser-20260929-01\\browser\\desktop-mweb-meadows.png",
+          "bytes": 45407,
+          "sha256": "e927509a8b0caea48c78c73d1fee3506ecbb22f69a422de27027ea55766a40ab",
+          "snapshot": {
+            "access": {
+              "allowed": true,
+              "reason": "local-free-navigation",
+              "officialRun": false,
+              "rankedEligible": false
+            },
+            "phase": "ready",
+            "disposed": false,
+            "failure": null,
+            "cleanupFailure": null,
+            "playtest": {
+              "mapId": "visual-overhaul-greybox-v1",
+              "view": {
+                "tick": 1152,
+                "x": 12500,
+                "y": 6700,
+                "groundZ": 0,
+                "vx": 0,
+                "vy": 0,
+                "locomotion": "idle",
+                "legDirection": 0,
+                "torsoDirection": 0,
+                "contacts": 0,
+                "inspectionJumps": 2,
+                "lastAction": "movement",
+                "officialRun": false,
+                "rankedEligible": false
+              },
+              "assetsReady": true,
+              "disposed": false,
+              "renderFrames": 2758,
+              "visiblePieces": 224,
+              "width": 1280,
+              "height": 604,
+              "nativeEvents": 6,
+              "heldKeys": 0,
+              "heldPointers": 0,
+              "planView": true,
+              "previewOnly": true
+            }
+          },
+          "overflow": {
+            "horizontal": false,
+            "vertical": false
+          }
+        },
+        {
+          "name": "desktop-litecoin-city",
+          "basis": "Explicit inspection jump/area plan; demonstrates full geometry/framing, not route traversal or close actor scale",
+          "path": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w2a-preview-browser-20260929-01\\browser\\desktop-litecoin-city.png",
+          "bytes": 39229,
+          "sha256": "37e3ccf3ec41ff4316140c6c19a0a5c01de7556d746207042881e78292f35635",
+          "snapshot": {
+            "access": {
+              "allowed": true,
+              "reason": "local-free-navigation",
+              "officialRun": false,
+              "rankedEligible": false
+            },
+            "phase": "ready",
+            "disposed": false,
+            "failure": null,
+            "cleanupFailure": null,
+            "playtest": {
+              "mapId": "visual-overhaul-greybox-v1",
+              "view": {
+                "tick": 1155,
+                "x": 7500,
+                "y": 6700,
+                "groundZ": 0,
+                "vx": 0,
+                "vy": 0,
+                "locomotion": "idle",
+                "legDirection": 0,
+                "torsoDirection": 0,
+                "contacts": 0,
+                "inspectionJumps": 3,
+                "lastAction": "movement",
+                "officialRun": false,
+                "rankedEligible": false
+              },
+              "assetsReady": true,
+              "disposed": false,
+              "renderFrames": 2767,
+              "visiblePieces": 110,
+              "width": 1280,
+              "height": 604,
+              "nativeEvents": 6,
+              "heldKeys": 0,
+              "heldPointers": 0,
+              "planView": true,
+              "previewOnly": true
+            }
+          },
+          "overflow": {
+            "horizontal": false,
+            "vertical": false
+          }
+        },
+        {
+          "name": "desktop-halving-farms",
+          "basis": "Explicit inspection jump/area plan; demonstrates full geometry/framing, not route traversal or close actor scale",
+          "path": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w2a-preview-browser-20260929-01\\browser\\desktop-halving-farms.png",
+          "bytes": 40025,
+          "sha256": "258ecd61e49a39fc25f3a88e713d6bc27a4f58bcbec175e9eb74d4091779c446",
+          "snapshot": {
+            "access": {
+              "allowed": true,
+              "reason": "local-free-navigation",
+              "officialRun": false,
+              "rankedEligible": false
+            },
+            "phase": "ready",
+            "disposed": false,
+            "failure": null,
+            "cleanupFailure": null,
+            "playtest": {
+              "mapId": "visual-overhaul-greybox-v1",
+              "view": {
+                "tick": 1158,
+                "x": 17500,
+                "y": 6700,
+                "groundZ": 0,
+                "vx": 0,
+                "vy": 0,
+                "locomotion": "idle",
+                "legDirection": 0,
+                "torsoDirection": 0,
+                "contacts": 0,
+                "inspectionJumps": 4,
+                "lastAction": "movement",
+                "officialRun": false,
+                "rankedEligible": false
+              },
+              "assetsReady": true,
+              "disposed": false,
+              "renderFrames": 2776,
+              "visiblePieces": 150,
+              "width": 1280,
+              "height": 604,
+              "nativeEvents": 6,
+              "heldKeys": 0,
+              "heldPointers": 0,
+              "planView": true,
+              "previewOnly": true
+            }
+          },
+          "overflow": {
+            "horizontal": false,
+            "vertical": false
+          }
+        },
+        {
+          "name": "desktop-silver-coast",
+          "basis": "Explicit inspection jump/area plan; demonstrates full geometry/framing, not route traversal or close actor scale",
+          "path": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w2a-preview-browser-20260929-01\\browser\\desktop-silver-coast.png",
+          "bytes": 35211,
+          "sha256": "92fb1c8ff86334f61cde368871d2e53380ced45d40f853624dc1453fac4fecc4",
+          "snapshot": {
+            "access": {
+              "allowed": true,
+              "reason": "local-free-navigation",
+              "officialRun": false,
+              "rankedEligible": false
+            },
+            "phase": "ready",
+            "disposed": false,
+            "failure": null,
+            "cleanupFailure": null,
+            "playtest": {
+              "mapId": "visual-overhaul-greybox-v1",
+              "view": {
+                "tick": 1161,
+                "x": 2500,
+                "y": 6700,
+                "groundZ": 0,
+                "vx": 0,
+                "vy": 0,
+                "locomotion": "idle",
+                "legDirection": 0,
+                "torsoDirection": 0,
+                "contacts": 0,
+                "inspectionJumps": 5,
+                "lastAction": "movement",
+                "officialRun": false,
+                "rankedEligible": false
+              },
+              "assetsReady": true,
+              "disposed": false,
+              "renderFrames": 2786,
+              "visiblePieces": 39,
+              "width": 1280,
+              "height": 604,
+              "nativeEvents": 6,
+              "heldKeys": 0,
+              "heldPointers": 0,
+              "planView": true,
+              "previewOnly": true
+            }
+          },
+          "overflow": {
+            "horizontal": false,
+            "vertical": false
+          }
+        },
+        {
+          "name": "desktop-scrypt-bayou",
+          "basis": "Explicit inspection jump/area plan; demonstrates full geometry/framing, not route traversal or close actor scale",
+          "path": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w2a-preview-browser-20260929-01\\browser\\desktop-scrypt-bayou.png",
+          "bytes": 35589,
+          "sha256": "bd92a43bbeed6d0fdf2d42241307459ab978886717f463a72df39e940b4b34d3",
+          "snapshot": {
+            "access": {
+              "allowed": true,
+              "reason": "local-free-navigation",
+              "officialRun": false,
+              "rankedEligible": false
+            },
+            "phase": "ready",
+            "disposed": false,
+            "failure": null,
+            "cleanupFailure": null,
+            "playtest": {
+              "mapId": "visual-overhaul-greybox-v1",
+              "view": {
+                "tick": 1165,
+                "x": 2500,
+                "y": 11600,
+                "groundZ": 0,
+                "vx": 0,
+                "vy": 0,
+                "locomotion": "idle",
+                "legDirection": 0,
+                "torsoDirection": 0,
+                "contacts": 0,
+                "inspectionJumps": 6,
+                "lastAction": "movement",
+                "officialRun": false,
+                "rankedEligible": false
+              },
+              "assetsReady": true,
+              "disposed": false,
+              "renderFrames": 2796,
+              "visiblePieces": 39,
+              "width": 1280,
+              "height": 604,
+              "nativeEvents": 6,
+              "heldKeys": 0,
+              "heldPointers": 0,
+              "planView": true,
+              "previewOnly": true
+            }
+          },
+          "overflow": {
+            "horizontal": false,
+            "vertical": false
+          }
+        },
+        {
+          "name": "desktop-hashwood-river",
+          "basis": "Explicit inspection jump/area plan; demonstrates full geometry/framing, not route traversal or close actor scale",
+          "path": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w2a-preview-browser-20260929-01\\browser\\desktop-hashwood-river.png",
+          "bytes": 42490,
+          "sha256": "738f59cb225c04d2fb8d0e70468e4ba91039c516b0bf099151208e3ff1836cb6",
+          "snapshot": {
+            "access": {
+              "allowed": true,
+              "reason": "local-free-navigation",
+              "officialRun": false,
+              "rankedEligible": false
+            },
+            "phase": "ready",
+            "disposed": false,
+            "failure": null,
+            "cleanupFailure": null,
+            "playtest": {
+              "mapId": "visual-overhaul-greybox-v1",
+              "view": {
+                "tick": 1168,
+                "x": 7500,
+                "y": 11600,
+                "groundZ": 0,
+                "vx": 0,
+                "vy": 0,
+                "locomotion": "idle",
+                "legDirection": 0,
+                "torsoDirection": 0,
+                "contacts": 0,
+                "inspectionJumps": 7,
+                "lastAction": "movement",
+                "officialRun": false,
+                "rankedEligible": false
+              },
+              "assetsReady": true,
+              "disposed": false,
+              "renderFrames": 2807,
+              "visiblePieces": 118,
+              "width": 1280,
+              "height": 604,
+              "nativeEvents": 6,
+              "heldKeys": 0,
+              "heldPointers": 0,
+              "planView": true,
+              "previewOnly": true
+            }
+          },
+          "overflow": {
+            "horizontal": false,
+            "vertical": false
+          }
+        },
+        {
+          "name": "desktop-hollow-pines",
+          "basis": "Explicit inspection jump/area plan; demonstrates full geometry/framing, not route traversal or close actor scale",
+          "path": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w2a-preview-browser-20260929-01\\browser\\desktop-hollow-pines.png",
+          "bytes": 45855,
+          "sha256": "cc9d0db524dfa2ec8c2159c0d16b49278b55a287a0dc1376c9155f3a8c4b2986",
+          "snapshot": {
+            "access": {
+              "allowed": true,
+              "reason": "local-free-navigation",
+              "officialRun": false,
+              "rankedEligible": false
+            },
+            "phase": "ready",
+            "disposed": false,
+            "failure": null,
+            "cleanupFailure": null,
+            "playtest": {
+              "mapId": "visual-overhaul-greybox-v1",
+              "view": {
+                "tick": 1173,
+                "x": 12500,
+                "y": 11600,
+                "groundZ": 0,
+                "vx": 0,
+                "vy": 0,
+                "locomotion": "idle",
+                "legDirection": 0,
+                "torsoDirection": 0,
+                "contacts": 0,
+                "inspectionJumps": 8,
+                "lastAction": "movement",
+                "officialRun": false,
+                "rankedEligible": false
+              },
+              "assetsReady": true,
+              "disposed": false,
+              "renderFrames": 2821,
+              "visiblePieces": 229,
+              "width": 1280,
+              "height": 604,
+              "nativeEvents": 6,
+              "heldKeys": 0,
+              "heldPointers": 0,
+              "planView": true,
+              "previewOnly": true
+            }
+          },
+          "overflow": {
+            "horizontal": false,
+            "vertical": false
+          }
+        },
+        {
+          "name": "desktop-ledger-ridge",
+          "basis": "Explicit inspection jump/area plan; demonstrates full geometry/framing, not route traversal or close actor scale",
+          "path": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w2a-preview-browser-20260929-01\\browser\\desktop-ledger-ridge.png",
+          "bytes": 38943,
+          "sha256": "3925a84f94f2f62c06db7741da40045c0b48323ed62fdfdcdd9bc9f70e43d162",
+          "snapshot": {
+            "access": {
+              "allowed": true,
+              "reason": "local-free-navigation",
+              "officialRun": false,
+              "rankedEligible": false
+            },
+            "phase": "ready",
+            "disposed": false,
+            "failure": null,
+            "cleanupFailure": null,
+            "playtest": {
+              "mapId": "visual-overhaul-greybox-v1",
+              "view": {
+                "tick": 1177,
+                "x": 7500,
+                "y": 2500,
+                "groundZ": 0,
+                "vx": 0,
+                "vy": 0,
+                "locomotion": "idle",
+                "legDirection": 0,
+                "torsoDirection": 0,
+                "contacts": 0,
+                "inspectionJumps": 9,
+                "lastAction": "movement",
+                "officialRun": false,
+                "rankedEligible": false
+              },
+              "assetsReady": true,
+              "disposed": false,
+              "renderFrames": 2832,
+              "visiblePieces": 107,
+              "width": 1280,
+              "height": 604,
+              "nativeEvents": 6,
+              "heldKeys": 0,
+              "heldPointers": 0,
+              "planView": true,
+              "previewOnly": true
+            }
+          },
+          "overflow": {
+            "horizontal": false,
+            "vertical": false
+          }
+        },
+        {
+          "name": "desktop-fork-fortress",
+          "basis": "Explicit inspection jump/area plan; demonstrates full geometry/framing, not route traversal or close actor scale",
+          "path": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w2a-preview-browser-20260929-01\\browser\\desktop-fork-fortress.png",
+          "bytes": 39412,
+          "sha256": "a9a25ee7537c8a5199a230069f1d746fc1f632f6dac65c5e3a27db2a7fe2c107",
+          "snapshot": {
+            "access": {
+              "allowed": true,
+              "reason": "local-free-navigation",
+              "officialRun": false,
+              "rankedEligible": false
+            },
+            "phase": "ready",
+            "disposed": false,
+            "failure": null,
+            "cleanupFailure": null,
+            "playtest": {
+              "mapId": "visual-overhaul-greybox-v1",
+              "view": {
+                "tick": 1182,
+                "x": 12500,
+                "y": 2500,
+                "groundZ": 0,
+                "vx": 0,
+                "vy": 0,
+                "locomotion": "idle",
+                "legDirection": 0,
+                "torsoDirection": 0,
+                "contacts": 0,
+                "inspectionJumps": 10,
+                "lastAction": "movement",
+                "officialRun": false,
+                "rankedEligible": false
+              },
+              "assetsReady": true,
+              "disposed": false,
+              "renderFrames": 2845,
+              "visiblePieces": 163,
+              "width": 1280,
+              "height": 604,
+              "nativeEvents": 6,
+              "heldKeys": 0,
+              "heldPointers": 0,
+              "planView": true,
+              "previewOnly": true
+            }
+          },
+          "overflow": {
+            "horizontal": false,
+            "vertical": false
+          }
+        },
+        {
+          "name": "desktop-rugpull-woods",
+          "basis": "Explicit inspection jump/area plan; demonstrates full geometry/framing, not route traversal or close actor scale",
+          "path": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w2a-preview-browser-20260929-01\\browser\\desktop-rugpull-woods.png",
+          "bytes": 39647,
+          "sha256": "235a67b35210df3b5e472d7a957cc6f47c084072cc55ad1e61919573dc06fc55",
+          "snapshot": {
+            "access": {
+              "allowed": true,
+              "reason": "local-free-navigation",
+              "officialRun": false,
+              "rankedEligible": false
+            },
+            "phase": "ready",
+            "disposed": false,
+            "failure": null,
+            "cleanupFailure": null,
+            "playtest": {
+              "mapId": "visual-overhaul-greybox-v1",
+              "view": {
+                "tick": 1186,
+                "x": 17500,
+                "y": 11600,
+                "groundZ": 0,
+                "vx": 0,
+                "vy": 0,
+                "locomotion": "idle",
+                "legDirection": 0,
+                "torsoDirection": 0,
+                "contacts": 0,
+                "inspectionJumps": 11,
+                "lastAction": "movement",
+                "officialRun": false,
+                "rankedEligible": false
+              },
+              "assetsReady": true,
+              "disposed": false,
+              "renderFrames": 2855,
+              "visiblePieces": 146,
+              "width": 1280,
+              "height": 604,
+              "nativeEvents": 6,
+              "heldKeys": 0,
+              "heldPointers": 0,
+              "planView": true,
+              "previewOnly": true
+            }
+          },
+          "overflow": {
+            "horizontal": false,
+            "vertical": false
+          }
+        }
+      ],
+      "nativeInput": {
+        "type": "Actual ArrowRight down/up across Meadows–Farms road",
+        "before": {
+          "access": {
+            "allowed": true,
+            "reason": "local-free-navigation",
+            "officialRun": false,
+            "rankedEligible": false
+          },
+          "phase": "ready",
+          "disposed": false,
+          "failure": null,
+          "cleanupFailure": null,
+          "playtest": {
+            "mapId": "visual-overhaul-greybox-v1",
+            "view": {
+              "tick": 12,
+              "x": 12500,
+              "y": 6700,
+              "groundZ": 0,
+              "vx": 0,
+              "vy": 0,
+              "locomotion": "idle",
+              "legDirection": 0,
+              "torsoDirection": 0,
+              "contacts": 0,
+              "inspectionJumps": 0,
+              "lastAction": "movement",
+              "officialRun": false,
+              "rankedEligible": false
+            },
+            "assetsReady": true,
+            "disposed": false,
+            "renderFrames": 21,
+            "visiblePieces": 3,
+            "width": 1280,
+            "height": 604,
+            "nativeEvents": 0,
+            "heldKeys": 0,
+            "heldPointers": 0,
+            "planView": false,
+            "previewOnly": true
+          }
+        },
+        "after": {
+          "access": {
+            "allowed": true,
+            "reason": "local-free-navigation",
+            "officialRun": false,
+            "rankedEligible": false
+          },
+          "phase": "ready",
+          "disposed": false,
+          "failure": null,
+          "cleanupFailure": null,
+          "playtest": {
+            "mapId": "visual-overhaul-greybox-v1",
+            "view": {
+              "tick": 793,
+              "x": 15605.666666666666,
+              "y": 6700,
+              "groundZ": 0,
+              "vx": 0,
+              "vy": 0,
+              "locomotion": "idle",
+              "legDirection": 0,
+              "torsoDirection": 0,
+              "contacts": 0,
+              "inspectionJumps": 0,
+              "lastAction": "movement",
+              "officialRun": false,
+              "rankedEligible": false
+            },
+            "assetsReady": true,
+            "disposed": false,
+            "renderFrames": 1893,
+            "visiblePieces": 69,
+            "width": 1280,
+            "height": 604,
+            "nativeEvents": 2,
+            "heldKeys": 0,
+            "heldPointers": 0,
+            "planView": false,
+            "previewOnly": true
+          }
+        }
+      },
+      "wall": {
+        "type": "Native walking into actual visible landmark mass",
+        "contact": {
+          "access": {
+            "allowed": true,
+            "reason": "local-free-navigation",
+            "officialRun": false,
+            "rankedEligible": false
+          },
+          "phase": "ready",
+          "disposed": false,
+          "failure": null,
+          "cleanupFailure": null,
+          "playtest": {
+            "mapId": "visual-overhaul-greybox-v1",
+            "view": {
+              "tick": 1145,
+              "x": 11902.333333333334,
+              "y": 5934.000001,
+              "groundZ": 0,
+              "vx": 0,
+              "vy": 0,
+              "locomotion": "moving",
+              "legDirection": 6,
+              "torsoDirection": 6,
+              "contacts": 1,
+              "inspectionJumps": 1,
+              "lastAction": "movement",
+              "officialRun": false,
+              "rankedEligible": false
+            },
+            "assetsReady": true,
+            "disposed": false,
+            "renderFrames": 2739,
+            "visiblePieces": 2,
+            "width": 1280,
+            "height": 604,
+            "nativeEvents": 5,
+            "heldKeys": 1,
+            "heldPointers": 0,
+            "planView": false,
+            "previewOnly": true
+          }
+        }
+      },
+      "cleanup": {
+        "access": {
+          "allowed": true,
+          "reason": "local-free-navigation",
+          "officialRun": false,
+          "rankedEligible": false
+        },
+        "phase": "disposed",
+        "disposed": true,
+        "failure": null,
+        "cleanupFailure": null,
+        "playtest": {
+          "mapId": "visual-overhaul-greybox-v1",
+          "view": {
+            "tick": 1186,
+            "x": 17500,
+            "y": 11600,
+            "groundZ": 0,
+            "vx": 0,
+            "vy": 0,
+            "locomotion": "idle",
+            "legDirection": 0,
+            "torsoDirection": 0,
+            "contacts": 0,
+            "inspectionJumps": 11,
+            "lastAction": "movement",
+            "officialRun": false,
+            "rankedEligible": false
+          },
+          "assetsReady": false,
+          "disposed": true,
+          "renderFrames": 2857,
+          "visiblePieces": 146,
+          "width": 1280,
+          "height": 604,
+          "nativeEvents": 6,
+          "heldKeys": 0,
+          "heldPointers": 0,
+          "planView": true,
+          "previewOnly": true
+        }
+      },
+      "boundaryAudit": {
+        "posts": 0,
+        "writes": 0
+      }
+    },
+    {
+      "viewport": {
+        "name": "phone-proxy",
+        "width": 414,
+        "height": 896,
+        "deviceScaleFactor": 3,
+        "isMobile": true,
+        "hasTouch": true
+      },
+      "captures": [
+        {
+          "name": "phone-proxy-start",
+          "basis": "Actual initial localFree spawn, no jump",
+          "path": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w2a-preview-browser-20260929-01\\browser\\phone-proxy-start.png",
+          "bytes": 125393,
+          "sha256": "a91b9522465f1f3e19dc13db8b26a5cc568f15194851c63189dc94fafaafd547",
+          "snapshot": {
+            "access": {
+              "allowed": true,
+              "reason": "local-free-navigation",
+              "officialRun": false,
+              "rankedEligible": false
+            },
+            "phase": "ready",
+            "disposed": false,
+            "failure": null,
+            "cleanupFailure": null,
+            "playtest": {
+              "mapId": "visual-overhaul-greybox-v1",
+              "view": {
+                "tick": 15,
+                "x": 12500,
+                "y": 6700,
+                "groundZ": 0,
+                "vx": 0,
+                "vy": 0,
+                "locomotion": "idle",
+                "legDirection": 0,
+                "torsoDirection": 0,
+                "contacts": 0,
+                "inspectionJumps": 0,
+                "lastAction": "movement",
+                "officialRun": false,
+                "rankedEligible": false
+              },
+              "assetsReady": true,
+              "disposed": false,
+              "renderFrames": 29,
+              "visiblePieces": 0,
+              "width": 414,
+              "height": 716,
+              "nativeEvents": 0,
+              "heldKeys": 0,
+              "heldPointers": 0,
+              "planView": false,
+              "previewOnly": true
+            }
+          },
+          "overflow": {
+            "horizontal": false,
+            "vertical": false
+          }
+        },
+        {
+          "name": "phone-proxy-touch",
+          "basis": "Actual native touch movement and cancel; Windows Chrome phone framing proxy",
+          "path": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w2a-preview-browser-20260929-01\\browser\\phone-proxy-touch.png",
+          "bytes": 126051,
+          "sha256": "9aa23b4968734af99cfe430c7cf4ccf4dadd26081c01efa17423a73bf1aad98f",
+          "snapshot": {
+            "access": {
+              "allowed": true,
+              "reason": "local-free-navigation",
+              "officialRun": false,
+              "rankedEligible": false
+            },
+            "phase": "ready",
+            "disposed": false,
+            "failure": null,
+            "cleanupFailure": null,
+            "playtest": {
+              "mapId": "visual-overhaul-greybox-v1",
+              "view": {
+                "tick": 102,
+                "x": 12805.666666666666,
+                "y": 6700,
+                "groundZ": 0,
+                "vx": 0,
+                "vy": 0,
+                "locomotion": "idle",
+                "legDirection": 0,
+                "torsoDirection": 0,
+                "contacts": 0,
+                "inspectionJumps": 0,
+                "lastAction": "movement",
+                "officialRun": false,
+                "rankedEligible": false
+              },
+              "assetsReady": true,
+              "disposed": false,
+              "renderFrames": 237,
+              "visiblePieces": 0,
+              "width": 414,
+              "height": 716,
+              "nativeEvents": 3,
+              "heldKeys": 0,
+              "heldPointers": 0,
+              "planView": false,
+              "previewOnly": true
+            }
+          },
+          "overflow": {
+            "horizontal": false,
+            "vertical": false
+          }
+        },
+        {
+          "name": "phone-proxy-mweb-meadows",
+          "basis": "Explicit inspection jump/area plan; demonstrates full geometry/framing, not route traversal or close actor scale",
+          "path": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w2a-preview-browser-20260929-01\\browser\\phone-proxy-mweb-meadows.png",
+          "bytes": 123240,
+          "sha256": "a6bcdb3a2bb58bd06fa9160aa48ff0ac386d71fe89f6d6919ba83b35d2831a3e",
+          "snapshot": {
+            "access": {
+              "allowed": true,
+              "reason": "local-free-navigation",
+              "officialRun": false,
+              "rankedEligible": false
+            },
+            "phase": "ready",
+            "disposed": false,
+            "failure": null,
+            "cleanupFailure": null,
+            "playtest": {
+              "mapId": "visual-overhaul-greybox-v1",
+              "view": {
+                "tick": 109,
+                "x": 12500,
+                "y": 6700,
+                "groundZ": 0,
+                "vx": 0,
+                "vy": 0,
+                "locomotion": "idle",
+                "legDirection": 0,
+                "torsoDirection": 0,
+                "contacts": 0,
+                "inspectionJumps": 1,
+                "lastAction": "movement",
+                "officialRun": false,
+                "rankedEligible": false
+              },
+              "assetsReady": true,
+              "disposed": false,
+              "renderFrames": 254,
+              "visiblePieces": 129,
+              "width": 414,
+              "height": 716,
+              "nativeEvents": 3,
+              "heldKeys": 0,
+              "heldPointers": 0,
+              "planView": true,
+              "previewOnly": true
+            }
+          },
+          "overflow": {
+            "horizontal": false,
+            "vertical": false
+          }
+        },
+        {
+          "name": "phone-proxy-litecoin-city",
+          "basis": "Explicit inspection jump/area plan; demonstrates full geometry/framing, not route traversal or close actor scale",
+          "path": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w2a-preview-browser-20260929-01\\browser\\phone-proxy-litecoin-city.png",
+          "bytes": 116834,
+          "sha256": "06e7b93b084fa73717157ebdb9aa3683d1e0033a2eb291fdff628a01dc61d490",
+          "snapshot": {
+            "access": {
+              "allowed": true,
+              "reason": "local-free-navigation",
+              "officialRun": false,
+              "rankedEligible": false
+            },
+            "phase": "ready",
+            "disposed": false,
+            "failure": null,
+            "cleanupFailure": null,
+            "playtest": {
+              "mapId": "visual-overhaul-greybox-v1",
+              "view": {
+                "tick": 114,
+                "x": 7500,
+                "y": 6700,
+                "groundZ": 0,
+                "vx": 0,
+                "vy": 0,
+                "locomotion": "idle",
+                "legDirection": 0,
+                "torsoDirection": 0,
+                "contacts": 0,
+                "inspectionJumps": 2,
+                "lastAction": "movement",
+                "officialRun": false,
+                "rankedEligible": false
+              },
+              "assetsReady": true,
+              "disposed": false,
+              "renderFrames": 267,
+              "visiblePieces": 64,
+              "width": 414,
+              "height": 716,
+              "nativeEvents": 3,
+              "heldKeys": 0,
+              "heldPointers": 0,
+              "planView": true,
+              "previewOnly": true
+            }
+          },
+          "overflow": {
+            "horizontal": false,
+            "vertical": false
+          }
+        },
+        {
+          "name": "phone-proxy-halving-farms",
+          "basis": "Explicit inspection jump/area plan; demonstrates full geometry/framing, not route traversal or close actor scale",
+          "path": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w2a-preview-browser-20260929-01\\browser\\phone-proxy-halving-farms.png",
+          "bytes": 112255,
+          "sha256": "147bcfa64fe5a8d62ebe8eb678c3dcbd3805c1003bf9f213747fc9cce60fb5ff",
+          "snapshot": {
+            "access": {
+              "allowed": true,
+              "reason": "local-free-navigation",
+              "officialRun": false,
+              "rankedEligible": false
+            },
+            "phase": "ready",
+            "disposed": false,
+            "failure": null,
+            "cleanupFailure": null,
+            "playtest": {
+              "mapId": "visual-overhaul-greybox-v1",
+              "view": {
+                "tick": 119,
+                "x": 17500,
+                "y": 6700,
+                "groundZ": 0,
+                "vx": 0,
+                "vy": 0,
+                "locomotion": "idle",
+                "legDirection": 0,
+                "torsoDirection": 0,
+                "contacts": 0,
+                "inspectionJumps": 3,
+                "lastAction": "movement",
+                "officialRun": false,
+                "rankedEligible": false
+              },
+              "assetsReady": true,
+              "disposed": false,
+              "renderFrames": 281,
+              "visiblePieces": 55,
+              "width": 414,
+              "height": 716,
+              "nativeEvents": 3,
+              "heldKeys": 0,
+              "heldPointers": 0,
+              "planView": true,
+              "previewOnly": true
+            }
+          },
+          "overflow": {
+            "horizontal": false,
+            "vertical": false
+          }
+        },
+        {
+          "name": "phone-proxy-silver-coast",
+          "basis": "Explicit inspection jump/area plan; demonstrates full geometry/framing, not route traversal or close actor scale",
+          "path": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w2a-preview-browser-20260929-01\\browser\\phone-proxy-silver-coast.png",
+          "bytes": 109146,
+          "sha256": "3a6614a214dcf2c18aeb13156b2b5327498836f6cff50b044099d4811d90a1c2",
+          "snapshot": {
+            "access": {
+              "allowed": true,
+              "reason": "local-free-navigation",
+              "officialRun": false,
+              "rankedEligible": false
+            },
+            "phase": "ready",
+            "disposed": false,
+            "failure": null,
+            "cleanupFailure": null,
+            "playtest": {
+              "mapId": "visual-overhaul-greybox-v1",
+              "view": {
+                "tick": 124,
+                "x": 2500,
+                "y": 6700,
+                "groundZ": 0,
+                "vx": 0,
+                "vy": 0,
+                "locomotion": "idle",
+                "legDirection": 0,
+                "torsoDirection": 0,
+                "contacts": 0,
+                "inspectionJumps": 4,
+                "lastAction": "movement",
+                "officialRun": false,
+                "rankedEligible": false
+              },
+              "assetsReady": true,
+              "disposed": false,
+              "renderFrames": 294,
+              "visiblePieces": 26,
+              "width": 414,
+              "height": 716,
+              "nativeEvents": 3,
+              "heldKeys": 0,
+              "heldPointers": 0,
+              "planView": true,
+              "previewOnly": true
+            }
+          },
+          "overflow": {
+            "horizontal": false,
+            "vertical": false
+          }
+        },
+        {
+          "name": "phone-proxy-scrypt-bayou",
+          "basis": "Explicit inspection jump/area plan; demonstrates full geometry/framing, not route traversal or close actor scale",
+          "path": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w2a-preview-browser-20260929-01\\browser\\phone-proxy-scrypt-bayou.png",
+          "bytes": 112074,
+          "sha256": "ff65369c6af0abe57b236003f23e59e954228ccf0eba403ff4b0e8eb49677ccd",
+          "snapshot": {
+            "access": {
+              "allowed": true,
+              "reason": "local-free-navigation",
+              "officialRun": false,
+              "rankedEligible": false
+            },
+            "phase": "ready",
+            "disposed": false,
+            "failure": null,
+            "cleanupFailure": null,
+            "playtest": {
+              "mapId": "visual-overhaul-greybox-v1",
+              "view": {
+                "tick": 129,
+                "x": 2500,
+                "y": 11600,
+                "groundZ": 0,
+                "vx": 0,
+                "vy": 0,
+                "locomotion": "idle",
+                "legDirection": 0,
+                "torsoDirection": 0,
+                "contacts": 0,
+                "inspectionJumps": 5,
+                "lastAction": "movement",
+                "officialRun": false,
+                "rankedEligible": false
+              },
+              "assetsReady": true,
+              "disposed": false,
+              "renderFrames": 308,
+              "visiblePieces": 26,
+              "width": 414,
+              "height": 716,
+              "nativeEvents": 3,
+              "heldKeys": 0,
+              "heldPointers": 0,
+              "planView": true,
+              "previewOnly": true
+            }
+          },
+          "overflow": {
+            "horizontal": false,
+            "vertical": false
+          }
+        },
+        {
+          "name": "phone-proxy-hashwood-river",
+          "basis": "Explicit inspection jump/area plan; demonstrates full geometry/framing, not route traversal or close actor scale",
+          "path": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w2a-preview-browser-20260929-01\\browser\\phone-proxy-hashwood-river.png",
+          "bytes": 117137,
+          "sha256": "a3a3c57fc24be9ad0500b09a6e91badc0d63c472656bb1dc430fd2cf65ef63f5",
+          "snapshot": {
+            "access": {
+              "allowed": true,
+              "reason": "local-free-navigation",
+              "officialRun": false,
+              "rankedEligible": false
+            },
+            "phase": "ready",
+            "disposed": false,
+            "failure": null,
+            "cleanupFailure": null,
+            "playtest": {
+              "mapId": "visual-overhaul-greybox-v1",
+              "view": {
+                "tick": 134,
+                "x": 7500,
+                "y": 11600,
+                "groundZ": 0,
+                "vx": 0,
+                "vy": 0,
+                "locomotion": "idle",
+                "legDirection": 0,
+                "torsoDirection": 0,
+                "contacts": 0,
+                "inspectionJumps": 6,
+                "lastAction": "movement",
+                "officialRun": false,
+                "rankedEligible": false
+              },
+              "assetsReady": true,
+              "disposed": false,
+              "renderFrames": 322,
+              "visiblePieces": 67,
+              "width": 414,
+              "height": 716,
+              "nativeEvents": 3,
+              "heldKeys": 0,
+              "heldPointers": 0,
+              "planView": true,
+              "previewOnly": true
+            }
+          },
+          "overflow": {
+            "horizontal": false,
+            "vertical": false
+          }
+        },
+        {
+          "name": "phone-proxy-hollow-pines",
+          "basis": "Explicit inspection jump/area plan; demonstrates full geometry/framing, not route traversal or close actor scale",
+          "path": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w2a-preview-browser-20260929-01\\browser\\phone-proxy-hollow-pines.png",
+          "bytes": 113279,
+          "sha256": "8108cfb267aee6927545aa1e3e2769858512d252346ca333ef30cb697916ac20",
+          "snapshot": {
+            "access": {
+              "allowed": true,
+              "reason": "local-free-navigation",
+              "officialRun": false,
+              "rankedEligible": false
+            },
+            "phase": "ready",
+            "disposed": false,
+            "failure": null,
+            "cleanupFailure": null,
+            "playtest": {
+              "mapId": "visual-overhaul-greybox-v1",
+              "view": {
+                "tick": 139,
+                "x": 12500,
+                "y": 11600,
+                "groundZ": 0,
+                "vx": 0,
+                "vy": 0,
+                "locomotion": "idle",
+                "legDirection": 0,
+                "torsoDirection": 0,
+                "contacts": 0,
+                "inspectionJumps": 7,
+                "lastAction": "movement",
+                "officialRun": false,
+                "rankedEligible": false
+              },
+              "assetsReady": true,
+              "disposed": false,
+              "renderFrames": 335,
+              "visiblePieces": 95,
+              "width": 414,
+              "height": 716,
+              "nativeEvents": 3,
+              "heldKeys": 0,
+              "heldPointers": 0,
+              "planView": true,
+              "previewOnly": true
+            }
+          },
+          "overflow": {
+            "horizontal": false,
+            "vertical": false
+          }
+        },
+        {
+          "name": "phone-proxy-ledger-ridge",
+          "basis": "Explicit inspection jump/area plan; demonstrates full geometry/framing, not route traversal or close actor scale",
+          "path": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w2a-preview-browser-20260929-01\\browser\\phone-proxy-ledger-ridge.png",
+          "bytes": 112092,
+          "sha256": "4b20732fdf785bb01eac41b79f5f91fe3a62173852a555270e9b25ca3d8d96bf",
+          "snapshot": {
+            "access": {
+              "allowed": true,
+              "reason": "local-free-navigation",
+              "officialRun": false,
+              "rankedEligible": false
+            },
+            "phase": "ready",
+            "disposed": false,
+            "failure": null,
+            "cleanupFailure": null,
+            "playtest": {
+              "mapId": "visual-overhaul-greybox-v1",
+              "view": {
+                "tick": 144,
+                "x": 7500,
+                "y": 2500,
+                "groundZ": 0,
+                "vx": 0,
+                "vy": 0,
+                "locomotion": "idle",
+                "legDirection": 0,
+                "torsoDirection": 0,
+                "contacts": 0,
+                "inspectionJumps": 8,
+                "lastAction": "movement",
+                "officialRun": false,
+                "rankedEligible": false
+              },
+              "assetsReady": true,
+              "disposed": false,
+              "renderFrames": 349,
+              "visiblePieces": 61,
+              "width": 414,
+              "height": 716,
+              "nativeEvents": 3,
+              "heldKeys": 0,
+              "heldPointers": 0,
+              "planView": true,
+              "previewOnly": true
+            }
+          },
+          "overflow": {
+            "horizontal": false,
+            "vertical": false
+          }
+        },
+        {
+          "name": "phone-proxy-fork-fortress",
+          "basis": "Explicit inspection jump/area plan; demonstrates full geometry/framing, not route traversal or close actor scale",
+          "path": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w2a-preview-browser-20260929-01\\browser\\phone-proxy-fork-fortress.png",
+          "bytes": 113990,
+          "sha256": "ebe39a6d66443e6b80d846854b1a7b58d95113fe0a8905bc7de06c401439084a",
+          "snapshot": {
+            "access": {
+              "allowed": true,
+              "reason": "local-free-navigation",
+              "officialRun": false,
+              "rankedEligible": false
+            },
+            "phase": "ready",
+            "disposed": false,
+            "failure": null,
+            "cleanupFailure": null,
+            "playtest": {
+              "mapId": "visual-overhaul-greybox-v1",
+              "view": {
+                "tick": 149,
+                "x": 12500,
+                "y": 2500,
+                "groundZ": 0,
+                "vx": 0,
+                "vy": 0,
+                "locomotion": "idle",
+                "legDirection": 0,
+                "torsoDirection": 0,
+                "contacts": 0,
+                "inspectionJumps": 9,
+                "lastAction": "movement",
+                "officialRun": false,
+                "rankedEligible": false
+              },
+              "assetsReady": true,
+              "disposed": false,
+              "renderFrames": 362,
+              "visiblePieces": 81,
+              "width": 414,
+              "height": 716,
+              "nativeEvents": 3,
+              "heldKeys": 0,
+              "heldPointers": 0,
+              "planView": true,
+              "previewOnly": true
+            }
+          },
+          "overflow": {
+            "horizontal": false,
+            "vertical": false
+          }
+        },
+        {
+          "name": "phone-proxy-rugpull-woods",
+          "basis": "Explicit inspection jump/area plan; demonstrates full geometry/framing, not route traversal or close actor scale",
+          "path": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w2a-preview-browser-20260929-01\\browser\\phone-proxy-rugpull-woods.png",
+          "bytes": 117364,
+          "sha256": "262694396bd5636414e5aef81324058fa2f4dd496388e1b66d4703255db7ad24",
+          "snapshot": {
+            "access": {
+              "allowed": true,
+              "reason": "local-free-navigation",
+              "officialRun": false,
+              "rankedEligible": false
+            },
+            "phase": "ready",
+            "disposed": false,
+            "failure": null,
+            "cleanupFailure": null,
+            "playtest": {
+              "mapId": "visual-overhaul-greybox-v1",
+              "view": {
+                "tick": 153,
+                "x": 17500,
+                "y": 11600,
+                "groundZ": 0,
+                "vx": 0,
+                "vy": 0,
+                "locomotion": "idle",
+                "legDirection": 0,
+                "torsoDirection": 0,
+                "contacts": 0,
+                "inspectionJumps": 10,
+                "lastAction": "movement",
+                "officialRun": false,
+                "rankedEligible": false
+              },
+              "assetsReady": true,
+              "disposed": false,
+              "renderFrames": 374,
+              "visiblePieces": 63,
+              "width": 414,
+              "height": 716,
+              "nativeEvents": 3,
+              "heldKeys": 0,
+              "heldPointers": 0,
+              "planView": true,
+              "previewOnly": true
+            }
+          },
+          "overflow": {
+            "horizontal": false,
+            "vertical": false
+          }
+        }
+      ],
+      "nativeInput": {
+        "type": "Actual Chrome touch down and touchCancel on direction control",
+        "before": {
+          "access": {
+            "allowed": true,
+            "reason": "local-free-navigation",
+            "officialRun": false,
+            "rankedEligible": false
+          },
+          "phase": "ready",
+          "disposed": false,
+          "failure": null,
+          "cleanupFailure": null,
+          "playtest": {
+            "mapId": "visual-overhaul-greybox-v1",
+            "view": {
+              "tick": 16,
+              "x": 12500,
+              "y": 6700,
+              "groundZ": 0,
+              "vx": 0,
+              "vy": 0,
+              "locomotion": "idle",
+              "legDirection": 0,
+              "torsoDirection": 0,
+              "contacts": 0,
+              "inspectionJumps": 0,
+              "lastAction": "movement",
+              "officialRun": false,
+              "rankedEligible": false
+            },
+            "assetsReady": true,
+            "disposed": false,
+            "renderFrames": 30,
+            "visiblePieces": 0,
+            "width": 414,
+            "height": 716,
+            "nativeEvents": 0,
+            "heldKeys": 0,
+            "heldPointers": 0,
+            "planView": false,
+            "previewOnly": true
+          }
+        },
+        "after": {
+          "access": {
+            "allowed": true,
+            "reason": "local-free-navigation",
+            "officialRun": false,
+            "rankedEligible": false
+          },
+          "phase": "ready",
+          "disposed": false,
+          "failure": null,
+          "cleanupFailure": null,
+          "playtest": {
+            "mapId": "visual-overhaul-greybox-v1",
+            "view": {
+              "tick": 98,
+              "x": 12805.666666666666,
+              "y": 6700,
+              "groundZ": 0,
+              "vx": 0,
+              "vy": 0,
+              "locomotion": "idle",
+              "legDirection": 0,
+              "torsoDirection": 0,
+              "contacts": 0,
+              "inspectionJumps": 0,
+              "lastAction": "movement",
+              "officialRun": false,
+              "rankedEligible": false
+            },
+            "assetsReady": true,
+            "disposed": false,
+            "renderFrames": 227,
+            "visiblePieces": 0,
+            "width": 414,
+            "height": 716,
+            "nativeEvents": 3,
+            "heldKeys": 0,
+            "heldPointers": 0,
+            "planView": false,
+            "previewOnly": true
+          }
+        }
+      },
+      "wall": null,
+      "cleanup": {
+        "access": {
+          "allowed": true,
+          "reason": "local-free-navigation",
+          "officialRun": false,
+          "rankedEligible": false
+        },
+        "phase": "disposed",
+        "disposed": true,
+        "failure": null,
+        "cleanupFailure": null,
+        "playtest": {
+          "mapId": "visual-overhaul-greybox-v1",
+          "view": {
+            "tick": 154,
+            "x": 17500,
+            "y": 11600,
+            "groundZ": 0,
+            "vx": 0,
+            "vy": 0,
+            "locomotion": "idle",
+            "legDirection": 0,
+            "torsoDirection": 0,
+            "contacts": 0,
+            "inspectionJumps": 10,
+            "lastAction": "movement",
+            "officialRun": false,
+            "rankedEligible": false
+          },
+          "assetsReady": false,
+          "disposed": true,
+          "renderFrames": 375,
+          "visiblePieces": 63,
+          "width": 414,
+          "height": 716,
+          "nativeEvents": 3,
+          "heldKeys": 0,
+          "heldPointers": 0,
+          "planView": true,
+          "previewOnly": true
+        }
+      },
+      "boundaryAudit": {
+        "posts": 0,
+        "writes": 0
+      }
+    }
+  ],
+  "safety": [
+    {
+      "name": "default-denied",
+      "result": {
+        "access": {
+          "allowed": false,
+          "reason": "explicit-free-greybox-required",
+          "officialRun": false,
+          "rankedEligible": false
+        },
+        "phase": "denied",
+        "disposed": false,
+        "failure": null,
+        "cleanupFailure": null,
+        "playtest": null
+      },
+      "requested": [
+        "http://127.0.0.1:63016/dist/hmh-greybox/index.html",
+        "http://127.0.0.1:63016/dist/hmh-greybox/preview.css",
+        "http://127.0.0.1:63016/dist/hmh-greybox/entry.js"
+      ],
+      "basis": "Actual served local entry"
+    },
+    {
+      "name": "ranked-denied",
+      "result": {
+        "access": {
+          "allowed": false,
+          "reason": "explicit-free-greybox-required",
+          "officialRun": false,
+          "rankedEligible": false
+        },
+        "phase": "denied",
+        "disposed": false,
+        "failure": null,
+        "cleanupFailure": null,
+        "playtest": null
+      },
+      "requested": [
+        "http://127.0.0.1:63016/dist/hmh-greybox/index.html?mode=ranked&world=visual-overhaul-greybox-v1",
+        "http://127.0.0.1:63016/dist/hmh-greybox/preview.css",
+        "http://127.0.0.1:63016/dist/hmh-greybox/entry.js"
+      ],
+      "basis": "Actual served local entry"
+    },
+    {
+      "name": "embedded-denied",
+      "result": {
+        "access": {
+          "allowed": false,
+          "reason": "top-level-only",
+          "officialRun": false,
+          "rankedEligible": false
+        },
+        "phase": "denied",
+        "disposed": false,
+        "failure": null,
+        "cleanupFailure": null,
+        "playtest": null
+      },
+      "requested": [
+        "http://127.0.0.1:63016/__greybox-iframe-test",
+        "http://127.0.0.1:63016/dist/hmh-greybox/index.html?mode=free&world=visual-overhaul-greybox-v1",
+        "http://127.0.0.1:63016/dist/hmh-greybox/preview.css",
+        "http://127.0.0.1:63016/dist/hmh-greybox/entry.js"
+      ],
+      "basis": "Actual served local entry"
+    },
+    {
+      "name": "remote-url-denied",
+      "result": {
+        "access": {
+          "allowed": false,
+          "reason": "local-preview-only",
+          "officialRun": false,
+          "rankedEligible": false
+        },
+        "phase": "denied",
+        "disposed": false,
+        "failure": null,
+        "cleanupFailure": null,
+        "playtest": null
+      },
+      "requested": [
+        "https://greybox.invalid/dist/hmh-greybox/index.html?mode=free&world=visual-overhaul-greybox-v1",
+        "https://greybox.invalid/dist/hmh-greybox/preview.css",
+        "https://greybox.invalid/dist/hmh-greybox/entry.js"
+      ],
+      "basis": "Actual remote URL with exact local byte fulfilment; no external network"
+    }
+  ],
+  "errors": [],
+  "cleanupErrors": [],
+  "resourceFailures": [],
+  "responses": [
+    {
+      "url": "http://127.0.0.1:63016/dist/hmh-greybox/index.html?mode=free&world=visual-overhaul-greybox-v1",
+      "status": 200,
+      "bytes": 322,
+      "sha256": "1d64724a9521e8d24a2a657f6942baa97e4978af833ee3a0d56fd6eae8b516b9"
+    },
+    {
+      "url": "http://127.0.0.1:63016/dist/hmh-greybox/preview.css",
+      "status": 200,
+      "bytes": 2979,
+      "sha256": "e16de9444570ddfa9fe801d6dc247cc0062d03c9ee7f79a54b0e5b45b7f171c2"
+    },
+    {
+      "url": "http://127.0.0.1:63016/dist/hmh-greybox/entry.js",
+      "status": 200,
+      "bytes": 2100,
+      "sha256": "4cb9da47ac4c82b3f1af4a5067f33f7bbc66c36f1c3a3e038f32473fee1d7e00"
+    },
+    {
+      "url": "http://127.0.0.1:63016/dist/hmh-greybox/chunks/greybox-playtest-HNLT34DI.js",
+      "status": 200,
+      "bytes": 55548,
+      "sha256": "286f30d683a1190ad8c6efeb688a84fe8a82999ae1e63a967e7c63caebc0c9b1"
+    },
+    {
+      "url": "http://127.0.0.1:63016/assets/generated/hmh-reboot-production-heroes/lit-commando/lit-commando-production-pilot-atlas.json",
+      "status": 200,
+      "bytes": 648685,
+      "sha256": "bd2b91492a03b69898e90c5b0c6e3eab279bc315a0c03e174297090e6a295199"
+    },
+    {
+      "url": "http://127.0.0.1:63016/assets/generated/hmh-reboot-production-heroes/lit-commando/lit-commando-production-pilot-atlas.webp",
+      "status": 200,
+      "bytes": 3919100,
+      "sha256": "37679ea9f5c78f69b276e381969585d2298bcb2072cb343e6d4a0b95a7b8b749"
+    },
+    {
+      "url": "http://127.0.0.1:63016/dist/hmh-greybox/index.html?mode=free&world=visual-overhaul-greybox-v1",
+      "status": 200,
+      "bytes": 322,
+      "sha256": "1d64724a9521e8d24a2a657f6942baa97e4978af833ee3a0d56fd6eae8b516b9"
+    },
+    {
+      "url": "http://127.0.0.1:63016/dist/hmh-greybox/preview.css",
+      "status": 200,
+      "bytes": 2979,
+      "sha256": "e16de9444570ddfa9fe801d6dc247cc0062d03c9ee7f79a54b0e5b45b7f171c2"
+    },
+    {
+      "url": "http://127.0.0.1:63016/dist/hmh-greybox/entry.js",
+      "status": 200,
+      "bytes": 2100,
+      "sha256": "4cb9da47ac4c82b3f1af4a5067f33f7bbc66c36f1c3a3e038f32473fee1d7e00"
+    },
+    {
+      "url": "http://127.0.0.1:63016/dist/hmh-greybox/chunks/greybox-playtest-HNLT34DI.js",
+      "status": 200,
+      "bytes": 55548,
+      "sha256": "286f30d683a1190ad8c6efeb688a84fe8a82999ae1e63a967e7c63caebc0c9b1"
+    },
+    {
+      "url": "http://127.0.0.1:63016/assets/generated/hmh-reboot-production-heroes/lit-commando/lit-commando-production-pilot-atlas.json",
+      "status": 200,
+      "bytes": 648685,
+      "sha256": "bd2b91492a03b69898e90c5b0c6e3eab279bc315a0c03e174297090e6a295199"
+    },
+    {
+      "url": "http://127.0.0.1:63016/assets/generated/hmh-reboot-production-heroes/lit-commando/lit-commando-production-pilot-atlas.webp",
+      "status": 200,
+      "bytes": 3919100,
+      "sha256": "37679ea9f5c78f69b276e381969585d2298bcb2072cb343e6d4a0b95a7b8b749"
+    },
+    {
+      "url": "http://127.0.0.1:63016/dist/hmh-greybox/index.html",
+      "status": 200,
+      "bytes": 322,
+      "sha256": "1d64724a9521e8d24a2a657f6942baa97e4978af833ee3a0d56fd6eae8b516b9"
+    },
+    {
+      "url": "http://127.0.0.1:63016/dist/hmh-greybox/preview.css",
+      "status": 200,
+      "bytes": 2979,
+      "sha256": "e16de9444570ddfa9fe801d6dc247cc0062d03c9ee7f79a54b0e5b45b7f171c2"
+    },
+    {
+      "url": "http://127.0.0.1:63016/dist/hmh-greybox/entry.js",
+      "status": 200,
+      "bytes": 2100,
+      "sha256": "4cb9da47ac4c82b3f1af4a5067f33f7bbc66c36f1c3a3e038f32473fee1d7e00"
+    },
+    {
+      "url": "http://127.0.0.1:63016/dist/hmh-greybox/index.html?mode=ranked&world=visual-overhaul-greybox-v1",
+      "status": 200,
+      "bytes": 322,
+      "sha256": "1d64724a9521e8d24a2a657f6942baa97e4978af833ee3a0d56fd6eae8b516b9"
+    },
+    {
+      "url": "http://127.0.0.1:63016/dist/hmh-greybox/preview.css",
+      "status": 200,
+      "bytes": 2979,
+      "sha256": "e16de9444570ddfa9fe801d6dc247cc0062d03c9ee7f79a54b0e5b45b7f171c2"
+    },
+    {
+      "url": "http://127.0.0.1:63016/dist/hmh-greybox/entry.js",
+      "status": 200,
+      "bytes": 2100,
+      "sha256": "4cb9da47ac4c82b3f1af4a5067f33f7bbc66c36f1c3a3e038f32473fee1d7e00"
+    },
+    {
+      "url": "http://127.0.0.1:63016/__greybox-iframe-test",
+      "status": 200,
+      "bytes": 127,
+      "sha256": "1394a1a42d6e67b0e109d05b577bd8fdbe740fb0bc2b67a75421e19839f329dd"
+    },
+    {
+      "url": "http://127.0.0.1:63016/dist/hmh-greybox/index.html?mode=free&world=visual-overhaul-greybox-v1",
+      "status": 200,
+      "bytes": 322,
+      "sha256": "1d64724a9521e8d24a2a657f6942baa97e4978af833ee3a0d56fd6eae8b516b9"
+    },
+    {
+      "url": "http://127.0.0.1:63016/dist/hmh-greybox/preview.css",
+      "status": 200,
+      "bytes": 2979,
+      "sha256": "e16de9444570ddfa9fe801d6dc247cc0062d03c9ee7f79a54b0e5b45b7f171c2"
+    },
+    {
+      "url": "http://127.0.0.1:63016/dist/hmh-greybox/entry.js",
+      "status": 200,
+      "bytes": 2100,
+      "sha256": "4cb9da47ac4c82b3f1af4a5067f33f7bbc66c36f1c3a3e038f32473fee1d7e00"
+    },
+    {
+      "url": "https://greybox.invalid/dist/hmh-greybox/index.html?mode=free&world=visual-overhaul-greybox-v1",
+      "status": 200,
+      "bytes": 322,
+      "sha256": "1d64724a9521e8d24a2a657f6942baa97e4978af833ee3a0d56fd6eae8b516b9"
+    },
+    {
+      "url": "https://greybox.invalid/dist/hmh-greybox/preview.css",
+      "status": 200,
+      "bytes": 2979,
+      "sha256": "e16de9444570ddfa9fe801d6dc247cc0062d03c9ee7f79a54b0e5b45b7f171c2"
+    },
+    {
+      "url": "https://greybox.invalid/dist/hmh-greybox/entry.js",
+      "status": 200,
+      "bytes": 2100,
+      "sha256": "4cb9da47ac4c82b3f1af4a5067f33f7bbc66c36f1c3a3e038f32473fee1d7e00"
+    }
+  ],
+  "chromeProcess": {
+    "pid": 48792,
+    "closeObserved": true,
+    "scope": "The exact BrowserServer-owned Chrome child; renderer children are managed by that owned browser and the outer exact-PID tree watchdog.",
+    "exitCode": 0,
+    "signal": null,
+    "closeObservedAt": "2026-09-30T05:06:21.981Z"
+  },
+  "serverLifecycle": {
+    "listening": true,
+    "closeObserved": true,
+    "address": {
+      "address": "127.0.0.1",
+      "family": "IPv4",
+      "port": 63016
+    },
+    "closeObservedAt": "2026-09-30T05:06:22.007Z"
+  }
+}

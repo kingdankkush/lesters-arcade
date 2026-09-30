@@ -1,0 +1,27 @@
+// Test-only process/server event observer loaded before the unchanged visual CLI.
+// Forward every original argument/return value; no game, browser or clock hooks.
+import fs from 'node:fs';
+import path from 'node:path';
+import childProcess from 'node:child_process';
+import http from 'node:http';
+import {syncBuiltinESMExports} from 'node:module';
+const output=process.env.HMH_W2A_PROCESS_OBSERVER_OUTPUT;
+if(!output)throw new Error('Explicit observer receipt path required');
+const state={schema:'world-default-visual-owned-lifecycle-v1',scope:'Observed exact Node-spawned child close events and local HTTP server lifecycle. No simulation/clock/API arguments changed. Not unrelated processes, total process-tree CPU, device or release certification.',parentPid:process.pid,children:[],servers:[],observerErrors:[],nodeExitObserved:false};
+function save(){try{fs.writeFileSync(output,JSON.stringify(state,null,2));}catch(error){state.observerErrors.push({phase:'receipt-write',message:String(error)});}}
+const originalSpawn=childProcess.spawn,originalServer=http.createServer;
+childProcess.spawn=function(...args){
+  const record={index:state.children.length,program:String(args[0]),pid:null,spawnReturned:false,closeObserved:false,error:null,isChrome:path.basename(String(args[0])).toLowerCase()==='chrome.exe'};state.children.push(record);
+  let child;try{child=Reflect.apply(originalSpawn,this,args);}catch(error){record.error=String(error);save();throw error;}
+  record.spawnReturned=true;record.pid=child.pid??null;
+  child.once('error',error=>{record.error=String(error);save();});
+  child.once('close',(exitCode,signal)=>{Object.assign(record,{closeObserved:true,exitCode,signal,closeObservedAt:new Date().toISOString()});save();});save();return child;
+};
+http.createServer=function(...args){
+  const server=Reflect.apply(originalServer,this,args),record={index:state.servers.length,listeningObserved:false,closeObserved:false,error:null};state.servers.push(record);
+  server.once('listening',()=>{record.listeningObserved=true;record.address=server.address();save();});
+  server.once('error',error=>{record.error=String(error);save();});
+  server.once('close',()=>{record.closeObserved=true;record.closeObservedAt=new Date().toISOString();save();});save();return server;
+};
+syncBuiltinESMExports();save();
+process.once('exit',exitCode=>{state.nodeExitObserved=true;state.nodeExitCode=exitCode;state.allReturnedChildrenClosed=state.children.every(record=>!record.spawnReturned||record.closeObserved);state.allListeningServersClosed=state.servers.every(record=>!record.listeningObserved||record.closeObserved);state.actualChromeSpawns=state.children.filter(record=>record.isChrome).length;save();});
