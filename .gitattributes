@@ -131,3 +131,6 @@ docs/2.0/receipts/unlockables-retirement-g4a/*.gz -filter -diff -merge -text
 docs/2.0/receipts/world-w3c/**/*.gz -filter -diff -merge -text
 docs/2.0/receipts/world-w3c/*.gz -filter -diff -merge -text
 docs/2.0/receipts/world-w3c-gather/*.gz -filter -diff -merge -text
+
+# Compact dormant blog content evidence
+docs/2.0/receipts/blog-content-h2a/*.gz -filter -diff -merge -text

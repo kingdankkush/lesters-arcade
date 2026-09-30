@@ -34,13 +34,18 @@ fixed camera/bone alignment and exact original source restoration. Root and both
 art/character reviewers identify lost forearm/hand and knee/boot detail in the
 optimized body. Regional shape/normal/weight measurement is the next repair step; its source
 checkpoint `cce721c` passes17 plus isolated17 after actual missing-helper RED10;
-no replacement model, shader equivalence or performance acceptance is claimed.
+The first native measurement is preserved failed at a barycentric correspondence
+edge, with exact source restoration and all50 input pins unchanged. No regional
+quality statistics completed; the next step retains the exact failing witness.
+No replacement model, shader equivalence or performance acceptance is claimed.
 
 Private art A15 checkpoint `4bd9cc3c2` passes source15 plus identical isolated15
 and its native/pixel checks. The real porch/steps now face the approach, the wear
 path connects to them and roots have a clearer foreground gap. Root reviewed both
 originals; uniform ground, row-like low plants and dark porch remain below the
-final bar. A16 prepares a coherent yard pass using the same sources. No private
+final bar. A16 checkpoint `5dfb58297` completes the coherent yard study using the same sources.
+Source13 + isolated13 and native/pixel checks pass; both originals still fail
+art review because continuous ground and growth transitions remain flat. No private
 lane art is admitted to runtime; failed attempts remain preserved.
 
 Gathered rewards checkpoint `fdbef182c` inventories the exact25 legacy cosmetics
@@ -971,3 +976,24 @@ approach and trunk gaps improve; full-yard detail/planting remains below the art
 bar. Character neutral and textured comparisons expose loss in optimized limbs.
 A16 yard and regional limb diagnostics continue privately. Current checkpoint and
 original review images are refreshed. No credits, push, version bump or deployment.
+
+
+## H2a blog content preparation and continuation — 2026-09-30
+
+The dormant build-only blog index now validates metadata and excludes drafts and
+future posts from public lists, category counts and related reading. Actual
+RED12 then GREEN12 + identical isolated12 pass, with independent source review.
+No renderer, route, article, game or default build changes. See
+[H2a](slices/BLOG-CONTENT-H2A.md) for exact scope and retained evidence.
+
+World W3d has genuine RED12 before the scene implementation. Independent review
+caught toolbar focus swallowing movement after Resume and held input surviving
+toolbar focus; the fix and behavioral regression precede its source and real
+browser checks. World source/build/browser acceptance remains open.
+
+The owner's latest direct instruction is to complete all tasks and then push
+live. This supplies approval for the completed combined update once the stated
+art, compatibility, performance, device and full release gates pass. It does not
+waive those gates or authorize an unfinished interim release. Do not ask again
+for the same scope merely because older entries mention fresh approval. No 2.0
+deployment or promotion has occurred.

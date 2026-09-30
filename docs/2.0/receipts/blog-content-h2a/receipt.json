@@ -1,0 +1,45 @@
+{
+  "schema": "blog-content-h2a/v1",
+  "red": 12,
+  "green": 12,
+  "identicalIsolated": 12,
+  "sourcePins": {
+    "scripts/lib/blog-content.mjs": "65c28ddf5a7a6db5632be34d2dffeaf4b0c8f2759556e523befb29615b7107e0",
+    "tests/blog-content.test.mjs": "9095bc921ba33a645fd56967281d33796002c6dda0c0820f242f9c5ccac2aa01"
+  },
+  "entries": [
+    {
+      "file": "00-work-run-blog-content-source.mjs.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\run-blog-content-source.mjs",
+      "bytes": 3274,
+      "sha256": "18d6f58cb8de8a04a469aa5a0fb800a12fdd482cc2e91d5e94d95008f86eea24",
+      "gzipBytes": 1475
+    },
+    {
+      "file": "01-work-owned-windows-child.mjs.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\owned-windows-child.mjs",
+      "bytes": 3475,
+      "sha256": "a5177337fcf6ec41f285fc105b93d0b4b94ee1101cb14a653a91e9b8b075b0d9",
+      "gzipBytes": 1360
+    },
+    {
+      "file": "02-blog-content-source-red-01-report.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\blog-content-source-red-01\\report.json",
+      "bytes": 17637,
+      "sha256": "654f6ea2d58843801f630716c9a70e01943458389c28713121bbdeec65dfdf7b",
+      "gzipBytes": 1878
+    },
+    {
+      "file": "03-blog-content-source-green-01-report.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\blog-content-source-green-01\\report.json",
+      "bytes": 8277,
+      "sha256": "d248e6c50c3bf8242e3290a4095bb8506c4524dfda012a6310d1e45e9107839e",
+      "gzipBytes": 1587
+    }
+  ],
+  "independentReview": "Art: fourth eligible related-post fixture added before RED to exercise cap; final installed implementation clear.",
+  "active": false,
+  "htmlRendered": false,
+  "browserRun": false,
+  "releaseGateRun": false
+}
