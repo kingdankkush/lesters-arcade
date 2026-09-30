@@ -1,0 +1,726 @@
+{
+  "schema": "world-pines-raw-archive-v1",
+  "scope": "Exact source RED/GREEN/copy/diagnostic and one native browser attempt with one explicit inspection jump per viewport before local walks. Lossless gzip with raw and stored identities. Not a release gate, continuous regional journey, physical-device result or final-art acceptance.",
+  "entries": [
+    {
+      "archive": "red-01/apps/hmh-reboot/src/blocker-bounds.mjs.txt.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-pines-flow-red-20260930-01\\apps\\hmh-reboot\\src\\blocker-bounds.mjs.txt",
+      "bytes": 4684,
+      "sha256": "7f94d7f336a697e806ce92d1f5eedf9674d9d948f6366a958ba27e7124d2bf8a",
+      "storedBytes": 1757,
+      "storedSha256": "19850a1a0ba5829abc3f51fcb60578eca29f05e01775452fd2554aad9b8cbfff",
+      "compression": "gzip"
+    },
+    {
+      "archive": "red-01/apps/hmh-reboot/src/dev/greybox-city.mjs.txt.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-pines-flow-red-20260930-01\\apps\\hmh-reboot\\src\\dev\\greybox-city.mjs.txt",
+      "bytes": 4124,
+      "sha256": "df4e65c70cdd587bf459414db643b7a83fde2b520ad5e88269315cdd82f87c80",
+      "storedBytes": 1703,
+      "storedSha256": "0b537e727676db13a20d09a97b36f6d1b6653c6aec63b5a13da8488b295e4224",
+      "compression": "gzip"
+    },
+    {
+      "archive": "red-01/apps/hmh-reboot/src/dev/greybox-closed-masses.mjs.txt.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-pines-flow-red-20260930-01\\apps\\hmh-reboot\\src\\dev\\greybox-closed-masses.mjs.txt",
+      "bytes": 5250,
+      "sha256": "f1562f9f5c0be11d4b0c7a397e39187dc536a9546be7497ecfa75ea5ea0826cc",
+      "storedBytes": 1939,
+      "storedSha256": "d9b5425b00cfecfa4ef08ec78723c7b348291665197984e6bb198b18543307de",
+      "compression": "gzip"
+    },
+    {
+      "archive": "red-01/apps/hmh-reboot/src/dev/greybox-coast.mjs.txt.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-pines-flow-red-20260930-01\\apps\\hmh-reboot\\src\\dev\\greybox-coast.mjs.txt",
+      "bytes": 4850,
+      "sha256": "aecc082923e08ca46aced4f0ee8aed2ea5c85e79ba0cef8ee3511da8e9d88264",
+      "storedBytes": 1810,
+      "storedSha256": "995eacf03d91066dddcc030ebdddeb460a9bee2cdb23db01361a58ada183256b",
+      "compression": "gzip"
+    },
+    {
+      "archive": "red-01/apps/hmh-reboot/src/dev/greybox-farms.mjs.txt.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-pines-flow-red-20260930-01\\apps\\hmh-reboot\\src\\dev\\greybox-farms.mjs.txt",
+      "bytes": 3861,
+      "sha256": "b5c5e82f417b20c87eed92c5214f9521008193cee6a10b42507670497e090a6a",
+      "storedBytes": 1522,
+      "storedSha256": "e94c8a41912469d5681f8ece0969391dbe7080de0d07dec2cafbc896ec8b413f",
+      "compression": "gzip"
+    },
+    {
+      "archive": "red-01/apps/hmh-reboot/src/dev/greybox-kit.mjs.txt.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-pines-flow-red-20260930-01\\apps\\hmh-reboot\\src\\dev\\greybox-kit.mjs.txt",
+      "bytes": 5168,
+      "sha256": "b453096397f610445bd8a548e8ed70b883544d947e8cc98518b82fb7c756c349",
+      "storedBytes": 1937,
+      "storedSha256": "b0a44281f5cade14473cbdf1565ba94d4b07d449d8a0107020f0fdfdeede04ac",
+      "compression": "gzip"
+    },
+    {
+      "archive": "red-01/apps/hmh-reboot/src/dev/greybox-meadows.mjs.txt.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-pines-flow-red-20260930-01\\apps\\hmh-reboot\\src\\dev\\greybox-meadows.mjs.txt",
+      "bytes": 3661,
+      "sha256": "7d69ab91dd7e678af19b14b296d7e977e6ed7fe619a910d9ce9c93f2ed33516e",
+      "storedBytes": 1490,
+      "storedSha256": "54d0cd764c808693a5bad803868c6a1dc71c98ba05a4b031ea448b411ea99bdc",
+      "compression": "gzip"
+    },
+    {
+      "archive": "red-01/apps/hmh-reboot/src/dev/greybox-ridge.mjs.txt.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-pines-flow-red-20260930-01\\apps\\hmh-reboot\\src\\dev\\greybox-ridge.mjs.txt",
+      "bytes": 4673,
+      "sha256": "7224207505d038925950c723efbe0bc0843513632f9f3d0cfecfe26d432d9fdc",
+      "storedBytes": 1818,
+      "storedSha256": "37171a9fb7e3226baf3410bca3d378efbd769a71ba84f2744cfd0513f78f4eec",
+      "compression": "gzip"
+    },
+    {
+      "archive": "red-01/apps/hmh-reboot/src/dev/greybox-world-v1.mjs.txt.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-pines-flow-red-20260930-01\\apps\\hmh-reboot\\src\\dev\\greybox-world-v1.mjs.txt",
+      "bytes": 9920,
+      "sha256": "84cdf2ba296b37c2115fbedde9e60ce70f57369bb4a58a48bc86f945e0ba3057",
+      "storedBytes": 3228,
+      "storedSha256": "8a85cd39e8554fa8ce23ae63d7e1ecfaf5beb00881d8125bd1e3f7d8da66fae9",
+      "compression": "gzip"
+    },
+    {
+      "archive": "red-01/apps/hmh-reboot/src/value-guards.mjs.txt.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-pines-flow-red-20260930-01\\apps\\hmh-reboot\\src\\value-guards.mjs.txt",
+      "bytes": 2596,
+      "sha256": "8576f65fd1f8a4680578580a150bd3acdec43f555e6c8f1181e54ae92771cb94",
+      "storedBytes": 936,
+      "storedSha256": "91ada625932506cb5e73e391280c7eca3f10cfe9b8a8c8ea867fa68ed72c7b45",
+      "compression": "gzip"
+    },
+    {
+      "archive": "red-01/helper.mjs.txt.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-pines-flow-red-20260930-01\\helper.mjs.txt",
+      "bytes": 3475,
+      "sha256": "a5177337fcf6ec41f285fc105b93d0b4b94ee1101cb14a653a91e9b8b075b0d9",
+      "storedBytes": 1360,
+      "storedSha256": "ade927025e2afbae667182802dfce78d9ddd6b3afea7cfd48a5b40eac5e8ea4b",
+      "compression": "gzip"
+    },
+    {
+      "archive": "red-01/red-report.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-pines-flow-red-20260930-01\\red-report.json",
+      "bytes": 12176,
+      "sha256": "1f87c0a537af712300b799a9f8505b76b5034ddbcc19d6532ce71a20cb1c9eb1",
+      "storedBytes": 2665,
+      "storedSha256": "f47a1476d2322daf3b8f0629be600cf2de87b6b7d5e0bccf808082d282457c5f",
+      "compression": "gzip"
+    },
+    {
+      "archive": "red-01/runner.mjs.txt.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-pines-flow-red-20260930-01\\runner.mjs.txt",
+      "bytes": 5399,
+      "sha256": "12e923a7414fcafb0869d6013e0b5cf71e27254e122ed812817936bbb7915ca4",
+      "storedBytes": 2359,
+      "storedSha256": "605b793fda1be76e703925e4821883671f09477f38bc7883ae53fb569f49a926",
+      "compression": "gzip"
+    },
+    {
+      "archive": "red-01/scripts/lib/hmh-greybox-world-check.mjs.txt.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-pines-flow-red-20260930-01\\scripts\\lib\\hmh-greybox-world-check.mjs.txt",
+      "bytes": 14521,
+      "sha256": "5e7bc94f8200c15d73cd53e94193464697e8b6c804a793b80b3ce652214e448c",
+      "storedBytes": 4778,
+      "storedSha256": "60f1d9111b5269e40f280ddf6981c8247399ae2c46d02695762e0112c81386de",
+      "compression": "gzip"
+    },
+    {
+      "archive": "red-01/tests/hmh-greybox-pines-flow.test.mjs.txt.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-pines-flow-red-20260930-01\\tests\\hmh-greybox-pines-flow.test.mjs.txt",
+      "bytes": 8009,
+      "sha256": "5bfc27372acf66b4114c227d60dbe4e05cb0635ecb467741bf7380457922756e",
+      "storedBytes": 2570,
+      "storedSha256": "cd244e1a9f61a3d604edb05d9d422747e9ae8286405469fb4c8ced9e1caaad7c",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-01-failed/bindings.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-pines-green-20260930-01\\bindings.json",
+      "bytes": 17827,
+      "sha256": "bc97e650ec54b810ae37219f3afda4d37ef0a4840ca23fc1ca653430555817d0",
+      "storedBytes": 2421,
+      "storedSha256": "f89b80fb9000e059e83f008660b309752948db4017775aa208dfc0d234cccfbf",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-01-failed/gate-report.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-pines-green-20260930-01\\gate-report.json",
+      "bytes": 27565,
+      "sha256": "2bae176037e8321e27de1cf59cd0702b440f9786d9196d8c5c8b0c60abb40101",
+      "storedBytes": 5876,
+      "storedSha256": "9db09de412452e97520888e45a0346bd55009a99d04f78cbf60b0e680559cb29",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-01-failed/runner.mjs.txt.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-pines-green-20260930-01\\runner.mjs.txt",
+      "bytes": 4893,
+      "sha256": "da0587d9468440fd651baf9e9ae294625687d00ca5187d15c49805b44fd252a7",
+      "storedBytes": 1899,
+      "storedSha256": "f664da3a3f682ba98c748c3b9df3cda2d20f67836743d10a32f8a444c622d5a4",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-01-failed/source-copy/apps/hmh-reboot/src/blocker-bounds.mjs.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-pines-green-20260930-01\\source-copy\\apps\\hmh-reboot\\src\\blocker-bounds.mjs",
+      "bytes": 4684,
+      "sha256": "7f94d7f336a697e806ce92d1f5eedf9674d9d948f6366a958ba27e7124d2bf8a",
+      "storedBytes": 1757,
+      "storedSha256": "19850a1a0ba5829abc3f51fcb60578eca29f05e01775452fd2554aad9b8cbfff",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-01-failed/source-copy/apps/hmh-reboot/src/collision.mjs.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-pines-green-20260930-01\\source-copy\\apps\\hmh-reboot\\src\\collision.mjs",
+      "bytes": 18604,
+      "sha256": "94a90d4a68c9e66b54ff0332e8cf60aaeaff06c02734aed07a3e420e7eb52593",
+      "storedBytes": 4972,
+      "storedSha256": "48ee1efefabcbf889f8f99e24c1da389852688febec79de2c6103ca58541082a",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-01-failed/source-copy/apps/hmh-reboot/src/dev/greybox-city.mjs.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-pines-green-20260930-01\\source-copy\\apps\\hmh-reboot\\src\\dev\\greybox-city.mjs",
+      "bytes": 4124,
+      "sha256": "df4e65c70cdd587bf459414db643b7a83fde2b520ad5e88269315cdd82f87c80",
+      "storedBytes": 1703,
+      "storedSha256": "0b537e727676db13a20d09a97b36f6d1b6653c6aec63b5a13da8488b295e4224",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-01-failed/source-copy/apps/hmh-reboot/src/dev/greybox-closed-masses.mjs.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-pines-green-20260930-01\\source-copy\\apps\\hmh-reboot\\src\\dev\\greybox-closed-masses.mjs",
+      "bytes": 5250,
+      "sha256": "f1562f9f5c0be11d4b0c7a397e39187dc536a9546be7497ecfa75ea5ea0826cc",
+      "storedBytes": 1939,
+      "storedSha256": "d9b5425b00cfecfa4ef08ec78723c7b348291665197984e6bb198b18543307de",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-01-failed/source-copy/apps/hmh-reboot/src/dev/greybox-coast.mjs.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-pines-green-20260930-01\\source-copy\\apps\\hmh-reboot\\src\\dev\\greybox-coast.mjs",
+      "bytes": 4850,
+      "sha256": "aecc082923e08ca46aced4f0ee8aed2ea5c85e79ba0cef8ee3511da8e9d88264",
+      "storedBytes": 1810,
+      "storedSha256": "995eacf03d91066dddcc030ebdddeb460a9bee2cdb23db01361a58ada183256b",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-01-failed/source-copy/apps/hmh-reboot/src/dev/greybox-farms.mjs.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-pines-green-20260930-01\\source-copy\\apps\\hmh-reboot\\src\\dev\\greybox-farms.mjs",
+      "bytes": 3861,
+      "sha256": "b5c5e82f417b20c87eed92c5214f9521008193cee6a10b42507670497e090a6a",
+      "storedBytes": 1522,
+      "storedSha256": "e94c8a41912469d5681f8ece0969391dbe7080de0d07dec2cafbc896ec8b413f",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-01-failed/source-copy/apps/hmh-reboot/src/dev/greybox-kit.mjs.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-pines-green-20260930-01\\source-copy\\apps\\hmh-reboot\\src\\dev\\greybox-kit.mjs",
+      "bytes": 5168,
+      "sha256": "b453096397f610445bd8a548e8ed70b883544d947e8cc98518b82fb7c756c349",
+      "storedBytes": 1937,
+      "storedSha256": "b0a44281f5cade14473cbdf1565ba94d4b07d449d8a0107020f0fdfdeede04ac",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-01-failed/source-copy/apps/hmh-reboot/src/dev/greybox-meadows.mjs.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-pines-green-20260930-01\\source-copy\\apps\\hmh-reboot\\src\\dev\\greybox-meadows.mjs",
+      "bytes": 3661,
+      "sha256": "7d69ab91dd7e678af19b14b296d7e977e6ed7fe619a910d9ce9c93f2ed33516e",
+      "storedBytes": 1490,
+      "storedSha256": "54d0cd764c808693a5bad803868c6a1dc71c98ba05a4b031ea448b411ea99bdc",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-01-failed/source-copy/apps/hmh-reboot/src/dev/greybox-pines.mjs.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-pines-green-20260930-01\\source-copy\\apps\\hmh-reboot\\src\\dev\\greybox-pines.mjs",
+      "bytes": 4866,
+      "sha256": "8eac9684ac7d086ffdcead68f2734233e51407fcff5d29547728defe6efd9409",
+      "storedBytes": 1882,
+      "storedSha256": "31dc2edba64e695f1e0bcaafd21dfd1c12963c53d3737055cb2bb0cf048e2e90",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-01-failed/source-copy/apps/hmh-reboot/src/dev/greybox-ridge.mjs.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-pines-green-20260930-01\\source-copy\\apps\\hmh-reboot\\src\\dev\\greybox-ridge.mjs",
+      "bytes": 4673,
+      "sha256": "7224207505d038925950c723efbe0bc0843513632f9f3d0cfecfe26d432d9fdc",
+      "storedBytes": 1818,
+      "storedSha256": "37171a9fb7e3226baf3410bca3d378efbd769a71ba84f2744cfd0513f78f4eec",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-01-failed/source-copy/apps/hmh-reboot/src/dev/greybox-world-v1.mjs.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-pines-green-20260930-01\\source-copy\\apps\\hmh-reboot\\src\\dev\\greybox-world-v1.mjs",
+      "bytes": 10067,
+      "sha256": "55caed6b3c0cfd8b699457e0ba45005e43881d49b869f2b86c67591afa0e7f39",
+      "storedBytes": 3247,
+      "storedSha256": "79592a98a96904ce0a33d0f895b6886eabe97f956bfaf94d50bad627538bd908",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-01-failed/source-copy/apps/hmh-reboot/src/elevation.mjs.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-pines-green-20260930-01\\source-copy\\apps\\hmh-reboot\\src\\elevation.mjs",
+      "bytes": 19061,
+      "sha256": "afab7fb53ba657f13f1646d533909ae68544754c1de24ccef786ee156a57c4ea",
+      "storedBytes": 5734,
+      "storedSha256": "84f69341733cc434408d92af1b1e759319e4b473e67a257da11bcacfecf7bc92",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-01-failed/source-copy/apps/hmh-reboot/src/enemy-navgrid.mjs.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-pines-green-20260930-01\\source-copy\\apps\\hmh-reboot\\src\\enemy-navgrid.mjs",
+      "bytes": 30791,
+      "sha256": "da338be023aeeaadf0d5eb00a7ceef0adbd82e3ab7eb1b833fe7171445f595c3",
+      "storedBytes": 8280,
+      "storedSha256": "5e4b59e7d8785f3cc232091828e2e4909ce2cc3bc03cf601bb4f520f817d5c4a",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-01-failed/source-copy/apps/hmh-reboot/src/value-guards.mjs.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-pines-green-20260930-01\\source-copy\\apps\\hmh-reboot\\src\\value-guards.mjs",
+      "bytes": 2596,
+      "sha256": "8576f65fd1f8a4680578580a150bd3acdec43f555e6c8f1181e54ae92771cb94",
+      "storedBytes": 936,
+      "storedSha256": "91ada625932506cb5e73e391280c7eca3f10cfe9b8a8c8ea867fa68ed72c7b45",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-01-failed/source-copy/scripts/lib/hmh-greybox-layout-check.mjs.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-pines-green-20260930-01\\source-copy\\scripts\\lib\\hmh-greybox-layout-check.mjs",
+      "bytes": 5996,
+      "sha256": "7296aaf2767d5d77d759c7b7a3c9757dc931ba98e1db126436e11525533fb55e",
+      "storedBytes": 2289,
+      "storedSha256": "1f1291689e31abbcbd2eb0bcefcc248df5cb56d3f758262f5211daa2b6ccfddf",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-01-failed/source-copy/scripts/lib/hmh-greybox-world-check.mjs.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-pines-green-20260930-01\\source-copy\\scripts\\lib\\hmh-greybox-world-check.mjs",
+      "bytes": 14521,
+      "sha256": "5e7bc94f8200c15d73cd53e94193464697e8b6c804a793b80b3ce652214e448c",
+      "storedBytes": 4778,
+      "storedSha256": "60f1d9111b5269e40f280ddf6981c8247399ae2c46d02695762e0112c81386de",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-01-failed/source-copy/tests/hmh-greybox-city-flow.test.mjs.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-pines-green-20260930-01\\source-copy\\tests\\hmh-greybox-city-flow.test.mjs",
+      "bytes": 8388,
+      "sha256": "4c736822846ed7fd39486f3ca6c47a98e0776a2c20e704eebc25f0b0f736379e",
+      "storedBytes": 2698,
+      "storedSha256": "bda7508faba5c8e89f76f1b4f718ed4b6353acf078543e1fb18b0c475e823c79",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-01-failed/source-copy/tests/hmh-greybox-closed-masses.test.mjs.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-pines-green-20260930-01\\source-copy\\tests\\hmh-greybox-closed-masses.test.mjs",
+      "bytes": 3899,
+      "sha256": "b744cb42468d2ee1bc7b0ab776c82afa783cfb8a2d6a5d8a8741ed0387e2e7d3",
+      "storedBytes": 1670,
+      "storedSha256": "fc2f1ba129a56bfdac04332ed2a31fac96cd736169cdac6537357afca9d59ed6",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-01-failed/source-copy/tests/hmh-greybox-coast-flow.test.mjs.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-pines-green-20260930-01\\source-copy\\tests\\hmh-greybox-coast-flow.test.mjs",
+      "bytes": 8319,
+      "sha256": "ff5796d8641291700835f82aecc01f1659710c089d2c16b59fc406685478c291",
+      "storedBytes": 2631,
+      "storedSha256": "d7a71c9a5f8962493316f7cbd4772e76fe2c3d09b6e31a2d01c7579c80e1b3d9",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-01-failed/source-copy/tests/hmh-greybox-farms-flow.test.mjs.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-pines-green-20260930-01\\source-copy\\tests\\hmh-greybox-farms-flow.test.mjs",
+      "bytes": 5834,
+      "sha256": "44120d901a9ea16380ccf6b0e0a03f954c671b3d62f304075dfbc3fb5192c30c",
+      "storedBytes": 2005,
+      "storedSha256": "3763b52635efe109a433e31dfeebd3c14cf7b6d372eb25b72f2490ea61ae1b17",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-01-failed/source-copy/tests/hmh-greybox-kit-polygon-contract.test.mjs.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-pines-green-20260930-01\\source-copy\\tests\\hmh-greybox-kit-polygon-contract.test.mjs",
+      "bytes": 1727,
+      "sha256": "7cda487e835a76ca65a91e308debbb7e1d64e3c06429068f1ea6373794ed0abe",
+      "storedBytes": 744,
+      "storedSha256": "e7fadc55f4ddb121713df8be3f6859c4cd9a20a3fa50e7d825465f7a867775ea",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-01-failed/source-copy/tests/hmh-greybox-meadows-flow.test.mjs.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-pines-green-20260930-01\\source-copy\\tests\\hmh-greybox-meadows-flow.test.mjs",
+      "bytes": 4638,
+      "sha256": "9a504bb2a95d76cc77d0206c1b7e6c4924a5b6256b2ab88331554c06b364f77f",
+      "storedBytes": 1729,
+      "storedSha256": "57954731488ba3051ff4316b9de19ea1a0894da87e722d83f7f376b74ff691de",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-01-failed/source-copy/tests/hmh-greybox-pines-flow.test.mjs.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-pines-green-20260930-01\\source-copy\\tests\\hmh-greybox-pines-flow.test.mjs",
+      "bytes": 8009,
+      "sha256": "5bfc27372acf66b4114c227d60dbe4e05cb0635ecb467741bf7380457922756e",
+      "storedBytes": 2570,
+      "storedSha256": "cd244e1a9f61a3d604edb05d9d422747e9ae8286405469fb4c8ced9e1caaad7c",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-01-failed/source-copy/tests/hmh-greybox-ridge-flow.test.mjs.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-pines-green-20260930-01\\source-copy\\tests\\hmh-greybox-ridge-flow.test.mjs",
+      "bytes": 7631,
+      "sha256": "02fc796a5e3e773d2d4ba5d5ed563d12dfac53693fd92720d6affa27b8c31362",
+      "storedBytes": 2440,
+      "storedSha256": "211446c78d6417a7c77cf54458fc7a6db1ed0e5107589a020ad4accf018effbd",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-01-failed/source-copy/tests/hmh-greybox-world.test.mjs.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-pines-green-20260930-01\\source-copy\\tests\\hmh-greybox-world.test.mjs",
+      "bytes": 10049,
+      "sha256": "0f0893929fc1067cf287dbd48d4140a0366c54e6286cb37f5b9c4d289e6bc0a6",
+      "storedBytes": 3172,
+      "storedSha256": "e528b2bda4f2d86357cf04e3d9c5680c410ef2d8dc34857aa7f81a2b433a6ddb",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-02/bindings.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-pines-green-20260930-02\\bindings.json",
+      "bytes": 17827,
+      "sha256": "c8d62cf6f355e413a4551d761f29e4dad39325d4032a16f6fb9c88b972ec4847",
+      "storedBytes": 2423,
+      "storedSha256": "7405dbbc7b6ec42856786d22942b35b09752ab954dc18e99880b4f2b0dfb5139",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-02/gate-report.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-pines-green-20260930-02\\gate-report.json",
+      "bytes": 38388,
+      "sha256": "9a773a0685e786b894a831b9a4a25dffbaff5e54743a5430630fcdfe85a519b3",
+      "storedBytes": 6323,
+      "storedSha256": "a76e3e716485efafd7b326f64d329243a138b8e65f2e098ca8af3d4849ee636f",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-02/layout-report.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-pines-green-20260930-02\\layout-report.json",
+      "bytes": 66982,
+      "sha256": "a3011e1699dbe5b3fcc9d11091136337452626a71103a5973243f31bb1c4c8e2",
+      "storedBytes": 5745,
+      "storedSha256": "63ca413f4dd836ce1c669da96197582116ad3a64ac117936a019f3bc3005b784",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-02/runner.mjs.txt.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-pines-green-20260930-02\\runner.mjs.txt",
+      "bytes": 4896,
+      "sha256": "bf50fbdd4d227981e226bf62acc063bc76fb65a8d0305f266bef3b61df2f842d",
+      "storedBytes": 1903,
+      "storedSha256": "4b54992ceaa39f6376843100183a58d6f7de1fbf4391263e9322703296bc0e27",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-02/source-copy/apps/hmh-reboot/src/blocker-bounds.mjs.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-pines-green-20260930-02\\source-copy\\apps\\hmh-reboot\\src\\blocker-bounds.mjs",
+      "bytes": 4684,
+      "sha256": "7f94d7f336a697e806ce92d1f5eedf9674d9d948f6366a958ba27e7124d2bf8a",
+      "storedBytes": 1757,
+      "storedSha256": "19850a1a0ba5829abc3f51fcb60578eca29f05e01775452fd2554aad9b8cbfff",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-02/source-copy/apps/hmh-reboot/src/collision.mjs.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-pines-green-20260930-02\\source-copy\\apps\\hmh-reboot\\src\\collision.mjs",
+      "bytes": 18604,
+      "sha256": "94a90d4a68c9e66b54ff0332e8cf60aaeaff06c02734aed07a3e420e7eb52593",
+      "storedBytes": 4972,
+      "storedSha256": "48ee1efefabcbf889f8f99e24c1da389852688febec79de2c6103ca58541082a",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-02/source-copy/apps/hmh-reboot/src/dev/greybox-city.mjs.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-pines-green-20260930-02\\source-copy\\apps\\hmh-reboot\\src\\dev\\greybox-city.mjs",
+      "bytes": 4124,
+      "sha256": "df4e65c70cdd587bf459414db643b7a83fde2b520ad5e88269315cdd82f87c80",
+      "storedBytes": 1703,
+      "storedSha256": "0b537e727676db13a20d09a97b36f6d1b6653c6aec63b5a13da8488b295e4224",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-02/source-copy/apps/hmh-reboot/src/dev/greybox-closed-masses.mjs.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-pines-green-20260930-02\\source-copy\\apps\\hmh-reboot\\src\\dev\\greybox-closed-masses.mjs",
+      "bytes": 5250,
+      "sha256": "f1562f9f5c0be11d4b0c7a397e39187dc536a9546be7497ecfa75ea5ea0826cc",
+      "storedBytes": 1939,
+      "storedSha256": "d9b5425b00cfecfa4ef08ec78723c7b348291665197984e6bb198b18543307de",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-02/source-copy/apps/hmh-reboot/src/dev/greybox-coast.mjs.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-pines-green-20260930-02\\source-copy\\apps\\hmh-reboot\\src\\dev\\greybox-coast.mjs",
+      "bytes": 4850,
+      "sha256": "aecc082923e08ca46aced4f0ee8aed2ea5c85e79ba0cef8ee3511da8e9d88264",
+      "storedBytes": 1810,
+      "storedSha256": "995eacf03d91066dddcc030ebdddeb460a9bee2cdb23db01361a58ada183256b",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-02/source-copy/apps/hmh-reboot/src/dev/greybox-farms.mjs.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-pines-green-20260930-02\\source-copy\\apps\\hmh-reboot\\src\\dev\\greybox-farms.mjs",
+      "bytes": 3861,
+      "sha256": "b5c5e82f417b20c87eed92c5214f9521008193cee6a10b42507670497e090a6a",
+      "storedBytes": 1522,
+      "storedSha256": "e94c8a41912469d5681f8ece0969391dbe7080de0d07dec2cafbc896ec8b413f",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-02/source-copy/apps/hmh-reboot/src/dev/greybox-kit.mjs.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-pines-green-20260930-02\\source-copy\\apps\\hmh-reboot\\src\\dev\\greybox-kit.mjs",
+      "bytes": 5168,
+      "sha256": "b453096397f610445bd8a548e8ed70b883544d947e8cc98518b82fb7c756c349",
+      "storedBytes": 1937,
+      "storedSha256": "b0a44281f5cade14473cbdf1565ba94d4b07d449d8a0107020f0fdfdeede04ac",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-02/source-copy/apps/hmh-reboot/src/dev/greybox-meadows.mjs.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-pines-green-20260930-02\\source-copy\\apps\\hmh-reboot\\src\\dev\\greybox-meadows.mjs",
+      "bytes": 3661,
+      "sha256": "7d69ab91dd7e678af19b14b296d7e977e6ed7fe619a910d9ce9c93f2ed33516e",
+      "storedBytes": 1490,
+      "storedSha256": "54d0cd764c808693a5bad803868c6a1dc71c98ba05a4b031ea448b411ea99bdc",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-02/source-copy/apps/hmh-reboot/src/dev/greybox-pines.mjs.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-pines-green-20260930-02\\source-copy\\apps\\hmh-reboot\\src\\dev\\greybox-pines.mjs",
+      "bytes": 4865,
+      "sha256": "378ed31cb767befae63de3e33a869c7616b0d0fdf1ec6fdf3ad670eb3f12afa3",
+      "storedBytes": 1880,
+      "storedSha256": "99a0c757f68baa45012c8c365285b7a35175ddc08ca02db63ee6ff621253242c",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-02/source-copy/apps/hmh-reboot/src/dev/greybox-ridge.mjs.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-pines-green-20260930-02\\source-copy\\apps\\hmh-reboot\\src\\dev\\greybox-ridge.mjs",
+      "bytes": 4673,
+      "sha256": "7224207505d038925950c723efbe0bc0843513632f9f3d0cfecfe26d432d9fdc",
+      "storedBytes": 1818,
+      "storedSha256": "37171a9fb7e3226baf3410bca3d378efbd769a71ba84f2744cfd0513f78f4eec",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-02/source-copy/apps/hmh-reboot/src/dev/greybox-world-v1.mjs.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-pines-green-20260930-02\\source-copy\\apps\\hmh-reboot\\src\\dev\\greybox-world-v1.mjs",
+      "bytes": 10067,
+      "sha256": "55caed6b3c0cfd8b699457e0ba45005e43881d49b869f2b86c67591afa0e7f39",
+      "storedBytes": 3247,
+      "storedSha256": "79592a98a96904ce0a33d0f895b6886eabe97f956bfaf94d50bad627538bd908",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-02/source-copy/apps/hmh-reboot/src/elevation.mjs.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-pines-green-20260930-02\\source-copy\\apps\\hmh-reboot\\src\\elevation.mjs",
+      "bytes": 19061,
+      "sha256": "afab7fb53ba657f13f1646d533909ae68544754c1de24ccef786ee156a57c4ea",
+      "storedBytes": 5734,
+      "storedSha256": "84f69341733cc434408d92af1b1e759319e4b473e67a257da11bcacfecf7bc92",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-02/source-copy/apps/hmh-reboot/src/enemy-navgrid.mjs.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-pines-green-20260930-02\\source-copy\\apps\\hmh-reboot\\src\\enemy-navgrid.mjs",
+      "bytes": 30791,
+      "sha256": "da338be023aeeaadf0d5eb00a7ceef0adbd82e3ab7eb1b833fe7171445f595c3",
+      "storedBytes": 8280,
+      "storedSha256": "5e4b59e7d8785f3cc232091828e2e4909ce2cc3bc03cf601bb4f520f817d5c4a",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-02/source-copy/apps/hmh-reboot/src/value-guards.mjs.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-pines-green-20260930-02\\source-copy\\apps\\hmh-reboot\\src\\value-guards.mjs",
+      "bytes": 2596,
+      "sha256": "8576f65fd1f8a4680578580a150bd3acdec43f555e6c8f1181e54ae92771cb94",
+      "storedBytes": 936,
+      "storedSha256": "91ada625932506cb5e73e391280c7eca3f10cfe9b8a8c8ea867fa68ed72c7b45",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-02/source-copy/scripts/lib/hmh-greybox-layout-check.mjs.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-pines-green-20260930-02\\source-copy\\scripts\\lib\\hmh-greybox-layout-check.mjs",
+      "bytes": 5996,
+      "sha256": "7296aaf2767d5d77d759c7b7a3c9757dc931ba98e1db126436e11525533fb55e",
+      "storedBytes": 2289,
+      "storedSha256": "1f1291689e31abbcbd2eb0bcefcc248df5cb56d3f758262f5211daa2b6ccfddf",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-02/source-copy/scripts/lib/hmh-greybox-world-check.mjs.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-pines-green-20260930-02\\source-copy\\scripts\\lib\\hmh-greybox-world-check.mjs",
+      "bytes": 14521,
+      "sha256": "5e7bc94f8200c15d73cd53e94193464697e8b6c804a793b80b3ce652214e448c",
+      "storedBytes": 4778,
+      "storedSha256": "60f1d9111b5269e40f280ddf6981c8247399ae2c46d02695762e0112c81386de",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-02/source-copy/tests/hmh-greybox-city-flow.test.mjs.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-pines-green-20260930-02\\source-copy\\tests\\hmh-greybox-city-flow.test.mjs",
+      "bytes": 8388,
+      "sha256": "4c736822846ed7fd39486f3ca6c47a98e0776a2c20e704eebc25f0b0f736379e",
+      "storedBytes": 2698,
+      "storedSha256": "bda7508faba5c8e89f76f1b4f718ed4b6353acf078543e1fb18b0c475e823c79",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-02/source-copy/tests/hmh-greybox-closed-masses.test.mjs.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-pines-green-20260930-02\\source-copy\\tests\\hmh-greybox-closed-masses.test.mjs",
+      "bytes": 3899,
+      "sha256": "b744cb42468d2ee1bc7b0ab776c82afa783cfb8a2d6a5d8a8741ed0387e2e7d3",
+      "storedBytes": 1670,
+      "storedSha256": "fc2f1ba129a56bfdac04332ed2a31fac96cd736169cdac6537357afca9d59ed6",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-02/source-copy/tests/hmh-greybox-coast-flow.test.mjs.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-pines-green-20260930-02\\source-copy\\tests\\hmh-greybox-coast-flow.test.mjs",
+      "bytes": 8319,
+      "sha256": "ff5796d8641291700835f82aecc01f1659710c089d2c16b59fc406685478c291",
+      "storedBytes": 2631,
+      "storedSha256": "d7a71c9a5f8962493316f7cbd4772e76fe2c3d09b6e31a2d01c7579c80e1b3d9",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-02/source-copy/tests/hmh-greybox-farms-flow.test.mjs.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-pines-green-20260930-02\\source-copy\\tests\\hmh-greybox-farms-flow.test.mjs",
+      "bytes": 5834,
+      "sha256": "44120d901a9ea16380ccf6b0e0a03f954c671b3d62f304075dfbc3fb5192c30c",
+      "storedBytes": 2005,
+      "storedSha256": "3763b52635efe109a433e31dfeebd3c14cf7b6d372eb25b72f2490ea61ae1b17",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-02/source-copy/tests/hmh-greybox-kit-polygon-contract.test.mjs.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-pines-green-20260930-02\\source-copy\\tests\\hmh-greybox-kit-polygon-contract.test.mjs",
+      "bytes": 1727,
+      "sha256": "7cda487e835a76ca65a91e308debbb7e1d64e3c06429068f1ea6373794ed0abe",
+      "storedBytes": 744,
+      "storedSha256": "e7fadc55f4ddb121713df8be3f6859c4cd9a20a3fa50e7d825465f7a867775ea",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-02/source-copy/tests/hmh-greybox-meadows-flow.test.mjs.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-pines-green-20260930-02\\source-copy\\tests\\hmh-greybox-meadows-flow.test.mjs",
+      "bytes": 4638,
+      "sha256": "9a504bb2a95d76cc77d0206c1b7e6c4924a5b6256b2ab88331554c06b364f77f",
+      "storedBytes": 1729,
+      "storedSha256": "57954731488ba3051ff4316b9de19ea1a0894da87e722d83f7f376b74ff691de",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-02/source-copy/tests/hmh-greybox-pines-flow.test.mjs.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-pines-green-20260930-02\\source-copy\\tests\\hmh-greybox-pines-flow.test.mjs",
+      "bytes": 8009,
+      "sha256": "5bfc27372acf66b4114c227d60dbe4e05cb0635ecb467741bf7380457922756e",
+      "storedBytes": 2570,
+      "storedSha256": "cd244e1a9f61a3d604edb05d9d422747e9ae8286405469fb4c8ced9e1caaad7c",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-02/source-copy/tests/hmh-greybox-ridge-flow.test.mjs.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-pines-green-20260930-02\\source-copy\\tests\\hmh-greybox-ridge-flow.test.mjs",
+      "bytes": 7631,
+      "sha256": "02fc796a5e3e773d2d4ba5d5ed563d12dfac53693fd92720d6affa27b8c31362",
+      "storedBytes": 2440,
+      "storedSha256": "211446c78d6417a7c77cf54458fc7a6db1ed0e5107589a020ad4accf018effbd",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-02/source-copy/tests/hmh-greybox-world.test.mjs.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-pines-green-20260930-02\\source-copy\\tests\\hmh-greybox-world.test.mjs",
+      "bytes": 10049,
+      "sha256": "0f0893929fc1067cf287dbd48d4140a0366c54e6286cb37f5b9c4d289e6bc0a6",
+      "storedBytes": 3172,
+      "storedSha256": "e528b2bda4f2d86357cf04e3d9c5680c410ef2d8dc34857aa7f81a2b433a6ddb",
+      "compression": "gzip"
+    },
+    {
+      "archive": "browser-01/gate-report.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-pines-preview-browser-20260930-01\\gate-report.json",
+      "bytes": 244716,
+      "sha256": "f92a0b86cfedd49645a64b2be886883cb7c2cff6e4e31cb958f3005dee62e261",
+      "storedBytes": 33566,
+      "storedSha256": "586a698644ca1d22da8b2bcde0ada9da48b42189e8ad3674f55201ffb7a054c1",
+      "compression": "gzip"
+    },
+    {
+      "archive": "browser-01/bindings.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-pines-preview-browser-20260930-01\\bindings.json",
+      "bytes": 74494,
+      "sha256": "b5aee5f143145f852f4ec2b474df3867d1e7c50aff87bc061817e467ffa12b64",
+      "storedBytes": 14443,
+      "storedSha256": "27ca06a62a96e29e18368014725f36877bb5c3aa2c9be7f9e792a8b17a05bd4e",
+      "compression": "gzip"
+    },
+    {
+      "archive": "browser-01/runner.mjs.txt.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-pines-preview-browser-20260930-01\\runner.mjs.txt",
+      "bytes": 9828,
+      "sha256": "526d9d7697699adf7e968dd2a315e48da2dacda6882d28c4d0ca74c68009050b",
+      "storedBytes": 3293,
+      "storedSha256": "458f2b11ad1c43f833f7ae91f2e1c562e48b09ab79854efc1a0e987daf448598",
+      "compression": "gzip"
+    },
+    {
+      "archive": "browser-01/browser/browser-report.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-pines-preview-browser-20260930-01\\browser\\browser-report.json",
+      "bytes": 111848,
+      "sha256": "66f474e5b3e61fe786b6606b08cec8589736bed9e4383378cb3598924bab9c21",
+      "storedBytes": 6246,
+      "storedSha256": "c12a252317bb75bb8a37c91271354b558deb8a7cb57f22b0302b90ea7f8706f2",
+      "compression": "gzip"
+    },
+    {
+      "archive": "browser-01/harness/hmh-greybox-pines-browser-smoke.mjs.txt.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\hmh-greybox-pines-browser-smoke.mjs",
+      "bytes": 19070,
+      "sha256": "ceeb4497c2044a83c1e4162215481b1c0d708bc938f9f70a703fa165f9a7a63c",
+      "storedBytes": 6178,
+      "storedSha256": "7ddbf1e23b0b571b8b49aca7f99a18547a9ac457644f070359ebb228cd69db3c",
+      "compression": "gzip"
+    },
+    {
+      "archive": "browser-01/harness/prepare-world-pines-browser.mjs.txt.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\prepare-world-pines-browser.mjs",
+      "bytes": 5542,
+      "sha256": "000239b785f3ceede6549e80f9212a873fbbfa31a86da0875667e61be502dd56",
+      "storedBytes": 2308,
+      "storedSha256": "27c2518c5ece9c59ed1a84f106cd7f188f9f408064e12829708c6a917f172028",
+      "compression": "gzip"
+    },
+    {
+      "archive": "browser-01/harness/owned-windows-preview-child.mjs.txt.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\owned-windows-preview-child.mjs",
+      "bytes": 3476,
+      "sha256": "6f4903a66d324a01a476eebefdfac68663dde2c573f62f637c4b7537ccb0d631",
+      "storedBytes": 1360,
+      "storedSha256": "18c5cfc758da42cddbb922c7989a0204d20eb87c1d5d359985932ef89f92c162",
+      "compression": "gzip"
+    },
+    {
+      "archive": "author-image-review.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-pines-author-image-review.json",
+      "bytes": 1476,
+      "sha256": "a8f2c922e0a6a68b435f18525757a16affd66de1c63dd616575b9a5bb5f2b13e",
+      "storedBytes": 829,
+      "storedSha256": "2ecc2398794e4c328f3d1a0107691e34835cf58bc5db046f684a8d0c8aee2847",
+      "compression": "gzip"
+    }
+  ]
+}

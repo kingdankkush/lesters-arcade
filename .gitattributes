@@ -94,3 +94,6 @@ docs/2.0/receipts/world-coast/** -text
 docs/2.0/receipts/stacked-tutorial-f2a/*.gz -filter -diff -merge -text
 # Exact compressed Ridge authoring evidence
 docs/2.0/receipts/world-ridge/** -text
+
+# Exact compressed Pines authoring evidence
+docs/2.0/receipts/world-pines/** -text

@@ -643,3 +643,32 @@ yard, tiny/overlapping labels and boundary stripes remain. No final area/art,
 owner playtest, physical-phone, official map/verifier or release acceptance.
 See slices/WORLD-W2F-RIDGE.md and receipts/world-ridge. Manual bundle is separate
 at outputs/hmh-ridge-authored-flow-preview.zip. No credits/push/deploy/version.
+
+
+### W2g Hollow Pines local-flow checkpoint
+
+Pines now has a gated cemetery clearing, outside service path, returnable crypt
+trail, shaped forest masses and a two-ramp maintenance bank. Nineteen pieces
+and five paths replace its template. Six of ten areas have distinct authored
+local layouts; whole-map design, owner playtest and production art remain open.
+
+Genuine RED was 5 expected FAIL / 1 control PASS. GREEN01 failed seven propagated
+global assertions because the cemetery floor was too enclosed; the failure is
+retained. Wider actual gates and a shortened southern wall fixed the geometry
+without changing tests/checker thresholds. GREEN02 is 54/54 focused plus the same
+54/54 exact 25-file isolated no-Git/empty-PATH copy. All 98 sites out/back and
+14 roads pass. Solid footprint is 1,837,700 units² versus 2,060,800 allowed;
+conservative nav is 36,167/77,589 (46.6136%), 24 cells below Ridge despite smaller
+solid area. Court is 188/225 open (83.5556%), with two exits and both cover heights.
+
+One private build and one 79.980-second Chrome check passed 19 desktop / 5 touch
+legs following one visible inspection jump each. Bank z24, return z0, visible
+root contact y10445.2756, four denied entries and pagehide cleanup pass. Build
+29884/browser34668/Chrome31688 closed normally and were independently absent;
+HTTP62767 closed and exact marker released. Pins and served bytes match. All
+11 full-resolution originals were reviewed: routes, nearby walls and house
+frontage read, while flat masses, sparse ground and tiny/clipped labels remain.
+
+See slices/WORLD-W2G-PINES.md and receipts/world-pines; manual local bundle at
+outputs/hmh-pines-authored-flow-preview.zip. No full regional journey, physical
+phone, final art/owner acceptance, official map/verifier, version or deploy claim.
