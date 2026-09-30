@@ -13,19 +13,19 @@
     "skip": 0
   },
   "copiedFiles": 1906,
-  "sourceCopiesReceiptSha256": "d648bcfb24b80ce2777650aba6c7eb93aaf3bc3f1eda2fc7d017f6cdf2f0da6b",
+  "sourceCopiesReceiptSha256": "9ad2842297b7a83f674e2b5ff2604b5a3cb88e93193881c87be18df117e1cc0b",
   "selectedSourceSha256": {
     "scripts/hmh-source-model-lfs-check.mjs": "133c80438aa79d2b6cd077689e62bb9c794c3baa0efcca423d47d88fe44ae077",
-    "tests/build-git-independence.test.mjs": "ee42b46ebfb5efb5a874f3c7ae0fcc2c8bbaa29a0d09bf906c8c16ee4344f4cd",
+    "tests/build-git-independence.test.mjs": "6d5837147a2e0e40b0fc496a604666b87da590d0df708f792ad72329459e7661",
     "tests/hmh-source-model-lfs-policy.test.mjs": "e13f3547f72caba65210ef6a6465704f17d156fcad3c4d7bdd839fd60ce7bbf7",
     "tests/hmh-banner-art.test.mjs": "4bad97715e8c65ba036d75fe4f5f8499adee50947ca52a54bb66c06e854e3cf9",
     "tests/hmh-level-one-visible-runtime.test.mjs": "19c79ce55d075bcbd1abaab95321919ce4f1b4ebe3618e776b12420ad189ba14",
     "scripts/syntax-check.mjs": "ce99d29006e0b8ef5e51eb0d3952d060260a7242c7e56821b838421de4adc2f0",
     ".gitattributes": "46c05052aacf46face0edfd19f96790684923ef411fbf86d9fc3f508c237e31e",
-    "tests/ranked-live-browser-e2e.test.mjs": "17ccf84b24be95fead3d2997e97afbe6c902c60fe7cd6f3913e1189553e11f3e"
+    "tests/ranked-live-browser-e2e.test.mjs": "0fbab0eb37a8d1f4b0004199b60a99503a77ab62d62ac3fd9e78b3f1b5344a17"
   },
-  "independentReview": "character_gate_audit read-only review: no blocking finding; direct-call tripwire is not a transitive subprocess proof",
-  "freshAssetSuiteDurationMs": 1621.35,
+  "independentReview": "character_gate_audit earlier asset/policy review and stacked_replay_audit fourth-family source/exact selected unit/import-copy review: no blockers; static known-call heuristic is not exhaustive",
+  "freshAssetSuiteDurationMs": 1152.5872,
   "revisionMetadataUnit": {
     "schema": "ranked-source-revision-archive-unit-v1",
     "archive": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\cloud-portability-f863c0742db5494c904c02cf2ee6feb8",
@@ -1192,6 +1192,9 @@
     "declaredExistingDependenciesJunctioned": true,
     "exitCode": 0,
     "noRealKeyReadOrRpcOrTransactionExecuted": true,
+    "originalUnitHashEncoding": "normalized LF UTF8 text; exact selected case also normalized LF UTF8",
+    "originalUnitRawByteSha256": "17ccf84b24be95fead3d2997e97afbe6c902c60fe7cd6f3913e1189553e11f3e",
+    "candidateUnitRawByteSha256": "0fbab0eb37a8d1f4b0004199b60a99503a77ab62d62ac3fd9e78b3f1b5344a17",
     "checks": {
       "tests": 1,
       "pass": 1,

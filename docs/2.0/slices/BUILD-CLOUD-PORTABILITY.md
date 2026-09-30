@@ -13,3 +13,5 @@ The architectural direct-call tripwire failed first against the old tests. The f
 Independent read-only review found no blocking issue. The static tripwire detects direct Git calls and this known default metadata-helper call; it does not certify every transitive subprocess helper or execution of every repository test. This slice is scoped asset-test evidence, not a full release gate or a passing350MiB repository migration. Runtime source identity checks remain intact.
 
 The historical Level1 family received source review and optional-probe removal; its full suite was not rerun by this slice. Two retired exceptions remain unchanged.
+
+Fourth-family review verified the exact selected unit and all230 extra import-input hashes. Its original-unit and case hashes are explicitly normalized LF UTF8 text hashes, with raw measured/candidate byte identities also recorded. The final15/15 source-free asset proof uses the normalized candidate source; the static scanner remains a heuristic for known direct/default calls, not exhaustive transitive enforcement.
