@@ -20,6 +20,10 @@ const root = fileURLToPath(new URL('..', import.meta.url));
 
 // Every .mjs / .js module that must parse cleanly (node --check).
 const NODE_CHECK_FILES = [
+  'apps/hmh-reboot/src/cover-system.mjs',
+  'apps/hmh-reboot/src/traversal-system.mjs',
+  'tests/hmh-reboot-cover-system.test.mjs',
+  'tests/hmh-reboot-traversal-system.test.mjs',
   'scripts/lib/blog-publication.mjs',
   'tests/hmh-meadows-art-runtime.test.mjs',
   'apps/hmh-reboot/src/meadows-art-target.mjs',
