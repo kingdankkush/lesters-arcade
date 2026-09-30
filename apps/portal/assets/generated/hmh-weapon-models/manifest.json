@@ -1,0 +1,796 @@
+{
+  "artAccepted": false,
+  "blender": {
+    "hash": "ec6e62d40fa9",
+    "version": "5.1.2"
+  },
+  "budgets": {
+    "maxBytes": 153600,
+    "maxTextureSize": 512,
+    "maxTriangles": 3000
+  },
+  "canonicalAdoption": false,
+  "classification": "native-render-candidate",
+  "generatedUtc": "2026-09-30T22:52:27+00:00",
+  "gripFrame": {
+    "attachment": "socketLocal = axesInSocket * grip + anchorInSocket; model = jointWorld[pistol_prop] * socketLocal",
+    "forward": "+X toward the muzzle",
+    "glbAxes": "+X forward, +Y up, +Z right (glTF Y-up export of the Blender grip frame)",
+    "glbToGrip": "grip = (x, -z, y) of the GLB vertex",
+    "left": "+Y",
+    "origin": "trigger-hand palm point on the grip",
+    "socketJoint": "pistol_prop (identity child of weapon_socket under hand.R)",
+    "units": "metres at hero scale (hero GLBs are 2.1 m tall)",
+    "up": "+Z"
+  },
+  "heroes": {
+    "lester-original": {
+      "anchorInSocket": [
+        -0.0001673570164402588,
+        -0.004308144388408194,
+        -0.0005774714675731429
+      ],
+      "axesInSocket": {
+        "forward": [
+          0.5105335632154462,
+          0.13091397452981768,
+          -0.8498335202281366
+        ],
+        "left": [
+          -0.7828946605352998,
+          0.47947506298360654,
+          -0.3964588433648373
+        ],
+        "up": [
+          0.3555719777145805,
+          0.8677356713018503,
+          0.3472799640268194
+        ]
+      },
+      "file": "lester-original.glb",
+      "heldWeaponManifest": "apps/portal/assets/generated/hmh-held-weapons/lester-original/lester-original-held-weapons.json",
+      "heldWeaponManifestSha256": "8b2f5989f849e5a1fc1b8b738c2b053f6853196cd825878e7c34675ffac7aa77",
+      "nativePistolMuzzle": [
+        0.18125,
+        0.0,
+        0.1
+      ],
+      "nativePistolMuzzleSocket": [
+        0.127924,
+        0.106194,
+        -0.119882
+      ],
+      "runtimePistolAxisDeviationDegrees": 7.977,
+      "runtimePistolSocketBounds": [
+        [
+          -0.0532,
+          -0.0746,
+          -0.1948
+        ],
+        [
+          0.1398,
+          0.1043,
+          0.0541
+        ]
+      ],
+      "sha256": "fac4298d46b7b3dae5c6a614cac4dc99c48aab0d2750d2d336f50bfbc7b0fb26",
+      "socketJoint": "pistol_prop",
+      "socketJointIndex": 9,
+      "socketNodeIndex": 1
+    },
+    "lilly": {
+      "anchorInSocket": [
+        -0.006553389078977179,
+        -0.0013863330545017954,
+        0.023227762714540114
+      ],
+      "axesInSocket": {
+        "forward": [
+          0.41914037616581534,
+          0.14048758989518018,
+          -0.896986389056725
+        ],
+        "left": [
+          -0.8500271286333057,
+          0.40786481545340936,
+          -0.3333169256167078
+        ],
+        "up": [
+          0.31902229648567887,
+          0.9021693462984651,
+          0.29037087482115626
+        ]
+      },
+      "file": "lilly.glb",
+      "heldWeaponManifest": "apps/portal/assets/generated/hmh-held-weapons/lilly/lilly-held-weapons.json",
+      "heldWeaponManifestSha256": "a5a61db159d4ff6cf1937bd0996056d2f632cb22681e39ece33d5a306b1f8b94",
+      "nativePistolMuzzle": [
+        0.18125,
+        0.0,
+        0.1
+      ],
+      "nativePistolMuzzleSocket": [
+        0.101318,
+        0.114294,
+        -0.110314
+      ],
+      "runtimePistolAxisDeviationDegrees": 7.938,
+      "runtimePistolSocketBounds": [
+        [
+          -0.0549,
+          -0.0735,
+          -0.1827
+        ],
+        [
+          0.1123,
+          0.1112,
+          0.0751
+        ]
+      ],
+      "sha256": "5f9f4b42849455233a17b90b750c4c08125e4732dcf3acd7536a528abd42414f",
+      "socketJoint": "pistol_prop",
+      "socketJointIndex": 9,
+      "socketNodeIndex": 1
+    },
+    "lit-commando": {
+      "anchorInSocket": [
+        0.006607728158368346,
+        0.008198812037114887,
+        0.02547447027608039
+      ],
+      "axesInSocket": {
+        "forward": [
+          0.29026562184615773,
+          0.16927288584560296,
+          -0.9418559119588115
+        ],
+        "left": [
+          -0.9295010080076287,
+          0.2838982248304053,
+          -0.23543507396084115
+        ],
+        "up": [
+          0.22753844705250456,
+          0.9437947277112997,
+          0.23974521279326633
+        ]
+      },
+      "file": "lit-commando.glb",
+      "heldWeaponManifest": "apps/portal/assets/generated/hmh-held-weapons/lit-commando/lit-commando-held-weapons.json",
+      "heldWeaponManifestSha256": "58f91d2604769feb6cb59e146c1acdce24c503826000fb81b9e2420555d30a65",
+      "nativePistolMuzzle": [
+        0.18125,
+        0.0,
+        0.1
+      ],
+      "nativePistolMuzzleSocket": [
+        0.081972,
+        0.133259,
+        -0.121262
+      ],
+      "runtimePistolAxisDeviationDegrees": 8.089,
+      "runtimePistolSocketBounds": [
+        [
+          -0.0332,
+          -0.0643,
+          -0.191
+        ],
+        [
+          0.0943,
+          0.1257,
+          0.0749
+        ]
+      ],
+      "sha256": "6408efa2bc23ad71c8cb237fea761989ce5a88a5f19ee70990dbdaf2266d662c",
+      "socketJoint": "pistol_prop",
+      "socketJointIndex": 12,
+      "socketNodeIndex": 4
+    },
+    "lit-valkyrie": {
+      "anchorInSocket": [
+        -2.2442833896588188e-05,
+        0.005974475008961415,
+        0.01037782139220587
+      ],
+      "axesInSocket": {
+        "forward": [
+          0.435610036685589,
+          0.13231689944134473,
+          -0.8903573069622156
+        ],
+        "left": [
+          -0.8294582890933732,
+          0.4432080118539578,
+          -0.3399494151822539
+        ],
+        "up": [
+          0.34963243927455334,
+          0.8865996257334486,
+          0.3028172073318071
+        ]
+      },
+      "file": "lit-valkyrie.glb",
+      "heldWeaponManifest": "apps/portal/assets/generated/hmh-held-weapons/lit-valkyrie/lit-valkyrie-held-weapons.json",
+      "heldWeaponManifestSha256": "494de7b6d9ae6721e169175b2978f117e1e0b75c1bc1273a74a8c8b0c2c8297a",
+      "nativePistolMuzzle": [
+        0.18125,
+        0.0,
+        0.1
+      ],
+      "nativePistolMuzzleSocket": [
+        0.113895,
+        0.118617,
+        -0.120718
+      ],
+      "runtimePistolAxisDeviationDegrees": 8.033,
+      "runtimePistolSocketBounds": [
+        [
+          -0.0501,
+          -0.0652,
+          -0.1937
+        ],
+        [
+          0.1231,
+          0.1167,
+          0.0614
+        ]
+      ],
+      "sha256": "394b50043b2a2f15e1c5659d5a18a1437e6081625bab1392c56e75e51025144f",
+      "socketJoint": "pistol_prop",
+      "socketJointIndex": 9,
+      "socketNodeIndex": 1
+    }
+  },
+  "pipelineId": "hmh-weapon-models/v1",
+  "runtimeAuthority": "projection-only",
+  "schemaVersion": 1,
+  "scripts": {
+    "exporter": "scripts/hmh-blender/export-hmh-weapon-models.py",
+    "exporterSha256": "f6bcfe07b8f9ae7bf3b98c3badd5f3c07d0756a76e3b8ed5abcc1f452f90ee2b",
+    "orchestrator": "scripts/run-hmh-weapon-models.py",
+    "orchestratorSha256": "64d9b74419da06e4312c980190b657e0b480e9bd0c5394a5d73546f380d498d7"
+  },
+  "settlementLive": false,
+  "weapons": {
+    "auto-miner": {
+      "boreHeight": 0.08,
+      "bytes": 142992,
+      "castingNote": "Rotary minigun; matches the Worn Heavy Machine Gun sheet.",
+      "equip": {
+        "ticks": 18,
+        "twoHanded": true
+      },
+      "file": "auto-miner.glb",
+      "forward": "+X",
+      "grip": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "lengthMetres": 1.1,
+      "material": {
+        "metallic": 0.75,
+        "roughness": 0.5,
+        "tint": [
+          0.26,
+          0.29,
+          0.36
+        ]
+      },
+      "muzzle": [
+        0.858,
+        0.0,
+        0.08
+      ],
+      "reload": {
+        "dipRadians": 0.3,
+        "ticks": 180
+      },
+      "sha256": "530f0fd29af7e53e50e3e4ccf7d257e162cf19bd94dc07c28d99a0293228dc59",
+      "slot": "gun",
+      "source": {
+        "bytes": 11325904,
+        "file": "military minigun 3d model.glb",
+        "sha256": "a9b386542d97b2d7a4cdec2ee8ae9596ff4bae273a68c093cd47fad97fb25188",
+        "textured": false,
+        "triangles": 470880
+      },
+      "standIn": false,
+      "texture": {
+        "bytes": 34229,
+        "height": 512,
+        "mimeType": "image/jpeg",
+        "width": 512
+      },
+      "title": "The Hashstorm (Machine Gun)",
+      "triangles": 1898,
+      "vertices": 2992
+    },
+    "bear-market-burner": {
+      "boreHeight": 0.09,
+      "bytes": 149444,
+      "castingNote": "STAND-IN. No flamethrower model was supplied; the assault rifle is the closest two-handed body. Needs an owner flamethrower model.",
+      "equip": {
+        "ticks": 16,
+        "twoHanded": true
+      },
+      "file": "bear-market-burner.glb",
+      "forward": "+X",
+      "grip": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "lengthMetres": 0.95,
+      "material": {
+        "metallic": 0.6,
+        "roughness": 0.55,
+        "tint": [
+          0.4,
+          0.3,
+          0.24
+        ]
+      },
+      "muzzle": [
+        0.646,
+        0.0,
+        0.09
+      ],
+      "reload": {
+        "dipRadians": 0.3,
+        "ticks": 90
+      },
+      "sha256": "14de55da44386138539feeb5de7b5d298298813205070d0757e0333791e69a6a",
+      "slot": "gun",
+      "source": {
+        "bytes": 11452744,
+        "file": "assault rifle 3d model.glb",
+        "sha256": "3dbcbc7d3d10c40e73083e8fb8a7ac6bfc7eecca9c58d1b189d225fcff154482",
+        "textured": false,
+        "triangles": 475955
+      },
+      "standIn": true,
+      "texture": {
+        "bytes": 36044,
+        "height": 512,
+        "mimeType": "image/jpeg",
+        "width": 512
+      },
+      "title": "Bear Market Burner (Flamethrower)",
+      "triangles": 1899,
+      "vertices": 3135
+    },
+    "coin-blaster": {
+      "boreHeight": 0.1,
+      "bytes": 131408,
+      "castingNote": "Compact rugged handgun; matches the Rugged Futuristic Handgun sheet. The desert eagle handgun (textured) is the alternate.",
+      "equip": {
+        "ticks": 10,
+        "twoHanded": false
+      },
+      "file": "coin-blaster.glb",
+      "forward": "+X",
+      "grip": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "lengthMetres": 0.29,
+      "material": {
+        "metallic": 0.7,
+        "roughness": 0.5,
+        "tint": [
+          0.34,
+          0.36,
+          0.4
+        ]
+      },
+      "muzzle": [
+        0.1798,
+        0.0,
+        0.1
+      ],
+      "reload": {
+        "dipRadians": 0.35,
+        "ticks": 90
+      },
+      "sha256": "fb90dace3161bd864e5da0ad611c36767dacf36187103771f453cff0fe17cfd0",
+      "slot": "gun",
+      "source": {
+        "bytes": 11615504,
+        "file": "pistol 3d model.glb",
+        "sha256": "30688e6c53fe8f197297c693766ad70c03434725f94f02968ad36136dbc10410",
+        "textured": false,
+        "triangles": 482534
+      },
+      "standIn": false,
+      "texture": {
+        "bytes": 30876,
+        "height": 512,
+        "mimeType": "image/jpeg",
+        "width": 512
+      },
+      "title": "The Settler (Pistol)",
+      "triangles": 1899,
+      "vertices": 2734
+    },
+    "forked-standard": {
+      "boreHeight": 0.06,
+      "bytes": 142540,
+      "castingNote": "STAND-IN. The war fork is a two-handed melee weapon and no fork model was supplied; the textured chainsaw (Weathered Red Chainsaw sheet) is the melee stand-in.",
+      "equip": {
+        "ticks": 18,
+        "twoHanded": true
+      },
+      "file": "forked-standard.glb",
+      "forward": "+X",
+      "grip": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "lengthMetres": 0.95,
+      "material": {
+        "metallic": 0.4,
+        "roughness": 0.6,
+        "tint": [
+          0.55,
+          0.16,
+          0.12
+        ]
+      },
+      "muzzle": [
+        0.817,
+        0.0,
+        0.06
+      ],
+      "reload": {
+        "dipRadians": 0.0,
+        "ticks": 0
+      },
+      "sha256": "202132a9965d21e55a79c0094d96ca99dc0619bc3e5e7ec29aeee54e5734390c",
+      "slot": "gun",
+      "source": {
+        "bytes": 16441976,
+        "file": "chainsaw 3d model.glb",
+        "sha256": "0809fb26111f4f7c5a605850ec9165f152a0ae55307540bf9710e1bfd03ee3c8",
+        "textured": true,
+        "triangles": 471665
+      },
+      "standIn": true,
+      "texture": {
+        "bytes": 50540,
+        "height": 512,
+        "mimeType": "image/jpeg",
+        "width": 512
+      },
+      "title": "The Forked Standard (War Fork)",
+      "triangles": 1300,
+      "vertices": 2579
+    },
+    "hash-rail": {
+      "boreHeight": 0.09,
+      "bytes": 130308,
+      "castingNote": "Textured scoped bolt rifle: the long precise lane weapon. Rugged Rifle sheet.",
+      "equip": {
+        "ticks": 16,
+        "twoHanded": true
+      },
+      "file": "hash-rail.glb",
+      "forward": "+X",
+      "grip": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "lengthMetres": 1.15,
+      "material": {
+        "metallic": 0.5,
+        "roughness": 0.55,
+        "tint": [
+          0.34,
+          0.36,
+          0.4
+        ]
+      },
+      "muzzle": [
+        0.828,
+        0.0,
+        0.09
+      ],
+      "reload": {
+        "dipRadians": 0.4,
+        "ticks": 156
+      },
+      "sha256": "022aa82342cf2e9c4b4a9e53e5a6afaa0ffb421aab4be33e5d0ab5d45c92b998",
+      "slot": "gun",
+      "source": {
+        "bytes": 15895556,
+        "file": "hunting rifle 3d model.glb",
+        "sha256": "bcb0b1c2b03e2301fd5b46fc7425cce8d2dd4b2bd221d0835ee4e3ff0a9be040",
+        "textured": true,
+        "triangles": 476666
+      },
+      "standIn": false,
+      "texture": {
+        "bytes": 42939,
+        "height": 512,
+        "mimeType": "image/jpeg",
+        "width": 512
+      },
+      "title": "Railgun",
+      "triangles": 1500,
+      "vertices": 2398
+    },
+    "launcher-rig": {
+      "boreHeight": 0.09,
+      "bytes": 139464,
+      "castingNote": "Drum grenade launcher; matches the Sci-Fi Grenade Launcher sheet.",
+      "equip": {
+        "ticks": 16,
+        "twoHanded": true
+      },
+      "file": "launcher-rig.glb",
+      "forward": "+X",
+      "grip": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "lengthMetres": 0.8,
+      "material": {
+        "metallic": 0.6,
+        "roughness": 0.55,
+        "tint": [
+          0.28,
+          0.32,
+          0.3
+        ]
+      },
+      "muzzle": [
+        0.51346,
+        0.0,
+        0.09
+      ],
+      "reload": {
+        "dipRadians": 0.45,
+        "ticks": 144
+      },
+      "sha256": "1ce70412d2c2926b372f321a84f18d5746cfee2d3fe054ceb09c40f293fadab5",
+      "slot": "gun",
+      "source": {
+        "bytes": 11598728,
+        "file": "grenade launcher 3d model.glb",
+        "sha256": "072f96ce844cc18d3d6a15bddc35885d801168062515f48b82ac297a1430d1a6",
+        "textured": false,
+        "triangles": 480174
+      },
+      "standIn": false,
+      "texture": {
+        "bytes": 31107,
+        "height": 512,
+        "mimeType": "image/jpeg",
+        "width": 512
+      },
+      "title": "Launcher Rig (Grenade Launcher)",
+      "triangles": 1899,
+      "vertices": 2978
+    },
+    "lightning-ledger": {
+      "boreHeight": 0.09,
+      "bytes": 128232,
+      "castingNote": "Scoped rifle stand-in for the arc rifle: the owner's futuristic gun GLB is an exploded two-body export and is unusable as delivered.",
+      "equip": {
+        "ticks": 16,
+        "twoHanded": true
+      },
+      "file": "lightning-ledger.glb",
+      "forward": "+X",
+      "grip": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "lengthMetres": 1.1,
+      "material": {
+        "metallic": 0.7,
+        "roughness": 0.45,
+        "tint": [
+          0.3,
+          0.36,
+          0.44
+        ]
+      },
+      "muzzle": [
+        0.792,
+        0.0,
+        0.09
+      ],
+      "reload": {
+        "dipRadians": 0.4,
+        "ticks": 144
+      },
+      "sha256": "e7b44340d74bd6bdb1688e7002ff03c4967b1b6a574510cf48175f7b28f30d1f",
+      "slot": "gun",
+      "source": {
+        "bytes": 11565820,
+        "file": "rifle with scope 3d model.glb",
+        "sha256": "571e1f4692da817dac1e1023e78c8a457aa920485284734dcd2f8019fa72e050",
+        "textured": false,
+        "triangles": 480329
+      },
+      "standIn": false,
+      "texture": {
+        "bytes": 29602,
+        "height": 512,
+        "mimeType": "image/jpeg",
+        "width": 512
+      },
+      "title": "The Lightning Ledger (Arc Rifle)",
+      "triangles": 1899,
+      "vertices": 2674
+    },
+    "litecoin-knife": {
+      "boreHeight": 0.02,
+      "bytes": 140140,
+      "castingNote": "Textured survival knife; matches the Rugged Survival Knife sheet.",
+      "equip": {
+        "ticks": 8,
+        "twoHanded": false
+      },
+      "file": "litecoin-knife.glb",
+      "forward": "+X",
+      "grip": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "lengthMetres": 0.34,
+      "material": {
+        "metallic": 0.5,
+        "roughness": 0.45,
+        "tint": [
+          0.34,
+          0.36,
+          0.4
+        ]
+      },
+      "muzzle": [
+        0.2788,
+        0.0,
+        0.02
+      ],
+      "reload": {
+        "dipRadians": 0.0,
+        "ticks": 0
+      },
+      "sha256": "0c1af305246136d1b84949989430d0b31db0dbe4480aece644d821fae76aca23",
+      "slot": "knife",
+      "source": {
+        "bytes": 16925392,
+        "file": "rugged hunting knife 3d model.glb",
+        "sha256": "3d5e50a2a5e5ebad7b983d7cd76f36548bf3b3d302de4ea290ecb3a1d51abaa3",
+        "textured": true,
+        "triangles": 488125
+      },
+      "standIn": false,
+      "texture": {
+        "bytes": 51308,
+        "height": 512,
+        "mimeType": "image/jpeg",
+        "width": 512
+      },
+      "title": "Litecoin Knife",
+      "triangles": 1500,
+      "vertices": 2443
+    },
+    "satoshi-frag": {
+      "boreHeight": 0.0,
+      "bytes": 135956,
+      "castingNote": "Textured pineapple grenade; matches the Weathered Military Grenade sheet.",
+      "equip": {
+        "ticks": 8,
+        "twoHanded": false
+      },
+      "file": "satoshi-frag.glb",
+      "forward": "+X",
+      "grip": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "lengthMetres": 0.13,
+      "material": {
+        "metallic": 0.4,
+        "roughness": 0.6,
+        "tint": [
+          0.3,
+          0.34,
+          0.26
+        ]
+      },
+      "muzzle": [
+        0.00516,
+        0.0,
+        0.0
+      ],
+      "reload": {
+        "dipRadians": 0.0,
+        "ticks": 0
+      },
+      "sha256": "19ba82ed67d29e24e99f41016edd56125f5f9b13e72570d7c88f42364d9df9c6",
+      "slot": "grenade",
+      "source": {
+        "bytes": 16083708,
+        "file": "hand grenade 3d model.glb",
+        "sha256": "38129c4a7e60c4ff617a92505c6a23d3d5252457992d550b90aa5c2243a0ffce",
+        "textured": true,
+        "triangles": 490766
+      },
+      "standIn": false,
+      "texture": {
+        "bytes": 42083,
+        "height": 512,
+        "mimeType": "image/jpeg",
+        "width": 512
+      },
+      "title": "Satoshi Frag (Hand Grenade)",
+      "triangles": 1400,
+      "vertices": 2619
+    },
+    "scatter-shotgun": {
+      "boreHeight": 0.09,
+      "bytes": 130996,
+      "castingNote": "Rugged pump shotgun; matches the Rugged Post-Apocalyptic Shotgun sheet.",
+      "equip": {
+        "ticks": 14,
+        "twoHanded": true
+      },
+      "file": "scatter-shotgun.glb",
+      "forward": "+X",
+      "grip": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "lengthMetres": 1.05,
+      "material": {
+        "metallic": 0.45,
+        "roughness": 0.6,
+        "tint": [
+          0.33,
+          0.3,
+          0.27
+        ]
+      },
+      "muzzle": [
+        0.735,
+        0.0,
+        0.09
+      ],
+      "reload": {
+        "dipRadians": 0.45,
+        "ticks": 120
+      },
+      "sha256": "0b81b1db1e24a8e89da98040566bfc7d7f2e2bf61f14d682a8d43ffaa43bfaed",
+      "slot": "gun",
+      "source": {
+        "bytes": 11602540,
+        "file": "rugged shotgun 3d model.glb",
+        "sha256": "41ece05b0e3eb6ce9e328b32565eded81495d40f295e8823db77133fd8e9111e",
+        "textured": false,
+        "triangles": 482322
+      },
+      "standIn": false,
+      "texture": {
+        "bytes": 29987,
+        "height": 512,
+        "mimeType": "image/jpeg",
+        "width": 512
+      },
+      "title": "The Block Breaker (Shotgun)",
+      "triangles": 1900,
+      "vertices": 2748
+    }
+  }
+}

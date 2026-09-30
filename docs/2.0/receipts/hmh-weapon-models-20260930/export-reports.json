@@ -1,0 +1,702 @@
+{
+  "auto-miner": {
+    "blender": {
+      "hash": "ec6e62d40fa9",
+      "version": "5.1.2"
+    },
+    "device": "CPU",
+    "lowTriangles": 1898,
+    "lowVertices": 956,
+    "outputBytes": 142992,
+    "outputGlb": "C:\\Users\\just_\\AppData\\Local\\Temp\\claude\\C--Users-just--lesters-arcade\\0d9119b8-2380-444e-a007-12981c4796b7\\scratchpad\\weapons-work\\auto-miner\\auto-miner.glb",
+    "outputSha256": "530f0fd29af7e53e50e3e4ccf7d257e162cf19bd94dc07c28d99a0293228dc59",
+    "placement": {
+      "axesInSource": {
+        "forward": [
+          -0.24998802622103952,
+          -0.9622068195395365,
+          0.10800010730420093
+        ],
+        "left": [
+          0.9678679933289612,
+          -0.25145883855885875,
+          -3.469446951953614e-18
+        ],
+        "up": [
+          0.027157581546946485,
+          0.10452984713582943,
+          0.9941508823223371
+        ]
+      },
+      "boreHeight": 0.08,
+      "bounds": [
+        [
+          -0.2420000433921814,
+          -0.1688278317451477,
+          -0.07770151644945145
+        ],
+        [
+          0.8580000400543213,
+          0.1718290150165558,
+          0.2712864279747009
+        ]
+      ],
+      "grip": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "lengthMetres": 1.1,
+      "muzzle": [
+        0.8580000000000001,
+        0.0,
+        0.08
+      ],
+      "sourceScale": 1.0998541144369118
+    },
+    "reviews": {
+      "low:side": "auto-miner__low__side.png",
+      "low:three-quarter": "auto-miner__low__three-quarter.png",
+      "low:top": "auto-miner__low__top.png",
+      "source:side": "auto-miner__source__side.png"
+    },
+    "sourcePath": "C:\\Users\\just_\\Desktop\\Projects\\LestersArcade-Assets\\military minigun 3d model.glb",
+    "sourceSha256After": "a9b386542d97b2d7a4cdec2ee8ae9596ff4bae273a68c093cd47fad97fb25188",
+    "sourceSha256Before": "a9b386542d97b2d7a4cdec2ee8ae9596ff4bae273a68c093cd47fad97fb25188",
+    "sourceTextured": false,
+    "sourceTriangles": 470880,
+    "textureJpeg": "auto-miner-base.jpg",
+    "textureSize": 512,
+    "weaponId": "auto-miner"
+  },
+  "bear-market-burner": {
+    "blender": {
+      "hash": "ec6e62d40fa9",
+      "version": "5.1.2"
+    },
+    "device": "CPU",
+    "lowTriangles": 1899,
+    "lowVertices": 992,
+    "outputBytes": 149444,
+    "outputGlb": "C:\\Users\\just_\\AppData\\Local\\Temp\\claude\\C--Users-just--lesters-arcade\\0d9119b8-2380-444e-a007-12981c4796b7\\scratchpad\\weapons-work\\bear-market-burner\\bear-market-burner.glb",
+    "outputSha256": "14de55da44386138539feeb5de7b5d298298813205070d0757e0333791e69a6a",
+    "placement": {
+      "axesInSource": {
+        "forward": [
+          -0.8788552598803133,
+          -0.4704283851876916,
+          0.07943907470765212
+        ],
+        "left": [
+          0.4719197824079441,
+          -0.8816414911811028,
+          0.0
+        ],
+        "up": [
+          0.07003678428330144,
+          0.0374888708507236,
+          0.996839723029531
+        ]
+      },
+      "boreHeight": 0.09,
+      "bounds": [
+        [
+          -0.30399999022483826,
+          -0.06560836732387543,
+          -0.22121621668338776
+        ],
+        [
+          0.6460000276565552,
+          0.06705101579427719,
+          0.17497049272060394
+        ]
+      ],
+      "grip": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "lengthMetres": 0.95,
+      "muzzle": [
+        0.6459999999999999,
+        0.0,
+        0.09
+      ],
+      "sourceScale": 0.8689898228965253
+    },
+    "reviews": {
+      "low:side": "bear-market-burner__low__side.png",
+      "low:three-quarter": "bear-market-burner__low__three-quarter.png",
+      "low:top": "bear-market-burner__low__top.png",
+      "source:side": "bear-market-burner__source__side.png"
+    },
+    "sourcePath": "C:\\Users\\just_\\Desktop\\Projects\\LestersArcade-Assets\\assault rifle 3d model.glb",
+    "sourceSha256After": "3dbcbc7d3d10c40e73083e8fb8a7ac6bfc7eecca9c58d1b189d225fcff154482",
+    "sourceSha256Before": "3dbcbc7d3d10c40e73083e8fb8a7ac6bfc7eecca9c58d1b189d225fcff154482",
+    "sourceTextured": false,
+    "sourceTriangles": 475955,
+    "textureJpeg": "bear-market-burner-base.jpg",
+    "textureSize": 512,
+    "weaponId": "bear-market-burner"
+  },
+  "coin-blaster": {
+    "blender": {
+      "hash": "ec6e62d40fa9",
+      "version": "5.1.2"
+    },
+    "device": "CPU",
+    "lowTriangles": 1899,
+    "lowVertices": 1101,
+    "outputBytes": 131408,
+    "outputGlb": "C:\\Users\\just_\\AppData\\Local\\Temp\\claude\\C--Users-just--lesters-arcade\\0d9119b8-2380-444e-a007-12981c4796b7\\scratchpad\\weapons-work\\coin-blaster\\coin-blaster.glb",
+    "outputSha256": "fb90dace3161bd864e5da0ad611c36767dacf36187103771f453cff0fe17cfd0",
+    "placement": {
+      "axesInSource": {
+        "forward": [
+          -0.9850654387461755,
+          -0.005702579299820487,
+          0.17208591452275887
+        ],
+        "left": [
+          0.005788939011389282,
+          -0.9999832439521786,
+          0.0
+        ],
+        "up": [
+          0.17208303104294578,
+          0.0009961948638914004,
+          0.9850819448263509
+        ]
+      },
+      "boreHeight": 0.1,
+      "bounds": [
+        [
+          -0.11020000278949738,
+          -0.029344527050852776,
+          -0.021522156894207
+        ],
+        [
+          0.17980000376701355,
+          0.03019843064248562,
+          0.14335514605045319
+        ]
+      ],
+      "grip": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "lengthMetres": 0.29,
+      "muzzle": [
+        0.17980000000000002,
+        0.0,
+        0.1
+      ],
+      "sourceScale": 0.278619694687628
+    },
+    "reviews": {
+      "low:side": "coin-blaster__low__side.png",
+      "low:three-quarter": "coin-blaster__low__three-quarter.png",
+      "low:top": "coin-blaster__low__top.png",
+      "source:side": "coin-blaster__source__side.png"
+    },
+    "sourcePath": "C:\\Users\\just_\\Desktop\\Projects\\LestersArcade-Assets\\pistol 3d model.glb",
+    "sourceSha256After": "30688e6c53fe8f197297c693766ad70c03434725f94f02968ad36136dbc10410",
+    "sourceSha256Before": "30688e6c53fe8f197297c693766ad70c03434725f94f02968ad36136dbc10410",
+    "sourceTextured": false,
+    "sourceTriangles": 482534,
+    "textureJpeg": "coin-blaster-base.jpg",
+    "textureSize": 512,
+    "weaponId": "coin-blaster"
+  },
+  "forked-standard": {
+    "blender": {
+      "hash": "ec6e62d40fa9",
+      "version": "5.1.2"
+    },
+    "device": "CPU",
+    "lowTriangles": 1300,
+    "lowVertices": 2993,
+    "outputBytes": 142540,
+    "outputGlb": "C:\\Users\\just_\\AppData\\Local\\Temp\\claude\\C--Users-just--lesters-arcade\\0d9119b8-2380-444e-a007-12981c4796b7\\scratchpad\\weapons-work\\forked-standard\\forked-standard.glb",
+    "outputSha256": "202132a9965d21e55a79c0094d96ca99dc0619bc3e5e7ec29aeee54e5734390c",
+    "placement": {
+      "axesInSource": {
+        "forward": [
+          0.039910844335786684,
+          -0.9872833858697757,
+          -0.15387865508223145
+        ],
+        "left": [
+          0.9991839133152034,
+          0.04039192211465541,
+          8.673617379884035e-19
+        ],
+        "up": [
+          0.006215454651189415,
+          -0.15375307676074443,
+          0.9880897527603876
+        ]
+      },
+      "boreHeight": 0.06,
+      "bounds": [
+        [
+          -0.13300004601478577,
+          -0.10786046087741852,
+          -0.13546600937843323
+        ],
+        [
+          0.8170000314712524,
+          0.11407620459794998,
+          0.2981617748737335
+        ]
+      ],
+      "grip": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "lengthMetres": 0.95,
+      "muzzle": [
+        0.8170000000000001,
+        0.0,
+        0.06
+      ],
+      "sourceScale": 0.9787758505118206
+    },
+    "reviews": {
+      "low:side": "forked-standard__low__side.png",
+      "low:three-quarter": "forked-standard__low__three-quarter.png",
+      "low:top": "forked-standard__low__top.png",
+      "source:side": "forked-standard__source__side.png"
+    },
+    "sourcePath": "C:\\Users\\just_\\Desktop\\Projects\\LestersArcade-Assets\\chainsaw 3d model.glb",
+    "sourceSha256After": "0809fb26111f4f7c5a605850ec9165f152a0ae55307540bf9710e1bfd03ee3c8",
+    "sourceSha256Before": "0809fb26111f4f7c5a605850ec9165f152a0ae55307540bf9710e1bfd03ee3c8",
+    "sourceTextured": true,
+    "sourceTriangles": 471665,
+    "textureJpeg": "forked-standard-base.jpg",
+    "textureSize": 512,
+    "weaponId": "forked-standard"
+  },
+  "hash-rail": {
+    "blender": {
+      "hash": "ec6e62d40fa9",
+      "version": "5.1.2"
+    },
+    "device": "CPU",
+    "lowTriangles": 1500,
+    "lowVertices": 1795,
+    "outputBytes": 130308,
+    "outputGlb": "C:\\Users\\just_\\AppData\\Local\\Temp\\claude\\C--Users-just--lesters-arcade\\0d9119b8-2380-444e-a007-12981c4796b7\\scratchpad\\weapons-work\\hash-rail\\hash-rail.glb",
+    "outputSha256": "022aa82342cf2e9c4b4a9e53e5a6afaa0ffb421aab4be33e5d0ab5d45c92b998",
+    "placement": {
+      "axesInSource": {
+        "forward": [
+          0.7004833408057971,
+          0.7091016442397023,
+          0.08060984673165142
+        ],
+        "left": [
+          -0.711416785709046,
+          0.7027703444308172,
+          6.938893903907227e-18
+        ],
+        "up": [
+          -0.056650209752118055,
+          -0.05734719805833031,
+          0.9967457311721479
+        ]
+      },
+      "boreHeight": 0.09,
+      "bounds": [
+        [
+          -0.32200002670288086,
+          -0.05674348771572113,
+          -0.11699488759040833
+        ],
+        [
+          0.828000009059906,
+          0.05577174574136734,
+          0.1678444892168045
+        ]
+      ],
+      "grip": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "lengthMetres": 1.15,
+      "muzzle": [
+        0.8279999999999998,
+        0.0,
+        0.09
+      ],
+      "sourceScale": 0.84964460975587
+    },
+    "reviews": {
+      "low:side": "hash-rail__low__side.png",
+      "low:three-quarter": "hash-rail__low__three-quarter.png",
+      "low:top": "hash-rail__low__top.png",
+      "source:side": "hash-rail__source__side.png"
+    },
+    "sourcePath": "C:\\Users\\just_\\Desktop\\Projects\\LestersArcade-Assets\\hunting rifle 3d model.glb",
+    "sourceSha256After": "bcb0b1c2b03e2301fd5b46fc7425cce8d2dd4b2bd221d0835ee4e3ff0a9be040",
+    "sourceSha256Before": "bcb0b1c2b03e2301fd5b46fc7425cce8d2dd4b2bd221d0835ee4e3ff0a9be040",
+    "sourceTextured": true,
+    "sourceTriangles": 476666,
+    "textureJpeg": "hash-rail-base.jpg",
+    "textureSize": 512,
+    "weaponId": "hash-rail"
+  },
+  "launcher-rig": {
+    "blender": {
+      "hash": "ec6e62d40fa9",
+      "version": "5.1.2"
+    },
+    "device": "CPU",
+    "lowTriangles": 1899,
+    "lowVertices": 1144,
+    "outputBytes": 139464,
+    "outputGlb": "C:\\Users\\just_\\AppData\\Local\\Temp\\claude\\C--Users-just--lesters-arcade\\0d9119b8-2380-444e-a007-12981c4796b7\\scratchpad\\weapons-work\\launcher-rig\\launcher-rig.glb",
+    "outputSha256": "1ce70412d2c2926b372f321a84f18d5746cfee2d3fe054ceb09c40f293fadab5",
+    "placement": {
+      "axesInSource": {
+        "forward": [
+          -0.039316375144490864,
+          -0.9638907604639921,
+          -0.26337962058148046
+        ],
+        "left": [
+          0.9991691554009076,
+          -0.04075535419349389,
+          0.0
+        ],
+        "up": [
+          -0.010734129724146267,
+          -0.2631607930462093,
+          0.9646922698261634
+        ]
+      },
+      "boreHeight": 0.09,
+      "bounds": [
+        [
+          -0.2800000309944153,
+          -0.10037152469158173,
+          -0.33090710639953613
+        ],
+        [
+          0.5200000405311584,
+          0.10571334511041641,
+          0.1742369830608368
+        ]
+      ],
+      "grip": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "lengthMetres": 0.8,
+      "muzzle": [
+        0.5134557768464115,
+        0.0,
+        0.09
+      ],
+      "sourceScale": 0.7953605356501986
+    },
+    "reviews": {
+      "low:side": "launcher-rig__low__side.png",
+      "low:three-quarter": "launcher-rig__low__three-quarter.png",
+      "low:top": "launcher-rig__low__top.png",
+      "source:side": "launcher-rig__source__side.png"
+    },
+    "sourcePath": "C:\\Users\\just_\\Desktop\\Projects\\LestersArcade-Assets\\grenade launcher 3d model.glb",
+    "sourceSha256After": "072f96ce844cc18d3d6a15bddc35885d801168062515f48b82ac297a1430d1a6",
+    "sourceSha256Before": "072f96ce844cc18d3d6a15bddc35885d801168062515f48b82ac297a1430d1a6",
+    "sourceTextured": false,
+    "sourceTriangles": 480174,
+    "textureJpeg": "launcher-rig-base.jpg",
+    "textureSize": 512,
+    "weaponId": "launcher-rig"
+  },
+  "lightning-ledger": {
+    "blender": {
+      "hash": "ec6e62d40fa9",
+      "version": "5.1.2"
+    },
+    "device": "CPU",
+    "lowTriangles": 1899,
+    "lowVertices": 1082,
+    "outputBytes": 128232,
+    "outputGlb": "C:\\Users\\just_\\AppData\\Local\\Temp\\claude\\C--Users-just--lesters-arcade\\0d9119b8-2380-444e-a007-12981c4796b7\\scratchpad\\weapons-work\\lightning-ledger\\lightning-ledger.glb",
+    "outputSha256": "e7b44340d74bd6bdb1688e7002ff03c4967b1b6a574510cf48175f7b28f30d1f",
+    "placement": {
+      "axesInSource": {
+        "forward": [
+          -0.7964607757041533,
+          0.5983349400236162,
+          0.08743873461844151
+        ],
+        "left": [
+          -0.6006354343971178,
+          -0.7995230296536714,
+          0.0
+        ],
+        "up": [
+          0.06990928201121974,
+          -0.05251880235068192,
+          0.996169899007356
+        ]
+      },
+      "boreHeight": 0.09,
+      "bounds": [
+        [
+          -0.3080001771450043,
+          -0.05443310737609863,
+          -0.20228828489780426
+        ],
+        [
+          0.7920001745223999,
+          0.05228438600897789,
+          0.1639285534620285
+        ]
+      ],
+      "grip": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "lengthMetres": 1.1,
+      "muzzle": [
+        0.792,
+        0.0,
+        0.09
+      ],
+      "sourceScale": 0.9115345647056975
+    },
+    "reviews": {
+      "low:side": "lightning-ledger__low__side.png",
+      "low:three-quarter": "lightning-ledger__low__three-quarter.png",
+      "low:top": "lightning-ledger__low__top.png",
+      "source:side": "lightning-ledger__source__side.png"
+    },
+    "sourcePath": "C:\\Users\\just_\\Desktop\\Projects\\LestersArcade-Assets\\rifle with scope 3d model.glb",
+    "sourceSha256After": "571e1f4692da817dac1e1023e78c8a457aa920485284734dcd2f8019fa72e050",
+    "sourceSha256Before": "571e1f4692da817dac1e1023e78c8a457aa920485284734dcd2f8019fa72e050",
+    "sourceTextured": false,
+    "sourceTriangles": 480329,
+    "textureJpeg": "lightning-ledger-base.jpg",
+    "textureSize": 512,
+    "weaponId": "lightning-ledger"
+  },
+  "litecoin-knife": {
+    "blender": {
+      "hash": "ec6e62d40fa9",
+      "version": "5.1.2"
+    },
+    "device": "CPU",
+    "lowTriangles": 1500,
+    "lowVertices": 1999,
+    "outputBytes": 140140,
+    "outputGlb": "C:\\Users\\just_\\AppData\\Local\\Temp\\claude\\C--Users-just--lesters-arcade\\0d9119b8-2380-444e-a007-12981c4796b7\\scratchpad\\weapons-work\\litecoin-knife\\litecoin-knife.glb",
+    "outputSha256": "0c1af305246136d1b84949989430d0b31db0dbe4480aece644d821fae76aca23",
+    "placement": {
+      "axesInSource": {
+        "forward": [
+          0.7360467808418449,
+          0.04053881533706893,
+          0.6757157248898565
+        ],
+        "left": [
+          -0.05499306630339538,
+          0.9984867363458317,
+          3.469446951953615e-18
+        ],
+        "up": [
+          -0.6746931888428308,
+          -0.037159679661114754,
+          0.7371623017603216
+        ]
+      },
+      "boreHeight": 0.02,
+      "bounds": [
+        [
+          -0.061199985444545746,
+          -0.021131480112671852,
+          -0.024143274873495102
+        ],
+        [
+          0.27880004048347473,
+          0.021059615537524223,
+          0.05760808289051056
+        ]
+      ],
+      "grip": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "lengthMetres": 0.34,
+      "muzzle": [
+        0.27879999999999994,
+        0.0,
+        0.02
+      ],
+      "sourceScale": 0.26747705006394995
+    },
+    "reviews": {
+      "low:side": "litecoin-knife__low__side.png",
+      "low:three-quarter": "litecoin-knife__low__three-quarter.png",
+      "low:top": "litecoin-knife__low__top.png",
+      "source:side": "litecoin-knife__source__side.png"
+    },
+    "sourcePath": "C:\\Users\\just_\\Desktop\\Projects\\LestersArcade-Assets\\rugged hunting knife 3d model.glb",
+    "sourceSha256After": "3d5e50a2a5e5ebad7b983d7cd76f36548bf3b3d302de4ea290ecb3a1d51abaa3",
+    "sourceSha256Before": "3d5e50a2a5e5ebad7b983d7cd76f36548bf3b3d302de4ea290ecb3a1d51abaa3",
+    "sourceTextured": true,
+    "sourceTriangles": 488125,
+    "textureJpeg": "litecoin-knife-base.jpg",
+    "textureSize": 512,
+    "weaponId": "litecoin-knife"
+  },
+  "satoshi-frag": {
+    "blender": {
+      "hash": "ec6e62d40fa9",
+      "version": "5.1.2"
+    },
+    "device": "CPU",
+    "lowTriangles": 1400,
+    "lowVertices": 1949,
+    "outputBytes": 135956,
+    "outputGlb": "C:\\Users\\just_\\AppData\\Local\\Temp\\claude\\C--Users-just--lesters-arcade\\0d9119b8-2380-444e-a007-12981c4796b7\\scratchpad\\weapons-work\\satoshi-frag\\satoshi-frag.glb",
+    "outputSha256": "19ba82ed67d29e24e99f41016edd56125f5f9b13e72570d7c88f42364d9df9c6",
+    "placement": {
+      "axesInSource": {
+        "forward": [
+          0.9977761547585731,
+          -0.0002622891100321446,
+          0.0666534035111399
+        ],
+        "left": [
+          0.0,
+          0.9999922575070547,
+          0.003935089064382498
+        ],
+        "up": [
+          -0.06665391957864202,
+          -0.003926338035292079,
+          0.9977684294837338
+        ]
+      },
+      "boreHeight": 0.0,
+      "bounds": [
+        [
+          -0.06499999761581421,
+          -0.03391261398792267,
+          -0.06260070949792862
+        ],
+        [
+          0.005160495638847351,
+          0.033394426107406616,
+          0.06739926338195801
+        ]
+      ],
+      "grip": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "lengthMetres": 0.13,
+      "muzzle": [
+        0.00516049465109681,
+        0.0,
+        0.0
+      ],
+      "sourceScale": 0.13165567715136287
+    },
+    "reviews": {
+      "low:side": "satoshi-frag__low__side.png",
+      "low:three-quarter": "satoshi-frag__low__three-quarter.png",
+      "low:top": "satoshi-frag__low__top.png",
+      "source:side": "satoshi-frag__source__side.png"
+    },
+    "sourcePath": "C:\\Users\\just_\\Desktop\\Projects\\LestersArcade-Assets\\hand grenade 3d model.glb",
+    "sourceSha256After": "38129c4a7e60c4ff617a92505c6a23d3d5252457992d550b90aa5c2243a0ffce",
+    "sourceSha256Before": "38129c4a7e60c4ff617a92505c6a23d3d5252457992d550b90aa5c2243a0ffce",
+    "sourceTextured": true,
+    "sourceTriangles": 490766,
+    "textureJpeg": "satoshi-frag-base.jpg",
+    "textureSize": 512,
+    "weaponId": "satoshi-frag"
+  },
+  "scatter-shotgun": {
+    "blender": {
+      "hash": "ec6e62d40fa9",
+      "version": "5.1.2"
+    },
+    "device": "CPU",
+    "lowTriangles": 1900,
+    "lowVertices": 1019,
+    "outputBytes": 130996,
+    "outputGlb": "C:\\Users\\just_\\AppData\\Local\\Temp\\claude\\C--Users-just--lesters-arcade\\0d9119b8-2380-444e-a007-12981c4796b7\\scratchpad\\weapons-work\\scatter-shotgun\\scatter-shotgun.glb",
+    "outputSha256": "0b81b1db1e24a8e89da98040566bfc7d7f2e2bf61f14d682a8d43ffaa43bfaed",
+    "placement": {
+      "axesInSource": {
+        "forward": [
+          -0.9544436782987864,
+          0.001596914546754702,
+          0.2983868543006095
+        ],
+        "left": [
+          -0.001673134149115919,
+          -0.99999860031008,
+          -1.0842021724855047e-19
+        ],
+        "up": [
+          0.29838643665153725,
+          -0.000499241235577626,
+          0.9544450142258519
+        ]
+      },
+      "boreHeight": 0.09,
+      "bounds": [
+        [
+          -0.3150002658367157,
+          -0.053270645439624786,
+          -0.12040016055107117
+        ],
+        [
+          0.7350003123283386,
+          0.05295486003160477,
+          0.13237044215202332
+        ]
+      ],
+      "grip": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "lengthMetres": 1.05,
+      "muzzle": [
+        0.7349999999999998,
+        0.0,
+        0.09
+      ],
+      "sourceScale": 1.0276335071928184
+    },
+    "reviews": {
+      "low:side": "scatter-shotgun__low__side.png",
+      "low:three-quarter": "scatter-shotgun__low__three-quarter.png",
+      "low:top": "scatter-shotgun__low__top.png",
+      "source:side": "scatter-shotgun__source__side.png"
+    },
+    "sourcePath": "C:\\Users\\just_\\Desktop\\Projects\\LestersArcade-Assets\\rugged shotgun 3d model.glb",
+    "sourceSha256After": "41ece05b0e3eb6ce9e328b32565eded81495d40f295e8823db77133fd8e9111e",
+    "sourceSha256Before": "41ece05b0e3eb6ce9e328b32565eded81495d40f295e8823db77133fd8e9111e",
+    "sourceTextured": false,
+    "sourceTriangles": 482322,
+    "textureJpeg": "scatter-shotgun-base.jpg",
+    "textureSize": 512,
+    "weaponId": "scatter-shotgun"
+  }
+}

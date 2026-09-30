@@ -1,0 +1,68 @@
+{
+  "contactSheetSha256": "b0026160ec213d4211338c1f0c88ea4d59b519c9ced42901faaf77739989ed83",
+  "manifestSha256": "13718bff5eadf97233769f8d22bed5d92db824c720656eb3af044fa365041b0c",
+  "pipelineId": "hmh-weapon-models/v1",
+  "totalBytes": 1371480,
+  "weapons": {
+    "auto-miner": {
+      "bytes": 142992,
+      "sha256": "530f0fd29af7e53e50e3e4ccf7d257e162cf19bd94dc07c28d99a0293228dc59",
+      "standIn": false,
+      "triangles": 1898
+    },
+    "bear-market-burner": {
+      "bytes": 149444,
+      "sha256": "14de55da44386138539feeb5de7b5d298298813205070d0757e0333791e69a6a",
+      "standIn": true,
+      "triangles": 1899
+    },
+    "coin-blaster": {
+      "bytes": 131408,
+      "sha256": "fb90dace3161bd864e5da0ad611c36767dacf36187103771f453cff0fe17cfd0",
+      "standIn": false,
+      "triangles": 1899
+    },
+    "forked-standard": {
+      "bytes": 142540,
+      "sha256": "202132a9965d21e55a79c0094d96ca99dc0619bc3e5e7ec29aeee54e5734390c",
+      "standIn": true,
+      "triangles": 1300
+    },
+    "hash-rail": {
+      "bytes": 130308,
+      "sha256": "022aa82342cf2e9c4b4a9e53e5a6afaa0ffb421aab4be33e5d0ab5d45c92b998",
+      "standIn": false,
+      "triangles": 1500
+    },
+    "launcher-rig": {
+      "bytes": 139464,
+      "sha256": "1ce70412d2c2926b372f321a84f18d5746cfee2d3fe054ceb09c40f293fadab5",
+      "standIn": false,
+      "triangles": 1899
+    },
+    "lightning-ledger": {
+      "bytes": 128232,
+      "sha256": "e7b44340d74bd6bdb1688e7002ff03c4967b1b6a574510cf48175f7b28f30d1f",
+      "standIn": false,
+      "triangles": 1899
+    },
+    "litecoin-knife": {
+      "bytes": 140140,
+      "sha256": "0c1af305246136d1b84949989430d0b31db0dbe4480aece644d821fae76aca23",
+      "standIn": false,
+      "triangles": 1500
+    },
+    "satoshi-frag": {
+      "bytes": 135956,
+      "sha256": "19ba82ed67d29e24e99f41016edd56125f5f9b13e72570d7c88f42364d9df9c6",
+      "standIn": false,
+      "triangles": 1400
+    },
+    "scatter-shotgun": {
+      "bytes": 130996,
+      "sha256": "0b81b1db1e24a8e89da98040566bfc7d7f2e2bf61f14d682a8d43ffaa43bfaed",
+      "standIn": false,
+      "triangles": 1900
+    }
+  }
+}
