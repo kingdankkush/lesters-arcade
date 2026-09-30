@@ -609,3 +609,15 @@ labels, boundary stripes and plain masses remain. Final area/art, owner playtest
 physical-phone performance, official map/verifier and release gates stay open.
 See slices/WORLD-W2E-COAST.md and receipts/world-coast. Manual bundle is separate
 at outputs/hmh-coast-authored-flow-preview.zip. No credits/push/deploy/version.
+
+## F2a STACKED interactive quick start — 2026-09-30
+
+Optional Free tutorial now teaches move/rotate/hold/drop/Halving with native
+keyboard/touch controls, skip/reopen and lazy first-entry onboarding. Diagram
+state is independent; actual run tick/score and other storage stay unchanged.
+Initial13RED,13GREEN+same13isolated, final35related and11actual Chrome cases pass.
+Seven final original captures inspected; corrected unequal grid rows and tablet
+controls below the fold. Fresh built432k Worker tuple stays exact. HMH1,039,992B,
+STACKED579,395B; all owned children/Chrome/HTTP closed. Both independent reviews
+found no actionable isolation/lifecycle issue. Default remains off; no physical
+phone, full game/soak/release or live claim. See slices/STACKED-F2A-TUTORIAL.md.

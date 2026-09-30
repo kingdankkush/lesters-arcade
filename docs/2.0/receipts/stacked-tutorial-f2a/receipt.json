@@ -1,0 +1,172 @@
+{
+  "scope": "Optional local Free tutorial; source tests, real Chrome and exact built Worker replay, not release/phone acceptance",
+  "entries": [
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-tutorial-source-red-01\\report.json",
+      "archive": "01-report.json.gz",
+      "bytes": 18818,
+      "sha256": "ef9b1216b38103c05f50821f1794b13582994617ebef9e1aef9a30889945e803",
+      "archiveBytes": 2142,
+      "archiveSha256": "8aef0a99093cbaf223e0017056a00f39a4857d321047d844cf655d1fb8450569"
+    },
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-tutorial-source-green-01\\report.json",
+      "archive": "02-report.json.gz",
+      "bytes": 9348,
+      "sha256": "5c704a3aa437aa7747d1040353b595b8590f2f0c60763545984ae02d4799450b",
+      "archiveBytes": 1843,
+      "archiveSha256": "8642c035104e24a285ec0f3ed8856d28f7229e2a902621f0d2097031c6441891"
+    },
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\run-stacked-tutorial-source.mjs",
+      "archive": "03-run-stacked-tutorial-source.mjs.gz",
+      "bytes": 2840,
+      "sha256": "7d66e6780963dc67ef67687c8e44cee9415a84f7319dc2b781bdfa9d8ef0b9d7",
+      "archiveBytes": 1269,
+      "archiveSha256": "51dd4c7b5b8588b6869370cb4202f538e12a6506acf6c76d3241c8360333b26a"
+    },
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-tutorial-built-01\\report.json",
+      "archive": "04-report.json.gz",
+      "bytes": 43837,
+      "sha256": "1ea9d2d9df3cc12e5ec459c13f58bf124c3c2e0c21ac83e8ab44cd030527ec06",
+      "archiveBytes": 14161,
+      "archiveSha256": "5121480b59b257467972caabfc25993199ca098c5595b664e0dd63c578cf2721"
+    },
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-tutorial-built-01\\meta.json",
+      "archive": "05-meta.json.gz",
+      "bytes": 4460280,
+      "sha256": "cf4c21f6f099b5232c7fa96b913c0064c8d404b4638bf01152a6befbb3039866",
+      "archiveBytes": 211920,
+      "archiveSha256": "ba239671b591f24f7f6d369801206e656215edd32143fed136079edeb68cd64c"
+    },
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-tutorial-browser-01\\report.json",
+      "archive": "06-report.json.gz",
+      "bytes": 24912,
+      "sha256": "6ec4e37ad226e323f70218cdeb11c9d96d20081123c2108a990dad70d81da434",
+      "archiveBytes": 9032,
+      "archiveSha256": "d176cc475d487cd004c86904d09d9c4693f1f4a0849347e640d703e69d443800"
+    },
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-tutorial-browser-01.mjs",
+      "archive": "07-stacked-tutorial-browser-01.mjs.gz",
+      "bytes": 11104,
+      "sha256": "76b7ffe236a35962bc5a197ca4217e17cd3d9fa74c86dc108c6bb29dcdf8bc54",
+      "archiveBytes": 3980,
+      "archiveSha256": "17a6f754afe631437bc6ce91695c6daa120214086631234246232ba9b23d9dd3"
+    },
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\run-stacked-tutorial-built-01.mjs",
+      "archive": "08-run-stacked-tutorial-built-01.mjs.gz",
+      "bytes": 4652,
+      "sha256": "557c64943224a0713e435d34a169b0e59a08313319ee2be8bbcf9a074a9f6b21",
+      "archiveBytes": 1815,
+      "archiveSha256": "61e36246779976f8b99403e7237c730a09e0306e932c4bf8fe84c7b4149e3ece"
+    },
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-tutorial-built-02\\report.json",
+      "archive": "09-report.json.gz",
+      "bytes": 54429,
+      "sha256": "20f23c64c1565b8557f8d8aa6f241ef5f94ee38371a517cdc6574ac107c6eea0",
+      "archiveBytes": 14360,
+      "archiveSha256": "4a949370407c482152d447b1a0ee71042c2481507b3c2c65a1f3a6aaea753e8d"
+    },
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-tutorial-built-02\\meta.json",
+      "archive": "10-meta.json.gz",
+      "bytes": 4460280,
+      "sha256": "0c11b71cdfc6d2c37ab33665bb6391df6c795fa126d3dc9135d5b7f975d19a30",
+      "archiveBytes": 211920,
+      "archiveSha256": "35eeccdd6c9c3aa2c9a43beeb07dcc54817df380b1019b58808ce97e67a61d0e"
+    },
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-tutorial-browser-02\\report.json",
+      "archive": "11-report.json.gz",
+      "bytes": 34317,
+      "sha256": "72edef7be9355f6f050ddcd734fee9a00944cfd08eea84c704f4a1f279ac2f03",
+      "archiveBytes": 9196,
+      "archiveSha256": "18d3b8be347826439d1f6952016d649e6a3ddc1f74b384b9d408e5980dac7007"
+    },
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-tutorial-browser-02.mjs",
+      "archive": "12-stacked-tutorial-browser-02.mjs.gz",
+      "bytes": 11472,
+      "sha256": "1708e4da7d28774d3393d2e0d44b891bbe386bcfc3468522fd71a82692cc6c9c",
+      "archiveBytes": 4094,
+      "archiveSha256": "0fca750ef96a1e6a838b2a59a5db6f1ce1cdf4268792b63c163cd6230b30ff6f"
+    },
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\run-stacked-tutorial-built-02.mjs",
+      "archive": "13-run-stacked-tutorial-built-02.mjs.gz",
+      "bytes": 4652,
+      "sha256": "11e0cb9bba4670502686ea62ef189b9eeb958d309984635511aaea6d3721ba87",
+      "archiveBytes": 1815,
+      "archiveSha256": "7764539702ee9e7b469b956695d7a1e4920ca3e97343e9eebf5464ffb31e8360"
+    },
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\owned-windows-child.mjs",
+      "archive": "14-owned-windows-child.mjs.gz",
+      "bytes": 3475,
+      "sha256": "a5177337fcf6ec41f285fc105b93d0b4b94ee1101cb14a653a91e9b8b075b0d9",
+      "archiveBytes": 1360,
+      "archiveSha256": "ade927025e2afbae667182802dfce78d9ddd6b3afea7cfd48a5b40eac5e8ea4b"
+    },
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\owned-windows-preview-child.mjs",
+      "archive": "15-owned-windows-preview-child.mjs.gz",
+      "bytes": 3476,
+      "sha256": "6f4903a66d324a01a476eebefdfac68663dde2c573f62f637c4b7537ccb0d631",
+      "archiveBytes": 1360,
+      "archiveSha256": "18c5cfc758da42cddbb922c7989a0204d20eb87c1d5d359985932ef89f92c162"
+    }
+  ],
+  "currentSourceSha256": {
+    "apps/stacked/src/main.mjs": "35196b3acd96a1f4276daa3d2e8e01bb090ddab34854b9642611ca8052f96d44",
+    "apps/stacked/src/tutorial-model.mjs": "8697b7b3ff808520ba9e836d0c204ef9850ba9e716762a0fa1a69b7ee87b6409",
+    "apps/stacked/src/tutorial-view.mjs": "5ea45f6c14b85e4f95c9fc4a1bb4084a6f11b65bfa26b864a7f1d0f6de6e2041",
+    "apps/stacked/src/tutorial-host.mjs": "05cda1c62b2372d8afd5c925f5e2d37eb94e25092681b0cbb8b5e85da3422698",
+    "apps/portal/src/stacked-host.mjs": "39d892841ef1e7712909f7b8eede87276a820d7f03a33a4956521be920f1f8f6",
+    "apps/portal/src/stacked-presentation-switch.mjs": "ff4500b61c1ead2559900cb48c6838c8f81d13a9a20c544f0a6b4bcba902ea4d",
+    "apps/portal/stacked/index.html": "f8e2e7bb28a9ff074b0c86861745a24892aad610ce00a678010066faaac396db",
+    "apps/portal/stacked/game.css": "dbaae6137b7791d0da571b6bfc9b1f59a07eb78448af968f10fdbf99f2842fb5",
+    "tests/stacked-tutorial.test.mjs": "1e123904a4feccfb6af61d1f0734c6e4386c9ec1294b3bc1e91918cde66b7131",
+    "tests/stacked-tutorial-host.test.mjs": "19d7f880a3d1c4a335bb072a8a1af08ac366dd083849d4e079858b51c09e4da1",
+    "apps/portal/src/stacked-sim.mjs": "5b5fe17c237389bd48834b757166c8afc0b58c801246806275d25fa16ae82114",
+    "apps/portal/src/stacked-contracts.mjs": "5ee0d079f2688b02217a60f4695e41944504b0759e87004da6a213e926be9ec6",
+    "apps/portal/src/stacked-evidence-transport.mjs": "f9e8c11fdd032390f4220580cbc5569c7080e05e689644e06f350300bb3d502d",
+    "server/verify/stacked.mjs": "9bcb1aee7ed466e799c83495307c489e7f54201b177c2691ab6d101187418493",
+    "apps/stacked/src/verify-worker.mjs": "7b277fd34cb069eca000b2753f1f94b346633c8645045efdd49ed73a1c04da09",
+    "build.mjs": "8b1cc3923eecfc866a8bb85246590113f53a51c0f1cc09afb7e7ef1bb2dc7add"
+  },
+  "budgets": {
+    "hmh-reboot": {
+      "total": 1039992,
+      "cap": 1048576,
+      "headroom": 8584
+    },
+    "stacked": {
+      "total": 579395,
+      "cap": 607000,
+      "headroom": 27605
+    }
+  },
+  "checks": {
+    "initialRed": 13,
+    "initialGreen": 13,
+    "isolatedCopy": 13,
+    "finalFocused": 35,
+    "finalBrowserCases": 11,
+    "screenshots": 7
+  },
+  "independentReview": [
+    "Character: lifecycle, input, disposal; no actionable findings",
+    "World: gameplay isolation; no actionable findings"
+  ],
+  "limits": [
+    "No physical phone or full release gate",
+    "No automated accessibility/design-lint package installed; manual focus/touch/contrast/layout review only",
+    "No HMH render source changed; visual:reboot not repeated for this DOM-only slice"
+  ]
+}

@@ -42,3 +42,14 @@ label{font-size:13px;display:flex;align-items:center;gap:10px}.panel label{min-h
 .panel .ranked-hint{margin:0 0 12px;font-size:12px;line-height:1.55;color:#9bb5c4}.panel .ranked-hint a,.panel .ranked-help a{color:#c9f6ff;text-decoration:underline;text-underline-offset:3px}.panel .ranked-hint a:hover,.panel .ranked-help a:hover{color:#fff}
 #menuTiles:has(#rankedModeTile[aria-current="true"])~.ranked-hint .free-line{display:none}
 .ranked-help .summary-hint{font-size:11px;letter-spacing:.04em;text-transform:none}.ranked-help-body{padding:0 0 12px}.panel .ranked-help-body p{margin:6px 0;font-size:13px;line-height:1.6;overflow-wrap:anywhere}
+
+/* Five-action practice diagram. No animation loop or score-bearing game state. */
+.tutorial-panel{width:min(100%,640px)}.tutorial-panel h2{color:var(--ink);background:none;-webkit-text-fill-color:var(--ink);font-size:clamp(26px,4vw,34px)}
+.tutorial-panel .eyebrow{color:var(--dim);font-size:11px;line-height:1.4}.tutorial-scene{display:grid;grid-template-columns:minmax(0,340px) 100px;justify-content:center;align-items:start;gap:20px;margin:20px 0}
+.tutorial-board{display:grid;grid-template-columns:repeat(10,minmax(0,1fr));grid-template-rows:repeat(8,minmax(0,1fr));gap:2px;aspect-ratio:10/8;padding:6px;border:1px solid var(--line);border-radius:8px;background:var(--bg)}
+.tutorial-cell{display:grid;place-items:center;background:var(--well);border:1px solid transparent;border-radius:2px;color:var(--accent-ink);font-size:14px;line-height:1}
+.tutorial-cell.is-guide{border-color:var(--accent)}.tutorial-cell.is-piece{background:var(--accent);border-color:var(--ink)}.tutorial-cell.is-stack{background:#b88d54;border-color:#dfbf8c}
+.tutorial-aside{padding:12px 0}.tutorial-aside p{margin:8px 0}.tutorial-aside p:first-of-type{font-size:24px;font-weight:800;color:var(--ink)}
+.tutorial-controls{display:flex;flex-wrap:wrap;gap:8px}.tutorial-controls button{flex:1;touch-action:manipulation}.tutorial-panel .tutorial-feedback{min-height:24px;font-weight:700;color:var(--accent)}.tutorial-hint{margin:12px 0}
+@media(max-width:440px){.tutorial-panel{padding:20px}.tutorial-scene{grid-template-columns:minmax(0,1fr) 64px;gap:12px;margin:16px 0}.tutorial-aside{padding:0}.tutorial-aside p:first-of-type{font-size:20px}.tutorial-aside .fine-print{font-size:11px}.tutorial-board{gap:1px;padding:4px}.tutorial-cell{font-size:12px}}
+@media(forced-colors:active){.tutorial-cell.is-piece{background:Highlight;color:HighlightText}.tutorial-cell.is-guide{border:1px dashed CanvasText}.tutorial-cell.is-stack{border:2px solid CanvasText}}

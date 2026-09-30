@@ -1,3 +1,4 @@
+import {createTutorialEntry} from './tutorial-host.mjs';
 import {loadLivingJourneyFactory} from './render/living-journey-loader.mjs';
 import { Application, Container, Graphics, Text } from 'pixi.js';
 import { PIECE_CELLS, cellsFor, collides } from '../../portal/src/stacked-sim.mjs';
@@ -24,7 +25,7 @@ const pauseClock = createStackedPauseClock();
 // Game sounds load lazily with the renderer (entry budget); until then every call is a no-op.
 let sfxImpl = null, soundForStep = () => null;
 const sfx = { play: (cue, prefs, combo) => sfxImpl?.play(cue, prefs, combo), stop: () => sfxImpl?.stop(), destroy: () => sfxImpl?.destroy() };
-let preview = null, haptics = null, livingJourneyActive = false;
+let preview = null, haptics = null, livingJourneyActive = false, tutorial = null;
 // Set from the init settings: a pre-preset (1.8.1-1.8.3) host must never be sent the preset keys.
 let parentPresets = false;
 // One settings card (settings simplification 2026-09-24). Every choice is a
@@ -100,7 +101,7 @@ function pause() {
   $('continueButton').textContent = 'Resume'; $('continueButton').hidden = false; overlay.hidden = false; state();
 }
 function resume() {
-  if (!run || !run.paused || run.snapshot.terminal || forfeited || pauseClock.countingDown || document.hidden) return;
+  if (tutorial?.active || !run || !run.paused || run.snapshot.terminal || forfeited || pauseClock.countingDown || document.hidden) return;
   pauseClock.requestResume(performance.now(), started && init.mode === 'ranked');
   if (started && init.mode === 'ranked') {
     $('continueButton').hidden = true; $('overlayTitle').textContent = '3'; return;
@@ -238,6 +239,12 @@ async function boot() {
   $('overlayCopy').textContent = 'Fill a row to clear it. The ledger rises from below, so leave room at the top. Clear four rows together for a HALVING. ' + (renderer.mobile ? 'Use the arrow and rotation buttons below. HOLD saves a piece; DROP places it at the landing guide.' : 'Move with ← →, rotate with ↑ / X, and drop with Space. C holds a piece; Z rotates back. Start right away, or open Settings to choose effects and a music world.');
   $('continueButton').disabled = false; syncPreferences(); stage.dataset.assetsReady = 'true'; state();
   $('continueButton').focus(); raf = requestAnimationFrame(frame);
+  let tutorialStorage; try { tutorialStorage = window.localStorage; } catch {}
+  tutorial = createTutorialEntry({search: globalThis.location?.search ?? '', mode: init.mode,
+    button: $('learnButton'), overlay, storage: tutorialStorage,
+    canOpen: () => !disposed && run.paused && !run.snapshot.terminal,
+    onActive: active => { input.clear(); $('continueButton').disabled = active; },
+    onStatus: message => { status.textContent = message; }});
 }
 function undo() {
   if (submitted || !run?.undo()) return;
@@ -247,7 +254,7 @@ function menuAction(action) {
   if (!overlay.hidden) applyMenuAction(overlay, action, document.activeElement);
 }
 function dispose() {
-  if (disposed) return; disposed = true; releaseOverlayFocus(); cancelAnimationFrame(raf); input?.destroy(); renderer?.destroy(); app?.destroy(true, { children: true }); bridge.destroy(); sfx.destroy();
+  if (disposed) return; disposed = true; tutorial?.destroy(); releaseOverlayFocus(); cancelAnimationFrame(raf); input?.destroy(); renderer?.destroy(); app?.destroy(true, { children: true }); bridge.destroy(); sfx.destroy();
 }
 $('continueButton').disabled = true;
 $('continueButton').addEventListener('click', () => { sfx.play('menu', settings); resume(); });

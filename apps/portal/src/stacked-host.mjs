@@ -1,4 +1,4 @@
-import {stackedJourneySuffix} from './stacked-presentation-switch.mjs';
+import {stackedPresentationSuffix} from './stacked-presentation-switch.mjs';
 import { STACKED_BRIDGE_PROTOCOL, STACKED_MAX_EVIDENCE_CHUNKS } from './stacked-contracts.mjs';
 import { validateStackedBridgeMessage } from './stacked-bridge-protocol.mjs';
 import { reassembleStackedEvidence } from './stacked-evidence-transport.mjs';
@@ -18,7 +18,7 @@ export const stackedRankedResultCopy = (result, settlementLive) => STACKED_RANKE
 export function createStackedHost({ mount, session, search = globalThis.location?.search ?? '', startLevel = 1, profile, settings, music, settlementLive = false, onReady = () => {}, onState = () => {}, onResult = () => {}, onRestart = () => {}, onExit = () => {}, onError = () => {}, persistRanked }) {
   const sessionId = session.urlSessionId ?? session.sessionId;
   const iframe = document.createElement('iframe');
-  iframe.className = 'stacked-game-frame'; iframe.title = "STACKED — Lester's Arcade"; iframe.src = '/stacked/index.html'+stackedJourneySuffix(search);
+  iframe.className = 'stacked-game-frame'; iframe.title = "STACKED — Lester's Arcade"; iframe.src = '/stacked/index.html'+stackedPresentationSuffix(search);
   // Popups escape the sandbox for the results share row (x.com/Facebook intents, rel=noopener); web-share/clipboard feed the native and Discord paths.
   iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox'); iframe.setAttribute('allow', 'autoplay; fullscreen; gamepad; web-share; clipboard-write');
   const channel = new MessageChannel();
