@@ -745,6 +745,8 @@ const NODE_CHECK_FILES = [
   "apps/portal/src/hmh-campaign-runtime.mjs",
   "apps/portal/src/hmh-character-config.mjs",
   'apps/portal/src/unlockables.mjs',
+  'apps/portal/src/unlockables-retirement.mjs',
+  'tests/unlockables-retirement.test.mjs',
   'apps/portal/src/unlockables-store.mjs',
   'apps/portal/src/routes/unlockables-panel.mjs',
   'apps/stacked/src/render/cosmetic-palettes.mjs',

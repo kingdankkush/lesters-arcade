@@ -921,3 +921,18 @@ Private boss04 correctness and A14 composition checkpoints are referenced in the
 opening summary, with art rejection and next measurements explicit. Current user
 checkpoint and local-versus screenshots were refreshed. No credits, push, version
 bump, production probe or deploy in this continuation.
+
+
+## G4a cosmetic retirement preparation — 2026-09-30
+
+The actual25 retired cosmetic IDs are now explicitly inventoried in a dormant
+pure planner. Exact game/slot/ID selections fall back to defaults while Lester,
+Lilly, earned records and unrelated future preferences remain intact. Explicit
+empty cosmetics survive the top-level server merge. No live route/store imports
+the planner, and no current catalog, server or database behavior changes.
+
+Actual RED10 missing-module cases then GREEN10 + identical isolated10 passed.
+Independent review contributed a mixed malformed/empty-record preservation case
+before RED; implementation review clear. All three child PIDs closed/absent and
+owned markers released. No browser/build/full gate for this inactive source slice.
+See [G4a](slices/UNLOCKABLES-RETIREMENT-G4A.md) for evidence and activation work.

@@ -1,0 +1,51 @@
+{
+  "schema": "unlockables-retirement-g4a/v1",
+  "red": 10,
+  "green": 10,
+  "identicalIsolated": 10,
+  "sourcePins": {
+    "apps\\portal\\src\\achievements\\chikun.mjs": "219d8481b6bd6e1beae6c98d548a36da840a89766eff8da5444d7c1dd2c952a1",
+    "apps\\portal\\src\\achievements\\entry.mjs": "a4e55551ae0b7aca76bda548659155ab22294e049fdcd02bf9462f224ce8b98e",
+    "apps\\portal\\src\\achievements\\hmh.mjs": "044a813a78829bf0c27eff8a94cefaf94dd7af3a1802e13624b79c6c79916751",
+    "apps\\portal\\src\\achievements\\index.mjs": "6a37dec6e6c3e1be89fa08992a08fda4bed9e030626379270e92c5c043743e47",
+    "apps\\portal\\src\\achievements\\stacked.mjs": "63856acea2d35637f7250ee81e4ef9d5c396788e5588bc59c4154750bf67b911",
+    "apps\\portal\\src\\unlockables-retirement.mjs": "6af14e5b1bee05b1275fdfb796720f01a599b5f01f7c12e8d377d9160d634906",
+    "apps\\portal\\src\\unlockables.mjs": "490d5b2e76b373db569dd411f6702102aded75037f16eadf3ce9e1b8d47395cd",
+    "tests/unlockables-retirement.test.mjs": "8c9265e3808f249633d79c1009587a59f5d68925dcd37a8144789b830311657e"
+  },
+  "entries": [
+    {
+      "file": "00-work-run-unlockables-retirement-source.mjs.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\run-unlockables-retirement-source.mjs",
+      "bytes": 3270,
+      "sha256": "d22512f252d03a31d16d184c07127bf285777e640b2d16458c2b4aa30eadbd9b",
+      "gzipBytes": 1468
+    },
+    {
+      "file": "01-work-owned-windows-child.mjs.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\owned-windows-child.mjs",
+      "bytes": 3475,
+      "sha256": "a5177337fcf6ec41f285fc105b93d0b4b94ee1101cb14a653a91e9b8b075b0d9",
+      "gzipBytes": 1360
+    },
+    {
+      "file": "02-unlockables-retirement-source-red-01-report.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\unlockables-retirement-source-red-01\\report.json",
+      "bytes": 16838,
+      "sha256": "9545a5c00a506ee969a0d835f8ac46db27319f043fbe41d2569bd03f9752a4af",
+      "gzipBytes": 2089
+    },
+    {
+      "file": "03-unlockables-retirement-source-green-01-report.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\unlockables-retirement-source-green-01\\report.json",
+      "bytes": 9000,
+      "sha256": "256c43ead2d8e908576f05745f52b0b8db91142b5a58b9c727a78f332ac94cc6",
+      "gzipBytes": 1828
+    }
+  ],
+  "independentReview": "Art: mixed unrelated empty/malformed record preservation added before RED; implementation reviewed clear.",
+  "active": false,
+  "databaseWrites": false,
+  "browserRun": false,
+  "releaseGateRun": false
+}
