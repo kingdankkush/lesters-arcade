@@ -407,3 +407,8 @@ early blog publication, minting, contract action or release is inferred.
 ## Chikun E1 checkpoint: technical animation pilot
 
 Optional eight-frame Eagle pipeline, three texture tiers, strict lazy loading, static fallback and disposal completed. See slices/CHIKUN-E1.md and receipts/chikun-e1/receipt.json:72 related Node checks,9 Python checks,six actual replay-identical game cases,delayed disposal and native phone-viewport portal pause/exit passed. Placeholder Eagle art remains rejected/private; physical device and final art gates are open. Original failures are retained. Initial budgets HMH1,039,992B/STACKED577,431B. No deployment or release version change.
+
+
+## G2a checkpoint: read-only achievement rarity
+
+Public per-game verified Ranked rarity service completed locally:14 database/classifier/API cases,expanded3-query provenance suite and six actual Guest-portal Chrome HTTP checks pass. Exact pure8-case noGit/noModules copy also passes. Independent review passes; matching earning-game/wallet/session guards tested. All children/Chrome/servers/database closed and matching owned markers released. See slices/ACHIEVEMENT-RARITY-G2A.md and receipts/achievement-rarity/receipt.json. Synthetic fixture only; no live population, profile UI, badge art, reward earning, minting or release acceptance. Versions unchanged and nothing deployed.

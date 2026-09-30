@@ -20,6 +20,12 @@ const root = fileURLToPath(new URL('..', import.meta.url));
 
 // Every .mjs / .js module that must parse cleanly (node --check).
 const NODE_CHECK_FILES = [
+  'apps/portal/src/achievements/rarity.mjs',
+  'server/neon/achievement-stats.mjs',
+  'api/achievements/stats.mjs',
+  'tests/achievement-rarity.test.mjs',
+  'tests/achievement-rarity-query.test.mjs',
+  'tests/achievement-rarity-api.test.mjs',
   'apps/portal/src/chikun-presentation-switch.mjs',
   'apps/chikun/src/obstacle-loop.mjs',
   'apps/chikun/src/obstacle-loop-view.mjs',

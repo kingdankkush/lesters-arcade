@@ -26,6 +26,9 @@
     "api/settle-status.mjs": {
       "maxDuration": 15
     },
+    "api/achievements/stats.mjs": {
+      "maxDuration": 10
+    },
     "api/leaderboard.mjs": {
       "maxDuration": 10
     },

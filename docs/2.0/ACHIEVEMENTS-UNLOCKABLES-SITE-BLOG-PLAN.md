@@ -37,12 +37,12 @@ first, then produce final badge art, trophies and rewards through the approved
 game direction. Reuse existing models before creating anything new; no credits
 are spent by adding this plan.
 
-The guide’s proposed reward-earning choices remain open pending the owner’s
-answer. Safe UI/art scaffolding and audits can proceed meanwhile. The two extra
-HMH trophies, three completion trophies and Early Supporter earning rule are not
-enabled by this task-list update. The proposed reward package needs explicit
-achievement-ID and server-proof mappings; descriptive unlock ideas are not yet
-executable rules.
+The owner approved using the recommended reward package: two extra HMH trophy
+achievements, three completion trophies, per-game Ranked rarity, the 12 proposed
+rewards, Early Supporter recognition and optional gyro tilt off by default.
+Implementation still needs exact achievement-ID and server-proof mappings;
+descriptive unlock ideas are not yet executable rules. No earning rule or reward
+is enabled by this task-list update.
 
 The owner’s combined-release direction takes precedence over the guide’s optional
 early-blog publication suggestion. Drafts can be reviewed earlier; publication

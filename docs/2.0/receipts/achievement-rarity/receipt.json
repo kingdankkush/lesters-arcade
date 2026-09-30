@@ -1,0 +1,187 @@
+{
+  "schema": "achievement-rarity-checkpoint/v1",
+  "checkedDate": "2026-09-30",
+  "scope": "Local read-only stats service; synthetic in-memory data; not live population, UI art, earning, minting or release acceptance",
+  "redCases": 8,
+  "greenCases": 14,
+  "expandedQueryCases": 3,
+  "actualChromeHttpCases": 6,
+  "pureExactCopyCases": 8,
+  "browserVersion": "154.0.8037.58",
+  "chromePid": 4124,
+  "processesClosed": true,
+  "markersReleased": true,
+  "review": "Independent character lane source review passed; same-wallet other-game earning negative added and checked afterward",
+  "currentInputs": [
+    {
+      "file": "C:\\Users\\just_\\lesters-arcade-wt\\visual-overhaul-200\\apps\\portal\\src\\achievements\\rarity.mjs",
+      "sha256": "158c3b51b208661af762f42252bdf0683a731a79278e2e3dd68e29419c8bd28f"
+    },
+    {
+      "file": "C:\\Users\\just_\\lesters-arcade-wt\\visual-overhaul-200\\server\\neon\\achievement-stats.mjs",
+      "sha256": "d7155cee322ee27480c72eafa6aebae626056ba303dc524554b4c5035ac161ac"
+    },
+    {
+      "file": "C:\\Users\\just_\\lesters-arcade-wt\\visual-overhaul-200\\api\\achievements\\stats.mjs",
+      "sha256": "40bc34e4d4835f80a6a68c03388bf661ce1eaf1c82c2e9263f6e463b225f9834"
+    },
+    {
+      "file": "C:\\Users\\just_\\lesters-arcade-wt\\visual-overhaul-200\\tests\\achievement-rarity-query.test.mjs",
+      "sha256": "26fc0d189fb66327e2793c452f0c91b957909d56b1b503c93fe9b4d3b98409e6"
+    },
+    {
+      "file": "C:\\Users\\just_\\lesters-arcade-wt\\visual-overhaul-200\\scripts\\syntax-check.mjs",
+      "sha256": "479f3ca84f079a44469e62bd59cc42bd18f5f08fb7fdaccc14a5d02ec5b3cf0d"
+    },
+    {
+      "file": "C:\\Users\\just_\\lesters-arcade-wt\\visual-overhaul-200\\vercel.json",
+      "sha256": "40f0ea9db6a960f3207a5b4b525b99f567c51b625c849e32663ec5e1d48fdc4a"
+    },
+    {
+      "file": "C:\\Users\\just_\\lesters-arcade-wt\\visual-overhaul-200\\apps\\portal\\src\\achievements\\index.mjs",
+      "sha256": "6a37dec6e6c3e1be89fa08992a08fda4bed9e030626379270e92c5c043743e47"
+    },
+    {
+      "file": "C:\\Users\\just_\\lesters-arcade-wt\\visual-overhaul-200\\server\\settle\\store.mjs",
+      "sha256": "1e6331e189c1ddcc443e001705d187c8dfb0ef54443e6d8415bc1133eb589b4f"
+    },
+    {
+      "file": "C:\\Users\\just_\\lesters-arcade-wt\\visual-overhaul-200\\server\\neon\\queries.mjs",
+      "sha256": "f0cc5c47d1659c2f12ac8be9dffa7cf3d82012c3652558229fdeb30a0da3867f"
+    },
+    {
+      "file": "C:\\Users\\just_\\lesters-arcade-wt\\visual-overhaul-200\\server\\neon\\migrations.mjs",
+      "sha256": "b1262f5e0e3d30ae05ff8968a076c99b6d8eb02e7088840ea2edcc70698c7786"
+    },
+    {
+      "file": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\run-achievement-rarity-browser.mjs",
+      "sha256": "7bc645b5799fdd93ba06b9a7228d6dc3fe690a8395372b2a3ee76d42b8cac722"
+    },
+    {
+      "file": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\achievement-rarity-browser.mjs",
+      "sha256": "81d195da18757d1a2d444c1aa20f8b2975656d68661aaee2d1ed1393683256e0"
+    },
+    {
+      "file": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\owned-windows-preview-child.mjs",
+      "sha256": "6f4903a66d324a01a476eebefdfac68663dde2c573f62f637c4b7537ccb0d631"
+    },
+    {
+      "file": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\achievement-rarity-green-01\\report.json",
+      "sha256": "9cf7383bb2dbb0621eb656bb4f7ac2a32ad0426d42c2d2d8d7a46a536d97b12a"
+    }
+  ],
+  "archives": [
+    {
+      "original": "achievement-rarity-red-01/report.json",
+      "stored": "achievement-rarity-red-01--report.json.gz",
+      "originalBytes": 13396,
+      "originalSha256": "90af1f1e45b2095cce5d98b50722107709f98dd91238e41e1521723427724129",
+      "archiveBytes": 1816,
+      "archiveSha256": "3e1704d2953eb499dc52d9ffb63e3d322c088d75fd3dc94adbef2d1d840fd959"
+    },
+    {
+      "original": "achievement-rarity-red-01/test-source.mjs.txt",
+      "stored": "achievement-rarity-red-01--test-source.mjs.txt.gz",
+      "originalBytes": 3164,
+      "originalSha256": "b9cd76dac907a893ce336f76fdec13a9b07cf446d00606fda32a0ac3c1e891d6",
+      "archiveBytes": 951,
+      "archiveSha256": "c0f3044c0d0d8e7fe0f54d6cbc7d5560fc4c2fa8eaadf5bc3e3c8e330ba28492"
+    },
+    {
+      "original": "achievement-rarity-threshold-green-01/report.json",
+      "stored": "achievement-rarity-threshold-green-01--report.json.gz",
+      "originalBytes": 16191,
+      "originalSha256": "2f5166b818ff43561233eb88c39cf75cf53714159b97ab6ff74323cc030d7cf6",
+      "archiveBytes": 2480,
+      "archiveSha256": "a3c4ea5939e14fd298df162d93342cd850fddc61426d3d57b2faeceaba6566e1"
+    },
+    {
+      "original": "achievement-rarity-green-01/report.json",
+      "stored": "achievement-rarity-green-01--report.json.gz",
+      "originalBytes": 16745,
+      "originalSha256": "9cf7383bb2dbb0621eb656bb4f7ac2a32ad0426d42c2d2d8d7a46a536d97b12a",
+      "archiveBytes": 2753,
+      "archiveSha256": "b04221528fa85c845845d6d038728d3eb41114336701766d5ff81338d782f6fd"
+    },
+    {
+      "original": "achievement-rarity-query-pre-review-negative.mjs",
+      "stored": "achievement-rarity-query-pre-review-negative.mjs.gz",
+      "originalBytes": 3324,
+      "originalSha256": "8acdeb7687a77efa0dd7bcb0e38efa081b4048fdb56f0ea27538fc37293fafe5",
+      "archiveBytes": 1331,
+      "archiveSha256": "bd8805e5347d881aa9bacf14b533120cd697ec434e9fc015fb989621d4e92fd1"
+    },
+    {
+      "original": "achievement-rarity-final-01/report.json",
+      "stored": "achievement-rarity-final-01--report.json.gz",
+      "originalBytes": 36711,
+      "originalSha256": "94d6ae2169d1ed45d20d0c86b2314fc19a474b6314031a8f7c190619c184353b",
+      "archiveBytes": 9141,
+      "archiveSha256": "aa1c6bbf043effc3fe8a62146d11c356fc5e5a464dcee5fe1cc0f43d90d2153f"
+    },
+    {
+      "original": "achievement-rarity-browser-01/report.json",
+      "stored": "achievement-rarity-browser-01--report.json.gz",
+      "originalBytes": 24358,
+      "originalSha256": "14fd0430339b12cd21103b13d3925822244aa9135a97e254ba66fafb8d926489",
+      "archiveBytes": 6343,
+      "archiveSha256": "c5b338d81a73e1cb4040cffedb89a6fe6e5de7650788aa1ca3adff45d37cff5e"
+    },
+    {
+      "original": "run-achievement-rarity-red.mjs",
+      "stored": "run-achievement-rarity-red.mjs.gz",
+      "originalBytes": 2657,
+      "originalSha256": "8ba7d65c0496b5a563b604fc346361587f7d9d046372a76d1332c1a19f2af868",
+      "archiveBytes": 1153,
+      "archiveSha256": "04db6458cdae6968d66f132bcb521d3255f468126dd9eb99483be49e49193516"
+    },
+    {
+      "original": "run-achievement-rarity-threshold-green.mjs",
+      "stored": "run-achievement-rarity-threshold-green.mjs.gz",
+      "originalBytes": 3574,
+      "originalSha256": "d4f35d07ff1449a5f3058536472bee9620290471c4092803ab2d76a8ea30d028",
+      "archiveBytes": 1481,
+      "archiveSha256": "22933d48c29d2768cb7971b55373207edb875f33a383907afb36db047e0ad1a4"
+    },
+    {
+      "original": "run-achievement-rarity-green.mjs",
+      "stored": "run-achievement-rarity-green.mjs.gz",
+      "originalBytes": 3211,
+      "originalSha256": "d1a1af20de61558ceef69bfede362bc2fbde3151e8daf32308e6f3620086cda5",
+      "archiveBytes": 1415,
+      "archiveSha256": "4f46cfe3c4ae98454fc226a2952b7624841bb339b52d76b51d53c72aa827f6f7"
+    },
+    {
+      "original": "run-achievement-rarity-browser.mjs",
+      "stored": "run-achievement-rarity-browser.mjs.gz",
+      "originalBytes": 5008,
+      "originalSha256": "7bc645b5799fdd93ba06b9a7228d6dc3fe690a8395372b2a3ee76d42b8cac722",
+      "archiveBytes": 1904,
+      "archiveSha256": "9387a6e46297986b6e9aff4f46afe831fda37b6812ec42da3d175f72bad076cd"
+    },
+    {
+      "original": "achievement-rarity-browser.mjs",
+      "stored": "achievement-rarity-browser.mjs.gz",
+      "originalBytes": 7530,
+      "originalSha256": "81d195da18757d1a2d444c1aa20f8b2975656d68661aaee2d1ed1393683256e0",
+      "archiveBytes": 2951,
+      "archiveSha256": "4a02224e10797f938e7b43dca5c56e1503c0be445ff3223186e299637718ff98"
+    },
+    {
+      "original": "owned-windows-child.mjs",
+      "stored": "owned-windows-child.mjs.gz",
+      "originalBytes": 3475,
+      "originalSha256": "a5177337fcf6ec41f285fc105b93d0b4b94ee1101cb14a653a91e9b8b075b0d9",
+      "archiveBytes": 1360,
+      "archiveSha256": "ade927025e2afbae667182802dfce78d9ddd6b3afea7cfd48a5b40eac5e8ea4b"
+    },
+    {
+      "original": "owned-windows-preview-child.mjs",
+      "stored": "owned-windows-preview-child.mjs.gz",
+      "originalBytes": 3476,
+      "originalSha256": "6f4903a66d324a01a476eebefdfac68663dde2c573f62f637c4b7537ccb0d631",
+      "archiveBytes": 1360,
+      "archiveSha256": "18c5cfc758da42cddbb922c7989a0204d20eb87c1d5d359985932ef89f92c162"
+    }
+  ]
+}
