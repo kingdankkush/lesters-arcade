@@ -128,6 +128,7 @@ const NODE_CHECK_FILES = [
   'apps/hmh-reboot/src/actor-3d-controller.mjs',
   'apps/hmh-reboot/src/actor-3d-model.mjs',
   'apps/hmh-reboot/src/actor-3d-clips.mjs',
+  'scripts/hmh-hero-clip-preview.mjs',
   'apps/hmh-reboot/src/actor-3d-clip-table.mjs',
   'tests/hmh-hero-clip-library.test.mjs',
   'apps/hmh-reboot/src/actor-3d-pixi.mjs',
