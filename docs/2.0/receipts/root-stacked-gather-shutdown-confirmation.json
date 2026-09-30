@@ -1,0 +1,15 @@
+{
+  "scope": "Read-only confirmation after original failed shutdown; no new kill or checker retry",
+  "recordedAt": "2026-09-30T03:27:25.9460108Z",
+  "originalPids": [
+    20876,
+    55264,
+    33280
+  ],
+  "recordedPidsAbsent": true,
+  "directDescendantsAbsent": true,
+  "markerToken": "root-stacked-gather-d7050149-7daf-4a1d-87ef-b60389f3b42c",
+  "originalGatePassed": false,
+  "sourceReason": "Reviewed syntax runner executes only node --check, Python version probes and py_compile subprocesses",
+  "recoveredClosureConfirmed": true
+}

@@ -1,0 +1,597 @@
+{
+  "scope": "Read-only byte comparison of every actual resource served in the passing STACKED browser proof against the gathered root; not a new browser run",
+  "result": "PASS",
+  "resources": [
+    {
+      "file": "apps/portal/src/stacked-evidence-transport.mjs",
+      "bytes": 6744,
+      "sha256": "f9e8c11fdd032390f4220580cbc5569c7080e05e689644e06f350300bb3d502d"
+    },
+    {
+      "file": "apps/portal/src/stacked-contracts.mjs",
+      "bytes": 6193,
+      "sha256": "5ee0d079f2688b02217a60f4695e41944504b0759e87004da6a213e926be9ec6"
+    },
+    {
+      "file": "apps/portal/src/stacked-sim.mjs",
+      "bytes": 52630,
+      "sha256": "5b5fe17c237389bd48834b757166c8afc0b58c801246806275d25fa16ae82114"
+    },
+    {
+      "file": "apps/portal/src/seeded-rng.mjs",
+      "bytes": 5300,
+      "sha256": "b6eed9c993e1efd38871c14d50b580ea15133fdcef020e81ffe7051e24b3ebc7"
+    },
+    {
+      "file": "apps/portal/dist/stacked/verify-worker.js",
+      "bytes": 2077,
+      "sha256": "bb21d658841692e13811d246937b0f7f4e322291f4102ee7584de97312534738"
+    },
+    {
+      "file": "apps/portal/dist/chunks/chunk-Z6AGTUFW.js",
+      "bytes": 23007,
+      "sha256": "b4d6f116bb9c92f93537f2765c9bb7214978f31a3a3cfe1e50d3e82be14df924"
+    },
+    {
+      "file": "apps/portal/dist/chunks/chunk-N53BCL72.js",
+      "bytes": 2605,
+      "sha256": "ac20fc0af4052d9370a3cb5cba303399a2f0877306e17ab7dd8dd10ad4990a42"
+    },
+    {
+      "file": "apps/portal/dist/chunks/chunk-2WGYLO4P.js",
+      "bytes": 655,
+      "sha256": "fe5865361e105c752963ffcabdae4f585e39639d8f0a1167a65ce795bfd94776"
+    },
+    {
+      "file": "apps/portal/index.html",
+      "bytes": 43507,
+      "sha256": "46fd65f56dd98cb13f006cfbd251c8bfb7732c76de1f1cb24726fc210695bd5a"
+    },
+    {
+      "file": "apps/portal/src/design-tokens.css",
+      "bytes": 3012,
+      "sha256": "32e5e8c67aeed880896ec504faa52476e4bbd4ce17d9dbda9a09daa68c8fcb10"
+    },
+    {
+      "file": "apps/portal/portal-discovery.css",
+      "bytes": 30463,
+      "sha256": "70d3d44a3e9ae2fbb94fc432dc0b7303380d6e46a10f2e12b09085025f28cf8f"
+    },
+    {
+      "file": "apps/portal/assets/video/arcade-splash-poster.jpg",
+      "bytes": 131991,
+      "sha256": "e192692099e72faef1587f1f56ab79217426f3d027cfb3fa4b1a7a243cd0d784"
+    },
+    {
+      "file": "apps/portal/dist/main.js",
+      "bytes": 1168126,
+      "sha256": "e7510cb3c15eeae300830f3bbd1077c8bb29b781635d7189c2cd361412dd76d9"
+    },
+    {
+      "file": "apps/portal/styles.css",
+      "bytes": 147074,
+      "sha256": "bab074b27edb800d4639de7b9c7519fdc25ce6d209251786538fa6e457512052"
+    },
+    {
+      "file": "apps/portal/assets/brand/lesters-arcade-logo-horizontal.png",
+      "bytes": 27639,
+      "sha256": "a8003e2c65b80c94e9d590416af36823e57227bbcb50573fcbddc88c5bb0a5a1"
+    },
+    {
+      "file": "apps/portal/styles-arcade-polish.css",
+      "bytes": 99833,
+      "sha256": "5193c346e6d5d652a139e9815633673fc8e53623482c541f8ac143ea2677d69d"
+    },
+    {
+      "file": "apps/portal/assets/video/arcade-promo-poster.jpg",
+      "bytes": 101165,
+      "sha256": "07b1506106fca93cd823d706089b4d23d925d36562151a26fb3841a44ddfdf51"
+    },
+    {
+      "file": "apps/portal/assets/icons/arcade-ui.svg",
+      "bytes": 11577,
+      "sha256": "a2b659cf6409271f20ee059a6d413c7857c8a12093143dbf7c89b17584f78455"
+    },
+    {
+      "file": "apps/portal/assets/hmh-art/banners/hmh-extra4-1600.webp",
+      "bytes": 196742,
+      "sha256": "b5d2a7b76bf6bdcb02298b841520faad2a9ba29a045304e807fddd20b6d6a59a"
+    },
+    {
+      "file": "apps/portal/assets/generated/chikun-mode-select/chikuns-escape-free-mode.webp",
+      "bytes": 107636,
+      "sha256": "48415043eeb87d0f042f6da4465198f0c6e1421da17611f6d9110f60eb022072"
+    },
+    {
+      "file": "apps/portal/assets/stacked-mode-select/stacked-free-v1.png",
+      "bytes": 2149892,
+      "sha256": "b84fe31c9e1a875ab7d47712ccf59e021451e89e68e28c08ca846fcf099ca114"
+    },
+    {
+      "file": "apps/portal/dist/chunks/chunk-GAYH257E.js",
+      "bytes": 19559,
+      "sha256": "2f253c04dc130792e42fb0c4e64517da819deb740aea2231625f6e297b4d50a0"
+    },
+    {
+      "file": "apps/portal/dist/chunks/chunk-OA7PQIDS.js",
+      "bytes": 7562,
+      "sha256": "76e882c7dd3fd8850b150147c84ae68e584a96c7ad7cd5996d58a4fa6eeb3dfc"
+    },
+    {
+      "file": "apps/portal/dist/chunks/chunk-FDLBFADV.js",
+      "bytes": 3066,
+      "sha256": "79999f9f3339a08ed3a370ebd21ddfbc136effd2bd76bd6dbffb08bc4995e111"
+    },
+    {
+      "file": "apps/portal/dist/chunks/chunk-YFNAS4ZQ.js",
+      "bytes": 3396,
+      "sha256": "5222309515ecb7048637d5e5aea3830b88b49688273b03b92a0c163aafc0d914"
+    },
+    {
+      "file": "apps/portal/dist/chunks/chunk-6NSARBFJ.js",
+      "bytes": 13196,
+      "sha256": "7822c781accde52af28dbcca4ca3f4b42e7334e93423c2367d8e4e183e90e701"
+    },
+    {
+      "file": "apps/portal/dist/chunks/chunk-LNMPA4Q7.js",
+      "bytes": 20858,
+      "sha256": "a2a4fdf77a1d6b613b324acff2c1cd813acd148034f0913d74abf2b72de935cb"
+    },
+    {
+      "file": "apps/portal/dist/chunks/chunk-RGQGHKA6.js",
+      "bytes": 880,
+      "sha256": "22c04604e5011c0e193b3ad8f2d73e9602d3bede2a8b4e8f3d405700a8dfeaf7"
+    },
+    {
+      "file": "apps/portal/dist/chunks/chunk-MKJKQ74X.js",
+      "bytes": 820532,
+      "sha256": "3b6380592da398df187dcc4430f98d73bd92af8c2d61afdb11b5a404bde25698"
+    },
+    {
+      "file": "apps/portal/dist/chunks/chunk-E5VFVWGR.js",
+      "bytes": 1212,
+      "sha256": "95e4994e29f5be216517152b9275515cf9aed247900ca1a2af28bef580c33fdd"
+    },
+    {
+      "file": "apps/portal/dist/chunks/chunk-KV7BALVC.js",
+      "bytes": 1783,
+      "sha256": "596aca66ac87a3078cccfc532b72785a479404d5247807f7dabd2e36da098f86"
+    },
+    {
+      "file": "apps/portal/dist/chunks/chunk-TWFI2P4Z.js",
+      "bytes": 51,
+      "sha256": "2e77548aca68682462975375846cc557ca941a1b06085447072cb5fe75d777eb"
+    },
+    {
+      "file": "apps/portal/dist/chunks/chunk-XCXMAQ5X.js",
+      "bytes": 2460,
+      "sha256": "55713b0c6ff26a3ff172c4b53078291e94b8033573a06bab2ed07c33b001130c"
+    },
+    {
+      "file": "apps/portal/dist/chunks/chunk-46BBKS6U.js",
+      "bytes": 278,
+      "sha256": "dc6a20040752306b2687279ab9542a18cbce6dbbb30d57316a60b376701a81f8"
+    },
+    {
+      "file": "apps/portal/dist/chunks/chunk-K2MJE4EF.js",
+      "bytes": 4792,
+      "sha256": "dab9e36b3f5fbbb50c63533ee2d1c3b0f686e926aa57315348226aefd66558c8"
+    },
+    {
+      "file": "apps/portal/dist/chunks/chunk-RZZSZ2EG.js",
+      "bytes": 1880,
+      "sha256": "c189e8544abbf04b20324096a93a3980ad99a0583557779b80262aaa0983cb79"
+    },
+    {
+      "file": "apps/portal/dist/chunks/chunk-Q5HVGOEA.js",
+      "bytes": 421,
+      "sha256": "838bc1e73423856899f461a6384f0c933220d0dc1c7c5c5a4148e12de009225a"
+    },
+    {
+      "file": "apps/portal/dist/chunks/chunk-X6LY72AW.js",
+      "bytes": 10055,
+      "sha256": "7e3ae17b04d70ce2288a9afcf43be5ed94ce4e8a3634d1c64b3e7830d11e0edd"
+    },
+    {
+      "file": "apps/portal/dist/chunks/chunk-QZQQZ67Q.js",
+      "bytes": 24953,
+      "sha256": "cc5ac6a3fb21aa7a9dc7a24975ccd630c96430beaf305425d477403417de791d"
+    },
+    {
+      "file": "apps/portal/dist/chunks/chunk-35BRWECB.js",
+      "bytes": 3356,
+      "sha256": "902447d40ec443e1cdfad763ac26008351d9e6b5f949b2a1c887c0a50173ada9"
+    },
+    {
+      "file": "apps/portal/dist/chunks/chunk-MMSI7XOT.js",
+      "bytes": 10801,
+      "sha256": "628c514e29dfeaf75b2d2139eca21c246025185d4bf3cb2222897eaf3a5a2770"
+    },
+    {
+      "file": "apps/portal/dist/chunks/chunk-PBEL7OZC.js",
+      "bytes": 1800,
+      "sha256": "e02b932100995c4ed0eade95ef56e213187ea60f7719bc4db3f3e13b3ef3ef18"
+    },
+    {
+      "file": "apps/portal/dist/chunks/chunk-74RWV2R2.js",
+      "bytes": 1275,
+      "sha256": "0e58e1f13487f162562313478c6ebcfd099a69049a8bf6ade3ef5c654f757f58"
+    },
+    {
+      "file": "apps/portal/dist/chunks/chunk-PEFPTLR3.js",
+      "bytes": 11450,
+      "sha256": "0481001670285460d739a9aa8432f7cf13142f2a67927768b9a961074f5b4d84"
+    },
+    {
+      "file": "apps/portal/dist/chunks/chunk-NUFRM6SI.js",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "file": "apps/portal/dist/chunks/chunk-ADAJ2ZUC.js",
+      "bytes": 47615,
+      "sha256": "0ca55996163a6ebb6aee359efee6725013157d5e40c3e1dd2a5510d3071e22f3"
+    },
+    {
+      "file": "apps/portal/dist/chunks/chunk-STGVPYVL.js",
+      "bytes": 7381,
+      "sha256": "8d789022f6df5becc998d6d3a0427cb689345cc953956e4f5fa83a60938e3ac9"
+    },
+    {
+      "file": "apps/portal/dist/chunks/chunk-Q5BBAG26.js",
+      "bytes": 3926,
+      "sha256": "38f2f066d499163c6ba0ef6b6ea49d9c81614bfec5d709b134301c9c97def98d"
+    },
+    {
+      "file": "apps/portal/dist/chunks/chunk-YH74QWYW.js",
+      "bytes": 1928,
+      "sha256": "6bbd0214c84876118404897dccedb5f3e03588f9cf5428c76788d53ed0d18076"
+    },
+    {
+      "file": "apps/portal/dist/chunks/chunk-7Z3MKT4T.js",
+      "bytes": 7859,
+      "sha256": "a706e9a16fd93e22cf9a4c3101837669926361d02d6c70cd722f81310c9f204b"
+    },
+    {
+      "file": "apps/portal/dist/chunks/ranked-settlement-OVEBVFDU.js",
+      "bytes": 16017,
+      "sha256": "9423178f768f33a0e93c5ffbf1a3cc99c1afdf81d24312e96fe475d07f1ecd64"
+    },
+    {
+      "file": "apps/portal/dist/chunks/unlockables-store-3IEKELEM.js",
+      "bytes": 5645,
+      "sha256": "2ea0b7e73e046ff6b5c19265b99a9ea31ac7e298ed9a11566d65c1f6124c0c7e"
+    },
+    {
+      "file": "apps/portal/assets/generated/hmh-final-combat-vfx/muzzle-flash-pistol.png",
+      "bytes": 737,
+      "sha256": "11fec23483dcdc55a96ce78f7dcd7f9a22487c685a8381df2476df9042f64852"
+    },
+    {
+      "file": "apps/portal/assets/generated/hmh-final-combat-vfx/muzzle-flash-rail.png",
+      "bytes": 752,
+      "sha256": "411550a03be03ff2caec29bd926cbd703f5f9fd86ed29e74abcce21f41dd2492"
+    },
+    {
+      "file": "apps/portal/assets/generated/hmh-final-combat-vfx/hit-spark-metal.png",
+      "bytes": 1846,
+      "sha256": "59cb3327ae256d42e51659dd0da4e17fee89100a18542e31d1a721fcb6d9389f"
+    },
+    {
+      "file": "apps/portal/assets/generated/hmh-final-combat-vfx/hit-spark-flesh.png",
+      "bytes": 1859,
+      "sha256": "c315b276d60d338c8b256cb1d0b039644aa955346a668cbfc858ee99793e55b6"
+    },
+    {
+      "file": "apps/portal/assets/generated/hmh-final-combat-vfx/shell-casing-brass.png",
+      "bytes": 564,
+      "sha256": "a8c150e66ec6d90804be1043aa7678e92afa0355efe9ca87a69780cb89764de4"
+    },
+    {
+      "file": "apps/portal/assets/generated/hmh-final-combat-vfx/coin-pickup-pop.png",
+      "bytes": 1539,
+      "sha256": "715f03ed04ea66158a95b610a039a3132546e997162be5b892d319694a52652f"
+    },
+    {
+      "file": "apps/portal/assets/generated/hmh-final-combat-vfx/grenade-explosion-ring.png",
+      "bytes": 4467,
+      "sha256": "39c4526fe622b94b487da5eb62efd164c0e23ba0093adaf69669532aa4ca972d"
+    },
+    {
+      "file": "apps/portal/assets/generated/hmh-final-combat-vfx/death-dust-burst.png",
+      "bytes": 1698,
+      "sha256": "5d9465a671cb6e26904b5946818051369d91b1cbdf7a73e76d39e73d54f73aba"
+    },
+    {
+      "file": "apps/portal/assets/generated/hmh-final-combat-vfx/gore-pixel-splatter.png",
+      "bytes": 1247,
+      "sha256": "7f914e5b691bb6e1f02c765ee6d28291618839498ff64792ba51fd781c3ee07d"
+    },
+    {
+      "file": "apps/portal/assets/generated/hmh-final-combat-vfx/level-up-burst.png",
+      "bytes": 2523,
+      "sha256": "d807cd28299cd4b63c4bcdcf98d07f8453ea03f7f53479c5a02086742e1fe683"
+    },
+    {
+      "file": "apps/portal/assets/generated/sliced/icon-weapon-health.png",
+      "bytes": 7499,
+      "sha256": "e10fb7b196141e8eaed62f662743addabc3f7d35f844210cd771456a3d2163aa"
+    },
+    {
+      "file": "apps/portal/assets/generated/sliced/icon-weapon-shield.png",
+      "bytes": 6975,
+      "sha256": "41660fc4941d7d5d13bfdb97f4bd1b0a4708ce1ca69f96f3d3e8904b05070cbf"
+    },
+    {
+      "file": "apps/portal/assets/generated/sliced/icon-weapon-ammo.png",
+      "bytes": 8168,
+      "sha256": "590a16660ffcfbcb25b6c39540788b5fa659e715da64619cabf50252108b90f6"
+    },
+    {
+      "file": "apps/portal/assets/generated/sliced/icon-weapon-one-up.png",
+      "bytes": 7999,
+      "sha256": "10e6b07219891384064ce5ab665928d7c5cc043ce195256f0d1b627e5c79dafa"
+    },
+    {
+      "file": "apps/portal/assets/generated/sliced/icon-weapon-settler.png",
+      "bytes": 8814,
+      "sha256": "ad274b29df3533da6343d65483130b1af27e5a6adcba5b1576c8b0ffc71be0ac"
+    },
+    {
+      "file": "apps/portal/assets/generated/sliced/icon-weapon-score-multiplier.png",
+      "bytes": 4846,
+      "sha256": "67819b9d9bf9d5f203b1d60428c3ffaa7963635201d08faebfc78c23e4ab914c"
+    },
+    {
+      "file": "apps/portal/assets/audio/playlist/hard-money-heroes-16-bit-arcade-music.mp3",
+      "bytes": 2913681,
+      "sha256": "101da360846707c57b4cba2a2a51fe74718bf0be8e633599eb7b13cac7345727"
+    },
+    {
+      "file": "apps/portal/dist/chunks/chunk-TDPHQMEG.js",
+      "bytes": 8903,
+      "sha256": "791188af75c71d547a19630952c35344c9445222632a66a4ba98307a072aca18"
+    },
+    {
+      "file": "apps/portal/dist/chunks/chunk-FDGOJUNH.js",
+      "bytes": 16080,
+      "sha256": "3078dcfe5af58edafa2f742ecb344de0a1e9a74651ea7bbfbddbdd6a4786ae93"
+    },
+    {
+      "file": "apps/portal/assets/video/arcade-splash-loop.mp4",
+      "bytes": 2937102,
+      "sha256": "2f5d1f91845eafb2bbce2cfbe9107102bbec41b42c0c0240df4180a2bf4137da"
+    },
+    {
+      "file": "apps/portal/assets/audio/sfx/wallet-connect.ogg",
+      "bytes": 9834,
+      "sha256": "a27c6bb0df7da1e6af5dd5937593c98bc58b6e513f42fe6a3254cd6a6949c648"
+    },
+    {
+      "file": "apps/portal/assets/audio/sfx/menu-click.ogg",
+      "bytes": 4876,
+      "sha256": "ccfb7fa0cccdd9faec0eb16033c732b1e308d139d80f799161495d58f7adcdb9"
+    },
+    {
+      "file": "apps/portal/assets/audio/sfx/level-start.ogg",
+      "bytes": 8968,
+      "sha256": "063564703b6094d70718a3e787a55cc9141611e4ecd6b6637f8828f79b4a8c3a"
+    },
+    {
+      "file": "apps/portal/assets/audio/sfx/jump.ogg",
+      "bytes": 12111,
+      "sha256": "fd3e75e1de2f2fda90aceeacaeb0427ac8bddd3b07a6ce2a8f9ba923df3771f9"
+    },
+    {
+      "file": "apps/portal/assets/audio/sfx/land.ogg",
+      "bytes": 11924,
+      "sha256": "8481912bc7fa5828924a00ef15b6cd613b994956e0817bd3122065c9b2896d2d"
+    },
+    {
+      "file": "apps/portal/assets/audio/sfx/weapon-fire.ogg",
+      "bytes": 7286,
+      "sha256": "72b589eadd41781257ac859e4f4d030222e623390e4a1a83f6d05329a6e026f1"
+    },
+    {
+      "file": "apps/portal/assets/audio/sfx/melee.ogg",
+      "bytes": 8800,
+      "sha256": "486988aa2d6440ffc4c62a0e8ccf3c23673ba84424bd4723378d451b7255eb5c"
+    },
+    {
+      "file": "apps/portal/assets/audio/sfx/grenade.ogg",
+      "bytes": 28274,
+      "sha256": "4b597d658d0ae101f0a030fbeea5fc3a4292ab85f017470a8254a8e7959cbd69"
+    },
+    {
+      "file": "apps/portal/assets/audio/sfx/pickup.ogg",
+      "bytes": 6753,
+      "sha256": "3b74efad87f1e69dbd1d05c5ad952ab90859b5a3d11da6ec5bd79b4f03b42afa"
+    },
+    {
+      "file": "apps/portal/assets/audio/sfx/enemy-hit.ogg",
+      "bytes": 15491,
+      "sha256": "956c6612a256aa1a67a2327fffe2454f6b1d82e4c1c2be28fd66916335d5b1d6"
+    },
+    {
+      "file": "apps/portal/assets/audio/sfx/player-hit.ogg",
+      "bytes": 7373,
+      "sha256": "46e67425d16339772e8d328fb36a49426c9467418686e11beeb71ff84b0f6433"
+    },
+    {
+      "file": "apps/portal/assets/audio/sfx/boss-warning.ogg",
+      "bytes": 11700,
+      "sha256": "abb8f9e4eb2071491b0b15f84ee302386b1847609310c1b000ae174639a6cc5a"
+    },
+    {
+      "file": "apps/portal/assets/audio/sfx/game-over.ogg",
+      "bytes": 9915,
+      "sha256": "44af8249b933e0fd35ec957a638bb1a0b01f85b53fbe9674bf77bd3ca3168ef4"
+    },
+    {
+      "file": "apps/portal/assets/hard-money-heroes/cabinet/rotation/hmh-cabinet-rotation-00-front.png",
+      "bytes": 74116,
+      "sha256": "3ca0ab35a576ebe9f05592a769f6bb443b5540a50277293ba37732325218404e"
+    },
+    {
+      "file": "apps/portal/assets/hard-money-heroes/cabinet/rotation/hmh-cabinet-rotation-01-front-right.png",
+      "bytes": 93150,
+      "sha256": "0239f0f10f18650086c3509e7032e92e18f940a4fca54fae972b3f57d7e1c7d0"
+    },
+    {
+      "file": "apps/portal/assets/hard-money-heroes/cabinet/rotation/hmh-cabinet-rotation-02-right-side.png",
+      "bytes": 66322,
+      "sha256": "75a23d33d1ad00672b2e4e7d5d667d7c6db5db4f5c9b5232213b784be69f4376"
+    },
+    {
+      "file": "apps/portal/assets/hard-money-heroes/cabinet/rotation/hmh-cabinet-rotation-03-back.png",
+      "bytes": 24510,
+      "sha256": "f0566ff62aa3a85fba9192d8895d39ef827a3470a9653b6296fb146c7b1b353e"
+    },
+    {
+      "file": "apps/portal/assets/hard-money-heroes/cabinet/rotation/hmh-cabinet-rotation-04-left-side.png",
+      "bytes": 57554,
+      "sha256": "13c51810165170c3a5b918cebf7045482d0046d93f6e4853c5e876942b411b56"
+    },
+    {
+      "file": "apps/portal/assets/hard-money-heroes/cabinet/rotation/hmh-cabinet-rotation-05-front-left.png",
+      "bytes": 84157,
+      "sha256": "62cf25e690c5bea1d6278c2b3360d49bcf41e7c8776cc7fa83d984586c22edf7"
+    },
+    {
+      "file": "apps/portal/assets/generated/chikun-cabinet/chikun-cabinet-front.png",
+      "bytes": 34527,
+      "sha256": "51867a5e8fd664217045ee470c3a2011557e3682ee3f04c4ae289c155fbe5c9b"
+    },
+    {
+      "file": "apps/portal/assets/generated/chikun-cabinet/chikun-cabinet-front-right.png",
+      "bytes": 51187,
+      "sha256": "87cac38b0da3104aa22e21f2eb83cb93293ea49bf346da0775290461bb1a522a"
+    },
+    {
+      "file": "apps/portal/assets/generated/chikun-cabinet/chikun-cabinet-right.png",
+      "bytes": 40475,
+      "sha256": "4354827c7fbac94ab5dedf373c9711da1fcee66ba0029af8ac59a04e2f728443"
+    },
+    {
+      "file": "apps/portal/assets/generated/chikun-cabinet/chikun-cabinet-back.png",
+      "bytes": 17109,
+      "sha256": "971d674a7970db184a955d5ae20d4ee6e86b2fa37bb67637fc990f361c93852a"
+    },
+    {
+      "file": "apps/portal/assets/generated/chikun-cabinet/chikun-cabinet-left.png",
+      "bytes": 30696,
+      "sha256": "85249555a5ffa79da7907173da3fba0a6692dee55d9691a4d2a15bd91e4e56c8"
+    },
+    {
+      "file": "apps/portal/assets/generated/chikun-cabinet/chikun-cabinet-front-right-low.png",
+      "bytes": 46288,
+      "sha256": "2c19ae214ceb496940e8ef0439e98e674c2df0a754b9a328906e900f785cf031"
+    },
+    {
+      "file": "apps/portal/assets/stacked-cabinet/stacked-cabinet-turnaround-v1.png",
+      "bytes": 1362754,
+      "sha256": "53f6583467387c5c260081fcd388a2467d96f65de5806bb26e27fdd56e96cfca"
+    },
+    {
+      "file": "apps/portal/assets/generated/hmh-banners/mweb-invaders-keyart.jpg",
+      "bytes": 116301,
+      "sha256": "5959bb59d678d5f07da7f234ad733fdf3ae39c483b26eb9aaec2a8299c36f6ac"
+    },
+    {
+      "file": "apps/portal/assets/generated/hmh-banners/litvm-legends-keyart.jpg",
+      "bytes": 210074,
+      "sha256": "fa0bc133b0b862a27da7f708aae048e928d32d4a3dc177691414db71568989c5"
+    },
+    {
+      "file": "apps/portal/assets/favicon.svg",
+      "bytes": 511,
+      "sha256": "555a67d1eb092d224591cc05a0a0ff476d45413009714317c2fc9443bfefe14e"
+    },
+    {
+      "file": "apps/portal/assets/stacked-mode-select/stacked-ranked-v1.png",
+      "bytes": 2157252,
+      "sha256": "b080669cad7b4739bd69399a0db79617e63e2edc81eb8f8e45b897f07eea76bf"
+    },
+    {
+      "file": "apps/portal/dist/chunks/stacked-host-4BZFM35E.js",
+      "bytes": 7899,
+      "sha256": "820bba4b99b66806a9d985139c1e7ac254fda479ea4c79938965dc775bb932fa"
+    },
+    {
+      "file": "apps/portal/assets/audio/playlist/speedster-16-bit-arcade-music-track-1.mp3",
+      "bytes": 892778,
+      "sha256": "4622e582df27ef0b35b34b8adb9141f6760bb3485a250535b130dcd1eb1e1201"
+    },
+    {
+      "file": "apps/portal/dist/chunks/chunk-DYBTERKK.js",
+      "bytes": 12714,
+      "sha256": "7fed14e18bd73c121d602f3f331929b85489e533a1e6541cacf032f8b53d3176"
+    },
+    {
+      "file": "apps/portal/stacked/index.html",
+      "bytes": 12651,
+      "sha256": "333b38442b4b803a0a44a422f9037dee982f66aac63429412a08856a8c0943f0"
+    },
+    {
+      "file": "apps/portal/dist/stacked/stacked-pixi-v1.js",
+      "bytes": 496615,
+      "sha256": "6c9a15983644f0883e50c0723874e3e6e88f8cd8968f881253d15143c1732db3"
+    },
+    {
+      "file": "apps/portal/stacked/game.css",
+      "bytes": 14793,
+      "sha256": "0d785f9ac44f754a7bc4cf7d061483cb85de5a49e4129b54b66e4f7f5883189b"
+    },
+    {
+      "file": "apps/portal/dist/stacked/game.js",
+      "bytes": 25966,
+      "sha256": "a2d6d5e9cd2a8ad3dc9a70d699c7cf0d56a606eb0a8e1416ec16835e7bc7a03d"
+    },
+    {
+      "file": "apps/portal/dist/chunks/chunk-SFMOJRWV.js",
+      "bytes": 825,
+      "sha256": "c3ed249a216df94b7fa688e857640e04962af4acb1c2403635851287df2df0f5"
+    },
+    {
+      "file": "apps/portal/dist/chunks/renderer-OGPVOOGK.js",
+      "bytes": 35414,
+      "sha256": "48ecf74e9294e5c836e362232c7305a1c5ce58ab31bfc5bd7d082f53715ad659"
+    },
+    {
+      "file": "apps/portal/dist/chunks/visualizer-preview-IANHRSV3.js",
+      "bytes": 1403,
+      "sha256": "88e797d99e6c45ac6ced4b2edb0fecc870eea47f87563d69ded0797f14b57a80"
+    },
+    {
+      "file": "apps/portal/dist/chunks/haptics-WRI6IOH4.js",
+      "bytes": 1332,
+      "sha256": "840c1fc4c99ac2bb1009921443f34fcf9e0b4f0a00f07c59e75b606b23f043e1"
+    },
+    {
+      "file": "apps/portal/dist/chunks/sound-effects-RCUTOWUI.js",
+      "bytes": 4409,
+      "sha256": "aeaed058f5d4557bdc44daf0193a0b9217dc5293191702cdef2312be908a8cba"
+    },
+    {
+      "file": "apps/portal/dist/chunks/chunk-IIQTF2BL.js",
+      "bytes": 1712,
+      "sha256": "97246b64c68eeed75087677932fc799e7f15279d2d2f4ee6a5c37452138cbb59"
+    },
+    {
+      "file": "apps/portal/dist/chunks/chunk-WSLA44S3.js",
+      "bytes": 4293,
+      "sha256": "9e7b430b5ec8f965ba85509f981ffd6021041e92ecea33cc44be89d0ae494e0c"
+    },
+    {
+      "file": "apps/portal/dist/chunks/chunk-5J364X2K.js",
+      "bytes": 14139,
+      "sha256": "96acdc45ec04265b5d9d66fff083f2d16a54c90e166c30b5827e438feb448097"
+    },
+    {
+      "file": "apps/portal/assets/audio/playlist/lit-man-16-bit-arcade-music-track-2.mp3",
+      "bytes": 3140881,
+      "sha256": "d082b3702daee18c83c5092a83eca25e8b88634767339fafaacd5b2862502fa6"
+    }
+  ],
+  "allExact": true
+}

@@ -1,0 +1,715 @@
+{
+  "schema": "root-stacked-gather-checkpoint-v1",
+  "token": "root-stacked-gather-7bc107c4-fe63-4a01-9a09-5b4833352782",
+  "startedAt": "2026-09-30T03:28:16.269Z",
+  "before": {
+    "apps/portal/src/achievements/entry.mjs": "a4e55551ae0b7aca76bda548659155ab22294e049fdcd02bf9462f224ce8b98e",
+    "apps/portal/src/achievements/hmh.mjs": "044a813a78829bf0c27eff8a94cefaf94dd7af3a1802e13624b79c6c79916751",
+    "apps/portal/src/achievements/stats.mjs": "704f8ffefec2f9572243f98e85e71a67f0c4afc64be4fc9225da2dbd4baa13d6",
+    "apps/portal/src/chikun-course-regions.mjs": "0d43a3b3f8a2bf06db2c8e381290376696a9270e3f5d0d101d707720faf6941a",
+    "apps/portal/src/chikun-ground-course.mjs": "a29626fe35d1d92979c5950ef0cd17efdfe2340ba98c5a3a7a772403c32fb7ca",
+    "apps/portal/src/ranked-identity.mjs": "225a1f2c89a2f3cad7d5ef0f7b732ffae0347acd7d6c7a156d7227e60acd8056",
+    "apps/portal/src/seeded-rng.mjs": "b6eed9c993e1efd38871c14d50b580ea15133fdcef020e81ffe7051e24b3ebc7",
+    "apps/portal/src/session-integrity.mjs": "26785093fba615224ddfcc85ec6e3094c6e2e8a5b48f932da34bcbc427136157",
+    "apps/portal/src/session-seed.mjs": "4602de3e82949c72b635666225c877beb71b6c02e023ab735e91877c181f2c80",
+    "apps/portal/src/stacked-contracts.mjs": "5ee0d079f2688b02217a60f4695e41944504b0759e87004da6a213e926be9ec6",
+    "apps/portal/src/stacked-evidence-transport.mjs": "f9e8c11fdd032390f4220580cbc5569c7080e05e689644e06f350300bb3d502d",
+    "apps/portal/src/stacked-sim.mjs": "5b5fe17c237389bd48834b757166c8afc0b58c801246806275d25fa16ae82114",
+    "apps/stacked/src/dev/soak-pilot.mjs": "aba5c692371256a34e9eefbe63f3e4772b438829712aa8030cd0b14a88434156",
+    "apps/stacked/src/verify-worker.mjs": "7b277fd34cb069eca000b2753f1f94b346633c8645045efdd49ed73a1c04da09",
+    "sdk/hmh-run-summary-schema-v7.mjs": "81fd2c2fc109bd0856ba6acff19f1c379f5835b72365e57abf6a762cdc61ed98",
+    "sdk/hmh-run-summary-schema.mjs": "c5428b534378cd85fd71662409657bea652cf8737755513e5e573f4a0dcfa47a",
+    "server/verify/stacked.mjs": "9bcb1aee7ed466e799c83495307c489e7f54201b177c2691ab6d101187418493",
+    "server/verify/verified-run.mjs": "1e5c0079536ab3a94ba867b205f7bde11a0bb0d7e99d7b0ec2963a51dd71bfd8",
+    "tests/fixtures/ranked/build-fixtures.mjs": "3881337cdea3f274829a5ef03dd82233730c00a1e52b64e95dc7b294f5b2de2d",
+    "tests/fixtures/ranked/chikun-10min.json": "71f30754c77a47f90f2211ad25104f041cf5e718cf340e5c44af06f862ce61cd",
+    "tests/fixtures/ranked/chikun-valid.json": "158eb8791825539e8bf85467643642050d3cfd2069181c19e2f278a8123ccae1",
+    "tests/fixtures/ranked/hmh-honest-corpus.mjs": "eb5ccb0644ee90e35d8c1a79d259592ec88a825cd71987e90ff7d2b8c8d6686b",
+    "tests/fixtures/ranked/hmh-level-90.json": "00bdfaced2baa18466277594308f70bf76ed4be6a86820f79442c24a6b431160",
+    "tests/fixtures/ranked/hmh-realistic.json": "82f4052e70bf0751d87e11790ab6736bdbcaacf5c3d2cb775649a22e4490d51b",
+    "tests/fixtures/ranked/hmh-v7-future-districts.json": "5681a4cf68de784564927646d0496340d2e25985eeb9514f8bb4928241466c4a",
+    "tests/fixtures/ranked/hmh-v7-future-four-bosses.json": "16cd3d2c6c0aa1fdfed12ef54c28f326fccda3699b63a0fc5d9491f9609ef4c4",
+    "tests/fixtures/ranked/hmh-v7-liquidator.json": "5ee3985b490b1dab0a3fdd3068c78a504795a933d052d030f42ee5f1c0d75db1",
+    "tests/fixtures/ranked/hmh-valid.json": "137b2b8d94f69cec2ecf026561da93d5cdaa7b9441a79cfe83d097efc79ed39d",
+    "tests/fixtures/ranked/stacked-15min.json": "fb63161bd24c2159dfedee65d47517c148d630a6c9cfc3606de9bb1e5d6474f1",
+    "tests/fixtures/ranked/stacked-valid.json": "be8ac5cd2392ae5709a8120bd942714e62f083dbf2ef13c3fa3eb2b683f367d4",
+    "tests/fixtures/stacked-golden-run.json": "690a817c53ba6e89780260f3ec661d2d5e348144fa5f64fa9fc7bbc5a800a874",
+    "tests/fixtures/stacked-maximal-multibit-run.json": "405827e03625005e638c4c6b75af404e8937c4bf994e4a6df0377f9f3e2de04e",
+    "tests/fixtures/stacked-maximal-multibit-run.sic1.gz": "10a89692f844f370bc48774ed1dafeb77df1af225163ae9f44e4554312fb1203",
+    "tests/fixtures/stacked-maximal-priority-rotation-run.json": "5b6091ba5ab57a5a190befa914f570c3bf5ea1711cf3dedf2d0ea898f644a1c5",
+    "tests/fixtures/stacked-maximal-priority-rotation-run.sic1.gz": "7ca81104a46f33f6003eb56f58112933eaa50cd9dcdfb33329f472d851b79bef",
+    "tests/fixtures/stacked-priority-hold-short-terminal-run.json": "cf2f54c176191b4636093b48d0c5a54142294ae528058c43804da1c70cb5498a",
+    "tests/fixtures/stacked-priority-hold-short-terminal-run.sic1.gz": "6b6f7e4abe3a910dd7474ce7bed1132d1f06a508bc378098169b4045a9e69e62",
+    "tests/fixtures/stacked-transport-copy-iteration-worker.mjs": "242c46bc63ec29b5f2d79b298f051e466aecaf82f8ae4b084ab18c547331e27c",
+    "tests/fixtures/stacked-worker-runner.mjs": "7b9a48320583d12d2d012480f84ae7eb7dac1169ff598220912ea6cf8612774d",
+    "tests/server-verify-identity.test.mjs": "f51871b05e1f04e3fdc94db52c204392a95736db067b28fec0b5b5564ac28953",
+    "tests/server-verify-stacked.test.mjs": "22c88bf09476e2feb147fc703e1b60014985a6acbd1930db671d0ba6517044f8",
+    "tests/stacked-bridge-protocol.test.mjs": "edeff4501380d60b2771c82b242762e3088db8d54b46658868a82fd0f02101f7",
+    "tests/stacked-evidence-codec.test.mjs": "b1a5aed8bb077b89957e82741c3bb858fa6f7c630c2532b908ee0d5623b2fc4f",
+    "tests/stacked-evidence-copy-boundary.test.mjs": "1b0b3fa79bf6f265fcfba2ce90e1cd5d0ee0f7b910a134586befca8019e70dac",
+    "tests/stacked-evidence-transport.test.mjs": "f0ca0fe5e8d1720b31062f23fd442878f5765a6067f854f16b7022d31583c1bf",
+    "tests/stacked-evidence-varint-boundaries.test.mjs": "671f51f496cd6db23aabcfc1ed3042a2dd92a1e82cc1a0f3e88739333e2861e7",
+    "tests/stacked-headless-projection.test.mjs": "39f985361ca2f1285399a3e575a111dd90e957fdae4cbceaacc7978046902704",
+    "tests/stacked-input-codec.test.mjs": "d8fdaa682017f0848890bdb4410f2ce970ef740c6e142306842e3ebcceb34a4a",
+    "tests/stacked-maximal-multibit-replay.test.mjs": "5d2c7603b7ba58427d21c94d9f23bc2be90d5c830cc10e0497bb355980b27f3d",
+    "tests/stacked-maximal-priority-rotation-replay.test.mjs": "cd0d86cf36eb6edb12d73b51322755278900ccf9adc2714b20966d7cdf4b2eab",
+    "tests/stacked-priority-hold-short-terminal-replay.test.mjs": "7028a33b4a2b2caf7bfa82539713a4ba6c17a83b42a96b725f6ca71cf8466a12",
+    "tests/stacked-review-boundaries.test.mjs": "f548dc34db066797f9ff1e537f3527a9247575a3853f91a816f2caf0f8f1435d",
+    "tests/stacked-sim-determinism.test.mjs": "296ff63c049c6fb0d40f5e6ad97ff4598c4042fcecf3ec2fd7d70d772cc0e881",
+    "tests/stacked-verify-worker.test.mjs": "059c83e7d1c4800b2f712a3599c3cd84c220cec44e0849f8f926216c73f20407",
+    "apps/hmh-reboot/src/main.mjs": "389e6f9a85c123eeebd3adcfa9a78542165e68b4446b83d9d89be90df7e658a1",
+    "scripts/syntax-check.mjs": "4d417ccb9c02353b0816b4e3202f5e6395b0ffd6f3dfb5f703033de610bf40db",
+    "scripts/lib/source_art_paths.py": "59f153a5e6b574fe222024a78be727a6315eccaeaa20fc827b3b3824a78a7ab9",
+    "tests/test_source_art_paths.py": "74b1a11db2057f954aeb9f112c3e073dcb626e2384826b60c87b3be71cb2170c",
+    "tests/source-art-paths.test.mjs": "e05746f23ad74a08081b3e4dc0f5e95b4505d9afdf4c0c9375b0a10ab8cf33b4"
+  },
+  "after": {
+    "apps/portal/src/achievements/entry.mjs": "a4e55551ae0b7aca76bda548659155ab22294e049fdcd02bf9462f224ce8b98e",
+    "apps/portal/src/achievements/hmh.mjs": "044a813a78829bf0c27eff8a94cefaf94dd7af3a1802e13624b79c6c79916751",
+    "apps/portal/src/achievements/stats.mjs": "704f8ffefec2f9572243f98e85e71a67f0c4afc64be4fc9225da2dbd4baa13d6",
+    "apps/portal/src/chikun-course-regions.mjs": "0d43a3b3f8a2bf06db2c8e381290376696a9270e3f5d0d101d707720faf6941a",
+    "apps/portal/src/chikun-ground-course.mjs": "a29626fe35d1d92979c5950ef0cd17efdfe2340ba98c5a3a7a772403c32fb7ca",
+    "apps/portal/src/ranked-identity.mjs": "225a1f2c89a2f3cad7d5ef0f7b732ffae0347acd7d6c7a156d7227e60acd8056",
+    "apps/portal/src/seeded-rng.mjs": "b6eed9c993e1efd38871c14d50b580ea15133fdcef020e81ffe7051e24b3ebc7",
+    "apps/portal/src/session-integrity.mjs": "26785093fba615224ddfcc85ec6e3094c6e2e8a5b48f932da34bcbc427136157",
+    "apps/portal/src/session-seed.mjs": "4602de3e82949c72b635666225c877beb71b6c02e023ab735e91877c181f2c80",
+    "apps/portal/src/stacked-contracts.mjs": "5ee0d079f2688b02217a60f4695e41944504b0759e87004da6a213e926be9ec6",
+    "apps/portal/src/stacked-evidence-transport.mjs": "f9e8c11fdd032390f4220580cbc5569c7080e05e689644e06f350300bb3d502d",
+    "apps/portal/src/stacked-sim.mjs": "5b5fe17c237389bd48834b757166c8afc0b58c801246806275d25fa16ae82114",
+    "apps/stacked/src/dev/soak-pilot.mjs": "aba5c692371256a34e9eefbe63f3e4772b438829712aa8030cd0b14a88434156",
+    "apps/stacked/src/verify-worker.mjs": "7b277fd34cb069eca000b2753f1f94b346633c8645045efdd49ed73a1c04da09",
+    "sdk/hmh-run-summary-schema-v7.mjs": "81fd2c2fc109bd0856ba6acff19f1c379f5835b72365e57abf6a762cdc61ed98",
+    "sdk/hmh-run-summary-schema.mjs": "c5428b534378cd85fd71662409657bea652cf8737755513e5e573f4a0dcfa47a",
+    "server/verify/stacked.mjs": "9bcb1aee7ed466e799c83495307c489e7f54201b177c2691ab6d101187418493",
+    "server/verify/verified-run.mjs": "1e5c0079536ab3a94ba867b205f7bde11a0bb0d7e99d7b0ec2963a51dd71bfd8",
+    "tests/fixtures/ranked/build-fixtures.mjs": "3881337cdea3f274829a5ef03dd82233730c00a1e52b64e95dc7b294f5b2de2d",
+    "tests/fixtures/ranked/chikun-10min.json": "71f30754c77a47f90f2211ad25104f041cf5e718cf340e5c44af06f862ce61cd",
+    "tests/fixtures/ranked/chikun-valid.json": "158eb8791825539e8bf85467643642050d3cfd2069181c19e2f278a8123ccae1",
+    "tests/fixtures/ranked/hmh-honest-corpus.mjs": "eb5ccb0644ee90e35d8c1a79d259592ec88a825cd71987e90ff7d2b8c8d6686b",
+    "tests/fixtures/ranked/hmh-level-90.json": "00bdfaced2baa18466277594308f70bf76ed4be6a86820f79442c24a6b431160",
+    "tests/fixtures/ranked/hmh-realistic.json": "82f4052e70bf0751d87e11790ab6736bdbcaacf5c3d2cb775649a22e4490d51b",
+    "tests/fixtures/ranked/hmh-v7-future-districts.json": "5681a4cf68de784564927646d0496340d2e25985eeb9514f8bb4928241466c4a",
+    "tests/fixtures/ranked/hmh-v7-future-four-bosses.json": "16cd3d2c6c0aa1fdfed12ef54c28f326fccda3699b63a0fc5d9491f9609ef4c4",
+    "tests/fixtures/ranked/hmh-v7-liquidator.json": "5ee3985b490b1dab0a3fdd3068c78a504795a933d052d030f42ee5f1c0d75db1",
+    "tests/fixtures/ranked/hmh-valid.json": "137b2b8d94f69cec2ecf026561da93d5cdaa7b9441a79cfe83d097efc79ed39d",
+    "tests/fixtures/ranked/stacked-15min.json": "fb63161bd24c2159dfedee65d47517c148d630a6c9cfc3606de9bb1e5d6474f1",
+    "tests/fixtures/ranked/stacked-valid.json": "be8ac5cd2392ae5709a8120bd942714e62f083dbf2ef13c3fa3eb2b683f367d4",
+    "tests/fixtures/stacked-golden-run.json": "690a817c53ba6e89780260f3ec661d2d5e348144fa5f64fa9fc7bbc5a800a874",
+    "tests/fixtures/stacked-maximal-multibit-run.json": "405827e03625005e638c4c6b75af404e8937c4bf994e4a6df0377f9f3e2de04e",
+    "tests/fixtures/stacked-maximal-multibit-run.sic1.gz": "10a89692f844f370bc48774ed1dafeb77df1af225163ae9f44e4554312fb1203",
+    "tests/fixtures/stacked-maximal-priority-rotation-run.json": "5b6091ba5ab57a5a190befa914f570c3bf5ea1711cf3dedf2d0ea898f644a1c5",
+    "tests/fixtures/stacked-maximal-priority-rotation-run.sic1.gz": "7ca81104a46f33f6003eb56f58112933eaa50cd9dcdfb33329f472d851b79bef",
+    "tests/fixtures/stacked-priority-hold-short-terminal-run.json": "cf2f54c176191b4636093b48d0c5a54142294ae528058c43804da1c70cb5498a",
+    "tests/fixtures/stacked-priority-hold-short-terminal-run.sic1.gz": "6b6f7e4abe3a910dd7474ce7bed1132d1f06a508bc378098169b4045a9e69e62",
+    "tests/fixtures/stacked-transport-copy-iteration-worker.mjs": "242c46bc63ec29b5f2d79b298f051e466aecaf82f8ae4b084ab18c547331e27c",
+    "tests/fixtures/stacked-worker-runner.mjs": "7b9a48320583d12d2d012480f84ae7eb7dac1169ff598220912ea6cf8612774d",
+    "tests/server-verify-identity.test.mjs": "f51871b05e1f04e3fdc94db52c204392a95736db067b28fec0b5b5564ac28953",
+    "tests/server-verify-stacked.test.mjs": "22c88bf09476e2feb147fc703e1b60014985a6acbd1930db671d0ba6517044f8",
+    "tests/stacked-bridge-protocol.test.mjs": "edeff4501380d60b2771c82b242762e3088db8d54b46658868a82fd0f02101f7",
+    "tests/stacked-evidence-codec.test.mjs": "b1a5aed8bb077b89957e82741c3bb858fa6f7c630c2532b908ee0d5623b2fc4f",
+    "tests/stacked-evidence-copy-boundary.test.mjs": "1b0b3fa79bf6f265fcfba2ce90e1cd5d0ee0f7b910a134586befca8019e70dac",
+    "tests/stacked-evidence-transport.test.mjs": "f0ca0fe5e8d1720b31062f23fd442878f5765a6067f854f16b7022d31583c1bf",
+    "tests/stacked-evidence-varint-boundaries.test.mjs": "671f51f496cd6db23aabcfc1ed3042a2dd92a1e82cc1a0f3e88739333e2861e7",
+    "tests/stacked-headless-projection.test.mjs": "39f985361ca2f1285399a3e575a111dd90e957fdae4cbceaacc7978046902704",
+    "tests/stacked-input-codec.test.mjs": "d8fdaa682017f0848890bdb4410f2ce970ef740c6e142306842e3ebcceb34a4a",
+    "tests/stacked-maximal-multibit-replay.test.mjs": "5d2c7603b7ba58427d21c94d9f23bc2be90d5c830cc10e0497bb355980b27f3d",
+    "tests/stacked-maximal-priority-rotation-replay.test.mjs": "cd0d86cf36eb6edb12d73b51322755278900ccf9adc2714b20966d7cdf4b2eab",
+    "tests/stacked-priority-hold-short-terminal-replay.test.mjs": "7028a33b4a2b2caf7bfa82539713a4ba6c17a83b42a96b725f6ca71cf8466a12",
+    "tests/stacked-review-boundaries.test.mjs": "f548dc34db066797f9ff1e537f3527a9247575a3853f91a816f2caf0f8f1435d",
+    "tests/stacked-sim-determinism.test.mjs": "296ff63c049c6fb0d40f5e6ad97ff4598c4042fcecf3ec2fd7d70d772cc0e881",
+    "tests/stacked-verify-worker.test.mjs": "059c83e7d1c4800b2f712a3599c3cd84c220cec44e0849f8f926216c73f20407",
+    "apps/hmh-reboot/src/main.mjs": "389e6f9a85c123eeebd3adcfa9a78542165e68b4446b83d9d89be90df7e658a1",
+    "scripts/syntax-check.mjs": "4d417ccb9c02353b0816b4e3202f5e6395b0ffd6f3dfb5f703033de610bf40db",
+    "scripts/lib/source_art_paths.py": "59f153a5e6b574fe222024a78be727a6315eccaeaa20fc827b3b3824a78a7ab9",
+    "tests/test_source_art_paths.py": "74b1a11db2057f954aeb9f112c3e073dcb626e2384826b60c87b3be71cb2170c",
+    "tests/source-art-paths.test.mjs": "e05746f23ad74a08081b3e4dc0f5e95b4505d9afdf4c0c9375b0a10ab8cf33b4"
+  },
+  "reused112FocusedByExactSourceHash": true,
+  "reusedNoGitSixByExactSourceHash": true,
+  "scope": "Fresh gathered syntax and build plus source-art wrapper. Prior112focused/copy-six and firstattempt source-art wrapper reused only after exact identities. Serial syntax deadline300s, build60s; prior60s syntax timeout and separately confirmed closure retained. No original result rewritten. No timing, release gate, production or physical-device certification.",
+  "commands": [
+    {
+      "name": "all-syntax",
+      "command": {
+        "program": "C:\\Program Files\\nodejs\\node.exe",
+        "args": [
+          "scripts/syntax-check.mjs"
+        ],
+        "cwd": "C:\\Users\\just_\\lesters-arcade-wt\\visual-overhaul-200",
+        "startedAt": "2026-09-30T03:28:16.273Z",
+        "stdout": "Syntax check passed: 1229 JS modules + 145 Python scripts.\n",
+        "stderr": "",
+        "watchdogMs": 300000,
+        "watchdogTriggered": false,
+        "spawnError": null,
+        "treeStop": null,
+        "shutdownCloseDeadlineMs": 20000,
+        "childClosureConfirmed": true,
+        "outputLimitTriggered": false,
+        "spawnedPid": 11596,
+        "exitCode": 0,
+        "signal": null,
+        "closeObservedAt": "2026-09-30T03:29:53.920Z",
+        "finishedAt": "2026-09-30T03:29:53.920Z",
+        "wholeChildWallMs": 97645.2014,
+        "normalExit": true
+      }
+    },
+    {
+      "name": "fresh-build",
+      "command": {
+        "program": "C:\\Program Files\\nodejs\\node.exe",
+        "args": [
+          "build.mjs",
+          "--metafile"
+        ],
+        "cwd": "C:\\Users\\just_\\lesters-arcade-wt\\visual-overhaul-200",
+        "startedAt": "2026-09-30T03:29:53.920Z",
+        "stdout": "\n=== Bundle report ===\nSTACKED initial JS: 576100 B (entry 25966, vendor 496615, shared 53519)\nSource main.js:     440.8 KB\nBundled main.js:    1.11 MB  (+158.8% vs source entry; imports included)\nHMH reboot source:  318.3 KB\nHMH reboot entry:   310.2 KB  (-2.5% vs child source)\nHMH entry cap:      317,647 / 480,000 B; 162,353 B remaining\nChikun source:      48.9 KB\nChikun entry:       46.1 KB  (-5.7% vs child source)\nHMH Pixi vendor:    459.8 KB  (stable preloaded module)\nHMH shared chunks:  245.6 KB (251,487 B) across 29 hoisted chunk(s) game.js imports statically\nHMH initial JS:     770.0 KB (788,505 B) / 1.00 MB raw aggregate, entry + vendor\nHMH initial JS + shared: 1015.6 KB (1,039,992 B) / 1.00 MB raw aggregate, entry + shared chunks + vendor\nHMH headroom:       254.0 KB entry + vendor; 8.4 KB including shared chunks\nReown AppKit (lazy): 1.51 MB on first WalletConnect use (entry 348574 B + 9 static chunk(s) 1232981 B)\nTotal emitted JS:   11.26 MB across 325 files\nOutput dir:         apps/portal/dist/ (plus public discovery pages)\n",
+        "stderr": "\n  apps\\portal\\dist\\chunks\\hmh-animated-roster-LWW4EAQC.js      1.8mb\n  apps\\portal\\dist\\main.js                                     1.1mb\n  apps\\portal\\dist\\chunks\\chunk-MKJKQ74X.js                  801.3kb\n  apps\\portal\\dist\\chunks\\hmh-curated-level-art-ILZ4JAAC.js  726.3kb\n  apps\\portal\\dist\\chunks\\ethers.min-WYT2B7NK.js             385.4kb\n  ...and 194 more output files...\n\nDone in 224ms\n\n  apps\\portal\\dist\\chunks\\hmh-pixi.js  459.8kb\n\nDone in 411ms\n",
+        "watchdogMs": 60000,
+        "watchdogTriggered": false,
+        "spawnError": null,
+        "treeStop": null,
+        "shutdownCloseDeadlineMs": 20000,
+        "childClosureConfirmed": true,
+        "outputLimitTriggered": false,
+        "spawnedPid": 31364,
+        "exitCode": 0,
+        "signal": null,
+        "closeObservedAt": "2026-09-30T03:29:56.157Z",
+        "finishedAt": "2026-09-30T03:29:56.157Z",
+        "wholeChildWallMs": 2236.8870000000024,
+        "normalExit": true
+      }
+    }
+  ],
+  "passed": true,
+  "budgets": {
+    "hmh-reboot": {
+      "files": [
+        {
+          "file": "apps/portal/dist/hmh-reboot/game.js",
+          "bytes": 317647,
+          "sha256": "6034706fd1c3cb54e83405232ae61a466866dc1f098f9575922e2bea6a0795f3"
+        },
+        {
+          "file": "apps/portal/dist/chunks/chunk-2BH2DUJT.js",
+          "bytes": 28251,
+          "sha256": "b46a980688107505e390484d081e257045cab2db851b020bb3b989ddce936828"
+        },
+        {
+          "file": "apps/portal/dist/chunks/chunk-2GEB7OBA.js",
+          "bytes": 4219,
+          "sha256": "70a65bc4522fc364187cf2e23a1673dad5cc19d199e4c823fecd18f976813d9f"
+        },
+        {
+          "file": "apps/portal/dist/chunks/chunk-2WGYLO4P.js",
+          "bytes": 655,
+          "sha256": "fe5865361e105c752963ffcabdae4f585e39639d8f0a1167a65ce795bfd94776"
+        },
+        {
+          "file": "apps/portal/dist/chunks/chunk-35BRWECB.js",
+          "bytes": 3356,
+          "sha256": "902447d40ec443e1cdfad763ac26008351d9e6b5f949b2a1c887c0a50173ada9"
+        },
+        {
+          "file": "apps/portal/dist/chunks/chunk-54K7V4IX.js",
+          "bytes": 20539,
+          "sha256": "a18ce9bf1ff8c9f06e8b462eea3f0260bbbdfce6d3f6ca102ccd37413eb2b087"
+        },
+        {
+          "file": "apps/portal/dist/chunks/chunk-6DDQFTGU.js",
+          "bytes": 5708,
+          "sha256": "86ee5aaba5bc334fcdef63133cedea9b897a4dc5c73e8896e6f95160c6a1be47"
+        },
+        {
+          "file": "apps/portal/dist/chunks/chunk-74RWV2R2.js",
+          "bytes": 1275,
+          "sha256": "0e58e1f13487f162562313478c6ebcfd099a69049a8bf6ade3ef5c654f757f58"
+        },
+        {
+          "file": "apps/portal/dist/chunks/chunk-74ZJNIIV.js",
+          "bytes": 35584,
+          "sha256": "d6a7ec2d2df9af1c7f3c5f2d3e796a2010ed5b371810208cb07432c2b225845e"
+        },
+        {
+          "file": "apps/portal/dist/chunks/chunk-B2364FTF.js",
+          "bytes": 12061,
+          "sha256": "757de212e9fddbcb84d2423308a3168473d81822d1c52d145cd32354cb9e00cd"
+        },
+        {
+          "file": "apps/portal/dist/chunks/chunk-EKYRYSFG.js",
+          "bytes": 8142,
+          "sha256": "80a236e8f7ba1e0c0a27ce41f3a79030a0dce726377f9a722b77dff47f39dac8"
+        },
+        {
+          "file": "apps/portal/dist/chunks/chunk-ESDQIMBA.js",
+          "bytes": 965,
+          "sha256": "b8b27a8e8a339ff957517d24f55d5e43e19257a3d84afa800dcb6a4a36335ae6"
+        },
+        {
+          "file": "apps/portal/dist/chunks/chunk-FJSVRC2T.js",
+          "bytes": 3368,
+          "sha256": "9db85111ba86baf3c2c56720931ce6de6b09fdc11dfff016afa2da664970923c"
+        },
+        {
+          "file": "apps/portal/dist/chunks/chunk-HRT7TI5W.js",
+          "bytes": 1590,
+          "sha256": "4024f32d830d0a10cab912a25fb48fc25e7e66cce3cb4e6bd4e11bd2047397ee"
+        },
+        {
+          "file": "apps/portal/dist/chunks/chunk-IZH6NDGR.js",
+          "bytes": 8119,
+          "sha256": "717cc54567e4da4278370a10d392edd2f55566d58cf010a0bd909a3addae26d5"
+        },
+        {
+          "file": "apps/portal/dist/chunks/chunk-JW3WZOLP.js",
+          "bytes": 481,
+          "sha256": "1408f3bf522dca3a38a8506c8bed7426ce280669de684ec106feddc04993357b"
+        },
+        {
+          "file": "apps/portal/dist/chunks/chunk-KIEFYNSW.js",
+          "bytes": 1478,
+          "sha256": "6c1187374a3f5b26b4f25f12a9aac90068325e6cf7ef8f3a3154d52b9d90d136"
+        },
+        {
+          "file": "apps/portal/dist/chunks/chunk-MMSI7XOT.js",
+          "bytes": 10801,
+          "sha256": "628c514e29dfeaf75b2d2139eca21c246025185d4bf3cb2222897eaf3a5a2770"
+        },
+        {
+          "file": "apps/portal/dist/chunks/chunk-NSYVAXWR.js",
+          "bytes": 13104,
+          "sha256": "a8ec51079fd382283f7a361f482ce8ea6e36eacc2e97ff38bdff86338779d315"
+        },
+        {
+          "file": "apps/portal/dist/chunks/chunk-OQWCW7H2.js",
+          "bytes": 524,
+          "sha256": "d63df405a33525fdfc80c5840831f92e1a192e401fe482f6a13bb537fb270ee6"
+        },
+        {
+          "file": "apps/portal/dist/chunks/chunk-PBEL7OZC.js",
+          "bytes": 1800,
+          "sha256": "e02b932100995c4ed0eade95ef56e213187ea60f7719bc4db3f3e13b3ef3ef18"
+        },
+        {
+          "file": "apps/portal/dist/chunks/chunk-QYXQOKRI.js",
+          "bytes": 235,
+          "sha256": "a40d7c3ec735b2c20abaa218335ad1b4dce39965152eb352d0a5136f324bd3b2"
+        },
+        {
+          "file": "apps/portal/dist/chunks/chunk-QZQQZ67Q.js",
+          "bytes": 24953,
+          "sha256": "cc5ac6a3fb21aa7a9dc7a24975ccd630c96430beaf305425d477403417de791d"
+        },
+        {
+          "file": "apps/portal/dist/chunks/chunk-TH556TFN.js",
+          "bytes": 4375,
+          "sha256": "b98e4b917d2fa6e05401cab2f934e57b7e7969b6c60d7db59a08a0bbb9463ae5"
+        },
+        {
+          "file": "apps/portal/dist/chunks/chunk-UJHJCWV2.js",
+          "bytes": 4574,
+          "sha256": "5858b9b450a5ba4d382bb385423239c040f7480386c850addd930620265b0332"
+        },
+        {
+          "file": "apps/portal/dist/chunks/chunk-V6Q2KNOM.js",
+          "bytes": 3416,
+          "sha256": "1562970a6389619131513d12c918168ecc54c5acb83b588413019b7ab311a797"
+        },
+        {
+          "file": "apps/portal/dist/chunks/chunk-VDJRWC6L.js",
+          "bytes": 1904,
+          "sha256": "b9e0b429ca20baee726d10c1939d6f4d3ea2cc8ebc571a462521ce1df75792ff"
+        },
+        {
+          "file": "apps/portal/dist/chunks/chunk-WNDYD35G.js",
+          "bytes": 2376,
+          "sha256": "56836055d2a51efe654caf08e95b85e600979fcbf209eefb90415a30d39d0023"
+        },
+        {
+          "file": "apps/portal/dist/chunks/chunk-YKUM7VFD.js",
+          "bytes": 42284,
+          "sha256": "fa12b6d0b7e7346b6515c4b5d64eebffaac4a12cb73535dcce4a63c395278b82"
+        },
+        {
+          "file": "apps/portal/dist/chunks/chunk-ZZUUWCQ6.js",
+          "bytes": 5350,
+          "sha256": "cd49e6283a95a6da18e97138e31d4e95c3050817823a3a87cf748d0ea2795f8f"
+        },
+        {
+          "file": "apps/portal/dist/chunks/hmh-pixi.js",
+          "bytes": 470858,
+          "sha256": "f2fb9550f7afe643b73cc4c21eb0063f8c8f8d239b411cf33e4353e5b4930c66"
+        }
+      ],
+      "totalBytes": 1039992,
+      "capBytes": 1048576,
+      "headroomBytes": 8584
+    },
+    "stacked": {
+      "files": [
+        {
+          "file": "apps/portal/dist/stacked/game.js",
+          "bytes": 25966,
+          "sha256": "a2d6d5e9cd2a8ad3dc9a70d699c7cf0d56a606eb0a8e1416ec16835e7bc7a03d"
+        },
+        {
+          "file": "apps/portal/dist/chunks/chunk-2WGYLO4P.js",
+          "bytes": 655,
+          "sha256": "fe5865361e105c752963ffcabdae4f585e39639d8f0a1167a65ce795bfd94776"
+        },
+        {
+          "file": "apps/portal/dist/chunks/chunk-7Z3MKT4T.js",
+          "bytes": 7859,
+          "sha256": "a706e9a16fd93e22cf9a4c3101837669926361d02d6c70cd722f81310c9f204b"
+        },
+        {
+          "file": "apps/portal/dist/chunks/chunk-DYBTERKK.js",
+          "bytes": 12714,
+          "sha256": "7fed14e18bd73c121d602f3f331929b85489e533a1e6541cacf032f8b53d3176"
+        },
+        {
+          "file": "apps/portal/dist/chunks/chunk-N53BCL72.js",
+          "bytes": 2605,
+          "sha256": "ac20fc0af4052d9370a3cb5cba303399a2f0877306e17ab7dd8dd10ad4990a42"
+        },
+        {
+          "file": "apps/portal/dist/chunks/chunk-Q5BBAG26.js",
+          "bytes": 3926,
+          "sha256": "38f2f066d499163c6ba0ef6b6ea49d9c81614bfec5d709b134301c9c97def98d"
+        },
+        {
+          "file": "apps/portal/dist/chunks/chunk-SFMOJRWV.js",
+          "bytes": 825,
+          "sha256": "c3ed249a216df94b7fa688e857640e04962af4acb1c2403635851287df2df0f5"
+        },
+        {
+          "file": "apps/portal/dist/chunks/chunk-YH74QWYW.js",
+          "bytes": 1928,
+          "sha256": "6bbd0214c84876118404897dccedb5f3e03588f9cf5428c76788d53ed0d18076"
+        },
+        {
+          "file": "apps/portal/dist/chunks/chunk-Z6AGTUFW.js",
+          "bytes": 23007,
+          "sha256": "b4d6f116bb9c92f93537f2765c9bb7214978f31a3a3cfe1e50d3e82be14df924"
+        },
+        {
+          "file": "apps/portal/dist/stacked/stacked-pixi-v1.js",
+          "bytes": 496615,
+          "sha256": "6c9a15983644f0883e50c0723874e3e6e88f8cd8968f881253d15143c1732db3"
+        }
+      ],
+      "totalBytes": 576100,
+      "capBytes": 607000,
+      "headroomBytes": 30900
+    }
+  },
+  "actualBrowserServedBuiltFiles": [
+    {
+      "file": "apps/portal/dist/stacked/verify-worker.js",
+      "bytes": 2077,
+      "sha256": "bb21d658841692e13811d246937b0f7f4e322291f4102ee7584de97312534738",
+      "exactPreviouslyObservedBrowserBytes": true
+    },
+    {
+      "file": "apps/portal/dist/chunks/chunk-Z6AGTUFW.js",
+      "bytes": 23007,
+      "sha256": "b4d6f116bb9c92f93537f2765c9bb7214978f31a3a3cfe1e50d3e82be14df924",
+      "exactPreviouslyObservedBrowserBytes": true
+    },
+    {
+      "file": "apps/portal/dist/chunks/chunk-N53BCL72.js",
+      "bytes": 2605,
+      "sha256": "ac20fc0af4052d9370a3cb5cba303399a2f0877306e17ab7dd8dd10ad4990a42",
+      "exactPreviouslyObservedBrowserBytes": true
+    },
+    {
+      "file": "apps/portal/dist/chunks/chunk-2WGYLO4P.js",
+      "bytes": 655,
+      "sha256": "fe5865361e105c752963ffcabdae4f585e39639d8f0a1167a65ce795bfd94776",
+      "exactPreviouslyObservedBrowserBytes": true
+    },
+    {
+      "file": "apps/portal/dist/main.js",
+      "bytes": 1168126,
+      "sha256": "e7510cb3c15eeae300830f3bbd1077c8bb29b781635d7189c2cd361412dd76d9",
+      "exactPreviouslyObservedBrowserBytes": true
+    },
+    {
+      "file": "apps/portal/dist/chunks/chunk-GAYH257E.js",
+      "bytes": 19559,
+      "sha256": "2f253c04dc130792e42fb0c4e64517da819deb740aea2231625f6e297b4d50a0",
+      "exactPreviouslyObservedBrowserBytes": true
+    },
+    {
+      "file": "apps/portal/dist/chunks/chunk-OA7PQIDS.js",
+      "bytes": 7562,
+      "sha256": "76e882c7dd3fd8850b150147c84ae68e584a96c7ad7cd5996d58a4fa6eeb3dfc",
+      "exactPreviouslyObservedBrowserBytes": true
+    },
+    {
+      "file": "apps/portal/dist/chunks/chunk-FDLBFADV.js",
+      "bytes": 3066,
+      "sha256": "79999f9f3339a08ed3a370ebd21ddfbc136effd2bd76bd6dbffb08bc4995e111",
+      "exactPreviouslyObservedBrowserBytes": true
+    },
+    {
+      "file": "apps/portal/dist/chunks/chunk-YFNAS4ZQ.js",
+      "bytes": 3396,
+      "sha256": "5222309515ecb7048637d5e5aea3830b88b49688273b03b92a0c163aafc0d914",
+      "exactPreviouslyObservedBrowserBytes": true
+    },
+    {
+      "file": "apps/portal/dist/chunks/chunk-6NSARBFJ.js",
+      "bytes": 13196,
+      "sha256": "7822c781accde52af28dbcca4ca3f4b42e7334e93423c2367d8e4e183e90e701",
+      "exactPreviouslyObservedBrowserBytes": true
+    },
+    {
+      "file": "apps/portal/dist/chunks/chunk-LNMPA4Q7.js",
+      "bytes": 20858,
+      "sha256": "a2a4fdf77a1d6b613b324acff2c1cd813acd148034f0913d74abf2b72de935cb",
+      "exactPreviouslyObservedBrowserBytes": true
+    },
+    {
+      "file": "apps/portal/dist/chunks/chunk-RGQGHKA6.js",
+      "bytes": 880,
+      "sha256": "22c04604e5011c0e193b3ad8f2d73e9602d3bede2a8b4e8f3d405700a8dfeaf7",
+      "exactPreviouslyObservedBrowserBytes": true
+    },
+    {
+      "file": "apps/portal/dist/chunks/chunk-MKJKQ74X.js",
+      "bytes": 820532,
+      "sha256": "3b6380592da398df187dcc4430f98d73bd92af8c2d61afdb11b5a404bde25698",
+      "exactPreviouslyObservedBrowserBytes": true
+    },
+    {
+      "file": "apps/portal/dist/chunks/chunk-E5VFVWGR.js",
+      "bytes": 1212,
+      "sha256": "95e4994e29f5be216517152b9275515cf9aed247900ca1a2af28bef580c33fdd",
+      "exactPreviouslyObservedBrowserBytes": true
+    },
+    {
+      "file": "apps/portal/dist/chunks/chunk-KV7BALVC.js",
+      "bytes": 1783,
+      "sha256": "596aca66ac87a3078cccfc532b72785a479404d5247807f7dabd2e36da098f86",
+      "exactPreviouslyObservedBrowserBytes": true
+    },
+    {
+      "file": "apps/portal/dist/chunks/chunk-TWFI2P4Z.js",
+      "bytes": 51,
+      "sha256": "2e77548aca68682462975375846cc557ca941a1b06085447072cb5fe75d777eb",
+      "exactPreviouslyObservedBrowserBytes": true
+    },
+    {
+      "file": "apps/portal/dist/chunks/chunk-XCXMAQ5X.js",
+      "bytes": 2460,
+      "sha256": "55713b0c6ff26a3ff172c4b53078291e94b8033573a06bab2ed07c33b001130c",
+      "exactPreviouslyObservedBrowserBytes": true
+    },
+    {
+      "file": "apps/portal/dist/chunks/chunk-46BBKS6U.js",
+      "bytes": 278,
+      "sha256": "dc6a20040752306b2687279ab9542a18cbce6dbbb30d57316a60b376701a81f8",
+      "exactPreviouslyObservedBrowserBytes": true
+    },
+    {
+      "file": "apps/portal/dist/chunks/chunk-K2MJE4EF.js",
+      "bytes": 4792,
+      "sha256": "dab9e36b3f5fbbb50c63533ee2d1c3b0f686e926aa57315348226aefd66558c8",
+      "exactPreviouslyObservedBrowserBytes": true
+    },
+    {
+      "file": "apps/portal/dist/chunks/chunk-RZZSZ2EG.js",
+      "bytes": 1880,
+      "sha256": "c189e8544abbf04b20324096a93a3980ad99a0583557779b80262aaa0983cb79",
+      "exactPreviouslyObservedBrowserBytes": true
+    },
+    {
+      "file": "apps/portal/dist/chunks/chunk-Q5HVGOEA.js",
+      "bytes": 421,
+      "sha256": "838bc1e73423856899f461a6384f0c933220d0dc1c7c5c5a4148e12de009225a",
+      "exactPreviouslyObservedBrowserBytes": true
+    },
+    {
+      "file": "apps/portal/dist/chunks/chunk-X6LY72AW.js",
+      "bytes": 10055,
+      "sha256": "7e3ae17b04d70ce2288a9afcf43be5ed94ce4e8a3634d1c64b3e7830d11e0edd",
+      "exactPreviouslyObservedBrowserBytes": true
+    },
+    {
+      "file": "apps/portal/dist/chunks/chunk-QZQQZ67Q.js",
+      "bytes": 24953,
+      "sha256": "cc5ac6a3fb21aa7a9dc7a24975ccd630c96430beaf305425d477403417de791d",
+      "exactPreviouslyObservedBrowserBytes": true
+    },
+    {
+      "file": "apps/portal/dist/chunks/chunk-35BRWECB.js",
+      "bytes": 3356,
+      "sha256": "902447d40ec443e1cdfad763ac26008351d9e6b5f949b2a1c887c0a50173ada9",
+      "exactPreviouslyObservedBrowserBytes": true
+    },
+    {
+      "file": "apps/portal/dist/chunks/chunk-MMSI7XOT.js",
+      "bytes": 10801,
+      "sha256": "628c514e29dfeaf75b2d2139eca21c246025185d4bf3cb2222897eaf3a5a2770",
+      "exactPreviouslyObservedBrowserBytes": true
+    },
+    {
+      "file": "apps/portal/dist/chunks/chunk-PBEL7OZC.js",
+      "bytes": 1800,
+      "sha256": "e02b932100995c4ed0eade95ef56e213187ea60f7719bc4db3f3e13b3ef3ef18",
+      "exactPreviouslyObservedBrowserBytes": true
+    },
+    {
+      "file": "apps/portal/dist/chunks/chunk-74RWV2R2.js",
+      "bytes": 1275,
+      "sha256": "0e58e1f13487f162562313478c6ebcfd099a69049a8bf6ade3ef5c654f757f58",
+      "exactPreviouslyObservedBrowserBytes": true
+    },
+    {
+      "file": "apps/portal/dist/chunks/chunk-PEFPTLR3.js",
+      "bytes": 11450,
+      "sha256": "0481001670285460d739a9aa8432f7cf13142f2a67927768b9a961074f5b4d84",
+      "exactPreviouslyObservedBrowserBytes": true
+    },
+    {
+      "file": "apps/portal/dist/chunks/chunk-NUFRM6SI.js",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exactPreviouslyObservedBrowserBytes": true
+    },
+    {
+      "file": "apps/portal/dist/chunks/chunk-ADAJ2ZUC.js",
+      "bytes": 47615,
+      "sha256": "0ca55996163a6ebb6aee359efee6725013157d5e40c3e1dd2a5510d3071e22f3",
+      "exactPreviouslyObservedBrowserBytes": true
+    },
+    {
+      "file": "apps/portal/dist/chunks/chunk-STGVPYVL.js",
+      "bytes": 7381,
+      "sha256": "8d789022f6df5becc998d6d3a0427cb689345cc953956e4f5fa83a60938e3ac9",
+      "exactPreviouslyObservedBrowserBytes": true
+    },
+    {
+      "file": "apps/portal/dist/chunks/chunk-Q5BBAG26.js",
+      "bytes": 3926,
+      "sha256": "38f2f066d499163c6ba0ef6b6ea49d9c81614bfec5d709b134301c9c97def98d",
+      "exactPreviouslyObservedBrowserBytes": true
+    },
+    {
+      "file": "apps/portal/dist/chunks/chunk-YH74QWYW.js",
+      "bytes": 1928,
+      "sha256": "6bbd0214c84876118404897dccedb5f3e03588f9cf5428c76788d53ed0d18076",
+      "exactPreviouslyObservedBrowserBytes": true
+    },
+    {
+      "file": "apps/portal/dist/chunks/chunk-7Z3MKT4T.js",
+      "bytes": 7859,
+      "sha256": "a706e9a16fd93e22cf9a4c3101837669926361d02d6c70cd722f81310c9f204b",
+      "exactPreviouslyObservedBrowserBytes": true
+    },
+    {
+      "file": "apps/portal/dist/chunks/ranked-settlement-OVEBVFDU.js",
+      "bytes": 16017,
+      "sha256": "9423178f768f33a0e93c5ffbf1a3cc99c1afdf81d24312e96fe475d07f1ecd64",
+      "exactPreviouslyObservedBrowserBytes": true
+    },
+    {
+      "file": "apps/portal/dist/chunks/unlockables-store-3IEKELEM.js",
+      "bytes": 5645,
+      "sha256": "2ea0b7e73e046ff6b5c19265b99a9ea31ac7e298ed9a11566d65c1f6124c0c7e",
+      "exactPreviouslyObservedBrowserBytes": true
+    },
+    {
+      "file": "apps/portal/dist/chunks/chunk-TDPHQMEG.js",
+      "bytes": 8903,
+      "sha256": "791188af75c71d547a19630952c35344c9445222632a66a4ba98307a072aca18",
+      "exactPreviouslyObservedBrowserBytes": true
+    },
+    {
+      "file": "apps/portal/dist/chunks/chunk-FDGOJUNH.js",
+      "bytes": 16080,
+      "sha256": "3078dcfe5af58edafa2f742ecb344de0a1e9a74651ea7bbfbddbdd6a4786ae93",
+      "exactPreviouslyObservedBrowserBytes": true
+    },
+    {
+      "file": "apps/portal/dist/chunks/stacked-host-4BZFM35E.js",
+      "bytes": 7899,
+      "sha256": "820bba4b99b66806a9d985139c1e7ac254fda479ea4c79938965dc775bb932fa",
+      "exactPreviouslyObservedBrowserBytes": true
+    },
+    {
+      "file": "apps/portal/dist/chunks/chunk-DYBTERKK.js",
+      "bytes": 12714,
+      "sha256": "7fed14e18bd73c121d602f3f331929b85489e533a1e6541cacf032f8b53d3176",
+      "exactPreviouslyObservedBrowserBytes": true
+    },
+    {
+      "file": "apps/portal/dist/stacked/stacked-pixi-v1.js",
+      "bytes": 496615,
+      "sha256": "6c9a15983644f0883e50c0723874e3e6e88f8cd8968f881253d15143c1732db3",
+      "exactPreviouslyObservedBrowserBytes": true
+    },
+    {
+      "file": "apps/portal/dist/stacked/game.js",
+      "bytes": 25966,
+      "sha256": "a2d6d5e9cd2a8ad3dc9a70d699c7cf0d56a606eb0a8e1416ec16835e7bc7a03d",
+      "exactPreviouslyObservedBrowserBytes": true
+    },
+    {
+      "file": "apps/portal/dist/chunks/chunk-SFMOJRWV.js",
+      "bytes": 825,
+      "sha256": "c3ed249a216df94b7fa688e857640e04962af4acb1c2403635851287df2df0f5",
+      "exactPreviouslyObservedBrowserBytes": true
+    },
+    {
+      "file": "apps/portal/dist/chunks/renderer-OGPVOOGK.js",
+      "bytes": 35414,
+      "sha256": "48ecf74e9294e5c836e362232c7305a1c5ce58ab31bfc5bd7d082f53715ad659",
+      "exactPreviouslyObservedBrowserBytes": true
+    },
+    {
+      "file": "apps/portal/dist/chunks/visualizer-preview-IANHRSV3.js",
+      "bytes": 1403,
+      "sha256": "88e797d99e6c45ac6ced4b2edb0fecc870eea47f87563d69ded0797f14b57a80",
+      "exactPreviouslyObservedBrowserBytes": true
+    },
+    {
+      "file": "apps/portal/dist/chunks/haptics-WRI6IOH4.js",
+      "bytes": 1332,
+      "sha256": "840c1fc4c99ac2bb1009921443f34fcf9e0b4f0a00f07c59e75b606b23f043e1",
+      "exactPreviouslyObservedBrowserBytes": true
+    },
+    {
+      "file": "apps/portal/dist/chunks/sound-effects-RCUTOWUI.js",
+      "bytes": 4409,
+      "sha256": "aeaed058f5d4557bdc44daf0193a0b9217dc5293191702cdef2312be908a8cba",
+      "exactPreviouslyObservedBrowserBytes": true
+    },
+    {
+      "file": "apps/portal/dist/chunks/chunk-IIQTF2BL.js",
+      "bytes": 1712,
+      "sha256": "97246b64c68eeed75087677932fc799e7f15279d2d2f4ee6a5c37452138cbb59",
+      "exactPreviouslyObservedBrowserBytes": true
+    },
+    {
+      "file": "apps/portal/dist/chunks/chunk-WSLA44S3.js",
+      "bytes": 4293,
+      "sha256": "9e7b430b5ec8f965ba85509f981ffd6021041e92ecea33cc44be89d0ae494e0c",
+      "exactPreviouslyObservedBrowserBytes": true
+    },
+    {
+      "file": "apps/portal/dist/chunks/chunk-5J364X2K.js",
+      "bytes": 14139,
+      "sha256": "96acdc45ec04265b5d9d66fff083f2d16a54c90e166c30b5827e438feb448097",
+      "exactPreviouslyObservedBrowserBytes": true
+    }
+  ],
+  "allPreviouslyObservedBuiltBrowserBytesExact": true,
+  "finishedAt": "2026-09-30T03:29:56.212Z",
+  "markerRetainedForUnconfirmedShutdown": false,
+  "markerReleased": true
+}

@@ -176,3 +176,99 @@ On parent 957f0f26, the unchanged cockpit factory now joins the existing awaited
 The owned serialized local gate passes 95 focused tests, repository syntax, fresh build, three actual delayed/failed-module cases, four existing cockpit viewports, four captured-state/evidence cases, four world-text recovery cases and all 12 standard visual scenes. Six new tests also pass in a source copy without .git/Git on PATH and only the declared Acorn parser. Full-resolution desktop/phone UI evidence inspected. Total initial JS is 1,039,992 B, 7,452 B lower, with 8,584 B headroom; static graph and pinned vendor counts reconcile. Eleven protected source hashes are unchanged during the gate.
 
 [C1 scope/receipts](slices/COCKPIT-C1.md). Source/harness and independent final actual-receipt reviews pass: protected sources, emitted static graph/vendor, actual held chunk, screenshot framing and scoped correctness/visual results agree. Local candidate only: no integration merge/release/phone certification, and the 2.0 owner art, physical performance, greybox and specific promotion gates remain open. The S0d genuine-Hold attempt separately ended at 72,520 ticks; shorter-run decoder/replay/verifier acceptance does not satisfy the longest-duration gate. A4 native black-pixel repair separately passes its narrow technical checks but its actual art remains FAIL.
+
+
+## Saved parallel checkpoints and source-art A0 — 2026-09-29
+
+The adverse S0d short terminal fixture and single S0c CPU profile are gathered at
+e1065b45. The genuine-Hold block-out at72,520ticks remains an unsuccessful
+longest-duration attempt; the instrumented254.1ms profile is diagnostic, separate
+from timing acceptance. No maximum-encoding or productionCPU/global S0 closure.
+
+A0 b1921aad implements the explicit-root, canonical-path, SHA/byte-pinned Python
+authoring input boundary. The initial missing-helper RED,17fixture GREEN and exact
+two-file empty-PATH/no-.git/no-node_modules17-case proof are preserved. The normal
+Node wrapper and independent source-copy run repeat those cases, so counts are
+not additive. Source/path adversarial review passes the stated scope. Real Windows
+junctions, mutation/deletion/replacement and failure-time identity are covered.
+No actual archive/model is accessed by these checks; no pipeline migration,
+native inspection, copy or original removal is claimed. Content checks are not a
+secrets classifier or concurrent-writer/file-object lock. Repository-size
+compliance remains open. See slices/SOURCE-ART-BOUNDARY.md.
+
+The minimal STACKED transport copy is frozen at2d3ff182 and gathered at63ed8c78.
+Actual112focused and6source-copy checks pass; all54source/test/fixture identities
+are checked at gather before prior results are reused. Seven fresh samples per
+phase/variant give complete verification gains39.7–44.7ms with maximum195.2793ms,
+unchanged exact evidence/result and overlapping replay-control timing. Independent
+source/saved-record reviews and root raw-record review accept the local benefit.
+Only one indexed byte-copy changes; native canonical validation, caps, errors,
+rules, RNG, versions and corpus remain unchanged. See slices/STACKED-S0E-COPY.md.
+
+Actual Chrome native decoding and the real freshly built Worker return the exact
+old tuple. Desktop and XSMax-sized414x896DPR3 Guest/Free boot, controls, native exit
+and observed process cleanup pass. The first build witness guessed the wrong HMH
+vendor name; the next browser witness flagged native song cancellation. Both
+failures remain preserved. Final instrumentation forwards native media loading
+unchanged, retains all raw failed requests, and separates only HTTP200-served
+playlist ERR_ABORTED with observed native song change/owned closure. Complete
+input/dependency/output custody remains unchanged across the reused build/browser.
+Canvas containment and horizontal overflow pass; full-page phone screenshots do
+not certify whole touch-control framing, physical FPS/audio or Ranked end-to-end.
+
+The first gathered syntax pass exceeded a60s watchdog. Exact-tree shutdown returned
+255 with one child unsupported; the owned marker was retained. Later read-only
+checks confirmed all three recorded PIDs and their descendants absent, then released
+only that marker. Original failure/receipt are immutable. A separately bounded
+300s serial syntax window and fresh build follow; this is not replay timing or
+release certification. The registration conflict retained the exact union,
+including one pre-existing repeated mobile-performance entry. Failed one-time list
+readers changed no source; a corrected Counter comparison proved the union. A
+progress-note write initially failed on Windows default text encoding, after the
+code was safely committed; this UTF-8 follow-up corrects the note.
+
+Art A5 f4327da2 and boss R2b0365e00e remain isolated failed experiments. A5 removes
+added foundation caps and narrows shadows, but repeated leaf plates, pale ground
+and a ghosted roof fail the actual art bar. Existing authored tree55 is a closer
+prototype input; no A6 bake, production art or palette approval occurred. R2b fails
+the unchanged0.5mm body correspondence at12.67mm and lacks a costume tangent.
+Saved-byte diagnosis narrows the issue to21reference points; actual source
+topology/modifier inspection is prepared but not yet run. No pack retry, final
+GREEN/build/browser or runtime admission is claimed. Automatic approval review
+rejected the proposed Desktop failure-archive copy before execution; the exact
+owner question remains pending and originals remain preserved.
+
+Three helper agents stopped at the account limit after saving their work. Commits,
+unfinished optimizer code, failed assets, evidence and plans were checked on disk;
+none was discarded. Root continued the authorized checks and saved the completed
+slices. No integration merge/push, version bump, full release gate, deployment,
+promotion or physical device acceptance occurred. Art, physical performance,
+playable ten-area greybox and specific-release owner checkpoints remain open.
+
+
+### Final gathered proof and native diagnosis
+
+The extended gathered gate passes: all1,229listed JavaScript syntax checks
+(1,228distinct plus the preserved existing duplicate) and145Python checks in
+97.645s, followed by one fresh build in2.237s. Initial JS is HMH1,039,992B with
+8,584B headroom and STACKED576,100B with30,900B headroom. The initial60s timeout
+and failed tree-stop remain separately preserved with later exactPID/descendant
+closure confirmation. All54prior focused-test/source/fixture identities match
+at gather;112focused and6source-copy results are reused, not falsely counted as
+reruns. Protected gather sources remain unchanged. All50actual browser-served
+built files and all118actual served resources match the gathered root byte-for-byte,
+so the earlier Chrome compatibility proof applies without another browser run.
+No full release gate or production/physical acceptance is implied. See receipts/
+root-stacked-gather-passed.json and root-stacked-browser-resource-equivalence.json.
+
+The separately bounded read-only native boss inspection completed in one window
+and is frozen at isolatedb764425f. Recreated evaluated mesh matches the frozen
+first-idle cloud point-for-point. Actual preserveVolume=false. The21outlier IDs
+exactly equal all21vertices unused by both polygons and rendered loop triangles;
+no visible surface is represented by those points. The coat has45n-gons, consistent
+with the missing-tangent warning. Original source, elevenhelpers and failedasset
+identities are unchanged. The original failure is retained; no corrected export
+or new runtime/clip/fleet/art acceptance is claimed. Next: separately test a
+rendered-triangle witness while retaining original all-point diagnostics, and
+triangulate only the export copy without changing tolerance or surface/UV/weights.
+That correction still needs independent review and a new bounded pack window.
