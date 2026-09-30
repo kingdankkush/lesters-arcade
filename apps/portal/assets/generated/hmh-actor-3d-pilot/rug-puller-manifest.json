@@ -1,0 +1,130 @@
+{
+  "schema": 1,
+  "classification": "unapproved-runtime-character-pilot",
+  "activeRuntimeIntegration": false,
+  "cameraDegreesFromVertical": 55,
+  "groundPivot": "existing-world-foot-position",
+  "simulationAuthority": "none",
+  "actors": {
+    "rug-puller": {
+      "file": "rug-puller.glb",
+      "sha256": "543248a842d00296ca4e5ab407ede5883ceef268439d76f1ece5a349cebf71a8",
+      "sourceSha256": "9d545f3405ba92561088b256fd5ffc33b81849f99ef4377f9216ee7cb42d3d17",
+      "sourceBytes": 16023731,
+      "sourceTriangles": 51902,
+      "requiredClips": [
+        "idle",
+        "run",
+        "tell",
+        "attack",
+        "hit",
+        "death"
+      ],
+      "inspection": {
+        "bytes": 2337664,
+        "vertices": 10039,
+        "triangles": 9588,
+        "skinnedMeshes": 2,
+        "joints": 19,
+        "clips": [
+          {
+            "name": "attack",
+            "durationSeconds": 1,
+            "channels": 63
+          },
+          {
+            "name": "death",
+            "durationSeconds": 1,
+            "channels": 63
+          },
+          {
+            "name": "hit",
+            "durationSeconds": 1,
+            "channels": 63
+          },
+          {
+            "name": "idle",
+            "durationSeconds": 1,
+            "channels": 63
+          },
+          {
+            "name": "run",
+            "durationSeconds": 1,
+            "channels": 63
+          },
+          {
+            "name": "tell",
+            "durationSeconds": 1,
+            "channels": 63
+          }
+        ],
+        "bounds": {
+          "min": [
+            -0.37863120436668396,
+            0.0005273352144286036,
+            -0.37272965908050537
+          ],
+          "max": [
+            0.45995500683784485,
+            1.7793420553207397,
+            0.2434581071138382
+          ]
+        },
+        "embeddedImages": 7,
+        "images": [
+          {
+            "name": "costume-emission",
+            "format": "png",
+            "width": 512,
+            "height": 512,
+            "bytes": 26085
+          },
+          {
+            "name": "costume-normal",
+            "format": "png",
+            "width": 512,
+            "height": 512,
+            "bytes": 20410
+          },
+          {
+            "name": "costume-baseColor",
+            "format": "png",
+            "width": 512,
+            "height": 512,
+            "bytes": 38757
+          },
+          {
+            "name": "costume-metallicRoughness",
+            "format": "png",
+            "width": 512,
+            "height": 512,
+            "bytes": 38613
+          },
+          {
+            "name": "female+combatant+3d+model_normal",
+            "format": "png",
+            "width": 512,
+            "height": 512,
+            "bytes": 315309
+          },
+          {
+            "name": "female+combatant+3d+model_basecolor",
+            "format": "png",
+            "width": 512,
+            "height": 512,
+            "bytes": 543653
+          },
+          {
+            "name": "female+combatant+3d+model_rm",
+            "format": "png",
+            "width": 512,
+            "height": 512,
+            "bytes": 433496
+          }
+        ],
+        "textureBytesRgba8": 7340032,
+        "textureBytesRgba8Mipmaps": 9786700
+      }
+    }
+  }
+}

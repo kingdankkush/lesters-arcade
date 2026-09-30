@@ -1,0 +1,18 @@
+{
+  "schema": 1,
+  "actorId": "rug-puller",
+  "archivedAt": "2026-09-30T22:58:09.140774+00:00",
+  "repoPath": "apps/hmh-reboot/assets/source/models/native-enemies/rug-puller",
+  "archiveRoot": "C:\\Users\\just_\\Desktop\\Projects\\LestersArcade-Assets\\2.0\\Source\\Legacy-Integration-04366747",
+  "files": {
+    "rug-puller.blend": {
+      "sha256": "9d545f3405ba92561088b256fd5ffc33b81849f99ef4377f9216ee7cb42d3d17",
+      "bytes": 16023731
+    },
+    "source-receipt.json": {
+      "sha256": "c76b8c9b5c28241f6c8e5a82afabf26f8a433b47a10bad45e73f06246c9c1e78",
+      "bytes": 4019
+    }
+  },
+  "resolver": "HMH_SOURCE_ART_ROOT (default: this archive root); the .blend is git-ignored in the repository"
+}
