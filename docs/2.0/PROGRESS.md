@@ -24,18 +24,24 @@ No new map/schema/runtime default is activated. W3c is the next integration slic
 
 Private character checkpoint `1dd82309a` passes actual desktop and phone-framed
 boss facing, animation, state/evidence parity and graphics-context recovery.
-Facing is corrected; narrow/dark material detail remains unaccepted. Matched-pose
-diagnostic helper `ce38d5852` passes 25 plus identical isolated 25; its native
-source/derivative comparison is being prepared, not yet completed.
+Facing is corrected; final model/material quality remains unaccepted. Matched-pose
+checkpoint `11549267e` now passes four original native source/derivative views,
+fixed camera/bone alignment and exact original source restoration. Root and both
+art/character reviewers identify lost forearm/hand and knee/boot detail in the
+optimized body. Regional shape/normal/weight measurement is the next repair step;
+no replacement model, shader equivalence or performance acceptance is claimed.
 
-Private art A14 checkpoint `0ba091364` passes source 10 plus isolated 10 and its
-native/pixel checks after correcting saved-object identity, list aliasing and
-unevaluated imported transforms. Original farmhouse/plant sources are intact.
-The coherent yard study still fails final art quality: orphan wear spur, soft
-ground transitions and a dark hedge. A15 prepares a rigid turn toward the actual
-existing doorway, a logical wear route and trunk gaps. Its native witness remains
-open. No private lane assets are admitted to runtime; do not gather whole lane
-histories. Failed attempts and independent review findings remain preserved.
+Private art A15 checkpoint `4bd9cc3c2` passes source15 plus identical isolated15
+and its native/pixel checks. The real porch/steps now face the approach, the wear
+path connects to them and roots have a clearer foreground gap. Root reviewed both
+originals; uniform ground, row-like low plants and dark porch remain below the
+final bar. A16 prepares a coherent yard pass using the same sources. No private
+lane art is admitted to runtime; failed attempts remain preserved.
+
+Gathered rewards checkpoint `fdbef182c` inventories the exact25 legacy cosmetics
+and a dormant retirement planner. Actual RED10 then GREEN10 + isolated10 and
+independent review pass. Existing heroes/achievements/settings remain preserved;
+no live migration, replacement catalog or Locker is activated.
 
 ## Authority and continuation
 
