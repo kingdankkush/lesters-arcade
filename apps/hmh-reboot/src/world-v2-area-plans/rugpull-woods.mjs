@@ -21,7 +21,7 @@ export function createRugpullWoodsArtPlan(world) {
   plan.ground.base = { surfaceId: `${area.id}-floor`, material: 'forest' };
   // Camp ground reads as trodden earth; the abandoned stores are overgrown.
   plan.ground.zones.push(
-    { id: 'camp-court', material: 'earth', feather: 90, alpha: 0.85, vertices: [point(380, -720), point(1180, -700), point(1420, -300), point(1360, 520), point(760, 640), point(300, 400), point(240, -300)] },
+    { id: 'camp-court', material: 'earth', feather: 90, alpha: 0.55, vertices: [point(380, -720), point(1180, -700), point(1420, -300), point(1360, 520), point(760, 640), point(300, 400), point(240, -300)] },
     { id: 'lookout-bank-top', material: 'dirt', feather: 60, alpha: 0.6, vertices: [point(430, -1420), point(870, -1420), point(870, -1100), point(430, -1100)] },
     { id: 'stores-yard', material: 'marsh', feather: 110, alpha: 0.55, vertices: [point(-1180, 1300), point(-280, 1330), point(-260, 1780), point(-1200, 1760)] },
   );
@@ -29,7 +29,7 @@ export function createRugpullWoodsArtPlan(world) {
   for (const segment of routeSegments) {
     const key = `${segment.a.x},${segment.a.y}|${segment.b.x},${segment.b.y}`;
     if (seen.has(key)) continue; seen.add(key);
-    plan.ground.trails.push({ id: `trail-${plan.ground.trails.length}`, material: 'earth', points: [segment.a, segment.b], width: segment.kind === 'main' ? 58 : 44, halo: 34 });
+    plan.ground.trails.push({ id: `trail-${plan.ground.trails.length}`, material: 'earth', points: [segment.a, segment.b], width: segment.kind === 'main' ? 52 : 42, halo: 16 });
   }
   // Camp structures on the authored solids (HD cards replace the soft 256 px ones).
   solid('supply-tent', 'card', { source: 'b1-13', fit: 'width', tint: 0xe6dcc8 });

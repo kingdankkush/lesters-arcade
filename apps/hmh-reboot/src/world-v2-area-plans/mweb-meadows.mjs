@@ -18,8 +18,8 @@ export function createMwebMeadowsArtPlan(world) {
   // Garden beds and the worn relay court; a gravel apron carries the paved road
   // into the green and out toward the farm road.
   plan.ground.zones.push(
-    { id: 'entry-apron', material: 'gravel', feather: 70, alpha: 0.9, vertices: [point(-900, -120), point(-40, -150), point(120, -60), point(120, 60), point(-40, 150), point(-900, 120)] },
-    { id: 'farm-apron', material: 'gravel', feather: 70, alpha: 0.85, vertices: [point(160, -110), point(900, -130), point(900, 130), point(160, 110)] },
+    { id: 'entry-apron', material: 'gravel', feather: 60, alpha: 0.75, vertices: [point(-900, -95), point(-120, -110), point(40, -60), point(40, 60), point(-120, 110), point(-900, 95)] },
+    { id: 'farm-apron', material: 'gravel', feather: 60, alpha: 0.7, vertices: [point(200, -90), point(900, -100), point(900, 100), point(200, 90)] },
     { id: 'relay-court', material: 'earth', feather: 80, alpha: 0.7, vertices: [point(260, -760), point(880, -780), point(920, -420), point(700, -180), point(300, -220)] },
     { id: 'garden-bed-west', material: 'earth', feather: 60, alpha: 0.6, vertices: [point(-1480, -1180), point(-1000, -1200), point(-960, -900), point(-1460, -880)] },
     { id: 'garden-bed-south', material: 'earth', feather: 60, alpha: 0.55, vertices: [point(-1360, 760), point(-860, 740), point(-820, 900), point(-1340, 920)] },
@@ -28,7 +28,7 @@ export function createMwebMeadowsArtPlan(world) {
   );
   for (const segment of routeSegments) {
     if (segment.routeId === `${area.id}-city-green`) continue; // carried by the gravel apron
-    plan.ground.trails.push({ id: `trail-${plan.ground.trails.length}`, material: 'earth', points: [segment.a, segment.b], width: segment.kind === 'main' ? 52 : 40, halo: 30 });
+    plan.ground.trails.push({ id: `trail-${plan.ground.trails.length}`, material: 'earth', points: [segment.a, segment.b], width: segment.kind === 'main' ? 42 : 34, halo: 16 });
   }
   // Homes and garden walls on the authored solids.
   solid('garden-home', 'card', { source: 'b2-62', fit: 'width', tint: 0xe6e2d6 });
@@ -60,13 +60,10 @@ export function createMwebMeadowsArtPlan(world) {
   } }));
   // Broken fence clue: brambles crowd the secret gap without hiding it.
   for (const [x, y] of [[-1470, -560], [-1330, -850], [-1520, -880]]) if (guard.clear(cx + x, cy + y, 20)) prop('b1-02', cx + x, cy + y, 48, { tint: 0xd0cbb4, shadow: false });
-  // Meadow grass detail: tufts across the green edges and aggregate on the aprons.
+  // Meadow grass detail: tufts across the green edges and gravel aprons carry the road into the green.
   const tufts = [[-1500, -1500, 420, 320], [1500, -1500, 400, 320], [-1400, 1300, 460, 420], [1400, 1300, 440, 420], [0, 1200, 700, 360], [0, -1500, 600, 260], [-900, 560, 360, 240], [1300, -300, 340, 260]];
   tufts.forEach(([x, y, rx, ry], p) => scatter({ key: `tuft-${p}`, x: cx + x, y: cy + y, rx, ry, count: 22, radius: 8, place: (px, py, n, v) => {
     plan.ground.decals.push({ id: `tuft-${p}-${n}`, source: 'detail:grass', x: px, y: py, scale: 0.9 + v * 0.5, rotation: 0, alpha: 0.72, tint: 0xc8d2a0, flip: n % 2 === 1 });
-  } }));
-  [[-480, 0, 380, 90], [520, 0, 320, 80]].forEach(([x, y, rx, ry], p) => scatter({ key: `grit-${p}`, x: cx + x, y: cy + y, rx, ry, count: 16, radius: 4, place: (px, py, n, v) => {
-    plan.ground.decals.push({ id: `grit-${p}-${n}`, source: 'detail:aggregate', x: px, y: py, scale: 0.7 + v * 0.6, rotation: v * 6.28, alpha: 0.5, tint: 0xd8d2c0, flip: n % 2 === 0 });
   } }));
   return freezeDeep(plan);
 }

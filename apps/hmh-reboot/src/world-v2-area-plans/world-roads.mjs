@@ -71,7 +71,7 @@ export function createWorldRoadsArtPlan(world) {
       const at = alongPolyline(road.points, along, side * (half - 60));
       if (at && shoulderClear(road, at.x, at.y, 20)) prop('b2-49', at.x, at.y, 34, { flip: side > 0, tint: 0xd4d2cc, fade: false });
     }
-    for (const [along, side, source, height] of [[length * 0.5, 1, 'b2-51', 300], [length * 0.2, -1, 'b2-52', 190], [length * 0.8, 1, 'b2-52', 190]]) {
+    for (const [along, side, source, height] of [[length * 0.5, 1, 'b2-51', 300], [length * 0.2, -1, 'b2-52', 150], [length * 0.8, 1, 'b2-52', 150]]) {
       const at = alongPolyline(road.points, along, side * (half - 40));
       if (at && shoulderClear(road, at.x, at.y, 16)) prop(source, at.x, at.y, height, { flip: side > 0, tint: source === 'b2-51' ? 0xd6d8d4 : 0xffffff, fade: source === 'b2-51' });
     }

@@ -47,7 +47,7 @@ test('Rugpull Woods roots trees on matching-height banks, keeps understory off t
     for (const site of sites('rugpull-woods')) assert.ok(Math.hypot(site.x - plant.x, site.y - plant.y) >= 140);
   }
   assert.ok(low.filter(p => Math.abs(p.x - woods.center.x) < 550 && Math.abs(p.y - woods.center.y) < 480).length >= 60, 'centre framing keeps planted pockets');
-  assert.ok(summary.trails.every(t => t.width >= 44 && t.width <= 58) && summary.trails.length === 30);
+  assert.ok(summary.trails.every(t => t.width >= 42 && t.width <= 58) && summary.trails.length === 30);
   const decorated = new Set(summary.solids.map(s => s.pieceId));
   for (const name of ['supply-tent', 'lookout-post', 'abandoned-store', 'abandoned-lean-to', 'east-palisade', 'south-windbreak', 'supply-stack']) assert.ok(decorated.has(`rugpull-woods-${name}`), name);
   const tent = summary.solids.find(s => s.pieceId === 'rugpull-woods-supply-tent');

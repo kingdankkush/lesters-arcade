@@ -165,8 +165,8 @@ export function createAreaArt({ world, areaId, plan, kit = null, loadTexture, te
       const dx = b.x - a.x, dy = b.y - a.y, len = Math.hypot(dx, dy) || 1, ux = dx / len, uy = dy / len;
       const nx = oa.x - a.x, ny = oa.y - a.y, nlen = Math.hypot(nx, ny) || 1;
       const s = m.scale, matrix = { a: ux * s, b: uy * s, c: nx / nlen * (feather / 128), d: ny / nlen * (feather / 128), tx: a.x, ty: a.y };
-      g.poly([a.x, a.y, b.x, b.y, ob.x, ob.y, oa.x, oa.y]).fill({ color: multiplyTint(m.base, tint), alpha: alpha * 0.55, texture, matrix });
-      g.poly([a.x, a.y, b.x, b.y, ob.x, ob.y, oa.x, oa.y]).fill({ texture, matrix, color: multiplyTint(m.tint, tint), alpha: m.alpha * alpha });
+      // Global texture space: the strip's own bounds must not rescale the gradient.
+      g.poly([a.x, a.y, b.x, b.y, ob.x, ob.y, oa.x, oa.y]).fill({ texture, matrix, textureSpace: 'global', color: multiplyTint(m.tint, tint), alpha: Math.min(1, m.alpha + 0.15) * alpha });
     }
   }
   function paintZone(target, zone) {
@@ -186,7 +186,7 @@ export function createAreaArt({ world, areaId, plan, kit = null, loadTexture, te
       boxes.push(polygonBounds(wide));
     }
     const b = { minX: Math.min(...boxes.map(x => x.minX)), minY: Math.min(...boxes.map(x => x.minY)), maxX: Math.max(...boxes.map(x => x.maxX)), maxY: Math.max(...boxes.map(x => x.maxY)) };
-    materialFill(halo, rectVertices(b), trails[0].material, { alpha: 0.42 });
+    materialFill(halo, rectVertices(b), trails[0].material, { alpha: 0.22 });
     halo.mask = mask;
     for (const trail of trails) {
       materialFill(core, ribbonPolygon(trail.points, trail.width), trail.material);
@@ -212,7 +212,7 @@ export function createAreaArt({ world, areaId, plan, kit = null, loadTexture, te
     target.addChild(g, wear); painted.push(g, wear);
     if (recipe.cracks && road.cracks.length) for (const crack of road.cracks) {
       const { node } = card('b2-47', { x: crack.x, y: crack.y, height: road.width * 0.24 * crack.scale, tint: 0xb9bcb8, flip: crack.flip });
-      node.alpha = 0.58; target.addChild(node); painted.push(node);
+      node.alpha = 0.42; target.addChild(node); painted.push(node);
     }
   }
   function paintDecals(target, decals) {
@@ -257,7 +257,7 @@ export function createAreaArt({ world, areaId, plan, kit = null, loadTexture, te
     const vertices = piece.visible.vertices ?? rectVertices(b), roof = vertices.map(p => ({ x: p.x, y: p.y - h }));
     const node = new Container(); node.areaArtDecorated = true;
     const timber = multiplyTint(0x6b5c48, solid.tint), dark = multiplyTint(0x3f3629, solid.tint), pale = multiplyTint(0xd8d5c6, solid.tint);
-    if (solid.style !== 'hedge' && solid.style !== 'pickets') contactShadow(node, { x: cx, y: b.maxY - d * 0.5, width: w, depth: d + 8, alpha: 0.3, ao: true });
+    if (solid.style !== 'hedge' && solid.style !== 'pickets') contactShadow(node, { x: cx, y: b.maxY - d * 0.5, width: w * 0.9, depth: d * 0.9, alpha: 0.16, ao: false });
     if (solid.massAlpha > 0) {
       const mass = new Graphics();
       const faceMaterial = solid.style === 'bank' ? 'earth' : 'dirt';

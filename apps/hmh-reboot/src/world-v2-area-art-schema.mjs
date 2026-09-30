@@ -34,7 +34,7 @@ export const AREA_ART_MATERIALS = freezeDeep({
   paving: { tile: 'industrial-slab', base: 0x8d8f86, tint: 0xd6d6cc, alpha: 0.92, scale: 0.45 },
   boardwalk: { tile: 'bridge-deck', base: 0x7c6a4e, tint: 0xd4c6a4, alpha: 0.95, scale: 0.35 },
   asphalt: { tile: 'road', base: 0x494f4d, tint: 0xd6dad6, alpha: 0.95, scale: 0.5 },
-  gravel: { tile: 'crushed-ore', base: 0x8f8a7a, tint: 0xd8cfbd, alpha: 0.8, scale: 0.4 },
+  gravel: { tile: 'crushed-ore', base: 0x9a8f78, tint: 0xd6c6aa, alpha: 0.62, scale: 0.4 },
   dirt: { tile: 'packed-earth', base: 0x6b5b44, tint: 0xb9a888, alpha: 0.9, scale: 0.45 },
   forest: { tile: 'forest-floor', base: 0x5c6544, tint: 0xc6c1a0, alpha: 0.72, scale: 0.72 },
 });
@@ -150,7 +150,7 @@ export function validateAreaArtPlan(plan, kit) {
     materials.add(material(trail.material, `${name}.material`));
     const width = positive(trail.width, `${name}.width`);
     if (width > 160) fail(`${name}.width exceeds a worn trail`);
-    return { id: trail.id, material: trail.material, points, width, halo: trail.halo === undefined ? 36 : positive(trail.halo, `${name}.halo`) };
+    return { id: trail.id, material: trail.material, points, width, halo: trail.halo === undefined ? 18 : positive(trail.halo, `${name}.halo`) };
   });
   unique(trails, 'ground.trails');
   const decals = (ground.decals ?? []).map((decal, i) => {
