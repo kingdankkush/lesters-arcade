@@ -63,6 +63,7 @@ const NODE_CHECK_FILES = [
   'tests/hmh-greybox-world.test.mjs',
   'tests/hmh-greybox-closed-masses.test.mjs',
   'tests/hmh-greybox-playtest.test.mjs',
+  'tests/hmh-greybox-kit-polygon-contract.test.mjs',
   'tests/build-git-independence.test.mjs',
   'apps/chikun/src/coin-feedback.mjs',
   'apps/chikun/src/coin-feedback-dom.mjs',

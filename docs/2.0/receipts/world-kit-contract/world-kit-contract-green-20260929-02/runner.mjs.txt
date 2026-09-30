@@ -1,0 +1,51 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import assert from 'node:assert/strict';
+import {createHash,randomUUID} from 'node:crypto';
+import {runOwnedWindowsChild} from './owned-windows-child.mjs';
+const root='C:/Users/just_/lesters-arcade-wt/200-world-w0';
+const marker='C:/Users/just_/lesters-arcade-wt/.locks/heavy.lock';
+const output=path.resolve('work/world-kit-contract-green-20260929-02');
+const fileHash=file=>createHash('sha256').update(fs.readFileSync(file)).digest('hex');
+const testFile='tests/hmh-greybox-kit-polygon-contract.test.mjs';
+const kitFile='apps/hmh-reboot/src/dev/greybox-kit.mjs';
+const helper=path.resolve('work/owned-windows-child.mjs');
+assert.equal(fileHash(helper),'a5177337fcf6ec41f285fc105b93d0b4b94ee1101cb14a653a91e9b8b075b0d9');
+assert.equal(fileHash(path.join(root,testFile)),'7cda487e835a76ca65a91e308debbb7e1d64e3c06429068f1ea6373794ed0abe');
+assert.equal(fileHash(path.join(root,kitFile)),'b453096397f610445bd8a548e8ed70b883544d947e8cc98518b82fb7c756c349');
+const protectedFiles=['apps/hmh-reboot/src/level-one-world.mjs','apps/hmh-reboot/src/enemy-navgrid.mjs','apps/hmh-reboot/src/elevation.mjs','apps/hmh-reboot/src/collision.mjs','apps/hmh-reboot/src/movement.mjs','apps/hmh-reboot/src/main.mjs','scripts/lib/hmh-greybox-layout-check.mjs'];
+const hashes=files=>Object.fromEntries(files.map(file=>[file,fileHash(path.join(root,file))]));
+const before=hashes(protectedFiles);
+const files=[testFile,kitFile,...['collision.mjs','elevation.mjs','blocker-bounds.mjs','value-guards.mjs'].map(file=>'apps/hmh-reboot/src/'+file)];
+const sourceBefore=hashes(files);
+assert.equal(fs.existsSync(output),false);assert.equal(fs.existsSync(marker),false);
+const token='world-kit-contract-green-'+randomUUID();
+fs.mkdirSync(marker);fs.writeFileSync(path.join(marker,'owner.json'),JSON.stringify({owner:'/root/world_w0_audit',task:'Kit simple polygon GREEN/source copy',token}),{flag:'wx'});
+const report={schema:'world-kit-contract-green-v1',scope:'Four pure kit authoring cases repeated in exact six-file empty-PATH/no-.git/no-node_modules source closure. Counts are not additive; no nav/world/runtime/browser/performance or acceptance.',protectedBefore:before,sourceBefore,commands:[]};
+let certain=true;
+try{
+  fs.mkdirSync(output);
+  const copy=path.join(output,'source-copy');fs.mkdirSync(copy);
+  for(const file of files){const target=path.join(copy,file);fs.mkdirSync(path.dirname(target),{recursive:true});fs.copyFileSync(path.join(root,file),target);assert.equal(fileHash(target),sourceBefore[file]);}
+  for(const[file,name]of[[path.join(root,testFile),'test.mjs.txt'],[path.join(root,kitFile),'kit.mjs.txt'],[helper,'helper.mjs.txt'],[new URL(import.meta.url),'runner.mjs.txt']])fs.copyFileSync(file,path.join(output,name));
+  for(const[cwd,env]of[[root,process.env],[copy,{...process.env,PATH:'',Path:''}]]){
+    certain=false;
+    const command=await runOwnedWindowsChild(process.execPath,['--test','--test-reporter=tap',testFile],{cwd,env,watchdogMs:15000});
+    certain=command.childClosureConfirmed;
+    const counts=Object.fromEntries(['tests','pass','fail','cancelled','skipped','todo'].map(label=>[label,Number(command.stdout.match(new RegExp('^# '+label+' (\\d+)$','m'))?.[1])]));
+    report.commands.push({cwd,command,counts});
+    if(!certain)throw new Error('actual child closure uncertain; preserve marker');
+  }
+  report.protectedAfter=hashes(protectedFiles);assert.deepEqual(report.protectedAfter,before);
+  report.sourceAfter=hashes(files);assert.deepEqual(report.sourceAfter,sourceBefore);
+  assert.equal(fs.existsSync(path.join(copy,'.git')),false);assert.equal(fs.existsSync(path.join(copy,'node_modules')),false);
+  report.passed=report.commands.every(({command,counts})=>command.normalExit&&counts.tests===4&&counts.pass===4&&counts.fail===0&&['cancelled','skipped','todo'].every(key=>counts[key]===0));
+  if(!report.passed)process.exitCode=1;
+}catch(error){report.failure={message:error.message,stack:error.stack};process.exitCode=1;}
+finally{
+  report.markerRetainedForUnconfirmedShutdown=!certain;
+  if(certain){assert.equal(JSON.parse(fs.readFileSync(path.join(marker,'owner.json'))).token,token);fs.unlinkSync(path.join(marker,'owner.json'));fs.rmdirSync(marker);report.markerReleased=true;}
+  fs.writeFileSync(path.join(output,'green-report.json'),JSON.stringify(report,null,2)+'\n');
+  console.log(JSON.stringify({passed:report.passed,counts:report.commands.map(c=>c.counts),markerReleased:report.markerReleased??false,output}));
+  if(!certain)process.exit(1);
+}

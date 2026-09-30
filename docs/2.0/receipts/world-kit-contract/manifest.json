@@ -1,0 +1,46 @@
+{
+  "schema": "world-kit-contract-raw-archive-v1",
+  "scope": "Exact pure authoring RED/GREEN observations; source-copy repeated counts, no new nav/browser/device/performance acceptance.",
+  "files": {
+    "world-kit-contract-red-20260929-01/red-report.json": {
+      "bytes": 6230,
+      "sha256": "f822555d69b921ce699064ac5d031ba4381158ce4383f58d184141b1c596e080"
+    },
+    "world-kit-contract-red-20260929-01/pre-kit.mjs.txt": {
+      "bytes": 3786,
+      "sha256": "aff9c86d9dcac1973e75a72ea00044b7f98f234dbb046b70a520b715a8332cd2"
+    },
+    "world-kit-contract-red-20260929-01/test.mjs.txt": {
+      "bytes": 1727,
+      "sha256": "7cda487e835a76ca65a91e308debbb7e1d64e3c06429068f1ea6373794ed0abe"
+    },
+    "world-kit-contract-red-20260929-01/runner.mjs.txt": {
+      "bytes": 3756,
+      "sha256": "49c2e16ff2e5c74ed2f7dd3249b280e170c2cabe1faa75de4de54e1ab47253e2"
+    },
+    "world-kit-contract-red-20260929-01/helper.mjs.txt": {
+      "bytes": 3475,
+      "sha256": "a5177337fcf6ec41f285fc105b93d0b4b94ee1101cb14a653a91e9b8b075b0d9"
+    },
+    "world-kit-contract-green-20260929-02/green-report.json": {
+      "bytes": 7915,
+      "sha256": "fd01ff90a81793d9e34627f534bcd55088d902ad3d3d12cb3f6df6f053126014"
+    },
+    "world-kit-contract-green-20260929-02/kit.mjs.txt": {
+      "bytes": 5168,
+      "sha256": "b453096397f610445bd8a548e8ed70b883544d947e8cc98518b82fb7c756c349"
+    },
+    "world-kit-contract-green-20260929-02/test.mjs.txt": {
+      "bytes": 1727,
+      "sha256": "7cda487e835a76ca65a91e308debbb7e1d64e3c06429068f1ea6373794ed0abe"
+    },
+    "world-kit-contract-green-20260929-02/runner.mjs.txt": {
+      "bytes": 4543,
+      "sha256": "9dbaa5829a1eff8f3217e4d8c13e217f6eda38ac2e7465892df9642233d1a1cc"
+    },
+    "world-kit-contract-green-20260929-02/helper.mjs.txt": {
+      "bytes": 3475,
+      "sha256": "a5177337fcf6ec41f285fc105b93d0b4b94ee1101cb14a653a91e9b8b075b0d9"
+    }
+  }
+}

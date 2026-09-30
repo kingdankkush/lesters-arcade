@@ -1,0 +1,42 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import assert from 'node:assert/strict';
+import {createHash,randomUUID} from 'node:crypto';
+import {runOwnedWindowsChild} from './owned-windows-child.mjs';
+const root='C:/Users/just_/lesters-arcade-wt/200-world-w0';
+const marker='C:/Users/just_/lesters-arcade-wt/.locks/heavy.lock';
+const output=path.resolve('work/world-kit-contract-red-20260929-01');
+const sha=bytes=>createHash('sha256').update(bytes).digest('hex');
+const fileHash=file=>sha(fs.readFileSync(file));
+const testFile='tests/hmh-greybox-kit-polygon-contract.test.mjs';
+const kitFile='apps/hmh-reboot/src/dev/greybox-kit.mjs';
+const helper=path.resolve('work/owned-windows-child.mjs');
+assert.equal(fileHash(helper),'a5177337fcf6ec41f285fc105b93d0b4b94ee1101cb14a653a91e9b8b075b0d9');
+assert.equal(fileHash(path.join(root,testFile)),'7cda487e835a76ca65a91e308debbb7e1d64e3c06429068f1ea6373794ed0abe');
+assert.equal(fileHash(path.join(root,kitFile)),'aff9c86d9dcac1973e75a72ea00044b7f98f234dbb046b70a520b715a8332cd2');
+const protectedFiles=['apps/hmh-reboot/src/level-one-world.mjs','apps/hmh-reboot/src/enemy-navgrid.mjs','apps/hmh-reboot/src/elevation.mjs','apps/hmh-reboot/src/collision.mjs','apps/hmh-reboot/src/movement.mjs','apps/hmh-reboot/src/main.mjs','scripts/lib/hmh-greybox-layout-check.mjs'];
+const protectedHashes=()=>Object.fromEntries(protectedFiles.map(file=>[file,fileHash(path.join(root,file))]));
+const before=protectedHashes();
+assert.equal(fs.existsSync(output),false);assert.equal(fs.existsSync(marker),false);
+const token='world-kit-contract-red-'+randomUUID();
+fs.mkdirSync(marker);fs.writeFileSync(path.join(marker,'owner.json'),JSON.stringify({owner:'/root/world_w0_audit',task:'Kit simple polygon RED only',token}),{flag:'wx'});
+const report={schema:'world-kit-contract-red-v1',scope:'Four pure kit authoring cases; not navigation/world/runtime/performance/browser or acceptance. Three genuine nonsimple polygon failures expected plus one valid footprint control.',protectedBefore:before};
+let certain=true;
+try{
+  fs.mkdirSync(output);
+  for(const[file,name]of[[path.join(root,testFile),'test.mjs.txt'],[path.join(root,kitFile),'pre-kit.mjs.txt'],[helper,'helper.mjs.txt'],[new URL(import.meta.url),'runner.mjs.txt']])fs.copyFileSync(file,path.join(output,name));
+  certain=false;
+  report.command=await runOwnedWindowsChild(process.execPath,['--test','--test-reporter=tap',testFile],{cwd:root,watchdogMs:15000});
+  certain=report.command.childClosureConfirmed;
+  report.protectedAfter=protectedHashes();assert.deepEqual(report.protectedAfter,before);
+  report.counts=Object.fromEntries(['tests','pass','fail','cancelled','skipped','todo'].map(label=>[label,Number(report.command.stdout.match(new RegExp('^# '+label+' (\\d+)$','m'))?.[1])]));
+  report.passed=certain&&!report.command.watchdogTriggered&&!report.command.outputLimitTriggered&&!report.command.spawnError&&!report.command.signal&&report.command.exitCode===1&&report.counts.tests===4&&report.counts.pass===1&&report.counts.fail===3&&['cancelled','skipped','todo'].every(key=>report.counts[key]===0);
+  if(!report.passed)process.exitCode=1;
+}catch(error){report.failure={message:error.message,stack:error.stack};process.exitCode=1;}
+finally{
+  report.markerRetainedForUnconfirmedShutdown=!certain;
+  if(certain){assert.equal(JSON.parse(fs.readFileSync(path.join(marker,'owner.json'))).token,token);fs.unlinkSync(path.join(marker,'owner.json'));fs.rmdirSync(marker);report.markerReleased=true;}
+  fs.writeFileSync(path.join(output,'red-report.json'),JSON.stringify(report,null,2)+'\n');
+  console.log(JSON.stringify({passed:report.passed,counts:report.counts,markerReleased:report.markerReleased??false,output}));
+  if(!certain)process.exit(1);
+}

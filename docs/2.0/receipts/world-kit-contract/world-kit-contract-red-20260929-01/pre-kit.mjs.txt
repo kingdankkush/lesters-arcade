@@ -4,13 +4,6 @@ import { createElevationSurface } from '../elevation.mjs';
 import { freezeDeep } from '../value-guards.mjs';
 const solidKinds = new Set(['mass', 'cliff', 'cover-tall', 'cover-short']);
 const floorKinds = new Set(['road', 'deck', 'ramp', 'ledge']);
-const polygonEpsilon=1e-8;
-const cross=(a,b,c)=>(b.x-a.x)*(c.y-a.y)-(b.y-a.y)*(c.x-a.x);
-const onSegment=(a,b,p)=>Math.abs(cross(a,b,p))<=polygonEpsilon&&p.x>=Math.min(a.x,b.x)-polygonEpsilon&&p.x<=Math.max(a.x,b.x)+polygonEpsilon&&p.y>=Math.min(a.y,b.y)-polygonEpsilon&&p.y<=Math.max(a.y,b.y)+polygonEpsilon;
-function segmentsIntersect(a,b,c,d){
-  const ac=cross(a,b,c),ad=cross(a,b,d),ca=cross(c,d,a),cb=cross(c,d,b);
-  return(ac>polygonEpsilon&&ad< -polygonEpsilon||ac< -polygonEpsilon&&ad>polygonEpsilon)&&(ca>polygonEpsilon&&cb< -polygonEpsilon||ca< -polygonEpsilon&&cb>polygonEpsilon)||onSegment(a,b,c)||onSegment(a,b,d)||onSegment(c,d,a)||onSegment(c,d,b);
-}
 export function createGreyboxPiece(spec = {}) {
   if (typeof spec.id !== 'string' || !/^[a-z0-9][a-z0-9-]*$/.test(spec.id)) throw new TypeError('greybox id required');
   if (!solidKinds.has(spec.kind) && !floorKinds.has(spec.kind) && !['climb-marker', 'drop-marker'].includes(spec.kind)) throw new TypeError('unsupported greybox kind');
@@ -24,13 +17,6 @@ export function createGreyboxPiece(spec = {}) {
   if(spec.vertices!==undefined){
     if(!['mass','cliff'].includes(spec.kind)||!Array.isArray(spec.vertices)||spec.vertices.length<3||!spec.vertices.every(p=>Number.isFinite(p?.x)&&Number.isFinite(p?.y)))throw new TypeError('finite solid mass polygon required');
     vertices=spec.vertices.map(({x,y})=>({x,y}));
-    // Local convex turns alone accept stars and repeated loops. Reject these
-    // before the unchanged collision constructor receives the authored shape.
-    for(let i=0;i<vertices.length;i++)for(let j=i+1;j<vertices.length;j++)if(Math.hypot(vertices[i].x-vertices[j].x,vertices[i].y-vertices[j].y)<=polygonEpsilon)throw new TypeError('polygon duplicate vertex or zero-length edge');
-    for(let i=0;i<vertices.length;i++)for(let j=i+1;j<vertices.length;j++){
-      if(j===i+1||i===0&&j===vertices.length-1)continue;
-      if(segmentsIntersect(vertices[i],vertices[(i+1)%vertices.length],vertices[j],vertices[(j+1)%vertices.length]))throw new TypeError('polygon must be simple without intersecting edges');
-    }
     if(Math.min(...vertices.map(p=>p.x))!==bounds.minX||Math.max(...vertices.map(p=>p.x))!==bounds.maxX||Math.min(...vertices.map(p=>p.y))!==bounds.minY||Math.max(...vertices.map(p=>p.y))!==bounds.maxY)throw new TypeError('polygon must match its visible bounds');
     const signed=vertices.reduce((sum,p,i)=>{const q=vertices[(i+1)%vertices.length];return sum+p.x*q.y-p.y*q.x;},0);
     if(signed<0)vertices.reverse(); // Same geometry, canonical winding for the unchanged nav narrow phase.

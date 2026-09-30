@@ -456,3 +456,14 @@ Next: small raw-kit polygon contract, then distinct area flow, landmark approach
 sightlines/optional paths at human scale. Full HMH Free/W3 integration, world
 streaming, owner greybox approval, physical performance, complete release gate
 and release-specific deployment approval remain open. No push/deploy/version bump.
+
+
+### Local kit polygon guard
+
+The separate authoring constructor guard now rejects stars, repeated loops and
+duplicate/zero edges at1e-8 tolerance before unchanged collision validation.
+Actual RED1PASS3FAIL, then4/4 GREEN plus same4/4 six-file empty-PATH/no-.git/no-node_modules
+copy pass with zero skips/cancels and actual child closure/matching marker release.
+Seven old authority helpers and the existing authored layout stay unchanged.
+See slices/WORLD-KIT-CONTRACT.md and exact tiny raw receipt archive. No new world
+nav/browser/performance acceptance; Meadows flow and actor-scale review remain next.
