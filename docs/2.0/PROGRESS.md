@@ -841,3 +841,13 @@ Meadows had no geometry, Pines connections were unvalidated and Bayou/River
 still used templates. This is a documentation correction against existing
 source/evidence; no new test, whole-map approval, final-art or phone claim.
 The shared ten-area playtest sheet points to the final River review bundle.
+
+### STACKED F2f — local landing guide polish
+
+Local versus now uses a bright hollow ghost contour, correcting the small-screen
+contrast issue; solo defaults and canonical landing cells remain unchanged. Actual
+RED1/3, final3+same3 isolated, focused163, fresh build and17 native Chrome cases
+pass. Root and Art viewed the final desktop/landscape originals. Combined gathered
+world/local source checks also passed260 before this presentation-only polish.
+Current budgets remain HMH1,039,992B/STACKED580,861B. No physical-device/soak,
+full gate, credits or deploy. See slices/STACKED-F2F-GHOST-READABILITY.md.

@@ -114,3 +114,6 @@ docs/2.0/receipts/stacked-local-play-f2de/*.gz -filter -diff -merge -text
 
 # Compact exact Bayou authoring evidence
 docs/2.0/receipts/world-bayou/** -text
+
+# Compact local ghost contrast and combined gather evidence
+docs/2.0/receipts/stacked-local-ghost-f2f/*.gz -filter -diff -merge -text

@@ -25,12 +25,15 @@ export function shadeColor(color, shade) {
   return (channel(16) << 16) | (channel(8) << 8) | channel(0);
 }
 
-function drawMino(graphic, { x, y, kind, alpha = 1, size = CELL_PX - 2, patterned = false, colors = COLORS, shade = 0 }) {
+function drawMino(graphic, { x, y, kind, alpha = 1, size = CELL_PX - 2, patterned = false, colors = COLORS, shade = 0, outlined = false }) {
   // Moving a cell only changes its transform. Reuse its geometry until the
   // appearance changes, avoiding hundreds of triangulations per render tick.
   const fill = colors[kind] ?? 0xa8bdca, drawn = shadeColor(fill, shade);
-  const key = `${kind}:${alpha}:${size}:${patterned}:${drawn}`;
+  const key = `${kind}:${alpha}:${size}:${patterned}:${drawn}:${outlined}`;
   if (graphic.__appearance !== key) {
+    if (outlined) {
+      graphic.clear().roundRect(1, 1, size, size, 5).fill({color:drawn,alpha:.08}).stroke({color:0xd3faff,alpha:.85,width:2.4});
+    } else {
     graphic.clear().roundRect(1, 1, size, size, 5).fill({ color: drawn, alpha }).stroke({ color: 0xffffff, alpha: alpha * 0.32, width: 1 });
     graphic.rect(4, 3, Math.max(2,size-6), 2).fill({color:0xffffff,alpha:alpha*.2});
     // Ledger rows carry a shape cue, not just a colour: two ledger rulings.
@@ -43,6 +46,7 @@ function drawMino(graphic, { x, y, kind, alpha = 1, size = CELL_PX - 2, patterne
         if(cells.includes(cell+1)&&cell%3<2)graphic.rect(px,py,unit+1,1.5).fill({color:0x071321,alpha:alpha*.7});
         if(cells.includes(cell+3))graphic.rect(px,py,1.5,unit+1).fill({color:0x071321,alpha:alpha*.7});
       }
+    }
     }
     graphic.__appearance = key;
   }
@@ -65,7 +69,7 @@ function createPool(Graphics) {
   };
 }
 
-export function createStackedBoardView({ index, cells = 10, rows = 24, frame, geometry, Container, Graphics, Text, onFrameReleased = () => {}, onPresent = () => {} }) {
+export function createStackedBoardView({ index, cells = 10, rows = 24, frame, geometry, Container, Graphics, Text, ghostOutline = false, onFrameReleased = () => {}, onPresent = () => {} }) {
   if (!STACKED_FRAME_SIZES[frame] || cells !== 10 || rows !== 24) throw new RangeError('board view requires a 10x24 board and a known frame');
   if (!geometry?.PIECE_CELLS || typeof geometry.cellsFor !== 'function' || typeof geometry.collides !== 'function') throw new TypeError('board view requires canonical PIECE_CELLS, cellsFor and collides geometry');
   const kinds = Object.freeze(Object.keys(geometry.PIECE_CELLS));
@@ -107,14 +111,14 @@ export function createStackedBoardView({ index, cells = 10, rows = 24, frame, ge
     return geometry.cellsFor(normalized.kind,rotation,normalized.x??0,normalized.y??0);
   };
 
-  const renderPiece = (piece, pool, parent, alpha, offset=null) => {
+  const renderPiece = (piece, pool, parent, alpha, offset=null, outlined=false) => {
     pool.begin(); let used=0;
     const normalized=normalizePiece(piece);
     for (const [x,y] of pieceCells(normalized)) {
       const point=boardCellToAuthored({ x, y, frame:currentFrame });
       if (!point.visible) continue;
       const visual=pool.acquire(parent);
-      drawMino(visual, { ...point, kind:normalized.kind, alpha, patterned:colorblindPieces, colors }); used++;
+      drawMino(visual, { ...point, kind:normalized.kind, alpha, patterned:colorblindPieces, colors, outlined }); used++;
       if (offset) { visual.__baseX=point.x; visual.__baseY=point.y; placeActive(visual); }
     }
     pool.end(); return used;
@@ -140,7 +144,7 @@ export function createStackedBoardView({ index, cells = 10, rows = 24, frame, ge
     let lockedVisible=0, bufferClipped=0;
     for (let position=0; position<model.board.length; position++) { const cell=model.board[position]; if (!cell) continue; const y=Math.floor(position/cells); if (y>=BOARD_VISIBLE_ROWS) { bufferClipped++; continue; } const kind=LOCKED_KIND_BY_ID[Number(cell)]; if(!kind)continue; const point=boardCellToAuthored({x:position%cells,y,frame:currentFrame}); drawMino(stackPool.acquire(layers.stackLayer),{...point,kind,patterned:colorblindPieces,colors,shade:cellShade(position)}); lockedVisible++; }
     const activeVisuals=renderPiece(model.active,activePool,layers.activeLayer,1,activeOffset);
-    const ghostVisuals=renderPiece(ghostFor(model.board,model.active),ghostPool,layers.ghostLayer,0.24);
+    const ghostVisuals=renderPiece(ghostFor(model.board,model.active),ghostPool,layers.ghostLayer,0.24,null,ghostOutline);
     previewPool.begin(); let previews=0;
     if (currentFrame==='wide') { previews+=renderPreview(model.hold,8,80); for (let i=0;i<Math.min(5,model.queue?.length??0);i++) previews+=renderPreview(model.queue[i],416,82+i*92,0.48); }
     else { previews+=renderPreview(model.hold,8,770,0.45); for (let i=0;i<Math.min(3,model.queue?.length??0);i++) previews+=renderPreview(model.queue[i],140+i*58,770,0.4); }

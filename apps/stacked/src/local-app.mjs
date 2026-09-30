@@ -15,7 +15,7 @@ export async function mountLocalStacked() {
   finally { window.removeEventListener('pagehide',abandon); }
   if(abandoned){app.destroy(true);return;}
   stage.append(app.canvas);app.canvas.tabIndex=0;app.canvas.setAttribute('aria-label','Player one and player two STACKED boards');
-  const views=[0,1].map(index=>createStackedBoardView({index,frame:'wide',geometry:{PIECE_CELLS,cellsFor,collides},Container,Graphics,Text}));
+  const views=[0,1].map(index=>createStackedBoardView({index,frame:'wide',ghostOutline:true,geometry:{PIECE_CELLS,cellsFor,collides},Container,Graphics,Text}));
   for(const view of views){app.stage.addChild(view.root);view.layers.hudLayer.visible=false;view.setTrails(false);view.setColorblindPieces(true);}
   const hud=views.map((_,i)=>{const el=document.createElement('div');el.className='player-hud';el.innerHTML='<aside class="hold"><h3>HOLD</h3><div class="held piece"></div><div class="hud-score"><strong class="score">0</strong>points<br><span class="lines">0</span> lines</div><div class="incoming"><strong class="rows">0</strong>incoming rows</div></aside><aside class="queue"><h3>NEXT</h3><div class="next"></div></aside>';$('hud').append(el);return el;});
   let run=null, input=null, disposed=false, raf=0, setupMode=true, layout={playable:false,slots:[]}, lastTick=-1, lastStatus='', deviceScanAt=0, lastDeviceText='';

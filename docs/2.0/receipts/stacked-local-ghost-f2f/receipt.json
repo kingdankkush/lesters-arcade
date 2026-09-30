@@ -1,0 +1,85 @@
+{
+  "files": [
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-ghost-source-red-01\\report.json",
+      "archive": "stacked-ghost-source-red-01__report.json.gz",
+      "rawSha256": "ec15b31f0b5ce27392a0013418db062e36afb55b5e11cbaf3c464e48f109ca56",
+      "gzipBytes": 1424
+    },
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-ghost-source-green-01\\report.json",
+      "archive": "stacked-ghost-source-green-01__report.json.gz",
+      "rawSha256": "dc899b370d514b701e19b8de88df0855aa10ca1aca50555f420fc0c432b4d802",
+      "gzipBytes": 1238
+    },
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-ghost-source-green-02\\report.json",
+      "archive": "stacked-ghost-source-green-02__report.json.gz",
+      "rawSha256": "37ab05ba8f87c46c7e71f226d2f45122e9b87252b9904f0873d41fd9a1fcc995",
+      "gzipBytes": 1246
+    },
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-local-play-green-08\\report.json",
+      "archive": "stacked-local-play-green-08__report.json.gz",
+      "rawSha256": "4891ece3d5e2d6428b0ca400f03ad36f5457f24e890d928d76fd6b4b44831c53",
+      "gzipBytes": 19194
+    },
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-local-play-browser-green-08\\report.json",
+      "archive": "stacked-local-play-browser-green-08__report.json.gz",
+      "rawSha256": "9c84fb4109bb76bd43cfb29409e37de84ff28ceeca0b66ec15816cc0314edcd2",
+      "gzipBytes": 8342
+    },
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\combined-greybox-local-01\\report.json",
+      "archive": "combined-greybox-local-01__report.json.gz",
+      "rawSha256": "60b5d520e7c84615c58fb2a98f77756da3629525d70036b8e923e1c483490184",
+      "gzipBytes": 12975
+    },
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\run-stacked-ghost-source.mjs",
+      "archive": "run-stacked-ghost-source.mjs.gz",
+      "rawSha256": "fadfa9d8c2b409508d1074ebffaaf3f4d2d11d3e3c3596530481d5d073898670",
+      "gzipBytes": 1351
+    },
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\run-stacked-ghost-source-02.mjs",
+      "archive": "run-stacked-ghost-source-02.mjs.gz",
+      "rawSha256": "5dadf8a8e6f780ea052f94088a0ecd55b9d14e33b6a67b91104144ece80fb05e",
+      "gzipBytes": 1353
+    },
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\run-stacked-local-play-08.mjs",
+      "archive": "run-stacked-local-play-08.mjs.gz",
+      "rawSha256": "2cef5fd0f3e06ca6e519de2def5aa9a4a6808b18c649adadd916b819d52248fc",
+      "gzipBytes": 1806
+    },
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-local-play-browser-08.mjs",
+      "archive": "stacked-local-play-browser-08.mjs.gz",
+      "rawSha256": "f5a6ead5d35cd7ae406a07a3b67659d442650d9ed3fc150423ccac123ca4452f",
+      "gzipBytes": 4873
+    },
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\run-combined-greybox-local.mjs",
+      "archive": "run-combined-greybox-local.mjs.gz",
+      "rawSha256": "13743b589e96e5292e468ab06f82bd1b917fac21b2d6b3eb6c97028bb8999b4a",
+      "gzipBytes": 1518
+    },
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\owned-windows-child.mjs",
+      "archive": "owned-windows-child.mjs.gz",
+      "rawSha256": "a5177337fcf6ec41f285fc105b93d0b4b94ee1101cb14a653a91e9b8b075b0d9",
+      "gzipBytes": 1360
+    },
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\owned-windows-preview-child.mjs",
+      "archive": "owned-windows-preview-child.mjs.gz",
+      "rawSha256": "6f4903a66d324a01a476eebefdfac68663dde2c573f62f637c4b7537ccb0d631",
+      "gzipBytes": 1360
+    }
+  ],
+  "gzipBytes": 58040,
+  "physicalPhoneTested": false,
+  "releaseGateRun": false
+}
