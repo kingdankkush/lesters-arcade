@@ -28,6 +28,7 @@ export const RANKED_GAMES = Object.freeze({
     // builds carry HMH_CABINET_VERSION, and 1.8.x runs without it stay valid.
     buildHashPattern: Object.freeze(/^site-\d+\.\d+\.\d+:game-\d+\.\d+\.\d+(?::cabinet-\d+\.\d+\.\d+)?$/),
     evidenceEncoding: 'hmh-run-summary-v6+json',
+    evidenceEncodings: Object.freeze(['hmh-run-summary-v6+json']),
   }),
   chikun: Object.freeze({
     gameId: 'chikun',
@@ -37,6 +38,10 @@ export const RANKED_GAMES = Object.freeze({
     runtimeId: 'chikun:canvas-runtime-v7',
     buildHashPattern: Object.freeze(/^site-\d+\.\d+\.\d+:game-\d+\.\d+\.\d+:cabinet-\d+\.\d+\.\d+$/),
     evidenceEncoding: 'chikun-flap-evidence-v6+json',
+    // v7 (chikun-input-evidence-v7+json, course two) hashes here so the one
+    // envelope implementation covers it; whether a settle accepts it is the
+    // verifier's gate (chikun-official-course.mjs), closed by default.
+    evidenceEncodings: Object.freeze(['chikun-flap-evidence-v6+json', 'chikun-input-evidence-v7+json']),
   }),
   stacked: Object.freeze({
     gameId: 'stacked',
@@ -46,6 +51,7 @@ export const RANKED_GAMES = Object.freeze({
     runtimeId: 'stacked:stacked-result-v1',
     buildHashPattern: Object.freeze(/^site-\d+\.\d+\.\d+:game-\d+\.\d+\.\d+:cabinet-\d+\.\d+\.\d+$/),
     evidenceEncoding: 'stacked-sic1+base64',
+    evidenceEncodings: Object.freeze(['stacked-sic1+base64']),
   }),
 });
 export const RANKED_GAME_IDS = Object.freeze(Object.keys(RANKED_GAMES));
@@ -170,6 +176,11 @@ function gameOf(gameId) {
   return RANKED_GAMES[gameId];
 }
 
+// The encodings a game hashes: its evidenceEncoding plus any listed course
+// variants (chikun v7). Listing is not acceptance; the verifier gates that.
+const acceptsEncoding = (game, encoding) => (game.evidenceEncodings ?? [game.evidenceEncoding]).includes(encoding);
+const encodingList = (game) => (game.evidenceEncodings ?? [game.evidenceEncoding]).join(' or ');
+
 // §2.6 evidenceDigest. `evidence` is either the per-game evidence itself (the
 // v6 flap object, the SIC1 bytes, or { runSummary, sessionEnvelope }) or the
 // §5.1 settle-body evidence that wraps it. None of the bare forms has an
@@ -178,10 +189,10 @@ function gameOf(gameId) {
 export async function evidenceDigestFor(gameId, evidence) {
   const game = gameOf(gameId);
   const wrapped = isPlainObject(evidence) && Object.hasOwn(evidence, 'encoding');
-  if (wrapped && evidence.encoding !== game.evidenceEncoding) throw new TypeError(`evidence encoding must be ${game.evidenceEncoding}`);
+  if (wrapped && !acceptsEncoding(game, evidence.encoding)) throw new TypeError(`evidence encoding must be ${encodingList(game)}`);
   if (gameId === 'chikun') {
     const flap = wrapped ? evidence.flap : evidence;
-    if (!isPlainObject(flap)) throw new TypeError('Chikun evidence must be the v6 flap object');
+    if (!isPlainObject(flap)) throw new TypeError('Chikun evidence must be the flap object');
     return sha256Hex(flap);
   }
   if (gameId === 'stacked') {
@@ -198,7 +209,7 @@ export async function evidenceDigestFor(gameId, evidence) {
 // the browser and the server share it.
 export async function rankedEnvelopeHash({ gameId, sessionId32, encoding, evidenceDigest } = {}) {
   const game = gameOf(gameId);
-  if (encoding !== game.evidenceEncoding) throw new TypeError(`encoding must be ${game.evidenceEncoding}`);
+  if (!acceptsEncoding(game, encoding)) throw new TypeError(`encoding must be ${encodingList(game)}`);
   if (typeof sessionId32 !== 'string' || !SESSION_ID32_PATTERN.test(sessionId32)) throw new TypeError('sessionId32 must be 0x followed by 64 lowercase hex characters');
   if (typeof evidenceDigest !== 'string' || !SESSION_ID32_PATTERN.test(evidenceDigest)) throw new TypeError('evidenceDigest must be 0x followed by 64 lowercase hex characters');
   return sha256Hex({ version: RANKED_ENVELOPE_VERSION, gameId, sessionKey: sessionId32, encoding, evidenceDigest });

@@ -1,5 +1,6 @@
 import { createChikunParentBridge } from './chikun-bridge.mjs';
 import { chikunPresentationSuffix } from './chikun-presentation-switch.mjs';
+import { CHIKUN_OFFICIAL_COURSE_TWO_ENABLED, officialChikunCourse } from './chikun-official-course.mjs';
 
 function normalizeOrigin(value) {
   const origin = new URL(value).origin;
@@ -23,10 +24,14 @@ export function createChikunHost({
   readyTimeoutMs = 8000,
   setTimeoutRef = globalThis.setTimeout,
   clearTimeoutRef = globalThis.clearTimeout,
+  // The shared official-course gate (chikun-official-course.mjs). Tests inject
+  // true; nothing in the page, URL or storage can.
+  courseTwoEnabled = CHIKUN_OFFICIAL_COURSE_TWO_ENABLED,
 }) {
   if (!mount?.replaceChildren) throw new Error('Chikun mount element is required');
   if (!Number.isFinite(readyTimeoutMs) || readyTimeoutMs <= 0) throw new Error('readyTimeoutMs must be positive');
   const origin = normalizeOrigin(expectedOrigin);
+  const officialCourse = officialChikunCourse({ courseTwoEnabled: courseTwoEnabled === true });
   let activeBridge = null;
   let activeFrame = null;
   let ready = false;
@@ -96,6 +101,13 @@ export function createChikunHost({
     if(session.mode==='free'&&session.session?.rankedEligible===false&&new URLSearchParams(search).getAll('course').length===1&&new URLSearchParams(search).get('course')==='2'){
       const reviewUrl=new URL(iframe.src);reviewUrl.searchParams.set('course','2');iframe.src=reviewUrl.href;
     }
+    // Every other session plays the official course. Course two is offered
+    // only through the gate, never through a URL; course one adds nothing.
+    else if (officialCourse.courseId !== 1) {
+      const officialUrl = new URL(iframe.src);
+      officialUrl.searchParams.set('course', String(officialCourse.courseId));
+      iframe.src = officialUrl.href;
+    }
     iframe.loading = 'eager';
     iframe.referrerPolicy = 'same-origin';
     // allow-popups(-to-escape-sandbox): the results share row opens x.com and
@@ -133,6 +145,7 @@ export function createChikunHost({
 
   return Object.freeze({
     mountSession,
+    officialCourse: () => officialCourse,
     pause: () => sendCommand('portal:pause', {}),
     resume: () => sendCommand('portal:resume', {}),
     restart: () => sendCommand('portal:restart', {}),
