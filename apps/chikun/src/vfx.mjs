@@ -2,6 +2,7 @@ export const MAX_CHIKUN_PARTICLES = 24;
 
 const EVENT_STYLES = Object.freeze({
   flap: Object.freeze({ count: 4, color: '#d8f7ff', speed: 2.4, lifeTicks: 24, shake: 0, flash: 0 }),
+  'coin-positive': Object.freeze({ count: 6, color: '#f1dfb8', speed: 1.8, lifeTicks: 18, shake: 0, flash: 0 }),
   coin: Object.freeze({ count: 10, color: '#e7edf5', speed: 3.4, lifeTicks: 34, shake: 1, flash: 0.08 }),
   fork: Object.freeze({ count: 6, color: '#b4ece1', speed: 2.8, lifeTicks: 28, shake: 1, flash: 0 }),
   'near-miss': Object.freeze({ count: 16, color: '#ffe138', speed: 4.5, lifeTicks: 42, shake: 5, flash: 0.2 }),
@@ -42,5 +43,13 @@ export function planChikunVfx({ event, x = 0, y = 0, tick = 0, reduceMotion = fa
     flash: reduceMotion ? 0 : style.flash,
     bornTick: Math.max(0, Math.floor(Number(tick) || 0)),
     lifeTicks: style.lifeTicks,
+  });
+}
+// Pickups append sparkles without erasing a simultaneous danger cue.
+export function updateChikunVfxMotion(current, plan, bornFrame) {
+  if (plan.event === 'coin-positive') return current;
+  return Object.freeze({
+    shake: plan.shake > 0 ? { amount: plan.shake, bornFrame, lifeTicks: plan.lifeTicks } : null,
+    flash: plan.flash > 0 ? { alpha: plan.flash, bornFrame, lifeTicks: Math.min(18, plan.lifeTicks) } : null,
   });
 }

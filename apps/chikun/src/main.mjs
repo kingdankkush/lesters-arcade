@@ -5,6 +5,7 @@ import { loadRagdollArt, createChikunRagdoll, drawChikunRagdoll } from './ragdol
 import { createChikunCharacter, chikunCoatFilter, chikunTrailParticles, CHIKUN_FLOURISHES, milestoneFlourish } from './character.mjs';
 import { createChikunWorld, drawChikunObstacle } from './world.mjs';
 import { createChikunAudio } from './audio.mjs';
+import { isChikunCoinFeedbackEnabled } from './coin-feedback.mjs';
 import { buildChikunViewport, chikunForkInView, upcomingChikunObstacle } from './viewport.mjs';
 import { createGuardedFrameLoop, finishRunSafely } from './frame-guard.mjs';
 import {
@@ -19,7 +20,7 @@ import {
   validateChikunParentMessage,
   validateChikunChildMessage,
 } from '../../portal/src/chikun-bridge-protocol.mjs';
-import { MAX_CHIKUN_PARTICLES, planChikunVfx } from './vfx.mjs';
+import { MAX_CHIKUN_PARTICLES, planChikunVfx, updateChikunVfxMotion } from './vfx.mjs';
 import { buildChikunReplayTimeline, buildChikunModeTease, buildChikunJackpotTease } from './presentation.mjs';
 import { JACKPOT_LIVE } from '../../portal/src/jackpot-config.mjs';
 import { buildFreeShareText, buildShareLinks, createShareRow } from '../../portal/src/share-links.mjs';
@@ -164,6 +165,18 @@ let dailyChallenge = null;
 let ghostTrack = null;
 let replayPlayback = null;
 let replayPlaying = false;
+let positiveCoinFeedback = null;
+shell.dataset.coinFeedback = 'disabled';
+if (isChikunCoinFeedbackEnabled(new URLSearchParams(window.location.search))) {
+  shell.dataset.coinFeedback = 'loading';
+  import('./coin-feedback-dom.mjs').then(({ createChikunCoinOverlay, createChikunCoinFeedback }) => {
+    if (disposed) return;
+    const tracker = createChikunCoinFeedback();
+    tracker.reset(latestSnapshot?.coinsCollected ?? 0, latestSnapshot?.tick ?? 0);
+    positiveCoinFeedback = { tracker, overlay: createChikunCoinOverlay({ frame: document.querySelector('#gameFrame'), canvas, counter: coinValue }) };
+    shell.dataset.coinFeedback = 'ready';
+  }).catch(() => { if (!disposed) shell.dataset.coinFeedback = 'fallback'; });
+}
 
 function setLive(message) {
   liveStatus.textContent = message;
@@ -190,8 +203,8 @@ function spawnVfx(event, x = latestSnapshot?.chikun?.x ?? 280, y = latestSnapsho
   // A trail look recolours the flap, obstacle and coin bursts (character.mjs).
   const particles = chikunTrailParticles(plan.particles, event, cosmetics()).map((particle) => ({ ...particle, bornFrame: vfxFrame }));
   activeParticles = [...activeParticles, ...particles].slice(-MAX_CHIKUN_PARTICLES);
-  activeShake = plan.shake > 0 ? { amount: plan.shake, bornFrame: vfxFrame, lifeTicks: plan.lifeTicks } : null;
-  activeFlash = plan.flash > 0 ? { alpha: plan.flash, bornFrame: vfxFrame, lifeTicks: Math.min(18, plan.lifeTicks) } : null;
+  const motion = updateChikunVfxMotion({ shake: activeShake, flash: activeFlash }, plan, vfxFrame);
+  activeShake = motion.shake; activeFlash = motion.flash;
 }
 
 function renderReplayTimeline(evidence) {
@@ -315,10 +328,10 @@ function sendState(status = phase === 'running' ? 'running' : phase === 'game-ov
   });
 }
 
-function tone(frequency, duration = 0.08, gainValue = 0.035, type = 'triangle') {
+function tone(frequency, duration = 0.08, gainValue = 0.035, type = 'triangle', pitch = 1) {
   if (muted) return;
   const cue = ({420:'launch',96:'impact',560:'flap',880:'coin',1040:'near',660:'pass'})[frequency];
-  if (cue && flightAudio.play(cue)) return;
+  if (cue && flightAudio.play(cue, { pitch })) return;
   try {
     if (activeAudioVoices.size >= MAX_AUDIO_VOICES) return;
     const AudioContextCtor = globalThis.AudioContext ?? globalThis.webkitAudioContext;
@@ -333,7 +346,7 @@ function tone(frequency, duration = 0.08, gainValue = 0.035, type = 'triangle') 
       try { oscillator.disconnect(); gain.disconnect(); } catch { /* already released */ }
     }, { once: true });
     oscillator.type = type;
-    oscillator.frequency.value = frequency;
+    oscillator.frequency.value = frequency * pitch;
     gain.gain.setValueAtTime(gainValue, audioContext.currentTime);
     gain.gain.exponentialRampToValueAtTime(0.0001, audioContext.currentTime + duration);
     oscillator.connect(gain).connect(audioContext.destination);
@@ -447,6 +460,7 @@ function toggleFullscreen() {
 }
 
 function prepareRun() {
+  positiveCoinFeedback?.tracker.reset(); positiveCoinFeedback?.overlay.reset();
   ragdoll?.dispose(); ragdoll = null;
   terminalAge = 0; flapAge = Infinity; flightEventAge = Infinity; flightEvent = '';
   runtime = createChikunRuntime({ seed: initPayload.session.seed, maxTicks: MAX_RUN_TICKS });
@@ -683,6 +697,7 @@ function draw(snapshot = latestSnapshot) {
     drawChikun(snapshot);
   }
   drawVfx(snapshot);
+  positiveCoinFeedback?.overlay.render(renderDt, flightViewport, { reduceMotion: reduceMotion() });
   const approaching = phase === 'running' ? upcomingChikunObstacle(snapshot?.forks ?? [], flightViewport, snapshot?.difficulty?.speedMultiplier??1) : null;
   if (approaching) {
     const x = flightViewport.left + flightViewport.width - 12;
@@ -746,7 +761,17 @@ function stepFrame(now) {
         }
         accumulator -= STEP_MS;
         steps += 1;
-        if (latestSnapshot.coinsCollected > previousCoins) { previousCoins = latestSnapshot.coinsCollected; tone(880, 0.12, 0.04, 'sine'); showCallout('Litecoin +25'); spawnVfx('coin'); animateFlight('collect'); }
+        if (latestSnapshot.coinsCollected > previousCoins) {
+          previousCoins = latestSnapshot.coinsCollected;
+          if (positiveCoinFeedback) {
+            const plan = positiveCoinFeedback.tracker.observe(latestSnapshot);
+            if (plan) {
+              tone(880, 0.12, 0.04, 'sine', plan.pitch);
+              spawnVfx('coin-positive', plan.x, plan.y);
+              positiveCoinFeedback.overlay.collect(plan, flightViewport, { reduceMotion: reduceMotion() });
+            }
+          } else { tone(880, 0.12, 0.04, 'sine'); showCallout('Litecoin +25'); spawnVfx('coin'); animateFlight('collect'); }
+        }
         if (latestSnapshot.nearMisses > previousNearMisses) { previousNearMisses = latestSnapshot.nearMisses; tone(1040, 0.12, 0.04, 'triangle'); showCallout('Near miss +40'); spawnVfx('near-miss'); animateFlight(latestSnapshot.chikun.y < 360 ? 'dodge_high' : 'dodge_low'); }
         if (latestSnapshot.forksPassed > previousForks) {
           previousForks = latestSnapshot.forksPassed;
@@ -833,6 +858,7 @@ function handleParentMessage(event) {
     flightWorld.dispose();
     flightResizeObserver.disconnect();
     window.removeEventListener('resize', resizeFlightViewport);
+    positiveCoinFeedback?.overlay.dispose();
     flightAudio.dispose();
     audioContext?.close?.();
     audioContext = null;

@@ -1,0 +1,27 @@
+{
+  "schema": "chikun-positive-pickup-browser-v1",
+  "recordedAt": "2026-09-30T00:32:42.983Z",
+  "physicalPhoneTested": false,
+  "proofMode": "delayed-import-only",
+  "negativeControl": {
+    "originalSha256": "25facbb5565d560099bb46d7ebb19aa4d91ce16c6a6f13022a26c3122e5e88c7",
+    "servedSha256": "bf751f17d71fedab462934d197d506d9ec95865994cf89089ba50efc8eae3e50",
+    "removedGuard": "if(oe)return;",
+    "servedCount": 1
+  },
+  "frameScheduling": "controlled real browser frames and real child input handlers; not performance or physical acceptance",
+  "lazyModule": "/dist/chunks/coin-feedback-dom-BODGYAUD.js",
+  "cases": [],
+  "safetyCases": [],
+  "errors": [
+    "AssertionError [ERR_ASSERTION]: late import never marks a disposed child ready\n\n'ready' !== 'loading'\n\n    at file:///C:/Users/just_/lesters-arcade-wt/200-chikun-polish/scripts/chikun-positive-pickup-browser-smoke.mjs:235:16"
+  ],
+  "delayedImportObservation": {
+    "status": "ready",
+    "nodes": 0,
+    "pendingFrames": 0,
+    "closedPorts": 1,
+    "intercepted": 1,
+    "moduleEvaluationAwaited": true
+  }
+}

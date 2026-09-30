@@ -5,7 +5,7 @@
 // project grew past ~114 modules, causing `npm run check` to fail with
 // "The command line is too long." This runner keeps the SAME explicit file
 // lists (no globbing, so nothing silently escapes the gate) but invokes the
-// checks from Node, so the list can grow without any OS length wall — and new
+// checks from Node, so the list can grow without any OS length wall â€” and new
 // modules are added by editing an array here instead of a 8KB npm string.
 //
 // Add new source/test modules to NODE_CHECK_FILES, new Python scripts to
@@ -21,6 +21,10 @@ const root = fileURLToPath(new URL('..', import.meta.url));
 // Every .mjs / .js module that must parse cleanly (node --check).
 const NODE_CHECK_FILES = [
   'tests/build-git-independence.test.mjs',
+  'apps/chikun/src/coin-feedback.mjs',
+  'apps/chikun/src/coin-feedback-dom.mjs',
+  'tests/chikun-coin-feedback.test.mjs',
+  'scripts/chikun-positive-pickup-browser-smoke.mjs',
   'scripts/generate-stacked-maximal-fixture.mjs',
   'scripts/stacked-replay-benchmark.mjs',
   'scripts/stacked-replay-benchmark-sample.mjs',

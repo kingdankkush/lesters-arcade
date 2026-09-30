@@ -1,0 +1,74 @@
+{
+  "schema": "chikun-positive-pickup-source-bound-v1",
+  "classification": "default-off-local-presentation-prototype",
+  "runtimeSourceSha256": {
+    "apps/chikun/src/main.mjs": "fa98b3268e6d3234c53d1e3cdfe850e45cf5e367ab7f616028ee0f1ff6961f36",
+    "apps/chikun/src/vfx.mjs": "06da4690052e8e2cbd47d9d636a642f0eb8422cd86b93e4f8439c986d6c48e9d",
+    "apps/chikun/src/coin-feedback.mjs": "99783372fa2273cb14ca3400e872a5b753555f8da15b78ced1ec30122d37ff80",
+    "apps/chikun/src/coin-feedback-dom.mjs": "3cf4a6138eae14719f028b0a833eafd9c6f54119e90ca199462ea363b727f745"
+  },
+  "focusedChecks": {
+    "tests": 50,
+    "pass": 50,
+    "fail": 0,
+    "skip": 0
+  },
+  "byteChecks": {
+    "hmhInitialWithShared": 1039317,
+    "hmhHeadroom": 9259,
+    "stackedInitial": 576056
+  },
+  "browserCases": 4,
+  "browserSafetyCases": 3,
+  "browserErrors": 0,
+  "physicalPhoneTested": false,
+  "performanceMeasured": false,
+  "captureReceiptSha256": "3aaaab4201c21f17fcdc50bfda9e43067c7bc6cc619bea86813073f4f9044519",
+  "canonicalEvidenceUtf8Sha256": "3c9fc7dcd1d1097d0fcebf2f318b71850a178f87677c871eb2fce4bc178c6dc7",
+  "canonicalFinalStateUtf8Sha256": "072b419073aae45fef964542f94d06d178e8974969af7f6519b5950851910f4d",
+  "serialization": "compact UTF8 JSON of captured structured evidence/finalState; all four equal",
+  "separateBoardFailure": "initial empty preview template decode and later nested output-directory lookup failures retained; corrected board passed53/53 images, preview/filter/anchor/overflow at both sizes",
+  "priorPassedPhases": [
+    {
+      "name": "build-portability-source-free",
+      "exitCode": 0,
+      "log": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\build-portability-source-free-08786776ee3b4d7cbd8c352c8fab0657.log"
+    },
+    {
+      "name": "chikun-e0-focused",
+      "exitCode": 0,
+      "log": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\chikun-e0-focused-08786776ee3b4d7cbd8c352c8fab0657.log"
+    },
+    {
+      "name": "chikun-e0-build",
+      "exitCode": 0,
+      "log": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\chikun-e0-build-08786776ee3b4d7cbd8c352c8fab0657.log"
+    }
+  ],
+  "initialCompleteBrowserHarnessSha256": "bd8be78db3efd051c636b3575148802be423ca95ab6036611d0cdf4242dfc8cd",
+  "finalBrowserHarnessSha256": "5bd279c80f8aa3093d9cef3d7c7505fe1ab30cc40272ed3a2620866db990e8ee",
+  "strengthenedDelayedImportProof": {
+    "independentReview": "world_w0_audit read-only PASS",
+    "negativeReceiptSha256": "92a1365368151e16b9e586931c14fdc17276a8970d0558e1564bb19c56a81c2d",
+    "finalReceiptSha256": "b539f0487e8a28bdedb9de0e2eb6ea1b6317844d8ab954ea52c12d4c1c519a30",
+    "shippedEntryUnchangedSha256": "25facbb5565d560099bb46d7ebb19aa4d91ce16c6a6f13022a26c3122e5e88c7",
+    "observedNegative": {
+      "status": "ready",
+      "nodes": 0,
+      "pendingFrames": 0,
+      "closedPorts": 1,
+      "intercepted": 1,
+      "moduleEvaluationAwaited": true
+    },
+    "observedFinal": {
+      "status": "loading",
+      "nodes": 0,
+      "pendingFrames": 0,
+      "closedPorts": 1,
+      "intercepted": 1,
+      "moduleEvaluationAwaited": true
+    },
+    "scope": "targeted additional fresh proof; earlier complete runtime parity batch is unchanged and source-bound"
+  },
+  "referenceBoardReceiptSha256": "9ad6d6fa5a7bad748c1bb2dd56c60f47a8eb5989f04f69cc02261635e5ab53d2"
+}

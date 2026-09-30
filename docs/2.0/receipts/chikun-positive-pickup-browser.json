@@ -1,0 +1,1072 @@
+{
+  "schema": "chikun-positive-pickup-browser-v1",
+  "recordedAt": "2026-09-30T00:18:51.226Z",
+  "physicalPhoneTested": false,
+  "frameScheduling": "controlled real browser frames and real child input handlers; not performance or physical acceptance",
+  "lazyModule": "/dist/chunks/coin-feedback-dom-BODGYAUD.js",
+  "cases": [
+    {
+      "name": "desktop-before",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "dpr": 1,
+      "observed": {
+        "frameIndex": 736,
+        "peak": 0,
+        "firstPickupFrame": 736,
+        "coins": 1,
+        "phase": "running"
+      },
+      "geometry": {
+        "status": "disabled",
+        "coins": 1,
+        "flights": [],
+        "counter": {
+          "x": 216,
+          "y": 82,
+          "width": 11.390625,
+          "height": 13.59375
+        },
+        "overflow": false
+      },
+      "afterFlight": {
+        "flights": 0,
+        "arrivals": 0
+      },
+      "audio": [
+        {
+          "type": "buffer",
+          "pitch": 1,
+          "frequency": 0
+        },
+        {
+          "type": "buffer",
+          "pitch": 1,
+          "frequency": 0
+        },
+        {
+          "type": "buffer",
+          "pitch": 1,
+          "frequency": 0
+        },
+        {
+          "type": "buffer",
+          "pitch": 1,
+          "frequency": 0
+        },
+        {
+          "type": "buffer",
+          "pitch": 1,
+          "frequency": 0
+        },
+        {
+          "type": "buffer",
+          "pitch": 1,
+          "frequency": 0
+        },
+        {
+          "type": "buffer",
+          "pitch": 1,
+          "frequency": 0
+        },
+        {
+          "type": "buffer",
+          "pitch": 1,
+          "frequency": 0
+        },
+        {
+          "type": "oscillator",
+          "pitch": 1,
+          "frequency": 560
+        },
+        {
+          "type": "oscillator",
+          "pitch": 1,
+          "frequency": 660
+        },
+        {
+          "type": "oscillator",
+          "pitch": 1,
+          "frequency": 560
+        },
+        {
+          "type": "oscillator",
+          "pitch": 1,
+          "frequency": 560
+        },
+        {
+          "type": "oscillator",
+          "pitch": 1,
+          "frequency": 560
+        },
+        {
+          "type": "oscillator",
+          "pitch": 1,
+          "frequency": 560
+        },
+        {
+          "type": "oscillator",
+          "pitch": 1,
+          "frequency": 560
+        },
+        {
+          "type": "oscillator",
+          "pitch": 1,
+          "frequency": 560
+        },
+        {
+          "type": "buffer",
+          "pitch": 1,
+          "frequency": 0
+        },
+        {
+          "type": "buffer",
+          "pitch": 1,
+          "frequency": 0
+        },
+        {
+          "type": "buffer",
+          "pitch": 1,
+          "frequency": 0
+        },
+        {
+          "type": "buffer",
+          "pitch": 1,
+          "frequency": 0
+        },
+        {
+          "type": "buffer",
+          "pitch": 1,
+          "frequency": 0
+        },
+        {
+          "type": "buffer",
+          "pitch": 1,
+          "frequency": 0
+        },
+        {
+          "type": "buffer",
+          "pitch": 1,
+          "frequency": 0
+        },
+        {
+          "type": "buffer",
+          "pitch": 1,
+          "frequency": 0
+        },
+        {
+          "type": "buffer",
+          "pitch": 1,
+          "frequency": 0
+        },
+        {
+          "type": "buffer",
+          "pitch": 1,
+          "frequency": 0
+        },
+        {
+          "type": "oscillator",
+          "pitch": 1,
+          "frequency": 560
+        },
+        {
+          "type": "oscillator",
+          "pitch": 1,
+          "frequency": 560
+        },
+        {
+          "type": "oscillator",
+          "pitch": 1,
+          "frequency": 560
+        },
+        {
+          "type": "oscillator",
+          "pitch": 1,
+          "frequency": 660
+        },
+        {
+          "type": "oscillator",
+          "pitch": 1,
+          "frequency": 560
+        },
+        {
+          "type": "oscillator",
+          "pitch": 1,
+          "frequency": 560
+        },
+        {
+          "type": "oscillator",
+          "pitch": 1,
+          "frequency": 560
+        },
+        {
+          "type": "oscillator",
+          "pitch": 1,
+          "frequency": 560
+        },
+        {
+          "type": "buffer",
+          "pitch": 1,
+          "frequency": 0
+        },
+        {
+          "type": "oscillator",
+          "pitch": 1,
+          "frequency": 96
+        }
+      ],
+      "evidence": {
+        "version": "chikun-flap-evidence-v6",
+        "seed": 422250483,
+        "fixedStepHz": 60,
+        "maxTicks": 216000,
+        "flapDeltas": [
+          4,
+          13,
+          6,
+          5,
+          75,
+          78,
+          79,
+          80,
+          82,
+          66,
+          7,
+          6,
+          7,
+          6,
+          69,
+          78,
+          83,
+          383,
+          46,
+          78,
+          81,
+          84,
+          6,
+          6,
+          83,
+          79,
+          79,
+          80,
+          62,
+          80,
+          76
+        ]
+      },
+      "finalState": {
+        "step": 2063,
+        "y": 601.03,
+        "velocity": 6.72,
+        "score": 2337,
+        "coinsCollected": 9,
+        "forksPassed": 5,
+        "nearMisses": 0,
+        "bestCombo": 2,
+        "survivalTicks": 2063,
+        "survivalTime": 34.383333,
+        "crashed": true,
+        "terminalReason": "shiba"
+      },
+      "exactResultAndEvidenceParity": true,
+      "canonicalPublicReplayAccepted": true,
+      "ownedNodesAbsentAfterDispose": true,
+      "domRequests": [],
+      "muteCheck": null,
+      "errors": [],
+      "protocolErrors": [],
+      "runtimeErrors": []
+    },
+    {
+      "name": "desktop-positive",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "dpr": 1,
+      "observed": {
+        "frameIndex": 736,
+        "peak": 1,
+        "firstPickupFrame": 736,
+        "coins": 1,
+        "phase": "running"
+      },
+      "geometry": {
+        "status": "ready",
+        "coins": 1,
+        "flights": [
+          {
+            "x": 303.2415466308594,
+            "y": 274.81207275390625,
+            "width": 18.333343505859375,
+            "height": 18.33331298828125
+          }
+        ],
+        "counter": {
+          "x": 216,
+          "y": 82,
+          "width": 11.390625,
+          "height": 13.59375
+        },
+        "overflow": false
+      },
+      "afterFlight": {
+        "flights": 0,
+        "arrivals": 1
+      },
+      "audio": [
+        {
+          "type": "buffer",
+          "pitch": 1,
+          "frequency": 0
+        },
+        {
+          "type": "buffer",
+          "pitch": 1,
+          "frequency": 0
+        },
+        {
+          "type": "buffer",
+          "pitch": 1,
+          "frequency": 0
+        },
+        {
+          "type": "buffer",
+          "pitch": 1,
+          "frequency": 0
+        },
+        {
+          "type": "buffer",
+          "pitch": 1,
+          "frequency": 0
+        },
+        {
+          "type": "buffer",
+          "pitch": 1,
+          "frequency": 0
+        },
+        {
+          "type": "buffer",
+          "pitch": 1,
+          "frequency": 0
+        },
+        {
+          "type": "buffer",
+          "pitch": 1,
+          "frequency": 0
+        },
+        {
+          "type": "oscillator",
+          "pitch": 1,
+          "frequency": 560
+        },
+        {
+          "type": "oscillator",
+          "pitch": 1,
+          "frequency": 660
+        },
+        {
+          "type": "oscillator",
+          "pitch": 1,
+          "frequency": 560
+        },
+        {
+          "type": "oscillator",
+          "pitch": 1,
+          "frequency": 560
+        },
+        {
+          "type": "oscillator",
+          "pitch": 1,
+          "frequency": 560
+        },
+        {
+          "type": "oscillator",
+          "pitch": 1,
+          "frequency": 560
+        },
+        {
+          "type": "oscillator",
+          "pitch": 1,
+          "frequency": 560
+        },
+        {
+          "type": "oscillator",
+          "pitch": 1,
+          "frequency": 560
+        },
+        {
+          "type": "buffer",
+          "pitch": 1,
+          "frequency": 0
+        },
+        {
+          "type": "buffer",
+          "pitch": 1,
+          "frequency": 0
+        },
+        {
+          "type": "buffer",
+          "pitch": 1.0594631433486938,
+          "frequency": 0
+        },
+        {
+          "type": "buffer",
+          "pitch": 1.1224620342254639,
+          "frequency": 0
+        },
+        {
+          "type": "buffer",
+          "pitch": 1.1892070770263672,
+          "frequency": 0
+        },
+        {
+          "type": "buffer",
+          "pitch": 1.2599210739135742,
+          "frequency": 0
+        },
+        {
+          "type": "buffer",
+          "pitch": 1.3348398208618164,
+          "frequency": 0
+        },
+        {
+          "type": "buffer",
+          "pitch": 1.4142135381698608,
+          "frequency": 0
+        },
+        {
+          "type": "buffer",
+          "pitch": 1,
+          "frequency": 0
+        },
+        {
+          "type": "buffer",
+          "pitch": 1,
+          "frequency": 0
+        },
+        {
+          "type": "oscillator",
+          "pitch": 1,
+          "frequency": 560
+        },
+        {
+          "type": "oscillator",
+          "pitch": 1,
+          "frequency": 560
+        },
+        {
+          "type": "oscillator",
+          "pitch": 1,
+          "frequency": 560
+        },
+        {
+          "type": "oscillator",
+          "pitch": 1,
+          "frequency": 660
+        },
+        {
+          "type": "oscillator",
+          "pitch": 1,
+          "frequency": 560
+        },
+        {
+          "type": "oscillator",
+          "pitch": 1,
+          "frequency": 560
+        },
+        {
+          "type": "oscillator",
+          "pitch": 1,
+          "frequency": 560
+        },
+        {
+          "type": "oscillator",
+          "pitch": 1,
+          "frequency": 560
+        },
+        {
+          "type": "buffer",
+          "pitch": 1,
+          "frequency": 0
+        },
+        {
+          "type": "oscillator",
+          "pitch": 1,
+          "frequency": 96
+        }
+      ],
+      "evidence": {
+        "version": "chikun-flap-evidence-v6",
+        "seed": 422250483,
+        "fixedStepHz": 60,
+        "maxTicks": 216000,
+        "flapDeltas": [
+          4,
+          13,
+          6,
+          5,
+          75,
+          78,
+          79,
+          80,
+          82,
+          66,
+          7,
+          6,
+          7,
+          6,
+          69,
+          78,
+          83,
+          383,
+          46,
+          78,
+          81,
+          84,
+          6,
+          6,
+          83,
+          79,
+          79,
+          80,
+          62,
+          80,
+          76
+        ]
+      },
+      "finalState": {
+        "step": 2063,
+        "y": 601.03,
+        "velocity": 6.72,
+        "score": 2337,
+        "coinsCollected": 9,
+        "forksPassed": 5,
+        "nearMisses": 0,
+        "bestCombo": 2,
+        "survivalTicks": 2063,
+        "survivalTime": 34.383333,
+        "crashed": true,
+        "terminalReason": "shiba"
+      },
+      "exactResultAndEvidenceParity": true,
+      "canonicalPublicReplayAccepted": true,
+      "ownedNodesAbsentAfterDispose": true,
+      "domRequests": [
+        "http://127.0.0.1:8799/dist/chunks/coin-feedback-dom-BODGYAUD.js"
+      ],
+      "muteCheck": null,
+      "errors": [],
+      "protocolErrors": [],
+      "runtimeErrors": []
+    },
+    {
+      "name": "phone-positive",
+      "viewport": {
+        "width": 414,
+        "height": 896
+      },
+      "dpr": 3,
+      "observed": {
+        "frameIndex": 736,
+        "peak": 1,
+        "firstPickupFrame": 736,
+        "coins": 1,
+        "phase": "running"
+      },
+      "geometry": {
+        "status": "ready",
+        "coins": 1,
+        "flights": [
+          {
+            "x": 96.18494415283203,
+            "y": 298.4969482421875,
+            "width": 18.333335876464844,
+            "height": 18.33331298828125
+          }
+        ],
+        "counter": {
+          "x": 21,
+          "y": 153.40625,
+          "width": 8.515625,
+          "height": 9.59375
+        },
+        "overflow": false
+      },
+      "afterFlight": {
+        "flights": 0,
+        "arrivals": 1
+      },
+      "audio": [
+        {
+          "type": "buffer",
+          "pitch": 1,
+          "frequency": 0
+        },
+        {
+          "type": "buffer",
+          "pitch": 1,
+          "frequency": 0
+        },
+        {
+          "type": "buffer",
+          "pitch": 1,
+          "frequency": 0
+        },
+        {
+          "type": "buffer",
+          "pitch": 1,
+          "frequency": 0
+        },
+        {
+          "type": "buffer",
+          "pitch": 1,
+          "frequency": 0
+        },
+        {
+          "type": "buffer",
+          "pitch": 1,
+          "frequency": 0
+        },
+        {
+          "type": "buffer",
+          "pitch": 1,
+          "frequency": 0
+        },
+        {
+          "type": "buffer",
+          "pitch": 1,
+          "frequency": 0
+        },
+        {
+          "type": "oscillator",
+          "pitch": 1,
+          "frequency": 560
+        },
+        {
+          "type": "oscillator",
+          "pitch": 1,
+          "frequency": 660
+        },
+        {
+          "type": "oscillator",
+          "pitch": 1,
+          "frequency": 560
+        },
+        {
+          "type": "oscillator",
+          "pitch": 1,
+          "frequency": 560
+        },
+        {
+          "type": "oscillator",
+          "pitch": 1,
+          "frequency": 560
+        },
+        {
+          "type": "oscillator",
+          "pitch": 1,
+          "frequency": 560
+        },
+        {
+          "type": "oscillator",
+          "pitch": 1,
+          "frequency": 560
+        },
+        {
+          "type": "oscillator",
+          "pitch": 1,
+          "frequency": 560
+        },
+        {
+          "type": "buffer",
+          "pitch": 1,
+          "frequency": 0
+        },
+        {
+          "type": "buffer",
+          "pitch": 1,
+          "frequency": 0
+        }
+      ],
+      "evidence": {
+        "version": "chikun-flap-evidence-v6",
+        "seed": 422250483,
+        "fixedStepHz": 60,
+        "maxTicks": 216000,
+        "flapDeltas": [
+          4,
+          13,
+          6,
+          5,
+          75,
+          78,
+          79,
+          80,
+          82,
+          66,
+          7,
+          6,
+          7,
+          6,
+          69,
+          78,
+          83,
+          383,
+          46,
+          78,
+          81,
+          84,
+          6,
+          6,
+          83,
+          79,
+          79,
+          80,
+          62,
+          80,
+          76
+        ]
+      },
+      "finalState": {
+        "step": 2063,
+        "y": 601.03,
+        "velocity": 6.72,
+        "score": 2337,
+        "coinsCollected": 9,
+        "forksPassed": 5,
+        "nearMisses": 0,
+        "bestCombo": 2,
+        "survivalTicks": 2063,
+        "survivalTime": 34.383333,
+        "crashed": true,
+        "terminalReason": "shiba"
+      },
+      "exactResultAndEvidenceParity": true,
+      "canonicalPublicReplayAccepted": true,
+      "ownedNodesAbsentAfterDispose": true,
+      "domRequests": [
+        "http://127.0.0.1:8799/dist/chunks/coin-feedback-dom-BODGYAUD.js"
+      ],
+      "muteCheck": {
+        "before": {
+          "starts": 18,
+          "coins": 1
+        },
+        "after": {
+          "starts": 18,
+          "coins": 8
+        }
+      },
+      "errors": [],
+      "protocolErrors": [],
+      "runtimeErrors": []
+    },
+    {
+      "name": "phone-reduced",
+      "viewport": {
+        "width": 414,
+        "height": 896
+      },
+      "dpr": 3,
+      "observed": {
+        "frameIndex": 736,
+        "peak": 0,
+        "firstPickupFrame": 736,
+        "coins": 1,
+        "phase": "running"
+      },
+      "geometry": {
+        "status": "ready",
+        "coins": 1,
+        "flights": [],
+        "counter": {
+          "x": 21,
+          "y": 153.40625,
+          "width": 8.515625,
+          "height": 9.59375
+        },
+        "overflow": false
+      },
+      "afterFlight": {
+        "flights": 0,
+        "arrivals": 1
+      },
+      "audio": [
+        {
+          "type": "buffer",
+          "pitch": 1,
+          "frequency": 0
+        },
+        {
+          "type": "buffer",
+          "pitch": 1,
+          "frequency": 0
+        },
+        {
+          "type": "buffer",
+          "pitch": 1,
+          "frequency": 0
+        },
+        {
+          "type": "buffer",
+          "pitch": 1,
+          "frequency": 0
+        },
+        {
+          "type": "buffer",
+          "pitch": 1,
+          "frequency": 0
+        },
+        {
+          "type": "buffer",
+          "pitch": 1,
+          "frequency": 0
+        },
+        {
+          "type": "buffer",
+          "pitch": 1,
+          "frequency": 0
+        },
+        {
+          "type": "buffer",
+          "pitch": 1,
+          "frequency": 0
+        },
+        {
+          "type": "oscillator",
+          "pitch": 1,
+          "frequency": 560
+        },
+        {
+          "type": "oscillator",
+          "pitch": 1,
+          "frequency": 660
+        },
+        {
+          "type": "oscillator",
+          "pitch": 1,
+          "frequency": 560
+        },
+        {
+          "type": "oscillator",
+          "pitch": 1,
+          "frequency": 560
+        },
+        {
+          "type": "oscillator",
+          "pitch": 1,
+          "frequency": 560
+        },
+        {
+          "type": "oscillator",
+          "pitch": 1,
+          "frequency": 560
+        },
+        {
+          "type": "oscillator",
+          "pitch": 1,
+          "frequency": 560
+        },
+        {
+          "type": "oscillator",
+          "pitch": 1,
+          "frequency": 560
+        },
+        {
+          "type": "buffer",
+          "pitch": 1,
+          "frequency": 0
+        },
+        {
+          "type": "buffer",
+          "pitch": 1,
+          "frequency": 0
+        },
+        {
+          "type": "buffer",
+          "pitch": 1.0594631433486938,
+          "frequency": 0
+        },
+        {
+          "type": "buffer",
+          "pitch": 1.1224620342254639,
+          "frequency": 0
+        },
+        {
+          "type": "buffer",
+          "pitch": 1.1892070770263672,
+          "frequency": 0
+        },
+        {
+          "type": "buffer",
+          "pitch": 1.2599210739135742,
+          "frequency": 0
+        },
+        {
+          "type": "buffer",
+          "pitch": 1.3348398208618164,
+          "frequency": 0
+        },
+        {
+          "type": "buffer",
+          "pitch": 1.4142135381698608,
+          "frequency": 0
+        },
+        {
+          "type": "buffer",
+          "pitch": 1,
+          "frequency": 0
+        },
+        {
+          "type": "buffer",
+          "pitch": 1,
+          "frequency": 0
+        },
+        {
+          "type": "oscillator",
+          "pitch": 1,
+          "frequency": 560
+        },
+        {
+          "type": "oscillator",
+          "pitch": 1,
+          "frequency": 560
+        },
+        {
+          "type": "oscillator",
+          "pitch": 1,
+          "frequency": 560
+        },
+        {
+          "type": "oscillator",
+          "pitch": 1,
+          "frequency": 660
+        },
+        {
+          "type": "oscillator",
+          "pitch": 1,
+          "frequency": 560
+        },
+        {
+          "type": "oscillator",
+          "pitch": 1,
+          "frequency": 560
+        },
+        {
+          "type": "oscillator",
+          "pitch": 1,
+          "frequency": 560
+        },
+        {
+          "type": "oscillator",
+          "pitch": 1,
+          "frequency": 560
+        },
+        {
+          "type": "oscillator",
+          "pitch": 1,
+          "frequency": 880
+        },
+        {
+          "type": "oscillator",
+          "pitch": 1,
+          "frequency": 96
+        }
+      ],
+      "evidence": {
+        "version": "chikun-flap-evidence-v6",
+        "seed": 422250483,
+        "fixedStepHz": 60,
+        "maxTicks": 216000,
+        "flapDeltas": [
+          4,
+          13,
+          6,
+          5,
+          75,
+          78,
+          79,
+          80,
+          82,
+          66,
+          7,
+          6,
+          7,
+          6,
+          69,
+          78,
+          83,
+          383,
+          46,
+          78,
+          81,
+          84,
+          6,
+          6,
+          83,
+          79,
+          79,
+          80,
+          62,
+          80,
+          76
+        ]
+      },
+      "finalState": {
+        "step": 2063,
+        "y": 601.03,
+        "velocity": 6.72,
+        "score": 2337,
+        "coinsCollected": 9,
+        "forksPassed": 5,
+        "nearMisses": 0,
+        "bestCombo": 2,
+        "survivalTicks": 2063,
+        "survivalTime": 34.383333,
+        "crashed": true,
+        "terminalReason": "shiba"
+      },
+      "exactResultAndEvidenceParity": true,
+      "canonicalPublicReplayAccepted": true,
+      "ownedNodesAbsentAfterDispose": true,
+      "domRequests": [
+        "http://127.0.0.1:8799/dist/chunks/coin-feedback-dom-BODGYAUD.js"
+      ],
+      "muteCheck": null,
+      "errors": [],
+      "protocolErrors": [],
+      "runtimeErrors": []
+    }
+  ],
+  "safetyCases": [
+    {
+      "name": "delayed-load-dispose",
+      "observed": {
+        "status": "loading",
+        "nodes": 0,
+        "pendingFrames": 0,
+        "closedPorts": 1
+      },
+      "errors": [],
+      "passed": true
+    },
+    {
+      "name": "failed-download-fallback",
+      "optionalFailureKeepsGamePlayable": true,
+      "errors": [],
+      "passed": true
+    },
+    {
+      "name": "active-flight-dispose",
+      "actualPickupBeforeDisposal": 1,
+      "activeFlightRemoved": true,
+      "noInventedResult": true,
+      "errors": [],
+      "passed": true
+    }
+  ],
+  "errors": []
+}

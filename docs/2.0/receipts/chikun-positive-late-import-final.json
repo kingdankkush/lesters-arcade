@@ -1,0 +1,31 @@
+{
+  "schema": "chikun-positive-pickup-browser-v1",
+  "recordedAt": "2026-09-30T00:32:44.360Z",
+  "physicalPhoneTested": false,
+  "proofMode": "delayed-import-only",
+  "frameScheduling": "controlled real browser frames and real child input handlers; not performance or physical acceptance",
+  "lazyModule": "/dist/chunks/coin-feedback-dom-BODGYAUD.js",
+  "cases": [],
+  "safetyCases": [
+    {
+      "name": "delayed-load-dispose",
+      "observed": {
+        "status": "loading",
+        "nodes": 0,
+        "pendingFrames": 0,
+        "closedPorts": 1
+      },
+      "errors": [],
+      "passed": true
+    }
+  ],
+  "errors": [],
+  "delayedImportObservation": {
+    "status": "loading",
+    "nodes": 0,
+    "pendingFrames": 0,
+    "closedPorts": 1,
+    "intercepted": 1,
+    "moduleEvaluationAwaited": true
+  }
+}
