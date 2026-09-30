@@ -942,3 +942,12 @@ Independent review contributed a mixed malformed/empty-record preservation case
 before RED; implementation review clear. All three child PIDs closed/absent and
 owned markers released. No browser/build/full gate for this inactive source slice.
 See [G4a](slices/UNLOCKABLES-RETIREMENT-G4A.md) for evidence and activation work.
+
+## W3c — isolated local world movement runtime
+
+The loopback-only access gate and renderer-independent movement/nav lifetime now
+use the unchanged 60 Hz simulation and actual collision/traversal primitives.
+Genuine missing-module RED15 is retained; the new runtime and existing controls
+pass 48/48 source and identical 48/48 isolated checks, with independent review.
+No scene or official/default entry is enabled. W3d will add and verify the private
+Pixi scene. See [W3c checks and limits](slices/WORLD-W3C-LOCAL-RUNTIME.md).

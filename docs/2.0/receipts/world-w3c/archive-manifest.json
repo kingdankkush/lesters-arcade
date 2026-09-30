@@ -1,0 +1,96 @@
+{
+  "schema": "world-w3c-compact-archive-v1",
+  "scope": "Lossless genuine missing-module RED, exact source/no-Git GREEN, original hashes, runners, observed closure and independent review. No duplicate source tree, scene, browser, release or official-run claim.",
+  "entries": [
+    {
+      "archive": "red-01/red-report.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3c-local-runtime-red-20260930-01\\red-report.json",
+      "bytes": 32569,
+      "sha256": "077e02cb8bacc334fb14947c8498479d32028d0b10b0533392f6aac0fb89591e",
+      "storedBytes": 4673,
+      "storedSha256": "e17bffce63e902d90e8d2e7cab60a78c0e7e1627fe50174d2704465305c0b4de",
+      "compression": "gzip"
+    },
+    {
+      "archive": "red-01/bindings.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3c-local-runtime-red-20260930-01\\bindings.json",
+      "bytes": 18737,
+      "sha256": "4f331dd927e4fc0a9d0cdd7f6058586440e6bf695713e7571f99f0d319ab048f",
+      "storedBytes": 3142,
+      "storedSha256": "ea96851dc6cd1021a81788828763d8b52434f964f29081dd573e1e82e501f1d5",
+      "compression": "gzip"
+    },
+    {
+      "archive": "red-01/runner.mjs.txt.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3c-local-runtime-red-20260930-01\\runner.mjs.txt",
+      "bytes": 4595,
+      "sha256": "5bed13c26155bacec3cf97d1c513469f66e7b2904e31cc8bfe27e8720f38e9b4",
+      "storedBytes": 1809,
+      "storedSha256": "cda106a52701e929928f85c648f03eaca5f240057848e0b47962b5f2e280104a",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-01/gate-report.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3c-local-runtime-green-20260930-01\\gate-report.json",
+      "bytes": 39733,
+      "sha256": "6ffc7c5e162ee865227ec81952ffbd4661618267bfc3216d1fba695fd8333dc6",
+      "storedBytes": 8714,
+      "storedSha256": "eed96418fe70a2b2291dc20662c2a1a4e52b96e3a8d757676d4e66e4626c5973",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-01/bindings.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3c-local-runtime-green-20260930-01\\bindings.json",
+      "bytes": 19946,
+      "sha256": "43b093f54a3d7926bd9fc2d1287f9d42003cc5d2bedebe85d2226571851786e0",
+      "storedBytes": 3270,
+      "storedSha256": "3a74d26045f8f711aa73bf0ac5a448f5738864cf765453b054d9c8958f3ea7b3",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-01/runner.mjs.txt.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3c-local-runtime-green-20260930-01\\runner.mjs.txt",
+      "bytes": 5845,
+      "sha256": "9c98b975401fbb95a1b455cb1275f59b0fa02f0132e05919c2f35954facb5bd0",
+      "storedBytes": 2201,
+      "storedSha256": "d764352ab7a3152d013f9b3aa86786ad4dcdc9ee957ecf6934d582c2fb47ce97",
+      "compression": "gzip"
+    },
+    {
+      "archive": "world-w3c-red-closure.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3c-red-closure.json",
+      "bytes": 353,
+      "sha256": "44d7a7bc152e44da314719bf7ab6758e04441181f4de4ee8020acf70d20950d8",
+      "storedBytes": 224,
+      "storedSha256": "b4012c168cb0782dba5266a9cccaadd34b1586c8b0842ec7b96525994ee8faaa",
+      "compression": "gzip"
+    },
+    {
+      "archive": "world-w3c-green-closure.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3c-green-closure.json",
+      "bytes": 865,
+      "sha256": "1d35523f31279e55d52f37724507b5238fb58ee2ae6a23d5f5eb5dd6d36632ee",
+      "storedBytes": 265,
+      "storedSha256": "8b2f17f76f36f2ae10259022c59952ebf5e5389d1953d299a547f48fcb0db0d7",
+      "compression": "gzip"
+    },
+    {
+      "archive": "world-w3c-review.md.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3c-review.md",
+      "bytes": 2281,
+      "sha256": "b6bb61e82bc1da03e19f694cbbd8a315f109aacc904ad5ba067451addd54dbde",
+      "storedBytes": 1094,
+      "storedSha256": "df19e95d6be8559e9ed335813515ff46e95924b7195bfa873be083c9b801fd76",
+      "compression": "gzip"
+    },
+    {
+      "archive": "owned-windows-child.mjs.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\owned-windows-child.mjs",
+      "bytes": 3475,
+      "sha256": "a5177337fcf6ec41f285fc105b93d0b4b94ee1101cb14a653a91e9b8b075b0d9",
+      "storedBytes": 1353,
+      "storedSha256": "02e4475db1d22cb3a147a2e8df889e12f6857d38c4c60a8b4be99e5a04b4e2e7",
+      "compression": "gzip"
+    }
+  ]
+}
