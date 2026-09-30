@@ -20,7 +20,11 @@ byte-identical. W3b passed 31 plus identical isolated 31 and a fresh gathered-ro
 31. Its 34-file closure differs only by known checkout CRLF conversion in the
 greybox module; all 17 protected authority hashes match. Dormant geometry retains
 actual ground/collision/nav, stable area ownership and inert inspection metadata.
-No new map/schema/runtime default is activated. W3c is the next integration slice.
+No new map/schema/runtime default is activated. W3c gathered as `9c9cb243f`:
+48 source plus identical isolated48 pass for the local movement/nav lifetime and
+pre-import access gate. All31 gathered files match tested source modulo the same
+known greybox CRLF/LF conversion; all20 protected authority hashes match exactly.
+W3d next adds the actual Pixi scene and browser checks; they have not run yet.
 
 Private character checkpoint `1dd82309a` passes actual desktop and phone-framed
 boss facing, animation, state/evidence parity and graphics-context recovery.
@@ -28,7 +32,8 @@ Facing is corrected; final model/material quality remains unaccepted. Matched-po
 checkpoint `11549267e` now passes four original native source/derivative views,
 fixed camera/bone alignment and exact original source restoration. Root and both
 art/character reviewers identify lost forearm/hand and knee/boot detail in the
-optimized body. Regional shape/normal/weight measurement is the next repair step;
+optimized body. Regional shape/normal/weight measurement is the next repair step; its source
+checkpoint `cce721c` passes17 plus isolated17 after actual missing-helper RED10;
 no replacement model, shader equivalence or performance acceptance is claimed.
 
 Private art A15 checkpoint `4bd9cc3c2` passes source15 plus identical isolated15
@@ -951,3 +956,18 @@ Genuine missing-module RED15 is retained; the new runtime and existing controls
 pass 48/48 source and identical 48/48 isolated checks, with independent review.
 No scene or official/default entry is enabled. W3d will add and verify the private
 Pixi scene. See [W3c checks and limits](slices/WORLD-W3C-LOCAL-RUNTIME.md).
+
+
+### W3c gather and current image review — 2026-09-30
+
+Gathered as9c9cb243f after preserving both append-only progress entries. Source
+comparison records31 equivalent closure files and20 exact authority hashes. Only
+the previously documented greybox CRLF/LF checkout conversion differs. Source
+48+isolated48 evidence carries from the reviewed World lane; no additional root
+run, new build, scene or browser result is claimed. Proof: receipts/world-w3c-gather.
+
+Root reviewed the A15 yard and all four fixed-pose character originals. Farmhouse
+approach and trunk gaps improve; full-yard detail/planting remains below the art
+bar. Character neutral and textured comparisons expose loss in optimized limbs.
+A16 yard and regional limb diagnostics continue privately. Current checkpoint and
+original review images are refreshed. No credits, push, version bump or deployment.

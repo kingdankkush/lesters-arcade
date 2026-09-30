@@ -1,0 +1,19 @@
+{
+  "gatheredCommit": "9c9cb243f",
+  "matchedSourceFiles": 31,
+  "protectedExact": 20,
+  "entries": [
+    {
+      "file": "world-w3c-root-gather.json.gz",
+      "sha256": "5687f349af445d2b1efb039e5b56a3dc95cc9185a75391318fc41374f5176ad9",
+      "bytes": 11450,
+      "gzipBytes": 2909
+    },
+    {
+      "file": "gather-world-w3c.py.gz",
+      "sha256": "1d8679c99a22b9163b733234733146935d5391c49f7c940c8a0f2c35166e4d31",
+      "bytes": 1992,
+      "gzipBytes": 973
+    }
+  ]
+}
