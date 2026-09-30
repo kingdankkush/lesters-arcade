@@ -76,7 +76,7 @@ test('the Liquidator fights on an exchange floor inside Litecoin City through th
   }
   assert.equal(floor.walls.length, 12);
   assert.deepEqual(auditCollisionWorld({ blockers: [...world.collisionBlockers, ...floor.walls], visibleBarriers: [] }).errors.filter((error) => /duplicate/i.test(error)), []);
-  assert.deepEqual(gameplay.bossLockBlockers.map((wall) => wall.id), floor.walls.map((wall) => wall.id));
+  assert.deepEqual(gameplay.bossLockBlockers.slice(0, floor.walls.length).map((wall) => wall.id), floor.walls.map((wall) => wall.id), 'the exchange floor locks lead; the district court locks follow');
   assert.equal(BOSS_DEFINITIONS.liquidator.arenas.bell.id, 'margin-floor', 'the legacy table is untouched');
   assert.equal(gameplay.bossDefinitions.liquidator.arenas.bell.id, floor.id);
   assert.equal(gameplay.bossDefinitions.liquidator.triggerZone, BOSS_DEFINITIONS.liquidator.triggerZone);
@@ -96,7 +96,43 @@ test('the Liquidator fights on an exchange floor inside Litecoin City through th
   assert.equal(slots.slots.liquidator.arena.id, floor.id);
   assert.ok(slots.slots.liquidator.boss.x >= floor.bounds.minX && slots.slots.liquidator.boss.x <= floor.bounds.maxX);
   assert.equal(createBossSlots({ seed: 11 }).definitions, BOSS_DEFINITIONS, 'the legacy default is the legacy table');
-  assert.deepEqual(gameplay.stubbedBosses.map((row) => row.bossId).sort(), ['51-percent-foreman', 'lockkeeper', 'rug-pull-baron']);
+  assert.deepEqual(gameplay.stubbedBosses, [], 'every court boss is registered');
+});
+
+test('the three district bosses are registered on courts placed on the world arena anchors (slice HMH-BOSSES-2-4)', () => {
+  assert.deepEqual(Object.keys(gameplay.bossDefinitions).sort(), ['fifty-one-percent-foreman', 'liquidator', 'lockkeeper', 'rug-pull-baron']);
+  const areas = { 'rug-pull-baron': ['hashwood-river', 'rug-pull-baron'], lockkeeper: ['scrypt-bayou', 'lockkeeper'], 'fifty-one-percent-foreman': ['fork-fortress', '51-percent-foreman'] };
+  for (const [bossId, [districtId, arenaBossId]] of Object.entries(areas)) {
+    const court = gameplay.districtCourts[bossId];
+    const arena = world.encounterArenas.find((row) => row.bossId === arenaBossId);
+    assert.equal(court.id, arena.id);
+    assert.deepEqual(court.centre, arena.anchor);
+    assert.equal(court.bounds.maxX - court.bounds.minX, 1800);
+    for (const point of [court.centre, court.spawn, court.threshold, court.pedestal, court.retreat, ...court.marks]) {
+      assert.equal(isWorldV2PointClear(world, queryGround, point, 24), true, `${bossId} ${point.x},${point.y}`);
+      assert.equal(getWorldV2DistrictAt(world, point.x, point.y)?.id, districtId);
+    }
+    const definition = gameplay.bossDefinitions[bossId];
+    assert.equal(definition.arenas.threshold, court);
+    assert.equal(definition.readyTick, HMH_V7_BOSSES[bossId].readyTick);
+    assert.equal(definition.silverBurst, HMH_V7_BOSSES[bossId].silverBurst);
+    assert.equal(typeof definition.create, 'function');
+    assert.ok(gameplay.missionBossZones.some((row) => row.bossZone.kind === 'retreat' && row.bossZone.bossId === bossId && row.bossZone.arena === court.id));
+    for (const wall of court.walls) assert.ok(gameplay.bossLockBlockers.includes(wall));
+  }
+  assert.deepEqual(auditCollisionWorld({ blockers: [...world.collisionBlockers, ...gameplay.bossLockBlockers], visibleBarriers: [] }).errors.filter((error) => /duplicate/i.test(error)), []);
+  // Crossing the River threshold at the Baron's ready tick starts him on his court through the same slots.
+  const court = gameplay.districtCourts['rug-pull-baron'];
+  const slots = createBossSlots({ seed: 4, definitions: gameplay.bossDefinitions });
+  const player = { x: court.threshold.x, y: court.threshold.y, groundZ: 0, radius: 24 };
+  const readyTick = HMH_V7_BOSSES['rug-pull-baron'].readyTick;
+  assert.deepEqual(stepBossSlots(slots, { tick: readyTick - 1, player, missionEvents: [], level: 5 }).events, []);
+  const frame = stepBossSlots(slots, { tick: readyTick, player, missionEvents: [], level: 5 });
+  assert.equal(frame.events[0].type, 'boss-initiated');
+  assert.equal(frame.events[0].bossId, 'rug-pull-baron');
+  assert.equal(slots.slots['rug-pull-baron'].arena.id, court.id);
+  assert.equal(slots.slots['rug-pull-baron'].boss.bossId, 'rug-pull-baron');
+  assert.deepEqual(Object.keys(createBossSlots({ seed: 4 }).slots), ['liquidator'], 'the legacy default still holds only the Liquidator');
 });
 
 test('the entry, briefing and tables are deterministic and unofficial', () => {
