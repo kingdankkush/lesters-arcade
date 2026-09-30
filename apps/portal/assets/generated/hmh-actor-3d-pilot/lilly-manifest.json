@@ -1,0 +1,183 @@
+{
+  "schema": 1,
+  "classification": "unapproved-runtime-character-pilot",
+  "activeRuntimeIntegration": false,
+  "cameraDegreesFromVertical": 55,
+  "groundPivot": "existing-world-foot-position",
+  "simulationAuthority": "none",
+  "actors": {
+    "lilly": {
+      "file": "lilly.glb",
+      "sha256": "5f9f4b42849455233a17b90b750c4c08125e4732dcf3acd7536a528abd42414f",
+      "sourceSha256": "5f9152e713f7c4f79e96d1f1a4415dd1fb96a2685d3d14f22a65e895c8e7d6b2",
+      "sourceBytes": 59988395,
+      "sourceTriangles": 2417405,
+      "requiredClips": [
+        "idle",
+        "run",
+        "aim",
+        "pistol-fire",
+        "hurt",
+        "dash",
+        "melee",
+        "grenade",
+        "death"
+      ],
+      "inspection": {
+        "bytes": 7860780,
+        "vertices": 25645,
+        "triangles": 27496,
+        "skinnedMeshes": 6,
+        "joints": 24,
+        "clips": [
+          {
+            "name": "aim",
+            "durationSeconds": 1,
+            "channels": 75
+          },
+          {
+            "name": "dash",
+            "durationSeconds": 1,
+            "channels": 75
+          },
+          {
+            "name": "death",
+            "durationSeconds": 1,
+            "channels": 75
+          },
+          {
+            "name": "grenade",
+            "durationSeconds": 1,
+            "channels": 75
+          },
+          {
+            "name": "hurt",
+            "durationSeconds": 1,
+            "channels": 75
+          },
+          {
+            "name": "idle",
+            "durationSeconds": 1,
+            "channels": 75
+          },
+          {
+            "name": "melee",
+            "durationSeconds": 1,
+            "channels": 75
+          },
+          {
+            "name": "pistol-fire",
+            "durationSeconds": 1,
+            "channels": 75
+          },
+          {
+            "name": "run",
+            "durationSeconds": 1,
+            "channels": 75
+          }
+        ],
+        "bounds": {
+          "min": [
+            -0.5444358587265015,
+            0.0006126696825958788,
+            -0.3653395175933838
+          ],
+          "max": [
+            0.5441542863845825,
+            2.1002132892608643,
+            0.3640466034412384
+          ]
+        },
+        "embeddedImages": 12,
+        "images": [
+          {
+            "name": "desert+eagle+handgun+3d+model_normal",
+            "format": "png",
+            "width": 512,
+            "height": 512,
+            "bytes": 315694
+          },
+          {
+            "name": "desert+eagle+handgun+3d+model_basecolor",
+            "format": "png",
+            "width": 512,
+            "height": 512,
+            "bytes": 370923
+          },
+          {
+            "name": "desert+eagle+handgun+3d+model_rm",
+            "format": "png",
+            "width": 512,
+            "height": 512,
+            "bytes": 387271
+          },
+          {
+            "name": "rugged+hunting+knife+3d+model_normal",
+            "format": "png",
+            "width": 512,
+            "height": 512,
+            "bytes": 315427
+          },
+          {
+            "name": "rugged+hunting+knife+3d+model_basecolor",
+            "format": "png",
+            "width": 512,
+            "height": 512,
+            "bytes": 407601
+          },
+          {
+            "name": "rugged+hunting+knife+3d+model_rm",
+            "format": "png",
+            "width": 512,
+            "height": 512,
+            "bytes": 213764
+          },
+          {
+            "name": "fantasy+character+3d+model_normal",
+            "format": "png",
+            "width": 1024,
+            "height": 1024,
+            "bytes": 618384
+          },
+          {
+            "name": "fantasy+character+3d+model_basecolor",
+            "format": "png",
+            "width": 1024,
+            "height": 1024,
+            "bytes": 1374077
+          },
+          {
+            "name": "fantasy+character+3d+model_rm",
+            "format": "png",
+            "width": 1024,
+            "height": 1024,
+            "bytes": 839202
+          },
+          {
+            "name": "hand+grenade+3d+model_normal",
+            "format": "png",
+            "width": 512,
+            "height": 512,
+            "bytes": 176370
+          },
+          {
+            "name": "hand+grenade+3d+model_basecolor",
+            "format": "png",
+            "width": 512,
+            "height": 512,
+            "bytes": 303323
+          },
+          {
+            "name": "hand+grenade+3d+model_rm",
+            "format": "png",
+            "width": 512,
+            "height": 512,
+            "bytes": 326641
+          }
+        ],
+        "textureBytesRgba8": 22020096,
+        "textureBytesRgba8Mipmaps": 29360112
+      }
+    }
+  }
+}

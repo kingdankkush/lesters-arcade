@@ -84,12 +84,33 @@ export function validateMeadowsArtMetadata(metadata, tier) {
   }
   const [a, b] = selected.frames.map(frame => frame.frame);
   if (a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y) failure('overlapping target frames');
-  return { pages, frames: selected.frames, decodedBytes, encodedBytes };
+  const details = metadata.groundDetails;
+  if (details) {
+    const page = details.page;
+    if (details.runtimeAuthority !== 'projection-only' || details.sourcePixelsPreserved !== true || !page ||
+        !/^[a-z0-9-]+\.webp$/.test(page.image) || !HASH.test(page.sha256) ||
+        ![page.width, page.height, page.bytes].every(n => Number.isInteger(n) && n > 0) || page.width > 512 || page.height > 512 ||
+        !Array.isArray(details.frames) || details.frames.length !== 2 || !Array.isArray(details.placements) || details.placements.length > 128) failure('invalid bounded detail page');
+    const ids = new Set();
+    for (const frame of details.frames) {
+      const r = frame.frame;
+      if (!['grass', 'aggregate'].includes(frame.assetId) || ids.has(frame.assetId) || !r ||
+          ![r.x, r.y, r.w, r.h].every(Number.isInteger) || r.x < 0 || r.y < 0 || r.w < 1 || r.h < 1 || r.x + r.w > page.width || r.y + r.h > page.height ||
+          ![frame.anchor?.x, frame.anchor?.y].every(n => Number.isFinite(n) && n >= 0 && n <= 1) ||
+          ![frame.runtimeScale, frame.projectionY].every(n => Number.isFinite(n) && n > 0 && n <= 2)) failure('invalid detail frame');
+      ids.add(frame.assetId);
+    }
+    for (const row of details.placements) if (!ids.has(row.assetId) || ![row.x, row.y, row.rotation].every(Number.isFinite) ||
+        !Number.isFinite(row.scale) || row.scale <= 0 || row.scale > 2 || ![row.widthScale ?? 1, row.heightScale ?? 1].every(n => Number.isFinite(n) && n >= .35 && n <= 1.4) || !Number.isFinite(row.alpha) || row.alpha < 0 || row.alpha > 1 ||
+        !Number.isInteger(row.tint) || row.tint < 0 || row.tint > 0xffffff || typeof row.flip !== 'boolean') failure('invalid detail placement');
+    decodedBytes += page.width * page.height * 4; encodedBytes += page.bytes;
+  }
+  return { pages, frames: selected.frames, details, decodedBytes, encodedBytes };
 }
 
 export async function loadMeadowsArtTarget({ enabled = false, world, mobile = false, fetchImpl = fetch, loadTexture, unloadTexture = async () => {}, isDisposed = () => false, onCleanupReport = () => {} } = {}) {
   if (!enabled || isDisposed()) return null;
-  const loaded = [], appearance = new Map();
+  const loaded = [], detailTextures = [], appearance = new Map();
   let disposePromise = null, groundLayer = null, disposed = false;
   const getCleanupStatus = () => freezeDeep({ disposed, ok: disposed && loaded.every(entry => entry.released), ownedResourceUrls: loaded.filter(entry => !entry.released).map(entry => entry.url), failedResources: loaded.filter(entry => entry.error !== undefined).map(entry => ({ url: entry.url, attempts: entry.attempts, error: entry.error })) });
   const dispose = () => {
@@ -97,6 +118,7 @@ export async function loadMeadowsArtTarget({ enabled = false, world, mobile = fa
     groundLayer?.container?.parent?.removeChild(groundLayer.container);
     groundLayer?.container?.destroy?.({ children: true });
     groundLayer = null;
+    for (const texture of detailTextures.splice(0)) texture.destroy(false);
     appearance.clear();
     if (disposePromise) return disposePromise;
     const pending = loaded.filter(entry => !entry.released);
@@ -122,7 +144,7 @@ export async function loadMeadowsArtTarget({ enabled = false, world, mobile = fa
     if (!response.ok) failure(`metadata HTTP ${response.status}`);
     const metadata = await response.json(), selected = validateMeadowsArtMetadata(metadata, mobile ? 'mobile' : 'desktop');
     if (isDisposed()) return null;
-    for (const page of selected.pages) {
+    for (const page of [...selected.pages, ...(selected.details ? [selected.details.page] : [])]) {
       const url = ROOT + page.image, texture = await loadTexture(url);
       loaded.push({ url, texture });
       if (isDisposed()) { await dispose(); return null; }
@@ -132,13 +154,26 @@ export async function loadMeadowsArtTarget({ enabled = false, world, mobile = fa
     const createGround = ({ ContainerClass, SpriteClass, target, before }) => {
       if (disposed || groundLayer) failure('ground layer already created or disposed');
       const container = new ContainerClass(); container.label = 'meadows-art-target-ground';
-      const sprites = [];
+      const sprites = [], details = [];
       try {
         for (const piece of plan.ground) { const sprite = new SpriteClass({ texture: loaded[piece.page].texture }); sprite.anchor.set(0, 0); container.addChild(sprite); sprites.push(sprite); }
+        if (selected.details) {
+          const page = loaded[3].texture, frameTextures = new Map();
+          for (const frame of selected.details.frames) {
+            const r = frame.frame;
+            const texture = new page.constructor({ source: page.source, frame: new page.frame.constructor(r.x, r.y, r.w, r.h) });
+            detailTextures.push(texture); frameTextures.set(frame.assetId, { texture, frame });
+          }
+          for (const row of selected.details.placements) {
+            const { texture, frame } = frameTextures.get(row.assetId), sprite = new SpriteClass({ texture });
+            sprite.anchor.set(frame.anchor.x, frame.anchor.y); sprite.alpha = row.alpha; sprite.tint = row.tint; sprite.rotation = row.rotation;
+            container.addChild(sprite); details.push({ sprite, row, frame });
+          }
+        }
         target.addChildAt(container, target.getChildIndex(before));
-        groundLayer = { container, sprites };
+        groundLayer = { container, sprites, details };
         return groundLayer;
-      } catch (error) { container.destroy?.({ children: true }); throw error; }
+      } catch (error) { container.destroy?.({ children: true }); for (const texture of detailTextures.splice(0)) texture.destroy(false); throw error; }
     };
     const renderGround = ({ camera, view, worldToScreen }) => {
       if (!groundLayer || disposed) return;
@@ -146,6 +181,14 @@ export async function loadMeadowsArtTarget({ enabled = false, world, mobile = fa
         const sprite = groundLayer.sprites[index], point = worldToScreen({ x: piece.x, y: piece.y, z: 0 }, camera, view);
         sprite.position.set(point.x, point.y); sprite.width = piece.width * camera.zoom; sprite.height = piece.height * camera.zoom;
         sprite.visible = point.x + sprite.width >= 0 && point.x <= view.width && point.y + sprite.height >= 0 && point.y <= view.height;
+      }
+      for (const { sprite, row, frame } of groundLayer.details) {
+        const point = worldToScreen({ x: row.x, y: row.y, z: 0 }, camera, view);
+        const scale = frame.runtimeScale * row.scale * camera.zoom;
+        const width = row.widthScale ?? 1, height = row.heightScale ?? 1;
+        const extent = Math.hypot(frame.frame.w * width, frame.frame.h * frame.projectionY * height) * scale;
+        sprite.visible = point.x + extent >= 0 && point.x - extent <= view.width && point.y + extent >= 0 && point.y - extent <= view.height;
+        if (sprite.visible) { sprite.position.set(point.x, point.y); sprite.scale.set((row.flip ? -scale : scale) * width, scale * frame.projectionY * height); }
       }
     };
     return { plan, appearance, collectCanvasHud: collectMeadowsCanvasHudRects, resolveCameraZoom: baseZoom => resolveMeadowsTargetCameraZoom({ baseZoom, mobile, enabled: true }), encodedBytes: selected.encodedBytes, decodedBytes: selected.decodedBytes, replacePlacements: placements => replaceMeadowsArtPlacements(placements, plan), createGround, renderGround, getCleanupStatus, dispose };

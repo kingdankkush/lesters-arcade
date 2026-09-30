@@ -33,7 +33,7 @@ export function createLivingJourneyView({layer,Container,Graphics,Text,mobile=fa
     const slot={container,world,backdrop,rain,projection,base:null,glyphs:[],settings:{video:{},accessibility:{}}};
     root.addChild(container);slots.push(slot);
     slot.base=createAtmosphere({layer:world,sceneLayer:backdrop,Graphics,mobile,project});
-    const glyphs=Array.from({length:glyphCount},(_,index)=>{const glyph=new Text({text:GLYPHS[(index*7)%GLYPHS.length],style:{fontFamily:'monospace',fontSize:16,fill:index%3===0?0xc8e4df:0x69cba4}});glyph.anchor?.set?.(.5);rain.addChild(glyph);return glyph;});
+    const glyphs=Array.from({length:glyphCount},(_,index)=>{const glyph=new Text({text:GLYPHS[(index*7)%GLYPHS.length],style:{fontFamily:'monospace',fontSize:18,fill:0xffffff}});glyph.anchor?.set?.(.5);rain.addChild(glyph);return glyph;});
     slot.glyphs=glyphs;return slot;
   };
   makeSlot();makeSlot();
@@ -54,7 +54,9 @@ export function createLivingJourneyView({layer,Container,Graphics,Text,mobile=fa
     slot.settings.video.visualizer=SCENES.has(mode)?'living':mode==='matrix'?'living':mode;
     slot.settings.video.scene=SCENES.has(mode)?mode:'off';
     slot.world.visible=slot.backdrop.visible=mode!=='matrix';slot.rain.visible=mode==='matrix';
-    const baseInfo=slot.base.draw({...args,settings:slot.settings});
+    // Matrix owns this slot's pixels. Keep the hidden particle pool allocated
+    // for the next portal, but do not recalculate its geometry every frame.
+    const baseInfo=slot.base.draw({...args,settings:slot.settings,geometryVisible:mode!=='matrix'});
     const columns=mobile?12:24,rows=glyphCount/columns;
     const curtain=journey.state.reason==='halving'&&journey.state.mix<1?Math.sin(journey.state.mix*Math.PI)*.22:0;
     for(let index=0;index<glyphCount;index++){
@@ -64,7 +66,15 @@ export function createLivingJourneyView({layer,Container,Graphics,Text,mobile=fa
       const perspective=180/(depth+90),side=column<columns/2?-1:1;
       glyph.position.set(((column+.5)/columns-.5)*args.width*(1+curtain)*perspective+side*curtain*args.width*.12,
         (((row+.5)/rows+journey.state.distance*.009+column*.037)%1-.5)*args.height);
-      glyph.scale.set(Math.min(2,perspective));glyph.alpha=.38*args.settings.video.effectsIntensity;
+      // Staggered silver heads lead soft green tails. The journey distance
+      // freezes under reduced motion, including glyph changes and luminance.
+      const phase=((journey.state.distance*.035+column*.381)%rows+rows)%rows;
+      const age=(row-phase+rows)%rows,head=age<1;
+      glyph.scale.set(Math.min(2,perspective));
+      glyph.alpha=(.14+.50*Math.exp(-age*.55))*args.settings.video.effectsIntensity;
+      glyph.tint=head?0xe4fff0:0x72dba4;
+      const code=Math.floor(journey.state.distance*.12+column*.7+row*3);
+      const text=GLYPHS[(index*7+code)%GLYPHS.length];if(glyph.text!==text)glyph.text=text;
     }
     return baseInfo;
   };

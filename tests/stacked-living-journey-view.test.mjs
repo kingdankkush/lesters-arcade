@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { createStackedAtmosphere } from '../apps/stacked/src/render/atmosphere.mjs';
 import { createLivingJourneyView } from '../apps/stacked/src/render/living-journey-view.mjs';
 import { defaultStackedSettings } from '../apps/portal/src/stacked-player-settings.mjs';
 import {Container as Node,Graphics,Text} from './lib/stacked-pixi-test-fixture.mjs';
@@ -66,4 +67,23 @@ test('fixed-world selection respects settings then returns to the automatic jour
   assert.equal(view.resources.incoming.visible,false);assert.equal(view.resources.aperture.visible,false);
   settings.video.visualizer='journey';
   assert.equal(frame(view,settings,17).journeyVersion,'living-v1');view.destroy();
+});
+
+test('Matrix has readable trail heads and freezes glyph shape and brightness under reduced motion',()=>{
+  const{view,settings}=setup(true);let result;
+  for(let i=0;i<4000;i++){result=frame(view,settings,i*100);if(result.mode==='matrix'&&result.phase==='ambient'){
+    const visible=view.resources.glyphs.filter(g=>g.visible&&g.parent.visible&&g.parent.parent.visible);
+    assert.ok(visible.length>0);assert.ok(new Set(visible.map(g=>g.alpha)).size>3,'heads and tails must have distinct luminance');
+    settings.accessibility.reduceMotion=true;frame(view,settings,i*100+17);
+    const take=()=>visible.map(g=>[g.text,g.alpha,g.position.x,g.position.y,g.scale.x]);const before=take();
+    for(let j=1;j<20;j++)frame(view,settings,i*100+17+j*100);assert.deepEqual(take(),before);view.destroy();return;
+  }}assert.fail('Matrix did not arrive');
+});
+
+test('the hidden particle field is not recalculated while only Matrix glyphs are drawn',()=>{
+  let draws=0;const view=createLivingJourneyView({layer:new Node(),Container:Node,Graphics,Text,mobile:true,
+    createAtmosphere:options=>createStackedAtmosphere({...options,project(...args){draws++;return options.project(...args);}})}),settings=defaultStackedSettings();
+  for(let i=0;i<4000;i++){const result=frame(view,settings,i*100);if(result.mode==='matrix'&&result.phase==='ambient'){
+    const before=draws;frame(view,settings,i*100+17);assert.equal(draws,before,'invisible field should not consume the frame');view.destroy();return;
+  }}assert.fail('Matrix did not arrive');
 });

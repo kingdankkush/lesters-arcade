@@ -96,7 +96,7 @@ test('game presentation selects only the reviewed identity/weapon/clips and pres
   assert.equal(JSON.stringify([hero, enemy]), before);
   assert.equal(module.createActor3dPresentationEntries({ ...hero, weaponId: 'hash-rail' }, enemy).length, 1);
   assert.equal(module.createActor3dPresentationEntries({ ...hero, action: 'interact' }, null).length, 0);
-  assert.equal(module.createActor3dPresentationEntries({ ...hero, actorId: 'lester-original' }, null).length, 0);
+  assert.equal(module.createActor3dPresentationEntries({ ...hero, actorId: 'unapproved-hero' }, null).length, 0);
 });
 
 test('actor lifetime tracking stays bounded when a long run replaces the projected enemy repeatedly', () => {
@@ -184,4 +184,33 @@ test('malformed crowd selection restores prior sprites before falling back', asy
   const badBoss={active:true,visible:true,alpha:1,x:0,y:0,z:0,bodyHeight:84,pose:{state:'idle',direction:9,tick:0},original:{renderable:true}};
   assert.equal(controller.updateGame(null,[enemy],camera,view,badBoss),false);assert.equal(controller.status,'fallback');
   assert.equal(enemy.originals[0].renderable,true);assert.equal(badBoss.original.renderable,true);assert.equal(gpu.disposed,1);controller.dispose();
+});
+
+
+for (const heroActorId of ['lilly', 'lit-valkyrie', 'lester-original']) test(`selected ${heroActorId} uses its own hero identity and only that hero loads`, async () => {
+  const gpu=backend(); let options;
+  const controller=module.createActor3dPilotController({renderer:renderer(),canvas:canvas(),heroActorId,backendFactory:value=>{options=value;return gpu;}});
+  const original={renderable:true}, hero={actorId:heroActorId,weaponId:'coin-blaster',x:0,y:0,z:0,heading:0,action:'run',actionTick:15,bodyHeight:84,originals:[original]};
+  await controller.start();assert.equal(options.heroActorId,heroActorId);
+  assert.equal(controller.updateGame(hero,[],camera,view),true);
+  assert.equal(gpu.frames.at(-1)[0].actorId,heroActorId);assert.equal(gpu.frames.at(-1)[0].clip,'run');assert.equal(original.renderable,false);
+  const foreign={renderable:true};controller.updateGame({...hero,actorId:'lit-commando',originals:[foreign]},[],camera,view);
+  assert.equal(gpu.frames.at(-1).length,0);assert.equal(original.renderable,true);assert.equal(foreign.renderable,true);controller.dispose();
+});
+
+test('unsupported heroes retain their sprite without allocating another hero model', async () => {
+  let options;const gpu=backend(),controller=module.createActor3dPilotController({renderer:renderer(),canvas:canvas(),heroActorId:'unapproved-hero',backendFactory:value=>{options=value;return gpu;}});
+  await controller.start();assert.equal(options.heroActorId,null);controller.dispose();
+});
+
+test('equipped body and weapon colours survive detached 3D projection and restore after a hit flash', async () => {
+  const gpu=backend(), controller=module.createActor3dPilotController({renderer:renderer(),canvas:canvas(),backendFactory:()=>gpu});
+  const hero={actorId:'lit-commando',weaponId:'coin-blaster',x:0,y:0,z:0,heading:0,action:'idle',actionTick:0,bodyHeight:84,
+    bodyTint:0x55aacc,weaponTint:0xeebb55,originals:[{renderable:true}]};
+  await controller.start();controller.updateGame(hero,[],camera,view);
+  const equipped=gpu.frames.at(-1)[0];assert.equal(equipped.bodyTint,0x55aacc);assert.equal(equipped.weaponTint,0xeebb55);
+  controller.updateGame({...hero,bodyTint:0xffaaaa,weaponTint:0xffaaaa},[],camera,view);
+  const hit=gpu.frames.at(-1)[0];assert.equal(hit.bodyTint,0xffaaaa);assert.equal(hit.weaponTint,0xffaaaa);
+  controller.updateGame(hero,[],camera,view);assert.equal(gpu.frames.at(-1)[0].weaponTint,0xeebb55);
+  hero.bodyTint=0;assert.equal(equipped.bodyTint,0x55aacc);assert.ok(Object.isFrozen(equipped));controller.dispose();
 });

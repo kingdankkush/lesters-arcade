@@ -1,7 +1,7 @@
 // Presentation-only focused badge. The collection supplies already-validated facts.
 // No network, persistence, earning logic, sensors, WebGL or animation loop.
 export function createAchievementDetail({documentRef=globalThis.document,windowRef=globalThis.window}={}) {
-  let disposed=false,dialog,stage,art,title,game,requirement,record,hint,closeButton;
+  let disposed=false,dialog,stage,art,title,game,requirement,record,status,rarityText,hint,closeButton;
   let pointer=null,start=null,x=0,y=0,returnFocus=null,closeTouch=null;
   const media=windowRef?.matchMedia?.('(prefers-reduced-motion: reduce)');
   const reduced=()=>media?.matches===true;
@@ -25,7 +25,7 @@ export function createAchievementDetail({documentRef=globalThis.document,windowR
   function onVisibility(){if(documentRef.hidden)reset();}
   function ensure(){
     if(dialog)return;
-    dialog=element('dialog','achievement-detail');dialog.setAttribute('aria-labelledby','achievement-detail-title');
+    dialog=element('dialog','achievement-detail');dialog.setAttribute('aria-labelledby','achievement-detail-title');dialog.setAttribute('aria-describedby','achievement-detail-requirement');
     const heading=element('div','achievement-detail-heading');
     game=element('p','achievement-detail-game');title=element('h2','achievement-detail-title');title.id='achievement-detail-title';
     closeButton=element('button','achievement-detail-close','Close');closeButton.type='button';
@@ -48,8 +48,11 @@ export function createAchievementDetail({documentRef=globalThis.document,windowR
     heading.append(game,title,closeButton);
     stage=element('div','achievement-detail-stage');stage.tabIndex=0;stage.setAttribute('role','group');
     art=element('div','achievement-detail-art');stage.append(art);
-    hint=element('p','achievement-detail-hint');requirement=element('p','achievement-detail-requirement');record=element('p','achievement-detail-record');
-    dialog.append(heading,stage,hint,requirement,record);documentRef.body.append(dialog);
+    hint=element('p','achievement-detail-hint');requirement=element('p','achievement-detail-requirement');requirement.id='achievement-detail-requirement';record=element('p','achievement-detail-record');
+    status=element('p','achievement-detail-status');rarityText=element('p','achievement-detail-rarity');
+    const body=element('div','achievement-detail-body'),visual=element('div','achievement-detail-visual'),facts=element('div','achievement-detail-facts');
+    visual.append(stage,hint);facts.append(status,element('h3','achievement-detail-label','Requirement'),requirement,record,element('h3','achievement-detail-label','Ranked rarity'),rarityText);
+    body.append(visual,facts);dialog.append(heading,body);documentRef.body.append(dialog);
     stage.addEventListener('pointerdown',event=>{
       if(reduced()||pointer!==null||event.isPrimary===false||event.button!==0)return;
       pointer=event.pointerId;start={x:event.clientX,y:event.clientY,rx:x,ry:y};
@@ -78,7 +81,9 @@ export function createAchievementDetail({documentRef=globalThis.document,windowR
     if(disposed)throw new Error('achievement detail disposed');ensure();reset();returnFocus=restore;
     title.textContent=row.title;game.textContent=`${row.gameTitle} · ${row.tier}`;requirement.textContent=row.description;
     const rarity=!row.rarity?'Rarity unavailable':row.rarity.percentage===null?`Early · ${row.rarity.unlockedPlayers} players`:`${row.rarity.label} · ${row.rarity.percentage<.1&&row.rarity.percentage>0?'less than 0.1':Number(row.rarity.percentage.toFixed(1))}% of this cabinet’s Ranked players`;
-    record.textContent=[row.unlocked?'Earned':'To earn',row.unlocked&&row.unlockedAt?row.unlockedAt.slice(0,10):null,rarity].filter(Boolean).join(' · ');
+    status.textContent=row.unlocked?'Earned':'To earn';
+    record.textContent=row.unlocked?(row.unlockedAt?`Earned ${row.unlockedAt.slice(0,10)}`:'Recorded in verified Ranked play.'):'Complete the requirement in a verified Ranked run.';
+    rarityText.textContent=rarity;
     const image=element('img','achievement-detail-image');image.src=row.image;image.alt=row.title;image.draggable=false;image.width=256;image.height=256;
     if(typeof art.replaceChildren==='function')art.replaceChildren(image);else{art.textContent='';art.append(image);}
     dialog.setAttribute('data-tier',row.tier);dialog.setAttribute('data-earned',String(row.unlocked));

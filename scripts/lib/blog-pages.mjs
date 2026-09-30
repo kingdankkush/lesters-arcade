@@ -1,5 +1,5 @@
 import {isBlogPublicationIndex} from './blog-content.mjs';
-import {renderBlogArticle} from './blog-render.mjs';
+import {renderBlogArticle,blogArtwork} from './blog-render.mjs';
 
 const ORIGIN='https://lestersarcade.io';
 const escape=value=>String(value).replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
@@ -15,11 +15,12 @@ export function renderBlogListing(index,{category=null}={}){
  const summary=selected?{news:'The latest from Lester’s Arcade.',guides:'Find your next cabinet. Make your next run count.','dev-notes':'Art, design and the work behind the games.'}[category]:'Guides, updates and stories from the arcade.';
  const posts=selected?index.posts.filter(post=>post.category===category):index.posts;
  const tabs=[{id:null,label:'All articles',count:index.posts.length},...index.categories].map(item=>`<a href="${route(item.id)}"${item.id===category?' aria-current="page"':''}>${escape(item.label)} <span class="blog-count">${item.count}</span></a>`).join('');
- const cards=posts.map(post=>`<li><article><p class="blog-card-meta">${escape(index.categories.find(item=>item.id===post.category).label)} <span aria-hidden="true">·</span> <time datetime="${post.date}">${post.date}</time></p><h2><a href="/blog/${post.slug}">${escape(post.title)}</a></h2><p>${escape(post.summary)}</p><p class="blog-card-author">${escape(post.author)}</p></article></li>`).join('\n');
+ const cards=posts.map(post=>`<li><article><a href="/blog/${post.slug}" tabindex="-1" aria-hidden="true"><img class="blog-card-art" src="${blogArtwork(post).src}" alt="" loading="lazy" decoding="async" /></a><p class="blog-card-meta">${escape(index.categories.find(item=>item.id===post.category).label)} <span aria-hidden="true">·</span> <time datetime="${post.date}">${post.date}</time></p><h2><a href="/blog/${post.slug}">${escape(post.title)}</a></h2><p>${escape(post.summary)}</p><p class="blog-card-author">${escape(post.author)}</p></article></li>`).join('\n');
  return `<!doctype html>
 <html lang="en"><head><meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="theme-color" content="#05070f" /><title>${escape(title)} | Lester’s Arcade</title><meta name="description" content="${escape(summary)}" />
 <link rel="canonical" href="${url}" /><meta name="robots" content="index, follow" /><meta property="og:type" content="website" /><meta property="og:url" content="${url}" /><meta property="og:title" content="${escape(title)} | Lester’s Arcade" /><meta property="og:description" content="${escape(summary)}" />
+<meta property="og:image" content="https://lestersarcade.io/assets/brand/lesters-arcade-logo-horizontal.png" /><meta name="twitter:card" content="summary_large_image" />
 <link rel="alternate" type="application/atom+xml" title="Lester’s Arcade journal" href="/blog/feed.xml" />
 <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg" /><link rel="stylesheet" href="/src/design-tokens.css" /><link rel="stylesheet" href="/how-ranked-works.css" /><link rel="stylesheet" href="/blog/article.css" />
 </head><body><a class="skip-link" href="#main">Skip to articles</a>

@@ -22,6 +22,11 @@ test('collection renders available locked and verified owned badges without clai
  const view=createAchievementCollectionView({...deps,fetchImpl:null});
  const card=view.render({unlocks:owned});
  assert.equal(byClass(card,'collection-badge').length,124);assert.equal(byClass(card,'collection-badge-owned').length,1);
+ assert.equal(byClass(card,'collection-tier').length,124);
+ assert.equal(byClass(card,'collection-game-remaining').length,3);
+ const earnedBadge=byClass(card,'collection-badge-owned')[0];
+ assert.equal(earnedBadge.children[0].className,'collection-badge-heading');
+ assert.match(text(earnedBadge.children[0]),/Earned/);
  assert.equal(byClass(card,'collection-game-completion').length,3);assert.match(text(card),/1 \/ 124/);
  assert.match(text(card),/13 trophy achievements/);assert.doesNotMatch(text(card),/NFT minted|on-chain token|100% progress/);
  assert.equal(all(card).filter(item=>item.tag==='progress').length,3,'only measured collection completion, no guessed condition progress');

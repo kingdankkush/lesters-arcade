@@ -124,6 +124,7 @@ export function auditPortalE2eFlowContract({ flows = PORTAL_E2E_FLOWS, requiredA
 
 const MIME_TYPES = Object.freeze({
   '.html': 'text/html; charset=utf-8',
+  '.xml': 'application/atom+xml; charset=utf-8',
   '.js': 'text/javascript; charset=utf-8',
   '.mjs': 'text/javascript; charset=utf-8',
   '.css': 'text/css; charset=utf-8',
@@ -155,6 +156,8 @@ export function startPortalStaticServer({ rootDir, host = '127.0.0.1', port = 0 
       const url = new URL(request.url, `http://${request.headers.host ?? 'localhost'}`);
       let pathname = decodeURIComponent(url.pathname);
       if (SPA_ROUTE_PATTERN.test(pathname)) pathname = '/index.html';
+      if (pathname === '/how-ranked-works') pathname += '.html';
+      if (/^\/blog(?:\/[a-z0-9-]+|\/category\/[a-z-]+)?$/.test(pathname)) pathname += '/index.html';
       if (pathname.endsWith('/')) pathname += 'index.html';
       const filePath = path.join(root, pathname);
       if (!filePath.startsWith(root + path.sep) || !existsSync(filePath) || !statSync(filePath).isFile()) {

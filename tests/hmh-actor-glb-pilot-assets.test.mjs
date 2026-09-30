@@ -43,3 +43,19 @@ test('offline imported poses match asset digests and preserve native foot ground
     }
   }
 });
+
+for (const [actorId,joints,sourceSha256] of [
+  ['lilly',24,'5f9152e713f7c4f79e96d1f1a4415dd1fb96a2685d3d14f22a65e895c8e7d6b2'],
+  ['lit-valkyrie',22,'f090f2e2a387f8ee3c2666bed1af22344f6ec82b1695bc62f1d18f1cfb8268ec'],
+  ['lester-original',22,'ed1278ea131927f9849fb62f265512a8547186fb9b9c06b08da78fb438eacc96'],
+]) test(`${actorId} retains its source identity, rig and all nine native clips within the shared model limits`, () => {
+  const lilly=JSON.parse(readFileSync(new URL(`${actorId}-manifest.json`,directory))).actors[actorId];
+  const bytes=readFileSync(new URL(lilly.file,directory));
+  assert.equal(createHash('sha256').update(bytes).digest('hex'),lilly.sha256);
+  assert.equal(lilly.sourceSha256,sourceSha256);
+  const actual=inspectActorGlb(bytes,{requiredClips:lilly.requiredClips});assert.deepEqual(actual,lilly.inspection);
+  assert.equal(actual.joints,joints);assert.equal(actual.clips.length,9);assert.ok(actual.triangles<=30000&&actual.vertices<=30000&&actual.bytes<=8*1024*1024);
+  assert.ok(actual.images.every(image=>image.width<=1024&&image.height<=1024));
+  const receipt=JSON.parse(readFileSync(new URL(`../docs/2.0/receipts/${actorId}-glb-reimport.json`,import.meta.url)));
+  assert.equal(receipt.glbSha256,lilly.sha256);assert.equal(receipt.clips.length,9);assert.ok(receipt.clips.every(clip=>clip.samples.length===5));
+});

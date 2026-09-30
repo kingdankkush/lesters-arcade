@@ -39,3 +39,9 @@
 .blog-empty { padding-block: 36px; }
 .blog-empty a { display: inline-flex; align-items: center; min-height: 44px; }
 @media (max-width: 640px) { .blog-grid { grid-template-columns: minmax(0,1fr); gap: 20px; } }
+
+.blog-card-art { display:block; width:100%; height:180px; object-fit:cover; border-radius:8px; background:#0c1722; margin-bottom:20px; }
+.blog-hero { display:block; width:100%; max-width:64rem; max-height:32rem; object-fit:contain; background:#0c1722; border:1px solid var(--guide-rule); border-radius:12px; }
+.blog-card-art[src*="logo-horizontal"] { object-fit:contain; padding:20px; box-sizing:border-box; }
+.blog-hero[src*="logo-horizontal"] { padding:32px; box-sizing:border-box; }
+@media (max-width:480px) { .blog-card-art { height:150px; } .blog-hero[src*="logo-horizontal"] { padding:16px; } }

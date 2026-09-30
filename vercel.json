@@ -328,6 +328,18 @@
       "destination": "/jackpot/chikun.html"
     },
     {
+      "source": "/blog",
+      "destination": "/blog/index.html"
+    },
+    {
+      "source": "/blog/category/:category([a-z-]+)",
+      "destination": "/blog/category/:category/index.html"
+    },
+    {
+      "source": "/blog/:slug([a-z0-9-]+)",
+      "destination": "/blog/:slug/index.html"
+    },
+    {
       "source": "/how-ranked-works",
       "destination": "/how-ranked-works.html"
     },

@@ -9,6 +9,7 @@ const finite = (value, name) => {
   if (!Number.isFinite(value)) throw new TypeError(`${name} must be finite`);
   return value;
 };
+const tint = value => Number.isInteger(value) && value >= 0 && value <= 0xffffff ? value : 0xffffff;
 const identity = (value, name) => {
   if (typeof value !== 'string' || !value) throw new TypeError(`${name} must be a non-empty string`);
   return value;
@@ -26,7 +27,7 @@ export function createActor3dProjection(actor, camera, viewport) {
   finite(screen.x, 'screen x'); finite(screen.y, 'screen y');
   const projection = Object.freeze({
     id: identity(actor?.id, 'id'), actorId: identity(actor?.actorId, 'actorId'), position,
-    screen: Object.freeze(screen),
+    screen: Object.freeze(screen), bodyTint: tint(actor?.bodyTint), weaponTint: tint(actor?.weaponTint),
     depth: worldDepthKey(position.y), heading: finite(actor?.heading ?? 0, 'heading'),
     clip: identity(actor?.clip ?? 'idle', 'clip'), clipTimeSeconds,
     pixelsPerMetre: finite(actor?.pixelsPerMetre ?? 40, 'pixelsPerMetre'),

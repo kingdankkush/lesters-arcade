@@ -7,6 +7,9 @@ import { JACKPOT_RULES_PATH } from '../apps/portal/src/jackpot-config.mjs';
 import { RANKED_FACTS } from '../apps/portal/src/ranked-facts.mjs';
 import { RANKED_GUIDE_FILE, RANKED_GUIDE_PATH, rankedGuideCopy, rankedGuideSchema, rankedSurfaceCopy, renderGuideHeader, renderGuideInline, renderGuideMain, renderHomeRanked } from '../apps/portal/src/ranked-guide-content.mjs';
 
+import {loadBlogPublication} from './lib/blog-publication.mjs';
+import {buildBlogPages} from './lib/blog-pages.mjs';
+
 const portal=fileURLToPath(new URL('../apps/portal/',import.meta.url));
 
 // Contract A33: the public copy follows SETTLEMENT_LIVE and HOSTED_PROFILE_SYNC in
@@ -44,6 +47,7 @@ export function renderCopyBlock(html,key,content,file='page'){
 const paragraphs=list=>list.map(text=>'<p>'+escapeHtml(text).replace(/`([^`]+)`/g,'<code>$1</code>')+'</p>').join('\n      ');
 
 function withMeta(html,path,copy){
+  html=html.replaceAll("\r\n","\n");
   const meta=portalPageMeta(path,copy);
   html=html.replace(/<title>[\s\S]*?<\/title>/,'<title>'+escapeHtml(meta.title)+'</title>');
   for(const [attribute,key,value] of [
@@ -160,7 +164,10 @@ export function buildPortalPages({flags,outDir=portal,sources={}}={}){
   const copy=portalCopyFor(resolved);
   const rules=jackpotRulesCopy(resolved);
   const surface=rankedSurfaceCopy(resolved);
-  const pages=new Map();
+  const journal=buildBlogPages(loadBlogPublication());
+  const pages=new Map(journal.map(page=>[page.path,!resolved.settlementLive&&page.path.endsWith('/index.html')
+    ? page.content.replace('<main id="main" tabindex="-1">','<main id="main" tabindex="-1"><p class="blog-preview" role="note">Dated journal archive. Ranked services are currently in preview. See <a href="/how-ranked-works">How Ranked works</a> for current availability.</p>')
+    : page.content]));
   const write=(name,text)=>pages.set(name,text);
   const home=renderHome(readFileSync(resolve(portal,'index.html'),'utf8'),copy,surface);
   write('index.html',home);
@@ -189,25 +196,25 @@ export function buildPortalPages({flags,outDir=portal,sources={}}={}){
   write(JACKPOT_RULES_FILE,renderJackpotRules(sources[JACKPOT_RULES_FILE]??readFileSync(resolve(portal,JACKPOT_RULES_FILE),'utf8'),rules));
   // The rules page joins the sitemap and llms.txt only once the jackpot is live (design §D.4).
   // The Ranked guide is listed in every flag state: without live settlement it says Ranked is in preview.
-  const urls=['/','/games',...PORTAL_GAMES.map(game=>'/games/'+game.slug),RANKED_GUIDE_PATH,'/trust.html',...(rules.live?[JACKPOT_RULES_PATH]:[])];
+  const urls=[...journal.filter(page=>page.mediaType.startsWith('text/html')).map(page=>'/'+page.path.replace(/\/index\.html$/,'')),'/','/games',...PORTAL_GAMES.map(game=>'/games/'+game.slug),RANKED_GUIDE_PATH,'/trust.html',...(rules.live?[JACKPOT_RULES_PATH]:[])];
   write('sitemap.xml','<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'+urls.map(path=>'<url><loc>https://lestersarcade.io'+path+'</loc></url>').join('\n')+'\n</urlset>\n');
   // The previous site had no robots file. An empty rule set preserves its access
   // policy; this adds only sitemap discovery, no training/search bot directives.
   write('robots.txt','Sitemap: https://lestersarcade.io/sitemap.xml\n');
-  write('llms.txt',"# Lester's Arcade\n\n"+copy.description+"\n\n## Games\n"+PORTAL_GAMES.map(game=>'- ['+game.title+'](https://lestersarcade.io/games/'+game.slug+'): '+game.description).join('\n')+"\n\n## Platform\n- [How it works](https://lestersarcade.io/#how-it-works): "+copy.llmsHowItWorks+"\n- [How Ranked works](https://lestersarcade.io"+RANKED_GUIDE_PATH+"): "+surface.llmsGuideLine+"\n- [Browse games](https://lestersarcade.io/games)\n- [Support and policies](https://lestersarcade.io/trust.html)"+(rules.live?"\n- [Weekly Jackpot rules](https://lestersarcade.io"+JACKPOT_RULES_PATH+"): "+rules.description:'')+"\n\n## Current scope\n"+copy.llmsScope+"\n"+(surface.llmsSection?"\n## How Ranked works\n"+surface.llmsSection.join('\n')+"\n":''));
+  write('llms.txt',"# Lester's Arcade\n\n"+copy.description+"\n\n## Games\n"+PORTAL_GAMES.map(game=>'- ['+game.title+'](https://lestersarcade.io/games/'+game.slug+'): '+game.description).join('\n')+"\n\n## Platform\n- [How it works](https://lestersarcade.io/#how-it-works): "+copy.llmsHowItWorks+"\n- [How Ranked works](https://lestersarcade.io"+RANKED_GUIDE_PATH+"): "+surface.llmsGuideLine+"\n- [Arcade journal](https://lestersarcade.io/blog): Cabinet guides and how verified runs work.\n- [Browse games](https://lestersarcade.io/games)\n- [Support and policies](https://lestersarcade.io/trust.html)"+(rules.live?"\n- [Weekly Jackpot rules](https://lestersarcade.io"+JACKPOT_RULES_PATH+"): "+rules.description:'')+"\n\n## Current scope\n"+copy.llmsScope+"\n"+(surface.llmsSection?"\n## How Ranked works\n"+surface.llmsSection.join('\n')+"\n":''));
   mkdirSync(resolve(outDir,'discover'),{recursive:true});
   mkdirSync(resolve(outDir,'jackpot'),{recursive:true});
   for(const [name,text] of pages){
     const target=resolve(outDir,name);
     let current=null;
     try{current=readFileSync(target,'utf8');}catch{}
-    if(current!==text)writeFileSync(target,text);
+    if(current!==text){mkdirSync(resolve(target,'..'),{recursive:true});writeFileSync(target,text);}
   }
   return urls;
 }
 
 // Files written by buildPortalPages, relative to its outDir.
-export const PORTAL_GENERATED_FILES=Object.freeze(['index.html',...['games',...PORTAL_GAMES.map(game=>game.slug)].map(name=>'discover/'+name+'.html'),'trust.html','manifest.webmanifest','sitemap.xml','robots.txt','llms.txt',JACKPOT_RULES_FILE,RANKED_GUIDE_FILE]);
+export const PORTAL_GENERATED_FILES=Object.freeze(['index.html',...['games',...PORTAL_GAMES.map(game=>game.slug)].map(name=>'discover/'+name+'.html'),'trust.html','manifest.webmanifest','sitemap.xml','robots.txt','llms.txt',JACKPOT_RULES_FILE,RANKED_GUIDE_FILE,...buildBlogPages(loadBlogPublication()).map(page=>page.path)]);
 
 // Renders into a scratch directory and returns the generated files under outDir
 // that differ from that render. Nothing under outDir is written.

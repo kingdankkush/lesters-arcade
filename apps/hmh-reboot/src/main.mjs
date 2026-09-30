@@ -552,7 +552,7 @@ async function boot() {
   const enemyRenderPassModule = import('./enemy-render-pass.mjs');
   const app = new Application();
   let actor3dPilot = null, actor3dDisposed = false;
-  let actor3dHeroAction = 'idle', actor3dHeroTick = 0;
+  let actor3dHeroAction = 'idle', actor3dHeroTick = 0, actor3dHeroFlash = 0xffffff;
   let handleBridgeProtocolError = (error) => setStatus('Bridge protocol error', error.message);
   let bridge = null;
   if (window.parent !== window) {
@@ -938,6 +938,7 @@ async function boot() {
       if (actor3dDisposed) return;
       actor3dPilot = createActor3dPilotController({ renderer: app.renderer, canvas: app.canvas,
         qualityTier: runtimeParams.get('actor3dQuality') ?? (performanceProfile.id === 'desktop' ? 'medium' : 'low'),
+        heroActorId: productionHeroId,
         attachDisplay: display => { world.addChild(display); worldDepthLayer.attach(display); },
         onTelemetry: report => { dataset.actor3dStatus = report.status; dataset.actor3dCount = String(report.count); dataset.actor3dReason = report.reason ?? ''; if (report.qualityTier) { dataset.actor3dQuality = report.qualityTier; dataset.actor3dLimit = String(report.maxActors); } },
       });
@@ -1957,7 +1958,7 @@ async function boot() {
   // nothing to clear.
   const wipe = (...graphics) => { for (const graphic of graphics) if (graphic.context.instructions.length) graphic.clear(); };
   const renderWorld = (renderState = renderActor ?? actor) => {
-    actor3dHeroAction = 'idle'; actor3dHeroTick = simulation?.tick ?? 0;
+    actor3dHeroAction = 'idle'; actor3dHeroTick = simulation?.tick ?? 0; actor3dHeroFlash = 0xffffff;
     const view = viewport();
     const viewKey = `${view.width}x${view.height}`;
     if (backdrop.drawnFor !== viewKey) backdrop.clear().rect(0, 0, view.width, view.height).fill({ color: 0x071522 }).drawnFor = viewKey;
@@ -2861,7 +2862,8 @@ async function boot() {
           placeWeaponGlow(groundScreen.x + smear.offsetX, chestY + smear.offsetY, smear.radius, smear.tint, smear.alpha);
           placeWeaponGlow(groundScreen.x + smear.offsetX * 2, chestY + smear.offsetY * 2, smear.radius * 0.7, smear.tint, smear.alpha * 0.6);
         }
-        productionHeroDisplay.setTint(smear?.flash ? HIT_SMEAR.bodyTint : 0xffffff, settings.cosmetics);
+        actor3dHeroFlash = smear?.flash ? HIT_SMEAR.bodyTint : 0xffffff;
+        productionHeroDisplay.setTint(actor3dHeroFlash, settings.cosmetics);
         // K-6 afterimage trail: pooled glows behind the hero for the eight
         // active dash ticks; no hero texture clone, so no new textures.
         if (dashState?.startedTick >= 0 && lastDashDirection) {
@@ -3052,7 +3054,15 @@ async function boot() {
         actor3dPilot.updateGame(productionHeroDisplay ? { actorId: productionHeroId, weaponId: heldWeapon?.id,
           x: renderState.x, y: renderState.y, z: renderState.z, heading: Math.atan2(heldAim.y, heldAim.x),
           action: actor3dHeroAction, actionTick: actor3dHeroTick, moving: motion?.locomotion === 'moving',
+          bodyTint: actor3dHeroFlash !== 0xffffff ? actor3dHeroFlash : settings.cosmetics?.heroTint,
+          weaponTint: actor3dHeroFlash !== 0xffffff ? actor3dHeroFlash : settings.cosmetics?.weaponTint,
           bodyHeight: productionHeroDisplay.minimumBodyHeight, originals: [actorVisual, heldWeaponLayer] } : null, enemy3d, camera, view, boss3d);
+        // The replaced atlas owns a baked shadow; supply its ground contact
+        // only while the 3D hero hides that atlas, using the existing pool.
+        if (actor3dPilot.ownsOriginal(actorVisual, 'hero')) contactShadowPool?.place({
+          x: groundScreen.x, y: groundScreen.y, footprintPx: productionHeroDisplay.minimumBodyHeight * .2 * camera.zoom,
+          lift: Math.max(0, renderState.z - getGroundContact(renderState).z), alpha: .42,
+        });
       }
       // overlayVisuals sits on the stage and is not shake-offset, so carry
       // the world offset across or pips detach from their bodies mid-shake.

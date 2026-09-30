@@ -1,5 +1,71 @@
 # Lester's Arcade 2.0 progress
 
+## September 30: three rigged heroes, ground detail, Matrix and collection polish
+
+Full scope remains required before publication. This is a committed production
+batch, not a completed overhaul or release. No deployment, version bump, paid
+generation, settlement change or new test framework.
+
+- HMH now supports all four existing heroes in the optional 3D backend. Newly
+  converted Lilly, Lit Valkyrie and Lester Original retain their native rigs,
+  materials, tangents and nine existing clips each. Files are 7,860,780 /8,360,540
+  /7,829,828B, about27.5k triangles; only the selected hero model loads. These
+  are not the complete requested action sets: non-pistol weapons and interaction
+  still retain their sprite fallback. Source/native export commits:5993784d7,
+  5ad2b45b6 and278547c3f in the Character worktree. Original models unchanged.
+- Fixed dropped cosmetic body/weapon colours and damage flashes in 3D. Restored
+  its ground contact shadow through the existing pool. A soft geometric edge
+  light improves dark-clothing separation without another render pass.
+- Meadows gains103 low grass cards in varied edge pockets and five faint road
+  shoulder patches. The single256-square page adds38,228B download /262,144B
+  decoded memory. All three previous terrain pages are unchanged. Art producer
+  commits1febf6d61 and2cc292a30; integrated final manifest SHA
+  47e65b4772bdd4518986652f3454f93ec241f877b459cc03fa743df48b33c1f5.
+  This improves placement, but does not complete the ten-area art pass.
+- Chikun's three existing hats gain fabric planes, seams, metal and gem detail
+  in the same painter used by the actual game and Locker. Earning IDs unchanged.
+- STACKED Matrix now has silver heads, green trails and slowly changing glyphs.
+  Hidden particle geometry is skipped while live audio envelopes keep updating.
+  The isolated CPU fixture measured601 Matrix frames at56.3ms before /5.10ms
+  after; this excludes GPU/text upload and is not a phone/FPS claim. Reduced
+  motion freezes glyph motion and changes. No simulation or replay changes.
+- Achievement cards now show tier and earned/to-earn labels, remaining counts,
+  and a compact detail layout separating requirement from Ranked rarity.
+  Existing badge art and earning rules remain. Browser data was a read-only
+  fixture, not evidence of newly earned achievements or live aggregate stats.
+- Added five complete journal guides, image cards/heroes, category pages, Atom,
+  sitemap/llms integration and clean routes. Existing art reused. A preview-mode
+  banner distinguishes dated articles from current Ranked availability. The
+  eventual2.0 release announcement remains tied to the finished release.
+
+Verification: focused existing model/pose, controller/projection, terrain,
+cosmetic, Matrix, achievement UI, blog and page-builder checks pass. Initial
+terrain test gathering included seven private native-source cases unavailable in
+root; only the14 portable runtime cases were gathered, with native cases retained
+in Art. No existing root test was removed. Two initial game-review waits used an
+Art-worktree-only status field; corrected to root's actual loaded-house signal.
+Final six hero/terrain views and two Matrix WebGL scene views pass. Each new hero
+was observed idle/moving at desktop and414px phone framing with selected-only
+requests. Achievement dialogs/grid and journal/hat views fit without errors or
+overflow. Local guide routing and Atom MIME issues found during review are fixed.
+The Matrix-only contrast correction was rebuilt and visually reviewed once more.
+Owned browser/server/native processes closed; shared heavy marker released.
+
+Final build: HMH initial/shared1,041,919B (6,657B spare); STACKED581,014B.
+Evidence remains in local workspace outputs/lilly-meadows-game (full hero report
+in heroes-and-matrix-review.json, final Matrix report in review.json),
+outputs/achievement-ui-polish and outputs/locker-hats-blog-review. Expanded
+visual/release gates and physical-phone tests were not run in this batch under
+the owner's delivery-first instruction. The60-enemy performance,30-minute HMH
+and60-minute STACKED phone runs, final art acceptance, full release gate and
+Ranked end-to-end checks remain open. 3D and Meadows remain explicit switches.
+
+Next production priority: complete the enemy/boss conversions and full hero
+action sets using the reusable native pipeline, then the remaining world areas
+and objectives. Course v2, replacement rewards/trophies, final asset-size
+reconciliation and phone/release acceptance still prevent a full-scope launch.
+
+
 ## September 30: integrated terrain, crowds and cosmetic previews
 
 Full scope retained; release later remains the owner's decision. No deployment,

@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="theme-color" content="#05070f" /><title>What a verified run means at Lester’s Arcade | Lester’s Arcade</title>
+<meta name="description" content="From a game result to a checked leaderboard entry: the roles of the game, server and testnet." /><meta name="robots" content="index, follow" />
+<link rel="canonical" href="https://lestersarcade.io/blog/what-a-verified-run-means" /><link rel="alternate" type="application/atom+xml" title="Lester’s Arcade journal" href="/blog/feed.xml" /><meta property="og:type" content="article" /><meta property="og:url" content="https://lestersarcade.io/blog/what-a-verified-run-means" /><meta property="og:title" content="What a verified run means at Lester’s Arcade | Lester’s Arcade" /><meta property="og:description" content="From a game result to a checked leaderboard entry: the roles of the game, server and testnet." />
+<meta property="og:image" content="https://lestersarcade.io/assets/brand/lesters-arcade-logo-horizontal.png" /><meta property="og:image:alt" content="Lester’s Arcade" /><meta name="twitter:card" content="summary_large_image" /><meta name="twitter:image" content="https://lestersarcade.io/assets/brand/lesters-arcade-logo-horizontal.png" />
+<link rel="icon" type="image/svg+xml" href="/assets/favicon.svg" />
+<link rel="stylesheet" href="/src/design-tokens.css" /><link rel="stylesheet" href="/how-ranked-works.css" /><link rel="stylesheet" href="/blog/article.css" />
+</head><body>
+<a class="skip-link" href="#main">Skip to article</a>
+<header class="guide-header"><nav class="guide-topbar" aria-label="Main navigation"><a class="guide-brand" href="/"><img src="/assets/brand/lesters-arcade-logo-horizontal.png" alt="Lester’s Arcade home" width="600" height="223" /></a><a href="/blog">Arcade journal</a><a href="/games">Play the games</a><a href="/how-ranked-works">How Ranked works</a></nav>
+
+<p class="guide-kicker">Arcade journal / Behind the scenes</p><h1>What a verified run means at Lester’s Arcade</h1><p class="guide-lead">From a game result to a checked leaderboard entry: the roles of the game, server and testnet.</p>
+<p class="blog-byline">Lester’s Arcade <span aria-hidden="true">·</span> <time datetime="2026-09-30">2026-09-30</time></p><nav class="guide-toc" aria-label="On this page"><h2>On this page</h2><ul><li><a href="#section-a-result-begins-in-the-game">A result begins in the game</a></li><li><a href="#section-different-games-need-different-checks">Different games need different checks</a></li><li><a href="#section-the-browser-does-not-approve-itself">The browser does not approve itself</a></li><li><a href="#section-why-visual-settings-stay-separate">Why visual settings stay separate</a></li><li><a href="#section-this-is-a-testnet">This is a testnet</a></li></ul></nav></header>
+<main id="main" tabindex="-1"><img class="blog-hero" src="/assets/brand/lesters-arcade-logo-horizontal.png" alt="Lester’s Arcade" decoding="async" /><article class="blog-prose" aria-label="What a verified run means at Lester’s Arcade"><h2 id="section-a-result-begins-in-the-game">A result begins in the game</h2>
+<p>The game knows when your run ends and can show its result immediately. Ranked adds another step: the arcade server checks the submitted run before the result is published.</p>
+<p>That distinction matters. A number on a local results screen is not, by itself, a verified leaderboard entry. Free Mode remains separate from Ranked and does not publish an official score to the chain.</p>
+<h2 id="section-different-games-need-different-checks">Different games need different checks</h2>
+<p>Chikun’s Escape and STACKED record inputs that the server can replay. Replaying the run lets the server compare the resulting state and score with the submission.</p>
+<p>Hard Money Heroes uses plausibility checks on its run evidence. It does not use the same exact-input replay verification as the other two games. Describing all three systems as identical would hide a meaningful difference.</p>
+<h2 id="section-the-browser-does-not-approve-itself">The browser does not approve itself</h2>
+<p>For a valid Ranked run, the server produces the trusted verification and the relayer publishes the result. The browser does not hold the server’s verification secret or authorize its own score submission.</p>
+<p>The leaderboard and profile then reflect the indexed result. If a result is still being checked or published, follow the status shown by the arcade rather than repeatedly submitting the same run.</p>
+<h2 id="section-why-visual-settings-stay-separate">Why visual settings stay separate</h2>
+<p>A brighter effect, a different costume or a calmer screen should change what you see, not the outcome of a run. Cosmetic settings therefore belong to presentation. They must not change collision, damage, input evidence or a server-earned achievement.</p>
+<p>That also helps explain why older runs matter during an update. New art can arrive without rewriting what an earlier game version recorded. Changes to gameplay rules require deliberate compatibility work.</p>
+<h2 id="section-this-is-a-testnet">This is a testnet</h2>
+<p>Ranked currently runs on LitVM LiteForge. Testnet zkLTC has no monetary value, and testnet activity should not be described as mainnet settlement or a real-money prize.</p>
+<p>For the current entry steps, supported flow and troubleshooting, use <a href="/how-ranked-works">How Ranked works</a>. To learn a cabinet without a wallet, <a href="/games">start a Free run</a>.</p></article>
+</main>
+<footer class="guide-footer"><p>One more run?</p><nav aria-label="Footer"><a href="/games">Choose a cabinet</a><a href="/trust.html">Support and policies</a></nav></footer>
+</body></html>

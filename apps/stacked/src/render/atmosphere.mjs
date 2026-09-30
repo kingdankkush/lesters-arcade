@@ -39,7 +39,7 @@ export function createStackedAtmosphere({ layer, sceneLayer = null, Graphics, mo
   return {
     audio(frame, now) { motion.audio(frame, now); },
     nextScene() { scenes?.next(motion.state.time); },
-    draw({ now, tick, lines = 0, width, height, settings, feedback = {} }) {
+    draw({ now, tick, lines = 0, width, height, settings, feedback = {}, geometryVisible = true }) {
       const zoneIndex = Math.max(0, boundaries.findLastIndex(value => tick >= value));
       const zone = STACKED_EPOCHS[zoneIndex], previous = STACKED_EPOCHS[Math.max(0, zoneIndex - 1)];
       const mix = Math.min(1, (tick - boundaries[zoneIndex]) / 150);
@@ -52,6 +52,11 @@ export function createStackedAtmosphere({ layer, sceneLayer = null, Graphics, mo
       const nextMode = chosen === 'journey' ? JOURNEY_WORLDS[zoneIndex] : MUSIC_WORLD_NAMES[chosen] ? chosen : 'living';
       if (mode !== nextMode) { mode = nextMode; changedAt = time; }
       const fade = reduced ? 1 : Math.min(1, 0.25 + (time - changedAt) * 2.5);
+      // The Matrix overlay still needs fresh music envelopes and epoch colours,
+      // but its hidden particle scene needs neither geometry nor draw updates.
+      if (!geometryVisible) return { name: zone.name, color, palette, signals: motion.state, particles: 0, webs: 0,
+        available: !!available, phase: 'hidden', generation: 0, organisms: 0, mode,
+        visualizerName: MUSIC_WORLD_NAMES[mode], scene: 'off', sceneName: 'Off', sceneTransitions: 0, sceneMix: 1 };
       const living = field.update({ now: time * 1000, width, height, lines, reducedMotion: reduced, reducedEffects: settings.video.reducedEffects, level, bass, high, beat });
       const shapes = mode === 'living' ? living : world.update({ mode, time, width, height, minimal: settings.video.reducedEffects, reducedMotion: reduced, bass, high, level, beat, ...feedback, generation: living.generation });
       // Optional presentation projection owns separate buffers. Default frames

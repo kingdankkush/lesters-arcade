@@ -258,6 +258,23 @@ test('the hat sits on the crest found in the frame and keeps to pixel rectangles
   assert.deepEqual(calls.filter(([key]) => key === 'fillRect'), [['fillRect', 8, 18, 8, 6], ['fillRect', 10, 20, 4, 2]]);
 });
 
+test('the polished hat package preserves earned IDs and bounded crest-sized artwork', async () => {
+  const { UNLOCKABLES } = await import('../apps/portal/src/unlockables.mjs');
+  assert.deepEqual(UNLOCKABLES.filter(item => item.gameId === 'chikun' && item.kind === 'hat').map(item => [item.id, item.requires.achievementId]), [
+    ['chikun-hat-cap', 'chikun-first-flight'], ['chikun-hat-top', 'chikun-survive-4m'], ['chikun-hat-crown', 'chikun-loop-2'],
+  ]);
+  for (const rects of Object.values(CHIKUN_COSMETIC_LOOKS.hat)) {
+    assert.ok(rects.length <= 32, 'static hat costs at most64 fill rectangles per frame');
+    for (const [x,y,width,height,color] of rects) {
+      assert.ok([x,y,width,height].every(Number.isFinite));assert.ok(width > 0 && height > 0);
+      assert.ok(x >= -7 && x + width <= 9 && y >= -11 && y + height <= 1, 'retains the existing crest-sized silhouette envelope');
+      assert.match(color, /^#[0-9a-f]{6}$/i);
+    }
+    const calls = [];drawChikunHat(recordingContext(calls), rects, 80, 60, 1.3);
+    assert.equal(calls.filter(([key]) => key === 'fillRect').length, rects.length * 2);
+  }
+});
+
 class Node {
   constructor() { this.children = []; this.visible = true; this.tint = 0xffffff; this.position = { x: 0, y: 0, set: (x, y) => { this.position.x = x; this.position.y = y; } }; this.scale = { x: 1, y: 1, set: (x, y = x) => { this.scale.x = x; this.scale.y = y; } }; }
   addChild(...children) { this.children.push(...children); return children.at(-1); }

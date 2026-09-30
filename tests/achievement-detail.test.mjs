@@ -23,6 +23,9 @@ test('detail opens one labelled native dialog with factual text and no requests'
  const {createAchievementDetail}=await load(),env=setup(),view=createAchievementDetail(env);
  view.open(row);const dialog=env.find('achievement-detail'),allText=env.nodes.map(n=>n.textContent).join(' ');
  assert.equal(dialog.open,true);assert.equal(dialog.attributes['aria-labelledby'],'achievement-detail-title');
+ assert.equal(dialog.attributes['aria-describedby'],'achievement-detail-requirement');
+ assert.equal(env.find('achievement-detail-status').textContent,'Earned');
+ assert.match(env.find('achievement-detail-rarity').textContent,/Rare.*5%/);
  assert.match(allText,/First Flight/);assert.match(allText,/Finish a verified flight/);assert.match(allText,/Earned/);assert.doesNotMatch(allText,/mint|NFT|settled|100% complete/i);
  view.open({...row,title:'Updated title'});assert.equal(env.nodes.filter(n=>n.tag==='dialog').length,1);view.dispose();
 });

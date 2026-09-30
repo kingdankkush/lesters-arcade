@@ -1,5 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<url><loc>https://lestersarcade.io/blog</loc></url>
+<url><loc>https://lestersarcade.io/blog/category/news</loc></url>
+<url><loc>https://lestersarcade.io/blog/category/guides</loc></url>
+<url><loc>https://lestersarcade.io/blog/category/dev-notes</loc></url>
+<url><loc>https://lestersarcade.io/blog/chikun-escape-read-the-course</loc></url>
+<url><loc>https://lestersarcade.io/blog/choose-your-first-cabinet</loc></url>
+<url><loc>https://lestersarcade.io/blog/hard-money-heroes-find-your-exit</loc></url>
+<url><loc>https://lestersarcade.io/blog/stacked-build-room-to-breathe</loc></url>
+<url><loc>https://lestersarcade.io/blog/what-a-verified-run-means</loc></url>
 <url><loc>https://lestersarcade.io/</loc></url>
 <url><loc>https://lestersarcade.io/games</loc></url>
 <url><loc>https://lestersarcade.io/games/hard-money-heroes</loc></url>

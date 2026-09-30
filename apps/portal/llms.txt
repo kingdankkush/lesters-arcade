@@ -10,6 +10,7 @@ Lester's Arcade is a browser arcade inspired by Litecoin culture. Play Hard Mone
 ## Platform
 - [How it works](https://lestersarcade.io/#how-it-works): Free play with no wallet, and wallet sign-in for Ranked runs on the LitVM testnet.
 - [How Ranked works](https://lestersarcade.io/how-ranked-works): How to play Ranked: the steps, the 0.012 zkLTC price, free testnet zkLTC from the faucet, the server checks, the boards and fixes for common problems.
+- [Arcade journal](https://lestersarcade.io/blog): Cabinet guides and how verified runs work.
 - [Browse games](https://lestersarcade.io/games)
 - [Support and policies](https://lestersarcade.io/trust.html)
 

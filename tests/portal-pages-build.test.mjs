@@ -128,7 +128,13 @@ test('the preview render keeps the preview wording and names no board period', (
     assert.doesNotMatch(pages[JACKPOT_RULES_FILE], /Soft launch/);
     for (const [name, text] of Object.entries(pages)) {
       const page = name === JACKPOT_RULES_FILE ? text.replace(/<!-- copy:jackpot-legal:start -->[\s\S]*?<!-- copy:jackpot-legal:end -->/, '') : text;
+      // Dated editorial records retain historical explanations across a service pause.
+      // Their actual preview output must prominently explain current availability.
+      if (name.startsWith('blog/') && name.endsWith('/index.html')) {
+        assert.match(page, /Dated journal archive\. Ranked services are currently in preview/);
+      } else {
       assert.doesNotMatch(withoutModal(page), /\byearly\b|0\.012|0\.102|Neon Postgres|plausibility/i, name);
+      }
     }
   });
 });

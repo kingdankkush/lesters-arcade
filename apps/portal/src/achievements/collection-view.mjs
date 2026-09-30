@@ -18,7 +18,7 @@ export function createAchievementCollectionView({el,appendText,renderAchievement
 
  function ensureStyle(){
   if(!documentRef?.head||!documentRef.createElement||documentRef.getElementById?.('achievement-collection-css'))return;
-  const link=documentRef.createElement('link');link.id='achievement-collection-css';link.rel='stylesheet';link.href='/src/styles/achievement-collection.css?v=collection-detail-v1';documentRef.head.append(link);
+  const link=documentRef.createElement('link');link.id='achievement-collection-css';link.rel='stylesheet';link.href='/src/styles/achievement-collection.css?v=collection-detail-v2';documentRef.head.append(link);
  }
  function field(label,name,options){
   const wrapper=el('label',{className:'collection-control'});appendText(wrapper,'span',label);
@@ -58,7 +58,7 @@ export function createAchievementCollectionView({el,appendText,renderAchievement
   for(const game of model.games){
    const pane=el('div',{className:'collection-game-completion',dataset:{game:game.gameId}});
    appendText(pane,'strong',game.shortTitle);appendText(pane,'span',`${game.unlocked} / ${game.total}`);
-   const progress=el('progress');progress.setAttribute('value',game.unlocked);progress.setAttribute('max',game.total);progress.setAttribute('aria-label',`${game.title}: ${game.unlocked} of ${game.total} achievements earned`);pane.append(progress);cabinets.append(pane);
+   const progress=el('progress');progress.setAttribute('value',game.unlocked);progress.setAttribute('max',game.total);progress.setAttribute('aria-label',`${game.title}: ${game.unlocked} of ${game.total} achievements earned`);pane.append(progress);appendText(pane,'small',game.unlocked===game.total?'Collection complete':`${game.total-game.unlocked} to earn`,'collection-game-remaining');cabinets.append(pane);
   }
   const rarity=el('div',{className:'collection-rarest'});
   if(model.rarest){appendText(rarity,'span','Rarest earned achievement');appendText(rarity,'strong',model.rarest.title);appendText(rarity,'small',`${model.rarest.gameTitle} · ${percent(model.rarest.rarity.percentage)} of its Ranked players`);}
@@ -67,6 +67,8 @@ export function createAchievementCollectionView({el,appendText,renderAchievement
   const badges=[];
   for(const row of model.rows){
    const badge=el('article',{className:`collection-badge tier-${row.tier}${row.unlocked?' collection-badge-owned':' collection-badge-locked'}`,dataset:{achievement:row.id,game:row.gameId}});
+   const badgeHeading=el('div',{className:'collection-badge-heading'});
+   appendText(badgeHeading,'span',row.tier,'collection-tier');appendText(badgeHeading,'span',row.unlocked?'Earned':'To earn','collection-ownership');badge.append(badgeHeading);
    const details=el('details'),toggle=el('summary',{dataset:{achievement:row.id,game:row.gameId}});
    const disclosureKey=`${row.gameId}:${row.id}`;details.open=opened.has(disclosureKey);disclosures.set(disclosureKey,details);toggle.setAttribute('aria-label',`${row.title}. ${row.unlocked?'Earned':'Locked'}. Show requirement`);
    toggle.append(renderAchievementIcon({iconSrc:row.image,icon:row.unlocked?'🏅':'🔒',label:row.title}));
@@ -81,7 +83,7 @@ export function createAchievementCollectionView({el,appendText,renderAchievement
      detail.open(row,{returnFocus:()=>detailButtons.get(disclosureKey)?.focus?.({preventScroll:true})});
     }catch{if(!disposed&&epoch===detailEpoch)detailStatus.textContent='Preview unavailable. You can still read the requirement here.';}
    });details.append(inspect,detailStatus);badge.append(details);
-   const record=el('div',{className:'collection-badge-record'});appendText(record,'span',row.unlocked?'Earned':'To earn','collection-ownership');
+   const record=el('div',{className:'collection-badge-record'});
    if(row.nft)appendText(record,'small','Trophy achievement','collection-trophy-label');
    if(row.rarity){const label=el('small',{className:`collection-rarity rarity-${row.rarity.rarity}`});label.textContent=row.rarity.percentage===null?`Early · ${row.rarity.unlockedPlayers} players`:`${row.rarity.label} · ${percent(row.rarity.percentage)}`;label.setAttribute('title',`${row.rarity.unlockedPlayers} of ${row.rarity.rankedPlayers} eligible Ranked players in this cabinet`);record.append(label);}
    else appendText(record,'small','Rarity unavailable','collection-rarity-unavailable');

@@ -61,6 +61,11 @@ void main() {
   float fill=0.30*max(0.0,dot(n,eye));
   vec3 illumination=bounce+vec3(0.98,0.94,0.88)*(0.66*diffuse)+vec3(0.96,1.0,1.03)*fill;
   vec3 linear=albedo*illumination*(1.0-0.35*metal)+mix(vec3(0.04),albedo,metal)*spec*0.65;
+  // A broad neutral edge fill separates dark clothing from soil at phone
+  // scale. Use geometric normals so normal-map pores cannot sparkle; no
+  // screen-space outline, extra draw, pulse or emissive texture is needed.
+  float edge=pow(1.0-clamp(abs(dot(normalize(vNormal),eye)),0.0,1.0),3.0);
+  linear+=vec3(0.68,0.72,0.75)*edge*(0.035+0.045*rough);
   vec3 color=pow(clamp(linear,0.0,1.0),vec3(1.0/2.2));
   float alpha=base.a*vColor.a; outColor=vec4(color*vColor.rgb*alpha,alpha);
 }`;
@@ -71,13 +76,19 @@ class ActorPrimitive extends Mesh {
 }
 
 export function actor3dPrimitiveVisible(name, clip) {
-  if (name.includes('Coin Blaster')) return !['melee', 'grenade', 'death'].includes(clip);
-  if (name.includes('Litecoin Knife')) return clip === 'melee';
-  if (name.includes('Satoshi Frag') || name.includes('Throw Release Palm')) return clip === 'grenade';
+  if ((name.includes('Coin Blaster') || /^(Lilly|Lit Valkyrie|Lester Original) \| coin-blaster$/.test(name))) return !['melee', 'grenade', 'death'].includes(clip);
+  if ((name.includes('Litecoin Knife') || /^(Lilly|Lit Valkyrie|Lester Original) \| litecoin-knife$/.test(name))) return clip === 'melee';
+  if (name.includes('Satoshi Frag') || name.includes('Throw Release Palm') || /^(Lilly|Lit Valkyrie|Lester Original) \| satoshi-frag-(held|released)$/.test(name)) return clip === 'grenade';
   return true;
 }
 
-export async function createActor3dPixiBackend({ renderer, signal, maxActors = 24, fetchAsset = fetch, decodeImage = createImageBitmap } = {}) {
+export function actor3dPrimitiveTint(name, projection) {
+  const weapon = /Coin Blaster|Litecoin Knife|Satoshi Frag|Throw Release Palm/.test(name)
+    || /^(Lilly|Lit Valkyrie|Lester Original) \| (coin-blaster|litecoin-knife|satoshi-frag-(held|released))$/.test(name);
+  return (weapon ? projection.weaponTint : projection.bodyTint) ?? 0xffffff;
+}
+
+export async function createActor3dPixiBackend({ renderer, signal, maxActors = 24, heroActorId = 'lit-commando', fetchAsset = fetch, decodeImage = createImageBitmap } = {}) {
   const assets = new Map(), live = new Set(), order = createActor3dDepthRegistry(maxActors); let bands = new Map(), disposed = false;
   let program = null, probeTarget = null;
   const state = new State(); state.depthTest = true; state.depthMask = true; state.cullMode = 'none';
@@ -97,8 +108,9 @@ export async function createActor3dPixiBackend({ renderer, signal, maxActors = 2
     signal?.throwIfAborted();
     program = GlProgram.from({ name: 'hmh-actor-3d-pilot', vertex, fragment });
     probeTarget = RenderTexture.create({ width: 2, height: 2, resolution: 1 });
+    if (heroActorId !== null && !['lit-commando', 'lilly', 'lit-valkyrie', 'lester-original'].includes(heroActorId)) throw new Error('unreviewed hero asset');
     // Sequential load bounds peak decode memory and allows coherent cleanup.
-    for (const id of ['lit-commando', 'bagholder-rusher', 'the-liquidator']) {
+    for (const id of [heroActorId, 'bagholder-rusher', 'the-liquidator'].filter(Boolean)) {
       signal?.throwIfAborted();
       const response = await fetchAsset(`/assets/generated/hmh-actor-3d-pilot/${id}.glb`, { signal });
       if (!response.ok) throw new Error('pilot asset unavailable');
@@ -163,6 +175,7 @@ export async function createActor3dPixiBackend({ renderer, signal, maxActors = 2
       display.pilotUniforms.update(); display.position.set(projection.screen.x, projection.screen.y);
       for (let i = 0; i < display.children.length; i++) {
         const mesh = display.children[i]; mesh.visible = actor3dPrimitiveVisible(asset.model.primitives[i].nodeName, projection.clip);
+        mesh.tint = actor3dPrimitiveTint(asset.model.primitives[i].nodeName, projection);
         Object.assign(mesh.pilotBounds, projectActor3dBounds(asset.envelopes[i], palette, { heading: projection.heading, pixelsPerMetre: projection.pixelsPerMetre * projection.zoom }));
         mesh.onViewUpdate();
       }

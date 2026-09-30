@@ -1,6 +1,13 @@
 import {parseBlogPost,isBlogPublicationIndex} from './blog-content.mjs';
 
 const ORIGIN='https://lestersarcade.io';
+const ART=Object.freeze({
+  'lester-blaster':{src:'/assets/hmh-art/banners/hmh-extra4-1600.webp',alt:'Hard Money Heroes key art'},
+  chikun:{src:'/assets/generated/chikun-mode-select/chikuns-escape-free-mode.webp',alt:'Chikun’s Escape key art'},
+  stacked:{src:'/assets/stacked-mode-select/stacked-free-v1.png',alt:'STACKED key art'},
+});
+export const blogArtwork=post=>ART[post?.games?.[0]]??{src:'/assets/brand/lesters-arcade-logo-horizontal.png',alt:'Lester’s Arcade'};
+
 const escape=value=>String(value).replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
 function linkTarget(value){
   if(/[\s\u0000-\u001f\u007f\\]/u.test(value))throw new TypeError('Invalid blog link');
@@ -66,6 +73,7 @@ export function renderBlogArticle(post,{preview=false,index}={}){
   const rendered=renderBlogMarkdown(checked.body),title=checked.title+" | Lester’s Arcade",canonical=ORIGIN+'/blog/'+checked.slug;
   const toc=rendered.toc.length?'<nav class="guide-toc" aria-label="On this page"><h2>On this page</h2><ul>'+rendered.toc.map(item=>`<li><a href="#${item.id}">${escape(item.title)}</a></li>`).join('')+'</ul></nav>':'';
   const related=preview?[]:(post.related??[]).map(slug=>index.posts.find(candidate=>candidate.slug===slug)).filter(Boolean).map(validated);
+  const art=blogArtwork(checked);
   const category={news:'News',guides:'Guides','dev-notes':'Behind the scenes'}[checked.category];
   return `<!doctype html>
 <html lang="en"><head>
@@ -73,6 +81,7 @@ export function renderBlogArticle(post,{preview=false,index}={}){
 <meta name="theme-color" content="#05070f" /><title>${escape(title)}</title>
 <meta name="description" content="${escape(checked.summary)}" /><meta name="robots" content="${preview?'noindex, nofollow':'index, follow'}" />
 ${preview?'':`<link rel="canonical" href="${canonical}" /><link rel="alternate" type="application/atom+xml" title="Lester’s Arcade journal" href="/blog/feed.xml" /><meta property="og:type" content="article" /><meta property="og:url" content="${canonical}" /><meta property="og:title" content="${escape(title)}" /><meta property="og:description" content="${escape(checked.summary)}" />`}
+<meta property="og:image" content="${ORIGIN+art.src}" /><meta property="og:image:alt" content="${escape(art.alt)}" /><meta name="twitter:card" content="summary_large_image" /><meta name="twitter:image" content="${ORIGIN+art.src}" />
 <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg" />
 <link rel="stylesheet" href="/src/design-tokens.css" /><link rel="stylesheet" href="/how-ranked-works.css" /><link rel="stylesheet" href="/blog/article.css" />
 </head><body>
@@ -81,7 +90,7 @@ ${preview?'':`<link rel="canonical" href="${canonical}" /><link rel="alternate" 
 ${preview?'<p class="blog-preview">Editorial preview · Not published</p>':''}
 <p class="guide-kicker">Arcade journal / ${category}</p><h1>${escape(checked.title)}</h1><p class="guide-lead">${escape(checked.summary)}</p>
 <p class="blog-byline">${escape(checked.author)} <span aria-hidden="true">·</span> <time datetime="${checked.date}">${checked.date}</time></p>${toc}</header>
-<main id="main" tabindex="-1"><article class="blog-prose" aria-label="${escape(checked.title)}">${rendered.html}</article>
+<main id="main" tabindex="-1"><img class="blog-hero" src="${art.src}" alt="${escape(art.alt)}" decoding="async" /><article class="blog-prose" aria-label="${escape(checked.title)}">${rendered.html}</article>
 ${related.length?'<aside class="blog-related" aria-label="Related reading"><h2>Keep reading</h2><ul>'+related.map(item=>`<li><a href="/blog/${item.slug}">${escape(item.title)}</a><p>${escape(item.summary)}</p></li>`).join('')+'</ul></aside>':''}</main>
 <footer class="guide-footer"><p>One more run?</p><nav aria-label="Footer"><a href="/games">Choose a cabinet</a><a href="/trust.html">Support and policies</a></nav></footer>
 </body></html>\n`;

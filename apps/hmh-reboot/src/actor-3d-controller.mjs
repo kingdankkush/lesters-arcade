@@ -49,10 +49,11 @@ function supported(renderer, canvas) {
 export function createActor3dPresentationEntries(hero, enemies, boss = null, maxActors = ACTOR3D_QUALITY_LIMITS.medium, focus = hero) {
   actorLimit(maxActors);
   const entries = [], pixelsPerMetre = Number.isFinite(hero?.bodyHeight) && hero.bodyHeight > 0 ? hero.bodyHeight / 2.1 : 40;
-  if (hero?.actorId === 'lit-commando' && hero.weaponId === 'coin-blaster' && hero.action !== 'interact') {
+  if (['lit-commando', 'lilly', 'lit-valkyrie', 'lester-original'].includes(hero?.actorId) && hero.weaponId === 'coin-blaster' && hero.action !== 'interact') {
     const clip = hero.action === 'aim' && hero.moving ? 'run' : hero.action;
     const loop = ['idle', 'run', 'aim'].includes(clip), duration = { 'pistol-fire': 12, hurt: 12, melee: 20, grenade: 24, dash: 18, death: 60 }[clip] ?? 60;
     entries.push({ descriptor: { id: 'hero', actorId: hero.actorId, x: hero.x, y: hero.y, z: hero.z, heading: hero.heading,
+      bodyTint: hero.bodyTint, weaponTint: hero.weaponTint,
       clip, clipTimeSeconds: loop ? Math.max(0, hero.actionTick % 60) / 60 : Math.min(1, Math.max(0, hero.actionTick) / duration), pixelsPerMetre }, originals: hero.originals });
   }
   entries.push(...createLiquidator3dEntries(boss));
@@ -73,14 +74,15 @@ export function createActor3dPresentationEntries(hero, enemies, boss = null, max
   return entries;
 }
 
-export function createActor3dPilotController({ renderer, canvas, qualityTier = 'medium', attachDisplay = () => {}, onTelemetry = () => {},
+export function createActor3dPilotController({ renderer, canvas, qualityTier = 'medium', heroActorId = 'lit-commando', attachDisplay = () => {}, onTelemetry = () => {},
   backendFactory = options => import('./actor-3d-pixi.mjs').then(module => module.createActor3dPixiBackend({ renderer, ...options })) } = {}) {
   const tier = Object.hasOwn(ACTOR3D_QUALITY_LIMITS, qualityTier) ? qualityTier : 'medium';
   const maxActors = ACTOR3D_QUALITY_LIMITS[tier];
+  const selectedHero = ['lit-commando', 'lilly', 'lit-valkyrie', 'lester-original'].includes(heroActorId) ? heroActorId : null;
   const abort = new AbortController();
   const hidden = new Map(); let disposed = false;
   const restore = () => { for (const [display, record] of hidden) if (!display.destroyed) display.renderable = record.value; hidden.clear(); };
-  const session = createActor3dPilotSession({ enabled: true, supported: supported(renderer, canvas), createBackend: () => backendFactory({ signal: abort.signal, maxActors }), attachDisplay,
+  const session = createActor3dPilotSession({ enabled: true, supported: supported(renderer, canvas), createBackend: () => backendFactory({ signal: abort.signal, maxActors, heroActorId: selectedHero }), attachDisplay,
     onFallback: reason => { abort.abort(); restore(); onTelemetry({ status: 'fallback', count: 0, reason }); } });
   const lost = () => session.handleContextLoss();
   canvas?.addEventListener('webglcontextlost', lost);
@@ -102,7 +104,7 @@ export function createActor3dPilotController({ renderer, canvas, qualityTier = '
       } catch { session.handleFailure(); return false; }
     },
     updateGame(hero, enemies, camera, viewport, boss = null) {
-      try { return controller.update(createActor3dPresentationEntries(hero, enemies, boss, maxActors, hero ?? camera), camera, viewport); }
+      try { return controller.update(createActor3dPresentationEntries(hero, enemies, boss, maxActors, hero ?? camera).filter(entry => entry.descriptor.id !== 'hero' || entry.descriptor.actorId === selectedHero), camera, viewport); }
       catch { restore(); session.handleFailure(); return false; }
     },
     dispose() {
