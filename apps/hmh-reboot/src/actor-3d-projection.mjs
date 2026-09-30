@@ -1,5 +1,5 @@
-// Optional actor backend ownership contract. This module is not a 3D renderer
-// and is not imported by the active game. A later backend must return one Pixi
+// Optional actor backend ownership contract. This module is not a 3D renderer.
+// The lazy backend must return one Pixi
 // display per actor so the existing world RenderLayer can interleave props.
 import { worldToScreen } from './world-space.mjs';
 import { worldDepthKey } from './world-depth.mjs';
@@ -29,7 +29,10 @@ export function createActor3dProjection(actor, camera, viewport) {
     screen: Object.freeze(screen),
     depth: worldDepthKey(position.y), heading: finite(actor?.heading ?? 0, 'heading'),
     clip: identity(actor?.clip ?? 'idle', 'clip'), clipTimeSeconds,
+    pixelsPerMetre: finite(actor?.pixelsPerMetre ?? 40, 'pixelsPerMetre'),
+    zoom: finite(camera?.zoom ?? 1, 'zoom'),
   });
+  if (projection.pixelsPerMetre <= 0 || projection.zoom <= 0) throw new TypeError('positive presentation scale required');
   projections.add(projection);
   return projection;
 }
@@ -90,12 +93,17 @@ export function createActor3dPilotSession({ enabled = false, supported = false, 
             attachDisplay(display);
           }
           display.zIndex = projection.depth;
+        }
+        backend.beginFrame?.(Object.freeze([...frame]));
+        for (const projection of frame) {
+          const display = displays.get(projection.id);
           backend.renderActor(display, projection);
         }
         return true;
       } catch { fallback('renderer-failed'); return false; }
     },
     handleContextLoss() { fallback('context-lost'); },
+    handleFailure() { fallback('renderer-failed'); },
     dispose() { if (status !== 'disposed') { status = 'disposed'; release(); } },
   };
   return Object.freeze(session);

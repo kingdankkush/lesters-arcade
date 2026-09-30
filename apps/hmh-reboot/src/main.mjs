@@ -545,6 +545,8 @@ async function boot() {
   const staticWorldBakeModule = import('./world-static-bake.mjs');
   const enemyRenderPassModule = import('./enemy-render-pass.mjs');
   const app = new Application();
+  let actor3dPilot = null, actor3dDisposed = false;
+  let actor3dHeroAction = 'idle', actor3dHeroTick = 0;
   let handleBridgeProtocolError = (error) => setStatus('Bridge protocol error', error.message);
   let bridge = null;
   if (window.parent !== window) {
@@ -572,6 +574,8 @@ async function boot() {
           marker.scale.set(1);
           bridge.send('game:state', statePayload('running'));
         } else if (message.type === 'portal:dispose') {
+          actor3dDisposed = true;
+          actor3dPilot?.dispose();
           document.removeEventListener('visibilitychange', handleVisibilityChange);
           window.removeEventListener('keydown', handleExitKey);
           app.renderer.off('resize', handleResize);
@@ -891,6 +895,20 @@ async function boot() {
     ...objectiveRewardPlacements(),
   ]);
   worldDepthLayer.attach(actorVisual, heldWeaponLayer, bossVisual);
+  dataset.actor3dStatus = 'disabled';
+  // Opening proof: the exact switch is default-off; accepted sprites remain
+  // authoritative until a supported, fully loaded backend draws this frame.
+  if (runtimeParams.get('actor3dPilot') === '1') {
+    dataset.actor3dStatus = 'loading';
+    import('./actor-3d-controller.mjs').then(({ createActor3dPilotController }) => {
+      if (actor3dDisposed) return;
+      actor3dPilot = createActor3dPilotController({ renderer: app.renderer, canvas: app.canvas,
+        attachDisplay: display => { world.addChild(display); worldDepthLayer.attach(display); },
+        onTelemetry: report => { dataset.actor3dStatus = report.status; dataset.actor3dCount = String(report.count); dataset.actor3dReason = report.reason ?? ''; },
+      });
+      return actor3dPilot.start();
+    }).catch(() => { dataset.actor3dStatus = 'fallback'; dataset.actor3dReason = 'chunk-failed'; });
+  }
   let authoredPropDisplay = null;
   let tripoPropAppearance = new Map();
   let worldDesignBlockerIds = new Set();
@@ -1228,7 +1246,8 @@ async function boot() {
   // point lands on the chest. Push it down to the sprite's foot line so the
   // contact reads where the body actually meets the ground.
   const contactShadowFootY = (display, pose, screenY, zoom) =>
-    screenY + (pose?.frame?.h ?? 0) * (1 - (pose?.anchor?.y ?? 1)) * (display.rosterScale ?? 1) * zoom;
+    actor3dPilot?.ownsOriginal(display, `enemy:${display.renderPassId}`) ? screenY
+      : screenY + (pose?.frame?.h ?? 0) * (1 - (pose?.anchor?.y ?? 1)) * (display.rosterScale ?? 1) * zoom;
 
   // Cycle 074 (E-4): the elite ground ring. Radius follows the archetype's
   // authored footprint through the same zoom as the body; the pulse is a pure
@@ -1871,6 +1890,7 @@ async function boot() {
   // nothing to clear.
   const wipe = (...graphics) => { for (const graphic of graphics) if (graphic.context.instructions.length) graphic.clear(); };
   const renderWorld = (renderState = renderActor ?? actor) => {
+    actor3dHeroAction = 'idle'; actor3dHeroTick = simulation?.tick ?? 0;
     const view = viewport();
     const viewKey = `${view.width}x${view.height}`;
     if (backdrop.drawnFor !== viewKey) backdrop.clear().rect(0, 0, view.width, view.height).fill({ color: 0x071522 }).drawnFor = viewKey;
@@ -2709,6 +2729,7 @@ async function boot() {
                   : productionAction === 'hurt' ? playerHitAge
                     : productionAction === 'interact' ? (missionClip.mode === 'quick' ? interactionAge : Math.min(interactionAge, 9)) : visualTick;
         const activeWeaponId = weaponLoadout ? getActiveWeaponState(weaponLoadout).id : null;
+        actor3dHeroAction = productionAction; actor3dHeroTick = productionActionTick;
         productionHeroDisplay.container.heldWeapons?.request(activeWeaponId);
         productionHeroDisplay.applyPose({
           weaponId: activeWeaponId,
@@ -2939,6 +2960,21 @@ async function boot() {
       }
       // Screen-space overlays: enemy health pips, boss bar, damage flash, and
       // the low-health vignette. All projection-only.
+      if (actor3dPilot) {
+        let enemy3d = null;
+        for (const enemy of grayboxEnemies) {
+          const body = enemyMarkers.get(enemy.id);
+          if (enemy.archetypeId !== 'bagholder-rusher' || !enemy.active || !body?.visible || !body.worldDesignPoseInput) continue;
+          enemy3d = { id: enemy.id, x: body.renderPassWalkX, y: body.renderPassWalkY,
+            z: (Number.isFinite(enemy.previousGroundZ) ? enemy.previousGroundZ + ((enemy.groundZ ?? 0) - enemy.previousGroundZ) * renderAlpha : enemy.groundZ ?? 0) + (enemy.visualLiftZ ?? 0),
+            pose: body.worldDesignPoseInput, originals: [body] };
+          break;
+        }
+        actor3dPilot.updateGame(productionHeroDisplay ? { actorId: productionHeroId, weaponId: heldWeapon?.id,
+          x: renderState.x, y: renderState.y, z: renderState.z, heading: Math.atan2(heldAim.y, heldAim.x),
+          action: actor3dHeroAction, actionTick: actor3dHeroTick, moving: motion?.locomotion === 'moving',
+          bodyHeight: productionHeroDisplay.minimumBodyHeight, originals: [actorVisual, heldWeaponLayer] } : null, enemy3d, camera, view);
+      }
       // overlayVisuals sits on the stage and is not shake-offset, so carry
       // the world offset across or pips detach from their bodies mid-shake.
       enemyRenderPass.drawHealthPips(overlayVisuals, camera.zoom, world.position.x, world.position.y);
