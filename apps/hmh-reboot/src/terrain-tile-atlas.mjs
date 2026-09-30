@@ -216,6 +216,14 @@ export function createTerrainTileRegistry({ TilingSpriteClass } = {}) {
     overlayTextureFor(overlayId) {
       return overlayTextures.get(overlayId) ?? null;
     },
+    unregister(kind, id, texture) {
+      const registry = kind === 'tile' ? textures : kind === 'fringe' ? fringeTextures : kind === 'overlay' ? overlayTextures : null;
+      if (!registry) throw new TypeError('unknown terrain registry kind');
+      if (registry.get(id) !== texture) throw new Error('terrain registry source ownership mismatch');
+      registry.delete(id);
+      version += 1;
+      return true;
+    },
     markFailed(materialId) {
       failed.add(materialId);
     },

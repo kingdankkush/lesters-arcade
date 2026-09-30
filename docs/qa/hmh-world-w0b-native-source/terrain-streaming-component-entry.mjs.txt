@@ -1,0 +1,37 @@
+// Actual Pixi/terrain renderer component proof. Camera jumps are presentation
+// inputs only; this host has no simulation, player, RNG or run evidence.
+import { Application, Assets, Container, Graphics, TilingSprite, Texture } from 'C:/Users/just_/lesters-arcade-wt/200-world-w0/node_modules/pixi.js/lib/index.mjs';
+import { createTerrainAreaStreaming } from 'C:/Users/just_/lesters-arcade-wt/200-world-w0/apps/hmh-reboot/src/terrain-area-streaming.mjs';
+import { createTerrainTileRegistry } from 'C:/Users/just_/lesters-arcade-wt/200-world-w0/apps/hmh-reboot/src/terrain-tile-atlas.mjs';
+import { LEVEL_ONE_WORLD, createLevelOneGroundQuery } from 'C:/Users/just_/lesters-arcade-wt/200-world-w0/apps/hmh-reboot/src/level-one-world.mjs';
+import { createStaticWorldBake } from 'C:/Users/just_/lesters-arcade-wt/200-world-w0/apps/hmh-reboot/src/world-static-bake.mjs';
+import { createWorldProductionLayers, renderWorldProductionArt } from 'C:/Users/just_/lesters-arcade-wt/200-world-w0/apps/hmh-reboot/src/world-production-art.mjs';
+import { worldToScreen, createCameraState } from 'C:/Users/just_/lesters-arcade-wt/200-world-w0/apps/hmh-reboot/src/world-space.mjs';
+import { RUNTIME_PERFORMANCE_PROFILES } from 'C:/Users/just_/lesters-arcade-wt/200-world-w0/apps/hmh-reboot/src/runtime-performance.mjs';
+const profile=RUNTIME_PERFORMANCE_PROFILES[new URLSearchParams(location.search).get('profile')==='mobile'?'mobile':'desktop'];
+const app=new Application();await app.init({width:innerWidth,height:innerHeight,resolution:profile.id==='mobile'?1:devicePixelRatio,antialias:profile.antialias,background:0x101822,preference:'webgl'});
+document.body.appendChild(app.canvas);app.ticker.stop();
+const production=createWorldProductionLayers({ContainerClass:Container,GraphicsClass:Graphics,TilingSpriteClass:TilingSprite});app.stage.addChild(production.root);
+const registry=createTerrainTileRegistry({TilingSpriteClass:TilingSprite});
+const bake=createStaticWorldBake({worldProduction:production,world:LEVEL_ONE_WORLD,render:renderWorldProductionArt,ContainerClass:Container,GraphicsClass:Graphics});
+const errors=[],loads=[],unloads=[];let current=createCameraState({x:3050,y:1500,groundZ:0,zoom:1.5});
+const beforeWorld=JSON.stringify(LEVEL_ONE_WORLD);
+const spriteCount=source=>{let count=0;const visit=root=>{for(const child of root.children??[]){if(child.texture?.source===source)count++;visit(child);}};visit(production.root);return count;};
+const wrapped={cache:Assets.cache,async load(url){const texture=await Assets.load(url);loads.push({url,uid:texture.source.uid,pixelWidth:texture.source.pixelWidth,pixelHeight:texture.source.pixelHeight});return texture;},async unload(url){
+ const texture=Assets.cache.get(url),source=texture?.source;
+ const record={url,sourceUid:source?.uid,spriteReferencesBeforeUnload:source?spriteCount(source):null};
+ if(!texture||record.spriteReferencesBeforeUnload!==0)throw new Error('Actual consumer remained before source unload');
+ await Assets.unload(url);Object.assign(record,{cachePresentAfterUnload:Assets.cache.has(url),textureDestroyed:texture.destroyed,sourceDestroyed:source.destroyed});unloads.push(record);
+}};
+const streaming=await createTerrainAreaStreaming({world:LEVEL_ONE_WORLD,registry,worldProduction:production,bake,Assets:wrapped,profile,onError:error=>errors.push(String(error.message))});
+streaming.setPinnedTextures([Texture.WHITE,Texture.WHITE]);
+const view=()=>({width:innerWidth,height:innerHeight});
+const render=()=>{bake.render({worldProduction:production,world:LEVEL_ONE_WORLD,camera:current,view:view(),worldToScreen,queryGround:createLevelOneGroundQuery(),tick:0,performanceProfile:profile,terrainTiles:registry});app.render();};
+const snapshot=()=>({...streaming.snapshot(),loads:[...loads],unloads:[...unloads],bakes:bake.bakes,errors:[...errors],worldUnchanged:beforeWorld===JSON.stringify(LEVEL_ONE_WORLD),redRockPresent:!!registry.textureFor('red-rock'),roadSourceUid:registry.textureFor('road')?.source?.uid??null});
+window.terrainProof=Object.freeze({
+ begin(camera){current=createCameraState(camera);streaming.update({camera:{...current},view:view()});return snapshot();},
+ async settle(){await streaming.idle();render();return snapshot();},
+ snapshot,
+ async dispose(){await streaming.dispose();const final=snapshot();app.destroy(true,{children:true});return final;},
+});
+document.documentElement.dataset.componentReady='true';

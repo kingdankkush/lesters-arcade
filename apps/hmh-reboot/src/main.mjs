@@ -505,6 +505,8 @@ async function boot() {
   });
   // Perf step 6: phones load half-size (@0.5x) actor, prop and terrain pages.
   const textureAssets = createProfileTextureLoader(Assets, performanceProfile);
+  let terrainAreaStreaming = null, terrainPinnedPropTextures = [];
+  const terrainStreamingBootController = new AbortController();
   const touchUiEnabled = isTouchUiEnabled({ coarsePointer, width: window.innerWidth });
   // Owner direction 2026-09-16: desktop mouse wheel zooms +10% / -30% from the
   // readable default; phones keep the default (frame rate first).
@@ -581,6 +583,14 @@ async function boot() {
           window.removeEventListener('keydown', handleExitKey);
           app.renderer.off('resize', handleResize);
           app.ticker.stop();
+          terrainStreamingBootController.abort();
+          terrainAreaStreaming?.dispose().then(() => {
+            dataset.terrainStream = JSON.stringify(terrainAreaStreaming.snapshot());
+          }).catch(error => {
+            dataset.terrainStream = JSON.stringify(terrainAreaStreaming.snapshot());
+            dataset.terrainStreamDisposeError = String(error?.message ?? error);
+            console.error('[HMH] Terrain source disposal failed', error);
+          });
           combatAudio.destroy();
           cockpit?.destroy();
           upgradePanel?.destroy();
@@ -634,6 +644,7 @@ async function boot() {
   // Authored terrain materials. `?flatTerrain=1` restores the flat colour
   // fills for regression comparison.
   const terrainTilesEnabled = runtimeParams.get('flatTerrain') !== '1';
+  const terrainAreaStreamingEnabled = terrainTilesEnabled && runtimeParams.get('areaStreaming') === '1';
   const productionPilotEnabled = !grayboxRequested && !pipelinePilotEnabled;
   const requestedProductionHeroId = runtimeParams.get('productionHero');
   const productionHeroId = Object.hasOwn(PRODUCTION_HERO_ASSETS, requestedProductionHeroId)
@@ -1014,6 +1025,8 @@ async function boot() {
       authoredPropDisplay = display;
       authoredHeldWeaponDisplay = heldWeaponDisplay;
       tripoPropAppearance = candidateAppearance;
+      terrainPinnedPropTextures = [atlasTexture, ...[...candidateAppearance.values()].map(asset => asset.texture)];
+      terrainAreaStreaming?.setPinnedTextures(terrainPinnedPropTextures);
       worldDesignBlockerIds = candidateBlockerIds;
       worldProduction.layers.townBlockers.visible = false;
       worldProduction.layers.landmarks.visible = false;
@@ -1097,6 +1110,27 @@ async function boot() {
   let terrainTileLoadError = null;
   const loadTerrainTiles = () => {
     if (!terrainTilesEnabled) return;
+    if (terrainAreaStreamingEnabled) {
+      import('./terrain-area-streaming.mjs').then(async ({ createTerrainAreaStreaming }) => {
+        if (terrainStreamingBootController.signal.aborted) return;
+        const streaming = await createTerrainAreaStreaming({ world: LEVEL_ONE_WORLD, registry: terrainTiles, worldProduction, bake: worldBake,
+          Assets, profile: performanceProfile, signal: terrainStreamingBootController.signal,
+          onError: error => {
+            terrainTileLoadError = String(error?.message ?? error);
+            dataset.terrainStreamError = terrainTileLoadError;
+            console.warn('[HMH] Terrain stream resource failure', error);
+          } });
+        if (terrainStreamingBootController.signal.aborted) { await streaming.dispose(); return; }
+        streaming.setPinnedTextures(terrainPinnedPropTextures);
+        terrainAreaStreaming = streaming;
+      }).catch(error => {
+        if (terrainStreamingBootController.signal.aborted) return;
+        terrainTileLoadError = String(error?.message ?? error);
+        dataset.terrainStreamError = terrainTileLoadError;
+        console.warn('[HMH] Terrain stream unavailable; keeping basic graphics', error);
+      });
+      return;
+    }
     fetch(terrainManifestUrl(), { credentials: 'same-origin' })
       .then((response) => {
         if (!response.ok) throw new Error(`terrain manifest ${response.status}`);
@@ -1837,6 +1871,7 @@ async function boot() {
   // the bake compare them without re-joining every frame.
   let nativeBlockers = null;
   const renderAuthoredTerrain = (view) => {
+    if (terrainAreaStreaming && camera) terrainAreaStreaming.update({ camera: { x: camera.x, y: camera.y, groundZ: camera.groundZ, zoom: camera.zoom }, view: { ...view } });
     const gates = missionState.openGates;
     if (nativeBlockers?.ids !== worldDesignBlockerIds || nativeBlockers.gates !== gates || nativeBlockers.size !== gates.size) {
       const set = new Set([...worldDesignBlockerIds, ...gates]);
@@ -5595,18 +5630,22 @@ async function boot() {
     else window.location.assign('../');
   });
   app.ticker.add((ticker) => {
+    if (terrainAreaStreaming && camera) {
+      terrainAreaStreaming.update({ camera: { x: camera.x, y: camera.y, groundZ: camera.groundZ, zoom: camera.zoom }, view: viewport() });
+      dataset.terrainStream = JSON.stringify(terrainAreaStreaming.snapshot());
+    }
     if (startupGate && sessionPayload) {
       const worldStates = [dataset.authoredPropStatus, dataset.nativePropStatus, dataset.worldDesignStatus];
       const openingEnemiesReady = !enemyRosterEnabled || HMH_OPENING_ENEMY_ARCHETYPE_IDS.every(id => enemyRosterIndexes.has(id));
       const ready = (!productionPilotEnabled || loadedProductionHeroId === productionHeroAsset(sessionPayload.heroId).actorId)
         && openingEnemiesReady && worldStates.every(state => state === 'ready')
-        && (!terrainTilesEnabled || TERRAIN_MATERIAL_IDS.every(id => terrainTiles.loadedIds.includes(id)));
+        && (!terrainTilesEnabled || (terrainAreaStreamingEnabled ? terrainAreaStreaming?.snapshot().ready === true : TERRAIN_MATERIAL_IDS.every(id => terrainTiles.loadedIds.includes(id))));
       const status = startupGate.check({ ready, now: performance.now(), failed: Boolean(productionHeroLoadError || terrainTileLoadError || enemyRosterLoadError || worldStates.includes('fallback')) });
       const entryButton = startupPanel?.querySelector?.('#hmhStartupEnter');
       if (entryButton) {
         const flags = [!productionPilotEnabled || loadedProductionHeroId === productionHeroAsset(sessionPayload.heroId).actorId,
           openingEnemiesReady, ...worldStates.map(state => state === 'ready'),
-          ...TERRAIN_MATERIAL_IDS.map(id => !terrainTilesEnabled || terrainTiles.loadedIds.includes(id))];
+          ...(terrainAreaStreamingEnabled ? [terrainAreaStreaming?.snapshot().ready === true] : TERRAIN_MATERIAL_IDS.map(id => !terrainTilesEnabled || terrainTiles.loadedIds.includes(id)))];
         const percent = Math.round(flags.filter(Boolean).length / flags.length * 100);
         const progress = startupPanel.querySelector('[role="progressbar"]');
         progress?.setAttribute('aria-valuenow', String(percent));

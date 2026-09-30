@@ -52,3 +52,6 @@ apps/portal/assets/generated/chikun-ragdoll-v1/**/*.json -text whitespace=cr-at-
 apps/portal/assets/generated/hmh-barriers/*.json -text whitespace=cr-at-eol
 apps/portal/assets/generated/hmh-silver-coin/*.json -text whitespace=cr-at-eol
 apps/portal/assets/audio/sfx/hmh-objective-cues.json -text whitespace=cr-at-eol
+
+# W0b browser witnesses retain the exact measured producer bytes.
+docs/qa/hmh-world-w0b-native-source/*.mjs.txt -text whitespace=cr-at-eol

@@ -1,0 +1,658 @@
+{
+  "schema": "hmh-world-w0b-closure-v1",
+  "recordedAt": "2026-09-30T01:06:10.375Z",
+  "candidateSource": {
+    "at": "2026-09-30T01:04:19.634Z",
+    "sourceSha256": {
+      "apps/hmh-reboot/src/main.mjs": "b4dc1dbab9ed47fa56a1ebb29f04d5d06ea3490721ce02bb741469c320e815fb",
+      "apps/hmh-reboot/src/area-texture-leases.mjs": "c516cf152aebd869a785b8143f07f69d6d8762c6bcb868f06b4bd5db38036df2",
+      "apps/hmh-reboot/src/terrain-area-streaming.mjs": "24bcaeb9f6d259f2033c3a7269b16b58c75e942a40e399989d049479d84b1975",
+      "apps/hmh-reboot/src/terrain-tile-atlas.mjs": "397103f2fca680f38e80a2852ebfcde550a3e126fce3abff4d6063061fdc36c5",
+      "apps/hmh-reboot/src/world-static-bake.mjs": "a4dd6eafcdbb6336a50b70c195911991887be6a0420b82c0242b23797c69998c",
+      "tests/hmh-terrain-area-streaming.test.mjs": "d71be4e695963c8b1d6e783b10f6f0a9dae4900194624ae803ca1da29d2fa9df",
+      "scripts/syntax-check.mjs": "5de36d9e873449011b96685bfe82bc53e246866e03f59a421933088494db7dc7"
+    },
+    "frozenSourceSha256": {
+      "apps/hmh-reboot/src/enemy-navgrid.mjs": "da338be023aeeaadf0d5eb00a7ceef0adbd82e3ab7eb1b833fe7171445f595c3",
+      "apps/hmh-reboot/src/elevation.mjs": "afab7fb53ba657f13f1646d533909ae68544754c1de24ccef786ee156a57c4ea",
+      "apps/hmh-reboot/src/level-one-world.mjs": "173d43a2718919dc93a5c9e2c5b061a1cb1821fc6969d9f9bd7c4f5d435c69a1",
+      "apps/hmh-reboot/src/world-design-interactions.mjs": "88eacdd0afcb5143d3f6a997a846139dd48de458004af4c490afd38b54946220"
+    },
+    "witnessSha256": {
+      "terrain-streaming-browser-proof.mjs": "4600f77e384bbb992d93f3935941887d4836eb1e304e5e1edb8ce854f3ba85a2",
+      "terrain-streaming-component-entry.mjs": "1eafe2d356da07b97222aa11ecc593407090c2cc316184d79020ba31ddfc07de",
+      "terrain-streaming-host-entry.mjs": "efd6f63d2de795afce4ebdc739fc14aab1b579e2c01204bee57a9c12dcb39997",
+      "prepare-w0b-no-git-copy.mjs": "12dc5689b629a919745d229c2ea8a0fd4372ff3c6c67a1692306a677689285a6",
+      "run-w0b-green-gate.mjs": "118d45ab2d4fd316768fd21f1d1d6252bd97f643aec79a5b1ece53b447609e6a"
+    }
+  },
+  "scope": "Default-off terrain leases for the existing six-district 12,000 x 4,800 world. Scope excludes the requested 20,000 x 14,000 ten-area complete world streaming, player navigation, complete replay parity, phone performance and release acceptance.",
+  "physicalPhoneTested": false,
+  "performanceAcceptance": false,
+  "fullReleaseGateRun": false,
+  "deployed": false,
+  "tests": {
+    "focused": {
+      "tests": 92,
+      "pass": 92,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0,
+      "durationMs": 3254.7351
+    },
+    "standalone": {
+      "tests": 14,
+      "pass": 14,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0,
+      "durationMs": 560.1638,
+      "relativeSourceModules": 16,
+      "gitMetadataAbsent": true,
+      "dependencies": "Existing real Pixi dependency read through external node_modules junction; no install; not a dependency-free test"
+    },
+    "commands": {
+      "focused": {
+        "name": "focused",
+        "args": [
+          "--test",
+          "--test-reporter=tap",
+          "--test-concurrency=1",
+          "tests/hmh-terrain-area-streaming.test.mjs",
+          "tests/hmh-reboot-terrain-tiles.test.mjs",
+          "tests/hmh-world-static-bake.test.mjs",
+          "tests/hmh-world-render-lifecycle.test.mjs",
+          "tests/hmh-mobile-half-res-textures.test.mjs",
+          "tests/hmh-reboot-terrain-rebuild.test.mjs",
+          "tests/hmh-reboot-boot-responsive.test.mjs"
+        ],
+        "startedAt": "2026-09-30T01:04:19.641Z",
+        "stdout": "TAP version 13\n# Subtest: the mobile profile swaps every runtime page for its @0.5x variant; desktop and reduced motion keep full pages\nok 1 - the mobile profile swaps every runtime page for its @0.5x variant; desktop and reduced motion keep full pages\n  ---\n  duration_ms: 23.9013\n  type: 'test'\n  ...\n# Subtest: pages that already carry their own tiers, and anything that is not a runtime page, are never rewritten\nok 2 - pages that already carry their own tiers, and anything that is not a runtime page, are never rewritten\n  ---\n  duration_ms: 0.1035\n  type: 'test'\n  ...\n# Subtest: Pixi reads the variant suffix as resolution 0.5, query strings included\nok 3 - Pixi reads the variant suffix as resolution 0.5, query strings included\n  ---\n  duration_ms: 16.5529\n  type: 'test'\n  ...\n# Subtest: the manifest lists exactly the runtime pages, each variant fresh, half size and byte-exact\nok 4 - the manifest lists exactly the runtime pages, each variant fresh, half size and byte-exact\n  ---\n  duration_ms: 104.612\n  type: 'test'\n  ...\n# Subtest: the mobile loader requests the variant, falls back to the full page if the variant fails, and desktop is untouched\nok 5 - the mobile loader requests the variant, falls back to the full page if the variant fails, and desktop is untouched\n  ---\n  duration_ms: 0.4187\n  type: 'test'\n  ...\n# Subtest: a roster display cut from the half page draws every pose at the full page size, anchor and UVs\nok 6 - a roster display cut from the half page draws every pose at the full page size, anchor and UVs\n  ---\n  duration_ms: 7.199\n  type: 'test'\n  ...\n# Subtest: native Tripo prop pages validate against their logical size, so the half pages are accepted\nok 7 - native Tripo prop pages validate against their logical size, so the half pages are accepted\n  ---\n  duration_ms: 2.4014\n  type: 'test'\n  ...\n# Subtest: the child loads every scalable page through the profile texture loader\nok 8 - the child loads every scalable page through the profile texture loader\n  ---\n  duration_ms: 2.4989\n  type: 'test'\n  ...\n# Subtest: a hero built from half pilot, motion and held-weapon pages validates and draws every layer at the full page geometry\nok 9 - a hero built from half pilot, motion and held-weapon pages validates and draws every layer at the full page geometry\n  ---\n  duration_ms: 308.7443\n  type: 'test'\n  ...\n# Subtest: terrain tiles, fringes and overlays from half pages tile with the same texture matrix, repeat modes and manifest tile size\nok 10 - terrain tiles, fringes and overlays from half pages tile with the same texture matrix, repeat modes and manifest tile size\n  ---\n  duration_ms: 20.7149\n  type: 'test'\n  ...\n# Subtest: M2 renders one interactive frame before building the full deterministic navgrid\nok 11 - M2 renders one interactive frame before building the full deterministic navgrid\n  ---\n  duration_ms: 1.6392\n  type: 'test'\n  ...\n# Subtest: early bridge protocol errors do not access runtime services before initialization\nok 12 - early bridge protocol errors do not access runtime services before initialization\n  ---\n  duration_ms: 0.8503\n  type: 'test'\n  ...\n# Subtest: M6 idle-sliced navgrid is byte-identical to synchronous authority and yields repeatedly\nok 13 - M6 idle-sliced navgrid is byte-identical to synchronous authority and yields repeatedly\n  ---\n  duration_ms: 106.3271\n  type: 'test'\n  ...\n# Subtest: M2 full Level 1 navgrid remains bounded under the 1.5 second local target\nok 14 - M2 full Level 1 navgrid remains bounded under the 1.5 second local target\n  ---\n  duration_ms: 48.4139\n  type: 'test'\n  ...\n# Subtest: K-7 navgrid authority refuses to serve a grid while the idle-sliced build is in flight, then serves the byte-identical grid\nok 15 - K-7 navgrid authority refuses to serve a grid while the idle-sliced build is in flight, then serves the byte-identical grid\n  ---\n  duration_ms: 74.6765\n  type: 'test'\n  ...\n# Subtest: K-7 time-budgeted slices end within sliceBudgetMs plus one cell under a fake clock and stay byte-identical\nok 16 - K-7 time-budgeted slices end within sliceBudgetMs plus one cell under a fake clock and stay byte-identical\n  ---\n  duration_ms: 166.4554\n  type: 'test'\n  ...\n# Subtest: K-7 initializeSession requires navigation authority before it creates a simulation, and the flow field reads the required grid\nok 17 - K-7 initializeSession requires navigation authority before it creates a simulation, and the flow field reads the required grid\n  ---\n  duration_ms: 1.2893\n  type: 'test'\n  ...\n# Subtest: terrain v5 ships verified Blender ground under a bumped pipeline id\nok 18 - terrain v5 ships verified Blender ground under a bumped pipeline id\n  ---\n  duration_ms: 2.6949\n  type: 'test'\n  ...\n# Subtest: W-1 records a verifiable digest for every baked file\nok 19 - W-1 records a verifiable digest for every baked file\n  ---\n  duration_ms: 13.6082\n  type: 'test'\n  ...\n# Subtest: W-3/W-4 bake authored edge strips as overlays, not base materials\nok 20 - W-3/W-4 bake authored edge strips as overlays, not base materials\n  ---\n  duration_ms: 1.2693\n  type: 'test'\n  ...\n# Subtest: W-1 registry exposes overlays with strip addressing and stays inert until loaded\nok 21 - W-1 registry exposes overlays with strip addressing and stays inert until loaded\n  ---\n  duration_ms: 0.2403\n  type: 'test'\n  ...\n# Subtest: W-1 manifest validation carries the overlay contract to the runtime\nok 22 - W-1 manifest validation carries the overlay contract to the runtime\n  ---\n  duration_ms: 0.6792\n  type: 'test'\n  ...\n# Subtest: W-11 bakes an opaque rock-face strip for ledge and cliff faces\nok 23 - W-11 bakes an opaque rock-face strip for ledge and cliff faces\n  ---\n  duration_ms: 62.8921\n  type: 'test'\n  ...\n# Subtest: W-1 raises the tile repeat out of the aliasing band and mipmaps the samplers\nok 24 - W-1 raises the tile repeat out of the aliasing band and mipmaps the samplers\n  ---\n  duration_ms: 0.4521\n  type: 'test'\n  ...\n# Subtest: W-4 lands shore and scree bands under the surfaces that shed them\nok 25 - W-4 lands shore and scree bands under the surfaces that shed them\n  ---\n  duration_ms: 0.6325\n  type: 'test'\n  ...\n# Subtest: W-1 bakery is vectorised, lit and deterministic\nok 26 - W-1 bakery is vectorised, lit and deterministic\n  ---\n  duration_ms: 0.6207\n  type: 'test'\n  ...\n# Subtest: W-3 roads read as a surface that meets the ground, not an outlined ribbon\nok 27 - W-3 roads read as a surface that meets the ground, not an outlined ribbon\n  ---\n  duration_ms: 0.6331\n  type: 'test'\n  ...\n# Subtest: every district and every readable surface has an authored material\nok 28 - every district and every readable surface has an authored material\n  ---\n  duration_ms: 1.0462\n  type: 'test'\n  ...\n# Subtest: the baked manifest is present, projection-only, and complete\nok 29 - the baked manifest is present, projection-only, and complete\n  ---\n  duration_ms: 2.9777\n  type: 'test'\n  ...\n# Subtest: tiles preserve 512px Blender ground detail with proportional fringes\nok 30 - tiles preserve 512px Blender ground detail with proportional fringes\n  ---\n  duration_ms: 0.6047\n  type: 'test'\n  ...\n# Subtest: each district tile is bound to its original Blender material and measured wrap statistics\nok 31 - each district tile is bound to its original Blender material and measured wrap statistics\n  ---\n  duration_ms: 0.642\n  type: 'test'\n  ...\n# Subtest: terrain requests use a new version key even under the preceding service worker\nok 32 - terrain requests use a new version key even under the preceding service worker\n  ---\n  duration_ms: 0.4013\n  type: 'test'\n  ...\n# Subtest: every material file referenced by the manifest exists on disk\nok 33 - every material file referenced by the manifest exists on disk\n  ---\n  duration_ms: 1.5036\n  type: 'test'\n  ...\n# Subtest: manifest validation fails closed on a foreign or incomplete manifest\nok 34 - manifest validation fails closed on a foreign or incomplete manifest\n  ---\n  duration_ms: 0.8976\n  type: 'test'\n  ...\n# Subtest: the registry stays inert until a texture arrives, so terrain never blocks\nok 35 - the registry stays inert until a texture arrives, so terrain never blocks\n  ---\n  duration_ms: 0.5355\n  type: 'test'\n  ...\n# Subtest: the registry enables repeat addressing, which is what makes a tile tile\nok 36 - the registry enables repeat addressing, which is what makes a tile tile\n  ---\n  duration_ms: 0.2081\n  type: 'test'\n  ...\n# Subtest: registry rejects unknown materials and textures without a source\nok 37 - registry rejects unknown materials and textures without a source\n  ---\n  duration_ms: 0.1996\n  type: 'test'\n  ...\n# Subtest: terrain rendering keeps a flat-colour fallback and carries no gameplay authority\nok 38 - terrain rendering keeps a flat-colour fallback and carries no gameplay authority\n  ---\n  duration_ms: 1.3953\n  type: 'test'\n  ...\n# Subtest: readability cues draw ABOVE the opaque surface material, not under it\nok 39 - readability cues draw ABOVE the opaque surface material, not under it\n  ---\n  duration_ms: 0.761\n  type: 'test'\n  ...\n# Subtest: the road mask never renders as a visible stroke when no tile is present\nok 40 - the road mask never renders as a visible stroke when no tile is present\n  ---\n  duration_ms: 1.1765\n  type: 'test'\n  ...\n# Subtest: sprite pooling reuses sprites, excludes the mask, and hides stale ones\nok 41 - sprite pooling reuses sprites, excludes the mask, and hides stale ones\n  ---\n  duration_ms: 0.5269\n  type: 'test'\n  ...\n# Subtest: terrain load status is observable so a silent failure cannot hide\nok 42 - terrain load status is observable so a silent failure cannot hide\n  ---\n  duration_ms: 0.6911\n  type: 'test'\n  ...\n# Subtest: area leases share one real resource and detach before last-owner unload\nok 43 - area leases share one real resource and detach before last-owner unload\n  ---\n  duration_ms: 1.4746\n  type: 'test'\n  ...\n# Subtest: cancelled pending area never publishes; delayed completion is disposed before re-entry reload\nok 44 - cancelled pending area never publishes; delayed completion is disposed before re-entry reload\n  ---\n  duration_ms: 0.3198\n  type: 'test'\n  ...\n# Subtest: pending and retiring bytes remain reserved and bounded during rapid area changes\nok 45 - pending and retiring bytes remain reserved and bounded during rapid area changes\n  ---\n  duration_ms: 2.3291\n  type: 'test'\n  ...\n# Subtest: dispose cancels pending work and keeps failed source disposal observable and charged\nok 46 - dispose cancels pending work and keeps failed source disposal observable and charged\n  ---\n  duration_ms: 0.665\n  type: 'test'\n  ...\n# Subtest: camera interest uses detached viewport scale and retain hysteresis without changing world inputs\nok 47 - camera interest uses detached viewport scale and retain hysteresis without changing world inputs\n  ---\n  duration_ms: 0.3125\n  type: 'test'\n  ...\n# Subtest: owned Pixi loader tracks actual mobile fallback URL and rejects foreign cache ownership\nok 48 - owned Pixi loader tracks actual mobile fallback URL and rejects foreign cache ownership\n  ---\n  duration_ms: 0.5389\n  type: 'test'\n  ...\n# Subtest: actual Pixi terrain sprites and registry detach and bake invalidates before owned source unload\nok 49 - actual Pixi terrain sprites and registry detach and bake invalidates before owned source unload\n  ---\n  duration_ms: 1.1235\n  type: 'test'\n  ...\n# Subtest: explicit invalidation redraws the actual static-bake adapter at the unchanged camera\nok 50 - explicit invalidation redraws the actual static-bake adapter at the unchanged camera\n  ---\n  duration_ms: 2.7181\n  type: 'test'\n  ...\n# Subtest: actual current-map terrain adapter unloads obsolete Pixi sources, preserves shared pages and reports pinned props separately\nok 51 - actual current-map terrain adapter unloads obsolete Pixi sources, preserves shared pages and reports pinned props separately\n  ---\n  duration_ms: 3.5979\n  type: 'test'\n  ...\n# Subtest: cancelled failed request cannot poison a later re-entry generation\nok 52 - cancelled failed request cannot poison a later re-entry generation\n  ---\n  duration_ms: 0.3568\n  type: 'test'\n  ...\n# Subtest: owned loader rejects a silently incomplete Pixi unload instead of releasing its reservation\nok 53 - owned loader rejects a silently incomplete Pixi unload instead of releasing its reservation\n  ---\n  duration_ms: 0.3016\n  type: 'test'\n  ...\n# Subtest: owned loader retains the original actual Pixi source when only its Texture wrapper is destroyed\nok 54 - owned loader retains the original actual Pixi source when only its Texture wrapper is destroyed\n  ---\n  duration_ms: 0.247\n  type: 'test'\n  ...\n# Subtest: owned loader rejects public source substitution during unload while its original actual Pixi source survives\nok 55 - owned loader rejects public source substitution during unload while its original actual Pixi source survives\n  ---\n  duration_ms: 0.2142\n  type: 'test'\n  ...\n# Subtest: a throwing telemetry callback cannot interrupt actual partial-publication source cleanup\nok 56 - a throwing telemetry callback cannot interrupt actual partial-publication source cleanup\n  ---\n  duration_ms: 0.49\n  type: 'test'\n  ...\n# Subtest: queued corpses join the real ground-depth layer at their captured world Y\nok 57 - queued corpses join the real ground-depth layer at their captured world Y\n  ---\n  duration_ms: 3.3593\n  type: 'test'\n  ...\n# Subtest: distant deaths still attach corpse art without playing nearby combat audio\nok 58 - distant deaths still attach corpse art without playing nearby combat audio\n  ---\n  duration_ms: 1.1784\n  type: 'test'\n  ...\n# Subtest: corpse capacity and reset leave no orphaned depth attachments\nok 59 - corpse capacity and reset leave no orphaned depth attachments\n  ---\n  duration_ms: 1.67\n  type: 'test'\n  ...\n# Subtest: the actual expiry loop detaches expired corpse graphics and pools them for the next kill\nok 60 - the actual expiry loop detaches expired corpse graphics and pools them for the next kill\n  ---\n  duration_ms: 1.9428\n  type: 'test'\n  ...\n# Subtest: fallback buildings have an individually sorted display in the real depth layer\nok 61 - fallback buildings have an individually sorted display in the real depth layer\n  ---\n  duration_ms: 7.5527\n  type: 'test'\n  ...\n# Subtest: fallback fence remains in the same depth system as its native replacement\nok 62 - fallback fence remains in the same depth system as its native replacement\n  ---\n  duration_ms: 1.2581\n  type: 'test'\n  ...\n# Subtest: fallback machinery remains in the same depth system as its native replacement\nok 63 - fallback machinery remains in the same depth system as its native replacement\n  ---\n  duration_ms: 2.9323\n  type: 'test'\n  ...\n# Subtest: fallback containers remains in the same depth system as its native replacement\nok 64 - fallback containers remains in the same depth system as its native replacement\n  ---\n  duration_ms: 1.2933\n  type: 'test'\n  ...\n# Subtest: fallback bridge-rail remains in the same depth system as its native replacement\nok 65 - fallback bridge-rail remains in the same depth system as its native replacement\n  ---\n  duration_ms: 2.3614\n  type: 'test'\n  ...\n# Subtest: partial authored-display construction cleans its real Pixi attachments\nok 66 - partial authored-display construction cleans its real Pixi attachments\n  ---\n  duration_ms: 1.0464\n  type: 'test'\n  ...\n# Subtest: failed props construction never hides canonical fallback collision art\nok 67 - failed props construction never hides canonical fallback collision art\n  ---\n  duration_ms: 4.0375\n  type: 'test'\n  ...\n# Subtest: failed held construction never hides canonical fallback collision art\nok 68 - failed held construction never hides canonical fallback collision art\n  ---\n  duration_ms: 2.7938\n  type: 'test'\n  ...\n# Subtest: static and dynamic passes reproduce the full render exactly: bridge\nok 69 - static and dynamic passes reproduce the full render exactly: bridge\n  ---\n  duration_ms: 11.7923\n  type: 'test'\n  ...\n# Subtest: static and dynamic passes reproduce the full render exactly: north crossing\nok 70 - static and dynamic passes reproduce the full render exactly: north crossing\n  ---\n  duration_ms: 2.3322\n  type: 'test'\n  ...\n# Subtest: static and dynamic passes reproduce the full render exactly: reservoir\nok 71 - static and dynamic passes reproduce the full render exactly: reservoir\n  ---\n  duration_ms: 4.049\n  type: 'test'\n  ...\n# Subtest: static and dynamic passes reproduce the full render exactly: ravine ramp\nok 72 - static and dynamic passes reproduce the full render exactly: ravine ramp\n  ---\n  duration_ms: 2.1024\n  type: 'test'\n  ...\n# Subtest: static and dynamic passes reproduce the full render exactly: ravine cliff\nok 73 - static and dynamic passes reproduce the full render exactly: ravine cliff\n  ---\n  duration_ms: 2.1716\n  type: 'test'\n  ...\n# Subtest: static and dynamic passes reproduce the full render exactly: mining deck\nok 74 - static and dynamic passes reproduce the full render exactly: mining deck\n  ---\n  duration_ms: 2.2852\n  type: 'test'\n  ...\n# Subtest: static and dynamic passes reproduce the full render exactly: spawn\nok 75 - static and dynamic passes reproduce the full render exactly: spawn\n  ---\n  duration_ms: 1.2163\n  type: 'test'\n  ...\n# Subtest: static and dynamic passes reproduce the full render exactly: fuel route\nok 76 - static and dynamic passes reproduce the full render exactly: fuel route\n  ---\n  duration_ms: 3.5601\n  type: 'test'\n  ...\n# Subtest: static and dynamic passes reproduce the full render exactly: tanker row\nok 77 - static and dynamic passes reproduce the full render exactly: tanker row\n  ---\n  duration_ms: 2.7624\n  type: 'test'\n  ...\n# Subtest: static and dynamic passes reproduce the full render exactly: ford\nok 78 - static and dynamic passes reproduce the full render exactly: ford\n  ---\n  duration_ms: 3.3914\n  type: 'test'\n  ...\n# Subtest: each pass leaves the other pass's layers alone at 4700,2400\nok 79 - each pass leaves the other pass's layers alone at 4700,2400\n  ---\n  duration_ms: 2.3516\n  type: 'test'\n  ...\n# Subtest: each pass leaves the other pass's layers alone at 5400,3000\nok 80 - each pass leaves the other pass's layers alone at 5400,3000\n  ---\n  duration_ms: 2.0468\n  type: 'test'\n  ...\n# Subtest: each pass leaves the other pass's layers alone at 8600,1300\nok 81 - each pass leaves the other pass's layers alone at 8600,1300\n  ---\n  duration_ms: 1.5517\n  type: 'test'\n  ...\n# Subtest: each pass leaves the other pass's layers alone at 3450,3000\nok 82 - each pass leaves the other pass's layers alone at 3450,3000\n  ---\n  duration_ms: 1.5506\n  type: 'test'\n  ...\n# Subtest: the screen-space vignette is drawn once per view size, not every frame\nok 83 - the screen-space vignette is drawn once per view size, not every frame\n  ---\n  duration_ms: 2.0351\n  type: 'test'\n  ...\n# Subtest: baking groups the static layers without changing the draw order\nok 84 - baking groups the static layers without changing the draw order\n  ---\n  duration_ms: 0.4968\n  type: 'test'\n  ...\n# Subtest: a translated bake puts the static world where the per-frame renderer drew it: bridge walk\nok 85 - a translated bake puts the static world where the per-frame renderer drew it: bridge walk\n  ---\n  duration_ms: 16.7437\n  type: 'test'\n  ...\n# Subtest: a translated bake puts the static world where the per-frame renderer drew it: ravine climb\nok 86 - a translated bake puts the static world where the per-frame renderer drew it: ravine climb\n  ---\n  duration_ms: 7.1681\n  type: 'test'\n  ...\n# Subtest: a translated bake puts the static world where the per-frame renderer drew it: mobile river bank\nok 87 - a translated bake puts the static world where the per-frame renderer drew it: mobile river bank\n  ---\n  duration_ms: 9.026\n  type: 'test'\n  ...\n# Subtest: rebake policy: only a real change or leaving the margin re-draws the static world\nok 88 - rebake policy: only a real change or leaving the margin re-draws the static world\n  ---\n  duration_ms: 4.8819\n  type: 'test'\n  ...\n# Subtest: the terrain registry versions every change a baked ground depends on\nok 89 - the terrain registry versions every change a baked ground depends on\n  ---\n  duration_ms: 0.9296\n  type: 'test'\n  ...\n# Subtest: the camera ground height shifts the baked world but not the tile pattern\nok 90 - the camera ground height shifts the baked world but not the tile pattern\n  ---\n  duration_ms: 1.2797\n  type: 'test'\n  ...\n# Subtest: a caller-joined blocker key re-bakes exactly when the blocker set would\nok 91 - a caller-joined blocker key re-bakes exactly when the blocker set would\n  ---\n  duration_ms: 10.1078\n  type: 'test'\n  ...\n# Subtest: the runtime renders the ground through the lazily loaded bake\nok 92 - the runtime renders the ground through the lazily loaded bake\n  ---\n  duration_ms: 0.2418\n  type: 'test'\n  ...\n1..92\n# tests 92\n# suites 0\n# pass 92\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 3254.7351\n",
+        "stderr": "",
+        "exitCode": 0,
+        "signal": null,
+        "finishedAt": "2026-09-30T01:04:22.993Z"
+      },
+      "copy-no-git": {
+        "name": "copy-no-git",
+        "args": [
+          "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\prepare-w0b-no-git-copy.mjs"
+        ],
+        "startedAt": "2026-09-30T01:04:22.995Z",
+        "stdout": "{\"out\":\"C:\\\\Users\\\\just_\\\\Documents\\\\Codex\\\\2026-09-29\\\\you-are-taking-over-as-lead\\\\work\\\\world-w0b-no-git-20260929\",\"relativeSourceModules\":16,\"gitCheckoutPresent\":false,\"installedDependency\":\"Existing real Pixi dependency through a read-only junction; no install or Git-dependent test\"}\n",
+        "stderr": "",
+        "exitCode": 0,
+        "signal": null,
+        "finishedAt": "2026-09-30T01:04:23.081Z"
+      },
+      "no-git": {
+        "name": "no-git",
+        "args": [
+          "--test",
+          "--test-reporter=tap",
+          "--test-concurrency=1",
+          "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w0b-no-git-20260929\\tests\\hmh-terrain-area-streaming.test.mjs"
+        ],
+        "startedAt": "2026-09-30T01:04:23.086Z",
+        "stdout": "TAP version 13\n# Subtest: area leases share one real resource and detach before last-owner unload\nok 1 - area leases share one real resource and detach before last-owner unload\n  ---\n  duration_ms: 1.4716\n  type: 'test'\n  ...\n# Subtest: cancelled pending area never publishes; delayed completion is disposed before re-entry reload\nok 2 - cancelled pending area never publishes; delayed completion is disposed before re-entry reload\n  ---\n  duration_ms: 0.4007\n  type: 'test'\n  ...\n# Subtest: pending and retiring bytes remain reserved and bounded during rapid area changes\nok 3 - pending and retiring bytes remain reserved and bounded during rapid area changes\n  ---\n  duration_ms: 2.6956\n  type: 'test'\n  ...\n# Subtest: dispose cancels pending work and keeps failed source disposal observable and charged\nok 4 - dispose cancels pending work and keeps failed source disposal observable and charged\n  ---\n  duration_ms: 0.656\n  type: 'test'\n  ...\n# Subtest: camera interest uses detached viewport scale and retain hysteresis without changing world inputs\nok 5 - camera interest uses detached viewport scale and retain hysteresis without changing world inputs\n  ---\n  duration_ms: 0.3152\n  type: 'test'\n  ...\n# Subtest: owned Pixi loader tracks actual mobile fallback URL and rejects foreign cache ownership\nok 6 - owned Pixi loader tracks actual mobile fallback URL and rejects foreign cache ownership\n  ---\n  duration_ms: 0.5322\n  type: 'test'\n  ...\n# Subtest: actual Pixi terrain sprites and registry detach and bake invalidates before owned source unload\nok 7 - actual Pixi terrain sprites and registry detach and bake invalidates before owned source unload\n  ---\n  duration_ms: 1.0339\n  type: 'test'\n  ...\n# Subtest: explicit invalidation redraws the actual static-bake adapter at the unchanged camera\nok 8 - explicit invalidation redraws the actual static-bake adapter at the unchanged camera\n  ---\n  duration_ms: 2.7617\n  type: 'test'\n  ...\n# Subtest: actual current-map terrain adapter unloads obsolete Pixi sources, preserves shared pages and reports pinned props separately\nok 9 - actual current-map terrain adapter unloads obsolete Pixi sources, preserves shared pages and reports pinned props separately\n  ---\n  duration_ms: 3.713\n  type: 'test'\n  ...\n# Subtest: cancelled failed request cannot poison a later re-entry generation\nok 10 - cancelled failed request cannot poison a later re-entry generation\n  ---\n  duration_ms: 0.2915\n  type: 'test'\n  ...\n# Subtest: owned loader rejects a silently incomplete Pixi unload instead of releasing its reservation\nok 11 - owned loader rejects a silently incomplete Pixi unload instead of releasing its reservation\n  ---\n  duration_ms: 0.2546\n  type: 'test'\n  ...\n# Subtest: owned loader retains the original actual Pixi source when only its Texture wrapper is destroyed\nok 12 - owned loader retains the original actual Pixi source when only its Texture wrapper is destroyed\n  ---\n  duration_ms: 0.2304\n  type: 'test'\n  ...\n# Subtest: owned loader rejects public source substitution during unload while its original actual Pixi source survives\nok 13 - owned loader rejects public source substitution during unload while its original actual Pixi source survives\n  ---\n  duration_ms: 0.3142\n  type: 'test'\n  ...\n# Subtest: a throwing telemetry callback cannot interrupt actual partial-publication source cleanup\nok 14 - a throwing telemetry callback cannot interrupt actual partial-publication source cleanup\n  ---\n  duration_ms: 0.5101\n  type: 'test'\n  ...\n1..14\n# tests 14\n# suites 0\n# pass 14\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 560.1638\n",
+        "stderr": "",
+        "exitCode": 0,
+        "signal": null,
+        "finishedAt": "2026-09-30T01:04:23.731Z"
+      },
+      "build": {
+        "name": "build",
+        "args": [
+          "build.mjs",
+          "--metafile"
+        ],
+        "startedAt": "2026-09-30T01:04:23.733Z",
+        "stdout": "\n=== Bundle report ===\nSTACKED initial JS: 576056 B (entry 25966, vendor 496615, shared 53475)\nSource main.js:     440.8 KB\nBundled main.js:    1.11 MB  (+158.8% vs source entry; imports included)\nHMH reboot source:  315.4 KB\nHMH reboot entry:   308.9 KB  (-2.0% vs child source)\nHMH entry cap:      316,337 / 480,000 B; 163,663 B remaining\nChikun source:      47.5 KB\nChikun entry:       45.1 KB  (-5.0% vs child source)\nHMH Pixi vendor:    454.8 KB  (stable preloaded module)\nHMH shared chunks:  252.8 KB (258,829 B) across 27 hoisted chunk(s) game.js imports statically\nHMH initial JS:     763.8 KB (782,083 B) / 1.00 MB raw aggregate, entry + vendor\nHMH initial JS + shared: 1016.5 KB (1,040,912 B) / 1.00 MB raw aggregate, entry + shared chunks + vendor\nHMH headroom:       260.2 KB entry + vendor; 7.5 KB including shared chunks\nReown AppKit (lazy): 1.51 MB on first WalletConnect use (entry 348574 B + 9 static chunk(s) 1232981 B)\nTotal emitted JS:   11.22 MB across 316 files\nOutput dir:         apps/portal/dist/ (plus public discovery pages)\n",
+        "stderr": "\n  apps\\portal\\dist\\chunks\\hmh-animated-roster-LWW4EAQC.js      1.8mb\n  apps\\portal\\dist\\main.js                                     1.1mb\n  apps\\portal\\dist\\chunks\\chunk-MKJKQ74X.js                  801.3kb\n  apps\\portal\\dist\\chunks\\hmh-curated-level-art-ILZ4JAAC.js  726.3kb\n  apps\\portal\\dist\\chunks\\ethers.min-WYT2B7NK.js             385.4kb\n  ...and 185 more output files...\n\nDone in 174ms\n\n  apps\\portal\\dist\\chunks\\hmh-pixi.js  454.8kb\n\nDone in 195ms\n",
+        "exitCode": 0,
+        "signal": null,
+        "finishedAt": "2026-09-30T01:04:25.680Z"
+      },
+      "browser": {
+        "name": "browser",
+        "args": [
+          "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\terrain-streaming-browser-proof.mjs"
+        ],
+        "startedAt": "2026-09-30T01:04:25.733Z",
+        "stdout": "{\"nativeCases\":2,\"componentCases\":2,\"staleCases\":1,\"errors\":0,\"out\":\"C:\\\\Users\\\\just_\\\\Documents\\\\Codex\\\\2026-09-29\\\\you-are-taking-over-as-lead\\\\work\\\\world-w0b-browser-green-20260929-04\"}\n",
+        "stderr": "",
+        "exitCode": 0,
+        "signal": null,
+        "finishedAt": "2026-09-30T01:04:41.144Z"
+      },
+      "visual-reboot": {
+        "name": "visual-reboot",
+        "args": [
+          "scripts/hmh-reboot-visual-regression.mjs"
+        ],
+        "startedAt": "2026-09-30T01:04:41.145Z",
+        "stdout": "{\n  \"schema\": \"hmh-reboot-visual-signature-v1\",\n  \"tolerance\": 2.5,\n  \"accepted\": false,\n  \"baselineDir\": \"docs/testing/VISUAL_BASELINES/hmh-reboot\",\n  \"currentDir\": \".hermes/evidence/hmh-reboot-visual/current\",\n  \"reducedMotionEvidence\": {\n    \"sceneId\": \"frontier-relay-desktop\",\n    \"landmarkVisible\": 7,\n    \"animatedSignals\": 0,\n    \"atmosphereSprites\": 0\n  },\n  \"results\": [\n    {\n      \"sceneId\": \"frontier-relay-desktop\",\n      \"observedTick\": 90,\n      \"status\": \"unchanged\",\n      \"meanDelta\": 0.003,\n      \"maxDelta\": 2,\n      \"changedCells\": 0,\n      \"enemyCrops\": {\n        \"status\": \"unchanged\",\n        \"count\": 1,\n        \"crops\": [\n          {\n            \"archetypeId\": \"bagholder-rusher\",\n            \"meanLumaDelta\": 0,\n            \"maxCellDelta\": 0,\n            \"status\": \"unchanged\"\n          }\n        ]\n      },\n      \"errors\": []\n    },\n    {\n      \"sceneId\": \"frontier-relay-mobile\",\n      \"observedTick\": 240,\n      \"status\": \"unchanged\",\n      \"meanDelta\": 0.005,\n      \"maxDelta\": 3,\n      \"changedCells\": 1,\n      \"enemyCrops\": {\n        \"status\": \"unchanged\",\n        \"count\": 2,\n        \"crops\": [\n          {\n            \"archetypeId\": \"bagholder-rusher\",\n            \"meanLumaDelta\": 0,\n            \"maxCellDelta\": 0,\n            \"status\": \"unchanged\"\n          },\n          {\n            \"archetypeId\": \"forkrunner\",\n            \"meanLumaDelta\": 0,\n            \"maxCellDelta\": 0,\n            \"status\": \"unchanged\"\n          }\n        ]\n      },\n      \"errors\": []\n    },\n    {\n      \"sceneId\": \"combat-engaged-desktop\",\n      \"observedTick\": 420,\n      \"status\": \"unchanged\",\n      \"meanDelta\": 0.019,\n      \"maxDelta\": 4,\n      \"changedCells\": 3,\n      \"enemyCrops\": {\n        \"status\": \"unchanged\",\n        \"count\": 1,\n        \"crops\": [\n          {\n            \"archetypeId\": \"bagholder-rusher\",\n            \"meanLumaDelta\": 0,\n            \"maxCellDelta\": 0,\n            \"status\": \"unchanged\"\n          }\n        ]\n      },\n      \"errors\": []\n    },\n    {\n      \"sceneId\": \"ravine-overlook-desktop\",\n      \"observedTick\": 180,\n      \"status\": \"unchanged\",\n      \"meanDelta\": 0.003,\n      \"maxDelta\": 2,\n      \"changedCells\": 0,\n      \"errors\": []\n    },\n    {\n      \"sceneId\": \"mining-camp-desktop\",\n      \"observedTick\": 180,\n      \"status\": \"unchanged\",\n      \"meanDelta\": 0.003,\n      \"maxDelta\": 2,\n      \"changedCells\": 0,\n      \"errors\": []\n    },\n    {\n      \"sceneId\": \"liquidity-bridge-desktop\",\n      \"observedTick\": 180,\n      \"status\": \"unchanged\",\n      \"meanDelta\": 0.003,\n      \"maxDelta\": 2,\n      \"changedCells\": 0,\n      \"errors\": []\n    },\n    {\n      \"sceneId\": \"hashwood-foliage-desktop\",\n      \"observedTick\": 180,\n      \"status\": \"unchanged\",\n      \"meanDelta\": 0.003,\n      \"maxDelta\": 2,\n      \"changedCells\": 0,\n      \"errors\": []\n    },\n    {\n      \"sceneId\": \"liquidation-yard-desktop\",\n      \"observedTick\": 180,\n      \"status\": \"unchanged\",\n      \"meanDelta\": 0.003,\n      \"maxDelta\": 2,\n      \"changedCells\": 0,\n      \"errors\": []\n    },\n    {\n      \"sceneId\": \"liquidation-market-desktop\",\n      \"observedTick\": 180,\n      \"status\": \"unchanged\",\n      \"meanDelta\": 0.003,\n      \"maxDelta\": 2,\n      \"changedCells\": 0,\n      \"errors\": []\n    },\n    {\n      \"sceneId\": \"liquidation-residential-desktop\",\n      \"observedTick\": 180,\n      \"status\": \"unchanged\",\n      \"meanDelta\": 0.003,\n      \"maxDelta\": 2,\n      \"changedCells\": 0,\n      \"errors\": []\n    },\n    {\n      \"sceneId\": \"hashwood-camp-desktop\",\n      \"observedTick\": 180,\n      \"status\": \"unchanged\",\n      \"meanDelta\": 0.003,\n      \"maxDelta\": 2,\n      \"changedCells\": 0,\n      \"errors\": []\n    },\n    {\n      \"sceneId\": \"crossing-water-desktop\",\n      \"observedTick\": 180,\n      \"status\": \"unchanged\",\n      \"meanDelta\": 0.005,\n      \"maxDelta\": 3,\n      \"changedCells\": 1,\n      \"errors\": []\n    }\n  ]\n}\nVisual regression passed for 12 scenes.\n",
+        "stderr": "",
+        "exitCode": 0,
+        "signal": null,
+        "finishedAt": "2026-09-30T01:05:27.332Z"
+      }
+    }
+  },
+  "budget": {
+    "cap": 1048576,
+    "combinedInitialChildBytes": 782083,
+    "entryBytes": 316337,
+    "initialChildBytesWithSharedChunks": 1040912,
+    "remaining": 266493,
+    "remainingWithSharedChunks": 7664,
+    "sharedChunkBytes": 258829,
+    "vendorBytes": 465746,
+    "sharedChunks": [
+      {
+        "path": "apps/portal/dist/chunks/chunk-2BH2DUJT.js",
+        "bytes": 28251
+      },
+      {
+        "path": "apps/portal/dist/chunks/chunk-2GEB7OBA.js",
+        "bytes": 4219
+      },
+      {
+        "path": "apps/portal/dist/chunks/chunk-2WGYLO4P.js",
+        "bytes": 655
+      },
+      {
+        "path": "apps/portal/dist/chunks/chunk-35BRWECB.js",
+        "bytes": 3356
+      },
+      {
+        "path": "apps/portal/dist/chunks/chunk-66IU6Y7X.js",
+        "bytes": 33466
+      },
+      {
+        "path": "apps/portal/dist/chunks/chunk-6DDQFTGU.js",
+        "bytes": 5708
+      },
+      {
+        "path": "apps/portal/dist/chunks/chunk-74RWV2R2.js",
+        "bytes": 1275
+      },
+      {
+        "path": "apps/portal/dist/chunks/chunk-74ZJNIIV.js",
+        "bytes": 35584
+      },
+      {
+        "path": "apps/portal/dist/chunks/chunk-B2364FTF.js",
+        "bytes": 12061
+      },
+      {
+        "path": "apps/portal/dist/chunks/chunk-EKYRYSFG.js",
+        "bytes": 8142
+      },
+      {
+        "path": "apps/portal/dist/chunks/chunk-ESDQIMBA.js",
+        "bytes": 965
+      },
+      {
+        "path": "apps/portal/dist/chunks/chunk-FJSVRC2T.js",
+        "bytes": 3368
+      },
+      {
+        "path": "apps/portal/dist/chunks/chunk-HRT7TI5W.js",
+        "bytes": 1590
+      },
+      {
+        "path": "apps/portal/dist/chunks/chunk-IZH6NDGR.js",
+        "bytes": 8119
+      },
+      {
+        "path": "apps/portal/dist/chunks/chunk-JW3WZOLP.js",
+        "bytes": 481
+      },
+      {
+        "path": "apps/portal/dist/chunks/chunk-KIEFYNSW.js",
+        "bytes": 1478
+      },
+      {
+        "path": "apps/portal/dist/chunks/chunk-MMSI7XOT.js",
+        "bytes": 10801
+      },
+      {
+        "path": "apps/portal/dist/chunks/chunk-NSYVAXWR.js",
+        "bytes": 13104
+      },
+      {
+        "path": "apps/portal/dist/chunks/chunk-OQWCW7H2.js",
+        "bytes": 524
+      },
+      {
+        "path": "apps/portal/dist/chunks/chunk-PBEL7OZC.js",
+        "bytes": 1800
+      },
+      {
+        "path": "apps/portal/dist/chunks/chunk-QZQQZ67Q.js",
+        "bytes": 24953
+      },
+      {
+        "path": "apps/portal/dist/chunks/chunk-TH556TFN.js",
+        "bytes": 4375
+      },
+      {
+        "path": "apps/portal/dist/chunks/chunk-UJHJCWV2.js",
+        "bytes": 4574
+      },
+      {
+        "path": "apps/portal/dist/chunks/chunk-V6Q2KNOM.js",
+        "bytes": 3416
+      },
+      {
+        "path": "apps/portal/dist/chunks/chunk-VDJRWC6L.js",
+        "bytes": 1904
+      },
+      {
+        "path": "apps/portal/dist/chunks/chunk-WNDYD35G.js",
+        "bytes": 2376
+      },
+      {
+        "path": "apps/portal/dist/chunks/chunk-YKUM7VFD.js",
+        "bytes": 42284
+      }
+    ],
+    "scope": "Actual emitted own-branch byte lengths; excludes independently prepared character/art/Chikun/root integration"
+  },
+  "builtFiles": [
+    {
+      "file": "apps/portal/dist/meta.json",
+      "bytes": 4438146,
+      "sha256": "c71c73ae3273b98bddfbf037cd79b58b77aefef8326d0cf00ffe6ed31ff3dc1a"
+    },
+    {
+      "file": "apps/portal/dist/hmh-reboot/game.js",
+      "bytes": 316337,
+      "sha256": "47f317e0e006e234e3353de9b3ca5eeeea4f878cff71bd5952ee4ec8dd1ebac5"
+    },
+    {
+      "file": "apps/portal/dist/chunks/hmh-pixi.js",
+      "bytes": 465746,
+      "sha256": "5da86a3125f1f0d35c88edbbfb6a454aada982908aef710771105f96eecc1c2c"
+    },
+    {
+      "file": "apps/portal/dist/chunks/chunk-2BH2DUJT.js",
+      "bytes": 28251,
+      "sha256": "b46a980688107505e390484d081e257045cab2db851b020bb3b989ddce936828"
+    },
+    {
+      "file": "apps/portal/dist/chunks/chunk-2GEB7OBA.js",
+      "bytes": 4219,
+      "sha256": "70a65bc4522fc364187cf2e23a1673dad5cc19d199e4c823fecd18f976813d9f"
+    },
+    {
+      "file": "apps/portal/dist/chunks/chunk-2WGYLO4P.js",
+      "bytes": 655,
+      "sha256": "fe5865361e105c752963ffcabdae4f585e39639d8f0a1167a65ce795bfd94776"
+    },
+    {
+      "file": "apps/portal/dist/chunks/chunk-35BRWECB.js",
+      "bytes": 3356,
+      "sha256": "902447d40ec443e1cdfad763ac26008351d9e6b5f949b2a1c887c0a50173ada9"
+    },
+    {
+      "file": "apps/portal/dist/chunks/chunk-66IU6Y7X.js",
+      "bytes": 33466,
+      "sha256": "051838ac99e143fe98fb6a3619d596ef2f66adbe26a17c89c44b495606dc7343"
+    },
+    {
+      "file": "apps/portal/dist/chunks/chunk-6DDQFTGU.js",
+      "bytes": 5708,
+      "sha256": "86ee5aaba5bc334fcdef63133cedea9b897a4dc5c73e8896e6f95160c6a1be47"
+    },
+    {
+      "file": "apps/portal/dist/chunks/chunk-74RWV2R2.js",
+      "bytes": 1275,
+      "sha256": "0e58e1f13487f162562313478c6ebcfd099a69049a8bf6ade3ef5c654f757f58"
+    },
+    {
+      "file": "apps/portal/dist/chunks/chunk-74ZJNIIV.js",
+      "bytes": 35584,
+      "sha256": "d6a7ec2d2df9af1c7f3c5f2d3e796a2010ed5b371810208cb07432c2b225845e"
+    },
+    {
+      "file": "apps/portal/dist/chunks/chunk-B2364FTF.js",
+      "bytes": 12061,
+      "sha256": "757de212e9fddbcb84d2423308a3168473d81822d1c52d145cd32354cb9e00cd"
+    },
+    {
+      "file": "apps/portal/dist/chunks/chunk-EKYRYSFG.js",
+      "bytes": 8142,
+      "sha256": "80a236e8f7ba1e0c0a27ce41f3a79030a0dce726377f9a722b77dff47f39dac8"
+    },
+    {
+      "file": "apps/portal/dist/chunks/chunk-ESDQIMBA.js",
+      "bytes": 965,
+      "sha256": "b8b27a8e8a339ff957517d24f55d5e43e19257a3d84afa800dcb6a4a36335ae6"
+    },
+    {
+      "file": "apps/portal/dist/chunks/chunk-FJSVRC2T.js",
+      "bytes": 3368,
+      "sha256": "9db85111ba86baf3c2c56720931ce6de6b09fdc11dfff016afa2da664970923c"
+    },
+    {
+      "file": "apps/portal/dist/chunks/chunk-HRT7TI5W.js",
+      "bytes": 1590,
+      "sha256": "4024f32d830d0a10cab912a25fb48fc25e7e66cce3cb4e6bd4e11bd2047397ee"
+    },
+    {
+      "file": "apps/portal/dist/chunks/chunk-IZH6NDGR.js",
+      "bytes": 8119,
+      "sha256": "717cc54567e4da4278370a10d392edd2f55566d58cf010a0bd909a3addae26d5"
+    },
+    {
+      "file": "apps/portal/dist/chunks/chunk-JW3WZOLP.js",
+      "bytes": 481,
+      "sha256": "1408f3bf522dca3a38a8506c8bed7426ce280669de684ec106feddc04993357b"
+    },
+    {
+      "file": "apps/portal/dist/chunks/chunk-KIEFYNSW.js",
+      "bytes": 1478,
+      "sha256": "6c1187374a3f5b26b4f25f12a9aac90068325e6cf7ef8f3a3154d52b9d90d136"
+    },
+    {
+      "file": "apps/portal/dist/chunks/chunk-MMSI7XOT.js",
+      "bytes": 10801,
+      "sha256": "628c514e29dfeaf75b2d2139eca21c246025185d4bf3cb2222897eaf3a5a2770"
+    },
+    {
+      "file": "apps/portal/dist/chunks/chunk-NSYVAXWR.js",
+      "bytes": 13104,
+      "sha256": "a8ec51079fd382283f7a361f482ce8ea6e36eacc2e97ff38bdff86338779d315"
+    },
+    {
+      "file": "apps/portal/dist/chunks/chunk-OQWCW7H2.js",
+      "bytes": 524,
+      "sha256": "d63df405a33525fdfc80c5840831f92e1a192e401fe482f6a13bb537fb270ee6"
+    },
+    {
+      "file": "apps/portal/dist/chunks/chunk-PBEL7OZC.js",
+      "bytes": 1800,
+      "sha256": "e02b932100995c4ed0eade95ef56e213187ea60f7719bc4db3f3e13b3ef3ef18"
+    },
+    {
+      "file": "apps/portal/dist/chunks/chunk-QZQQZ67Q.js",
+      "bytes": 24953,
+      "sha256": "cc5ac6a3fb21aa7a9dc7a24975ccd630c96430beaf305425d477403417de791d"
+    },
+    {
+      "file": "apps/portal/dist/chunks/chunk-TH556TFN.js",
+      "bytes": 4375,
+      "sha256": "b98e4b917d2fa6e05401cab2f934e57b7e7969b6c60d7db59a08a0bbb9463ae5"
+    },
+    {
+      "file": "apps/portal/dist/chunks/chunk-UJHJCWV2.js",
+      "bytes": 4574,
+      "sha256": "5858b9b450a5ba4d382bb385423239c040f7480386c850addd930620265b0332"
+    },
+    {
+      "file": "apps/portal/dist/chunks/chunk-V6Q2KNOM.js",
+      "bytes": 3416,
+      "sha256": "1562970a6389619131513d12c918168ecc54c5acb83b588413019b7ab311a797"
+    },
+    {
+      "file": "apps/portal/dist/chunks/chunk-VDJRWC6L.js",
+      "bytes": 1904,
+      "sha256": "b9e0b429ca20baee726d10c1939d6f4d3ea2cc8ebc571a462521ce1df75792ff"
+    },
+    {
+      "file": "apps/portal/dist/chunks/chunk-WNDYD35G.js",
+      "bytes": 2376,
+      "sha256": "56836055d2a51efe654caf08e95b85e600979fcbf209eefb90415a30d39d0023"
+    },
+    {
+      "file": "apps/portal/dist/chunks/chunk-YKUM7VFD.js",
+      "bytes": 42284,
+      "sha256": "fa12b6d0b7e7346b6515c4b5d64eebffaac4a12cb73535dcce4a63c395278b82"
+    }
+  ],
+  "browserReport": "docs/qa/hmh-world-w0b-browser-20260929.json",
+  "visualReport": "docs/qa/hmh-world-w0b-visual-20260929.json",
+  "screenshots": [
+    {
+      "file": "work/world-w0b-browser-green-20260929-04/desktop-actual-free.png",
+      "bytes": 1375961,
+      "sha256": "257947a6fde542233ba7ed61523f7534c490faed72d720924e5223388bc936e4"
+    },
+    {
+      "file": "work/world-w0b-browser-green-20260929-04/desktop-component-0.png",
+      "bytes": 1380658,
+      "sha256": "17c23418e3843e9d61c84ecc8185153ad17ab23be35a409fe868ef0e010da5f8"
+    },
+    {
+      "file": "work/world-w0b-browser-green-20260929-04/desktop-component-1.png",
+      "bytes": 1512393,
+      "sha256": "c6adec9ede6712a41f57c2af1c6dccdf6b8ea5e18e9a6594720ee546a50a2762"
+    },
+    {
+      "file": "work/world-w0b-browser-green-20260929-04/desktop-component-2.png",
+      "bytes": 1380661,
+      "sha256": "d562291492ccc122c52b340ba2d999fb32a1c93b21add0b665ea891455becd4b"
+    },
+    {
+      "file": "work/world-w0b-browser-green-20260929-04/phone-proxy-actual-free.png",
+      "bytes": 1832570,
+      "sha256": "a27dcb086c65e81d6843767e03f1a3a984eedc4b0eff8737acc6bb31277b6ca3"
+    },
+    {
+      "file": "work/world-w0b-browser-green-20260929-04/phone-proxy-component-0.png",
+      "bytes": 1882154,
+      "sha256": "bfa701297b67afecdb0575d772d54702cf8ddc4bcfc7305a7445ebb3c69fdc62"
+    },
+    {
+      "file": "work/world-w0b-browser-green-20260929-04/phone-proxy-component-1.png",
+      "bytes": 2052866,
+      "sha256": "0f3c8d88fb6b22998d9c512d0a08ba013092dae81ca5d94a9c579071b5985862"
+    },
+    {
+      "file": "work/world-w0b-browser-green-20260929-04/phone-proxy-component-2.png",
+      "bytes": 1882154,
+      "sha256": "bfa701297b67afecdb0575d772d54702cf8ddc4bcfc7305a7445ebb3c69fdc62"
+    }
+  ],
+  "visualFiles": [
+    {
+      "file": ".hermes/evidence/hmh-reboot-visual/current/combat-engaged-desktop.enemy-crops.json",
+      "bytes": 821,
+      "sha256": "54ae16b4bc03976221acb6597b6b577f4b02a755e8415d64b3006eac30af1eb1"
+    },
+    {
+      "file": ".hermes/evidence/hmh-reboot-visual/current/combat-engaged-desktop.enemy-crops.png",
+      "bytes": 1252438,
+      "sha256": "f58e2013b307e6092094ac145250a78978cfb785f58e82d72617f047b46fee79"
+    },
+    {
+      "file": ".hermes/evidence/hmh-reboot-visual/current/combat-engaged-desktop.png",
+      "bytes": 1197444,
+      "sha256": "c692bb3a6ebb09e597bf650990c0a9a05a2a3fad98c78e08daf9a35c6ab51feb"
+    },
+    {
+      "file": ".hermes/evidence/hmh-reboot-visual/current/combat-engaged-desktop.runtime.json",
+      "bytes": 8963,
+      "sha256": "0e448a969e1b6e0ad2af39516dec23aeb8d46f307659c113893e856cbb9493fb"
+    },
+    {
+      "file": ".hermes/evidence/hmh-reboot-visual/current/crossing-water-desktop.png",
+      "bytes": 921356,
+      "sha256": "520f7c7ecb9fe968e1d25b1a8045d0c0dc5fff95f19db4535901d9fc50b0b55e"
+    },
+    {
+      "file": ".hermes/evidence/hmh-reboot-visual/current/crossing-water-desktop.runtime.json",
+      "bytes": 8727,
+      "sha256": "ab3e42bcbc47966cb15e3db90c10c15c9b4a43fc2d40d2d2d3344c634ef754ba"
+    },
+    {
+      "file": ".hermes/evidence/hmh-reboot-visual/current/frontier-relay-desktop.enemy-crops.json",
+      "bytes": 848,
+      "sha256": "0077140cdc4caf321eaada558b92522febdc89b3292bfb24bc65c102682f59f9"
+    },
+    {
+      "file": ".hermes/evidence/hmh-reboot-visual/current/frontier-relay-desktop.enemy-crops.png",
+      "bytes": 1252312,
+      "sha256": "5592c5a8628df140ce5d8fdf2bc0528304fe45bca0f66d599891baa90a72c005"
+    },
+    {
+      "file": ".hermes/evidence/hmh-reboot-visual/current/frontier-relay-desktop.png",
+      "bytes": 1220181,
+      "sha256": "15401517fe787433f1dadfe221c3fb025682da93cadcad147f7e5715fba22bea"
+    },
+    {
+      "file": ".hermes/evidence/hmh-reboot-visual/current/frontier-relay-desktop.runtime.json",
+      "bytes": 8903,
+      "sha256": "cc81a65c7ccfcfb23397a5d838fab5b66eb8d1e9de39da5c6ea1a0002958d1dc"
+    },
+    {
+      "file": ".hermes/evidence/hmh-reboot-visual/current/frontier-relay-mobile.enemy-crops.json",
+      "bytes": 1631,
+      "sha256": "35e499ea50f266058d1b71c9f91b5fdb97bb29fa5367828093302ef03a05f6ba"
+    },
+    {
+      "file": ".hermes/evidence/hmh-reboot-visual/current/frontier-relay-mobile.enemy-crops.png",
+      "bytes": 297907,
+      "sha256": "0f812e6dc3a1675b548fda1f4473d438204de60cee7fc4d2c6286da87a40b10b"
+    },
+    {
+      "file": ".hermes/evidence/hmh-reboot-visual/current/frontier-relay-mobile.png",
+      "bytes": 305440,
+      "sha256": "2fd22138a4fdcb95f5732e45b94abc7801d98899b900ab280e4ebfe9503439f0"
+    },
+    {
+      "file": ".hermes/evidence/hmh-reboot-visual/current/frontier-relay-mobile.runtime.json",
+      "bytes": 8879,
+      "sha256": "a39228e30c147088859da8fab207a70e126848f03ddb45477d493b52508d9c4c"
+    },
+    {
+      "file": ".hermes/evidence/hmh-reboot-visual/current/hashwood-camp-desktop.png",
+      "bytes": 1293406,
+      "sha256": "94ea99f6f81d48646cf5a49a0f803a14e59f47aeceb356b67e049cee61fb8df1"
+    },
+    {
+      "file": ".hermes/evidence/hmh-reboot-visual/current/hashwood-camp-desktop.runtime.json",
+      "bytes": 8684,
+      "sha256": "b8aaf1e27049ed2e0d4c594b4336dbc1b072fb2d0c6f628153bd5136c5dd0936"
+    },
+    {
+      "file": ".hermes/evidence/hmh-reboot-visual/current/hashwood-foliage-desktop.png",
+      "bytes": 1504297,
+      "sha256": "2c19d27e698182f7581508af878a77860b5fce225713de5c6692edb3d12108fa"
+    },
+    {
+      "file": ".hermes/evidence/hmh-reboot-visual/current/hashwood-foliage-desktop.runtime.json",
+      "bytes": 8831,
+      "sha256": "6f1c98bfb37ffb89c070b0914ba2d711f4523255ff7b7376030eeefc2964a3c3"
+    },
+    {
+      "file": ".hermes/evidence/hmh-reboot-visual/current/liquidation-market-desktop.png",
+      "bytes": 964235,
+      "sha256": "5b1bb73963d2deccb3babeacc30b57d356735af3d824b5133a1228dc9bd97e18"
+    },
+    {
+      "file": ".hermes/evidence/hmh-reboot-visual/current/liquidation-market-desktop.runtime.json",
+      "bytes": 8948,
+      "sha256": "a15598ba8012450eefb2b6e07b468ddcb7831de15e740022e4fc1a66fcad9f33"
+    },
+    {
+      "file": ".hermes/evidence/hmh-reboot-visual/current/liquidation-residential-desktop.png",
+      "bytes": 1053550,
+      "sha256": "5750ee421c38a1dfd6786ee3d1455cb35e33468a362f3dec0ef0060f3b33f9fa"
+    },
+    {
+      "file": ".hermes/evidence/hmh-reboot-visual/current/liquidation-residential-desktop.runtime.json",
+      "bytes": 8655,
+      "sha256": "b27f9cd32bfe1be8f87b755abc7b094b4a3961fb4a5b1e89a85fa03c0edd497b"
+    },
+    {
+      "file": ".hermes/evidence/hmh-reboot-visual/current/liquidation-yard-desktop.png",
+      "bytes": 1047743,
+      "sha256": "d498ab158139e4510d069ab47ca97dea26ff722270f86b66b9bdd4d27b68eada"
+    },
+    {
+      "file": ".hermes/evidence/hmh-reboot-visual/current/liquidation-yard-desktop.runtime.json",
+      "bytes": 8693,
+      "sha256": "fc6094c34390b0c14a74d3030e3a2e4c688bcc7f2e1545c6dc56d4def8ccdc9f"
+    },
+    {
+      "file": ".hermes/evidence/hmh-reboot-visual/current/liquidity-bridge-desktop.png",
+      "bytes": 1308543,
+      "sha256": "e2f15b2cf7005fc88f538f55a3a28f7fca956a8ff0b0b8b56328dbb6a969277d"
+    },
+    {
+      "file": ".hermes/evidence/hmh-reboot-visual/current/liquidity-bridge-desktop.runtime.json",
+      "bytes": 8730,
+      "sha256": "bc6c522d73c26707b62471fe49123ce45ebf99857d8568a79948dad279836fd8"
+    },
+    {
+      "file": ".hermes/evidence/hmh-reboot-visual/current/mining-camp-desktop.png",
+      "bytes": 1422328,
+      "sha256": "c6ab5bdc7f176aae26d5fe79dd465fb7b9c26607c575421b9d3650e1e482822a"
+    },
+    {
+      "file": ".hermes/evidence/hmh-reboot-visual/current/mining-camp-desktop.runtime.json",
+      "bytes": 8677,
+      "sha256": "ce858330d5d231544b665ac071effc76e3bd92f8af4a05748378dadd66ff5ae8"
+    },
+    {
+      "file": ".hermes/evidence/hmh-reboot-visual/current/ravine-overlook-desktop.png",
+      "bytes": 1391691,
+      "sha256": "613110139930741217b471bfe27f52dd20514e4756bf5100e3c264efbe99eee6"
+    },
+    {
+      "file": ".hermes/evidence/hmh-reboot-visual/current/ravine-overlook-desktop.runtime.json",
+      "bytes": 8739,
+      "sha256": "3e190962bdb46788ba117023c396973ee74883374d37ef2ae7cf890694c9c156"
+    }
+  ],
+  "witnessArchives": {
+    "terrain-streaming-browser-proof.mjs": {
+      "file": "docs/qa/hmh-world-w0b-native-source/terrain-streaming-browser-proof.mjs.txt",
+      "sha256": "4600f77e384bbb992d93f3935941887d4836eb1e304e5e1edb8ce854f3ba85a2"
+    },
+    "terrain-streaming-component-entry.mjs": {
+      "file": "docs/qa/hmh-world-w0b-native-source/terrain-streaming-component-entry.mjs.txt",
+      "sha256": "1eafe2d356da07b97222aa11ecc593407090c2cc316184d79020ba31ddfc07de"
+    },
+    "terrain-streaming-host-entry.mjs": {
+      "file": "docs/qa/hmh-world-w0b-native-source/terrain-streaming-host-entry.mjs.txt",
+      "sha256": "efd6f63d2de795afce4ebdc739fc14aab1b579e2c01204bee57a9c12dcb39997"
+    },
+    "prepare-w0b-no-git-copy.mjs": {
+      "file": "docs/qa/hmh-world-w0b-native-source/prepare-w0b-no-git-copy.mjs.txt",
+      "sha256": "12dc5689b629a919745d229c2ea8a0fd4372ff3c6c67a1692306a677689285a6"
+    },
+    "run-w0b-green-gate.mjs": {
+      "file": "docs/qa/hmh-world-w0b-native-source/run-w0b-green-gate.mjs.txt",
+      "sha256": "118d45ab2d4fd316768fd21f1d1d6252bd97f643aec79a5b1ece53b447609e6a"
+    }
+  },
+  "limitations": [
+    "RGBA source pixel estimates and conservative full-size reservations are not actual GPU/driver/process residency; mips/decode scratch/peaks unmeasured",
+    "Five global prop sources remain pinned and are accounted separately; actor pages are outside terrain accounting",
+    "Pixi Assets has no AbortSignal load API: stale downloads finish then owned sources unload; no network abort claim",
+    "Native Free cases prove actual opening/movement/disposal, not a completed run or exact evidence comparison",
+    "Presentation-only component camera jumps are not actual player traversal or streamed future-map coverage",
+    "Production portal URL whitelist does not forward areaStreaming; enabled proof uses standalone/private Free parent harness",
+    "Old default visual signatures remain unchanged; no new art/Hades quality sign-off claimed",
+    "No physical phone,30-minute flat memory,heavy combat/streaming frame-time certification,full release gate or deployment"
+  ],
+  "independentReview": {
+    "reviewer": "/root/stacked_replay_audit",
+    "type": "Read-only source and saved-evidence review; no independent fresh replay/browser/timing",
+    "sourceSubstitutionRepair": "PASS; originally assumed destroy(false) nulls source was corrected from actual Pixi8.19 evidence",
+    "telemetryRepair": "PASS; underlying lifecycle and throwing callback errors retained while source cleanup continues",
+    "freshEvidenceReview": "PASS: final read-only review matched all 7 current source, 4 frozen gameplay-source and 5 exact witness archive hashes; complete saved tests/build/browser/visual and retained adverse scope. No independent fresh execution or screenshot certification.",
+    "finalUnloadObservations": {
+      "desktop": 33,
+      "phoneProxy": 15,
+      "staleDownload": 13,
+      "assertions": "Original source destroyed, no sprite references, cache absent, final reservation/active loads zero"
+    }
+  }
+}

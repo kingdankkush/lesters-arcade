@@ -1,0 +1,23 @@
+// Private Free-only browser harness; real existing parent/child bridge.
+import { createHmhParentBridge } from 'C:/Users/just_/lesters-arcade-wt/200-world-w0/apps/portal/src/hmh-reboot-bridge.mjs';
+import { createStandaloneInitPayload } from 'C:/Users/just_/lesters-arcade-wt/200-world-w0/apps/hmh-reboot/src/standalone-session.mjs';
+const iframe = document.querySelector('iframe');
+const query = new URLSearchParams(location.search);
+const payload = createStandaloneInitPayload({ heroId: 'lit-commando' });
+const session = { sessionId: 'world-terrain-browser-proof', ...payload, settings: { ...payload.settings, musicEnabled: false } };
+const messages = [], errors = [];
+let bridge = null;
+iframe.addEventListener('load', () => {
+  bridge = createHmhParentBridge({ iframe, expectedOrigin: location.origin, session,
+    onMessage(message) { messages.push({ type: message.type, payload: message.payload }); },
+    onProtocolError(error) { errors.push(String(error.message)); } });
+  bridge.connect();
+});
+const params = new URLSearchParams({ areaStreaming: '1', releaseTelemetry: '1' });
+if (query.has('worldTour')) { params.set('worldTour', query.get('worldTour')); params.set('evidenceSafe', '1'); }
+iframe.src = '/hmh-reboot/index.html?' + params;
+window.terrainHost = Object.freeze({ messages, errors,
+  dispose() { if (!bridge?.connected) throw new Error('Real bridge not connected'); bridge.send('portal:dispose', {}); },
+  pause() { bridge.send('portal:pause', {}); },
+  resume() { bridge.send('portal:resume', {}); },
+});

@@ -110,6 +110,7 @@ export function createStaticWorldBake({
     offset,
     /** Static passes drawn so far (telemetry and tests). */
     get bakes() { return bakes; },
+    invalidate() { bake = null; },
     /**
      * One frame: re-bake when needed, translate the baked layers, then draw the
      * animated pass. `onBake(bakeCamera, bakeView)` draws caller-owned static

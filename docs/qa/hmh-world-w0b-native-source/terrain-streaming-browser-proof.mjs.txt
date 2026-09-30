@@ -1,0 +1,68 @@
+import assert from 'node:assert/strict';
+import { readFile, mkdir, writeFile } from 'node:fs/promises';
+import { createRequire } from 'node:module';
+import path from 'node:path';
+import { fileURLToPath, pathToFileURL } from 'node:url';
+const work=fileURLToPath(new URL('.',import.meta.url)),wt=path.resolve(process.env.W0B_REPO_ROOT||'C:/Users/just_/lesters-arcade-wt/200-world-w0');
+const {build}=createRequire(pathToFileURL(wt+'/package.json'))('esbuild');
+const {chromium}=await import(pathToFileURL(process.env.PLAYWRIGHT_MODULE_PATH||path.join(wt,'benchmarks/hmh-engine-bakeoff/node_modules/playwright/index.mjs')));
+const {startPortalStaticServer}=await import(pathToFileURL(wt+'/scripts/hmh-reboot-portal-e2e.mjs'));
+const out=path.resolve(process.env.W0B_BROWSER_OUTPUT||path.join(work,'world-w0b-browser-20260929'));await mkdir(out,{recursive:true});
+const bundle=async name=>{const contents=(await readFile(path.join(work,name),'utf8')).replaceAll('C:/Users/just_/lesters-arcade-wt/200-world-w0',wt.replaceAll('\\','/'));return(await build({stdin:{contents,resolveDir:wt,sourcefile:name},bundle:true,write:false,format:'esm',target:'es2022',minify:false})).outputFiles[0].text;};
+const parent=await bundle('terrain-streaming-host-entry.mjs'),component=await bundle('terrain-streaming-component-entry.mjs');
+const {server,origin}=await startPortalStaticServer({rootDir:wt+'/apps/portal'});
+const browser=await chromium.launch({executablePath:'C:/Program Files/Google/Chrome/Application/chrome.exe',headless:true,args:['--enable-gpu','--ignore-gpu-blocklist','--enable-webgl']});
+const report={schema:'hmh-world-w0b-browser-v1',recordedAt:new Date().toISOString(),physicalPhoneTested:false,performanceAcceptance:false,
+ scope:'Existing six-district terrain subset. Native Free opening plus real Pixi source lifetime component; component camera jumps have no gameplay or traversal authority.',nativeObservations:[],nativeCases:[],componentCases:[],staleCases:[],errors:[]};
+const html=(entry,label)=>`<!doctype html><html><head><meta charset="utf-8"><base href="/hmh-reboot/"><meta name="viewport" content="width=device-width,initial-scale=1"><style>html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#101822}iframe{border:0;width:100%;height:100%;display:block}aside{position:absolute;left:8px;top:8px;color:white;font:12px sans-serif;z-index:3}</style></head><body>${entry==='parent'?'<iframe title="Actual HMH Free opening"></iframe>':'<aside>'+label+'</aside>'}<script type="module" src="/terrain-proof-${entry}.js"></script></body></html>`;
+async function install(page){await page.route('**/terrain-proof-parent.js',route=>route.fulfill({status:200,contentType:'text/javascript',body:parent}));await page.route('**/terrain-proof-component.js',route=>route.fulfill({status:200,contentType:'text/javascript',body:component}));await page.route('**/terrain-proof-host*',route=>route.fulfill({status:200,contentType:'text/html',body:html('parent','')}));await page.route('**/terrain-proof-component?*',route=>route.fulfill({status:200,contentType:'text/html',body:html('component','Terrain renderer component • presentation camera only')}));}
+let activePage,activeName;
+try{
+ for(const [name,viewport,dpr]of[['desktop',{width:1440,height:900},1],['phone-proxy',{width:414,height:896},3]]){
+  const context=await browser.newContext({viewport,deviceScaleFactor:dpr,hasTouch:name==='phone-proxy',serviceWorkers:'block'}),page=await context.newPage();activePage=page;activeName=name;
+  const errors=[],requests=[];page.on('pageerror',e=>errors.push(e.message));page.on('request',r=>{if(r.url().includes('hmhAreaLease='))requests.push(r.url());});await install(page);
+  await page.goto(origin+'/terrain-proof-host',{waitUntil:'domcontentloaded'});const frame=await(await page.waitForSelector('iframe')).contentFrame();
+  await frame.waitForFunction(()=>document.querySelector('#hmhStartupEnter')?.disabled===false,null,{timeout:45000,polling:50});
+  await frame.locator('#hmhStartupEnter').click();
+  await frame.waitForFunction(()=>document.querySelector('#hmhRebootStage')?.dataset.startupArt==='ready',null,{timeout:5000,polling:50});
+  const opening=await frame.locator('#hmhRebootStage').evaluate(stage=>({...stage.dataset}));const initial=JSON.parse(opening.terrainStream);assert.equal(initial.ready,true);assert.ok(initial.readyPages.length>0);assert.ok(initial.pinnedPropPages.pageCount>0);assert.equal(initial.failedDisposals,0);
+  await page.waitForTimeout(250);
+  await frame.locator('#hmhRebootStage canvas').click({position:{x:viewport.width/2,y:viewport.height/2}});await page.keyboard.down('d');await page.waitForTimeout(1000);await page.keyboard.up('d');
+  await page.screenshot({path:path.join(out,name+'-actual-free.png'),fullPage:true});
+  const live=await frame.locator('#hmhRebootStage').evaluate(stage=>({...stage.dataset}));assert.equal(live.startupArt,'ready');assert.equal(live.simulationState,'active');assert.ok(Number(live.simulationStepsTotal)>Number(opening.simulationStepsTotal));
+  const observation={name,opening,live,requests,errors};report.nativeObservations.push(observation);
+  await page.evaluate(()=>terrainHost.dispose());
+  try{await frame.waitForFunction(()=>{const text=document.querySelector('#hmhRebootStage')?.dataset.terrainStream;return text&&JSON.parse(text).disposed===true&&JSON.parse(text).reservedDecodedBytes===0;},null,{timeout:5000,polling:50});}
+  catch(error){observation.disposalWitness=await frame.locator('#hmhRebootStage').evaluate(stage=>({...stage.dataset}));observation.protocolErrors=await page.evaluate(()=>terrainHost.errors);throw error;}
+  const final=await frame.locator('#hmhRebootStage').evaluate(stage=>({...stage.dataset}));assert.equal(final.terrainStreamDisposeError,undefined);assert.equal(JSON.parse(final.terrainStream).failedDisposals,0);assert.deepEqual(errors,[]);assert.deepEqual(await page.evaluate(()=>terrainHost.errors),[]);
+  report.nativeCases.push({name,viewport,dpr,opening,live,final,requests,errors,nativeInput:true,completedRun:false});await context.close();activePage=null;
+ }
+ for(const [name,viewport,dpr,profile]of[['desktop',{width:1440,height:900},1,'desktop'],['phone-proxy',{width:414,height:896},3,'mobile']]){
+  const context=await browser.newContext({viewport,deviceScaleFactor:dpr,serviceWorkers:'block'}),page=await context.newPage();activePage=page;activeName=name+'-component';const errors=[];page.on('pageerror',e=>errors.push(e.message));await install(page);
+  await page.goto(origin+'/terrain-proof-component?profile='+profile,{waitUntil:'domcontentloaded'});await page.waitForFunction(()=>document.documentElement.dataset.componentReady==='true');
+  const cameras=[{x:3050,y:1500,groundZ:0,zoom:1.5},{x:9000,y:1600,groundZ:0,zoom:1.5},{x:3050,y:1500,groundZ:0,zoom:1.5}];const states=[];
+  for(let i=0;i<cameras.length;i++){
+   await page.evaluate(camera=>terrainProof.begin(camera),cameras[i]);const state=await page.evaluate(()=>terrainProof.settle());states.push(state);assert.equal(state.ready,true);assert.equal(state.failedDisposals,0);assert.equal(state.worldUnchanged,true);assert.ok(state.reservedDecodedBytes<=state.maxDecodedBytes);assert.ok(state.loads.length>0);assert.deepEqual(state.errors,[]);await page.screenshot({path:path.join(out,name+'-component-'+i+'.png'),fullPage:true});
+  }
+  assert.equal(states[0].redRockPresent,true);assert.equal(states[1].redRockPresent,false);assert.equal(states[2].redRockPresent,true);assert.equal(states[0].roadSourceUid,states[1].roadSourceUid);assert.ok(states[1].unloads.length>0);
+  for(const item of states[1].unloads){assert.equal(item.spriteReferencesBeforeUnload,0);assert.equal(item.cachePresentAfterUnload,false);assert.equal(item.textureDestroyed,true);assert.equal(item.sourceDestroyed,true);}
+  const final=await page.evaluate(()=>terrainProof.dispose());assert.equal(final.reservedDecodedBytes,0);assert.equal(final.failedDisposals,0);assert.deepEqual(errors,[]);report.componentCases.push({name,viewport,dpr,profile,states,final,errors,actualPixiPngLoadAndSourceDestroy:true});await context.close();activePage=null;
+ }
+ // A real held PNG download completes after its area's leases were cancelled.
+ // No browser request abort is claimed: reservation stays until actual unload.
+ {
+  const context=await browser.newContext({viewport:{width:414,height:896},deviceScaleFactor:3,serviceWorkers:'block'}),page=await context.newPage();activePage=page;activeName='stale-png-completion';const errors=[];page.on('pageerror',e=>errors.push(e.message));await install(page);
+  let release,heldUrl=null;const held=new Promise(resolve=>{release=resolve;});
+  await page.route('**/*',async route=>{const url=new URL(route.request().url());if(!heldUrl&&url.pathname.endsWith('/red-rock@0.5x.webp')&&url.searchParams.has('hmhAreaLease')){heldUrl=route.request().url();await held;return route.continue();}return route.fallback();});
+  try{
+   await page.goto(origin+'/terrain-proof-component?profile=mobile',{waitUntil:'domcontentloaded'});await page.waitForFunction(()=>document.documentElement.dataset.componentReady==='true');
+   await page.evaluate(()=>terrainProof.begin({x:3050,y:1500,groundZ:0,zoom:1.5}));for(let attempt=0;!heldUrl&&attempt<100;attempt++)await page.waitForTimeout(10);assert.ok(heldUrl,'actual red-rock PNG request must be held');
+   const cancelled=await page.evaluate(()=>terrainProof.begin({x:9000,y:1600,groundZ:0,zoom:1.5}));const old=cancelled.entries.find(entry=>entry.id==='tile:red-rock');assert.ok(old);assert.equal(old.cancelled,true);assert.equal(old.state,'loading');assert.ok(cancelled.reservedDecodedBytes>0);
+   release();const settled=await page.evaluate(()=>terrainProof.settle());assert.equal(settled.redRockPresent,false);assert.equal(settled.ready,true);assert.deepEqual(settled.errors,[]);
+   const disposed=settled.unloads.find(item=>new URL(item.url,origin+'/hmh-reboot/').href===heldUrl);assert.ok(disposed,'native source from stale actual request must be unloaded');assert.equal(disposed.spriteReferencesBeforeUnload,0);assert.equal(disposed.textureDestroyed,true);assert.equal(disposed.sourceDestroyed,true);assert.equal(disposed.cachePresentAfterUnload,false);
+   const final=await page.evaluate(()=>terrainProof.dispose());assert.equal(final.reservedDecodedBytes,0);assert.equal(final.failedDisposals,0);assert.deepEqual(errors,[]);report.staleCases.push({name:'stale-png-completion',heldUrl,cancelled,settled,final,errors,networkAborted:false});
+  }finally{release();await context.close();activePage=null;}
+ }
+}catch(error){if(activePage&&!activePage.isClosed())await activePage.screenshot({path:path.join(out,activeName+'.failure.png'),fullPage:true}).catch(()=>{});report.errors.push(String(error.stack));throw error;}
+finally{await writeFile(path.join(out,'WORLD-W0B-browser.json'),JSON.stringify(report,null,2)+'\n');await browser.close();await new Promise(resolve=>server.close(resolve));}
+console.log(JSON.stringify({nativeCases:report.nativeCases.length,componentCases:report.componentCases.length,staleCases:report.staleCases.length,errors:report.errors.length,out}));

@@ -1,0 +1,13 @@
+import { readFileSync, writeFileSync, mkdirSync, existsSync, copyFileSync, symlinkSync } from 'node:fs';
+import { dirname, resolve, join, relative } from 'node:path';
+import { fileURLToPath } from 'node:url';
+const work=fileURLToPath(new URL('.',import.meta.url)),wt='C:/Users/just_/lesters-arcade-wt/200-world-w0',out=join(work,'world-w0b-no-git-20260929');
+if(existsSync(join(out,'.git')))throw new Error('Unexpected Git checkout in scoped standalone source copy');
+const visited=new Set();
+function copy(module){const absolute=resolve(wt,module);if(visited.has(absolute))return;visited.add(absolute);const destination=resolve(out,relative(wt,absolute));if(!destination.startsWith(resolve(out)+'\\')&&!destination.startsWith(resolve(out)+'/'))throw new Error('Copy escaped intended standalone directory');mkdirSync(dirname(destination),{recursive:true});copyFileSync(absolute,destination);const source=readFileSync(absolute,'utf8');for(const match of source.matchAll(/(?:from\s*|import\s*\(\s*|import\s*)['"]([^'"]+)['"]/g)){if(match[1].startsWith('.')&&match[1].endsWith('.mjs'))copy(relative(wt,resolve(dirname(absolute),match[1])));}}
+copy('tests/hmh-terrain-area-streaming.test.mjs');
+const manifest='apps/portal/assets/generated/hmh-terrain-tiles/hmh-terrain-tiles.json';mkdirSync(dirname(join(out,manifest)),{recursive:true});copyFileSync(join(wt,manifest),join(out,manifest));
+writeFileSync(join(out,'package.json'),JSON.stringify({type:'module',private:true,description:'W0b copied source/real Pixi dependency proof; no Git checkout'})+'\n');
+if(!existsSync(join(out,'node_modules')))symlinkSync(resolve(wt,'node_modules'),join(out,'node_modules'),'junction');
+if(existsSync(join(out,'.git')))throw new Error('Standalone copy must contain no Git checkout');
+console.log(JSON.stringify({out,relativeSourceModules:visited.size,gitCheckoutPresent:false,installedDependency:'Existing real Pixi dependency through a read-only junction; no install or Git-dependent test'}));
