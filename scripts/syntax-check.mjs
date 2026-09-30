@@ -20,6 +20,7 @@ const root = fileURLToPath(new URL('..', import.meta.url));
 
 // Every .mjs / .js module that must parse cleanly (node --check).
 const NODE_CHECK_FILES = [
+  'tests/build-git-independence.test.mjs',
   'scripts/generate-stacked-maximal-fixture.mjs',
   'scripts/stacked-replay-benchmark.mjs',
   'scripts/stacked-replay-benchmark-sample.mjs',

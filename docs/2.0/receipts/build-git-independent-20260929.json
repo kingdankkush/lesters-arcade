@@ -1,0 +1,1208 @@
+{
+  "schema": "build-asset-git-independent-v1",
+  "scope": "actual banner byte/hash/dimension checks and injected authoring-policy units",
+  "sourceFree": true,
+  "gitMetadataAbsent": true,
+  "gitExecutableAbsentFromPath": true,
+  "nodeModulesAbsent": true,
+  "exitCode": 0,
+  "checks": {
+    "tests": 15,
+    "pass": 15,
+    "fail": 0,
+    "skip": 0
+  },
+  "copiedFiles": 1906,
+  "sourceCopiesReceiptSha256": "d648bcfb24b80ce2777650aba6c7eb93aaf3bc3f1eda2fc7d017f6cdf2f0da6b",
+  "selectedSourceSha256": {
+    "scripts/hmh-source-model-lfs-check.mjs": "133c80438aa79d2b6cd077689e62bb9c794c3baa0efcca423d47d88fe44ae077",
+    "tests/build-git-independence.test.mjs": "ee42b46ebfb5efb5a874f3c7ae0fcc2c8bbaa29a0d09bf906c8c16ee4344f4cd",
+    "tests/hmh-source-model-lfs-policy.test.mjs": "e13f3547f72caba65210ef6a6465704f17d156fcad3c4d7bdd839fd60ce7bbf7",
+    "tests/hmh-banner-art.test.mjs": "4bad97715e8c65ba036d75fe4f5f8499adee50947ca52a54bb66c06e854e3cf9",
+    "tests/hmh-level-one-visible-runtime.test.mjs": "19c79ce55d075bcbd1abaab95321919ce4f1b4ebe3618e776b12420ad189ba14",
+    "scripts/syntax-check.mjs": "ce99d29006e0b8ef5e51eb0d3952d060260a7242c7e56821b838421de4adc2f0",
+    ".gitattributes": "46c05052aacf46face0edfd19f96790684923ef411fbf86d9fc3f508c237e31e",
+    "tests/ranked-live-browser-e2e.test.mjs": "17ccf84b24be95fead3d2997e97afbe6c902c60fe7cd6f3913e1189553e11f3e"
+  },
+  "independentReview": "character_gate_audit read-only review: no blocking finding; direct-call tripwire is not a transitive subprocess proof",
+  "freshAssetSuiteDurationMs": 1621.35,
+  "revisionMetadataUnit": {
+    "schema": "ranked-source-revision-archive-unit-v1",
+    "archive": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\cloud-portability-f863c0742db5494c904c02cf2ee6feb8",
+    "testFile": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\cloud-portability-f863c0742db5494c904c02cf2ee6feb8\\.tmp\\revision-unit.mjs",
+    "originalUnitFile": "tests/ranked-live-browser-e2e.test.mjs",
+    "originalUnitSha256": "0fbab0eb37a8d1f4b0004199b60a99503a77ab62d62ac3fd9e78b3f1b5344a17",
+    "exactSelectedCaseSha256": "36d5e59dfbaa1b62a54221ec3e7538a4fe61ceee605e55db9c4357871f71d07f",
+    "caseBytes": 1377,
+    "scope": "exact existing four-transcript unit extracted without other RPC/key fixtures; declared existing Ethers dependency required",
+    "importInputCopies": [
+      {
+        "file": "apps/chikun/assets/obstacle-shapes.json",
+        "sha256": "c79094da68b0ec6c500cf5fcdd315e95d97d8a8117263188e9f138eac5ef161a",
+        "bytes": 237
+      },
+      {
+        "file": "apps/chikun/src/art-loader.mjs",
+        "sha256": "648151c63ada7a5589537c70fe83f8c7b0268f998671703aebdd0e4ab6a34547",
+        "bytes": 13040
+      },
+      {
+        "file": "apps/chikun/src/atmosphere.mjs",
+        "sha256": "feaebfb1b6fbc7b298dee7fc3ab516f8823bc22da8fd2df49f01392b0c845a31",
+        "bytes": 15509
+      },
+      {
+        "file": "apps/chikun/src/audio.mjs",
+        "sha256": "29a1f754b60b8fd54fd7027a0341375a340b2db52b3537790edf12136a96c8e9",
+        "bytes": 1955
+      },
+      {
+        "file": "apps/chikun/src/character.mjs",
+        "sha256": "debe539f2638e349a1fa5ccf97763d1121ebcdf1979f63506ea75dddebbdca5b",
+        "bytes": 21481
+      },
+      {
+        "file": "apps/chikun/src/device-blit.mjs",
+        "sha256": "e517d3b5233e001f621ca6a88ef7f3f54a7c92f6dbf87c152ef3747552382c3b",
+        "bytes": 2317
+      },
+      {
+        "file": "apps/chikun/src/flight-room.mjs",
+        "sha256": "f590296219a9ceb17ff12fb2302200bdce7e1bd93c0fcf452ad7613819b7503a",
+        "bytes": 2489
+      },
+      {
+        "file": "apps/chikun/src/frame-guard.mjs",
+        "sha256": "84aca2d8307297351b872cae3bc3f7b16c0283ee90e375d37d75c0b75b6ece2b",
+        "bytes": 1252
+      },
+      {
+        "file": "apps/chikun/src/ground-world.mjs",
+        "sha256": "7ae3d138cc2797fb2ae15bd24f4485a4d33f5bf0a1e122ffc831a98bc342d19c",
+        "bytes": 16392
+      },
+      {
+        "file": "apps/chikun/src/light-rig.mjs",
+        "sha256": "ac963c5e59ca58bd24d5f64526c4fa8515c793f676592a344aefd09d0589efca",
+        "bytes": 10141
+      },
+      {
+        "file": "apps/chikun/src/main.mjs",
+        "sha256": "0abf44921094b5afb677afc5fbd0e1add76e4bf04f51adfa9aec9f5c83a53631",
+        "bytes": 48615
+      },
+      {
+        "file": "apps/chikun/src/painters.mjs",
+        "sha256": "6d32d05dba76ffb4c5367ae5ff91d35cc73d5ed0684a71a542d0f487c378326b",
+        "bytes": 28368
+      },
+      {
+        "file": "apps/chikun/src/parallax.mjs",
+        "sha256": "6c03c247e62040602d01d619323b373179003ceca22ebe938b6db6dfcdff613e",
+        "bytes": 22944
+      },
+      {
+        "file": "apps/chikun/src/presentation.mjs",
+        "sha256": "65636de41e0cd11ea02bc81ee6a6370794113b81d550775e9e5592e26117c520",
+        "bytes": 3322
+      },
+      {
+        "file": "apps/chikun/src/ragdoll.mjs",
+        "sha256": "b0ce23af5c9a37ecabc6f593b48a1330b51aeef3cb19c05932cb3c7848051116",
+        "bytes": 4066
+      },
+      {
+        "file": "apps/chikun/src/replay-file.mjs",
+        "sha256": "529d04d1d4ee392e51564452876ee14879e1bd7149079a450060ba52dfd0ca09",
+        "bytes": 1345
+      },
+      {
+        "file": "apps/chikun/src/replay-viewer.mjs",
+        "sha256": "f5c818bdf3830b425466e63daf5416d17fb761a0a7e1fe7fe4f033246f6de135",
+        "bytes": 2321
+      },
+      {
+        "file": "apps/chikun/src/scene-bus.mjs",
+        "sha256": "089653aa379b11e99bdc210bb5eee49c7d2a3b61d611522af72e549ff4c5cab1",
+        "bytes": 1431
+      },
+      {
+        "file": "apps/chikun/src/scenery-catalog.mjs",
+        "sha256": "817e3da311c93170252e720b86afc059c9fd1adc1dc25050c7b864e67f8c8e86",
+        "bytes": 30227
+      },
+      {
+        "file": "apps/chikun/src/vfx.mjs",
+        "sha256": "1480ebb718e09b691629b8c46bdc8e729aa1190afe7318edbbb132b1314c7d0e",
+        "bytes": 2175
+      },
+      {
+        "file": "apps/chikun/src/viewport.mjs",
+        "sha256": "1c1025f6a966c4e743c8a0fcbbb00619d75112b0c07fc1a80720c72b77124b0c",
+        "bytes": 2246
+      },
+      {
+        "file": "apps/chikun/src/world.mjs",
+        "sha256": "faefc344654e32a0675bb7900e8622f08a27df182f943ce98c4509169042fc6b",
+        "bytes": 12876
+      },
+      {
+        "file": "apps/chikun/assets/source/native-provenance.json",
+        "sha256": "1e1327d513f2ae476526e924e7722a38418a8d3b0185bfb5ad4c44d2af26a147",
+        "bytes": 9179
+      },
+      {
+        "file": "apps/chikun/assets/source/ground-sky/provenance.json",
+        "sha256": "00d0748f3b41398cb3752baca77bbf6aca84af0007b1ede635a939ceb8fe96ba",
+        "bytes": 2309
+      },
+      {
+        "file": "apps/chikun/assets/source/open-air/provenance.json",
+        "sha256": "08d6a862e4f40f16abd7b38b38854dbba2abbeffacfc5d5a4e7a538805d16d01",
+        "bytes": 1011
+      },
+      {
+        "file": "apps/hmh-reboot/src/action-map.mjs",
+        "sha256": "c5b982f2c7844df298fa5c7d08f11f9bd9016af454ddf548458d4fe9dd6f81ad",
+        "bytes": 5651
+      },
+      {
+        "file": "apps/hmh-reboot/src/actor-3d-projection.mjs",
+        "sha256": "f0ff76db637bca2da3cd7e305cc5a248e0b01dfa83d47890e7c4401f1388fdca",
+        "bytes": 4293
+      },
+      {
+        "file": "apps/hmh-reboot/src/aim.mjs",
+        "sha256": "e34483734ac25d93b71cfd7850c84d2adfd39f3a9aa51430116895a60f3e3efb",
+        "bytes": 5759
+      },
+      {
+        "file": "apps/hmh-reboot/src/authored-prop-atlas.mjs",
+        "sha256": "85f5edcdfb23064329b53836efe84b8a1d246c1fc492a6ab962490ea2a60003d",
+        "bytes": 296
+      },
+      {
+        "file": "apps/hmh-reboot/src/authored-prop-display.mjs",
+        "sha256": "e42dbae5e0c06fcb1ffe47e8426afa515be9159fca3cd90a1695d2045095d1d0",
+        "bytes": 14345
+      },
+      {
+        "file": "apps/hmh-reboot/src/authored-prop-layout.mjs",
+        "sha256": "19fc5e825ed6fa27d8027eedbaafef9cf3b8575471f00a3c0f7993ec81f76cfc",
+        "bytes": 46532
+      },
+      {
+        "file": "apps/hmh-reboot/src/automatic-actions.mjs",
+        "sha256": "032fc5ed6cce93788981816b99bc1d616f8a52d3a64f169869a8f442cc76cbc0",
+        "bytes": 3702
+      },
+      {
+        "file": "apps/hmh-reboot/src/bear-market-burner-event.mjs",
+        "sha256": "b9581df1aa94f31bc4fad7c9ce0e1106fd6b1bdc2d90296e2eb937eed6d79101",
+        "bytes": 3529
+      },
+      {
+        "file": "apps/hmh-reboot/src/bear-market-burner.mjs",
+        "sha256": "8318d571b0c3905870fac3968e2a40ead92955c338f8faca591f104bee936e14",
+        "bytes": 17323
+      },
+      {
+        "file": "apps/hmh-reboot/src/blocker-bounds.mjs",
+        "sha256": "7f94d7f336a697e806ce92d1f5eedf9674d9d948f6366a958ba27e7124d2bf8a",
+        "bytes": 4684
+      },
+      {
+        "file": "apps/hmh-reboot/src/boss-arenas.mjs",
+        "sha256": "55aa1ba6852a1da5bfa5f9d22d3a1979ff40ed13fd19bb34329de00ec8d73c88",
+        "bytes": 6724
+      },
+      {
+        "file": "apps/hmh-reboot/src/boss-drops.mjs",
+        "sha256": "f493a12ac9576f6f23e49466d832843e374c6e74ab51e65263ec78967122878e",
+        "bytes": 10616
+      },
+      {
+        "file": "apps/hmh-reboot/src/boss-geometry.mjs",
+        "sha256": "dc0981bc75b62f7f882895a0b46e091c3ac445f59f7300affbf371f6e2ce50d6",
+        "bytes": 8634
+      },
+      {
+        "file": "apps/hmh-reboot/src/boss-reference-dps.mjs",
+        "sha256": "b97f62b358359994c27fc950d2f21cc9e47f1b5800f2676b4c59a93e33148e96",
+        "bytes": 1866
+      },
+      {
+        "file": "apps/hmh-reboot/src/boss-slots.mjs",
+        "sha256": "a857a877e44eec3b5e67d8baae8006d4e754e0629035cb0670f1a555a007c5b7",
+        "bytes": 18459
+      },
+      {
+        "file": "apps/hmh-reboot/src/bridge.mjs",
+        "sha256": "ba9d80e1d27edb9d144b122cefc2954f04cd12574753247ccb7bf985dad03351",
+        "bytes": 5458
+      },
+      {
+        "file": "apps/hmh-reboot/src/cockpit-ui.mjs",
+        "sha256": "6b2acd2cfdf2cc1891f3db91ad7c3386f0e797a6df0421fd8eef0df669a51800",
+        "bytes": 15099
+      },
+      {
+        "file": "apps/hmh-reboot/src/collectible-capacity.mjs",
+        "sha256": "25e846fdd24fafb7ff470cfd042dbcea4590be972a3472b7865c66e6d82de1be",
+        "bytes": 983
+      },
+      {
+        "file": "apps/hmh-reboot/src/collectible-system.mjs",
+        "sha256": "05e8d6606363c1c60dd0137d53e2f7d674eadb3a841c8a4268d24fe3f35f5652",
+        "bytes": 8116
+      },
+      {
+        "file": "apps/hmh-reboot/src/collision.mjs",
+        "sha256": "94a90d4a68c9e66b54ff0332e8cf60aaeaff06c02734aed07a3e420e7eb52593",
+        "bytes": 18604
+      },
+      {
+        "file": "apps/hmh-reboot/src/combat-audio.mjs",
+        "sha256": "e8c509e730edc743d8211499b50fb9afce0ca239dadf53b00d49cb1d1440d891",
+        "bytes": 17113
+      },
+      {
+        "file": "apps/hmh-reboot/src/combat-events.mjs",
+        "sha256": "4be6e26f3887450314cf0a3378b25856eca5c4f9a78e63a738abf174701ad24b",
+        "bytes": 8314
+      },
+      {
+        "file": "apps/hmh-reboot/src/combat-feedback.mjs",
+        "sha256": "49cc26c2e1cef15b6d50279df11927452d1389850825b1ac7326be1c0b50b38f",
+        "bytes": 2732
+      },
+      {
+        "file": "apps/hmh-reboot/src/combat-lifecycle.mjs",
+        "sha256": "c8070247e8575928e49a3901e09f3f76fe44817fb0e887a86dcd82729de2445f",
+        "bytes": 1614
+      },
+      {
+        "file": "apps/hmh-reboot/src/combo-feedback.mjs",
+        "sha256": "755fb546b0009d6b0b56989be9dcd34e1f528a6b2707b91895a934b773a94ede",
+        "bytes": 1227
+      },
+      {
+        "file": "apps/hmh-reboot/src/contact-shadows.mjs",
+        "sha256": "e22fd4b69f5b67756302f00429fff58f9b1fa836edaeafc7213fe646705e1f2b",
+        "bytes": 8488
+      },
+      {
+        "file": "apps/hmh-reboot/src/corpse-presentation.mjs",
+        "sha256": "250c86bf2d3c88f986228bb635c31d7a82379954be3b7a294b1a56e584aa609d",
+        "bytes": 1267
+      },
+      {
+        "file": "apps/hmh-reboot/src/cover-break-presentation.mjs",
+        "sha256": "d0d3659bfda22d3c65129324ae0035fd46c29c652d3e1c94faea8832c5089d09",
+        "bytes": 2002
+      },
+      {
+        "file": "apps/hmh-reboot/src/creature-presentation.mjs",
+        "sha256": "c7e7d1b0a4b3dc752a535aaa561bb4f9ff5f25914bbab38a6f8eb61d95eb501d",
+        "bytes": 1637
+      },
+      {
+        "file": "apps/hmh-reboot/src/critical-liquidator-benchmark.mjs",
+        "sha256": "1fffc3fd8a00c154cb8b60b2f10a14a03b1737ecd20a01fd56a242b8d7f37700",
+        "bytes": 8094
+      },
+      {
+        "file": "apps/hmh-reboot/src/dash.mjs",
+        "sha256": "91dfa16a6655c91c2936ee4dfea75a8c94a0f225d3e8b1831e1af91408e58422",
+        "bytes": 9431
+      },
+      {
+        "file": "apps/hmh-reboot/src/death-camera.mjs",
+        "sha256": "31b87ff4505d3d6fa83bd44ffdade8f821f1c66b2a3d92c705c06235885b6f85",
+        "bytes": 2776
+      },
+      {
+        "file": "apps/hmh-reboot/src/debug-grid-overlay.mjs",
+        "sha256": "7b09cd7360445520aa182820d0042dae1b31584498a573f8fe03ec1363285570",
+        "bytes": 1605
+      },
+      {
+        "file": "apps/hmh-reboot/src/deterministic-hash.mjs",
+        "sha256": "9c64da7fb818940fbc5eb810d7a334a4a1726a3bd4df1a775be5b18a1862c2aa",
+        "bytes": 2497
+      },
+      {
+        "file": "apps/hmh-reboot/src/dodge-intent.mjs",
+        "sha256": "7ba5a83778bb17115f11438509b187ab9ed699af88141c0c8b3924b990d27bf2",
+        "bytes": 3996
+      },
+      {
+        "file": "apps/hmh-reboot/src/elevation.mjs",
+        "sha256": "afab7fb53ba657f13f1646d533909ae68544754c1de24ccef786ee156a57c4ea",
+        "bytes": 19061
+      },
+      {
+        "file": "apps/hmh-reboot/src/encounter-director.mjs",
+        "sha256": "7f92174bc61643773b77e7743b00c26b1d1bee2dbb5630c88ab41ef24b104474",
+        "bytes": 14615
+      },
+      {
+        "file": "apps/hmh-reboot/src/encounter-endurance-pilot.mjs",
+        "sha256": "ccb09a5250e935365ac0a1b7587a2223e8b96590fbc262877b841d34fb5dfc8b",
+        "bytes": 4070
+      },
+      {
+        "file": "apps/hmh-reboot/src/enemy-archetypes.mjs",
+        "sha256": "588939128113bc4fb7cb5ababdd5ba124222d79498e30c6bc3427eeb9895cd7f",
+        "bytes": 5945
+      },
+      {
+        "file": "apps/hmh-reboot/src/enemy-attack-presentation.mjs",
+        "sha256": "8a657c84d3aa36cffb4ac1df38fb32827d87139914ba940c6efc8f47ee28e2c3",
+        "bytes": 804
+      },
+      {
+        "file": "apps/hmh-reboot/src/enemy-combat.mjs",
+        "sha256": "40b306bc03f156a00a63d9b49b696185596ee96aafef7f9f51646b1fd86fd255",
+        "bytes": 10731
+      },
+      {
+        "file": "apps/hmh-reboot/src/enemy-display-pool.mjs",
+        "sha256": "a3db5d93535c6a4b7cac3c91e2651c0c5a43c872e9ddafb1cef695be852380b2",
+        "bytes": 4480
+      },
+      {
+        "file": "apps/hmh-reboot/src/enemy-hit-feedback.mjs",
+        "sha256": "f33d068e66039ee5f1cab501e8253a59d088643dcde609e354e5ec18601206cb",
+        "bytes": 4900
+      },
+      {
+        "file": "apps/hmh-reboot/src/enemy-hurtboxes.mjs",
+        "sha256": "3b17f9c96104724b61c622d7a30b166a225767557a77923f80e23323e3ab6724",
+        "bytes": 2016
+      },
+      {
+        "file": "apps/hmh-reboot/src/enemy-navgrid.mjs",
+        "sha256": "da338be023aeeaadf0d5eb00a7ceef0adbd82e3ab7eb1b833fe7171445f595c3",
+        "bytes": 30791
+      },
+      {
+        "file": "apps/hmh-reboot/src/enemy-production-art.mjs",
+        "sha256": "b6fd66861caabe12ea07dd6ae3210616f34809192615fdbaa66377264297f855",
+        "bytes": 18424
+      },
+      {
+        "file": "apps/hmh-reboot/src/enemy-render-pass.mjs",
+        "sha256": "290d69805b8ff2720002c410cd9cdfd374cbab8cae7ca0ed82103f1e707c17b3",
+        "bytes": 20872
+      },
+      {
+        "file": "apps/hmh-reboot/src/enemy-roster-atlas.mjs",
+        "sha256": "9461cd9b57093be37a426646d90d5692e51b6e9f3a66321d1dc0bd3de5f70fd6",
+        "bytes": 16121
+      },
+      {
+        "file": "apps/hmh-reboot/src/enemy-simulation.mjs",
+        "sha256": "8bccd5590578df3cf601f5e40e350eb0946a16d430b090bc36710e00d54539c7",
+        "bytes": 36167
+      },
+      {
+        "file": "apps/hmh-reboot/src/evolution-effects.mjs",
+        "sha256": "90ac1ca6dd9130b0f376bb5b2563b6ea3f916d8d7820d5155a4a45fe17c241cd",
+        "bytes": 7174
+      },
+      {
+        "file": "apps/hmh-reboot/src/evolution-tuning.mjs",
+        "sha256": "491dbe791d17f54411792d2296ea3e8576777468c3cd988e0182f4d1abeea47b",
+        "bytes": 2698
+      },
+      {
+        "file": "apps/hmh-reboot/src/forked-standard-event.mjs",
+        "sha256": "350c6380fe7aedd29c34bece7ce083cb5272a4f33f3160878096658e7562478b",
+        "bytes": 3901
+      },
+      {
+        "file": "apps/hmh-reboot/src/forked-standard.mjs",
+        "sha256": "9609409fc2800adab03e098db6d57cddd5264be8013998a926f38cc5064d4a6b",
+        "bytes": 7655
+      },
+      {
+        "file": "apps/hmh-reboot/src/game-feel.mjs",
+        "sha256": "25b395ba32d3313e62ab62d160001c5132991f9b026faf523fd469d063f61eb1",
+        "bytes": 11316
+      },
+      {
+        "file": "apps/hmh-reboot/src/gore-presentation.mjs",
+        "sha256": "2a4a7c8e6d56bf796a1e9314bb5392534ab9fb7fc543120ff37ee3becaefcc1e",
+        "bytes": 12420
+      },
+      {
+        "file": "apps/hmh-reboot/src/grenade-feedback.mjs",
+        "sha256": "1778e4f2324e33ee7d1372d29536f45a8e1898add9f9983c8f2dd8a79b185c73",
+        "bytes": 13272
+      },
+      {
+        "file": "apps/hmh-reboot/src/grenade-vfx.mjs",
+        "sha256": "7b24ecaec5b4280ee6b1990817338277061261e7a40a8f2b2191dc037bbcf5ba",
+        "bytes": 2187
+      },
+      {
+        "file": "apps/hmh-reboot/src/grenades.mjs",
+        "sha256": "f5a1d8bf899d7c408eb1c2239ae8e17e35209a39131fc0b1206d6c5aa660e380",
+        "bytes": 15565
+      },
+      {
+        "file": "apps/hmh-reboot/src/held-weapon-atlas.mjs",
+        "sha256": "b266126c3ec0141936ed56b9bb45bf22713def4a94e5553643695cc4e383a989",
+        "bytes": 13349
+      },
+      {
+        "file": "apps/hmh-reboot/src/hero-loadout.mjs",
+        "sha256": "e7dc3781834565f4a365c5896ac52a84dae46bcbfe875775b32e64ca55e3e650",
+        "bytes": 3737
+      },
+      {
+        "file": "apps/hmh-reboot/src/hero-motion-atlas.mjs",
+        "sha256": "3ca8336b342aa517bbccdd039e0e7a59266b50d0ac0e1b59c0b4f9e811ff1317",
+        "bytes": 6876
+      },
+      {
+        "file": "apps/hmh-reboot/src/hud-layout.mjs",
+        "sha256": "a8d7c3f0206bf0cbdb1d91f5bc4b93bf61b830bbf3bff64bf160590c87f227c0",
+        "bytes": 10134
+      },
+      {
+        "file": "apps/hmh-reboot/src/hud.mjs",
+        "sha256": "410e2bde729d9f82eab440a2db854b33033bac58b5b4e074470d1b2845b82861",
+        "bytes": 20122
+      },
+      {
+        "file": "apps/hmh-reboot/src/input.mjs",
+        "sha256": "46cc9f2eaa58e13e220be51d6306eab0095adc6114a26b9409872799513926b0",
+        "bytes": 19159
+      },
+      {
+        "file": "apps/hmh-reboot/src/level-briefing.mjs",
+        "sha256": "54d49c22caeef3b66a1da7294940208bcc2d130b65999eb3f64239c49cab50bf",
+        "bytes": 5881
+      },
+      {
+        "file": "apps/hmh-reboot/src/level-entry.mjs",
+        "sha256": "e8a6f1f501e261e7da1e6aaa83159e69d82cf000410fb70a0913d403ac3e591e",
+        "bytes": 996
+      },
+      {
+        "file": "apps/hmh-reboot/src/level-one-world.mjs",
+        "sha256": "173d43a2718919dc93a5c9e2c5b061a1cb1821fc6969d9f9bd7c4f5d435c69a1",
+        "bytes": 36585
+      },
+      {
+        "file": "apps/hmh-reboot/src/lightning-ledger-event.mjs",
+        "sha256": "73490a21cb9ca83291bb0ddf74877f75511ed9d1e0b005ab54ed15aafce3ef3f",
+        "bytes": 3785
+      },
+      {
+        "file": "apps/hmh-reboot/src/lightning-ledger.mjs",
+        "sha256": "7394a277cb4af9ba6177e395720450e16b12b09a8c3a05d26e5bdc61695a29a2",
+        "bytes": 10087
+      },
+      {
+        "file": "apps/hmh-reboot/src/liquidator-boss.mjs",
+        "sha256": "b6d00278fdee86d9123aee972cfca5fbf756620962fcff6886f783c0f5127fed",
+        "bytes": 41552
+      },
+      {
+        "file": "apps/hmh-reboot/src/liquidator-build-matrix.mjs",
+        "sha256": "db369146b969dbd60a42283643521c0f0ef5bc3312542e0c596e783da008527a",
+        "bytes": 5309
+      },
+      {
+        "file": "apps/hmh-reboot/src/liquidator-telegraph-renderer.mjs",
+        "sha256": "8df6aa68fde9db6676bb6109f123cc61982fbaaa87803b54fdd5f7bdba4f2f01",
+        "bytes": 6021
+      },
+      {
+        "file": "apps/hmh-reboot/src/liquidator-upgrade-benchmark.mjs",
+        "sha256": "d25e7b417114884053f7edc839dd189eddb6f603dc834b5d895b416da0027402",
+        "bytes": 6970
+      },
+      {
+        "file": "apps/hmh-reboot/src/main.mjs",
+        "sha256": "2a2f46675701386749400a38d5ce8d2e143e250e2a390c25b2d7822a5ba5c699",
+        "bytes": 320190
+      },
+      {
+        "file": "apps/hmh-reboot/src/mannequin-atlas.mjs",
+        "sha256": "b8158d237f121b26969016b65aea8551c1ea684841a726476ae9c354a7c80f56",
+        "bytes": 5698
+      },
+      {
+        "file": "apps/hmh-reboot/src/melee.mjs",
+        "sha256": "f59708968eb8315d23a5633e3de4b32796819c393ddb6d92d5e750393e590ed7",
+        "bytes": 10288
+      },
+      {
+        "file": "apps/hmh-reboot/src/minimap-model.mjs",
+        "sha256": "e95404aceefd5ea50197fdcd3a68d747c00ba0e8109d2e3679abe334835b4fda",
+        "bytes": 3709
+      },
+      {
+        "file": "apps/hmh-reboot/src/mission-guidance.mjs",
+        "sha256": "b617bef916ab41d70c90052364d771bb252cbd750d7ef9d2786cb53943a10889",
+        "bytes": 6388
+      },
+      {
+        "file": "apps/hmh-reboot/src/mission-objectives.mjs",
+        "sha256": "b58f7056384fe4dbe55ff41009a638ea1ab86a9974b848fa9b6136a5a7a63e7c",
+        "bytes": 25315
+      },
+      {
+        "file": "apps/hmh-reboot/src/mission-palette.mjs",
+        "sha256": "227533829e3a3a0e56ced4906cbe3708a16abaf28d201cd86c03e5cb99e61f40",
+        "bytes": 1423
+      },
+      {
+        "file": "apps/hmh-reboot/src/movement.mjs",
+        "sha256": "7fd15d97e91f67fda97b0d0c59b7a128400e4db8494f8b9d7c2fc570cc774480",
+        "bytes": 8122
+      },
+      {
+        "file": "apps/hmh-reboot/src/native-barriers.mjs",
+        "sha256": "f2a384ebad6707d6685e0cbd3c825c8fb2bdcf8fac8dcec91278cc4fbb8e67a5",
+        "bytes": 4200
+      },
+      {
+        "file": "apps/hmh-reboot/src/objective-rewards.mjs",
+        "sha256": "e069f080fd0ad9d624bd79c90550edc562269454358898452e0d9725814a7992",
+        "bytes": 4748
+      },
+      {
+        "file": "apps/hmh-reboot/src/opening-balance.mjs",
+        "sha256": "96f10384c3645e471509b269c570c1c8f5c902ba1f81a8ea19d11f046abdc161",
+        "bytes": 1426
+      },
+      {
+        "file": "apps/hmh-reboot/src/pickup-banner.mjs",
+        "sha256": "3a29c7f5e3fb0228b8192e5eae71dd6273bedbf5b6154c326d5c3566d8196e60",
+        "bytes": 7231
+      },
+      {
+        "file": "apps/hmh-reboot/src/pickup-indicators.mjs",
+        "sha256": "864f5eebe752612afecdd5bc4f7f3753648c4c3253b04bea2f9638bae8bd603e",
+        "bytes": 1851
+      },
+      {
+        "file": "apps/hmh-reboot/src/pixi-vendor.mjs",
+        "sha256": "5a5e62c055d9901ab9dacc9223477fee89babd0877bdc87ef7fbf14d998628be",
+        "bytes": 150
+      },
+      {
+        "file": "apps/hmh-reboot/src/prisoners.mjs",
+        "sha256": "11773ab4e54a5d258984e975d76d60115aeaf41bc76f9935a28a9da13ee7401e",
+        "bytes": 9011
+      },
+      {
+        "file": "apps/hmh-reboot/src/production-hero-assets.mjs",
+        "sha256": "be9d84633f0c72b227a7ac4b358e063faeb8eb6da1f6a29bacae4a0a64798bc3",
+        "bytes": 2011
+      },
+      {
+        "file": "apps/hmh-reboot/src/production-hero-atlas.mjs",
+        "sha256": "e34fa1adcae0981676e0a60e200bf48dd21bee7b582fe251619a9b017ae665b2",
+        "bytes": 32486
+      },
+      {
+        "file": "apps/hmh-reboot/src/progression-content.mjs",
+        "sha256": "6679db4fb76682834974e0743f936bde584ef2b262342d6c876f5a6238c4e07c",
+        "bytes": 10104
+      },
+      {
+        "file": "apps/hmh-reboot/src/projectile-physics.mjs",
+        "sha256": "bf725811b0d79a6a9a30c51533c050b2f40a2871a2abb630db9309b898d8acbc",
+        "bytes": 33424
+      },
+      {
+        "file": "apps/hmh-reboot/src/prototype-actor-art.mjs",
+        "sha256": "5687239aff01a0e75152ee3e9881f1d70dc6857d1ab1c10e50d50d6c5d59bf53",
+        "bytes": 6106
+      },
+      {
+        "file": "apps/hmh-reboot/src/reload-presentation.mjs",
+        "sha256": "53c16e621b3306ee0036c24ef0eae27db90cb167a46709ce32b5ddbe01a6c029",
+        "bytes": 3573
+      },
+      {
+        "file": "apps/hmh-reboot/src/road-presentation.mjs",
+        "sha256": "aa1b4ddec96c974da20502b2977606397073522957f9c37544685c04aac3234c",
+        "bytes": 847
+      },
+      {
+        "file": "apps/hmh-reboot/src/run-adapters.mjs",
+        "sha256": "8906492502ac3bfeb54720d01df12908bc84851ee529ad1c85d87110dd243b86",
+        "bytes": 2322
+      },
+      {
+        "file": "apps/hmh-reboot/src/run-progression.mjs",
+        "sha256": "370d5b904773f7b381b38ceb28b43f29b8250aab7c2b63165714a09cb1265364",
+        "bytes": 25989
+      },
+      {
+        "file": "apps/hmh-reboot/src/run-summary-v7.mjs",
+        "sha256": "701ed1f123d52d0bb853bfc2efc3e312c8638d634fa6749529eb1c1ede0df5fa",
+        "bytes": 1530
+      },
+      {
+        "file": "apps/hmh-reboot/src/runtime-performance.mjs",
+        "sha256": "e0ed17d050160674ed3758c6457cd549aaf6950edecbae18e3cd6891c039bb40",
+        "bytes": 8628
+      },
+      {
+        "file": "apps/hmh-reboot/src/runtime-telemetry-loader.mjs",
+        "sha256": "85a470fc69ea37a1bac357592e2ef09ca2d76c12ff436a524fb8a4462d352bd1",
+        "bytes": 323
+      },
+      {
+        "file": "apps/hmh-reboot/src/runtime-telemetry-writer.mjs",
+        "sha256": "d70169d732c9e1b097e8fb1279bf47f03b1befbba057f47422ef017231e524a4",
+        "bytes": 19550
+      },
+      {
+        "file": "apps/hmh-reboot/src/selected-hero-renderer-loader.mjs",
+        "sha256": "b83547ad421a7497970fbcf88ad6e47bdd2c49bfab941f26acf124ae8f0c18d0",
+        "bytes": 390
+      },
+      {
+        "file": "apps/hmh-reboot/src/silver-drop-presentation.mjs",
+        "sha256": "6735026a96235ffe5322b7f8faa0df7138df6ceccf409cd21331cb2b000ac39d",
+        "bytes": 1841
+      },
+      {
+        "file": "apps/hmh-reboot/src/silver-drops.mjs",
+        "sha256": "a1a8a863b8afe9bcab637441cd4a69bed85a61e8c601be86f9df48367ebf4a3f",
+        "bytes": 1798
+      },
+      {
+        "file": "apps/hmh-reboot/src/simulation.mjs",
+        "sha256": "e7f8d3dde68054c074fadedf19fac004e27e5d53916b524250d86b91417ba8a9",
+        "bytes": 9370
+      },
+      {
+        "file": "apps/hmh-reboot/src/standalone-session.mjs",
+        "sha256": "548ca66685b6ea626362fa8e7d675fb2e5637eb476a425f709d4a316f0101749",
+        "bytes": 1085
+      },
+      {
+        "file": "apps/hmh-reboot/src/startup-art.mjs",
+        "sha256": "4545b56feb2db9b832de0b8e642512d993c1d3267a15b876a22795d1cda00cb9",
+        "bytes": 643
+      },
+      {
+        "file": "apps/hmh-reboot/src/terrain-tile-atlas.mjs",
+        "sha256": "517add99733cdec6e3a288fe79acb9ecc755d852aae1543e0a13499b129039fe",
+        "bytes": 9807
+      },
+      {
+        "file": "apps/hmh-reboot/src/touch-controls.mjs",
+        "sha256": "dc8718dd458b37dd9e905cbc00911538e7f583706aa88cebf3a3491fc1a3efbf",
+        "bytes": 13201
+      },
+      {
+        "file": "apps/hmh-reboot/src/tripo-prop-appearance.mjs",
+        "sha256": "434661cabc39b24ead7410acf52e077d2fc28774434ab4f0f352b6fdbca8e597",
+        "bytes": 7851
+      },
+      {
+        "file": "apps/hmh-reboot/src/upgrade-card-presentation.mjs",
+        "sha256": "7e20120f0af9dd1f65d7bf7f21124fb7857ccc18cb95e71249e8be2fe0c38449",
+        "bytes": 2447
+      },
+      {
+        "file": "apps/hmh-reboot/src/upgrade-panel.mjs",
+        "sha256": "9a487e91e1202bc7efae64a2172580bb8b0ba1857b4e19da2a3202e2a8a1a291",
+        "bytes": 15534
+      },
+      {
+        "file": "apps/hmh-reboot/src/value-guards.mjs",
+        "sha256": "8576f65fd1f8a4680578580a150bd3acdec43f555e6c8f1181e54ae92771cb94",
+        "bytes": 2596
+      },
+      {
+        "file": "apps/hmh-reboot/src/weapon-audio.mjs",
+        "sha256": "d9826383075bd6ab0a2eaddc2085bc3712de35647ec681ade667402567d0c223",
+        "bytes": 2509
+      },
+      {
+        "file": "apps/hmh-reboot/src/weapon-system.mjs",
+        "sha256": "64a51d2a02ad5928b2be3a4a576a49ff1a825bec713be69cf1a0bed4f1a0132b",
+        "bytes": 67711
+      },
+      {
+        "file": "apps/hmh-reboot/src/weapon-vfx.mjs",
+        "sha256": "d888e146c2020a221786fce010b72fe64edcaeacf43096d546e0ef5b270b4cbe",
+        "bytes": 20440
+      },
+      {
+        "file": "apps/hmh-reboot/src/weapon-wheel.mjs",
+        "sha256": "c2b6cf1bfec576e0c8600e08e919169dca25bfba82c87ed719a0d074951042d0",
+        "bytes": 8839
+      },
+      {
+        "file": "apps/hmh-reboot/src/world-atmosphere.mjs",
+        "sha256": "180603b7cec7119bc0d906e24e616512dca870486ecae9b19bc7fc24a81e3a69",
+        "bytes": 16943
+      },
+      {
+        "file": "apps/hmh-reboot/src/world-decals.mjs",
+        "sha256": "20ff44f9c83074500b92813e49c3069236a4c92eba74846d6b63ee8d28a75c4c",
+        "bytes": 14045
+      },
+      {
+        "file": "apps/hmh-reboot/src/world-depth.mjs",
+        "sha256": "e13988c9c085a61a6498141ad5834d69f49e2a831a7893bf0460e88f49df649e",
+        "bytes": 337
+      },
+      {
+        "file": "apps/hmh-reboot/src/world-design-encounters.mjs",
+        "sha256": "b4bae06b6765402e9a3d2f61cb4ece73710e71ef090cb36dc42c0cdee6553d92",
+        "bytes": 8902
+      },
+      {
+        "file": "apps/hmh-reboot/src/world-design-field-map.mjs",
+        "sha256": "80182b6e275760293d78f6b368d8647381fe32b7bcc2eb27a59a6b37175d7f75",
+        "bytes": 5895
+      },
+      {
+        "file": "apps/hmh-reboot/src/world-design-interactions.mjs",
+        "sha256": "88eacdd0afcb5143d3f6a997a846139dd48de458004af4c490afd38b54946220",
+        "bytes": 3012
+      },
+      {
+        "file": "apps/hmh-reboot/src/world-design-layout.mjs",
+        "sha256": "c22ee92acf72f33c920bf650ede59961f30df1de3b25b3e9168a661b4a9ebd5f",
+        "bytes": 6519
+      },
+      {
+        "file": "apps/hmh-reboot/src/world-design-life.mjs",
+        "sha256": "cf06a253aea8324564e9857b77087edddef39c3c6ef3c5f4de200011465aedb6",
+        "bytes": 27586
+      },
+      {
+        "file": "apps/hmh-reboot/src/world-design-native-assets.mjs",
+        "sha256": "4711d63e6aef66a058756734283c41d82ad8c7f66c89f885bed0d10a683b7ab6",
+        "bytes": 3192
+      },
+      {
+        "file": "apps/hmh-reboot/src/world-design-pacing.mjs",
+        "sha256": "d0b369d619375d4347c014b83336791115c078ef9c0eedc73a701649007758d4",
+        "bytes": 1214
+      },
+      {
+        "file": "apps/hmh-reboot/src/world-design-secrets.mjs",
+        "sha256": "82971a997dd92413230c21fbd33c0c48d9ecfd598bb047be34d27db1757d2386",
+        "bytes": 2124
+      },
+      {
+        "file": "apps/hmh-reboot/src/world-design-spatial.mjs",
+        "sha256": "067886caaf00a7cde395efa9213d2ef21b02d15d35dea05a9d4ddd91febe7fd0",
+        "bytes": 1098
+      },
+      {
+        "file": "apps/hmh-reboot/src/world-design-water.mjs",
+        "sha256": "f0e232ab488eac6721754303b8823ca7a616880ccbf42f5925e04a38bb69c2e2",
+        "bytes": 2849
+      },
+      {
+        "file": "apps/hmh-reboot/src/world-destructibles.mjs",
+        "sha256": "4bc030b2616258cdae3f75cd10b4a1cd97dc515e8b80c77301bd1ef2c75817da",
+        "bytes": 5874
+      },
+      {
+        "file": "apps/hmh-reboot/src/world-explosives.mjs",
+        "sha256": "fbc6de5dc9b60f83fbf09fb10d7974e481005ec097a5aabb3be74f1c0ad9cea7",
+        "bytes": 1650
+      },
+      {
+        "file": "apps/hmh-reboot/src/world-ground-fallback.mjs",
+        "sha256": "fe05ba31c9098654650a6bab4036117a6b6b2f205af0fd9d78e3af3602575c7d",
+        "bytes": 8965
+      },
+      {
+        "file": "apps/hmh-reboot/src/world-hazards.mjs",
+        "sha256": "c33b8827a0ca58934e82ec50d54f76251e754530a1251272df195e782827251b",
+        "bytes": 4635
+      },
+      {
+        "file": "apps/hmh-reboot/src/world-production-art.mjs",
+        "sha256": "a48356fbb19dc2452207200078315e40e07036f7cbc35bfc59748866ebf9ff86",
+        "bytes": 80606
+      },
+      {
+        "file": "apps/hmh-reboot/src/world-space.mjs",
+        "sha256": "027cf14e47af85c8fa97183809fb76f074f82dea97727515e6d357056c042b71",
+        "bytes": 13610
+      },
+      {
+        "file": "apps/hmh-reboot/src/world-static-bake.mjs",
+        "sha256": "cf896d0821382ee19b75f72889fba8428d5eea167258754e1e918a27e33f8dc1",
+        "bytes": 7220
+      },
+      {
+        "file": "apps/hmh-reboot/src/world-tour-spawns.mjs",
+        "sha256": "bd4f7b5389bced0c2d46cc9ffe6a277c83294d82d407f81badd0ae61bad51578",
+        "bytes": 5181
+      },
+      {
+        "file": "apps/hmh-reboot/assets/source/blender/hmh-authored-props.json",
+        "sha256": "7e26f6eb041da6854b7417e20d8e4e831ebf0e812d1c2490b0af36731dfb8f67",
+        "bytes": 42641
+      },
+      {
+        "file": "apps/hmh-reboot/assets/source/blender/hmh-character-pipeline.json",
+        "sha256": "d22b215d5d1c738a96c5f107c68510c62244121b337906fe7123de43f977b280",
+        "bytes": 4581
+      },
+      {
+        "file": "apps/hmh-reboot/assets/source/blender/hmh-commando-concepts.json",
+        "sha256": "91e1c00c6cb465764a91021408ddbf975714bf2cd558b3b9c32d790697a7aca9",
+        "bytes": 5102
+      },
+      {
+        "file": "apps/hmh-reboot/assets/source/blender/hmh-enemy-roster.json",
+        "sha256": "54ddc431e32b4b574c4bf04628498f7408bb1ce8e65a4653b5f6c56ce9f004d7",
+        "bytes": 11823
+      },
+      {
+        "file": "apps/hmh-reboot/assets/source/blender/hmh-held-weapons.json",
+        "sha256": "62f9e1d2712fed0dcd3820d2f9ac8b7f92a448c5404123cae07e1e604e6e7ee2",
+        "bytes": 6085
+      },
+      {
+        "file": "apps/hmh-reboot/assets/source/blender/hmh-hero-portrait-render.json",
+        "sha256": "75b3dd18fad767c81f51013d3e9289a1c1c8fa81268b57516da68425b880bc96",
+        "bytes": 612
+      },
+      {
+        "file": "apps/hmh-reboot/assets/source/blender/hmh-hero-selector-render.json",
+        "sha256": "90886197885a10cf6ee5604999f13f0e4376c582d7aacac276bc1c1d9251a9f1",
+        "bytes": 2688
+      },
+      {
+        "file": "apps/hmh-reboot/assets/source/blender/hmh-native-roster.json",
+        "sha256": "cd6d6890dfa3927253aeba99b26fc1cdb314f60f96de4c11fbf3e318ebf70b84",
+        "bytes": 10997
+      },
+      {
+        "file": "apps/hmh-reboot/assets/source/blender/hmh-production-heroes.json",
+        "sha256": "83c7f87150804ed3982875473fd60d50b47a2c62c983ea3b8ffcb4dd5327f3c4",
+        "bytes": 23441
+      },
+      {
+        "file": "apps/hmh-reboot/assets/source/blender/hmh-reference-character-models.json",
+        "sha256": "598d24383b4113790af90a8dcee1db77fe84da869dd8304bf2931e267cf183dd",
+        "bytes": 6559
+      },
+      {
+        "file": "apps/hmh-reboot/assets/source/blender/hmh-skinned-test-actor.json",
+        "sha256": "877e0457844f189fcd96f9c51130cfaed5a71d79fe95e78d6056e7a461905230",
+        "bytes": 5263
+      },
+      {
+        "file": "apps/hmh-reboot/assets/source/blender/lester-original-gameplay-reproducibility.json",
+        "sha256": "33b5f4c26e34e2fb4c2ff1347fcfc923a2f543331dfd069e8169411fdd7e1707",
+        "bytes": 161
+      },
+      {
+        "file": "apps/hmh-reboot/assets/source/blender/lester-original-packed-source-inspection.json",
+        "sha256": "eab89c75df318c3a1bd38305c7fa77ad861e399f34cf4815b6a45117f91e69a9",
+        "bytes": 2901
+      },
+      {
+        "file": "apps/hmh-reboot/assets/source/blender/lilly-gameplay-reproducibility.json",
+        "sha256": "d2ff1725d1d4a20659490170b15f2c5d79c81a6c747c37023ea716a20bf165de",
+        "bytes": 151
+      },
+      {
+        "file": "apps/hmh-reboot/assets/source/blender/lilly-packed-source-inspection.json",
+        "sha256": "6af0cc88530c95d475b58419730e46c077146f6c267aea59734efe0dde607e6b",
+        "bytes": 2857
+      },
+      {
+        "file": "apps/hmh-reboot/assets/source/blender/lit-commando-gameplay-reproducibility.json",
+        "sha256": "a99730e268d48b6a4951f7a62dee3af8246e80600e7dd4f44a40bdd4ccd80b32",
+        "bytes": 159
+      },
+      {
+        "file": "apps/hmh-reboot/assets/source/blender/lit-commando-packed-source-inspection.json",
+        "sha256": "7adc65f9c0bee3da803566eb7b1805ccf5f708056914a65061a8bfa421e85a04",
+        "bytes": 2913
+      },
+      {
+        "file": "apps/hmh-reboot/assets/source/blender/lit-valkyrie-gameplay-reproducibility.json",
+        "sha256": "f5bf12e7052779cb92b08b68ea47e421f6a97f71ccf576101bcbcf83de191793",
+        "bytes": 152
+      },
+      {
+        "file": "apps/hmh-reboot/assets/source/blender/lit-valkyrie-packed-source-inspection.json",
+        "sha256": "394584d6e903b3b22c47d9b2bdb2beb7c16bc0873c3f2301cd004bd29dd9e88e",
+        "bytes": 2871
+      },
+      {
+        "file": "apps/hmh-reboot/assets/source/terrain/ground-source.json",
+        "sha256": "d25613eb4743ab4a91ba832ca788032fb172bff6f36800400a30970b0d4ad23c",
+        "bytes": 6850
+      },
+      {
+        "file": "apps/hmh-reboot/assets/source/models/native-enemies/bagholder-rusher/provenance.json",
+        "sha256": "a78eb863712741d865a702b7af1a817d798ece1001ec27fe965375d7a7a830ef",
+        "bytes": 6986
+      },
+      {
+        "file": "apps/hmh-reboot/assets/source/models/native-enemies/bagholder-rusher/source-preservation.json",
+        "sha256": "8c1888f0da7c73943bffe527790daafe9a343048b543383520b8a8134ef40de3",
+        "bytes": 164968
+      },
+      {
+        "file": "apps/hmh-reboot/assets/source/models/native-enemies/forkrunner/source-receipt.json",
+        "sha256": "f91f813991350b0cd2e884675d50f98f2812dc04603eb29dd260fabf28c016fe",
+        "bytes": 1493
+      },
+      {
+        "file": "apps/hmh-reboot/assets/source/models/native-enemies/gas-bomber/source-receipt.json",
+        "sha256": "34b64d05bba37eff1d95d7e87e45b6d72d2b3e21be01340c0d4897b576baac6b",
+        "bytes": 1496
+      },
+      {
+        "file": "apps/hmh-reboot/assets/source/models/native-enemies/liquidator-agent/source-receipt.json",
+        "sha256": "0a9b2d6d41669cdb250b94d54efced5863accd34629d84ac150b736ae4331420",
+        "bytes": 1544
+      },
+      {
+        "file": "apps/hmh-reboot/assets/source/models/native-enemies/the-liquidator/source-receipt.json",
+        "sha256": "a502dbd8ef0f7970d2866c1265f0ffd01edee9ac48cd00fad1fca79586e8cda3",
+        "bytes": 1720
+      },
+      {
+        "file": "apps/hmh-reboot/assets/source/models/native-enemies/validator-cultist/source-receipt.json",
+        "sha256": "6259e05c21271de27c6f838236e8ae3da486706f0b64f7684d49ea91038fd4a9",
+        "bytes": 1550
+      },
+      {
+        "file": "apps/hmh-reboot/assets/source/models/native-enemies/whale-enforcer/source-receipt.json",
+        "sha256": "dfa40e04e0919c345d4abfc85c081bfe0de33f99913c58355f92dfbee738265d",
+        "bytes": 1527
+      },
+      {
+        "file": "apps/hmh-reboot/assets/source/reference/heroes/references.json",
+        "sha256": "cbfa785d6283da0aabecfa558dce92e852c6789521dd62a27dffbb5422958423",
+        "bytes": 3696
+      },
+      {
+        "file": "apps/hmh-reboot/assets/source/reference/weapons/references.json",
+        "sha256": "2297daafa3fa6f6f9b671d2b5829bcae514a1445a703302074a2bfda7ed186c9",
+        "bytes": 5672
+      },
+      {
+        "file": "apps/stacked/src/child-bridge.mjs",
+        "sha256": "f1d5745b1ff511976ba782744c5ebc9c1dafb8a4eb2fd21384d73ea04ca8eb14",
+        "bytes": 1745
+      },
+      {
+        "file": "apps/stacked/src/free-medals.mjs",
+        "sha256": "e0b85f69a863271ecf7fea541fba4724907068febbc236237addd3daa1a953a4",
+        "bytes": 4803
+      },
+      {
+        "file": "apps/stacked/src/haptics.mjs",
+        "sha256": "2c18da72be471e732792b1364a7802d211e64eafaf2c3fe5349f690f9878ef83",
+        "bytes": 1997
+      },
+      {
+        "file": "apps/stacked/src/input.mjs",
+        "sha256": "ea4e613444ae51871276501cc69b9f91d908b5969c243327eb3b2851ca8e3ac5",
+        "bytes": 5802
+      },
+      {
+        "file": "apps/stacked/src/main.mjs",
+        "sha256": "6d2c5880091962dc34960c5c070ef3ac224e7339ca799f19799a0fb62e6c7dbe",
+        "bytes": 24105
+      },
+      {
+        "file": "apps/stacked/src/menu-navigation.mjs",
+        "sha256": "47fe85c25085bc29991e94eca499eb447b066cd39ae5022d13da696112aecb9f",
+        "bytes": 2448
+      },
+      {
+        "file": "apps/stacked/src/overlay-focus.mjs",
+        "sha256": "dbe03103cf176013e6a5791e5ff155b732c0da5b5e6085f499f26327413ba992",
+        "bytes": 1442
+      },
+      {
+        "file": "apps/stacked/src/pause-clock.mjs",
+        "sha256": "736bb2661bc5adcac88db3bd6860872d9502ccfce6d3b193842a17b14fcc5846",
+        "bytes": 846
+      },
+      {
+        "file": "apps/stacked/src/pixi-vendor.mjs",
+        "sha256": "cc6a87ac5cb9736370a1f755d463c9d5b681bb16436392b33f95b28b258143ba",
+        "bytes": 418
+      },
+      {
+        "file": "apps/stacked/src/play-session.mjs",
+        "sha256": "1ae56d487d796e17de509c8a8b85987c447459d410bcf7fd6fb3654c988b0f7d",
+        "bytes": 2181
+      },
+      {
+        "file": "apps/stacked/src/preferences-bridge.mjs",
+        "sha256": "3d8086eba9ab5b411f03ca621b2283c48690f8ef48a6845f7e57629b12e00b18",
+        "bytes": 2690
+      },
+      {
+        "file": "apps/stacked/src/run-summary.mjs",
+        "sha256": "58cc90aedad4f38eb303b8fe5e507760809d40300c016e30465c5e318476948b",
+        "bytes": 1369
+      },
+      {
+        "file": "apps/stacked/src/sound-effects.mjs",
+        "sha256": "e474042a48453ed9c3eaaeb862bf9210a51352e74e1369c1c5f9514403e239d7",
+        "bytes": 7110
+      },
+      {
+        "file": "apps/stacked/src/verify-worker.mjs",
+        "sha256": "7b277fd34cb069eca000b2753f1f94b346633c8645045efdd49ed73a1c04da09",
+        "bytes": 3542
+      },
+      {
+        "file": "apps/stacked/src/dev/soak-pilot.mjs",
+        "sha256": "aba5c692371256a34e9eefbe63f3e4772b438829712aa8030cd0b14a88434156",
+        "bytes": 15141
+      },
+      {
+        "file": "apps/stacked/src/render/active-interpolation.mjs",
+        "sha256": "a41d9548c25ecb65b20b6917f14287e853f9da7124d0898c619b689421aed7a5",
+        "bytes": 3580
+      },
+      {
+        "file": "apps/stacked/src/render/aquatic-forms.mjs",
+        "sha256": "1f19f4981a777070b7a4984baed9bcac9994e48f2271ef68b25cf9b664b846a0",
+        "bytes": 3218
+      },
+      {
+        "file": "apps/stacked/src/render/atmosphere.mjs",
+        "sha256": "60f602502ad8465d19401403c67f3eefb2cc73b29b399e68a8251cd78d5a0ca3",
+        "bytes": 7479
+      },
+      {
+        "file": "apps/stacked/src/render/board-feedback.mjs",
+        "sha256": "be6217f1f0394bcf167ff77d6cef5141df32cc5e3eff5503112048674227cc7c",
+        "bytes": 1439
+      },
+      {
+        "file": "apps/stacked/src/render/board-motion.mjs",
+        "sha256": "b1fd3e354268498faa37cb3707a62d739af765d8fe56b5eea69c716201edab1a",
+        "bytes": 9099
+      },
+      {
+        "file": "apps/stacked/src/render/board-pulse.mjs",
+        "sha256": "8b5eb8984b8a8b7de9319b99bdcdaa95c79395257e72238c8116b2ec075f395d",
+        "bytes": 4981
+      },
+      {
+        "file": "apps/stacked/src/render/board-view.mjs",
+        "sha256": "005ebd8fbaa162675b72c4c7c6b44c2023d90f45c5178ed3e109d097ccd11e19",
+        "bytes": 13718
+      },
+      {
+        "file": "apps/stacked/src/render/cosmetic-palettes.mjs",
+        "sha256": "76e13c53bc80d5141f61bb9d68133cf60c8fdec1cdc7728821414504e2be0048",
+        "bytes": 2091
+      },
+      {
+        "file": "apps/stacked/src/render/gameplay-feedback.mjs",
+        "sha256": "9a31602ffae19ae9d9c4729ff80fd61d545400e69803379f8f8b82ed01fd0e48",
+        "bytes": 2090
+      },
+      {
+        "file": "apps/stacked/src/render/gameplay-particles.mjs",
+        "sha256": "10ed24e691fae16524967614ab70203134918598d5ebcf9e007c07fae1a00167",
+        "bytes": 9518
+      },
+      {
+        "file": "apps/stacked/src/render/layers.mjs",
+        "sha256": "a87b66512939516619b461dc0843c40a22869e6dae58f2d3957cda9a87e448db",
+        "bytes": 668
+      },
+      {
+        "file": "apps/stacked/src/render/living-field.mjs",
+        "sha256": "a3875537dec2b2586758bd0448a27341ec2828dbe9adc46d9c788396a30e6f2e",
+        "bytes": 4923
+      },
+      {
+        "file": "apps/stacked/src/render/lock-projection.mjs",
+        "sha256": "0c81563e5dde541c81cb92e15f78422f127527f1d300098ca08a2b52de51e3f5",
+        "bytes": 1950
+      },
+      {
+        "file": "apps/stacked/src/render/music-motion.mjs",
+        "sha256": "0073fe0f2fd2c2cacf4fbe509388a281e1dba54c6ffe6072dc97f5e38bb4d17c",
+        "bytes": 1428
+      },
+      {
+        "file": "apps/stacked/src/render/music-scenes.mjs",
+        "sha256": "fb8628a592c117241e27aa16327d84e35d85a058eb1df16955a217ad3190a460",
+        "bytes": 13807
+      },
+      {
+        "file": "apps/stacked/src/render/music-worlds.mjs",
+        "sha256": "bcb5d3df03b34cfcfb1e90fb57bda497563be591162bb382e7158c1d6087dc7c",
+        "bytes": 3253
+      },
+      {
+        "file": "apps/stacked/src/render/piece-presentation.mjs",
+        "sha256": "37270b8e443456aac4397ef1484508b94667b485006ceba900ec9eb43bf6861c",
+        "bytes": 9141
+      },
+      {
+        "file": "apps/stacked/src/render/renderer.mjs",
+        "sha256": "7bd3c1a0b67abeecb507abb9339fd18bc3605c3efca0eb0203e4fe4f7772d561",
+        "bytes": 9299
+      },
+      {
+        "file": "apps/stacked/src/render/root-fit.mjs",
+        "sha256": "2dd998fe8dd16495a0247267309758964a0457dc1c20e9cccb546c94da46b9b3",
+        "bytes": 644
+      },
+      {
+        "file": "apps/stacked/src/render/visualizer-governor.mjs",
+        "sha256": "5fbeb2b6415106e9156c55aa31ccd09bbe58726aaed9563289db9e1737caad5f",
+        "bytes": 4813
+      },
+      {
+        "file": "apps/stacked/src/render/visualizer-preview.mjs",
+        "sha256": "0d4f1e42bb93eafa4af20529a90384868e41443fad620858ac711b118d4b9407",
+        "bytes": 2219
+      },
+      {
+        "file": "apps/stacked/src/render/world-forms.mjs",
+        "sha256": "92ab13308a6dffe2540398e5f6326d31d28b47d48182e92fdf5ac2405a45b433",
+        "bytes": 7484
+      }
+    ],
+    "gitMetadataAbsent": true,
+    "gitExecutableAbsentFromPath": true,
+    "declaredExistingDependenciesJunctioned": true,
+    "exitCode": 0,
+    "noRealKeyReadOrRpcOrTransactionExecuted": true,
+    "checks": {
+      "tests": 1,
+      "pass": 1,
+      "fail": 0,
+      "skip": 0
+    },
+    "durationMs": 341.5313
+  },
+  "additionalFailuresPreserved": [
+    "targeted architecture witness rejected default sourceRevision(root)",
+    "GREEN passed but wrapper expected TAP instead of default reporter (no test failure)",
+    "selected import-copy witness initially omitted obstacle-shapes JSON and HMH source imports; inputs were copied, assertions unchanged"
+  ]
+}

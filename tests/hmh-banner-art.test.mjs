@@ -72,8 +72,8 @@ test('the pool covers every hero, uses 16:9 outputs and records no source PNG in
     assert.ok(image.alt.length > 20, `${image.id} alt text`);
     for (const output of image.outputs) assert.equal(output.width * 9, output.height * 16, output.path);
   }
-  const tracked = spawnSync('git', ['ls-files', '--', 'apps/portal/assets/hmh-art'], { cwd: root, encoding: 'utf8' }).stdout;
-  assert.doesNotMatch(tracked, /\.png$/m, 'the owner PNGs stay in the vault');
+  const packaged = readdirSync(artDir, { recursive: true }).filter(file => /\.png$/i.test(file));
+  assert.deepEqual(packaged, [], 'the owner PNGs stay in the external artwork archive');
 });
 
 test('the og image is a 1200x630 JPEG under 300 KB, fit for X and Discord', () => {
@@ -124,20 +124,15 @@ test('the retired HMH banners are gone and nothing ships a reference to them', (
     'hmh-key-art/hmh-loading-keyart',
   ];
   for (const path of retired.slice(0, 3)) assert.equal(existsSync(join(root, 'apps/portal/assets', path)), false, path);
-  // git ls-files where the checkout has .git; the Vercel build uploads no .git,
-  // so fall back to walking the same folders on disk.
+  // Inspect the deployable filesystem directly: the cloud upload has no Git metadata.
   const scanRoots = ['apps/portal', 'api', 'server', 'scripts', 'vercel.json'];
-  const listed = spawnSync('git', ['ls-files', '--', ...scanRoots], { cwd: root, encoding: 'utf8' });
-  let files = listed.status === 0 ? listed.stdout.split('\n').filter(Boolean) : [];
-  if (!files.length) {
-    const walk = (rel) => {
-      const full = join(root, rel);
-      if (!existsSync(full)) return [];
-      if (!statSync(full).isDirectory()) return [rel];
-      return readdirSync(full).flatMap((name) => (name === 'node_modules' || name === '.git' ? [] : walk(`${rel}/${name}`)));
-    };
-    files = scanRoots.flatMap(walk);
-  }
+  const walk = (rel) => {
+    const full = join(root, rel);
+    if (!existsSync(full)) return [];
+    if (!statSync(full).isDirectory()) return [rel];
+    return readdirSync(full).flatMap(name => ['node_modules', '.git', '.tmp'].includes(name) ? [] : walk(`${rel}/${name}`));
+  };
+  const files = scanRoots.flatMap(walk);
   const tracked = files.filter((path) => /\.(?:html|m?js|css|txt|xml|json|webmanifest|py)$/.test(path) && !path.startsWith('apps/portal/dist/'));
   for (const path of tracked) {
     const text = readFileSync(join(root, path), 'utf8');

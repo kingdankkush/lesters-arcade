@@ -1,5 +1,4 @@
 import assert from 'node:assert/strict';
-import { spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { readFileSync, mkdtempSync, mkdirSync, writeFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
@@ -36,22 +35,6 @@ const EXPECTED_RULES = [
   'apps/hmh-reboot/assets/source/models/**/*.blend filter=lfs diff=lfs merge=lfs -text',
 ];
 
-function gitAvailable() {
-  const probe = spawnSync('git', ['--version'], { cwd: root, encoding: 'utf8' });
-  return probe.status === 0;
-}
-
-function gitLfsAvailable() {
-  const probe = spawnSync('git', ['lfs', 'version'], { cwd: root, encoding: 'utf8' });
-  return probe.status === 0;
-}
-
-// Vercel strips .git from the build checkout, so attribute and LFS probes need a real work tree.
-function insideGitWorkTree() {
-  const probe = spawnSync('git', ['rev-parse', '--is-inside-work-tree'], { cwd: root, encoding: 'utf8' });
-  return probe.status === 0 && probe.stdout.trim() === 'true';
-}
-
 test('P-5 source-model and packed Blend LFS rules are written into .gitattributes verbatim', () => {
   assert.deepEqual([...LFS_MODEL_RULES], EXPECTED_RULES);
   assert.deepEqual([...LFS_MODEL_EXTENSIONS], ['glb', 'fbx', 'bin', 'png', 'jpg', 'jpeg', 'blend']);
@@ -70,53 +53,12 @@ test('P-5 source-model and packed Blend LFS rules are written into .gitattribute
   assert.ok(pngMacro >= 0 && pngRule > pngMacro, 'the LFS png rule must come after the binary macro so it overrides it');
 });
 
-test('P-5 git check-attr resolves filter=lfs for a probe path under every model extension', (t) => {
-  // Mirrors a2e87e58: Vercel strips .git, and the release gate rejects skipped tests,
-  // so the attribute proof runs only where a work tree exists and passes vacuously elsewhere.
-  if (!gitAvailable() || !insideGitWorkTree()) {
-    t.diagnostic('no git work tree on this host; check-attr proof not exercised');
-    return;
+test('hash-bound native producer receipts declare byte preservation without exempting ordinary JSON', () => {
+  const lines = readRepo('.gitattributes').split(/\r?\n/);
+  for (const suffix of ['packed-source-inspection', 'gameplay-reproducibility']) {
+    assert.ok(lines.includes(`apps/hmh-reboot/assets/source/blender/*-${suffix}.json -text`), suffix);
   }
-  for (const extension of LFS_MODEL_EXTENSIONS) {
-    const probe = `${SOURCE_MODEL_ROOT}/probe/probe.${extension}`;
-    const result = spawnSync('git', ['check-attr', 'filter', 'diff', 'merge', 'text', '--', probe], { cwd: root, encoding: 'utf8' });
-    assert.equal(result.status, 0, `git check-attr failed for ${probe}: ${result.stderr}`);
-    assert.match(result.stdout, /: filter: lfs/, `${probe} does not resolve filter=lfs:\n${result.stdout}`);
-    assert.match(result.stdout, /: diff: lfs/, `${probe} does not resolve diff=lfs`);
-    assert.match(result.stdout, /: merge: lfs/, `${probe} does not resolve merge=lfs`);
-    assert.match(result.stdout, /: text: unset/, `${probe} must be -text so Git never autodetects a binary as text`);
-  }
-  // A file outside the models root keeps the repository's existing behaviour.
-  const outside = spawnSync('git', ['check-attr', 'filter', '--', 'apps/hmh-reboot/assets/source/blender/probe.png'], { cwd: root, encoding: 'utf8' });
-  assert.match(outside.stdout, /: filter: unspecified/, 'the LFS rule leaked outside the models root');
-});
-
-test('hash-bound native evidence survives Git cleaning byte-exactly without exempting ordinary JSON', () => {
-  const scratch = mkdtempSync(path.join(tmpdir(), 'hmh-evidence-git-bytes-'));
-  const env = { ...process.env };
-  for (const key of ['GIT_DIR', 'GIT_WORK_TREE', 'GIT_INDEX_FILE', 'GIT_COMMON_DIR']) delete env[key];
-  const git = (args, input) => {
-    const result = spawnSync('git', ['-c', 'core.autocrlf=false', ...args], { cwd: scratch, env, input, encoding: 'utf8' });
-    assert.equal(result.status, 0, result.stderr || result.error?.message);
-    return result.stdout.trim();
-  };
-  try {
-    git(['init', '--quiet']);
-    writeFileSync(path.join(scratch, '.gitattributes'), readRepo('.gitattributes'));
-    const directory = 'apps/hmh-reboot/assets/source/blender';
-    mkdirSync(path.join(scratch, directory), { recursive: true });
-    // Deliberate CRLF witness: these are byte-hashed producer receipts, not
-    // canonicalized JSON. Git must not alter their bytes in a clean checkout.
-    const raw = Buffer.from('{\r\n  "nativeReceipt": true\r\n}\r\n');
-    const expected = git(['hash-object', '--no-filters', '--stdin'], raw);
-    for (const suffix of ['packed-source-inspection', 'gameplay-reproducibility']) {
-      const file = `${directory}/lit-commando-${suffix}.json`;
-      assert.equal(git(['hash-object', `--path=${file}`, '--stdin'], raw), expected, `${suffix}: Git rewrites hash-bound evidence`);
-    }
-    assert.notEqual(git(['hash-object', '--path=ordinary-config.json', '--stdin'], raw), expected, 'ordinary JSON must retain the existing LF text policy');
-  } finally {
-    rmSync(scratch, { recursive: true, force: true });
-  }
+  assert.ok(!lines.some(line => /^\*\.json\s+.*-text/.test(line)), 'ordinary JSON keeps the existing text policy');
 });
 
 test('P-5 pointer detection, the per-file cap and the texture cap are pure and exact', () => {
@@ -187,22 +129,54 @@ test('declared LFS identity rejects duplicate, prefixed, and malformed pointer f
   for (const payload of malformed) assert.ok(evaluateDeclaredSourcePayload(Buffer.from(payload), { sourceSha256, sourceBytes }).problems.length > 0, payload);
 });
 
-test('P-5 the offline checker passes honestly on a repository with zero tracked models', async (t) => {
-  if (!gitAvailable() || !insideGitWorkTree() || !gitLfsAvailable()) {
-    t.diagnostic('no git work tree or git-lfs on this host; offline checker not exercised');
-    return;
+// The authoring CLI exercises real Git locally. Cloud unit tests execute its
+// real policy logic with explicit deterministic command transcripts and actual files.
+async function checkFixture({ rawHead = false, badAttribute = null, missingListing = false } = {}) {
+  const scratch = mkdtempSync(path.join(tmpdir(), 'hmh-lfs-policy-unit-'));
+  const model = `${SOURCE_MODEL_ROOT}/unit/packed.blend`;
+  try {
+    writeFileSync(path.join(scratch, '.gitattributes'), readRepo('.gitattributes'));
+    mkdirSync(path.dirname(path.join(scratch, model)), { recursive: true });
+    const payload = Buffer.from('unit packed source'); writeFileSync(path.join(scratch, model), payload);
+    const pointer = Buffer.from(`version https://git-lfs.github.com/spec/v1\noid sha256:${createHash('sha256').update(payload).digest('hex')}\nsize ${payload.length}\n`);
+    const transcript = [];
+    const textCommand = (cwd, args) => {
+      assert.equal(cwd, scratch); transcript.push([...args]);
+      let stdout;
+      if (args[0] === 'check-attr') stdout = ['filter', 'diff', 'merge', 'text'].map(attribute => `${args.at(-1)}: ${attribute}: ${attribute === badAttribute ? 'unspecified' : attribute === 'text' ? 'unset' : 'lfs'}`).join('\n');
+      else if (args.join(' ') === 'lfs version') stdout = 'unit-lfs-transcript';
+      else if (args[0] === 'ls-files') stdout = model;
+      else if (args.join(' ') === 'lfs ls-files --name-only') stdout = missingListing ? '' : model;
+      else if (args[0] === 'rev-parse') stdout = 'unit-head';
+      else if (args.join(' ') === 'lfs env') stdout = 'Endpoint=https://example.invalid/unit-lfs';
+      else assert.fail(`unexpected command transcript: ${args}`);
+      return { status: 0, stdout, stderr: '' };
+    };
+    const binaryCommand = (cwd, args) => {
+      assert.equal(cwd, scratch); assert.deepEqual(args, ['cat-file', '-p', `HEAD:${model}`]);
+      return { status: 0, stdout: rawHead ? payload : pointer, stderr: '' };
+    };
+    const report = await runOfflineCheck({ root: scratch, textCommand, binaryCommand });
+    assert.equal(transcript.filter(args => args[0] === 'check-attr').length, 7);
+    assert.equal(report.trackedModels, 1); assert.deepEqual(report.missingRules, []);
+    return report;
+  } finally { rmSync(scratch, { recursive: true, force: true }); }
+}
+
+test('the authoring checker policy validates actual source bytes with injected command transcripts and no Git dependency', async () => {
+  const report = await checkFixture();
+  assert.equal(report.ok, true, JSON.stringify(report)); assert.equal(report.models[0].pointerInHead, true);
+  assert.equal(report.models[0].sizeBytes, Buffer.byteLength('unit packed source'));
+  assert.equal(report.models[0].lfsListed, true);
+});
+
+test('the authoring checker rejects wrong filter/diff/merge/text, raw committed models and missing LFS membership', async () => {
+  for (const badAttribute of ['filter', 'diff', 'merge', 'text']) {
+    const report = await checkFixture({ badAttribute });
+    assert.equal(report.ok, false); assert.ok(report.problems.some(problem => problem.includes(badAttribute)));
   }
-  const report = await runOfflineCheck({ root });
-  assert.equal(report.ok, true, JSON.stringify(report, null, 2));
-  assert.deepEqual(report.missingRules, []);
-  assert.equal(report.checkAttr.every((entry) => entry.filter === 'lfs'), true, JSON.stringify(report.checkAttr));
-  assert.equal(typeof report.trackedModels, 'number');
-  assert.equal(report.lfsAvailable, gitLfsAvailable());
-  if (!report.lfsAvailable) assert.match(report.notes.join('\n'), /git-lfs/i);
-  for (const model of report.models) {
-    assert.equal(model.problems.length, 0, `${model.path}: ${model.problems.join('; ')}`);
-    assert.equal(model.pointerInHead, true, `${model.path} is committed as a raw blob, not an LFS pointer`);
-  }
+  assert.equal((await checkFixture({ rawHead: true })).ok, false);
+  assert.equal((await checkFixture({ missingListing: true })).ok, false);
 });
 
 test('P-5 the checker is an npm script, is syntax-gated, and the docs carry the policy instead of the placeholder', () => {

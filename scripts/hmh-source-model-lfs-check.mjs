@@ -146,7 +146,7 @@ function parseCheckAttr(stdout) {
   return attributes;
 }
 
-export async function runOfflineCheck({ root = process.cwd() } = {}) {
+export async function runOfflineCheck({ root = process.cwd(), textCommand = git, binaryCommand = gitBinary } = {}) {
   const notes = [];
   const problems = [];
   const gitattributesPath = path.join(root, '.gitattributes');
@@ -157,19 +157,19 @@ export async function runOfflineCheck({ root = process.cwd() } = {}) {
   const checkAttr = [];
   for (const extension of LFS_MODEL_EXTENSIONS) {
     const probe = `${SOURCE_MODEL_ROOT}/probe/probe.${extension}`;
-    const result = git(root, ['check-attr', 'filter', 'diff', 'merge', 'text', '--', probe]);
+    const result = textCommand(root, ['check-attr', 'filter', 'diff', 'merge', 'text', '--', probe]);
     const attributes = result.status === 0 ? parseCheckAttr(result.stdout) : {};
     const entry = { probe, filter: attributes.filter ?? null, diff: attributes.diff ?? null, merge: attributes.merge ?? null, text: attributes.text ?? null };
     checkAttr.push(entry);
-    if (entry.filter !== 'lfs') problems.push(`git check-attr resolves filter=${entry.filter} (expected lfs) for ${probe}`);
+    for (const attribute of ['filter', 'diff', 'merge']) if (entry[attribute] !== 'lfs') problems.push(`git check-attr resolves ${attribute}=${entry[attribute]} (expected lfs) for ${probe}`);
     if (entry.text !== 'unset') problems.push(`git check-attr resolves text=${entry.text} (expected unset via -text) for ${probe}`);
   }
 
-  const lfsVersion = git(root, ['lfs', 'version']);
+  const lfsVersion = textCommand(root, ['lfs', 'version']);
   const lfsAvailable = lfsVersion.status === 0;
   if (!lfsAvailable) notes.push('git-lfs is not installed on this host: the `git lfs ls-files` subset check was skipped; pointer detection still ran through git cat-file.');
 
-  const tracked = git(root, ['ls-files', '--', SOURCE_MODEL_ROOT]);
+  const tracked = textCommand(root, ['ls-files', '--', SOURCE_MODEL_ROOT]);
   const trackedModelPaths = tracked.status === 0
     ? tracked.stdout.split(/\r?\n/).map((line) => line.trim()).filter((line) => line && modelExtension(line))
     : [];
@@ -177,12 +177,12 @@ export async function runOfflineCheck({ root = process.cwd() } = {}) {
 
   let lfsListed = new Set();
   if (lfsAvailable) {
-    const listed = git(root, ['lfs', 'ls-files', '--name-only']);
+    const listed = textCommand(root, ['lfs', 'ls-files', '--name-only']);
     if (listed.status === 0) lfsListed = new Set(listed.stdout.split(/\r?\n/).map((line) => line.trim()).filter(Boolean));
     else problems.push(`git lfs ls-files failed: ${listed.stderr.trim()}`);
   }
 
-  const headExists = git(root, ['rev-parse', '--verify', '--quiet', 'HEAD']).status === 0;
+  const headExists = textCommand(root, ['rev-parse', '--verify', '--quiet', 'HEAD']).status === 0;
   const models = [];
   for (const relativePath of trackedModelPaths) {
     const absolute = path.join(root, relativePath);
@@ -196,10 +196,10 @@ export async function runOfflineCheck({ root = process.cwd() } = {}) {
     if (workingTreeIsPointer) notes.push(`${relativePath} is an unsmudged pointer in this working tree (GIT_LFS_SKIP_SMUDGE or missing object); size and texture checks need \`git lfs pull\`.`);
     let pointerInHead = null;
     if (headExists) {
-      const head = gitBinary(root, ['cat-file', '-p', `HEAD:${relativePath}`]);
+      const head = binaryCommand(root, ['cat-file', '-p', `HEAD:${relativePath}`]);
       if (head.status === 0) pointerInHead = isLfsPointer(head.stdout);
       else {
-        const index = gitBinary(root, ['cat-file', '-p', `:${relativePath}`]);
+        const index = binaryCommand(root, ['cat-file', '-p', `:${relativePath}`]);
         pointerInHead = index.status === 0 ? isLfsPointer(index.stdout) : null;
         if (pointerInHead !== null) notes.push(`${relativePath} is staged but not yet in HEAD; the index blob was inspected instead.`);
       }
@@ -212,7 +212,7 @@ export async function runOfflineCheck({ root = process.cwd() } = {}) {
 
   let endpoint = null;
   if (lfsAvailable) {
-    const env = git(root, ['lfs', 'env']);
+    const env = textCommand(root, ['lfs', 'env']);
     const match = /^Endpoint=(\S+)/m.exec(env.stdout);
     endpoint = match ? match[1] : null;
   }
