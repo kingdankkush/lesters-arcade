@@ -1,0 +1,47 @@
+{
+  "accepted": 96,
+  "manifestSha256": "3cf7285063a4aa7e9d3f30c3cbc71e5d2c87f959ae81fa5085b6114e9a37800d",
+  "package": "C:\\Users\\just_\\lesters-arcade-wt\\200-claude-world-art\\apps\\portal\\assets\\generated\\hmh-reboot-tripo-props-hd",
+  "pages": [
+    [
+      "tripo-props-hd-plants-00.webp",
+      21,
+      1676832,
+      16777216
+    ],
+    [
+      "tripo-props-hd-props-00.webp",
+      26,
+      2093182,
+      16777216
+    ],
+    [
+      "tripo-props-hd-structures-00.webp",
+      15,
+      2812414,
+      16777216
+    ],
+    [
+      "tripo-props-hd-structures-01.webp",
+      14,
+      2400884,
+      16777216
+    ],
+    [
+      "tripo-props-hd-pickups-00.webp",
+      20,
+      1636718,
+      16777216
+    ]
+  ],
+  "rejected": [],
+  "status": "pass",
+  "totals": {
+    "decodedBytes": 83886080,
+    "encodedBytes": 10620030,
+    "halfResDecodedBytes": 20971520,
+    "halfResEncodedBytes": 979794,
+    "items": 96,
+    "pages": 5
+  }
+}
