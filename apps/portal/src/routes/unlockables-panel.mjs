@@ -29,7 +29,7 @@ import {
   unlockState,
 } from '../unlockables.mjs';
 
-export const UNLOCKABLES_PANEL_STYLESHEET = './src/styles/unlockables-panel.css?v=unlockables-20260923';
+export const UNLOCKABLES_PANEL_STYLESHEET = './src/styles/unlockables-panel.css?v=locker-20260930';
 export const UNLOCKABLES_PANEL_ID = 'unlockablesPanel';
 export const UNLOCKABLES_GAME_TITLES = Object.freeze({ 'lester-blaster': 'Hard Money Heroes', chikun: 'Chikun’s Escape', stacked: 'STACKED' });
 export const UNLOCKABLES_SLOT_LABELS = Object.freeze({
@@ -129,6 +129,8 @@ export function buildUnlockablesPanelModel(snapshot, { heroEntries = null, canva
       id: item.id,
       title: item.title,
       swatch: item.swatch ?? null,
+      preview: item.preview ?? null,
+      description: achievement?.description ?? null,
       status,
       requirement: requirementText(item),
       achievementId: achievement?.id ?? null,
@@ -216,7 +218,7 @@ export function renderUnlockablesPanel({
   if (host.parentNode !== after.parentNode || host.previousElementSibling !== after) after.parentNode.insertBefore(host, after.nextSibling);
   let state = panels.get(host);
   if (!state) {
-    state = { status: '', unsubscribe: null, observer: null };
+    state = { status: '', unsubscribe: null, observer: null, gameId: 'lester-blaster', inspected: null };
     panels.set(host, state);
   }
   state.view = VIEWS.has(view) ? view : 'settings';
@@ -246,6 +248,7 @@ export function renderUnlockablesPanel({
 function paint(host, state) {
   const { documentRef, store } = state;
   const snapshot = store.snapshot();
+  if (state.wallet !== snapshot.wallet) { state.wallet = snapshot.wallet; state.status = ''; }
   let heroEntries = null;
   try { heroEntries = state.heroEntries?.() ?? null; } catch { heroEntries = null; }
   const model = buildUnlockablesPanelModel(snapshot, { heroEntries, canvasFilter: state.canvasFilter });
@@ -254,19 +257,43 @@ function paint(host, state) {
   const header = documentRef.createElement('header');
   header.className = 'unlockables-head';
   header.append(text(documentRef, 'span', 'UNLOCKABLES', 'cabinet-status-label'));
-  const title = text(documentRef, 'h2', 'Cosmetic looks', 'unlockables-title');
+  const title = text(documentRef, 'h2', 'Your Locker', 'unlockables-title');
   title.id = `${UNLOCKABLES_PANEL_ID}Title`;
   header.append(title, text(documentRef, 'p', model.notice, 'unlockables-notice'));
+  const looks = model.games.flatMap(game => game.slots.flatMap(slot => slot.options.filter(option => option.id !== null)));
+  const available = looks.filter(option => option.status === 'unlocked' || option.status === 'selected').length;
+  header.append(text(documentRef, 'p', `${available} / ${looks.length} looks unlocked · Inspect a look, then equip it`, 'unlockables-overview'));
   body.push(header);
 
   const live = text(documentRef, 'p', state.status, 'unlockables-status');
   live.setAttribute('role', 'status');
   live.setAttribute('aria-live', 'polite');
+  body.push(live);
+  const games = documentRef.createElement('nav');
+  games.className = 'unlockables-games'; games.setAttribute('aria-label', 'Locker game');
+  for (const game of model.games) {
+    const button = text(documentRef, 'button', game.gameId === 'lester-blaster' ? 'Hard Money Heroes' : game.title, 'unlockables-game-button');
+    button.type = 'button'; button.id = `locker-game-${game.gameId}`;
+    button.setAttribute('aria-pressed', String(state.gameId === game.gameId));
+    button.addEventListener('click', () => {
+      state.gameId = game.gameId; state.inspected = null; paint(host, state);
+      documentRef.getElementById(button.id)?.focus?.({ preventScroll: true });
+    });
+    games.append(button);
+  }
+  body.push(games);
+  const activeGame = model.games.find(game => game.gameId === state.gameId) ?? model.games[0];
+  const inspectedSlot = activeGame.slots.find(slot => slot.slot === state.inspected?.slot) ?? activeGame.slots[0];
+  const inspectedOption = inspectedSlot.options.find(option => state.inspected && option.id === state.inspected.id)
+    ?? inspectedSlot.options.find(option => option.id && ['selected', 'unlocked'].includes(option.status))
+    ?? inspectedSlot.options[1] ?? inspectedSlot.options[0];
+  body.push(renderInspection(host, state, activeGame, inspectedSlot, inspectedOption));
 
   for (const game of model.games) {
     const section = documentRef.createElement('section');
     section.className = 'unlockables-game';
     section.dataset.game = game.gameId;
+    section.hidden = game.gameId !== activeGame.gameId;
     const heading = text(documentRef, 'h3', game.title, 'unlockables-game-title');
     heading.id = `unlockables-${game.gameId}-${++serial}`;
     section.setAttribute('aria-labelledby', heading.id);
@@ -275,8 +302,55 @@ function paint(host, state) {
     for (const slot of game.slots) section.append(renderSlot(host, state, game, slot));
     body.push(section);
   }
-  body.push(live);
   host.replaceChildren(...body);
+}
+
+
+function renderProgress(documentRef, progress, title, source = 'verified Ranked runs') {
+  const meter = documentRef.createElement('progress');
+  meter.max = progress.required; meter.value = Math.min(progress.current, progress.required);
+  meter.setAttribute('aria-label', `${title}: ${progress.current} of ${progress.required} ${source}`);
+  return meter;
+}
+
+const LOOK_EFFECT = Object.freeze({
+  'hero-skin': 'Changes your hero’s colour treatment.',
+  'weapon-skin': 'Changes the colour of your held weapon and projectiles.',
+  coat: 'Changes Chikun’s coat colours.', trail: 'Changes the colours of Chikun’s particle trail.',
+  hat: 'Adds a small hat to Chikun.', 'piece-skin': 'Changes the colours of STACKED pieces.',
+  scene: 'Adds a colour grade to your chosen music world. Every music world remains available.',
+});
+
+function renderInspection(host, state, game, slot, option) {
+  const { documentRef } = state;
+  const panel = documentRef.createElement('section'); panel.className = 'unlockables-inspection';
+  panel.setAttribute('aria-labelledby', 'locker-inspection-title'); panel.dataset.state = option.status;
+  const figure = documentRef.createElement('figure'); figure.className = 'unlockables-preview';
+  if (option.swatch) figure.style.backgroundColor = option.swatch;
+  if (option.preview) {
+    const image = documentRef.createElement('img'); image.src = option.preview; image.alt = '';
+    image.loading = 'lazy'; image.decoding = 'async'; figure.append(image);
+  } else figure.append(text(documentRef, 'span', '✦', 'unlockables-default-art'));
+  figure.append(text(documentRef, 'figcaption', option.preview ? 'Reference art · colour swatch' : 'Original game look'));
+  const copy = documentRef.createElement('div'); copy.className = 'unlockables-inspection-copy';
+  copy.append(text(documentRef, 'p', `${game.title} · ${slot.label}`, 'unlockables-inspection-kicker'));
+  const title = text(documentRef, 'h3', option.title); title.id = 'locker-inspection-title'; title.tabIndex = -1;
+  copy.append(title, text(documentRef, 'p', STATUS_WORDS[option.status], 'unlockables-inspection-state'));
+  copy.append(text(documentRef, 'p', option.id ? LOOK_EFFECT[slot.slot] : 'The original look, always available.'));
+  if (option.id) {
+    copy.append(renderRequirement(host, state, game.gameId, option));
+    if (option.description) copy.append(text(documentRef, 'p', option.description, 'unlockables-goal'));
+    if (option.progress) copy.append(renderProgress(documentRef, option.progress, option.title));
+  }
+  const equip = text(documentRef, 'button', option.status === 'selected' ? 'Equipped' : option.status === 'unlocked' ? 'Equip look' : 'Locked', 'unlockables-equip');
+  equip.type = 'button'; equip.id = 'locker-equip'; equip.disabled = option.status !== 'unlocked';
+  equip.addEventListener('click', () => {
+    if (option.status !== 'unlocked' || equip.disabled) return;
+    state.gameId = game.gameId; state.inspected = { slot: slot.slot, id: option.id }; equip.disabled = true;
+    void choose(host, state, game.gameId, slot, option, 'locker-inspection-title');
+  });
+  copy.append(equip, text(documentRef, 'small', slot.note ?? 'Presentation only · no gameplay advantage', 'unlockables-inspection-note'));
+  panel.append(figure, copy); return panel;
 }
 
 function renderHeroes(documentRef, heroes) {
@@ -294,6 +368,7 @@ function renderHeroes(documentRef, heroes) {
       ? `Locked · ${hero.requirement}${hero.progress ? ` (${hero.progress.current}/${hero.progress.required})` : ''}`
       : hero.status === 'unlocked' ? 'Unlocked · choose in hero select' : 'See the hero select';
     item.append(text(documentRef, 'small', detail));
+    if (hero.progress) item.append(renderProgress(documentRef, hero.progress, hero.title, hero.requirement.includes('on this device') ? 'Ranked runs on this device' : 'verified Ranked runs'));
     list.append(item);
   }
   wrap.append(list);
@@ -333,6 +408,16 @@ function renderSlot(host, state, game, slot) {
     else swatch.dataset.default = 'true';
     label.append(swatch, text(documentRef, 'span', option.title, 'unlockables-option-title'), text(documentRef, 'span', STATUS_WORDS[option.status], 'unlockables-option-state'));
     item.append(input, label);
+    const inspect = text(documentRef, 'button', 'Inspect', 'unlockables-inspect');
+    inspect.type = 'button'; inspect.id = `${inputId}-inspect`;
+    inspect.setAttribute('aria-label', `Inspect ${option.title}`);
+    inspect.addEventListener('click', () => {
+      state.gameId = game.gameId; state.inspected = { slot: slot.slot, id: option.id };
+      paint(host, state);
+      const heading = documentRef.getElementById('locker-inspection-title');
+      heading?.scrollIntoView?.({ block: 'nearest' }); heading?.focus?.({ preventScroll: true });
+    });
+    item.append(inspect);
     if (option.status === 'locked' || option.status === 'coming-soon') item.append(renderRequirement(host, state, game.gameId, option));
     input.addEventListener('change', () => {
       if (!input.checked) return;
@@ -353,7 +438,7 @@ function renderRequirement(host, state, gameId, option) {
     return line;
   }
   if (option.achievementId && option.achievementTitle) {
-    line.append(documentRef.createTextNode('Earn '));
+    line.append(documentRef.createTextNode(['selected', 'unlocked'].includes(option.status) ? 'Unlocked by ' : 'Earn '));
     const link = documentRef.createElement('a');
     link.className = 'unlockables-achievement-link';
     link.href = '/profile';
@@ -394,10 +479,12 @@ function showAchievement(state, gameId, achievementId) {
   state.requestFrame(focus);
 }
 
-async function choose(host, state, gameId, slot, option) {
+async function choose(host, state, gameId, slot, option, focusId = null) {
   const label = `${slot.label}: ${option.title}`;
+  const store = state.store, wallet = store.snapshot().wallet;
   let result = null;
-  try { result = await state.store.select(gameId, slot.slot, option.id); } catch { result = null; }
+  try { result = await store.select(gameId, slot.slot, option.id); } catch { result = null; }
+  if (state.store !== store || store.snapshot().wallet !== wallet) return;
   if (!result?.ok) {
     state.status = result?.error === 'locked' ? `${option.title} is locked.` : 'That look could not be saved. Try again.';
   } else if (result.saved === 'wallet') {
@@ -409,6 +496,6 @@ async function choose(host, state, gameId, slot, option) {
   }
   paint(host, state);
   // Keep the keyboard where the player left it after the repaint.
-  const input = state.documentRef.getElementById?.(`unlockables-${gameId}-${slot.slot}-${option.id ?? 'default'}`);
+  const input = state.documentRef.getElementById?.(focusId ?? `unlockables-${gameId}-${slot.slot}-${option.id ?? 'default'}`);
   input?.focus?.({ preventScroll: true });
 }

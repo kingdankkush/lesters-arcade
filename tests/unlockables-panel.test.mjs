@@ -14,7 +14,7 @@ import {
 import { COSMETIC_SLOTS, UNLOCKABLES, emptyUnlocks, unlocksFromProfileResponse } from '../apps/portal/src/unlockables.mjs';
 import { buildCharacterSelectEntries, buildCharacterStatIdentityRoster, HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG } from '../apps/portal/src/hmh-character-config.mjs';
 
-const read = (path) => readFileSync(new URL(`../${path}`, import.meta.url), 'utf8');
+const read = (path) => readFileSync(new URL(`../${path}`, import.meta.url), 'utf8').replace(/\r\n/g, '\n');
 const WALLET = '0x1234567890abcdef1234567890abcdef12345678';
 
 // A minimal DOM: element tree, attributes, dataset, events and lookups.
@@ -391,4 +391,55 @@ test('the panel ships lazily, builds DOM safely, reads at 320 px and keeps phase
   const copy = JSON.stringify([buildUnlockablesPanelModel(previewSnapshot), buildUnlockablesPanelModel(hostedSnapshot({})), unlockablesNotice({ hosted: true, wallet: null }), rendered]);
   assert.doesNotMatch(copy, /\bnft\b|soulbound|minting|minted/i);
   assert.ok(UNLOCKABLES.length >= 26);
+});
+
+
+test('Locker inspection is read-only, game filtering preserves choices, and equip uses the existing store', async () => {
+  const { documentRef, app, grid } = fakeDocument(), store = fakeStore(hostedSnapshot({}));
+  const host = renderUnlockablesPanel({ store, documentRef, after: grid, app });
+  documentRef.getElementById('locker-game-chikun').dispatch('click');
+  assert.deepEqual(host.all(n => n.dataset.game && !n.hidden).map(n => n.dataset.game), ['chikun']);
+  documentRef.getElementById('unlockables-chikun-coat-chikun-coat-glacier-inspect').dispatch('click');
+  assert.equal(documentRef.activeElement.id, 'locker-inspection-title');
+  assert.equal(documentRef.activeElement.textContent, 'Glacier Coat');
+  assert.deepEqual(store.selects, [], 'inspection never equips');
+  assert.equal(documentRef.getElementById('locker-equip').disabled, false);
+  documentRef.getElementById('locker-equip').dispatch('click');
+  await new Promise(resolve => setTimeout(resolve, 0));
+  assert.deepEqual(store.selects, [['chikun', 'coat', 'chikun-coat-glacier']]);
+  assert.equal(documentRef.getElementById('locker-equip').textContent, 'Equipped');
+  assert.equal(documentRef.activeElement.id, 'locker-inspection-title');
+  documentRef.getElementById('unlockables-chikun-coat-default-inspect').dispatch('click');
+  documentRef.getElementById('locker-equip').dispatch('click');
+  await new Promise(resolve => setTimeout(resolve, 0));
+  assert.deepEqual(store.selects.at(-1), ['chikun', 'coat', null], 'original look is a real selectable fallback');
+});
+
+test('locked inspection shows exact requirement and only available verified progress', () => {
+  const { documentRef, app, grid } = fakeDocument(), store = fakeStore(hostedSnapshot({}));
+  const host = renderUnlockablesPanel({ store, documentRef, after: grid, app });
+  documentRef.getElementById('unlockables-lester-blaster-weapon-skin-hmh-weapon-veteran-inspect').dispatch('click');
+  let detail = host.all(n => n.className === 'unlockables-inspection')[0];
+  const meter = detail.all(n => n.tagName === 'PROGRESS')[0];
+  assert.deepEqual([meter.value, meter.max], [6, 25]);
+  assert.match(meter.getAttribute('aria-label'), /verified Ranked runs/);
+  assert.equal(documentRef.getElementById('locker-equip').disabled, true);
+  documentRef.getElementById('locker-equip').dispatch('click');
+  assert.deepEqual(store.selects, []);
+  documentRef.getElementById('unlockables-lester-blaster-hero-skin-hmh-hero-silver-inspect').dispatch('click');
+  detail = host.all(n => n.className === 'unlockables-inspection')[0];
+  assert.equal(detail.all(n => n.tagName === 'PROGRESS').length, 0, 'missing per-achievement progress is never invented');
+  assert.match(detail.textContent, /Earn /);
+  assert.match(detail.textContent, /Reference art/);
+});
+
+test('a late equip response cannot announce another wallet’s saved choice', async () => {
+  const { documentRef, app, grid } = fakeDocument(), store = fakeStore(hostedSnapshot({}));
+  let resolve; store.select = () => new Promise(done => { resolve = done; });
+  const host = renderUnlockablesPanel({ store, documentRef, after: grid, app });
+  documentRef.getElementById('unlockables-chikun-coat-chikun-coat-glacier-inspect').dispatch('click');
+  documentRef.getElementById('locker-equip').dispatch('click');
+  store.emit({ ...hostedSnapshot({}), wallet: '0x' + '9'.repeat(40) });
+  resolve({ ok: true, saved: 'wallet' }); await new Promise(done => setTimeout(done, 0));
+  assert.equal(host.all(n => n.getAttribute('role') === 'status')[0].textContent, '');
 });

@@ -125,9 +125,9 @@
    label is the visible, 44 px touch target. */
 .unlockables-radio {
   position: absolute;
-  inset: 0;
+  inset: 0 auto auto 0;
   width: 100%;
-  height: 100%;
+  height: 54px;
   margin: 0;
   opacity: 0;
   cursor: pointer;
@@ -284,3 +284,35 @@
     transition: none;
   }
 }
+
+
+/* Locker: one cabinet at a time, with an honest reference and explicit equip. */
+.unlockables-game[hidden]{display:none!important}
+.unlockables-overview{margin:8px 0 0;color:#e5f8ff;font-size:14px;font-weight:650}
+.unlockables-games{display:flex;flex-wrap:wrap;gap:8px}
+.unlockables-game-button,.unlockables-inspect,.unlockables-equip{font:inherit;min-height:44px;touch-action:manipulation;cursor:pointer;border:1px solid #466174;border-radius:10px;color:#eaf8ff;background:#132534;padding:10px 14px}
+.unlockables-game-button{flex:1;font-size:13px;font-weight:700}
+.unlockables-game-button[aria-pressed="true"]{color:#08222b;background:#baf2ef;border-color:#baf2ef}
+.unlockables-inspection{display:grid;grid-template-columns:minmax(130px,30%) minmax(0,1fr);gap:22px;padding:20px;border:1px solid #416775;border-radius:18px;background:linear-gradient(130deg,#163643,#101a2b 70%);overflow:hidden}
+.unlockables-preview{position:relative;display:grid;place-items:center;align-content:center;min-width:0;min-height:200px;margin:0;border:1px solid #ffffff30;border-radius:12px;background:#263b4d;overflow:hidden;isolation:isolate}
+.unlockables-preview::before{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at 50% 25%,#ffffff19,#030c1fe8);z-index:-1}
+.unlockables-preview img{display:block;width:100%;height:176px;object-fit:contain;filter:drop-shadow(0 6px 10px #0008)}
+.unlockables-preview figcaption{width:100%;padding:9px 8px;color:#e5f8ff;background:#071320cf;text-align:center;font-size:10px;line-height:1.5}
+.unlockables-default-art{font-size:76px;color:#d4faff;line-height:176px}
+.unlockables-inspection-copy{display:grid;align-content:start;gap:10px;min-width:0}
+.unlockables-inspection-copy h3{margin:0;font-size:clamp(22px,4vw,30px);line-height:1.15;color:#f4fcff}
+.unlockables-inspection-copy p{margin:0;font-size:14px;line-height:1.5;color:#d0dce6}
+.unlockables-inspection-copy .unlockables-inspection-kicker{font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:#a8c6d5}
+.unlockables-inspection-copy .unlockables-inspection-state{justify-self:start;padding:3px 9px;border:1px solid #7c95a6;border-radius:99px;font-size:11px;font-weight:750;letter-spacing:.08em;text-transform:uppercase}
+.unlockables-inspection[data-state="selected"] .unlockables-inspection-state,.unlockables-inspection[data-state="unlocked"] .unlockables-inspection-state{border-color:#a8efc6;color:#a8efc6}
+.unlockables-inspection-copy .unlockables-goal{font-size:12px;color:#aec3d2}
+.unlockables-equip{justify-self:start;min-width:140px;font-weight:750;background:#baf2ef;border-color:#baf2ef;color:#08222b}
+.unlockables-equip:disabled{cursor:default;background:#172a37;border-color:#466174;color:#c0d0d9}
+.unlockables-inspection-note{font-size:11px;color:#adc4d2;line-height:1.5}
+.unlockables-inspect{position:relative;z-index:1;padding:8px;font-size:12px;background:#13253488}
+.unlockables-card{min-height:54px}
+.unlockables-game-button:focus-visible,.unlockables-inspect:focus-visible,.unlockables-equip:focus-visible{outline:3px solid #d2fcff;outline-offset:3px}
+.unlockables-panel progress{display:block;width:100%;height:8px;accent-color:#baf2ef}
+.unlockables-achievement-link{min-height:44px;display:inline-flex;align-items:center}
+@media(max-width:540px){.unlockables-inspection{grid-template-columns:minmax(0,1fr);gap:16px;padding:16px}.unlockables-preview{min-height:150px}.unlockables-preview img{height:150px}.unlockables-default-art{line-height:130px}.unlockables-games{gap:6px}.unlockables-game-button{padding:9px 6px;font-size:11px}.unlockables-equip{width:100%}}
+@media(forced-colors:active){.unlockables-game-button[aria-pressed="true"],.unlockables-inspection-state{border:2px solid Highlight}.unlockables-inspection{border-color:CanvasText}}
