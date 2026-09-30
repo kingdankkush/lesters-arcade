@@ -1,0 +1,113 @@
+{
+  "schema": 1,
+  "sheet": "contact-sheet.png",
+  "sheetSha256": "0c658cc9bdff551394c44d1c0953fe861b867f97869dcc5ce46c65770dcd7f4c",
+  "renderer": "Blender 5.1.2 Cycles CPU, 16 samples, 360 px, orthographic 2.5 m, re-imported runtime GLB (offline inspection, not a game screenshot)",
+  "columns": [
+    "idle-front",
+    "idle-34",
+    "run-34",
+    "tell-34",
+    "attack-34",
+    "hit-34",
+    "death-34"
+  ],
+  "rows": {
+    "rug-puller": {
+      "glbSha256": "543248a842d00296ca4e5ab407ede5883ceef268439d76f1ece5a349cebf71a8",
+      "bytes": 2337664,
+      "triangles": 9588,
+      "vertices": 10039,
+      "primitives": 2,
+      "joints": 19,
+      "clips": [
+        "attack",
+        "death",
+        "hit",
+        "idle",
+        "run",
+        "tell"
+      ]
+    },
+    "pump-and-dump-bloater": {
+      "glbSha256": "555290a568b5f3175594e02ac97047033d24e98c4e2c221ee6689ace79010e58",
+      "bytes": 2059084,
+      "triangles": 9348,
+      "vertices": 7990,
+      "primitives": 2,
+      "joints": 19,
+      "clips": [
+        "attack",
+        "death",
+        "hit",
+        "idle",
+        "run",
+        "tell"
+      ]
+    },
+    "tollkeeper": {
+      "glbSha256": "7abaea058eb4604cc10ef0877d1ac72a6906505f989b5675ab5df4d9b6d735ef",
+      "bytes": 2114328,
+      "triangles": 9764,
+      "vertices": 8941,
+      "primitives": 2,
+      "joints": 19,
+      "clips": [
+        "attack",
+        "death",
+        "hit",
+        "idle",
+        "run",
+        "tell"
+      ]
+    },
+    "hodl-revenant": {
+      "glbSha256": "b45c716938739d16fd06244f2a06e577fb2cafbeef3c8b7e21e01691e40f18ce",
+      "bytes": 2396656,
+      "triangles": 12772,
+      "vertices": 21475,
+      "primitives": 2,
+      "joints": 19,
+      "clips": [
+        "attack",
+        "death",
+        "hit",
+        "idle",
+        "run",
+        "tell"
+      ]
+    },
+    "money-printer": {
+      "glbSha256": "f8e88ef8dfaa2f71077701671e731d03b67ab46f40ce0bff59e6b97a8578dedd",
+      "bytes": 2030068,
+      "triangles": 8958,
+      "vertices": 8027,
+      "primitives": 2,
+      "joints": 19,
+      "clips": [
+        "attack",
+        "death",
+        "hit",
+        "idle",
+        "run",
+        "tell"
+      ]
+    },
+    "oracle-marksman": {
+      "glbSha256": "80a435948383a772cd7ed51c1d472728d4e670dc3310c64c417f2322630fb10f",
+      "bytes": 1755868,
+      "triangles": 9156,
+      "vertices": 12529,
+      "primitives": 2,
+      "joints": 19,
+      "clips": [
+        "attack",
+        "death",
+        "hit",
+        "idle",
+        "run",
+        "tell"
+      ]
+    }
+  }
+}
