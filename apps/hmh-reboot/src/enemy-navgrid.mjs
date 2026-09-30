@@ -19,7 +19,7 @@ export const MAX_FLANK_WIDENING = 1.25;
 
 // The strictest movement limits across every ordinary archetype, so one
 // shared field is legal for all of them (gas-bomber: drop 12, ascent 48).
-const CONSERVATIVE_TRANSITION = Object.freeze({
+export const CONSERVATIVE_TRANSITION = Object.freeze({
   maxCurbHeight: 8,
   maxDropHeight: 12,
   maxAuthoredAscent: 48,
@@ -27,9 +27,9 @@ const CONSERVATIVE_TRANSITION = Object.freeze({
 
 // A cell is unwalkable when its centre sits inside a blocker inflated by a
 // typical ordinary-enemy radius, or on untraversable ground (deep water).
-const ENEMY_CLEARANCE_RADIUS = 18;
+export const ENEMY_CLEARANCE_RADIUS = 18;
 
-function pointInsideInflatedShape(shape, x, y, inflate) {
+export function pointInsideInflatedShape(shape, x, y, inflate) {
   if (shape.type === 'circle') {
     return Math.hypot(x - shape.x, y - shape.y) <= shape.radius + inflate;
   }
@@ -64,7 +64,7 @@ function pointInsideInflatedShape(shape, x, y, inflate) {
 
 // Per-build conservative broad phase. Unknown/degenerate shapes keep the exact
 // narrow-phase path; this never changes the nine sample points or blocker order.
-function navBlockerBounds(blocker) {
+export function navBlockerBounds(blocker) {
   const shape = blocker?.shape;
   const round = shape?.type === 'circle' || shape?.type === 'capsule';
   const points = shape?.type === 'circle' ? [shape] : shape?.type === 'capsule' ? [shape.a, shape.b] : shape?.vertices;
@@ -233,10 +233,16 @@ export async function createEnemyNavGridChunked({
   if (typeof now !== 'function') throw new TypeError('now must be a function');
   if (typeof scheduleYield !== 'function') throw new TypeError('scheduleYield must be a function');
   const { minX, minY, maxX, maxY } = world.bounds;
-  const blockerBounds = world.collisionBlockers.map(navBlockerBounds);
   const columns = Math.ceil((maxX - minX) / cellSize);
   const rows = Math.ceil((maxY - minY) / cellSize);
   const total = columns * rows;
+  // W4a: an authored world may carry its own precomputed grid, built by the
+  // same rules in its lazy chunk (world-v2-navgrid.mjs) and pinned
+  // byte-identical to this walk; adopting it skips the idle-sliced build.
+  const precomputed = world.navGrid;
+  if (precomputed?.cellSize === cellSize && precomputed.columns === columns && precomputed.rows === rows && precomputed.minX === minX && precomputed.minY === minY
+    && precomputed.walkable instanceof Uint8Array && precomputed.walkable.length === total && precomputed.edges instanceof Uint8Array && precomputed.edges.length === total) return precomputed;
+  const blockerBounds = world.collisionBlockers.map(navBlockerBounds);
   const walkable = new Uint8Array(total);
   const edges = new Uint8Array(total);
   const centreX = (column) => minX + (column + 0.5) * cellSize;

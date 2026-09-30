@@ -1111,7 +1111,7 @@ export function renderWorldProductionArt({ worldProduction, world, camera, view,
     if (!screenBoundsVisible(routePoints, view, performanceProfile.worldCullMargin)) continue;
     const firstNode = routeNodes[0];
     const paved = route.kind === 'main' || route.kind === 'street';
-    drawRoute(layers, routePoints, route, DISTRICT_PRODUCTION_MATERIALS[districtAt(firstNode.x).id], paved ? roadMaskGraphic : pathMaskGraphic, paved ? roadTiled : pathTiled, view);
+    drawRoute(layers, routePoints, route, DISTRICT_PRODUCTION_MATERIALS[materialKey(districtAt(firstNode.x, firstNode.y))], paved ? roadMaskGraphic : pathMaskGraphic, paved ? roadTiled : pathTiled, view);
     if (!stripPlacer || !shoulderTexture) continue;
     // Both verges of every segment. The strip's inner edge sits just inside the
     // travelled width so the surface tile covers the join.
