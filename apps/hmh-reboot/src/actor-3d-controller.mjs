@@ -2,7 +2,10 @@
 // only; its backend receives detached frozen projections, never simulation.
 import { createActor3dProjection, createActor3dPilotSession, createLiquidator3dEntries } from './actor-3d-projection.mjs';
 
-export const ACTOR3D_ENEMY_IDS = Object.freeze(['bagholder-rusher', 'forkrunner', 'liquidator-agent', 'whale-enforcer', 'gas-bomber', 'validator-cultist']);
+// Lazy chunk: the six 2.0 enemies register here (GLB + manifest under
+// hmh-actor-3d-pilot/) without touching the initial bundle or the legacy tables.
+export const ACTOR3D_ENEMY_IDS = Object.freeze(['bagholder-rusher', 'forkrunner', 'liquidator-agent', 'whale-enforcer', 'gas-bomber', 'validator-cultist',
+  'tollkeeper', 'money-printer', 'pump-and-dump-bloater', 'hodl-revenant', 'rug-puller', 'oracle-marksman']);
 
 export const ACTOR3D_QUALITY_LIMITS = Object.freeze({ low: 8, medium: 24, high: 64 });
 const actorLimit = value => {
