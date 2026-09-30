@@ -1,0 +1,153 @@
+{
+  "v": "stacked-s0c-tests-v1",
+  "recordedAt": "2026-09-30T00:21:26.328Z",
+  "scope": "Durable legality/canonical/checkpoint/old-protocol tests; no fresh performance measurement",
+  "red": {
+    "command": "--test --test-reporter=tap --test-concurrency=1 C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\tests\\stacked-maximal-priority-rotation-replay.test.mjs",
+    "exitCode": 1,
+    "tests": 4,
+    "pass": 0,
+    "fail": 4,
+    "skipped": 0,
+    "todo": 0,
+    "cancelled": 0,
+    "durationMs": 169.0715
+  },
+  "focused": {
+    "command": "--test --test-reporter=tap --test-concurrency=1 C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\tests\\stacked-maximal-priority-rotation-replay.test.mjs",
+    "exitCode": 0,
+    "tests": 4,
+    "pass": 4,
+    "fail": 0,
+    "skipped": 0,
+    "todo": 0,
+    "cancelled": 0,
+    "durationMs": 3209.7722
+  },
+  "standalone": {
+    "command": "--test --test-reporter=tap --test-concurrency=1 C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-s0c-no-git-20260929\\tests\\stacked-maximal-priority-rotation-replay.test.mjs",
+    "exitCode": 0,
+    "tests": 4,
+    "pass": 4,
+    "fail": 0,
+    "skipped": 0,
+    "todo": 0,
+    "cancelled": 0,
+    "durationMs": 3210.0646,
+    "sourceModules": 17,
+    "fixtureFiles": 2,
+    "gitPresent": false,
+    "nodeModulesPresent": false,
+    "minimalPackageJson": {
+      "private": true,
+      "type": "module"
+    }
+  },
+  "files": [
+    {
+      "path": "tests/stacked-maximal-priority-rotation-replay.test.mjs",
+      "bytes": 6206,
+      "sha256": "cd0d86cf36eb6edb12d73b51322755278900ccf9adc2714b20966d7cdf4b2eab"
+    },
+    {
+      "path": "server/verify/stacked.mjs",
+      "bytes": 4159,
+      "sha256": "9bcb1aee7ed466e799c83495307c489e7f54201b177c2691ab6d101187418493"
+    },
+    {
+      "path": "server/verify/verified-run.mjs",
+      "bytes": 5676,
+      "sha256": "1e5c0079536ab3a94ba867b205f7bde11a0bb0d7e99d7b0ec2963a51dd71bfd8"
+    },
+    {
+      "path": "apps/portal/src/ranked-identity.mjs",
+      "bytes": 12452,
+      "sha256": "225a1f2c89a2f3cad7d5ef0f7b732ffae0347acd7d6c7a156d7227e60acd8056"
+    },
+    {
+      "path": "apps/portal/src/session-seed.mjs",
+      "bytes": 2516,
+      "sha256": "4602de3e82949c72b635666225c877beb71b6c02e023ab735e91877c181f2c80"
+    },
+    {
+      "path": "apps/portal/src/session-integrity.mjs",
+      "bytes": 5794,
+      "sha256": "26785093fba615224ddfcc85ec6e3094c6e2e8a5b48f932da34bcbc427136157"
+    },
+    {
+      "path": "apps/portal/src/achievements/stats.mjs",
+      "bytes": 11373,
+      "sha256": "704f8ffefec2f9572243f98e85e71a67f0c4afc64be4fc9225da2dbd4baa13d6"
+    },
+    {
+      "path": "apps/portal/src/achievements/hmh.mjs",
+      "bytes": 13562,
+      "sha256": "044a813a78829bf0c27eff8a94cefaf94dd7af3a1802e13624b79c6c79916751"
+    },
+    {
+      "path": "apps/portal/src/achievements/entry.mjs",
+      "bytes": 5402,
+      "sha256": "a4e55551ae0b7aca76bda548659155ab22294e049fdcd02bf9462f224ce8b98e"
+    },
+    {
+      "path": "apps/portal/src/stacked-sim.mjs",
+      "bytes": 52630,
+      "sha256": "5b5fe17c237389bd48834b757166c8afc0b58c801246806275d25fa16ae82114"
+    },
+    {
+      "path": "apps/portal/src/stacked-contracts.mjs",
+      "bytes": 6193,
+      "sha256": "5ee0d079f2688b02217a60f4695e41944504b0759e87004da6a213e926be9ec6"
+    },
+    {
+      "path": "apps/portal/src/seeded-rng.mjs",
+      "bytes": 5300,
+      "sha256": "b6eed9c993e1efd38871c14d50b580ea15133fdcef020e81ffe7051e24b3ebc7"
+    },
+    {
+      "path": "apps/portal/src/chikun-course-regions.mjs",
+      "bytes": 8367,
+      "sha256": "0d43a3b3f8a2bf06db2c8e381290376696a9270e3f5d0d101d707720faf6941a"
+    },
+    {
+      "path": "apps/portal/src/chikun-ground-course.mjs",
+      "bytes": 9192,
+      "sha256": "a29626fe35d1d92979c5950ef0cd17efdfe2340ba98c5a3a7a772403c32fb7ca"
+    },
+    {
+      "path": "sdk/hmh-run-summary-schema-v7.mjs",
+      "bytes": 16461,
+      "sha256": "81fd2c2fc109bd0856ba6acff19f1c379f5835b72365e57abf6a762cdc61ed98"
+    },
+    {
+      "path": "sdk/hmh-run-summary-schema.mjs",
+      "bytes": 17539,
+      "sha256": "c5428b534378cd85fd71662409657bea652cf8737755513e5e573f4a0dcfa47a"
+    },
+    {
+      "path": "apps/portal/src/stacked-evidence-transport.mjs",
+      "bytes": 6645,
+      "sha256": "059afcbf2801e7d34c946101d41ddd0c6bfc06508743076c57d8704ab9ab2a84"
+    },
+    {
+      "path": "tests/fixtures/stacked-maximal-priority-rotation-run.json",
+      "bytes": 77895,
+      "sha256": "5b6091ba5ab57a5a190befa914f570c3bf5ea1711cf3dedf2d0ea898f644a1c5"
+    },
+    {
+      "path": "tests/fixtures/stacked-maximal-priority-rotation-run.sic1.gz",
+      "bytes": 54663,
+      "sha256": "7ca81104a46f33f6003eb56f58112933eaa50cd9dcdfb33329f472d851b79bef"
+    }
+  ],
+  "exactCaptureNormalization": true,
+  "nativeRecordedSourceArchivesMatch": true,
+  "currentEngineAndServerSourcesMatchCapture": true,
+  "exclusions": [
+    "Browser/phone",
+    "Long-run worker",
+    "Production CPU",
+    "Global maximum-encoding inputs",
+    "Full release/build gate"
+  ]
+}

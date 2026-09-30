@@ -1,0 +1,30 @@
+// Scratch-only first-use sample for an actually verified distinct-input fixture.
+import assert from 'node:assert/strict';
+import { performance } from 'node:perf_hooks';
+import { cpus, totalmem } from 'node:os';
+const source = new URL('file:///C:/Users/just_/lesters-arcade-wt/200-stacked-replay/');
+const { replayStackedRun } = await import(new URL('apps/portal/src/stacked-sim.mjs', source));
+const { decodeStackedEvidence, verifyStackedRun } = await import(new URL('server/verify/stacked.mjs', source));
+const { loadMaximalFixture, assertVerifiedFixture, STACKED_BENCHMARK_PHASES } = await import(new URL('scripts/lib/stacked-replay-benchmark.mjs', source));
+const [phase, fixtureRoot] = process.argv.slice(2);
+if (!STACKED_BENCHMARK_PHASES.includes(phase) || !fixtureRoot) throw new TypeError('require phase and previously accepted maximal fixture root');
+const { fixture, bytes, evidence } = loadMaximalFixture(fixtureRoot);
+assert.equal(fixture.provenance.oldProtocolVerifierAccepted, true);
+assert.equal(fixture.provenance.maximalDurationAccepted, true);
+const beforeMemory = process.memoryUsage();
+const cpuStart = process.threadCpuUsage();
+const start = performance.now();
+const result = phase === 'decode' ? decodeStackedEvidence(evidence) : phase === 'replay' ? replayStackedRun(bytes, fixture.replayOptions)
+  : await verifyStackedRun({ identity: fixture.identity, evidence, nowMs: fixture.verifyAtMs });
+const wallMs = performance.now() - start;
+const cpu = process.threadCpuUsage(cpuStart);
+const afterMemory = process.memoryUsage();
+if (phase === 'decode') { assert.equal(result.ok, true); assert.deepEqual(Buffer.from(result.bytes), bytes); }
+else if (phase === 'replay') assert.deepEqual(result, fixture.expectedTuple);
+else assertVerifiedFixture(result, fixture, evidence);
+process.stdout.write(JSON.stringify({ phase, ok: true, wallMs, cpuMs: (cpu.user + cpu.system) / 1000, cpuClock: 'thread',
+  memoryDelta: Object.fromEntries(Object.keys(beforeMemory).map(key => [key, afterMemory[key] - beforeMemory[key]])),
+  environment: { node: process.version, platform: process.platform, arch: process.arch, cpu: cpus()[0]?.model ?? null, logicalCpus: cpus().length, totalMemoryBytes: totalmem() },
+  ticks: fixture.expectedTuple.ticks, evidenceBytes: bytes.length, evidenceSha256: fixture.evidence.sha256,
+  scope: phase === 'decode' ? 'actual server base64/header decode; private SIC1 parse included in replay' : phase === 'replay' ? 'SIC1 parse + headless replay + terminal tuple/hash' : 'complete per-game verifier; authentication, API/network and settlement excluded',
+  exclusions: ['process startup', 'module imports', 'fixture disk read/decompression', 'assertions', 'auth/session-ticket binding', 'API/network/settlement', 'browser/phone', 'maximum raw-encoding guarantee'] }) + '\n');

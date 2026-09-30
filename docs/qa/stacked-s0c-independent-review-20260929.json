@@ -1,0 +1,40 @@
+{
+  "scope": "Independent source and saved-evidence review only; no repeated simulation, decoder acceptance, timing or production certification.",
+  "passed": true,
+  "producerSha256": "9458141f30c035f8afc56663b76c905e8bdf5b9352e4b1072fb9345d26f5cc9a",
+  "evidenceSha256": "9ae11c4d47455bf92aed1424e9cd730ece503cf3f1f5fa2e00a18f9affb95ca4",
+  "evidenceBytes": 757272,
+  "checkpointCount": 12,
+  "observations": 21,
+  "phases": {
+    "decode": {
+      "count": 7,
+      "p50Ms": 56.6795,
+      "p95Ms": 58.7797,
+      "p99Ms": 58.7797,
+      "maxMs": 58.7797
+    },
+    "replay": {
+      "count": 7,
+      "p50Ms": 176.81220000000002,
+      "p95Ms": 181.8619,
+      "p99Ms": 181.8619,
+      "maxMs": 181.8619
+    },
+    "verify": {
+      "count": 7,
+      "p50Ms": 236.1341,
+      "p95Ms": 242.78480000000002,
+      "p99Ms": 242.78480000000002,
+      "maxMs": 242.78480000000002
+    }
+  },
+  "localVerifyMarginMs": 7.215199999999982,
+  "exclusions": [
+    "global maximum legal encoding",
+    "production CPU/cold import",
+    "browser worker",
+    "physical phone",
+    "independent replay rerun"
+  ]
+}

@@ -1,0 +1,113 @@
+// Scratch diagnostic only. Distinct actual inputs; no shipping source edits.
+import assert from 'node:assert/strict';
+import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
+import { createHash } from 'node:crypto';
+import { gzipSync } from 'node:zlib';
+import { performance } from 'node:perf_hooks';
+import { resolve, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const root = new URL('file:///C:/Users/just_/lesters-arcade-wt/200-stacked-replay/');
+const sim = await import(new URL('apps/portal/src/stacked-sim.mjs', root));
+const { STACKED_MAX_TICKS, STACKED_ACTIONS } = await import(new URL('apps/portal/src/stacked-contracts.mjs', root));
+const { createStackedSoakPilot } = await import(new URL('apps/stacked/src/dev/soak-pilot.mjs', root));
+const { createCanonicalSessionIdentity } = await import(new URL('apps/portal/src/session-integrity.mjs', root));
+const { verifyStackedRun } = await import(new URL('server/verify/stacked.mjs', root));
+
+const options = { limitTicks: 10_800, maxWallSeconds: 300, token: null, out: null };
+for (const arg of process.argv.slice(2)) {
+  const match = /^--(limit-ticks|max-wall-seconds|owned-lock-token|out)=(.+)$/.exec(arg);
+  if (!match) throw new TypeError(`invalid argument: ${arg}`);
+  const [, key, value] = match;
+  if (key === 'owned-lock-token') options.token = value;
+  else if (key === 'out') options.out = resolve(value);
+  else {
+    const number = Number(value);
+    if (!Number.isInteger(number) || number <= 0) throw new TypeError(`invalid ${key}`);
+    if (key === 'limit-ticks') options.limitTicks = number;
+    else options.maxWallSeconds = number;
+  }
+}
+if (options.limitTicks > STACKED_MAX_TICKS || options.maxWallSeconds > 600 || !options.out || !options.token) throw new TypeError('require bounded ticks/wall duration, owned lock token and output folder');
+const owner = JSON.parse(readFileSync(new URL('../.locks/heavy.lock/owner.json', root), 'utf8'));
+if (owner.token !== options.token) throw new Error('shared heavy lock token mismatch');
+const hash = value => createHash('sha256').update(value).digest('hex');
+const sourcePaths = ['apps/portal/src/stacked-sim.mjs', 'apps/portal/src/stacked-contracts.mjs', 'apps/portal/src/seeded-rng.mjs', 'apps/stacked/src/dev/soak-pilot.mjs', 'server/verify/stacked.mjs', 'server/verify/verified-run.mjs'];
+const sourceHashes = Object.fromEntries(sourcePaths.map(path => [path, hash(readFileSync(new URL(path, root)))]));
+sourceHashes['scratch/stacked-priority-rotation-probe.mjs'] = hash(readFileSync(fileURLToPath(import.meta.url)));
+const old = JSON.parse(readFileSync(new URL('tests/fixtures/ranked/stacked-15min.json', root), 'utf8'));
+const identity = await createCanonicalSessionIdentity(old.body.identity);
+const replayOptions = { expectedSeed: identity.seed, maxTicks: STACKED_MAX_TICKS,
+  config: { startLevel: 1, buildHash: identity.buildHash, seasonId: identity.seasonId } };
+const runtime = sim.createStackedRuntime({ seed: identity.seed, maxTicks: STACKED_MAX_TICKS, config: replayOptions.config });
+const recorder = sim.createStackedInputRecorder({ seed: identity.seed });
+const pilot = createStackedSoakPilot({ mode: 'free' });
+const action = Object.fromEntries(STACKED_ACTIONS.map((name, index) => [name, 1 << index]));
+const checkpointTicks = new Set([0, 60, 600, 10_800, 25_200, 43_200, 64_800, 90_000, 144_000, 216_000, 324_000, STACKED_MAX_TICKS, options.limitTicks]);
+const checkpoints = [];
+const capture = () => { const snapshot = runtime.snapshot(); checkpoints.push({ tick: snapshot.tick, snapshot,
+  stateHash: runtime.stateHash(), stateBytesBase64: Buffer.from(sim.stackedRuntimeStateBytes(runtime)).toString('base64') }); };
+capture();
+let changedInputTicks = 0, multiBitTransitionCount = 0, previousMask = 0;
+const maskCounts = {};
+const start = performance.now();
+while (!runtime.terminal && recorder.tick < options.limitTicks) {
+  if (performance.now() - start > options.maxWallSeconds * 1000) throw new Error('bounded generation wall duration exceeded; no terminal or acceptance claimed');
+  const state = runtime.snapshot();
+  const planned = pilot.sample(state);
+  // This is a DISTINCT input mask. Only actual decoder/replay/verifier outcomes
+  // can establish acceptance. All eight bits have existing gameplay meanings.
+  let mask = (planned & action.hardDrop) !== 0 ? planned | action.softDrop : planned;
+  // Add concurrent real lower-priority rotation controls. Actual uninterrupted
+  // recording and terminal replay/verifier acceptance establish legality;
+  // source priority alone is never represented as same-state proof.
+  if ((planned & action.rotateCCW) !== 0) mask |= action.rotateCW | action.rotate180;
+  else if ((planned & action.rotateCW) !== 0) mask |= action.rotate180;
+  if (mask !== planned) changedInputTicks += 1;
+  const xor = mask ^ previousMask;
+  if (xor !== 0 && (xor & (xor - 1)) !== 0) multiBitTransitionCount += 1;
+  previousMask = mask;
+  maskCounts[mask] = (maskCounts[mask] ?? 0) + 1;
+  recorder.sample(recorder.tick + 1, mask);
+  runtime.step(recorder.commit());
+  if (checkpointTicks.has(recorder.tick)) capture();
+  if (recorder.tick % 10_800 === 0) process.stdout.write(JSON.stringify({ tick: recorder.tick, requestedTicks: options.limitTicks, elapsedSeconds: (performance.now() - start) / 1000 }) + '\n');
+}
+if (checkpoints.at(-1).tick !== recorder.tick) capture();
+const bytes = recorder.encode();
+const decoded = sim.decodeSic1(bytes);
+assert.equal(decoded.totalTicks, recorder.tick);
+assert.equal(decoded.seed, identity.seed);
+const report = { v: 'stacked-priority-rotation-distinct-run-diagnostic-v1', generatedAt: new Date().toISOString(), node: process.version,
+  method: 'Actual existing Free-only pilot reacts to actual unchanged runtime snapshots. SoftDrop is added to pilot HardDrop masks; rotate180 accompanies rotateCW, and rotateCW plus rotate180 accompany rotateCCW. These are distinct concurrent real inputs. No resets, reseeds, state edits, skipped ticks, rule/config override or padded encoding.',
+  unchangedRuntimeMaxTicks: STACKED_MAX_TICKS, requestedTicks: options.limitTicks, consumedTicks: recorder.tick,
+  continuous: true, changedInputTicks, multiBitTransitionCount, maskCounts, sourceHashes,
+  evidenceBytes: bytes.length, evidenceSha256: hash(bytes), actualPublicDecoderAccepted: true,
+  terminal: runtime.terminal, replayAccepted: false, oldProtocolVerifierAccepted: false, maximalDurationAccepted: false,
+  elapsedSeconds: (performance.now() - start) / 1000,
+  exclusions: ['human run', 'production server', 'browser/phone acceptance', 'maximum raw-encoding headroom', 'timing gate'] };
+mkdirSync(options.out, { recursive: true });
+if (runtime.terminal) {
+  const expectedTuple = runtime.result();
+  assert.deepEqual(sim.replayStackedRun(bytes, replayOptions), expectedTuple);
+  report.replayAccepted = true;
+  report.terminalTuple = expectedTuple;
+  const evidence = { encoding: 'stacked-sic1+base64', sic1: Buffer.from(bytes).toString('base64'), startLevel: 1 };
+  const verified = await verifyStackedRun({ identity, evidence, nowMs: old.verifyAtMs });
+  assert.equal(verified.ok, true, JSON.stringify(verified));
+  report.oldProtocolVerifierAccepted = true;
+  report.maximalDurationAccepted = expectedTuple.ticks === STACKED_MAX_TICKS && expectedTuple.terminalReason === 'tick-ceiling';
+  const { text, ...metadata } = verified.evidence;
+  assert.equal(text, evidence.sic1);
+  const compressed = gzipSync(bytes, { level: 9 });
+  const fixture = { v: report.maximalDurationAccepted ? 'stacked-maximal-fixture-v1' : 'stacked-distinct-input-short-terminal-fixture-v1', provenance: { ...report, humanRun: false, historicalEvidenceRecovered: false },
+    identity, verifyAtMs: old.verifyAtMs, replayOptions,
+    evidence: { file: 'stacked-maximal-run.sic1.gz', compression: 'gzip', bytes: bytes.length, sha256: hash(bytes), compressedBytes: compressed.length, compressedSha256: hash(compressed) },
+    expectedTuple, checkpoints, expectedVerified: { ...verified, evidence: metadata } };
+  const fixtureDir = join(options.out, 'tests', 'fixtures');
+  mkdirSync(fixtureDir, { recursive: true });
+  writeFileSync(join(fixtureDir, 'stacked-maximal-run.sic1.gz'), compressed, { flag: 'wx' });
+  writeFileSync(join(fixtureDir, 'stacked-maximal-run.json'), JSON.stringify(fixture, null, 2) + '\n', { flag: 'wx' });
+} else report.note = 'Nonterminal prefix only. Runtime ceiling stayed unchanged. No complete replay or verifier acceptance claimed.';
+writeFileSync(join(options.out, 'probe-report.json'), JSON.stringify(report, null, 2) + '\n', { flag: 'wx' });
+process.stdout.write(JSON.stringify(report) + '\n');

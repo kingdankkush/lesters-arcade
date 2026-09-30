@@ -43,6 +43,7 @@ const NODE_CHECK_FILES = [
   'scripts/lib/hmh-world-size-fixtures.mjs',
   'tests/hmh-world-size-diagnostics.test.mjs',
   'tests/stacked-maximal-multibit-replay.test.mjs',
+  'tests/stacked-maximal-priority-rotation-replay.test.mjs',
   'scripts/hmh-perf-crowd-bench.mjs',
   'scripts/lib/hmh-perf-analysis.mjs',
   'tests/hmh-perf-crowd-bench.test.mjs',
