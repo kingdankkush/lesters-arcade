@@ -1,0 +1,21 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import { createHash } from 'node:crypto';
+const repo='C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0';
+const roots=['tests/hmh-greybox-world.test.mjs','tests/hmh-greybox-closed-masses.test.mjs','tests/hmh-greybox-kit-polygon-contract.test.mjs','tests/hmh-greybox-meadows-flow.test.mjs'];
+const sources={},edges=[];
+const sha=body=>createHash('sha256').update(body).digest('hex');
+function visit(file){
+  if(sources[file])return;const bytes=fs.readFileSync(path.join(repo,file));sources[file]={bytes:bytes.length,sha256:sha(bytes)};
+  const text=bytes.toString('utf8');
+  if(/\bimport\s*\(\s*(?!['"\s])/.test(text))throw new Error(`undeclared computed import:${file}`);
+  for(const match of text.matchAll(/(?:\bfrom\s*|\bimport\s*\()\s*['"]([^'"]+)['"]/g)){
+    const specifier=match[1];if(specifier.startsWith('node:'))continue;if(!specifier.startsWith('.'))throw new Error(`undeclared package:${specifier}`);
+    const resolved=path.relative(repo,path.resolve(repo,path.dirname(file),specifier)).replaceAll('\\','/');
+    if(resolved.startsWith('../'))throw new Error('source closure escaped own checkout');edges.push({file,specifier,resolved});visit(resolved);
+  }
+}
+roots.forEach(visit);
+const manifest={schema:'world-meadows-source-copy-binding-v1',roots,sources,edges,protectedFiles:Object.fromEntries(['apps/hmh-reboot/src/level-one-world.mjs','apps/hmh-reboot/src/enemy-navgrid.mjs','apps/hmh-reboot/src/elevation.mjs','apps/hmh-reboot/src/collision.mjs','apps/hmh-reboot/src/movement.mjs','apps/hmh-reboot/src/main.mjs','scripts/lib/hmh-greybox-layout-check.mjs'].map(file=>[file,sha(fs.readFileSync(path.join(repo,file)))])),harness:Object.fromEntries(['work/owned-windows-child.mjs','work/world-w1b-diagnostic.mjs'].map(file=>[file,sha(fs.readFileSync(file))]))};
+fs.writeFileSync('work/world-meadows-green-bindings.json',JSON.stringify(manifest,null,2));
+console.log(JSON.stringify({sources:Object.keys(sources).length,manifestSha256:sha(fs.readFileSync('work/world-meadows-green-bindings.json'))}));

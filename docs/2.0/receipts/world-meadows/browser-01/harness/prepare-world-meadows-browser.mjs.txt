@@ -1,0 +1,44 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import assert from 'node:assert/strict';
+import {createHash} from 'node:crypto';
+import {createRequire} from 'node:module';
+const repo='C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0';
+const output=path.resolve('work/world-meadows-browser-bindings-02.json');
+assert.equal(fs.existsSync(output),false,'binding preparation never silently overwrites a reviewed identity');
+const hash=bytes=>createHash('sha256').update(bytes).digest('hex');
+const item=file=>{const bytes=fs.readFileSync(file);return{bytes:bytes.length,sha256:hash(bytes)};};
+const {parse}=createRequire(path.join(repo,'package.json'))('acorn');
+const roots=['apps/hmh-reboot/src/dev/greybox-entry.mjs','scripts/build-hmh-greybox-preview.mjs','tests/hmh-greybox-world.test.mjs','tests/hmh-greybox-closed-masses.test.mjs','tests/hmh-greybox-playtest.test.mjs','tests/hmh-greybox-kit-polygon-contract.test.mjs','tests/hmh-greybox-meadows-flow.test.mjs'];
+const manifest={schema:'world-meadows-preview-browser-binding-v1',repo,scope:'Source-only exact local Meadows preview closure and declared esbuild/Playwright dependencies. No production build, browser, performance or owner approval implied.',roots,sources:{},edges:[],assets:{},dependencies:{},harness:{},protectedFiles:{}};
+function visit(relative){
+  if(manifest.sources[relative])return;const file=path.resolve(repo,relative);assert.ok(file.startsWith(repo+path.sep));
+  manifest.sources[relative]=item(file);const text=fs.readFileSync(file,'utf8'),imports=[];
+  function walk(node){if(!node||typeof node!=='object')return;if(['ImportDeclaration','ExportNamedDeclaration','ExportAllDeclaration'].includes(node.type)&&node.source)imports.push(node.source.value);if(node.type==='ImportExpression'){assert.equal(typeof node.source.value,'string',`undeclared computed import:${relative}`);imports.push(node.source.value);}for(const child of Object.values(node)){if(Array.isArray(child))child.forEach(walk);else if(child&&typeof child==='object')walk(child);}}
+  walk(parse(text,{ecmaVersion:'latest',sourceType:'module'}));
+  for(const specifier of imports){if(specifier.startsWith('node:')||relative==='scripts/build-hmh-greybox-preview.mjs'&&specifier==='esbuild')continue;
+    assert.ok(specifier.startsWith('.'),`undeclared package import:${relative}:${specifier}`);
+    const target=path.relative(repo,path.resolve(path.dirname(file),specifier)).replaceAll('\\','/');assert.ok(!target.startsWith('../'));manifest.edges.push({file:relative,specifier,target});visit(target);
+  }
+}
+roots.forEach(visit);
+for(const relative of ['apps/hmh-reboot/src/dev/greybox-preview.css','package.json','package-lock.json'])manifest.sources[relative]=item(path.join(repo,relative));
+const protectedExpected={
+  'apps/hmh-reboot/src/level-one-world.mjs':'173d43a2718919dc93a5c9e2c5b061a1cb1821fc6969d9f9bd7c4f5d435c69a1',
+  'apps/hmh-reboot/src/enemy-navgrid.mjs':'da338be023aeeaadf0d5eb00a7ceef0adbd82e3ab7eb1b833fe7171445f595c3',
+  'apps/hmh-reboot/src/elevation.mjs':'afab7fb53ba657f13f1646d533909ae68544754c1de24ccef786ee156a57c4ea',
+  'apps/hmh-reboot/src/collision.mjs':'94a90d4a68c9e66b54ff0332e8cf60aaeaff06c02734aed07a3e420e7eb52593',
+  'apps/hmh-reboot/src/movement.mjs':'7fd15d97e91f67fda97b0d0c59b7a128400e4db8494f8b9d7c2fc570cc774480',
+  'apps/hmh-reboot/src/main.mjs':'389e6f9a85c123eeebd3adcfa9a78542165e68b4446b83d9d89be90df7e658a1',
+  'scripts/lib/hmh-greybox-layout-check.mjs':'7296aaf2767d5d77d759c7b7a3c9757dc931ba98e1db126436e11525533fb55e'
+};
+for(const[relative,expected]of Object.entries(protectedExpected)){manifest.protectedFiles[relative]=item(path.join(repo,relative));assert.equal(manifest.protectedFiles[relative].sha256,expected,relative);}
+for(const suffix of ['json','webp']){const relative=`apps/portal/assets/generated/hmh-reboot-production-heroes/lit-commando/lit-commando-production-pilot-atlas.${suffix}`;manifest.assets[relative]=item(path.join(repo,relative));}
+function tree(dir){for(const entry of fs.readdirSync(dir,{withFileTypes:true})){const file=path.join(dir,entry.name);if(entry.isDirectory())tree(file);else{assert.ok(entry.isFile()&&!entry.isSymbolicLink(),`unclassified dependency:${file}`);manifest.dependencies[path.resolve(file)]=item(file);}}}
+for(const name of ['esbuild','@esbuild/win32-x64','acorn'])tree(path.join(repo,'node_modules',name));
+for(const name of ['playwright','playwright-core'])tree(path.join(repo,'benchmarks/hmh-engine-bakeoff/node_modules',name));
+for(const relative of ['work/hmh-greybox-meadows-browser-smoke.mjs','work/owned-windows-preview-child.mjs','work/prepare-world-meadows-browser.mjs'])manifest.harness[path.resolve(relative)]=item(path.resolve(relative));
+manifest.node={executable:process.execPath,version:process.version,...item(process.execPath)};
+manifest.chrome={executable:'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',...item('C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe')};
+fs.writeFileSync(output,JSON.stringify(manifest,null,2));
+console.log(JSON.stringify({output,sha256:hash(fs.readFileSync(output)),sources:Object.keys(manifest.sources).length,protected:Object.keys(manifest.protectedFiles).length,assets:Object.keys(manifest.assets).length,dependencies:Object.keys(manifest.dependencies).length,harness:Object.keys(manifest.harness).length,sourceOnly:true}));

@@ -1,0 +1,150 @@
+{
+  "schema": "world-meadows-two-scoped-parses-v1",
+  "scope": "Two source parses and exact single registrations only. No target tests, nav, build, browser, performance or acceptance.",
+  "passed": true,
+  "before": {
+    "apps/hmh-reboot/src/dev/greybox-meadows.mjs": {
+      "bytes": 3661,
+      "sha256": "7d69ab91dd7e678af19b14b296d7e977e6ed7fe619a910d9ce9c93f2ed33516e"
+    },
+    "tests/hmh-greybox-meadows-flow.test.mjs": {
+      "bytes": 4638,
+      "sha256": "9a504bb2a95d76cc77d0206c1b7e6c4924a5b6256b2ab88331554c06b364f77f"
+    },
+    "scripts/syntax-check.mjs": {
+      "bytes": 64150,
+      "sha256": "0332665155d1c4fa04491abd1e50331545514bbaa8796f22d7f2a8b9568521a7"
+    },
+    "apps/hmh-reboot/src/level-one-world.mjs": {
+      "bytes": 36585,
+      "sha256": "173d43a2718919dc93a5c9e2c5b061a1cb1821fc6969d9f9bd7c4f5d435c69a1"
+    },
+    "apps/hmh-reboot/src/enemy-navgrid.mjs": {
+      "bytes": 30791,
+      "sha256": "da338be023aeeaadf0d5eb00a7ceef0adbd82e3ab7eb1b833fe7171445f595c3"
+    },
+    "apps/hmh-reboot/src/elevation.mjs": {
+      "bytes": 19061,
+      "sha256": "afab7fb53ba657f13f1646d533909ae68544754c1de24ccef786ee156a57c4ea"
+    },
+    "apps/hmh-reboot/src/collision.mjs": {
+      "bytes": 18604,
+      "sha256": "94a90d4a68c9e66b54ff0332e8cf60aaeaff06c02734aed07a3e420e7eb52593"
+    },
+    "apps/hmh-reboot/src/movement.mjs": {
+      "bytes": 8122,
+      "sha256": "7fd15d97e91f67fda97b0d0c59b7a128400e4db8494f8b9d7c2fc570cc774480"
+    },
+    "apps/hmh-reboot/src/main.mjs": {
+      "bytes": 325923,
+      "sha256": "389e6f9a85c123eeebd3adcfa9a78542165e68b4446b83d9d89be90df7e658a1"
+    },
+    "scripts/lib/hmh-greybox-layout-check.mjs": {
+      "bytes": 5996,
+      "sha256": "7296aaf2767d5d77d759c7b7a3c9757dc931ba98e1db126436e11525533fb55e"
+    }
+  },
+  "after": {
+    "apps/hmh-reboot/src/dev/greybox-meadows.mjs": {
+      "bytes": 3661,
+      "sha256": "7d69ab91dd7e678af19b14b296d7e977e6ed7fe619a910d9ce9c93f2ed33516e"
+    },
+    "tests/hmh-greybox-meadows-flow.test.mjs": {
+      "bytes": 4638,
+      "sha256": "9a504bb2a95d76cc77d0206c1b7e6c4924a5b6256b2ab88331554c06b364f77f"
+    },
+    "scripts/syntax-check.mjs": {
+      "bytes": 64150,
+      "sha256": "0332665155d1c4fa04491abd1e50331545514bbaa8796f22d7f2a8b9568521a7"
+    },
+    "apps/hmh-reboot/src/level-one-world.mjs": {
+      "bytes": 36585,
+      "sha256": "173d43a2718919dc93a5c9e2c5b061a1cb1821fc6969d9f9bd7c4f5d435c69a1"
+    },
+    "apps/hmh-reboot/src/enemy-navgrid.mjs": {
+      "bytes": 30791,
+      "sha256": "da338be023aeeaadf0d5eb00a7ceef0adbd82e3ab7eb1b833fe7171445f595c3"
+    },
+    "apps/hmh-reboot/src/elevation.mjs": {
+      "bytes": 19061,
+      "sha256": "afab7fb53ba657f13f1646d533909ae68544754c1de24ccef786ee156a57c4ea"
+    },
+    "apps/hmh-reboot/src/collision.mjs": {
+      "bytes": 18604,
+      "sha256": "94a90d4a68c9e66b54ff0332e8cf60aaeaff06c02734aed07a3e420e7eb52593"
+    },
+    "apps/hmh-reboot/src/movement.mjs": {
+      "bytes": 8122,
+      "sha256": "7fd15d97e91f67fda97b0d0c59b7a128400e4db8494f8b9d7c2fc570cc774480"
+    },
+    "apps/hmh-reboot/src/main.mjs": {
+      "bytes": 325923,
+      "sha256": "389e6f9a85c123eeebd3adcfa9a78542165e68b4446b83d9d89be90df7e658a1"
+    },
+    "scripts/lib/hmh-greybox-layout-check.mjs": {
+      "bytes": 5996,
+      "sha256": "7296aaf2767d5d77d759c7b7a3c9757dc931ba98e1db126436e11525533fb55e"
+    }
+  },
+  "commands": [
+    {
+      "file": "apps/hmh-reboot/src/dev/greybox-meadows.mjs",
+      "command": {
+        "program": "C:\\Program Files\\nodejs\\node.exe",
+        "args": [
+          "--check",
+          "apps/hmh-reboot/src/dev/greybox-meadows.mjs"
+        ],
+        "cwd": "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0",
+        "startedAt": "2026-09-30T07:24:06.016Z",
+        "stdout": "",
+        "stderr": "",
+        "watchdogMs": 10000,
+        "watchdogTriggered": false,
+        "spawnError": null,
+        "treeStop": null,
+        "shutdownCloseDeadlineMs": 20000,
+        "childClosureConfirmed": true,
+        "outputLimitTriggered": false,
+        "spawnedPid": 41148,
+        "exitCode": 0,
+        "signal": null,
+        "closeObservedAt": "2026-09-30T07:24:06.106Z",
+        "finishedAt": "2026-09-30T07:24:06.106Z",
+        "wholeChildWallMs": 85.81819999999999,
+        "normalExit": true
+      }
+    },
+    {
+      "file": "tests/hmh-greybox-meadows-flow.test.mjs",
+      "command": {
+        "program": "C:\\Program Files\\nodejs\\node.exe",
+        "args": [
+          "--check",
+          "tests/hmh-greybox-meadows-flow.test.mjs"
+        ],
+        "cwd": "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0",
+        "startedAt": "2026-09-30T07:24:06.109Z",
+        "stdout": "",
+        "stderr": "",
+        "watchdogMs": 10000,
+        "watchdogTriggered": false,
+        "spawnError": null,
+        "treeStop": null,
+        "shutdownCloseDeadlineMs": 20000,
+        "childClosureConfirmed": true,
+        "outputLimitTriggered": false,
+        "spawnedPid": 33276,
+        "exitCode": 0,
+        "signal": null,
+        "closeObservedAt": "2026-09-30T07:24:06.192Z",
+        "finishedAt": "2026-09-30T07:24:06.192Z",
+        "wholeChildWallMs": 83.07069999999999,
+        "normalExit": true
+      }
+    }
+  ],
+  "errors": [],
+  "markerRetainedForUnconfirmedShutdown": false,
+  "markerReleased": true
+}

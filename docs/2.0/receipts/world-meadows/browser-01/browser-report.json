@@ -1,0 +1,3573 @@
+{
+  "schema": "hmh-greybox-meadows-native-browser-v1",
+  "scope": "One local Meadows navigation authoring slice in Walk view. Actual keyboard/touch controls and unchanged collision/ground, no clock replacement or state injection. Windows Chrome desktop/phone framing proxy, not physical phone, FPS, full simulation, combat/mission/cover/climb, W3/verifier or owner greybox approval.",
+  "passed": true,
+  "viewports": [
+    {
+      "viewport": {
+        "name": "desktop",
+        "width": 1280,
+        "height": 800,
+        "deviceScaleFactor": 1,
+        "isMobile": false,
+        "hasTouch": false
+      },
+      "captures": [
+        {
+          "name": "desktop-start",
+          "basis": "Actual initial localFree spawn, no jump",
+          "path": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-meadows-preview-browser-20260930-01\\browser\\desktop-start.png",
+          "bytes": 33967,
+          "sha256": "92af7e50f2cf252c6ff8dd97823d231e8ff12380abc33f092d7211d95331327e",
+          "snapshot": {
+            "access": {
+              "allowed": true,
+              "reason": "local-free-navigation",
+              "officialRun": false,
+              "rankedEligible": false
+            },
+            "phase": "ready",
+            "disposed": false,
+            "failure": null,
+            "cleanupFailure": null,
+            "playtest": {
+              "mapId": "visual-overhaul-greybox-v1",
+              "view": {
+                "tick": 11,
+                "x": 12500,
+                "y": 6700,
+                "groundZ": 0,
+                "vx": 0,
+                "vy": 0,
+                "locomotion": "idle",
+                "legDirection": 0,
+                "torsoDirection": 0,
+                "contacts": 0,
+                "inspectionJumps": 0,
+                "lastAction": "movement",
+                "officialRun": false,
+                "rankedEligible": false
+              },
+              "assetsReady": true,
+              "disposed": false,
+              "renderFrames": 17,
+              "visiblePieces": 4,
+              "width": 1280,
+              "height": 604,
+              "nativeEvents": 0,
+              "heldKeys": 0,
+              "heldPointers": 0,
+              "planView": false,
+              "previewOnly": true
+            }
+          },
+          "overflow": {
+            "horizontal": false,
+            "vertical": false
+          }
+        },
+        {
+          "name": "desktop-green-approach",
+          "basis": "Actor-scale Walk view after uninterrupted real keyboard movement; no inspection jump",
+          "path": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-meadows-preview-browser-20260930-01\\browser\\desktop-green-approach.png",
+          "bytes": 34899,
+          "sha256": "b975329e2b9a530eb9cbaa4c305569631a9b516f1ce0345e16fcb7d6a6cc46b2",
+          "snapshot": {
+            "access": {
+              "allowed": true,
+              "reason": "local-free-navigation",
+              "officialRun": false,
+              "rankedEligible": false
+            },
+            "phase": "ready",
+            "disposed": false,
+            "failure": null,
+            "cleanupFailure": null,
+            "playtest": {
+              "mapId": "visual-overhaul-greybox-v1",
+              "view": {
+                "tick": 122,
+                "x": 12500,
+                "y": 6282.333333333334,
+                "groundZ": 0,
+                "vx": 0,
+                "vy": 0,
+                "locomotion": "idle",
+                "legDirection": 6,
+                "torsoDirection": 6,
+                "contacts": 0,
+                "inspectionJumps": 0,
+                "lastAction": "movement",
+                "officialRun": false,
+                "rankedEligible": false
+              },
+              "assetsReady": true,
+              "disposed": false,
+              "renderFrames": 283,
+              "visiblePieces": 2,
+              "width": 1280,
+              "height": 604,
+              "nativeEvents": 2,
+              "heldKeys": 0,
+              "heldPointers": 0,
+              "planView": false,
+              "previewOnly": true
+            }
+          },
+          "overflow": {
+            "horizontal": false,
+            "vertical": false
+          }
+        },
+        {
+          "name": "desktop-relay-court",
+          "basis": "Actor-scale Walk view after uninterrupted real keyboard movement; no inspection jump",
+          "path": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-meadows-preview-browser-20260930-01\\browser\\desktop-relay-court.png",
+          "bytes": 36166,
+          "sha256": "536948201176d6db9839dfcaaf4661b1a53a6c3c6452e6a75d97970875d22246",
+          "snapshot": {
+            "access": {
+              "allowed": true,
+              "reason": "local-free-navigation",
+              "officialRun": false,
+              "rankedEligible": false
+            },
+            "phase": "ready",
+            "disposed": false,
+            "failure": null,
+            "cleanupFailure": null,
+            "playtest": {
+              "mapId": "visual-overhaul-greybox-v1",
+              "view": {
+                "tick": 401,
+                "x": 13203.267558238802,
+                "y": 5739.0657750946175,
+                "groundZ": 0,
+                "vx": 0,
+                "vy": 0,
+                "locomotion": "idle",
+                "legDirection": 0,
+                "torsoDirection": 0,
+                "contacts": 0,
+                "inspectionJumps": 0,
+                "lastAction": "movement",
+                "officialRun": false,
+                "rankedEligible": false
+              },
+              "assetsReady": true,
+              "disposed": false,
+              "renderFrames": 954,
+              "visiblePieces": 4,
+              "width": 1280,
+              "height": 604,
+              "nativeEvents": 10,
+              "heldKeys": 0,
+              "heldPointers": 0,
+              "planView": false,
+              "previewOnly": true
+            }
+          },
+          "overflow": {
+            "horizontal": false,
+            "vertical": false
+          }
+        },
+        {
+          "name": "desktop-entry-from-city",
+          "basis": "Actor-scale Walk view after uninterrupted real keyboard movement; no inspection jump",
+          "path": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-meadows-preview-browser-20260930-01\\browser\\desktop-entry-from-city.png",
+          "bytes": 35399,
+          "sha256": "7a6b932856d4c882f7749bcf5aeedebb0ca192facea61e490df667c1c118ee0a",
+          "snapshot": {
+            "access": {
+              "allowed": true,
+              "reason": "local-free-navigation",
+              "officialRun": false,
+              "rankedEligible": false
+            },
+            "phase": "ready",
+            "disposed": false,
+            "failure": null,
+            "cleanupFailure": null,
+            "playtest": {
+              "mapId": "visual-overhaul-greybox-v1",
+              "view": {
+                "tick": 1016,
+                "x": 11599.504906208587,
+                "y": 6690.828427124746,
+                "groundZ": 0,
+                "vx": 0,
+                "vy": 0,
+                "locomotion": "idle",
+                "legDirection": 4,
+                "torsoDirection": 4,
+                "contacts": 0,
+                "inspectionJumps": 0,
+                "lastAction": "movement",
+                "officialRun": false,
+                "rankedEligible": false
+              },
+              "assetsReady": true,
+              "disposed": false,
+              "renderFrames": 2428,
+              "visiblePieces": 5,
+              "width": 1280,
+              "height": 604,
+              "nativeEvents": 22,
+              "heldKeys": 0,
+              "heldPointers": 0,
+              "planView": false,
+              "previewOnly": true
+            }
+          },
+          "overflow": {
+            "horizontal": false,
+            "vertical": false
+          }
+        },
+        {
+          "name": "desktop-garden-lane",
+          "basis": "Actor-scale Walk view after uninterrupted real keyboard movement; no inspection jump",
+          "path": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-meadows-preview-browser-20260930-01\\browser\\desktop-garden-lane.png",
+          "bytes": 33857,
+          "sha256": "a1fcb8ed4d7ae1c82c28501f1e4f578699dd80ed0975534372c7532a8449e2d3",
+          "snapshot": {
+            "access": {
+              "allowed": true,
+              "reason": "local-free-navigation",
+              "officialRun": false,
+              "rankedEligible": false
+            },
+            "phase": "ready",
+            "disposed": false,
+            "failure": null,
+            "cleanupFailure": null,
+            "playtest": {
+              "mapId": "visual-overhaul-greybox-v1",
+              "view": {
+                "tick": 1324,
+                "x": 11113.293472894058,
+                "y": 6000.796399967566,
+                "groundZ": 0,
+                "vx": 0,
+                "vy": 0,
+                "locomotion": "idle",
+                "legDirection": 4,
+                "torsoDirection": 4,
+                "contacts": 0,
+                "inspectionJumps": 0,
+                "lastAction": "movement",
+                "officialRun": false,
+                "rankedEligible": false
+              },
+              "assetsReady": true,
+              "disposed": false,
+              "renderFrames": 3167,
+              "visiblePieces": 6,
+              "width": 1280,
+              "height": 604,
+              "nativeEvents": 30,
+              "heldKeys": 0,
+              "heldPointers": 0,
+              "planView": false,
+              "previewOnly": true
+            }
+          },
+          "overflow": {
+            "horizontal": false,
+            "vertical": false
+          }
+        },
+        {
+          "name": "desktop-garden-rejoin",
+          "basis": "Actor-scale Walk view after uninterrupted real keyboard movement; no inspection jump",
+          "path": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-meadows-preview-browser-20260930-01\\browser\\desktop-garden-rejoin.png",
+          "bytes": 35401,
+          "sha256": "6cee3694417b00498f4c7ee0f130c0fb002d2ab2385c98e141e7ef40feff3c0d",
+          "snapshot": {
+            "access": {
+              "allowed": true,
+              "reason": "local-free-navigation",
+              "officialRun": false,
+              "rankedEligible": false
+            },
+            "phase": "ready",
+            "disposed": false,
+            "failure": null,
+            "cleanupFailure": null,
+            "playtest": {
+              "mapId": "visual-overhaul-greybox-v1",
+              "view": {
+                "tick": 1570,
+                "x": 11694.594779070212,
+                "y": 5660.251633319702,
+                "groundZ": 0,
+                "vx": 0,
+                "vy": 0,
+                "locomotion": "idle",
+                "legDirection": 0,
+                "torsoDirection": 0,
+                "contacts": 0,
+                "inspectionJumps": 0,
+                "lastAction": "movement",
+                "officialRun": false,
+                "rankedEligible": false
+              },
+              "assetsReady": true,
+              "disposed": false,
+              "renderFrames": 3758,
+              "visiblePieces": 5,
+              "width": 1280,
+              "height": 604,
+              "nativeEvents": 36,
+              "heldKeys": 0,
+              "heldPointers": 0,
+              "planView": false,
+              "previewOnly": true
+            }
+          },
+          "overflow": {
+            "horizontal": false,
+            "vertical": false
+          }
+        },
+        {
+          "name": "desktop-porch",
+          "basis": "Actor-scale Walk view after uninterrupted real keyboard movement; no inspection jump",
+          "path": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-meadows-preview-browser-20260930-01\\browser\\desktop-porch.png",
+          "bytes": 35681,
+          "sha256": "b8c39e86436a27a3f60b4d37ef183961703128dc756bc1d07d7d160453837e4e",
+          "snapshot": {
+            "access": {
+              "allowed": true,
+              "reason": "local-free-navigation",
+              "officialRun": false,
+              "rankedEligible": false
+            },
+            "phase": "ready",
+            "disposed": false,
+            "failure": null,
+            "cleanupFailure": null,
+            "playtest": {
+              "mapId": "visual-overhaul-greybox-v1",
+              "view": {
+                "tick": 2613,
+                "x": 11695.323578490354,
+                "y": 6889.823376490847,
+                "groundZ": 24,
+                "vx": 0,
+                "vy": 0,
+                "locomotion": "idle",
+                "legDirection": 0,
+                "torsoDirection": 0,
+                "contacts": 0,
+                "inspectionJumps": 0,
+                "lastAction": "movement",
+                "officialRun": false,
+                "rankedEligible": false
+              },
+              "assetsReady": true,
+              "disposed": false,
+              "renderFrames": 6259,
+              "visiblePieces": 4,
+              "width": 1280,
+              "height": 604,
+              "nativeEvents": 56,
+              "heldKeys": 0,
+              "heldPointers": 0,
+              "planView": false,
+              "previewOnly": true
+            }
+          },
+          "overflow": {
+            "horizontal": false,
+            "vertical": false
+          }
+        },
+        {
+          "name": "desktop-fence-contact",
+          "basis": "Real collision contact; separate from the passing declared-route walks",
+          "path": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-meadows-preview-browser-20260930-01\\browser\\desktop-fence-contact.png",
+          "bytes": 33472,
+          "sha256": "042f060f168f15f76b999d4d04b24387e2ffea8c4147e332e88a32921271ae70",
+          "snapshot": {
+            "access": {
+              "allowed": true,
+              "reason": "local-free-navigation",
+              "officialRun": false,
+              "rankedEligible": false
+            },
+            "phase": "ready",
+            "disposed": false,
+            "failure": null,
+            "cleanupFailure": null,
+            "playtest": {
+              "mapId": "visual-overhaul-greybox-v1",
+              "view": {
+                "tick": 3028,
+                "x": 11342.634510261527,
+                "y": 6224.000001,
+                "groundZ": 0,
+                "vx": 0,
+                "vy": 0,
+                "locomotion": "idle",
+                "legDirection": 6,
+                "torsoDirection": 6,
+                "contacts": 0,
+                "inspectionJumps": 0,
+                "lastAction": "movement",
+                "officialRun": false,
+                "rankedEligible": false
+              },
+              "assetsReady": true,
+              "disposed": false,
+              "renderFrames": 7256,
+              "visiblePieces": 3,
+              "width": 1280,
+              "height": 604,
+              "nativeEvents": 68,
+              "heldKeys": 0,
+              "heldPointers": 0,
+              "planView": false,
+              "previewOnly": true
+            }
+          },
+          "overflow": {
+            "horizontal": false,
+            "vertical": false
+          }
+        },
+        {
+          "name": "desktop-meadows-plan",
+          "basis": "Explicit Area plan presentation toggle at actual walked position; geometry/framing only, no inspection jump",
+          "path": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-meadows-preview-browser-20260930-01\\browser\\desktop-meadows-plan.png",
+          "bytes": 47858,
+          "sha256": "2d76e511db1016a04aa2d391a3b4652e78a37baeff64cd141c067e490ca02872",
+          "snapshot": {
+            "access": {
+              "allowed": true,
+              "reason": "local-free-navigation",
+              "officialRun": false,
+              "rankedEligible": false
+            },
+            "phase": "ready",
+            "disposed": false,
+            "failure": null,
+            "cleanupFailure": null,
+            "playtest": {
+              "mapId": "visual-overhaul-greybox-v1",
+              "view": {
+                "tick": 3033,
+                "x": 11342.634510261527,
+                "y": 6224.000001,
+                "groundZ": 0,
+                "vx": 0,
+                "vy": 0,
+                "locomotion": "idle",
+                "legDirection": 6,
+                "torsoDirection": 6,
+                "contacts": 0,
+                "inspectionJumps": 0,
+                "lastAction": "movement",
+                "officialRun": false,
+                "rankedEligible": false
+              },
+              "assetsReady": true,
+              "disposed": false,
+              "renderFrames": 7266,
+              "visiblePieces": 226,
+              "width": 1280,
+              "height": 604,
+              "nativeEvents": 68,
+              "heldKeys": 0,
+              "heldPointers": 0,
+              "planView": true,
+              "previewOnly": true
+            }
+          },
+          "overflow": {
+            "horizontal": false,
+            "vertical": false
+          }
+        }
+      ],
+      "journeys": [
+        {
+          "target": {
+            "name": "green approach",
+            "x": 12500,
+            "y": 6280
+          },
+          "before": {
+            "access": {
+              "allowed": true,
+              "reason": "local-free-navigation",
+              "officialRun": false,
+              "rankedEligible": false
+            },
+            "phase": "ready",
+            "disposed": false,
+            "failure": null,
+            "cleanupFailure": null,
+            "playtest": {
+              "mapId": "visual-overhaul-greybox-v1",
+              "view": {
+                "tick": 11,
+                "x": 12500,
+                "y": 6700,
+                "groundZ": 0,
+                "vx": 0,
+                "vy": 0,
+                "locomotion": "idle",
+                "legDirection": 0,
+                "torsoDirection": 0,
+                "contacts": 0,
+                "inspectionJumps": 0,
+                "lastAction": "movement",
+                "officialRun": false,
+                "rankedEligible": false
+              },
+              "assetsReady": true,
+              "disposed": false,
+              "renderFrames": 18,
+              "visiblePieces": 4,
+              "width": 1280,
+              "height": 604,
+              "nativeEvents": 0,
+              "heldKeys": 0,
+              "heldPointers": 0,
+              "planView": false,
+              "previewOnly": true
+            }
+          },
+          "after": {
+            "access": {
+              "allowed": true,
+              "reason": "local-free-navigation",
+              "officialRun": false,
+              "rankedEligible": false
+            },
+            "phase": "ready",
+            "disposed": false,
+            "failure": null,
+            "cleanupFailure": null,
+            "playtest": {
+              "mapId": "visual-overhaul-greybox-v1",
+              "view": {
+                "tick": 120,
+                "x": 12500,
+                "y": 6282.333333333334,
+                "groundZ": 0,
+                "vx": 0,
+                "vy": 0,
+                "locomotion": "idle",
+                "legDirection": 6,
+                "torsoDirection": 6,
+                "contacts": 0,
+                "inspectionJumps": 0,
+                "lastAction": "movement",
+                "officialRun": false,
+                "rankedEligible": false
+              },
+              "assetsReady": true,
+              "disposed": false,
+              "renderFrames": 278,
+              "visiblePieces": 2,
+              "width": 1280,
+              "height": 604,
+              "nativeEvents": 2,
+              "heldKeys": 0,
+              "heldPointers": 0,
+              "planView": false,
+              "previewOnly": true
+            }
+          },
+          "wholeNativeControlWallMs": 1807,
+          "basis": "Read-only position feedback samples actual browser keyboard controls; no clock/state writes. No contact at sampled feedback points; this is not cumulative contact telemetry, exact centre-polyline following, combat, pacing or performance certification."
+        },
+        {
+          "target": {
+            "name": "relay approach",
+            "x": 12760,
+            "y": 5770
+          },
+          "before": {
+            "access": {
+              "allowed": true,
+              "reason": "local-free-navigation",
+              "officialRun": false,
+              "rankedEligible": false
+            },
+            "phase": "ready",
+            "disposed": false,
+            "failure": null,
+            "cleanupFailure": null,
+            "playtest": {
+              "mapId": "visual-overhaul-greybox-v1",
+              "view": {
+                "tick": 122,
+                "x": 12500,
+                "y": 6282.333333333334,
+                "groundZ": 0,
+                "vx": 0,
+                "vy": 0,
+                "locomotion": "idle",
+                "legDirection": 6,
+                "torsoDirection": 6,
+                "contacts": 0,
+                "inspectionJumps": 0,
+                "lastAction": "movement",
+                "officialRun": false,
+                "rankedEligible": false
+              },
+              "assetsReady": true,
+              "disposed": false,
+              "renderFrames": 283,
+              "visiblePieces": 2,
+              "width": 1280,
+              "height": 604,
+              "nativeEvents": 2,
+              "heldKeys": 0,
+              "heldPointers": 0,
+              "planView": false,
+              "previewOnly": true
+            }
+          },
+          "after": {
+            "access": {
+              "allowed": true,
+              "reason": "local-free-navigation",
+              "officialRun": false,
+              "rankedEligible": false
+            },
+            "phase": "ready",
+            "disposed": false,
+            "failure": null,
+            "cleanupFailure": null,
+            "playtest": {
+              "mapId": "visual-overhaul-greybox-v1",
+              "view": {
+                "tick": 280,
+                "x": 12761.266947468219,
+                "y": 5776.886979707843,
+                "groundZ": 0,
+                "vx": 0,
+                "vy": 0,
+                "locomotion": "idle",
+                "legDirection": 6,
+                "torsoDirection": 6,
+                "contacts": 0,
+                "inspectionJumps": 0,
+                "lastAction": "movement",
+                "officialRun": false,
+                "rankedEligible": false
+              },
+              "assetsReady": true,
+              "disposed": false,
+              "renderFrames": 662,
+              "visiblePieces": 5,
+              "width": 1280,
+              "height": 604,
+              "nativeEvents": 6,
+              "heldKeys": 0,
+              "heldPointers": 0,
+              "planView": false,
+              "previewOnly": true
+            }
+          },
+          "wholeNativeControlWallMs": 2631,
+          "basis": "Read-only position feedback samples actual browser keyboard controls; no clock/state writes. No contact at sampled feedback points; this is not cumulative contact telemetry, exact centre-polyline following, combat, pacing or performance certification."
+        },
+        {
+          "target": {
+            "name": "relay switch",
+            "x": 13200,
+            "y": 5740
+          },
+          "before": {
+            "access": {
+              "allowed": true,
+              "reason": "local-free-navigation",
+              "officialRun": false,
+              "rankedEligible": false
+            },
+            "phase": "ready",
+            "disposed": false,
+            "failure": null,
+            "cleanupFailure": null,
+            "playtest": {
+              "mapId": "visual-overhaul-greybox-v1",
+              "view": {
+                "tick": 280,
+                "x": 12761.266947468219,
+                "y": 5776.886979707843,
+                "groundZ": 0,
+                "vx": 0,
+                "vy": 0,
+                "locomotion": "idle",
+                "legDirection": 6,
+                "torsoDirection": 6,
+                "contacts": 0,
+                "inspectionJumps": 0,
+                "lastAction": "movement",
+                "officialRun": false,
+                "rankedEligible": false
+              },
+              "assetsReady": true,
+              "disposed": false,
+              "renderFrames": 662,
+              "visiblePieces": 5,
+              "width": 1280,
+              "height": 604,
+              "nativeEvents": 6,
+              "heldKeys": 0,
+              "heldPointers": 0,
+              "planView": false,
+              "previewOnly": true
+            }
+          },
+          "after": {
+            "access": {
+              "allowed": true,
+              "reason": "local-free-navigation",
+              "officialRun": false,
+              "rankedEligible": false
+            },
+            "phase": "ready",
+            "disposed": false,
+            "failure": null,
+            "cleanupFailure": null,
+            "playtest": {
+              "mapId": "visual-overhaul-greybox-v1",
+              "view": {
+                "tick": 399,
+                "x": 13203.267558238802,
+                "y": 5739.0657750946175,
+                "groundZ": 0,
+                "vx": 0,
+                "vy": 0,
+                "locomotion": "idle",
+                "legDirection": 0,
+                "torsoDirection": 0,
+                "contacts": 0,
+                "inspectionJumps": 0,
+                "lastAction": "movement",
+                "officialRun": false,
+                "rankedEligible": false
+              },
+              "assetsReady": true,
+              "disposed": false,
+              "renderFrames": 948,
+              "visiblePieces": 4,
+              "width": 1280,
+              "height": 604,
+              "nativeEvents": 10,
+              "heldKeys": 0,
+              "heldPointers": 0,
+              "planView": false,
+              "previewOnly": true
+            }
+          },
+          "wholeNativeControlWallMs": 1986,
+          "basis": "Read-only position feedback samples actual browser keyboard controls; no clock/state writes. No contact at sampled feedback points; this is not cumulative contact telemetry, exact centre-polyline following, combat, pacing or performance certification."
+        },
+        {
+          "target": {
+            "name": "return relay approach",
+            "x": 12760,
+            "y": 5770
+          },
+          "before": {
+            "access": {
+              "allowed": true,
+              "reason": "local-free-navigation",
+              "officialRun": false,
+              "rankedEligible": false
+            },
+            "phase": "ready",
+            "disposed": false,
+            "failure": null,
+            "cleanupFailure": null,
+            "playtest": {
+              "mapId": "visual-overhaul-greybox-v1",
+              "view": {
+                "tick": 401,
+                "x": 13203.267558238802,
+                "y": 5739.0657750946175,
+                "groundZ": 0,
+                "vx": 0,
+                "vy": 0,
+                "locomotion": "idle",
+                "legDirection": 0,
+                "torsoDirection": 0,
+                "contacts": 0,
+                "inspectionJumps": 0,
+                "lastAction": "movement",
+                "officialRun": false,
+                "rankedEligible": false
+              },
+              "assetsReady": true,
+              "disposed": false,
+              "renderFrames": 954,
+              "visiblePieces": 4,
+              "width": 1280,
+              "height": 604,
+              "nativeEvents": 10,
+              "heldKeys": 0,
+              "heldPointers": 0,
+              "planView": false,
+              "previewOnly": true
+            }
+          },
+          "after": {
+            "access": {
+              "allowed": true,
+              "reason": "local-free-navigation",
+              "officialRun": false,
+              "rankedEligible": false
+            },
+            "phase": "ready",
+            "disposed": false,
+            "failure": null,
+            "cleanupFailure": null,
+            "playtest": {
+              "mapId": "visual-overhaul-greybox-v1",
+              "view": {
+                "tick": 517,
+                "x": 12769.752228842459,
+                "y": 5768.401698333606,
+                "groundZ": 0,
+                "vx": 0,
+                "vy": 0,
+                "locomotion": "idle",
+                "legDirection": 4,
+                "torsoDirection": 4,
+                "contacts": 0,
+                "inspectionJumps": 0,
+                "lastAction": "movement",
+                "officialRun": false,
+                "rankedEligible": false
+              },
+              "assetsReady": true,
+              "disposed": false,
+              "renderFrames": 1231,
+              "visiblePieces": 5,
+              "width": 1280,
+              "height": 604,
+              "nativeEvents": 14,
+              "heldKeys": 0,
+              "heldPointers": 0,
+              "planView": false,
+              "previewOnly": true
+            }
+          },
+          "wholeNativeControlWallMs": 1923,
+          "basis": "Read-only position feedback samples actual browser keyboard controls; no clock/state writes. No contact at sampled feedback points; this is not cumulative contact telemetry, exact centre-polyline following, combat, pacing or performance certification."
+        },
+        {
+          "target": {
+            "name": "return green approach",
+            "x": 12500,
+            "y": 6280
+          },
+          "before": {
+            "access": {
+              "allowed": true,
+              "reason": "local-free-navigation",
+              "officialRun": false,
+              "rankedEligible": false
+            },
+            "phase": "ready",
+            "disposed": false,
+            "failure": null,
+            "cleanupFailure": null,
+            "playtest": {
+              "mapId": "visual-overhaul-greybox-v1",
+              "view": {
+                "tick": 517,
+                "x": 12769.752228842459,
+                "y": 5768.401698333606,
+                "groundZ": 0,
+                "vx": 0,
+                "vy": 0,
+                "locomotion": "idle",
+                "legDirection": 4,
+                "torsoDirection": 4,
+                "contacts": 0,
+                "inspectionJumps": 0,
+                "lastAction": "movement",
+                "officialRun": false,
+                "rankedEligible": false
+              },
+              "assetsReady": true,
+              "disposed": false,
+              "renderFrames": 1231,
+              "visiblePieces": 5,
+              "width": 1280,
+              "height": 604,
+              "nativeEvents": 14,
+              "heldKeys": 0,
+              "heldPointers": 0,
+              "planView": false,
+              "previewOnly": true
+            }
+          },
+          "after": {
+            "access": {
+              "allowed": true,
+              "reason": "local-free-navigation",
+              "officialRun": false,
+              "rankedEligible": false
+            },
+            "phase": "ready",
+            "disposed": false,
+            "failure": null,
+            "cleanupFailure": null,
+            "playtest": {
+              "mapId": "visual-overhaul-greybox-v1",
+              "view": {
+                "tick": 675,
+                "x": 12497.171572875253,
+                "y": 6269.16176045808,
+                "groundZ": 0,
+                "vx": 0,
+                "vy": 0,
+                "locomotion": "idle",
+                "legDirection": 2,
+                "torsoDirection": 2,
+                "contacts": 0,
+                "inspectionJumps": 0,
+                "lastAction": "movement",
+                "officialRun": false,
+                "rankedEligible": false
+              },
+              "assetsReady": true,
+              "disposed": false,
+              "renderFrames": 1610,
+              "visiblePieces": 2,
+              "width": 1280,
+              "height": 604,
+              "nativeEvents": 18,
+              "heldKeys": 0,
+              "heldPointers": 0,
+              "planView": false,
+              "previewOnly": true
+            }
+          },
+          "wholeNativeControlWallMs": 2632,
+          "basis": "Read-only position feedback samples actual browser keyboard controls; no clock/state writes. No contact at sampled feedback points; this is not cumulative contact telemetry, exact centre-polyline following, combat, pacing or performance certification."
+        },
+        {
+          "target": {
+            "name": "entry green",
+            "x": 12500,
+            "y": 6700
+          },
+          "before": {
+            "access": {
+              "allowed": true,
+              "reason": "local-free-navigation",
+              "officialRun": false,
+              "rankedEligible": false
+            },
+            "phase": "ready",
+            "disposed": false,
+            "failure": null,
+            "cleanupFailure": null,
+            "playtest": {
+              "mapId": "visual-overhaul-greybox-v1",
+              "view": {
+                "tick": 675,
+                "x": 12497.171572875253,
+                "y": 6269.16176045808,
+                "groundZ": 0,
+                "vx": 0,
+                "vy": 0,
+                "locomotion": "idle",
+                "legDirection": 2,
+                "torsoDirection": 2,
+                "contacts": 0,
+                "inspectionJumps": 0,
+                "lastAction": "movement",
+                "officialRun": false,
+                "rankedEligible": false
+              },
+              "assetsReady": true,
+              "disposed": false,
+              "renderFrames": 1610,
+              "visiblePieces": 2,
+              "width": 1280,
+              "height": 604,
+              "nativeEvents": 18,
+              "heldKeys": 0,
+              "heldPointers": 0,
+              "planView": false,
+              "previewOnly": true
+            }
+          },
+          "after": {
+            "access": {
+              "allowed": true,
+              "reason": "local-free-navigation",
+              "officialRun": false,
+              "rankedEligible": false
+            },
+            "phase": "ready",
+            "disposed": false,
+            "failure": null,
+            "cleanupFailure": null,
+            "playtest": {
+              "mapId": "visual-overhaul-greybox-v1",
+              "view": {
+                "tick": 785,
+                "x": 12497.171572875253,
+                "y": 6690.828427124746,
+                "groundZ": 0,
+                "vx": 0,
+                "vy": 0,
+                "locomotion": "idle",
+                "legDirection": 2,
+                "torsoDirection": 2,
+                "contacts": 0,
+                "inspectionJumps": 0,
+                "lastAction": "movement",
+                "officialRun": false,
+                "rankedEligible": false
+              },
+              "assetsReady": true,
+              "disposed": false,
+              "renderFrames": 1874,
+              "visiblePieces": 4,
+              "width": 1280,
+              "height": 604,
+              "nativeEvents": 20,
+              "heldKeys": 0,
+              "heldPointers": 0,
+              "planView": false,
+              "previewOnly": true
+            }
+          },
+          "wholeNativeControlWallMs": 1833,
+          "basis": "Read-only position feedback samples actual browser keyboard controls; no clock/state writes. No contact at sampled feedback points; this is not cumulative contact telemetry, exact centre-polyline following, combat, pacing or performance certification."
+        },
+        {
+          "target": {
+            "name": "city entrance",
+            "x": 11600,
+            "y": 6700
+          },
+          "before": {
+            "access": {
+              "allowed": true,
+              "reason": "local-free-navigation",
+              "officialRun": false,
+              "rankedEligible": false
+            },
+            "phase": "ready",
+            "disposed": false,
+            "failure": null,
+            "cleanupFailure": null,
+            "playtest": {
+              "mapId": "visual-overhaul-greybox-v1",
+              "view": {
+                "tick": 785,
+                "x": 12497.171572875253,
+                "y": 6690.828427124746,
+                "groundZ": 0,
+                "vx": 0,
+                "vy": 0,
+                "locomotion": "idle",
+                "legDirection": 2,
+                "torsoDirection": 2,
+                "contacts": 0,
+                "inspectionJumps": 0,
+                "lastAction": "movement",
+                "officialRun": false,
+                "rankedEligible": false
+              },
+              "assetsReady": true,
+              "disposed": false,
+              "renderFrames": 1874,
+              "visiblePieces": 4,
+              "width": 1280,
+              "height": 604,
+              "nativeEvents": 20,
+              "heldKeys": 0,
+              "heldPointers": 0,
+              "planView": false,
+              "previewOnly": true
+            }
+          },
+          "after": {
+            "access": {
+              "allowed": true,
+              "reason": "local-free-navigation",
+              "officialRun": false,
+              "rankedEligible": false
+            },
+            "phase": "ready",
+            "disposed": false,
+            "failure": null,
+            "cleanupFailure": null,
+            "playtest": {
+              "mapId": "visual-overhaul-greybox-v1",
+              "view": {
+                "tick": 1014,
+                "x": 11599.504906208587,
+                "y": 6690.828427124746,
+                "groundZ": 0,
+                "vx": 0,
+                "vy": 0,
+                "locomotion": "idle",
+                "legDirection": 4,
+                "torsoDirection": 4,
+                "contacts": 0,
+                "inspectionJumps": 0,
+                "lastAction": "movement",
+                "officialRun": false,
+                "rankedEligible": false
+              },
+              "assetsReady": true,
+              "disposed": false,
+              "renderFrames": 2423,
+              "visiblePieces": 5,
+              "width": 1280,
+              "height": 604,
+              "nativeEvents": 22,
+              "heldKeys": 0,
+              "heldPointers": 0,
+              "planView": false,
+              "previewOnly": true
+            }
+          },
+          "wholeNativeControlWallMs": 3813,
+          "basis": "Read-only position feedback samples actual browser keyboard controls; no clock/state writes. No contact at sampled feedback points; this is not cumulative contact telemetry, exact centre-polyline following, combat, pacing or performance certification."
+        },
+        {
+          "target": {
+            "name": "garden turn",
+            "x": 11150,
+            "y": 6700
+          },
+          "before": {
+            "access": {
+              "allowed": true,
+              "reason": "local-free-navigation",
+              "officialRun": false,
+              "rankedEligible": false
+            },
+            "phase": "ready",
+            "disposed": false,
+            "failure": null,
+            "cleanupFailure": null,
+            "playtest": {
+              "mapId": "visual-overhaul-greybox-v1",
+              "view": {
+                "tick": 1016,
+                "x": 11599.504906208587,
+                "y": 6690.828427124746,
+                "groundZ": 0,
+                "vx": 0,
+                "vy": 0,
+                "locomotion": "idle",
+                "legDirection": 4,
+                "torsoDirection": 4,
+                "contacts": 0,
+                "inspectionJumps": 0,
+                "lastAction": "movement",
+                "officialRun": false,
+                "rankedEligible": false
+              },
+              "assetsReady": true,
+              "disposed": false,
+              "renderFrames": 2428,
+              "visiblePieces": 5,
+              "width": 1280,
+              "height": 604,
+              "nativeEvents": 22,
+              "heldKeys": 0,
+              "heldPointers": 0,
+              "planView": false,
+              "previewOnly": true
+            }
+          },
+          "after": {
+            "access": {
+              "allowed": true,
+              "reason": "local-free-navigation",
+              "officialRun": false,
+              "rankedEligible": false
+            },
+            "phase": "ready",
+            "disposed": false,
+            "failure": null,
+            "cleanupFailure": null,
+            "playtest": {
+              "mapId": "visual-overhaul-greybox-v1",
+              "view": {
+                "tick": 1134,
+                "x": 11145.838239541921,
+                "y": 6690.828427124746,
+                "groundZ": 0,
+                "vx": 0,
+                "vy": 0,
+                "locomotion": "idle",
+                "legDirection": 4,
+                "torsoDirection": 4,
+                "contacts": 0,
+                "inspectionJumps": 0,
+                "lastAction": "movement",
+                "officialRun": false,
+                "rankedEligible": false
+              },
+              "assetsReady": true,
+              "disposed": false,
+              "renderFrames": 2711,
+              "visiblePieces": 11,
+              "width": 1280,
+              "height": 604,
+              "nativeEvents": 24,
+              "heldKeys": 0,
+              "heldPointers": 0,
+              "planView": false,
+              "previewOnly": true
+            }
+          },
+          "wholeNativeControlWallMs": 1961,
+          "basis": "Read-only position feedback samples actual browser keyboard controls; no clock/state writes. No contact at sampled feedback points; this is not cumulative contact telemetry, exact centre-polyline following, combat, pacing or performance certification."
+        },
+        {
+          "target": {
+            "name": "garden lane",
+            "x": 11150,
+            "y": 6000
+          },
+          "before": {
+            "access": {
+              "allowed": true,
+              "reason": "local-free-navigation",
+              "officialRun": false,
+              "rankedEligible": false
+            },
+            "phase": "ready",
+            "disposed": false,
+            "failure": null,
+            "cleanupFailure": null,
+            "playtest": {
+              "mapId": "visual-overhaul-greybox-v1",
+              "view": {
+                "tick": 1134,
+                "x": 11145.838239541921,
+                "y": 6690.828427124746,
+                "groundZ": 0,
+                "vx": 0,
+                "vy": 0,
+                "locomotion": "idle",
+                "legDirection": 4,
+                "torsoDirection": 4,
+                "contacts": 0,
+                "inspectionJumps": 0,
+                "lastAction": "movement",
+                "officialRun": false,
+                "rankedEligible": false
+              },
+              "assetsReady": true,
+              "disposed": false,
+              "renderFrames": 2711,
+              "visiblePieces": 11,
+              "width": 1280,
+              "height": 604,
+              "nativeEvents": 24,
+              "heldKeys": 0,
+              "heldPointers": 0,
+              "planView": false,
+              "previewOnly": true
+            }
+          },
+          "after": {
+            "access": {
+              "allowed": true,
+              "reason": "local-free-navigation",
+              "officialRun": false,
+              "rankedEligible": false
+            },
+            "phase": "ready",
+            "disposed": false,
+            "failure": null,
+            "cleanupFailure": null,
+            "playtest": {
+              "mapId": "visual-overhaul-greybox-v1",
+              "view": {
+                "tick": 1308,
+                "x": 11145.838239541921,
+                "y": 6013.16176045808,
+                "groundZ": 0,
+                "vx": 0,
+                "vy": 0,
+                "locomotion": "idle",
+                "legDirection": 6,
+                "torsoDirection": 6,
+                "contacts": 0,
+                "inspectionJumps": 0,
+                "lastAction": "movement",
+                "officialRun": false,
+                "rankedEligible": false
+              },
+              "assetsReady": true,
+              "disposed": false,
+              "renderFrames": 3128,
+              "visiblePieces": 5,
+              "width": 1280,
+              "height": 604,
+              "nativeEvents": 26,
+              "heldKeys": 0,
+              "heldPointers": 0,
+              "planView": false,
+              "previewOnly": true
+            }
+          },
+          "wholeNativeControlWallMs": 2896,
+          "basis": "Read-only position feedback samples actual browser keyboard controls; no clock/state writes. No contact at sampled feedback points; this is not cumulative contact telemetry, exact centre-polyline following, combat, pacing or performance certification."
+        },
+        {
+          "target": {
+            "name": "garden secret",
+            "x": 11100,
+            "y": 6000
+          },
+          "before": {
+            "access": {
+              "allowed": true,
+              "reason": "local-free-navigation",
+              "officialRun": false,
+              "rankedEligible": false
+            },
+            "phase": "ready",
+            "disposed": false,
+            "failure": null,
+            "cleanupFailure": null,
+            "playtest": {
+              "mapId": "visual-overhaul-greybox-v1",
+              "view": {
+                "tick": 1308,
+                "x": 11145.838239541921,
+                "y": 6013.16176045808,
+                "groundZ": 0,
+                "vx": 0,
+                "vy": 0,
+                "locomotion": "idle",
+                "legDirection": 6,
+                "torsoDirection": 6,
+                "contacts": 0,
+                "inspectionJumps": 0,
+                "lastAction": "movement",
+                "officialRun": false,
+                "rankedEligible": false
+              },
+              "assetsReady": true,
+              "disposed": false,
+              "renderFrames": 3128,
+              "visiblePieces": 5,
+              "width": 1280,
+              "height": 604,
+              "nativeEvents": 26,
+              "heldKeys": 0,
+              "heldPointers": 0,
+              "planView": false,
+              "previewOnly": true
+            }
+          },
+          "after": {
+            "access": {
+              "allowed": true,
+              "reason": "local-free-navigation",
+              "officialRun": false,
+              "rankedEligible": false
+            },
+            "phase": "ready",
+            "disposed": false,
+            "failure": null,
+            "cleanupFailure": null,
+            "playtest": {
+              "mapId": "visual-overhaul-greybox-v1",
+              "view": {
+                "tick": 1322,
+                "x": 11113.293472894058,
+                "y": 6000.796399967566,
+                "groundZ": 0,
+                "vx": 0,
+                "vy": 0,
+                "locomotion": "idle",
+                "legDirection": 4,
+                "torsoDirection": 4,
+                "contacts": 0,
+                "inspectionJumps": 0,
+                "lastAction": "movement",
+                "officialRun": false,
+                "rankedEligible": false
+              },
+              "assetsReady": true,
+              "disposed": false,
+              "renderFrames": 3162,
+              "visiblePieces": 6,
+              "width": 1280,
+              "height": 604,
+              "nativeEvents": 30,
+              "heldKeys": 0,
+              "heldPointers": 0,
+              "planView": false,
+              "previewOnly": true
+            }
+          },
+          "wholeNativeControlWallMs": 236,
+          "basis": "Read-only position feedback samples actual browser keyboard controls; no clock/state writes. No contact at sampled feedback points; this is not cumulative contact telemetry, exact centre-polyline following, combat, pacing or performance certification."
+        },
+        {
+          "target": {
+            "name": "garden back edge",
+            "x": 11100,
+            "y": 5650
+          },
+          "before": {
+            "access": {
+              "allowed": true,
+              "reason": "local-free-navigation",
+              "officialRun": false,
+              "rankedEligible": false
+            },
+            "phase": "ready",
+            "disposed": false,
+            "failure": null,
+            "cleanupFailure": null,
+            "playtest": {
+              "mapId": "visual-overhaul-greybox-v1",
+              "view": {
+                "tick": 1324,
+                "x": 11113.293472894058,
+                "y": 6000.796399967566,
+                "groundZ": 0,
+                "vx": 0,
+                "vy": 0,
+                "locomotion": "idle",
+                "legDirection": 4,
+                "torsoDirection": 4,
+                "contacts": 0,
+                "inspectionJumps": 0,
+                "lastAction": "movement",
+                "officialRun": false,
+                "rankedEligible": false
+              },
+              "assetsReady": true,
+              "disposed": false,
+              "renderFrames": 3167,
+              "visiblePieces": 6,
+              "width": 1280,
+              "height": 604,
+              "nativeEvents": 30,
+              "heldKeys": 0,
+              "heldPointers": 0,
+              "planView": false,
+              "previewOnly": true
+            }
+          },
+          "after": {
+            "access": {
+              "allowed": true,
+              "reason": "local-free-navigation",
+              "officialRun": false,
+              "rankedEligible": false
+            },
+            "phase": "ready",
+            "disposed": false,
+            "failure": null,
+            "cleanupFailure": null,
+            "playtest": {
+              "mapId": "visual-overhaul-greybox-v1",
+              "view": {
+                "tick": 1415,
+                "x": 11100.928112403546,
+                "y": 5660.251633319702,
+                "groundZ": 0,
+                "vx": 0,
+                "vy": 0,
+                "locomotion": "idle",
+                "legDirection": 6,
+                "torsoDirection": 6,
+                "contacts": 0,
+                "inspectionJumps": 0,
+                "lastAction": "movement",
+                "officialRun": false,
+                "rankedEligible": false
+              },
+              "assetsReady": true,
+              "disposed": false,
+              "renderFrames": 3385,
+              "visiblePieces": 8,
+              "width": 1280,
+              "height": 604,
+              "nativeEvents": 34,
+              "heldKeys": 0,
+              "heldPointers": 0,
+              "planView": false,
+              "previewOnly": true
+            }
+          },
+          "wholeNativeControlWallMs": 1511,
+          "basis": "Read-only position feedback samples actual browser keyboard controls; no clock/state writes. No contact at sampled feedback points; this is not cumulative contact telemetry, exact centre-polyline following, combat, pacing or performance certification."
+        },
+        {
+          "target": {
+            "name": "garden rejoin north",
+            "x": 11700,
+            "y": 5650
+          },
+          "before": {
+            "access": {
+              "allowed": true,
+              "reason": "local-free-navigation",
+              "officialRun": false,
+              "rankedEligible": false
+            },
+            "phase": "ready",
+            "disposed": false,
+            "failure": null,
+            "cleanupFailure": null,
+            "playtest": {
+              "mapId": "visual-overhaul-greybox-v1",
+              "view": {
+                "tick": 1415,
+                "x": 11100.928112403546,
+                "y": 5660.251633319702,
+                "groundZ": 0,
+                "vx": 0,
+                "vy": 0,
+                "locomotion": "idle",
+                "legDirection": 6,
+                "torsoDirection": 6,
+                "contacts": 0,
+                "inspectionJumps": 0,
+                "lastAction": "movement",
+                "officialRun": false,
+                "rankedEligible": false
+              },
+              "assetsReady": true,
+              "disposed": false,
+              "renderFrames": 3385,
+              "visiblePieces": 8,
+              "width": 1280,
+              "height": 604,
+              "nativeEvents": 34,
+              "heldKeys": 0,
+              "heldPointers": 0,
+              "planView": false,
+              "previewOnly": true
+            }
+          },
+          "after": {
+            "access": {
+              "allowed": true,
+              "reason": "local-free-navigation",
+              "officialRun": false,
+              "rankedEligible": false
+            },
+            "phase": "ready",
+            "disposed": false,
+            "failure": null,
+            "cleanupFailure": null,
+            "playtest": {
+              "mapId": "visual-overhaul-greybox-v1",
+              "view": {
+                "tick": 1568,
+                "x": 11694.594779070212,
+                "y": 5660.251633319702,
+                "groundZ": 0,
+                "vx": 0,
+                "vy": 0,
+                "locomotion": "idle",
+                "legDirection": 0,
+                "torsoDirection": 0,
+                "contacts": 0,
+                "inspectionJumps": 0,
+                "lastAction": "movement",
+                "officialRun": false,
+                "rankedEligible": false
+              },
+              "assetsReady": true,
+              "disposed": false,
+              "renderFrames": 3752,
+              "visiblePieces": 5,
+              "width": 1280,
+              "height": 604,
+              "nativeEvents": 36,
+              "heldKeys": 0,
+              "heldPointers": 0,
+              "planView": false,
+              "previewOnly": true
+            }
+          },
+          "wholeNativeControlWallMs": 2548,
+          "basis": "Read-only position feedback samples actual browser keyboard controls; no clock/state writes. No contact at sampled feedback points; this is not cumulative contact telemetry, exact centre-polyline following, combat, pacing or performance certification."
+        },
+        {
+          "target": {
+            "name": "garden rejoin east",
+            "x": 12420,
+            "y": 5770
+          },
+          "before": {
+            "access": {
+              "allowed": true,
+              "reason": "local-free-navigation",
+              "officialRun": false,
+              "rankedEligible": false
+            },
+            "phase": "ready",
+            "disposed": false,
+            "failure": null,
+            "cleanupFailure": null,
+            "playtest": {
+              "mapId": "visual-overhaul-greybox-v1",
+              "view": {
+                "tick": 1570,
+                "x": 11694.594779070212,
+                "y": 5660.251633319702,
+                "groundZ": 0,
+                "vx": 0,
+                "vy": 0,
+                "locomotion": "idle",
+                "legDirection": 0,
+                "torsoDirection": 0,
+                "contacts": 0,
+                "inspectionJumps": 0,
+                "lastAction": "movement",
+                "officialRun": false,
+                "rankedEligible": false
+              },
+              "assetsReady": true,
+              "disposed": false,
+              "renderFrames": 3758,
+              "visiblePieces": 5,
+              "width": 1280,
+              "height": 604,
+              "nativeEvents": 36,
+              "heldKeys": 0,
+              "heldPointers": 0,
+              "planView": false,
+              "previewOnly": true
+            }
+          },
+          "after": {
+            "access": {
+              "allowed": true,
+              "reason": "local-free-navigation",
+              "officialRun": false,
+              "rankedEligible": false
+            },
+            "phase": "ready",
+            "disposed": false,
+            "failure": null,
+            "cleanupFailure": null,
+            "playtest": {
+              "mapId": "visual-overhaul-greybox-v1",
+              "view": {
+                "tick": 1764,
+                "x": 12406.134495084209,
+                "y": 5771.611943176317,
+                "groundZ": 0,
+                "vx": 0,
+                "vy": 0,
+                "locomotion": "idle",
+                "legDirection": 0,
+                "torsoDirection": 0,
+                "contacts": 0,
+                "inspectionJumps": 0,
+                "lastAction": "movement",
+                "officialRun": false,
+                "rankedEligible": false
+              },
+              "assetsReady": true,
+              "disposed": false,
+              "renderFrames": 4222,
+              "visiblePieces": 4,
+              "width": 1280,
+              "height": 604,
+              "nativeEvents": 40,
+              "heldKeys": 0,
+              "heldPointers": 0,
+              "planView": false,
+              "previewOnly": true
+            }
+          },
+          "wholeNativeControlWallMs": 3223,
+          "basis": "Read-only position feedback samples actual browser keyboard controls; no clock/state writes. No contact at sampled feedback points; this is not cumulative contact telemetry, exact centre-polyline following, combat, pacing or performance certification."
+        },
+        {
+          "target": {
+            "name": "garden rejoin green",
+            "x": 12420,
+            "y": 6700
+          },
+          "before": {
+            "access": {
+              "allowed": true,
+              "reason": "local-free-navigation",
+              "officialRun": false,
+              "rankedEligible": false
+            },
+            "phase": "ready",
+            "disposed": false,
+            "failure": null,
+            "cleanupFailure": null,
+            "playtest": {
+              "mapId": "visual-overhaul-greybox-v1",
+              "view": {
+                "tick": 1764,
+                "x": 12406.134495084209,
+                "y": 5771.611943176317,
+                "groundZ": 0,
+                "vx": 0,
+                "vy": 0,
+                "locomotion": "idle",
+                "legDirection": 0,
+                "torsoDirection": 0,
+                "contacts": 0,
+                "inspectionJumps": 0,
+                "lastAction": "movement",
+                "officialRun": false,
+                "rankedEligible": false
+              },
+              "assetsReady": true,
+              "disposed": false,
+              "renderFrames": 4222,
+              "visiblePieces": 4,
+              "width": 1280,
+              "height": 604,
+              "nativeEvents": 40,
+              "heldKeys": 0,
+              "heldPointers": 0,
+              "planView": false,
+              "previewOnly": true
+            }
+          },
+          "after": {
+            "access": {
+              "allowed": true,
+              "reason": "local-free-navigation",
+              "officialRun": false,
+              "rankedEligible": false
+            },
+            "phase": "ready",
+            "disposed": false,
+            "failure": null,
+            "cleanupFailure": null,
+            "playtest": {
+              "mapId": "visual-overhaul-greybox-v1",
+              "view": {
+                "tick": 2001,
+                "x": 12418.49985557472,
+                "y": 6696.156709824181,
+                "groundZ": 0,
+                "vx": 0,
+                "vy": 0,
+                "locomotion": "idle",
+                "legDirection": 2,
+                "torsoDirection": 2,
+                "contacts": 0,
+                "inspectionJumps": 0,
+                "lastAction": "movement",
+                "officialRun": false,
+                "rankedEligible": false
+              },
+              "assetsReady": true,
+              "disposed": false,
+              "renderFrames": 4791,
+              "visiblePieces": 4,
+              "width": 1280,
+              "height": 604,
+              "nativeEvents": 44,
+              "heldKeys": 0,
+              "heldPointers": 0,
+              "planView": false,
+              "previewOnly": true
+            }
+          },
+          "wholeNativeControlWallMs": 3951,
+          "basis": "Read-only position feedback samples actual browser keyboard controls; no clock/state writes. No contact at sampled feedback points; this is not cumulative contact telemetry, exact centre-polyline following, combat, pacing or performance certification."
+        },
+        {
+          "target": {
+            "name": "rejoined entry",
+            "x": 12500,
+            "y": 6700
+          },
+          "before": {
+            "access": {
+              "allowed": true,
+              "reason": "local-free-navigation",
+              "officialRun": false,
+              "rankedEligible": false
+            },
+            "phase": "ready",
+            "disposed": false,
+            "failure": null,
+            "cleanupFailure": null,
+            "playtest": {
+              "mapId": "visual-overhaul-greybox-v1",
+              "view": {
+                "tick": 2001,
+                "x": 12418.49985557472,
+                "y": 6696.156709824181,
+                "groundZ": 0,
+                "vx": 0,
+                "vy": 0,
+                "locomotion": "idle",
+                "legDirection": 2,
+                "torsoDirection": 2,
+                "contacts": 0,
+                "inspectionJumps": 0,
+                "lastAction": "movement",
+                "officialRun": false,
+                "rankedEligible": false
+              },
+              "assetsReady": true,
+              "disposed": false,
+              "renderFrames": 4791,
+              "visiblePieces": 4,
+              "width": 1280,
+              "height": 604,
+              "nativeEvents": 44,
+              "heldKeys": 0,
+              "heldPointers": 0,
+              "planView": false,
+              "previewOnly": true
+            }
+          },
+          "after": {
+            "access": {
+              "allowed": true,
+              "reason": "local-free-navigation",
+              "officialRun": false,
+              "rankedEligible": false
+            },
+            "phase": "ready",
+            "disposed": false,
+            "failure": null,
+            "cleanupFailure": null,
+            "playtest": {
+              "mapId": "visual-overhaul-greybox-v1",
+              "view": {
+                "tick": 2024,
+                "x": 12492.166522241387,
+                "y": 6696.156709824181,
+                "groundZ": 0,
+                "vx": 0,
+                "vy": 0,
+                "locomotion": "idle",
+                "legDirection": 0,
+                "torsoDirection": 0,
+                "contacts": 0,
+                "inspectionJumps": 0,
+                "lastAction": "movement",
+                "officialRun": false,
+                "rankedEligible": false
+              },
+              "assetsReady": true,
+              "disposed": false,
+              "renderFrames": 4846,
+              "visiblePieces": 4,
+              "width": 1280,
+              "height": 604,
+              "nativeEvents": 46,
+              "heldKeys": 0,
+              "heldPointers": 0,
+              "planView": false,
+              "previewOnly": true
+            }
+          },
+          "wholeNativeControlWallMs": 381,
+          "basis": "Read-only position feedback samples actual browser keyboard controls; no clock/state writes. No contact at sampled feedback points; this is not cumulative contact telemetry, exact centre-polyline following, combat, pacing or performance certification."
+        },
+        {
+          "target": {
+            "name": "porch city entrance",
+            "x": 11600,
+            "y": 6700
+          },
+          "before": {
+            "access": {
+              "allowed": true,
+              "reason": "local-free-navigation",
+              "officialRun": false,
+              "rankedEligible": false
+            },
+            "phase": "ready",
+            "disposed": false,
+            "failure": null,
+            "cleanupFailure": null,
+            "playtest": {
+              "mapId": "visual-overhaul-greybox-v1",
+              "view": {
+                "tick": 2024,
+                "x": 12492.166522241387,
+                "y": 6696.156709824181,
+                "groundZ": 0,
+                "vx": 0,
+                "vy": 0,
+                "locomotion": "idle",
+                "legDirection": 0,
+                "torsoDirection": 0,
+                "contacts": 0,
+                "inspectionJumps": 0,
+                "lastAction": "movement",
+                "officialRun": false,
+                "rankedEligible": false
+              },
+              "assetsReady": true,
+              "disposed": false,
+              "renderFrames": 4846,
+              "visiblePieces": 4,
+              "width": 1280,
+              "height": 604,
+              "nativeEvents": 46,
+              "heldKeys": 0,
+              "heldPointers": 0,
+              "planView": false,
+              "previewOnly": true
+            }
+          },
+          "after": {
+            "access": {
+              "allowed": true,
+              "reason": "local-free-navigation",
+              "officialRun": false,
+              "rankedEligible": false
+            },
+            "phase": "ready",
+            "disposed": false,
+            "failure": null,
+            "cleanupFailure": null,
+            "playtest": {
+              "mapId": "visual-overhaul-greybox-v1",
+              "view": {
+                "tick": 2252,
+                "x": 11598.49985557472,
+                "y": 6696.156709824181,
+                "groundZ": 0,
+                "vx": 0,
+                "vy": 0,
+                "locomotion": "idle",
+                "legDirection": 4,
+                "torsoDirection": 4,
+                "contacts": 0,
+                "inspectionJumps": 0,
+                "lastAction": "movement",
+                "officialRun": false,
+                "rankedEligible": false
+              },
+              "assetsReady": true,
+              "disposed": false,
+              "renderFrames": 5393,
+              "visiblePieces": 5,
+              "width": 1280,
+              "height": 604,
+              "nativeEvents": 48,
+              "heldKeys": 0,
+              "heldPointers": 0,
+              "planView": false,
+              "previewOnly": true
+            }
+          },
+          "wholeNativeControlWallMs": 3800,
+          "basis": "Read-only position feedback samples actual browser keyboard controls; no clock/state writes. No contact at sampled feedback points; this is not cumulative contact telemetry, exact centre-polyline following, combat, pacing or performance certification."
+        },
+        {
+          "target": {
+            "name": "porch foot approach",
+            "x": 11060,
+            "y": 6700
+          },
+          "before": {
+            "access": {
+              "allowed": true,
+              "reason": "local-free-navigation",
+              "officialRun": false,
+              "rankedEligible": false
+            },
+            "phase": "ready",
+            "disposed": false,
+            "failure": null,
+            "cleanupFailure": null,
+            "playtest": {
+              "mapId": "visual-overhaul-greybox-v1",
+              "view": {
+                "tick": 2252,
+                "x": 11598.49985557472,
+                "y": 6696.156709824181,
+                "groundZ": 0,
+                "vx": 0,
+                "vy": 0,
+                "locomotion": "idle",
+                "legDirection": 4,
+                "torsoDirection": 4,
+                "contacts": 0,
+                "inspectionJumps": 0,
+                "lastAction": "movement",
+                "officialRun": false,
+                "rankedEligible": false
+              },
+              "assetsReady": true,
+              "disposed": false,
+              "renderFrames": 5393,
+              "visiblePieces": 5,
+              "width": 1280,
+              "height": 604,
+              "nativeEvents": 48,
+              "heldKeys": 0,
+              "heldPointers": 0,
+              "planView": false,
+              "previewOnly": true
+            }
+          },
+          "after": {
+            "access": {
+              "allowed": true,
+              "reason": "local-free-navigation",
+              "officialRun": false,
+              "rankedEligible": false
+            },
+            "phase": "ready",
+            "disposed": false,
+            "failure": null,
+            "cleanupFailure": null,
+            "playtest": {
+              "mapId": "visual-overhaul-greybox-v1",
+              "view": {
+                "tick": 2390,
+                "x": 11064.833188908055,
+                "y": 6696.156709824181,
+                "groundZ": 0,
+                "vx": 0,
+                "vy": 0,
+                "locomotion": "idle",
+                "legDirection": 4,
+                "torsoDirection": 4,
+                "contacts": 0,
+                "inspectionJumps": 0,
+                "lastAction": "movement",
+                "officialRun": false,
+                "rankedEligible": false
+              },
+              "assetsReady": true,
+              "disposed": false,
+              "renderFrames": 5724,
+              "visiblePieces": 14,
+              "width": 1280,
+              "height": 604,
+              "nativeEvents": 50,
+              "heldKeys": 0,
+              "heldPointers": 0,
+              "planView": false,
+              "previewOnly": true
+            }
+          },
+          "wholeNativeControlWallMs": 2298,
+          "basis": "Read-only position feedback samples actual browser keyboard controls; no clock/state writes. No contact at sampled feedback points; this is not cumulative contact telemetry, exact centre-polyline following, combat, pacing or performance certification."
+        },
+        {
+          "target": {
+            "name": "porch foot",
+            "x": 11060,
+            "y": 6900
+          },
+          "before": {
+            "access": {
+              "allowed": true,
+              "reason": "local-free-navigation",
+              "officialRun": false,
+              "rankedEligible": false
+            },
+            "phase": "ready",
+            "disposed": false,
+            "failure": null,
+            "cleanupFailure": null,
+            "playtest": {
+              "mapId": "visual-overhaul-greybox-v1",
+              "view": {
+                "tick": 2390,
+                "x": 11064.833188908055,
+                "y": 6696.156709824181,
+                "groundZ": 0,
+                "vx": 0,
+                "vy": 0,
+                "locomotion": "idle",
+                "legDirection": 4,
+                "torsoDirection": 4,
+                "contacts": 0,
+                "inspectionJumps": 0,
+                "lastAction": "movement",
+                "officialRun": false,
+                "rankedEligible": false
+              },
+              "assetsReady": true,
+              "disposed": false,
+              "renderFrames": 5724,
+              "visiblePieces": 14,
+              "width": 1280,
+              "height": 604,
+              "nativeEvents": 50,
+              "heldKeys": 0,
+              "heldPointers": 0,
+              "planView": false,
+              "previewOnly": true
+            }
+          },
+          "after": {
+            "access": {
+              "allowed": true,
+              "reason": "local-free-navigation",
+              "officialRun": false,
+              "rankedEligible": false
+            },
+            "phase": "ready",
+            "disposed": false,
+            "failure": null,
+            "cleanupFailure": null,
+            "playtest": {
+              "mapId": "visual-overhaul-greybox-v1",
+              "view": {
+                "tick": 2443,
+                "x": 11064.833188908055,
+                "y": 6889.823376490847,
+                "groundZ": 0,
+                "vx": 0,
+                "vy": 0,
+                "locomotion": "idle",
+                "legDirection": 2,
+                "torsoDirection": 2,
+                "contacts": 0,
+                "inspectionJumps": 0,
+                "lastAction": "movement",
+                "officialRun": false,
+                "rankedEligible": false
+              },
+              "assetsReady": true,
+              "disposed": false,
+              "renderFrames": 5851,
+              "visiblePieces": 8,
+              "width": 1280,
+              "height": 604,
+              "nativeEvents": 52,
+              "heldKeys": 0,
+              "heldPointers": 0,
+              "planView": false,
+              "previewOnly": true
+            }
+          },
+          "wholeNativeControlWallMs": 882,
+          "basis": "Read-only position feedback samples actual browser keyboard controls; no clock/state writes. No contact at sampled feedback points; this is not cumulative contact telemetry, exact centre-polyline following, combat, pacing or performance certification."
+        },
+        {
+          "target": {
+            "name": "ramp entry",
+            "x": 11200,
+            "y": 6900
+          },
+          "before": {
+            "access": {
+              "allowed": true,
+              "reason": "local-free-navigation",
+              "officialRun": false,
+              "rankedEligible": false
+            },
+            "phase": "ready",
+            "disposed": false,
+            "failure": null,
+            "cleanupFailure": null,
+            "playtest": {
+              "mapId": "visual-overhaul-greybox-v1",
+              "view": {
+                "tick": 2443,
+                "x": 11064.833188908055,
+                "y": 6889.823376490847,
+                "groundZ": 0,
+                "vx": 0,
+                "vy": 0,
+                "locomotion": "idle",
+                "legDirection": 2,
+                "torsoDirection": 2,
+                "contacts": 0,
+                "inspectionJumps": 0,
+                "lastAction": "movement",
+                "officialRun": false,
+                "rankedEligible": false
+              },
+              "assetsReady": true,
+              "disposed": false,
+              "renderFrames": 5851,
+              "visiblePieces": 8,
+              "width": 1280,
+              "height": 604,
+              "nativeEvents": 52,
+              "heldKeys": 0,
+              "heldPointers": 0,
+              "planView": false,
+              "previewOnly": true
+            }
+          },
+          "after": {
+            "access": {
+              "allowed": true,
+              "reason": "local-free-navigation",
+              "officialRun": false,
+              "rankedEligible": false
+            },
+            "phase": "ready",
+            "disposed": false,
+            "failure": null,
+            "cleanupFailure": null,
+            "playtest": {
+              "mapId": "visual-overhaul-greybox-v1",
+              "view": {
+                "tick": 2480,
+                "x": 11193.770863589436,
+                "y": 6889.823376490847,
+                "groundZ": 3.0014306461327527,
+                "vx": 0,
+                "vy": 0,
+                "locomotion": "idle",
+                "legDirection": 0,
+                "torsoDirection": 0,
+                "contacts": 0,
+                "inspectionJumps": 0,
+                "lastAction": "movement",
+                "officialRun": false,
+                "rankedEligible": false
+              },
+              "assetsReady": true,
+              "disposed": false,
+              "renderFrames": 5940,
+              "visiblePieces": 6,
+              "width": 1280,
+              "height": 604,
+              "nativeEvents": 54,
+              "heldKeys": 0,
+              "heldPointers": 0,
+              "planView": false,
+              "previewOnly": true
+            }
+          },
+          "wholeNativeControlWallMs": 617,
+          "basis": "Read-only position feedback samples actual browser keyboard controls; no clock/state writes. No contact at sampled feedback points; this is not cumulative contact telemetry, exact centre-polyline following, combat, pacing or performance certification."
+        },
+        {
+          "target": {
+            "name": "porch top",
+            "x": 11700,
+            "y": 6900
+          },
+          "before": {
+            "access": {
+              "allowed": true,
+              "reason": "local-free-navigation",
+              "officialRun": false,
+              "rankedEligible": false
+            },
+            "phase": "ready",
+            "disposed": false,
+            "failure": null,
+            "cleanupFailure": null,
+            "playtest": {
+              "mapId": "visual-overhaul-greybox-v1",
+              "view": {
+                "tick": 2480,
+                "x": 11193.770863589436,
+                "y": 6889.823376490847,
+                "groundZ": 3.0014306461327527,
+                "vx": 0,
+                "vy": 0,
+                "locomotion": "idle",
+                "legDirection": 0,
+                "torsoDirection": 0,
+                "contacts": 0,
+                "inspectionJumps": 0,
+                "lastAction": "movement",
+                "officialRun": false,
+                "rankedEligible": false
+              },
+              "assetsReady": true,
+              "disposed": false,
+              "renderFrames": 5940,
+              "visiblePieces": 6,
+              "width": 1280,
+              "height": 604,
+              "nativeEvents": 54,
+              "heldKeys": 0,
+              "heldPointers": 0,
+              "planView": false,
+              "previewOnly": true
+            }
+          },
+          "after": {
+            "access": {
+              "allowed": true,
+              "reason": "local-free-navigation",
+              "officialRun": false,
+              "rankedEligible": false
+            },
+            "phase": "ready",
+            "disposed": false,
+            "failure": null,
+            "cleanupFailure": null,
+            "playtest": {
+              "mapId": "visual-overhaul-greybox-v1",
+              "view": {
+                "tick": 2611,
+                "x": 11695.323578490354,
+                "y": 6889.823376490847,
+                "groundZ": 24,
+                "vx": 0,
+                "vy": 0,
+                "locomotion": "idle",
+                "legDirection": 0,
+                "torsoDirection": 0,
+                "contacts": 0,
+                "inspectionJumps": 0,
+                "lastAction": "movement",
+                "officialRun": false,
+                "rankedEligible": false
+              },
+              "assetsReady": true,
+              "disposed": false,
+              "renderFrames": 6254,
+              "visiblePieces": 4,
+              "width": 1280,
+              "height": 604,
+              "nativeEvents": 56,
+              "heldKeys": 0,
+              "heldPointers": 0,
+              "planView": false,
+              "previewOnly": true
+            }
+          },
+          "wholeNativeControlWallMs": 2181,
+          "basis": "Read-only position feedback samples actual browser keyboard controls; no clock/state writes. No contact at sampled feedback points; this is not cumulative contact telemetry, exact centre-polyline following, combat, pacing or performance certification."
+        },
+        {
+          "target": {
+            "name": "reverse ramp",
+            "x": 11200,
+            "y": 6900
+          },
+          "before": {
+            "access": {
+              "allowed": true,
+              "reason": "local-free-navigation",
+              "officialRun": false,
+              "rankedEligible": false
+            },
+            "phase": "ready",
+            "disposed": false,
+            "failure": null,
+            "cleanupFailure": null,
+            "playtest": {
+              "mapId": "visual-overhaul-greybox-v1",
+              "view": {
+                "tick": 2613,
+                "x": 11695.323578490354,
+                "y": 6889.823376490847,
+                "groundZ": 24,
+                "vx": 0,
+                "vy": 0,
+                "locomotion": "idle",
+                "legDirection": 0,
+                "torsoDirection": 0,
+                "contacts": 0,
+                "inspectionJumps": 0,
+                "lastAction": "movement",
+                "officialRun": false,
+                "rankedEligible": false
+              },
+              "assetsReady": true,
+              "disposed": false,
+              "renderFrames": 6260,
+              "visiblePieces": 4,
+              "width": 1280,
+              "height": 604,
+              "nativeEvents": 56,
+              "heldKeys": 0,
+              "heldPointers": 0,
+              "planView": false,
+              "previewOnly": true
+            }
+          },
+          "after": {
+            "access": {
+              "allowed": true,
+              "reason": "local-free-navigation",
+              "officialRun": false,
+              "rankedEligible": false
+            },
+            "phase": "ready",
+            "disposed": false,
+            "failure": null,
+            "cleanupFailure": null,
+            "playtest": {
+              "mapId": "visual-overhaul-greybox-v1",
+              "view": {
+                "tick": 2741,
+                "x": 11199.972736428983,
+                "y": 6889.823376490847,
+                "groundZ": 3.4267019265588274,
+                "vx": 0,
+                "vy": 0,
+                "locomotion": "idle",
+                "legDirection": 4,
+                "torsoDirection": 4,
+                "contacts": 0,
+                "inspectionJumps": 0,
+                "lastAction": "movement",
+                "officialRun": false,
+                "rankedEligible": false
+              },
+              "assetsReady": true,
+              "disposed": false,
+              "renderFrames": 6566,
+              "visiblePieces": 6,
+              "width": 1280,
+              "height": 604,
+              "nativeEvents": 58,
+              "heldKeys": 0,
+              "heldPointers": 0,
+              "planView": false,
+              "previewOnly": true
+            }
+          },
+          "wholeNativeControlWallMs": 2130,
+          "basis": "Read-only position feedback samples actual browser keyboard controls; no clock/state writes. No contact at sampled feedback points; this is not cumulative contact telemetry, exact centre-polyline following, combat, pacing or performance certification."
+        },
+        {
+          "target": {
+            "name": "reverse ramp foot",
+            "x": 11060,
+            "y": 6900
+          },
+          "before": {
+            "access": {
+              "allowed": true,
+              "reason": "local-free-navigation",
+              "officialRun": false,
+              "rankedEligible": false
+            },
+            "phase": "ready",
+            "disposed": false,
+            "failure": null,
+            "cleanupFailure": null,
+            "playtest": {
+              "mapId": "visual-overhaul-greybox-v1",
+              "view": {
+                "tick": 2741,
+                "x": 11199.972736428983,
+                "y": 6889.823376490847,
+                "groundZ": 3.4267019265588274,
+                "vx": 0,
+                "vy": 0,
+                "locomotion": "idle",
+                "legDirection": 4,
+                "torsoDirection": 4,
+                "contacts": 0,
+                "inspectionJumps": 0,
+                "lastAction": "movement",
+                "officialRun": false,
+                "rankedEligible": false
+              },
+              "assetsReady": true,
+              "disposed": false,
+              "renderFrames": 6566,
+              "visiblePieces": 6,
+              "width": 1280,
+              "height": 604,
+              "nativeEvents": 58,
+              "heldKeys": 0,
+              "heldPointers": 0,
+              "planView": false,
+              "previewOnly": true
+            }
+          },
+          "after": {
+            "access": {
+              "allowed": true,
+              "reason": "local-free-navigation",
+              "officialRun": false,
+              "rankedEligible": false
+            },
+            "phase": "ready",
+            "disposed": false,
+            "failure": null,
+            "cleanupFailure": null,
+            "playtest": {
+              "mapId": "visual-overhaul-greybox-v1",
+              "view": {
+                "tick": 2780,
+                "x": 11062.089743613664,
+                "y": 6889.823376490847,
+                "groundZ": 0,
+                "vx": 0,
+                "vy": 0,
+                "locomotion": "idle",
+                "legDirection": 4,
+                "torsoDirection": 4,
+                "contacts": 0,
+                "inspectionJumps": 0,
+                "lastAction": "movement",
+                "officialRun": false,
+                "rankedEligible": false
+              },
+              "assetsReady": true,
+              "disposed": false,
+              "renderFrames": 6659,
+              "visiblePieces": 8,
+              "width": 1280,
+              "height": 604,
+              "nativeEvents": 60,
+              "heldKeys": 0,
+              "heldPointers": 0,
+              "planView": false,
+              "previewOnly": true
+            }
+          },
+          "wholeNativeControlWallMs": 643,
+          "basis": "Read-only position feedback samples actual browser keyboard controls; no clock/state writes. No contact at sampled feedback points; this is not cumulative contact telemetry, exact centre-polyline following, combat, pacing or performance certification."
+        },
+        {
+          "target": {
+            "name": "return to ground lane",
+            "x": 11060,
+            "y": 6700
+          },
+          "before": {
+            "access": {
+              "allowed": true,
+              "reason": "local-free-navigation",
+              "officialRun": false,
+              "rankedEligible": false
+            },
+            "phase": "ready",
+            "disposed": false,
+            "failure": null,
+            "cleanupFailure": null,
+            "playtest": {
+              "mapId": "visual-overhaul-greybox-v1",
+              "view": {
+                "tick": 2780,
+                "x": 11062.089743613664,
+                "y": 6889.823376490847,
+                "groundZ": 0,
+                "vx": 0,
+                "vy": 0,
+                "locomotion": "idle",
+                "legDirection": 4,
+                "torsoDirection": 4,
+                "contacts": 0,
+                "inspectionJumps": 0,
+                "lastAction": "movement",
+                "officialRun": false,
+                "rankedEligible": false
+              },
+              "assetsReady": true,
+              "disposed": false,
+              "renderFrames": 6659,
+              "visiblePieces": 8,
+              "width": 1280,
+              "height": 604,
+              "nativeEvents": 60,
+              "heldKeys": 0,
+              "heldPointers": 0,
+              "planView": false,
+              "previewOnly": true
+            }
+          },
+          "after": {
+            "access": {
+              "allowed": true,
+              "reason": "local-free-navigation",
+              "officialRun": false,
+              "rankedEligible": false
+            },
+            "phase": "ready",
+            "disposed": false,
+            "failure": null,
+            "cleanupFailure": null,
+            "playtest": {
+              "mapId": "visual-overhaul-greybox-v1",
+              "view": {
+                "tick": 2829,
+                "x": 11062.089743613664,
+                "y": 6712.156709824181,
+                "groundZ": 0,
+                "vx": 0,
+                "vy": 0,
+                "locomotion": "idle",
+                "legDirection": 6,
+                "torsoDirection": 6,
+                "contacts": 0,
+                "inspectionJumps": 0,
+                "lastAction": "movement",
+                "officialRun": false,
+                "rankedEligible": false
+              },
+              "assetsReady": true,
+              "disposed": false,
+              "renderFrames": 6777,
+              "visiblePieces": 13,
+              "width": 1280,
+              "height": 604,
+              "nativeEvents": 62,
+              "heldKeys": 0,
+              "heldPointers": 0,
+              "planView": false,
+              "previewOnly": true
+            }
+          },
+          "wholeNativeControlWallMs": 819,
+          "basis": "Read-only position feedback samples actual browser keyboard controls; no clock/state writes. No contact at sampled feedback points; this is not cumulative contact telemetry, exact centre-polyline following, combat, pacing or performance certification."
+        },
+        {
+          "target": {
+            "name": "fence contact approach",
+            "x": 11350,
+            "y": 6700
+          },
+          "before": {
+            "access": {
+              "allowed": true,
+              "reason": "local-free-navigation",
+              "officialRun": false,
+              "rankedEligible": false
+            },
+            "phase": "ready",
+            "disposed": false,
+            "failure": null,
+            "cleanupFailure": null,
+            "playtest": {
+              "mapId": "visual-overhaul-greybox-v1",
+              "view": {
+                "tick": 2829,
+                "x": 11062.089743613664,
+                "y": 6712.156709824181,
+                "groundZ": 0,
+                "vx": 0,
+                "vy": 0,
+                "locomotion": "idle",
+                "legDirection": 6,
+                "torsoDirection": 6,
+                "contacts": 0,
+                "inspectionJumps": 0,
+                "lastAction": "movement",
+                "officialRun": false,
+                "rankedEligible": false
+              },
+              "assetsReady": true,
+              "disposed": false,
+              "renderFrames": 6777,
+              "visiblePieces": 13,
+              "width": 1280,
+              "height": 604,
+              "nativeEvents": 62,
+              "heldKeys": 0,
+              "heldPointers": 0,
+              "planView": false,
+              "previewOnly": true
+            }
+          },
+          "after": {
+            "access": {
+              "allowed": true,
+              "reason": "local-free-navigation",
+              "officialRun": false,
+              "rankedEligible": false
+            },
+            "phase": "ready",
+            "disposed": false,
+            "failure": null,
+            "cleanupFailure": null,
+            "playtest": {
+              "mapId": "visual-overhaul-greybox-v1",
+              "view": {
+                "tick": 2905,
+                "x": 11342.634510261527,
+                "y": 6699.791349333667,
+                "groundZ": 0,
+                "vx": 0,
+                "vy": 0,
+                "locomotion": "idle",
+                "legDirection": 0,
+                "torsoDirection": 0,
+                "contacts": 0,
+                "inspectionJumps": 0,
+                "lastAction": "movement",
+                "officialRun": false,
+                "rankedEligible": false
+              },
+              "assetsReady": true,
+              "disposed": false,
+              "renderFrames": 6959,
+              "visiblePieces": 5,
+              "width": 1280,
+              "height": 604,
+              "nativeEvents": 66,
+              "heldKeys": 0,
+              "heldPointers": 0,
+              "planView": false,
+              "previewOnly": true
+            }
+          },
+          "wholeNativeControlWallMs": 1263,
+          "basis": "Read-only position feedback samples actual browser keyboard controls; no clock/state writes. No contact at sampled feedback points; this is not cumulative contact telemetry, exact centre-polyline following, combat, pacing or performance certification."
+        }
+      ],
+      "wall": {
+        "type": "Separate actual radius24 contact against visible garden fence",
+        "before": {
+          "access": {
+            "allowed": true,
+            "reason": "local-free-navigation",
+            "officialRun": false,
+            "rankedEligible": false
+          },
+          "phase": "ready",
+          "disposed": false,
+          "failure": null,
+          "cleanupFailure": null,
+          "playtest": {
+            "mapId": "visual-overhaul-greybox-v1",
+            "view": {
+              "tick": 2905,
+              "x": 11342.634510261527,
+              "y": 6699.791349333667,
+              "groundZ": 0,
+              "vx": 0,
+              "vy": 0,
+              "locomotion": "idle",
+              "legDirection": 0,
+              "torsoDirection": 0,
+              "contacts": 0,
+              "inspectionJumps": 0,
+              "lastAction": "movement",
+              "officialRun": false,
+              "rankedEligible": false
+            },
+            "assetsReady": true,
+            "disposed": false,
+            "renderFrames": 6959,
+            "visiblePieces": 5,
+            "width": 1280,
+            "height": 604,
+            "nativeEvents": 66,
+            "heldKeys": 0,
+            "heldPointers": 0,
+            "planView": false,
+            "previewOnly": true
+          }
+        },
+        "contact": {
+          "access": {
+            "allowed": true,
+            "reason": "local-free-navigation",
+            "officialRun": false,
+            "rankedEligible": false
+          },
+          "phase": "ready",
+          "disposed": false,
+          "failure": null,
+          "cleanupFailure": null,
+          "playtest": {
+            "mapId": "visual-overhaul-greybox-v1",
+            "view": {
+              "tick": 3026,
+              "x": 11342.634510261527,
+              "y": 6224.000001,
+              "groundZ": 0,
+              "vx": 0,
+              "vy": 0,
+              "locomotion": "moving",
+              "legDirection": 6,
+              "torsoDirection": 6,
+              "contacts": 1,
+              "inspectionJumps": 0,
+              "lastAction": "movement",
+              "officialRun": false,
+              "rankedEligible": false
+            },
+            "assetsReady": true,
+            "disposed": false,
+            "renderFrames": 7249,
+            "visiblePieces": 3,
+            "width": 1280,
+            "height": 604,
+            "nativeEvents": 67,
+            "heldKeys": 1,
+            "heldPointers": 0,
+            "planView": false,
+            "previewOnly": true
+          }
+        },
+        "after": {
+          "access": {
+            "allowed": true,
+            "reason": "local-free-navigation",
+            "officialRun": false,
+            "rankedEligible": false
+          },
+          "phase": "ready",
+          "disposed": false,
+          "failure": null,
+          "cleanupFailure": null,
+          "playtest": {
+            "mapId": "visual-overhaul-greybox-v1",
+            "view": {
+              "tick": 3026,
+              "x": 11342.634510261527,
+              "y": 6224.000001,
+              "groundZ": 0,
+              "vx": 0,
+              "vy": 0,
+              "locomotion": "moving",
+              "legDirection": 6,
+              "torsoDirection": 6,
+              "contacts": 1,
+              "inspectionJumps": 0,
+              "lastAction": "movement",
+              "officialRun": false,
+              "rankedEligible": false
+            },
+            "assetsReady": true,
+            "disposed": false,
+            "renderFrames": 7249,
+            "visiblePieces": 3,
+            "width": 1280,
+            "height": 604,
+            "nativeEvents": 68,
+            "heldKeys": 0,
+            "heldPointers": 0,
+            "planView": false,
+            "previewOnly": true
+          }
+        }
+      },
+      "cleanup": {
+        "access": {
+          "allowed": true,
+          "reason": "local-free-navigation",
+          "officialRun": false,
+          "rankedEligible": false
+        },
+        "phase": "disposed",
+        "disposed": true,
+        "failure": null,
+        "cleanupFailure": null,
+        "playtest": {
+          "mapId": "visual-overhaul-greybox-v1",
+          "view": {
+            "tick": 3033,
+            "x": 11342.634510261527,
+            "y": 6224.000001,
+            "groundZ": 0,
+            "vx": 0,
+            "vy": 0,
+            "locomotion": "idle",
+            "legDirection": 6,
+            "torsoDirection": 6,
+            "contacts": 0,
+            "inspectionJumps": 0,
+            "lastAction": "movement",
+            "officialRun": false,
+            "rankedEligible": false
+          },
+          "assetsReady": false,
+          "disposed": true,
+          "renderFrames": 7267,
+          "visiblePieces": 226,
+          "width": 1280,
+          "height": 604,
+          "nativeEvents": 68,
+          "heldKeys": 0,
+          "heldPointers": 0,
+          "planView": true,
+          "previewOnly": true
+        }
+      },
+      "boundaryAudit": {
+        "posts": 0,
+        "writes": 0
+      }
+    },
+    {
+      "viewport": {
+        "name": "phone-proxy",
+        "width": 414,
+        "height": 896,
+        "deviceScaleFactor": 3,
+        "isMobile": true,
+        "hasTouch": true
+      },
+      "captures": [
+        {
+          "name": "phone-proxy-start",
+          "basis": "Actual initial localFree spawn, no jump",
+          "path": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-meadows-preview-browser-20260930-01\\browser\\phone-proxy-start.png",
+          "bytes": 132688,
+          "sha256": "5003c73dd5717a27f84b4505c26cd1d8444d7335c30dff12f549013b0f574885",
+          "snapshot": {
+            "access": {
+              "allowed": true,
+              "reason": "local-free-navigation",
+              "officialRun": false,
+              "rankedEligible": false
+            },
+            "phase": "ready",
+            "disposed": false,
+            "failure": null,
+            "cleanupFailure": null,
+            "playtest": {
+              "mapId": "visual-overhaul-greybox-v1",
+              "view": {
+                "tick": 17,
+                "x": 12500,
+                "y": 6700,
+                "groundZ": 0,
+                "vx": 0,
+                "vy": 0,
+                "locomotion": "idle",
+                "legDirection": 0,
+                "torsoDirection": 0,
+                "contacts": 0,
+                "inspectionJumps": 0,
+                "lastAction": "movement",
+                "officialRun": false,
+                "rankedEligible": false
+              },
+              "assetsReady": true,
+              "disposed": false,
+              "renderFrames": 34,
+              "visiblePieces": 0,
+              "width": 414,
+              "height": 716,
+              "nativeEvents": 0,
+              "heldKeys": 0,
+              "heldPointers": 0,
+              "planView": false,
+              "previewOnly": true
+            }
+          },
+          "overflow": {
+            "horizontal": false,
+            "vertical": false
+          }
+        },
+        {
+          "name": "phone-proxy-garden-lane",
+          "basis": "Actor-scale native touch walk into the fenced garden lane; actual cancel/zero held pointers, no inspection jump",
+          "path": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-meadows-preview-browser-20260930-01\\browser\\phone-proxy-garden-lane.png",
+          "bytes": 147737,
+          "sha256": "dff98a63b4c5a5647976c1af6c552db7816144c276e8423aafacb6e0f8a1f122",
+          "snapshot": {
+            "access": {
+              "allowed": true,
+              "reason": "local-free-navigation",
+              "officialRun": false,
+              "rankedEligible": false
+            },
+            "phase": "ready",
+            "disposed": false,
+            "failure": null,
+            "cleanupFailure": null,
+            "playtest": {
+              "mapId": "visual-overhaul-greybox-v1",
+              "view": {
+                "tick": 551,
+                "x": 11142.333333333334,
+                "y": 5990.333333333334,
+                "groundZ": 0,
+                "vx": 0,
+                "vy": 0,
+                "locomotion": "idle",
+                "legDirection": 6,
+                "torsoDirection": 6,
+                "contacts": 0,
+                "inspectionJumps": 0,
+                "lastAction": "movement",
+                "officialRun": false,
+                "rankedEligible": false
+              },
+              "assetsReady": true,
+              "disposed": false,
+              "renderFrames": 1313,
+              "visiblePieces": 2,
+              "width": 414,
+              "height": 716,
+              "nativeEvents": 6,
+              "heldKeys": 0,
+              "heldPointers": 0,
+              "planView": false,
+              "previewOnly": true
+            }
+          },
+          "overflow": {
+            "horizontal": false,
+            "vertical": false
+          }
+        },
+        {
+          "name": "phone-proxy-meadows-plan",
+          "basis": "Explicit Area plan presentation toggle at actual walked position; geometry/framing only, no inspection jump",
+          "path": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-meadows-preview-browser-20260930-01\\browser\\phone-proxy-meadows-plan.png",
+          "bytes": 129861,
+          "sha256": "501290eede462daa11e914407e655b185a1c2d1b3d8e9e38b18cf20c038a7f54",
+          "snapshot": {
+            "access": {
+              "allowed": true,
+              "reason": "local-free-navigation",
+              "officialRun": false,
+              "rankedEligible": false
+            },
+            "phase": "ready",
+            "disposed": false,
+            "failure": null,
+            "cleanupFailure": null,
+            "playtest": {
+              "mapId": "visual-overhaul-greybox-v1",
+              "view": {
+                "tick": 557,
+                "x": 11142.333333333334,
+                "y": 5990.333333333334,
+                "groundZ": 0,
+                "vx": 0,
+                "vy": 0,
+                "locomotion": "idle",
+                "legDirection": 6,
+                "torsoDirection": 6,
+                "contacts": 0,
+                "inspectionJumps": 0,
+                "lastAction": "movement",
+                "officialRun": false,
+                "rankedEligible": false
+              },
+              "assetsReady": true,
+              "disposed": false,
+              "renderFrames": 1328,
+              "visiblePieces": 131,
+              "width": 414,
+              "height": 716,
+              "nativeEvents": 6,
+              "heldKeys": 0,
+              "heldPointers": 0,
+              "planView": true,
+              "previewOnly": true
+            }
+          },
+          "overflow": {
+            "horizontal": false,
+            "vertical": false
+          }
+        }
+      ],
+      "journeys": [
+        {
+          "direction": "left",
+          "target": {
+            "axis": "x",
+            "value": 11150
+          },
+          "before": {
+            "access": {
+              "allowed": true,
+              "reason": "local-free-navigation",
+              "officialRun": false,
+              "rankedEligible": false
+            },
+            "phase": "ready",
+            "disposed": false,
+            "failure": null,
+            "cleanupFailure": null,
+            "playtest": {
+              "mapId": "visual-overhaul-greybox-v1",
+              "view": {
+                "tick": 17,
+                "x": 12500,
+                "y": 6700,
+                "groundZ": 0,
+                "vx": 0,
+                "vy": 0,
+                "locomotion": "idle",
+                "legDirection": 0,
+                "torsoDirection": 0,
+                "contacts": 0,
+                "inspectionJumps": 0,
+                "lastAction": "movement",
+                "officialRun": false,
+                "rankedEligible": false
+              },
+              "assetsReady": true,
+              "disposed": false,
+              "renderFrames": 35,
+              "visiblePieces": 0,
+              "width": 414,
+              "height": 716,
+              "nativeEvents": 0,
+              "heldKeys": 0,
+              "heldPointers": 0,
+              "planView": false,
+              "previewOnly": true
+            }
+          },
+          "after": {
+            "access": {
+              "allowed": true,
+              "reason": "local-free-navigation",
+              "officialRun": false,
+              "rankedEligible": false
+            },
+            "phase": "ready",
+            "disposed": false,
+            "failure": null,
+            "cleanupFailure": null,
+            "playtest": {
+              "mapId": "visual-overhaul-greybox-v1",
+              "view": {
+                "tick": 362,
+                "x": 11142.333333333334,
+                "y": 6700,
+                "groundZ": 0,
+                "vx": 0,
+                "vy": 0,
+                "locomotion": "idle",
+                "legDirection": 4,
+                "torsoDirection": 4,
+                "contacts": 0,
+                "inspectionJumps": 0,
+                "lastAction": "movement",
+                "officialRun": false,
+                "rankedEligible": false
+              },
+              "assetsReady": true,
+              "disposed": false,
+              "renderFrames": 861,
+              "visiblePieces": 2,
+              "width": 414,
+              "height": 716,
+              "nativeEvents": 3,
+              "heldKeys": 0,
+              "heldPointers": 0,
+              "planView": false,
+              "previewOnly": true
+            }
+          },
+          "basis": "Actual Chrome touch dispatch on the visible direction button, with touchCancel and no inspection jump. Windows phone framing proxy, not physical phone."
+        },
+        {
+          "direction": "up",
+          "target": {
+            "axis": "y",
+            "value": 6000
+          },
+          "before": {
+            "access": {
+              "allowed": true,
+              "reason": "local-free-navigation",
+              "officialRun": false,
+              "rankedEligible": false
+            },
+            "phase": "ready",
+            "disposed": false,
+            "failure": null,
+            "cleanupFailure": null,
+            "playtest": {
+              "mapId": "visual-overhaul-greybox-v1",
+              "view": {
+                "tick": 362,
+                "x": 11142.333333333334,
+                "y": 6700,
+                "groundZ": 0,
+                "vx": 0,
+                "vy": 0,
+                "locomotion": "idle",
+                "legDirection": 4,
+                "torsoDirection": 4,
+                "contacts": 0,
+                "inspectionJumps": 0,
+                "lastAction": "movement",
+                "officialRun": false,
+                "rankedEligible": false
+              },
+              "assetsReady": true,
+              "disposed": false,
+              "renderFrames": 861,
+              "visiblePieces": 2,
+              "width": 414,
+              "height": 716,
+              "nativeEvents": 3,
+              "heldKeys": 0,
+              "heldPointers": 0,
+              "planView": false,
+              "previewOnly": true
+            }
+          },
+          "after": {
+            "access": {
+              "allowed": true,
+              "reason": "local-free-navigation",
+              "officialRun": false,
+              "rankedEligible": false
+            },
+            "phase": "ready",
+            "disposed": false,
+            "failure": null,
+            "cleanupFailure": null,
+            "playtest": {
+              "mapId": "visual-overhaul-greybox-v1",
+              "view": {
+                "tick": 545,
+                "x": 11142.333333333334,
+                "y": 5990.333333333334,
+                "groundZ": 0,
+                "vx": 0,
+                "vy": 0,
+                "locomotion": "idle",
+                "legDirection": 6,
+                "torsoDirection": 6,
+                "contacts": 0,
+                "inspectionJumps": 0,
+                "lastAction": "movement",
+                "officialRun": false,
+                "rankedEligible": false
+              },
+              "assetsReady": true,
+              "disposed": false,
+              "renderFrames": 1300,
+              "visiblePieces": 2,
+              "width": 414,
+              "height": 716,
+              "nativeEvents": 6,
+              "heldKeys": 0,
+              "heldPointers": 0,
+              "planView": false,
+              "previewOnly": true
+            }
+          },
+          "basis": "Actual Chrome touch dispatch on the visible direction button, with touchCancel and no inspection jump. Windows phone framing proxy, not physical phone."
+        }
+      ],
+      "wall": null,
+      "cleanup": {
+        "access": {
+          "allowed": true,
+          "reason": "local-free-navigation",
+          "officialRun": false,
+          "rankedEligible": false
+        },
+        "phase": "disposed",
+        "disposed": true,
+        "failure": null,
+        "cleanupFailure": null,
+        "playtest": {
+          "mapId": "visual-overhaul-greybox-v1",
+          "view": {
+            "tick": 558,
+            "x": 11142.333333333334,
+            "y": 5990.333333333334,
+            "groundZ": 0,
+            "vx": 0,
+            "vy": 0,
+            "locomotion": "idle",
+            "legDirection": 6,
+            "torsoDirection": 6,
+            "contacts": 0,
+            "inspectionJumps": 0,
+            "lastAction": "movement",
+            "officialRun": false,
+            "rankedEligible": false
+          },
+          "assetsReady": false,
+          "disposed": true,
+          "renderFrames": 1330,
+          "visiblePieces": 131,
+          "width": 414,
+          "height": 716,
+          "nativeEvents": 6,
+          "heldKeys": 0,
+          "heldPointers": 0,
+          "planView": true,
+          "previewOnly": true
+        }
+      },
+      "boundaryAudit": {
+        "posts": 0,
+        "writes": 0
+      }
+    }
+  ],
+  "safety": [
+    {
+      "name": "default-denied",
+      "result": {
+        "access": {
+          "allowed": false,
+          "reason": "explicit-free-greybox-required",
+          "officialRun": false,
+          "rankedEligible": false
+        },
+        "phase": "denied",
+        "disposed": false,
+        "failure": null,
+        "cleanupFailure": null,
+        "playtest": null
+      },
+      "requested": [
+        "http://127.0.0.1:53172/dist/hmh-greybox/index.html",
+        "http://127.0.0.1:53172/dist/hmh-greybox/preview.css",
+        "http://127.0.0.1:53172/dist/hmh-greybox/entry.js"
+      ],
+      "basis": "Actual served local entry"
+    },
+    {
+      "name": "ranked-denied",
+      "result": {
+        "access": {
+          "allowed": false,
+          "reason": "explicit-free-greybox-required",
+          "officialRun": false,
+          "rankedEligible": false
+        },
+        "phase": "denied",
+        "disposed": false,
+        "failure": null,
+        "cleanupFailure": null,
+        "playtest": null
+      },
+      "requested": [
+        "http://127.0.0.1:53172/dist/hmh-greybox/index.html?mode=ranked&world=visual-overhaul-greybox-v1",
+        "http://127.0.0.1:53172/dist/hmh-greybox/preview.css",
+        "http://127.0.0.1:53172/dist/hmh-greybox/entry.js"
+      ],
+      "basis": "Actual served local entry"
+    },
+    {
+      "name": "embedded-denied",
+      "result": {
+        "access": {
+          "allowed": false,
+          "reason": "top-level-only",
+          "officialRun": false,
+          "rankedEligible": false
+        },
+        "phase": "denied",
+        "disposed": false,
+        "failure": null,
+        "cleanupFailure": null,
+        "playtest": null
+      },
+      "requested": [
+        "http://127.0.0.1:53172/__greybox-iframe-test",
+        "http://127.0.0.1:53172/dist/hmh-greybox/index.html?mode=free&world=visual-overhaul-greybox-v1",
+        "http://127.0.0.1:53172/dist/hmh-greybox/preview.css",
+        "http://127.0.0.1:53172/dist/hmh-greybox/entry.js"
+      ],
+      "basis": "Actual served local entry"
+    },
+    {
+      "name": "remote-url-denied",
+      "result": {
+        "access": {
+          "allowed": false,
+          "reason": "local-preview-only",
+          "officialRun": false,
+          "rankedEligible": false
+        },
+        "phase": "denied",
+        "disposed": false,
+        "failure": null,
+        "cleanupFailure": null,
+        "playtest": null
+      },
+      "requested": [
+        "https://greybox.invalid/dist/hmh-greybox/index.html?mode=free&world=visual-overhaul-greybox-v1",
+        "https://greybox.invalid/dist/hmh-greybox/preview.css",
+        "https://greybox.invalid/dist/hmh-greybox/entry.js"
+      ],
+      "basis": "Actual remote URL with exact local byte fulfilment; no external network"
+    }
+  ],
+  "errors": [],
+  "cleanupErrors": [],
+  "resourceFailures": [],
+  "responses": [
+    {
+      "url": "http://127.0.0.1:53172/dist/hmh-greybox/index.html?mode=free&world=visual-overhaul-greybox-v1",
+      "status": 200,
+      "bytes": 322,
+      "sha256": "1d64724a9521e8d24a2a657f6942baa97e4978af833ee3a0d56fd6eae8b516b9"
+    },
+    {
+      "url": "http://127.0.0.1:53172/dist/hmh-greybox/preview.css",
+      "status": 200,
+      "bytes": 2979,
+      "sha256": "e16de9444570ddfa9fe801d6dc247cc0062d03c9ee7f79a54b0e5b45b7f171c2"
+    },
+    {
+      "url": "http://127.0.0.1:53172/dist/hmh-greybox/entry.js",
+      "status": 200,
+      "bytes": 2100,
+      "sha256": "c78b6fe468a35918e0062e1924afdeedebcd1a5be2823f70816f061d1a340dbc"
+    },
+    {
+      "url": "http://127.0.0.1:53172/dist/hmh-greybox/chunks/greybox-playtest-X77XYGT3.js",
+      "status": 200,
+      "bytes": 59550,
+      "sha256": "05efbe885868de4323693c8937753aa9f135953b08aa4d190ba332b851249858"
+    },
+    {
+      "url": "http://127.0.0.1:53172/assets/generated/hmh-reboot-production-heroes/lit-commando/lit-commando-production-pilot-atlas.json",
+      "status": 200,
+      "bytes": 648685,
+      "sha256": "bd2b91492a03b69898e90c5b0c6e3eab279bc315a0c03e174297090e6a295199"
+    },
+    {
+      "url": "http://127.0.0.1:53172/assets/generated/hmh-reboot-production-heroes/lit-commando/lit-commando-production-pilot-atlas.webp",
+      "status": 200,
+      "bytes": 3919100,
+      "sha256": "37679ea9f5c78f69b276e381969585d2298bcb2072cb343e6d4a0b95a7b8b749"
+    },
+    {
+      "url": "http://127.0.0.1:53172/dist/hmh-greybox/index.html?mode=free&world=visual-overhaul-greybox-v1",
+      "status": 200,
+      "bytes": 322,
+      "sha256": "1d64724a9521e8d24a2a657f6942baa97e4978af833ee3a0d56fd6eae8b516b9"
+    },
+    {
+      "url": "http://127.0.0.1:53172/dist/hmh-greybox/preview.css",
+      "status": 200,
+      "bytes": 2979,
+      "sha256": "e16de9444570ddfa9fe801d6dc247cc0062d03c9ee7f79a54b0e5b45b7f171c2"
+    },
+    {
+      "url": "http://127.0.0.1:53172/dist/hmh-greybox/entry.js",
+      "status": 200,
+      "bytes": 2100,
+      "sha256": "c78b6fe468a35918e0062e1924afdeedebcd1a5be2823f70816f061d1a340dbc"
+    },
+    {
+      "url": "http://127.0.0.1:53172/dist/hmh-greybox/chunks/greybox-playtest-X77XYGT3.js",
+      "status": 200,
+      "bytes": 59550,
+      "sha256": "05efbe885868de4323693c8937753aa9f135953b08aa4d190ba332b851249858"
+    },
+    {
+      "url": "http://127.0.0.1:53172/assets/generated/hmh-reboot-production-heroes/lit-commando/lit-commando-production-pilot-atlas.json",
+      "status": 200,
+      "bytes": 648685,
+      "sha256": "bd2b91492a03b69898e90c5b0c6e3eab279bc315a0c03e174297090e6a295199"
+    },
+    {
+      "url": "http://127.0.0.1:53172/assets/generated/hmh-reboot-production-heroes/lit-commando/lit-commando-production-pilot-atlas.webp",
+      "status": 200,
+      "bytes": 3919100,
+      "sha256": "37679ea9f5c78f69b276e381969585d2298bcb2072cb343e6d4a0b95a7b8b749"
+    },
+    {
+      "url": "http://127.0.0.1:53172/dist/hmh-greybox/index.html",
+      "status": 200,
+      "bytes": 322,
+      "sha256": "1d64724a9521e8d24a2a657f6942baa97e4978af833ee3a0d56fd6eae8b516b9"
+    },
+    {
+      "url": "http://127.0.0.1:53172/dist/hmh-greybox/preview.css",
+      "status": 200,
+      "bytes": 2979,
+      "sha256": "e16de9444570ddfa9fe801d6dc247cc0062d03c9ee7f79a54b0e5b45b7f171c2"
+    },
+    {
+      "url": "http://127.0.0.1:53172/dist/hmh-greybox/entry.js",
+      "status": 200,
+      "bytes": 2100,
+      "sha256": "c78b6fe468a35918e0062e1924afdeedebcd1a5be2823f70816f061d1a340dbc"
+    },
+    {
+      "url": "http://127.0.0.1:53172/dist/hmh-greybox/index.html?mode=ranked&world=visual-overhaul-greybox-v1",
+      "status": 200,
+      "bytes": 322,
+      "sha256": "1d64724a9521e8d24a2a657f6942baa97e4978af833ee3a0d56fd6eae8b516b9"
+    },
+    {
+      "url": "http://127.0.0.1:53172/dist/hmh-greybox/preview.css",
+      "status": 200,
+      "bytes": 2979,
+      "sha256": "e16de9444570ddfa9fe801d6dc247cc0062d03c9ee7f79a54b0e5b45b7f171c2"
+    },
+    {
+      "url": "http://127.0.0.1:53172/dist/hmh-greybox/entry.js",
+      "status": 200,
+      "bytes": 2100,
+      "sha256": "c78b6fe468a35918e0062e1924afdeedebcd1a5be2823f70816f061d1a340dbc"
+    },
+    {
+      "url": "http://127.0.0.1:53172/__greybox-iframe-test",
+      "status": 200,
+      "bytes": 127,
+      "sha256": "1394a1a42d6e67b0e109d05b577bd8fdbe740fb0bc2b67a75421e19839f329dd"
+    },
+    {
+      "url": "http://127.0.0.1:53172/dist/hmh-greybox/index.html?mode=free&world=visual-overhaul-greybox-v1",
+      "status": 200,
+      "bytes": 322,
+      "sha256": "1d64724a9521e8d24a2a657f6942baa97e4978af833ee3a0d56fd6eae8b516b9"
+    },
+    {
+      "url": "http://127.0.0.1:53172/dist/hmh-greybox/preview.css",
+      "status": 200,
+      "bytes": 2979,
+      "sha256": "e16de9444570ddfa9fe801d6dc247cc0062d03c9ee7f79a54b0e5b45b7f171c2"
+    },
+    {
+      "url": "http://127.0.0.1:53172/dist/hmh-greybox/entry.js",
+      "status": 200,
+      "bytes": 2100,
+      "sha256": "c78b6fe468a35918e0062e1924afdeedebcd1a5be2823f70816f061d1a340dbc"
+    },
+    {
+      "url": "https://greybox.invalid/dist/hmh-greybox/index.html?mode=free&world=visual-overhaul-greybox-v1",
+      "status": 200,
+      "bytes": 322,
+      "sha256": "1d64724a9521e8d24a2a657f6942baa97e4978af833ee3a0d56fd6eae8b516b9"
+    },
+    {
+      "url": "https://greybox.invalid/dist/hmh-greybox/preview.css",
+      "status": 200,
+      "bytes": 2979,
+      "sha256": "e16de9444570ddfa9fe801d6dc247cc0062d03c9ee7f79a54b0e5b45b7f171c2"
+    },
+    {
+      "url": "https://greybox.invalid/dist/hmh-greybox/entry.js",
+      "status": 200,
+      "bytes": 2100,
+      "sha256": "c78b6fe468a35918e0062e1924afdeedebcd1a5be2823f70816f061d1a340dbc"
+    }
+  ],
+  "chromeProcess": {
+    "pid": 31264,
+    "closeObserved": true,
+    "scope": "The exact BrowserServer-owned Chrome child; renderer children are managed by that owned browser and the outer exact-PID tree watchdog.",
+    "exitCode": 0,
+    "signal": null,
+    "closeObservedAt": "2026-09-30T07:19:15.538Z"
+  },
+  "serverLifecycle": {
+    "listening": true,
+    "closeObserved": true,
+    "address": {
+      "address": "127.0.0.1",
+      "family": "IPv4",
+      "port": 53172
+    },
+    "closeObservedAt": "2026-09-30T07:19:15.563Z"
+  }
+}

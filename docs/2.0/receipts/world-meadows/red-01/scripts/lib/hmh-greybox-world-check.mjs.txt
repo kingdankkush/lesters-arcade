@@ -77,29 +77,6 @@ export function checkGreyboxWorld(world) {
     if(nominalSecondsAt240<10||nominalSecondsAt240>25)warnings.push({code:'ROAD_PACING_TARGET',id:road.id,nominalSecondsAt240,basis:'Declared gate-to-gate polyline at nominal240, not a timed current-hero run or shortest player path'});
     return{id:road.id,actualSweepClear,groundContinuous,pathLengthUnits,nominalSecondsAt240};
   });
-  const localRouteIds=new Set();
-  const localJourneys=world.areas.flatMap(area=>{
-    if(area.inspectionRoutes===undefined)return[];
-    if(!Array.isArray(area.inspectionRoutes))throw new TypeError('inspection routes array required');
-    return area.inspectionRoutes.map(route=>{
-      if(typeof route?.id!=='string'||!route.id||localRouteIds.has(route.id))add('LOCAL_ROUTE_ID',route?.id??null);else localRouteIds.add(route.id);
-      if(!['main','optional'].includes(route.kind)||route.runtimeEffect!=='none')add('LOCAL_ROUTE_STAGE',route.id);
-      if(!Array.isArray(route.points)||route.points.length<2||!route.points.every(point))throw new TypeError('finite inspection route polyline required');
-      const from=sites.get(route.fromSiteId),to=sites.get(route.toSiteId);
-      const boundToSites=Boolean(from?.areaId===area.id&&to?.areaId===area.id&&point(from)&&point(to)&&distance(from,route.points[0])<1e-7&&distance(to,route.points.at(-1))<1e-7);
-      if(!boundToSites)add('LOCAL_ROUTE_SITE_MISMATCH',route.id);
-      if(!rectangle(area.bounds)||route.points.some(p=>!inside(area.bounds,p)))add('LOCAL_ROUTE_OUTSIDE_AREA',route.id);
-      let actualSweepClear=true,groundContinuous=true,pathLengthUnits=0;
-      for(let i=1;i<route.points.length;i++){
-        const a=route.points[i-1],b=route.points[i],length=distance(a,b);pathLengthUnits+=length;
-        if(length===0)add('LOCAL_ROUTE_ZERO_SEGMENT',route.id);
-        const checked=journey(a,b);actualSweepClear&&=checked.actualSweepClear;groundContinuous&&=checked.groundContinuous;
-      }
-      if(!actualSweepClear)add('LOCAL_ROUTE_SWEEP_BLOCKED',route.id);
-      if(!groundContinuous)add('LOCAL_ROUTE_GROUND_DISCONTINUITY',route.id);
-      return{id:route.id,areaId:area.id,kind:route.kind,boundToSites,actualSweepClear,groundContinuous,pathLengthUnits,nominalSecondsAt240:pathLengthUnits/240,basis:'Declared radius24 centre polyline swept both ways with existing ground query; not full path width, timed walk, combat or pacing approval'};
-    });
-  });
   const sightlines=world.sites.filter(site=>site.kind==='objective').map(site=>{
     if(!point(site.approach)){add('OBJECTIVE_APPROACH',site.id);return{id:site.id,clear:false};}
     const from={...site.approach,z:world.queryGround(site.approach.x,site.approach.y).groundZ+20},to={x:site.x,y:site.y,z:world.queryGround(site.x,site.y).groundZ+20};
@@ -141,5 +118,5 @@ export function checkGreyboxWorld(world) {
     if(!usableCover.some(piece=>piece.kind==='cover-short')||!usableCover.some(piece=>piece.kind==='cover-tall'))add('ARENA_COVER_HEIGHTS',arena.id);
     return{id:arena.id,separateExits:separate,reachableExits,exitJourneys,usableCover,coverBasis:'Actual matching height/blocker in or within120 units of court, clear player stand-off inside court and straight two-way centre approach; not actual enter/peek/fire control proof',floorSamples:samples,openFloorSamples:open,openFloorFraction:fraction,fractionBasis:'120-unit point lattice with actual player-radius collision clearance; not exact geometric area or complete boss avoidance proof'};
   });
-  return{schema:'hmh-greybox-world-layout-check-v1',passed:issues.length===0,scope:'Authored geometry/navigation/clearance/staged sightlines; not mission, actual cover/climb controls, boss AI, pacing playtest, verifier/version, streaming/device/performance acceptance',areas:measuredAreas,navigation,spawn:{playerRadiusClear,protectedRadiusClear},roadJourneys,localJourneys,sightlines,arenas:measuredArenas,issues,warnings};
+  return{schema:'hmh-greybox-world-layout-check-v1',passed:issues.length===0,scope:'Authored geometry/navigation/clearance/staged sightlines; not mission, actual cover/climb controls, boss AI, pacing playtest, verifier/version, streaming/device/performance acceptance',areas:measuredAreas,navigation,spawn:{playerRadiusClear,protectedRadiusClear},roadJourneys,sightlines,arenas:measuredArenas,issues,warnings};
 }

@@ -1,0 +1,37 @@
+import { spawn, spawnSync } from 'node:child_process';
+// Caller owns the shared marker. Unconfirmed closure must retain that marker.
+// This helper never retries, targets process names or resolves on error alone.
+export async function runOwnedWindowsChild(program, args, { cwd, env = process.env, watchdogMs, maxOutputBytes = 2 * 1024 * 1024 } = {}) {
+  if (!Number.isFinite(watchdogMs) || watchdogMs <= 0 || watchdogMs > 60_000) throw new Error('bounded positive child watchdog required');
+  const command = { program, args, cwd, startedAt: new Date().toISOString(), stdout: '', stderr: '', watchdogMs, watchdogTriggered: false, spawnError: null, treeStop: null, shutdownCloseDeadlineMs: 20_000, childClosureConfirmed: false, outputLimitTriggered: false };
+  const begin = performance.now();
+  const child = spawn(program, args, { cwd, env, windowsHide: true, stdio: ['ignore', 'pipe', 'pipe'] });
+  command.spawnedPid = child.pid ?? null;
+  let timer, closureTimer, closed = false, stopRequested = false, done;
+  function stop(reason) {
+    if (stopRequested || closed) return;
+    stopRequested = true; command.stopReason = reason;
+    if (Number.isSafeInteger(child.pid) && child.pid > 0) {
+      const killArgs = ['/PID', String(child.pid), '/T', '/F'];
+      try {
+        const result = spawnSync('C:/Windows/System32/taskkill.exe', killArgs, { encoding: 'utf8', windowsHide: true, timeout: 10_000, stdio: ['ignore', 'pipe', 'pipe'] });
+        command.treeStop = { program: 'C:/Windows/System32/taskkill.exe', args: killArgs, deadlineMs: 10_000, exitCode: result.status, signal: result.signal, error: result.error ? String(result.error.stack) : null, stdout: result.stdout ?? '', stderr: result.stderr ?? '' };
+      } catch (error) { command.treeStop = { program: 'C:/Windows/System32/taskkill.exe', args: killArgs, deadlineMs: 10_000, error: String(error.stack) }; }
+    } else command.treeStop = { error: 'No valid exact spawned PID; no unrelated PID/process targeted' };
+    closureTimer = setTimeout(() => { command.shutdownFailure = 'Actual child close not confirmed within bounded shutdown wait'; done(); }, 20_000);
+  }
+  const completion = new Promise(resolve => { done = resolve; });
+  function append(key, data) {
+    if (Buffer.byteLength(command.stdout) + Buffer.byteLength(command.stderr) + data.length > maxOutputBytes) { command.outputLimitTriggered = true; stop('output limit'); }
+    else command[key] += data.toString();
+  }
+  child.stdout.on('data', data => append('stdout', data)); child.stderr.on('data', data => append('stderr', data));
+  child.once('error', error => { command.spawnError = String(error.stack); });
+  child.once('close', (exitCode, signal) => { closed = true; clearTimeout(timer); clearTimeout(closureTimer); Object.assign(command, { exitCode, signal, closeObservedAt: new Date().toISOString() }); done(); });
+  timer = setTimeout(() => { command.watchdogTriggered = true; stop('child watchdog'); }, watchdogMs);
+  await completion; clearTimeout(timer); clearTimeout(closureTimer);
+  command.childClosureConfirmed = closed && (!stopRequested || (command.treeStop?.exitCode === 0 && command.treeStop?.error === null));
+  command.finishedAt = new Date().toISOString(); command.wholeChildWallMs = performance.now() - begin;
+  command.normalExit = command.childClosureConfirmed && !command.spawnError && !command.signal && command.exitCode === 0 && !command.watchdogTriggered && !command.outputLimitTriggered;
+  return command;
+}

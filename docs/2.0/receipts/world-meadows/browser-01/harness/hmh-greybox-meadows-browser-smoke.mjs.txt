@@ -1,0 +1,127 @@
+// One native-input local preview gate. No clock replacement, driver teleport,
+// simulation hooks or Ranked network. Inspection screenshots are labelled.
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import path from 'node:path';
+import { createHash } from 'node:crypto';
+import { createServer } from 'node:http';
+import { pathToFileURL } from 'node:url';
+const [repo,output]=process.argv.slice(2),portal=path.join(repo,'apps/portal');
+const {chromium}=await import(pathToFileURL(path.join(repo,'benchmarks/hmh-engine-bakeoff/node_modules/playwright/index.mjs')));
+const sha=bytes=>createHash('sha256').update(bytes).digest('hex');
+const report={schema:'hmh-greybox-meadows-native-browser-v1',scope:'One local Meadows navigation authoring slice in Walk view. Actual keyboard/touch controls and unchanged collision/ground, no clock replacement or state injection. Windows Chrome desktop/phone framing proxy, not physical phone, FPS, full simulation, combat/mission/cover/climb, W3/verifier or owner greybox approval.',passed:false,viewports:[],safety:[],errors:[],cleanupErrors:[],resourceFailures:[],responses:[],chromeProcess:null,serverLifecycle:{listening:false,closeObserved:false}};
+fs.mkdirSync(output,{recursive:true});
+const save=()=>fs.writeFileSync(path.join(output,'browser-report.json'),JSON.stringify(report,null,2));
+const suffix={'.html':'text/html','.js':'text/javascript','.mjs':'text/javascript','.json':'application/json','.css':'text/css','.webp':'image/webp','.png':'image/png'};
+let server,browser,browserServer,chromeClose,origin;const contexts=[];
+function bounded(action,ms,label){let timer;return Promise.race([action,new Promise((_,reject)=>{timer=setTimeout(()=>reject(new Error(`${label} did not close within${ms}ms`)),ms);})]).finally(()=>clearTimeout(timer));}
+const responseTasks=[];
+const track=page=>{
+  page.on('pageerror',error=>report.errors.push({url:page.url(),message:String(error)}));
+  page.on('console',message=>{if(message.type()==='error')report.errors.push({url:page.url(),message:message.text()});});
+  page.on('requestfailed',request=>report.resourceFailures.push({url:request.url(),error:request.failure()?.errorText??'unknown'}));
+  page.on('response',response=>{const task=response.body().then(bytes=>report.responses.push({url:response.url(),status:response.status(),bytes:bytes.length,sha256:sha(bytes)})).catch(error=>report.resourceFailures.push({url:response.url(),error:String(error)}));responseTasks.push(task);});
+};
+const snapshot=page=>page.evaluate(()=>window.__HMH_GREYBOX__.snapshot());
+async function ready(page,url){await page.goto(url,{waitUntil:'domcontentloaded',timeout:15_000});await page.waitForFunction(()=>document.querySelector('[data-greybox-root]')?.dataset.preview==='ready',null,{timeout:15_000});await page.locator('canvas').click();await page.waitForFunction(()=>window.__HMH_GREYBOX__.snapshot().playtest?.renderFrames>=2);}
+async function capture(page,name,basis){const file=path.join(output,`${name}.png`);await page.screenshot({path:file,fullPage:true});const bytes=fs.readFileSync(file);return{name,basis,path:file,bytes:bytes.length,sha256:sha(bytes),snapshot:await snapshot(page),overflow:await page.evaluate(()=>({horizontal:document.documentElement.scrollWidth>innerWidth,vertical:document.documentElement.scrollHeight>innerHeight}))};}
+async function walkTo(page,target,record){
+  const before=await snapshot(page),begin=Date.now(),deadline=begin+Math.hypot(target.x-before.playtest.view.x,target.y-before.playtest.view.y)/140*1000+4000,held=new Set();
+  try{
+    while(true){
+      const current=await snapshot(page),v=current.playtest.view,dx=target.x-v.x,dy=target.y-v.y;
+      assert.equal(v.inspectionJumps,0,'actual continuous native path, no inspection teleport');
+      assert.equal(current.playtest.planView,false,'actor-scale Walk view');
+      assert.equal(v.contacts,0,'declared path walking must not scrape a physical blocker');
+      if(Math.hypot(dx,dy)<=20)break;
+      assert.ok(Date.now()<deadline,`native route stalled before${target.name}`);
+      const next=new Set();
+      if(Math.abs(dx)>12)next.add(dx>0?'ArrowRight':'ArrowLeft');
+      if(Math.abs(dy)>12)next.add(dy>0?'ArrowDown':'ArrowUp');
+      for(const key of held)if(!next.has(key)){await page.keyboard.up(key);held.delete(key);}
+      for(const key of next)if(!held.has(key)){await page.keyboard.down(key);held.add(key);}
+      // Real browser/60Hz clock advances; this is control sampling, not a replaced clock.
+      await page.waitForTimeout(75);
+    }
+  }finally{for(const key of held)await page.keyboard.up(key);}
+  await page.waitForFunction(()=>{const p=window.__HMH_GREYBOX__.snapshot().playtest;return p.heldKeys===0&&p.view.vx===0&&p.view.vy===0;},null,{timeout:2500});
+  const after=await snapshot(page);assert.ok(Math.hypot(target.x-after.playtest.view.x,target.y-after.playtest.view.y)<=32,`native arrival:${target.name}`);assert.equal(after.playtest.view.inspectionJumps,0);assert.ok(after.playtest.view.tick>before.playtest.view.tick);assert.ok(after.playtest.nativeEvents>before.playtest.nativeEvents);record.journeys.push({target,before,after,wholeNativeControlWallMs:Date.now()-begin,basis:'Read-only position feedback samples actual browser keyboard controls; no clock/state writes. No contact at sampled feedback points; this is not cumulative contact telemetry, exact centre-polyline following, combat, pacing or performance certification.'});
+}
+async function touchTo(page,session,direction,target,record){
+  const before=await snapshot(page),button=await page.getByRole('button',{name:`Move${' '+direction}`}).boundingBox();assert.ok(button);
+  const x=button.x+button.width/2,y=button.y+button.height/2;
+  try{
+    await session.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x,y,id:1}]});
+    await page.waitForFunction(({axis,value,direction})=>{const v=window.__HMH_GREYBOX__.snapshot().playtest.view;return(direction==='left'||direction==='up')?v[axis]<=value:v[axis]>=value;},{...target,direction},{timeout:8000});
+  }finally{await session.send('Input.dispatchTouchEvent',{type:'touchCancel',touchPoints:[]});}
+  await page.waitForFunction(()=>{const p=window.__HMH_GREYBOX__.snapshot().playtest;return p.heldPointers===0&&p.view.vx===0&&p.view.vy===0;});
+  const after=await snapshot(page);assert.equal(after.playtest.view.inspectionJumps,0);assert.equal(after.playtest.view.contacts,0);assert.ok(after.playtest.view.tick>before.playtest.view.tick+30);assert.ok(after.playtest.nativeEvents>before.playtest.nativeEvents);record.journeys.push({direction,target,before,after,basis:'Actual Chrome touch dispatch on the visible direction button, with touchCancel and no inspection jump. Windows phone framing proxy, not physical phone.'});
+}
+try{
+  server=createServer((request,response)=>{
+    try{
+      const pathname=new URL(request.url,'http://localhost').pathname;
+      if(pathname==='/favicon.ico'){response.writeHead(204);response.end();return;}
+      if(pathname==='/__greybox-iframe-test'){response.writeHead(200,{'Content-Type':'text/html'});response.end('<iframe title="denied embedded greybox" src="/dist/hmh-greybox/index.html?mode=free&world=visual-overhaul-greybox-v1"></iframe>');return;}
+      const file=path.resolve(portal,'.'+decodeURIComponent(pathname));
+      if(!file.startsWith(portal+path.sep)||!fs.existsSync(file)||!fs.statSync(file).isFile()){response.writeHead(404);response.end('not found');return;}
+      response.writeHead(200,{'Content-Type':suffix[path.extname(file)]??'application/octet-stream','Cache-Control':'no-store'});response.end(fs.readFileSync(file));
+    }catch(error){response.writeHead(400);response.end('bad local request');}
+  });
+  server.once('close',()=>{report.serverLifecycle.closeObserved=true;report.serverLifecycle.closeObservedAt=new Date().toISOString();});
+  await new Promise((resolve,reject)=>{server.once('error',reject);server.listen(0,'127.0.0.1',resolve);});origin=`http://127.0.0.1:${server.address().port}`;report.serverLifecycle.listening=true;report.serverLifecycle.address=server.address();
+  browserServer=await chromium.launchServer({executablePath:'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',headless:true,timeout:15_000});
+  const chrome=browserServer.process();report.chromeProcess={pid:chrome.pid,closeObserved:false,scope:'The exact BrowserServer-owned Chrome child; renderer children are managed by that owned browser and the outer exact-PID tree watchdog.'};
+  chromeClose=new Promise(resolve=>{chrome.once('close',(exitCode,signal)=>{Object.assign(report.chromeProcess,{closeObserved:true,exitCode,signal,closeObservedAt:new Date().toISOString()});resolve();});});
+  browser=await chromium.connect(browserServer.wsEndpoint(),{timeout:15_000});
+  const url=`${origin}/dist/hmh-greybox/index.html?mode=free&world=visual-overhaul-greybox-v1`;
+  for(const viewport of [{name:'desktop',width:1280,height:800,deviceScaleFactor:1,isMobile:false,hasTouch:false},{name:'phone-proxy',width:414,height:896,deviceScaleFactor:3,isMobile:true,hasTouch:true}]){
+    const context=await browser.newContext({viewport:{width:viewport.width,height:viewport.height},deviceScaleFactor:viewport.deviceScaleFactor,isMobile:viewport.isMobile,hasTouch:viewport.hasTouch});contexts.push(context);
+    await context.addInitScript(()=>{window.__greyboxBoundaryAudit={posts:0,writes:0};const post=window.postMessage.bind(window);window.postMessage=(...args)=>{window.__greyboxBoundaryAudit.posts++;return post(...args);};const set=Storage.prototype.setItem;Storage.prototype.setItem=function(...args){window.__greyboxBoundaryAudit.writes++;return set.apply(this,args);};});
+    const page=await context.newPage();track(page);await ready(page,url);
+    const record={viewport,captures:[],journeys:[],wall:null,cleanup:null};report.viewports.push(record);
+    record.captures.push(await capture(page,`${viewport.name}-start`,'Actual initial localFree spawn, no jump'));
+    if(viewport.name==='desktop'){
+      for(const [name,x,y,picture]of[
+        ['green approach',12500,6280,'desktop-green-approach'],['relay approach',12760,5770,null],['relay switch',13200,5740,'desktop-relay-court'],
+        ['return relay approach',12760,5770,null],['return green approach',12500,6280,null],['entry green',12500,6700,null],['city entrance',11600,6700,'desktop-entry-from-city'],
+        ['garden turn',11150,6700,null],['garden lane',11150,6000,null],['garden secret',11100,6000,'desktop-garden-lane'],
+        ['garden back edge',11100,5650,null],['garden rejoin north',11700,5650,'desktop-garden-rejoin'],['garden rejoin east',12420,5770,null],['garden rejoin green',12420,6700,null],['rejoined entry',12500,6700,null],
+        ['porch city entrance',11600,6700,null],['porch foot approach',11060,6700,null],['porch foot',11060,6900,null],['ramp entry',11200,6900,null],['porch top',11700,6900,'desktop-porch']
+      ]){await walkTo(page,{name,x,y},record);if(picture)record.captures.push(await capture(page,picture,'Actor-scale Walk view after uninterrupted real keyboard movement; no inspection jump'));}
+      const porch=await snapshot(page);assert.equal(porch.playtest.view.groundZ,24);assert.equal(porch.playtest.view.inspectionJumps,0);
+      // Separate contact witness, after completing the clear authored routes.
+      for(const[name,x,y]of[['reverse ramp',11200,6900],['reverse ramp foot',11060,6900],['return to ground lane',11060,6700],['fence contact approach',11350,6700]])await walkTo(page,{name,x,y},record);
+      const before=await snapshot(page);let contact;await page.keyboard.down('ArrowUp');
+      try{await page.waitForFunction(()=>window.__HMH_GREYBOX__.snapshot().playtest.view.contacts>0,null,{timeout:6000});contact=await snapshot(page);assert.ok(contact.playtest.view.contacts>0);}finally{await page.keyboard.up('ArrowUp');}
+      await page.waitForFunction(()=>window.__HMH_GREYBOX__.snapshot().playtest.heldKeys===0&&window.__HMH_GREYBOX__.snapshot().playtest.view.vy===0);
+      const after=await snapshot(page);assert.ok(after.playtest.view.y>=6223.99&&after.playtest.view.y<=6225.01);assert.equal(after.playtest.view.inspectionJumps,0);record.wall={type:'Separate actual radius24 contact against visible garden fence',before,contact,after};record.captures.push(await capture(page,'desktop-fence-contact','Real collision contact; separate from the passing declared-route walks'));
+    }else{
+      const session=await context.newCDPSession(page);
+      try{await touchTo(page,session,'left',{axis:'x',value:11150},record);await touchTo(page,session,'up',{axis:'y',value:6000},record);}finally{await session.detach();}
+      record.captures.push(await capture(page,'phone-proxy-garden-lane','Actor-scale native touch walk into the fenced garden lane; actual cancel/zero held pointers, no inspection jump'));
+    }
+    await page.getByRole('button',{name:'Toggle area plan'}).click();
+    const plan=await capture(page,`${viewport.name}-meadows-plan`,'Explicit Area plan presentation toggle at actual walked position; geometry/framing only, no inspection jump');assert.equal(plan.snapshot.playtest.planView,true);assert.equal(plan.snapshot.playtest.view.inspectionJumps,0);record.captures.push(plan);
+    const audit=await page.evaluate(()=>window.__greyboxBoundaryAudit);assert.deepEqual(audit,{posts:0,writes:0});record.boundaryAudit=audit;
+    let cleanup;await page.exposeFunction('saveGreyboxCleanup',value=>{cleanup=value;});await page.evaluate(()=>window.addEventListener('pagehide',()=>window.saveGreyboxCleanup(window.__HMH_GREYBOX__.snapshot()),{once:true}));await page.goto('about:blank',{waitUntil:'domcontentloaded'});await page.waitForTimeout(50);assert.ok(cleanup?.disposed);assert.equal(cleanup.phase,'disposed');assert.equal(cleanup.playtest.disposed,true);assert.equal(cleanup.playtest.assetsReady,false);assert.equal(cleanup.playtest.heldKeys,0);assert.equal(cleanup.playtest.heldPointers,0);record.cleanup=cleanup;
+    await Promise.allSettled(responseTasks);await bounded(context.close(),10_000,'viewport context close');contexts.splice(contexts.indexOf(context),1);save();
+  }
+  for(const [name,target]of [['default-denied',`${origin}/dist/hmh-greybox/index.html`],['ranked-denied',url.replace('mode=free','mode=ranked')],['embedded-denied',`${origin}/__greybox-iframe-test`],['remote-url-denied','https://greybox.invalid/dist/hmh-greybox/index.html?mode=free&world=visual-overhaul-greybox-v1']]){
+    const context=await browser.newContext();contexts.push(context);const page=await context.newPage();track(page);const requested=[];page.on('request',request=>requested.push(request.url()));
+    // Actual non-loopback browser location, but all .invalid requests are locally
+    // fulfilled with the exact built bytes. No external host or DNS is contacted.
+    if(name==='remote-url-denied')await context.route('https://greybox.invalid/**',route=>{const pathname=new URL(route.request().url()).pathname,file=path.resolve(portal,'.'+pathname);assert.ok(file.startsWith(portal+path.sep));return route.fulfill({status:200,body:fs.readFileSync(file),contentType:suffix[path.extname(file)]??'application/octet-stream'});});
+    await page.goto(target,{waitUntil:'domcontentloaded',timeout:15_000});
+    let result;if(name==='embedded-denied'){const frame=page.frameLocator('iframe');await frame.locator('[data-greybox-root][data-preview="denied"]').waitFor();result=await page.frames().find(frame=>frame.url().includes('/dist/hmh-greybox/index.html')).evaluate(()=>window.__HMH_GREYBOX__.snapshot());}else{await page.locator('[data-greybox-root][data-preview="denied"]').waitFor();result=await snapshot(page);}
+    assert.equal(result.access.allowed,false);assert.equal(result.playtest,null);assert.equal(requested.some(url=>url.includes('/assets/')||url.includes('/chunks/')),false);report.safety.push({name,result,requested,basis:name==='remote-url-denied'?'Actual remote URL with exact local byte fulfilment; no external network':'Actual served local entry'});await Promise.allSettled(responseTasks);await bounded(context.close(),10_000,'denied context close');contexts.splice(contexts.indexOf(context),1);
+  }
+  await Promise.allSettled(responseTasks);assert.equal(report.errors.length,0,JSON.stringify(report.errors));assert.equal(report.resourceFailures.length,0,JSON.stringify(report.resourceFailures));assert.equal(report.responses.some(response=>new URL(response.url).pathname.startsWith('/api/')),false);assert.equal(report.viewports.length,2);assert.equal(report.safety.length,4);report.passed=true;
+}catch(error){report.failure={message:error.message,stack:error.stack};process.exitCode=1;}
+finally{
+  save();for(const context of contexts){try{await bounded(context.close(),10_000,'failed context close');}catch(error){report.cleanupErrors.push(String(error));}}
+  try{if(browser)await bounded(browser.close(),15_000,'Chrome close');}catch(error){report.cleanupErrors.push(String(error));}
+  try{if(browserServer){await bounded(browserServer.close(),15_000,'owned Chrome BrowserServer close');await bounded(chromeClose,5_000,'actual owned Chrome process close');}}catch(error){report.cleanupErrors.push(String(error));}
+  try{if(server){server.closeAllConnections();await bounded(new Promise((resolve,reject)=>server.close(error=>error?reject(error):resolve())),5_000,'local server close');}}catch(error){report.cleanupErrors.push(String(error));}
+  if(report.cleanupErrors.length||!Number.isSafeInteger(report.chromeProcess?.pid)||report.chromeProcess.pid<=0||!report.chromeProcess.closeObserved||report.chromeProcess.exitCode!==0||report.chromeProcess.signal!==null||!report.serverLifecycle.closeObserved){report.passed=false;process.exitCode=1;}save();console.log(JSON.stringify({output,passed:report.passed,viewports:report.viewports.length,safety:report.safety.length,errors:report.errors.length,cleanupErrors:report.cleanupErrors,chromeClosed:report.chromeProcess?.closeObserved??false,serverClosed:report.serverLifecycle.closeObserved}));
+}

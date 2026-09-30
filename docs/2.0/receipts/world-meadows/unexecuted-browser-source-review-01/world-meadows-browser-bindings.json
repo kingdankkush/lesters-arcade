@@ -1,0 +1,1213 @@
+{
+  "schema": "world-meadows-preview-browser-binding-v1",
+  "repo": "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0",
+  "scope": "Source-only exact local Meadows preview closure and declared esbuild/Playwright dependencies. No production build, browser, performance or owner approval implied.",
+  "roots": [
+    "apps/hmh-reboot/src/dev/greybox-entry.mjs",
+    "scripts/build-hmh-greybox-preview.mjs",
+    "tests/hmh-greybox-world.test.mjs",
+    "tests/hmh-greybox-closed-masses.test.mjs",
+    "tests/hmh-greybox-playtest.test.mjs",
+    "tests/hmh-greybox-kit-polygon-contract.test.mjs",
+    "tests/hmh-greybox-meadows-flow.test.mjs"
+  ],
+  "sources": {
+    "apps/hmh-reboot/src/dev/greybox-entry.mjs": {
+      "bytes": 1140,
+      "sha256": "e864b89b3f8eb700db80221ce1ca68fa20abfaa5772b1a19608a7699cd334144"
+    },
+    "apps/hmh-reboot/src/dev/greybox-access.mjs": {
+      "bytes": 872,
+      "sha256": "222a770f3eb59d670c5804ca6f9e17d9c6c5312ae4fc4d3bbff7c56b08958237"
+    },
+    "apps/hmh-reboot/src/dev/greybox-preview-launch.mjs": {
+      "bytes": 1016,
+      "sha256": "0ebe73bd5112241fd5fb7d98b5def88ee2eb44fa91deb1782d71e1a043f2d221"
+    },
+    "apps/hmh-reboot/src/dev/greybox-playtest.mjs": {
+      "bytes": 11910,
+      "sha256": "6915622ca937151eef0a696fa268ac577f197a622a78036ef9e2ebdac96afa81"
+    },
+    "apps/hmh-reboot/src/dev/greybox-world-v1.mjs": {
+      "bytes": 9333,
+      "sha256": "9d37bc9a8aad0ab5ca5a9722975fd282e18f5c7d87d2b8796077b029aba05ef7"
+    },
+    "apps/hmh-reboot/src/dev/greybox-kit.mjs": {
+      "bytes": 5168,
+      "sha256": "b453096397f610445bd8a548e8ed70b883544d947e8cc98518b82fb7c756c349"
+    },
+    "apps/hmh-reboot/src/collision.mjs": {
+      "bytes": 18604,
+      "sha256": "94a90d4a68c9e66b54ff0332e8cf60aaeaff06c02734aed07a3e420e7eb52593"
+    },
+    "apps/hmh-reboot/src/value-guards.mjs": {
+      "bytes": 2596,
+      "sha256": "8576f65fd1f8a4680578580a150bd3acdec43f555e6c8f1181e54ae92771cb94"
+    },
+    "apps/hmh-reboot/src/blocker-bounds.mjs": {
+      "bytes": 4684,
+      "sha256": "7f94d7f336a697e806ce92d1f5eedf9674d9d948f6366a958ba27e7124d2bf8a"
+    },
+    "apps/hmh-reboot/src/elevation.mjs": {
+      "bytes": 19061,
+      "sha256": "afab7fb53ba657f13f1646d533909ae68544754c1de24ccef786ee156a57c4ea"
+    },
+    "apps/hmh-reboot/src/dev/greybox-closed-masses.mjs": {
+      "bytes": 5250,
+      "sha256": "f1562f9f5c0be11d4b0c7a397e39187dc536a9546be7497ecfa75ea5ea0826cc"
+    },
+    "apps/hmh-reboot/src/dev/greybox-meadows.mjs": {
+      "bytes": 3661,
+      "sha256": "7d69ab91dd7e678af19b14b296d7e977e6ed7fe619a910d9ce9c93f2ed33516e"
+    },
+    "apps/hmh-reboot/src/dev/greybox-navigation.mjs": {
+      "bytes": 4687,
+      "sha256": "f4dda425b57cc2810a393efe184ed1f0df4fd23f444887525d60e3dfc776c185"
+    },
+    "apps/hmh-reboot/src/movement.mjs": {
+      "bytes": 8122,
+      "sha256": "7fd15d97e91f67fda97b0d0c59b7a128400e4db8494f8b9d7c2fc570cc774480"
+    },
+    "apps/hmh-reboot/src/production-hero-assets.mjs": {
+      "bytes": 2011,
+      "sha256": "be9d84633f0c72b227a7ac4b358e063faeb8eb6da1f6a29bacae4a0a64798bc3"
+    },
+    "apps/hmh-reboot/src/production-hero-atlas.mjs": {
+      "bytes": 32486,
+      "sha256": "e34fa1adcae0981676e0a60e200bf48dd21bee7b582fe251619a9b017ae665b2"
+    },
+    "apps/hmh-reboot/src/held-weapon-atlas.mjs": {
+      "bytes": 13349,
+      "sha256": "b266126c3ec0141936ed56b9bb45bf22713def4a94e5553643695cc4e383a989"
+    },
+    "scripts/build-hmh-greybox-preview.mjs": {
+      "bytes": 1577,
+      "sha256": "5aac0ac721e2313bf7eda93eb4ae9b8b70a3c0f6b2e27531f394ff9172a598e9"
+    },
+    "tests/hmh-greybox-world.test.mjs": {
+      "bytes": 10049,
+      "sha256": "0f0893929fc1067cf287dbd48d4140a0366c54e6286cb37f5b9c4d289e6bc0a6"
+    },
+    "scripts/lib/hmh-greybox-world-check.mjs": {
+      "bytes": 14521,
+      "sha256": "5e7bc94f8200c15d73cd53e94193464697e8b6c804a793b80b3ce652214e448c"
+    },
+    "scripts/lib/hmh-greybox-layout-check.mjs": {
+      "bytes": 5996,
+      "sha256": "7296aaf2767d5d77d759c7b7a3c9757dc931ba98e1db126436e11525533fb55e"
+    },
+    "apps/hmh-reboot/src/enemy-navgrid.mjs": {
+      "bytes": 30791,
+      "sha256": "da338be023aeeaadf0d5eb00a7ceef0adbd82e3ab7eb1b833fe7171445f595c3"
+    },
+    "tests/hmh-greybox-closed-masses.test.mjs": {
+      "bytes": 3899,
+      "sha256": "b744cb42468d2ee1bc7b0ab776c82afa783cfb8a2d6a5d8a8741ed0387e2e7d3"
+    },
+    "tests/hmh-greybox-playtest.test.mjs": {
+      "bytes": 6723,
+      "sha256": "f97f82199d638f52c01eba264211c264e3225e807ea8f2ed82de02bdae4a4658"
+    },
+    "tests/hmh-greybox-kit-polygon-contract.test.mjs": {
+      "bytes": 1727,
+      "sha256": "7cda487e835a76ca65a91e308debbb7e1d64e3c06429068f1ea6373794ed0abe"
+    },
+    "tests/hmh-greybox-meadows-flow.test.mjs": {
+      "bytes": 4638,
+      "sha256": "9a504bb2a95d76cc77d0206c1b7e6c4924a5b6256b2ab88331554c06b364f77f"
+    },
+    "apps/hmh-reboot/src/dev/greybox-preview.css": {
+      "bytes": 2979,
+      "sha256": "e16de9444570ddfa9fe801d6dc247cc0062d03c9ee7f79a54b0e5b45b7f171c2"
+    },
+    "package.json": {
+      "bytes": 14071,
+      "sha256": "3559b1afe529f6b873c5ed0fd6dd3efa0103a55fa99373d75112b36d68ab5518"
+    },
+    "package-lock.json": {
+      "bytes": 214063,
+      "sha256": "8d3837f478e49858912c634d2947ee3105ad62f304ab04fea9d4d2b5b509f335"
+    }
+  },
+  "edges": [
+    {
+      "file": "apps/hmh-reboot/src/dev/greybox-entry.mjs",
+      "specifier": "./greybox-access.mjs",
+      "target": "apps/hmh-reboot/src/dev/greybox-access.mjs"
+    },
+    {
+      "file": "apps/hmh-reboot/src/dev/greybox-entry.mjs",
+      "specifier": "./greybox-preview-launch.mjs",
+      "target": "apps/hmh-reboot/src/dev/greybox-preview-launch.mjs"
+    },
+    {
+      "file": "apps/hmh-reboot/src/dev/greybox-entry.mjs",
+      "specifier": "./greybox-playtest.mjs",
+      "target": "apps/hmh-reboot/src/dev/greybox-playtest.mjs"
+    },
+    {
+      "file": "apps/hmh-reboot/src/dev/greybox-playtest.mjs",
+      "specifier": "./greybox-world-v1.mjs",
+      "target": "apps/hmh-reboot/src/dev/greybox-world-v1.mjs"
+    },
+    {
+      "file": "apps/hmh-reboot/src/dev/greybox-world-v1.mjs",
+      "specifier": "./greybox-kit.mjs",
+      "target": "apps/hmh-reboot/src/dev/greybox-kit.mjs"
+    },
+    {
+      "file": "apps/hmh-reboot/src/dev/greybox-kit.mjs",
+      "specifier": "../collision.mjs",
+      "target": "apps/hmh-reboot/src/collision.mjs"
+    },
+    {
+      "file": "apps/hmh-reboot/src/collision.mjs",
+      "specifier": "./value-guards.mjs",
+      "target": "apps/hmh-reboot/src/value-guards.mjs"
+    },
+    {
+      "file": "apps/hmh-reboot/src/collision.mjs",
+      "specifier": "./blocker-bounds.mjs",
+      "target": "apps/hmh-reboot/src/blocker-bounds.mjs"
+    },
+    {
+      "file": "apps/hmh-reboot/src/blocker-bounds.mjs",
+      "specifier": "./value-guards.mjs",
+      "target": "apps/hmh-reboot/src/value-guards.mjs"
+    },
+    {
+      "file": "apps/hmh-reboot/src/dev/greybox-kit.mjs",
+      "specifier": "../elevation.mjs",
+      "target": "apps/hmh-reboot/src/elevation.mjs"
+    },
+    {
+      "file": "apps/hmh-reboot/src/elevation.mjs",
+      "specifier": "./value-guards.mjs",
+      "target": "apps/hmh-reboot/src/value-guards.mjs"
+    },
+    {
+      "file": "apps/hmh-reboot/src/elevation.mjs",
+      "specifier": "./blocker-bounds.mjs",
+      "target": "apps/hmh-reboot/src/blocker-bounds.mjs"
+    },
+    {
+      "file": "apps/hmh-reboot/src/elevation.mjs",
+      "specifier": "./value-guards.mjs",
+      "target": "apps/hmh-reboot/src/value-guards.mjs"
+    },
+    {
+      "file": "apps/hmh-reboot/src/dev/greybox-kit.mjs",
+      "specifier": "../value-guards.mjs",
+      "target": "apps/hmh-reboot/src/value-guards.mjs"
+    },
+    {
+      "file": "apps/hmh-reboot/src/dev/greybox-world-v1.mjs",
+      "specifier": "../elevation.mjs",
+      "target": "apps/hmh-reboot/src/elevation.mjs"
+    },
+    {
+      "file": "apps/hmh-reboot/src/dev/greybox-world-v1.mjs",
+      "specifier": "../value-guards.mjs",
+      "target": "apps/hmh-reboot/src/value-guards.mjs"
+    },
+    {
+      "file": "apps/hmh-reboot/src/dev/greybox-world-v1.mjs",
+      "specifier": "./greybox-closed-masses.mjs",
+      "target": "apps/hmh-reboot/src/dev/greybox-closed-masses.mjs"
+    },
+    {
+      "file": "apps/hmh-reboot/src/dev/greybox-closed-masses.mjs",
+      "specifier": "../value-guards.mjs",
+      "target": "apps/hmh-reboot/src/value-guards.mjs"
+    },
+    {
+      "file": "apps/hmh-reboot/src/dev/greybox-world-v1.mjs",
+      "specifier": "./greybox-meadows.mjs",
+      "target": "apps/hmh-reboot/src/dev/greybox-meadows.mjs"
+    },
+    {
+      "file": "apps/hmh-reboot/src/dev/greybox-meadows.mjs",
+      "specifier": "./greybox-kit.mjs",
+      "target": "apps/hmh-reboot/src/dev/greybox-kit.mjs"
+    },
+    {
+      "file": "apps/hmh-reboot/src/dev/greybox-playtest.mjs",
+      "specifier": "./greybox-navigation.mjs",
+      "target": "apps/hmh-reboot/src/dev/greybox-navigation.mjs"
+    },
+    {
+      "file": "apps/hmh-reboot/src/dev/greybox-navigation.mjs",
+      "specifier": "../movement.mjs",
+      "target": "apps/hmh-reboot/src/movement.mjs"
+    },
+    {
+      "file": "apps/hmh-reboot/src/movement.mjs",
+      "specifier": "./value-guards.mjs",
+      "target": "apps/hmh-reboot/src/value-guards.mjs"
+    },
+    {
+      "file": "apps/hmh-reboot/src/dev/greybox-navigation.mjs",
+      "specifier": "../collision.mjs",
+      "target": "apps/hmh-reboot/src/collision.mjs"
+    },
+    {
+      "file": "apps/hmh-reboot/src/dev/greybox-navigation.mjs",
+      "specifier": "../elevation.mjs",
+      "target": "apps/hmh-reboot/src/elevation.mjs"
+    },
+    {
+      "file": "apps/hmh-reboot/src/dev/greybox-playtest.mjs",
+      "specifier": "../production-hero-assets.mjs",
+      "target": "apps/hmh-reboot/src/production-hero-assets.mjs"
+    },
+    {
+      "file": "apps/hmh-reboot/src/dev/greybox-playtest.mjs",
+      "specifier": "../production-hero-atlas.mjs",
+      "target": "apps/hmh-reboot/src/production-hero-atlas.mjs"
+    },
+    {
+      "file": "apps/hmh-reboot/src/production-hero-atlas.mjs",
+      "specifier": "./production-hero-assets.mjs",
+      "target": "apps/hmh-reboot/src/production-hero-assets.mjs"
+    },
+    {
+      "file": "apps/hmh-reboot/src/production-hero-atlas.mjs",
+      "specifier": "./held-weapon-atlas.mjs",
+      "target": "apps/hmh-reboot/src/held-weapon-atlas.mjs"
+    },
+    {
+      "file": "apps/hmh-reboot/src/held-weapon-atlas.mjs",
+      "specifier": "./value-guards.mjs",
+      "target": "apps/hmh-reboot/src/value-guards.mjs"
+    },
+    {
+      "file": "apps/hmh-reboot/src/production-hero-atlas.mjs",
+      "specifier": "./production-hero-assets.mjs",
+      "target": "apps/hmh-reboot/src/production-hero-assets.mjs"
+    },
+    {
+      "file": "tests/hmh-greybox-world.test.mjs",
+      "specifier": "../apps/hmh-reboot/src/collision.mjs",
+      "target": "apps/hmh-reboot/src/collision.mjs"
+    },
+    {
+      "file": "tests/hmh-greybox-world.test.mjs",
+      "specifier": "../apps/hmh-reboot/src/dev/greybox-kit.mjs",
+      "target": "apps/hmh-reboot/src/dev/greybox-kit.mjs"
+    },
+    {
+      "file": "tests/hmh-greybox-world.test.mjs",
+      "specifier": "../apps/hmh-reboot/src/dev/greybox-world-v1.mjs",
+      "target": "apps/hmh-reboot/src/dev/greybox-world-v1.mjs"
+    },
+    {
+      "file": "tests/hmh-greybox-world.test.mjs",
+      "specifier": "../scripts/lib/hmh-greybox-world-check.mjs",
+      "target": "scripts/lib/hmh-greybox-world-check.mjs"
+    },
+    {
+      "file": "scripts/lib/hmh-greybox-world-check.mjs",
+      "specifier": "./hmh-greybox-layout-check.mjs",
+      "target": "scripts/lib/hmh-greybox-layout-check.mjs"
+    },
+    {
+      "file": "scripts/lib/hmh-greybox-layout-check.mjs",
+      "specifier": "../../apps/hmh-reboot/src/enemy-navgrid.mjs",
+      "target": "apps/hmh-reboot/src/enemy-navgrid.mjs"
+    },
+    {
+      "file": "apps/hmh-reboot/src/enemy-navgrid.mjs",
+      "specifier": "./elevation.mjs",
+      "target": "apps/hmh-reboot/src/elevation.mjs"
+    },
+    {
+      "file": "scripts/lib/hmh-greybox-world-check.mjs",
+      "specifier": "../../apps/hmh-reboot/src/collision.mjs",
+      "target": "apps/hmh-reboot/src/collision.mjs"
+    },
+    {
+      "file": "scripts/lib/hmh-greybox-world-check.mjs",
+      "specifier": "../../apps/hmh-reboot/src/elevation.mjs",
+      "target": "apps/hmh-reboot/src/elevation.mjs"
+    },
+    {
+      "file": "tests/hmh-greybox-closed-masses.test.mjs",
+      "specifier": "../apps/hmh-reboot/src/collision.mjs",
+      "target": "apps/hmh-reboot/src/collision.mjs"
+    },
+    {
+      "file": "tests/hmh-greybox-closed-masses.test.mjs",
+      "specifier": "../apps/hmh-reboot/src/dev/greybox-closed-masses.mjs",
+      "target": "apps/hmh-reboot/src/dev/greybox-closed-masses.mjs"
+    },
+    {
+      "file": "tests/hmh-greybox-playtest.test.mjs",
+      "specifier": "../apps/hmh-reboot/src/collision.mjs",
+      "target": "apps/hmh-reboot/src/collision.mjs"
+    },
+    {
+      "file": "tests/hmh-greybox-playtest.test.mjs",
+      "specifier": "../apps/hmh-reboot/src/elevation.mjs",
+      "target": "apps/hmh-reboot/src/elevation.mjs"
+    },
+    {
+      "file": "tests/hmh-greybox-playtest.test.mjs",
+      "specifier": "../apps/hmh-reboot/src/dev/greybox-access.mjs",
+      "target": "apps/hmh-reboot/src/dev/greybox-access.mjs"
+    },
+    {
+      "file": "tests/hmh-greybox-playtest.test.mjs",
+      "specifier": "../apps/hmh-reboot/src/dev/greybox-navigation.mjs",
+      "target": "apps/hmh-reboot/src/dev/greybox-navigation.mjs"
+    },
+    {
+      "file": "tests/hmh-greybox-playtest.test.mjs",
+      "specifier": "../apps/hmh-reboot/src/dev/greybox-preview-launch.mjs",
+      "target": "apps/hmh-reboot/src/dev/greybox-preview-launch.mjs"
+    },
+    {
+      "file": "tests/hmh-greybox-kit-polygon-contract.test.mjs",
+      "specifier": "../apps/hmh-reboot/src/dev/greybox-kit.mjs",
+      "target": "apps/hmh-reboot/src/dev/greybox-kit.mjs"
+    },
+    {
+      "file": "tests/hmh-greybox-meadows-flow.test.mjs",
+      "specifier": "../apps/hmh-reboot/src/dev/greybox-world-v1.mjs",
+      "target": "apps/hmh-reboot/src/dev/greybox-world-v1.mjs"
+    },
+    {
+      "file": "tests/hmh-greybox-meadows-flow.test.mjs",
+      "specifier": "../apps/hmh-reboot/src/dev/greybox-kit.mjs",
+      "target": "apps/hmh-reboot/src/dev/greybox-kit.mjs"
+    },
+    {
+      "file": "tests/hmh-greybox-meadows-flow.test.mjs",
+      "specifier": "../scripts/lib/hmh-greybox-world-check.mjs",
+      "target": "scripts/lib/hmh-greybox-world-check.mjs"
+    },
+    {
+      "file": "tests/hmh-greybox-meadows-flow.test.mjs",
+      "specifier": "../apps/hmh-reboot/src/collision.mjs",
+      "target": "apps/hmh-reboot/src/collision.mjs"
+    }
+  ],
+  "assets": {
+    "apps/portal/assets/generated/hmh-reboot-production-heroes/lit-commando/lit-commando-production-pilot-atlas.json": {
+      "bytes": 648685,
+      "sha256": "bd2b91492a03b69898e90c5b0c6e3eab279bc315a0c03e174297090e6a295199"
+    },
+    "apps/portal/assets/generated/hmh-reboot-production-heroes/lit-commando/lit-commando-production-pilot-atlas.webp": {
+      "bytes": 3919100,
+      "sha256": "37679ea9f5c78f69b276e381969585d2298bcb2072cb343e6d4a0b95a7b8b749"
+    }
+  },
+  "dependencies": {
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\node_modules\\esbuild\\bin\\esbuild": {
+      "bytes": 9350,
+      "sha256": "fe9a7b65a540d8df1a0f59941d52e7c1260c36fed9a2af3dd966f15381b6eb76"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\node_modules\\esbuild\\install.js": {
+      "bytes": 11773,
+      "sha256": "612294e278914443bdcf81cb17f54afec34dbdd2ebd999a6ee187912320cc315"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\node_modules\\esbuild\\lib\\main.d.ts": {
+      "bytes": 23392,
+      "sha256": "161c8e0690c46021506e32fda85956d785b70f309ae97011fd27374c065cac9b"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\node_modules\\esbuild\\lib\\main.js": {
+      "bytes": 97214,
+      "sha256": "8331fe1d8b3a07381f33cc425fcfaa94776e263113653f80ec3ba433e9657e73"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\node_modules\\esbuild\\LICENSE.md": {
+      "bytes": 1069,
+      "sha256": "b40ec5baec7bb34fa5b1c09521fa3cd52d5fad7adafed74932a2010d3612a681"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\node_modules\\esbuild\\package.json": {
+      "bytes": 3980,
+      "sha256": "d55d1d19fcc5b6079e4a71dd4111340c79c682bc36835ac7058a0c364c7db58a"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\node_modules\\esbuild\\README.md": {
+      "bytes": 175,
+      "sha256": "6d481cd60ec3c679e5e395f547ab4221147f35642894f6b95a8df38fd25c87bd"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\node_modules\\@esbuild\\win32-x64\\esbuild.exe": {
+      "bytes": 11670528,
+      "sha256": "ec02ee9b14ab332416fedd10614dfb80eed5304d94f67745067c011934a8c3c3"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\node_modules\\@esbuild\\win32-x64\\package.json": {
+      "bytes": 374,
+      "sha256": "4a63b84fa1059fef348e29e3a39c26168213bb7f0aa1ac0174e439cc1e62a9f8"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\node_modules\\@esbuild\\win32-x64\\README.md": {
+      "bytes": 143,
+      "sha256": "29cf512fa580b72392176bf694933ae0decaf18116fdeee917511b445411ce16"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\node_modules\\acorn\\bin\\acorn": {
+      "bytes": 60,
+      "sha256": "4c3eb6f1d8932790dbff043839f8ee7686bc614a59ef577e96fed618a4a4b1b8"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\node_modules\\acorn\\CHANGELOG.md": {
+      "bytes": 24556,
+      "sha256": "d01a9c476275c0a46ae4164ae724729aaacfc812b76cd7e6fefe2cb76819f01e"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\node_modules\\acorn\\dist\\acorn.d.mts": {
+      "bytes": 22462,
+      "sha256": "df8107deaf41869871690db7306f87b587e59660d659b1fbb64a7a30cea7cf36"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\node_modules\\acorn\\dist\\acorn.d.ts": {
+      "bytes": 22462,
+      "sha256": "df8107deaf41869871690db7306f87b587e59660d659b1fbb64a7a30cea7cf36"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\node_modules\\acorn\\dist\\acorn.js": {
+      "bytes": 245232,
+      "sha256": "fc3ed7b81e58464715d0291402892f22c3d86ea75302645a330390f85d8015c9"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\node_modules\\acorn\\dist\\acorn.mjs": {
+      "bytes": 233301,
+      "sha256": "953573b8fdab71599749ea5f2b33d3e760c2116178f9423ee7458dbe39d59453"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\node_modules\\acorn\\dist\\bin.js": {
+      "bytes": 3329,
+      "sha256": "fffd9df1d9158c4580068ad17c3176c34fe46f59021b8cd5780454994764dc30"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\node_modules\\acorn\\LICENSE": {
+      "bytes": 1099,
+      "sha256": "76a876cf886ff9be2a8b5e2e86514fed06223c8c9f0c1e9ee9606e93841e00b7"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\node_modules\\acorn\\package.json": {
+      "bytes": 1067,
+      "sha256": "5c1ed7259579a7899b303f514b0194adcb9fe474fc7d136a84c6a45f10eefc84"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\node_modules\\acorn\\README.md": {
+      "bytes": 11759,
+      "sha256": "b7783c23979634a89060164d8092e591639198b4460aefbed4ba9f8da478a977"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright\\cli.js": {
+      "bytes": 698,
+      "sha256": "5e79302a6aad7d835d92d5ae6b4244c91cf61b28e94d7917279090e6c231f7a1"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright\\index.d.ts": {
+      "bytes": 636,
+      "sha256": "b07f64ff6ec710998a62b07377fbda0ab4c313ba1f0055bfe9faa22cffedd47c"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright\\index.js": {
+      "bytes": 648,
+      "sha256": "4e98f65f0a9d9bcab8cffc0c5cfdd87fd3f5b0be74fc494ff166a466b204cd44"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright\\index.mjs": {
+      "bytes": 704,
+      "sha256": "a0f5715ea22354f922791a9c53dc012d5d5c067ff9cc4cd35ffb7cd272071a9f"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright\\jsx-runtime.js": {
+      "bytes": 942,
+      "sha256": "2fefb7ec3a42dcf1cea35ca7e3eb107507c4d80821b1d6abf6cfc9bca36498f0"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright\\jsx-runtime.mjs": {
+      "bytes": 764,
+      "sha256": "a6ae8df3a36f154f433b01fe1592170500f5fbe7798f6dacdfea5b492f31d1a6"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright\\lib\\agents\\agentParser.js": {
+      "bytes": 3475,
+      "sha256": "a2f630c1c2c9eafa0a3ca9cdbeaa26e74801615bc572e3fce226acb662ceb0eb"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright\\lib\\agents\\copilot-setup-steps.yml": {
+      "bytes": 646,
+      "sha256": "57f0fa74a9cc9e5abdf46846167d6e7d5a5aa274399cb5896616530db7b85da1"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright\\lib\\agents\\generateAgents.js": {
+      "bytes": 16958,
+      "sha256": "3bae7bde1d05c0fbaaa1a82ce7a39732ff52904de575fe88e69c391a6c41478e"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright\\lib\\agents\\playwright-test-coverage.prompt.md": {
+      "bytes": 1294,
+      "sha256": "8e8a32e98c7069c8af29a088a91999c81dafbeb09a144b143ebe888b48b94355"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright\\lib\\agents\\playwright-test-generate.prompt.md": {
+      "bytes": 175,
+      "sha256": "6031c3eacf1e55d527a0397066b64d134d9f925fd7286bcc78646e714611da10"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright\\lib\\agents\\playwright-test-generator.agent.md": {
+      "bytes": 3336,
+      "sha256": "0a61b313ff2573198fc89c7ab5b7e7db1c557193a470104ac90b2d6a0332be80"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright\\lib\\agents\\playwright-test-heal.prompt.md": {
+      "bytes": 105,
+      "sha256": "19f2bea9648ddac89b90b40a3f87b50c276d416677f8bb2fbcdac894cdb6946b"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright\\lib\\agents\\playwright-test-healer.agent.md": {
+      "bytes": 2891,
+      "sha256": "b3e1d85219df5ead7e3ef0dc69959b0263cc16e885f71d5b64bafdf97e6f9215"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright\\lib\\agents\\playwright-test-plan.prompt.md": {
+      "bytes": 196,
+      "sha256": "6ce2c51b356b4e89ac1e3c2b8b3ff0a390c7b518c1d4d24f019f9eb179cd6669"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright\\lib\\agents\\playwright-test-planner.agent.md": {
+      "bytes": 2808,
+      "sha256": "bf4baa68205aa04c4512a80bcc6a5362d3aaa76ae9165f05a9d5a29e1d34c0fd"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright\\lib\\cli\\reportActions.js": {
+      "bytes": 3562,
+      "sha256": "1ea9e8660db28045b853a54c24493b08029e148d9a0ee6e88027e409b497e3f1"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright\\lib\\cli\\testActions.js": {
+      "bytes": 9372,
+      "sha256": "44a4770714406134d1135b77d3b4388b557a7decb7f24094e637b6a5d517dd48"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright\\lib\\common\\index.js": {
+      "bytes": 115552,
+      "sha256": "f06ef2600a7ec53a67dc86e3f3ef809b7df3d81a848f5cad35a81675f531a321"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright\\lib\\common\\index.js.txt": {
+      "bytes": 1430,
+      "sha256": "9f21a01a6e63f1a8f48c9330d8e35d7a973bce2953c02f5103c77e091c1c6c2c"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright\\lib\\errorContext.js": {
+      "bytes": 4619,
+      "sha256": "7fdc8216d80ba10c5edea9617463da2e76ba56d966a14a963176952415d03871"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright\\lib\\globals.js": {
+      "bytes": 1935,
+      "sha256": "f5922eb1fb6051900157492eb9c218e62d07378eed135bca4b2f173ed1184d1c"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright\\lib\\index.js": {
+      "bytes": 34528,
+      "sha256": "033484bd04076585fa11954261323575a2f8ec12ca113f0c288dac67009fbf9f"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright\\lib\\isomorphic.js": {
+      "bytes": 8191,
+      "sha256": "3d61508f951aa9518adb4bf6594d61dfd1099c95a1a4f0af809a58ccebc59025"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright\\lib\\isomorphic.js.txt": {
+      "bytes": 267,
+      "sha256": "36c16ae5721dfe8ac2555e84d26b5895b7ca113e7304bd3735a16d56b5a71b3c"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright\\lib\\loader\\loaderProcessEntry.js": {
+      "bytes": 1262,
+      "sha256": "45681332f4178770c204b33e5b8dcbba940baf3bc6fc86506bab24027cb513f3"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright\\lib\\loader\\loaderProcessEntry.js.txt": {
+      "bytes": 234,
+      "sha256": "0fc4ad550d17a23e9f1cbc78f646e57461f4feb22253dd5220034ef44091005c"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright\\lib\\matchers\\expect.js": {
+      "bytes": 526213,
+      "sha256": "78fb9c8cb3214b6ff753e8444034f60ad740e5f16225bac879bb7bca3055fb62"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright\\lib\\matchers\\expect.js.LICENSE": {
+      "bytes": 39215,
+      "sha256": "4de4f5013cf10f5e438eb155af434c36083395e7c2c52d0385b4a7cbab71391e"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright\\lib\\matchers\\expect.js.txt": {
+      "bytes": 3903,
+      "sha256": "161ca3c9bc3edc5e3a549edaad90d499d54531a2cf5f282559da1a0978186165"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright\\lib\\mcp\\test\\browserBackend.js": {
+      "bytes": 4889,
+      "sha256": "7143473e53c8b76720e42efab95f55227807590d2818104223d5df6ac46b681e"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright\\lib\\mcp\\test\\generatorTools.js": {
+      "bytes": 5427,
+      "sha256": "3c53feaeb9fc2ff728f334cb31f9b7211e65b20c692c7585459c3c97bdd13a12"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright\\lib\\mcp\\test\\plannerTools.js": {
+      "bytes": 6379,
+      "sha256": "715abc888d9ea30b532b75c6f09aa34101ab15c1eeb959c50cf9dedcf3a459ac"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright\\lib\\mcp\\test\\seed.js": {
+      "bytes": 3239,
+      "sha256": "f36f7fb76d4ed33225e80be208cccc9757d363a9d1527cf560736c0f1e5edd31"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright\\lib\\mcp\\test\\streams.js": {
+      "bytes": 1577,
+      "sha256": "8affc240a6a90ee2dbdedcde9927018efe426ec0d390bcd1ee4f0464e75adc0f"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright\\lib\\mcp\\test\\testBackend.js": {
+      "bytes": 4067,
+      "sha256": "dcd8d09366617f13213ce544efb5fe47df5a87258ae93545d4d0738623f43ad1"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright\\lib\\mcp\\test\\testContext.js": {
+      "bytes": 11637,
+      "sha256": "74ff4273ea12e6353d4860c9452387b643d7d8899fbd4951389ba94d18df5e37"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright\\lib\\mcp\\test\\testTool.js": {
+      "bytes": 1104,
+      "sha256": "2a8f17d0a61ccb8a4ca9c52a3255d624deca989c0b06281d579629c664f8cc8e"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright\\lib\\mcp\\test\\testTools.js": {
+      "bytes": 3714,
+      "sha256": "14710b5f34246005d974762b83a2a50e5cc17130af841cd3bc447811d69c6af7"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright\\lib\\package.js": {
+      "bytes": 2013,
+      "sha256": "544a18417ea51dd4c8a9f3dbc4e2b47e46c80f452e0cd23d55e9b3680bc6241e"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright\\lib\\program.js": {
+      "bytes": 13581,
+      "sha256": "2fcbb3f041bd810ffe66fdb5f1253179c31311e2acbf716a0f254b6f683a5e0d"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright\\lib\\runner\\index.js": {
+      "bytes": 297798,
+      "sha256": "42772378ebad5d2387726d02d377721112edbdde99d495c1259855ddb701b08e"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright\\lib\\runner\\index.js.txt": {
+      "bytes": 2857,
+      "sha256": "045afc17f5bdcfcb0ea6931bf1a7221a247105c86264eb008bbf74f246810c25"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright\\lib\\transform\\babelBundle.js": {
+      "bytes": 2789601,
+      "sha256": "9201df11ae9c9ee1febd587c5013c4f862aa7e9981b92b86ccbbbd37e71f9124"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright\\lib\\transform\\babelBundle.js.LICENSE": {
+      "bytes": 121614,
+      "sha256": "676fa240edb9d844720e8e42e61be5457a4ced8dae0c6e63efb4b85e95d2d276"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright\\lib\\transform\\babelBundle.js.txt": {
+      "bytes": 21706,
+      "sha256": "4f8cd1987142f0cac537e30835b45c6fc18953451d74aa3bd9d82729fd0fdf1d"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright\\lib\\transform\\esmLoader.js": {
+      "bytes": 255065,
+      "sha256": "184d831ae4ec32d6f4e91c8c7801a28058ecd22c54e0bf3012240b20d6cedd74"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright\\lib\\transform\\esmLoader.js.LICENSE": {
+      "bytes": 17875,
+      "sha256": "1e61a7d29900da9ab323e85c2b89066e5d899a95b94f33aedc5f11d02d3da31a"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright\\lib\\transform\\esmLoader.js.txt": {
+      "bytes": 2465,
+      "sha256": "31e80fb604166449150c3c0d7559c1fd53f9e1ace1725f2b870300523cb4038d"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright\\lib\\util.js": {
+      "bytes": 15165,
+      "sha256": "6d5e08165ec78f576d4724c0e4693d07cf1e8e2662156daa706e380550d272a5"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright\\lib\\worker\\workerProcessEntry.js": {
+      "bytes": 75892,
+      "sha256": "e8b654850c073df3996816eb09edf845490d9a6e75785477a9ddb69d586cca54"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright\\lib\\worker\\workerProcessEntry.js.txt": {
+      "bytes": 692,
+      "sha256": "9731733268a00b6f3f3ac31174d3b1203848f61d8f516ffafe977420e9803d2a"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright\\LICENSE": {
+      "bytes": 11601,
+      "sha256": "45873d00a0dd243596deb4aa23b2493b3d1f0671921bf2538ea431d7380220eb"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright\\NOTICE": {
+      "bytes": 254,
+      "sha256": "6d602191187b35b9b01d2cffa01c8469c2c8d9de8a96f1bf868e0f264f51c81d"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright\\package.json": {
+      "bytes": 1559,
+      "sha256": "6b840268612656f0639fb7d68782e8353bdf11518589d30ddf66f283c2670ed5"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright\\README.md": {
+      "bytes": 11282,
+      "sha256": "d753d8f27fe36f705efad3199201148b8b55a41de977329d33c1ca81a744c6ef"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright\\test.d.ts": {
+      "bytes": 673,
+      "sha256": "3f00324f263189b385c3a9383b1f4dae6237697bcf0801f96aa35c340512d79c"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright\\test.js": {
+      "bytes": 806,
+      "sha256": "b97fa53a6ab864f51c9c48b5e4647d0acae45ba2948c5d78e38bfeb56755d974"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright\\test.mjs": {
+      "bytes": 1400,
+      "sha256": "1deb265617d0e87b6d05bf8b3d5bf73cd4b788665c249c609a01b94ceff2eea1"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright\\ThirdPartyNotices.txt": {
+      "bytes": 705,
+      "sha256": "b17ac0bd6f4b8207e440639cc8e0ba1bf1d9eaf9b12236764ab93b346c7abd8e"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright\\types\\test.d.ts": {
+      "bytes": 374132,
+      "sha256": "6e8044a9ca35eb66823c9ddddf826ca28bf900cd0cb3d31b3007277d094dc21e"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright\\types\\testReporter.d.ts": {
+      "bytes": 28107,
+      "sha256": "a724fe8a5f72bc65ca93f5d2c2d9f49d9be93074ca4c011e71c5fdd0094da619"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright-core\\bin\\install_media_pack.ps1": {
+      "bytes": 174,
+      "sha256": "bc20f049badf021e3a53bdb4156603caa5ef482c9a9a251f927605e676a44171"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright-core\\bin\\install_webkit_wsl.ps1": {
+      "bytes": 1464,
+      "sha256": "bc61beda37a808eef27d39ce684baa792f6d17737a25a432b1a84d3b591ab815"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright-core\\bin\\reinstall_chrome_beta_linux.sh": {
+      "bytes": 1217,
+      "sha256": "dc8c22b9dde76583cece2857575b88094299615f3136a3c598149710c45dee3a"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright-core\\bin\\reinstall_chrome_beta_mac.sh": {
+      "bytes": 563,
+      "sha256": "a92eaeb4ebcf5633a4e9c981481e14c80764fc81b6fcbc0565398e50ff319433"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright-core\\bin\\reinstall_chrome_beta_win.ps1": {
+      "bytes": 957,
+      "sha256": "b6d9e44742feafb98d5edc56fa20042949973cf30d141a1c5b4fb384096967c5"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright-core\\bin\\reinstall_chrome_stable_linux.sh": {
+      "bytes": 1212,
+      "sha256": "dc72ab3567a4ce43bd8353d4ecf41f1d9c03e870169367cd3ed9043aabf67dd1"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright-core\\bin\\reinstall_chrome_stable_mac.sh": {
+      "bytes": 519,
+      "sha256": "bb43a96c192a6cc81524ade0264686fff7809c019a89f7db0a9849635879c3be"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright-core\\bin\\reinstall_chrome_stable_win.ps1": {
+      "bytes": 923,
+      "sha256": "3d96c4e2f4ebbb3fad44cf3ba58d9cf90af1c9fb3073e3b27d45a74cf005515b"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright-core\\bin\\reinstall_msedge_beta_linux.sh": {
+      "bytes": 1494,
+      "sha256": "10b26f35dbc2000b94edf1172d803a29c5873a4eb8d523afbc687997b642767e"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright-core\\bin\\reinstall_msedge_beta_mac.sh": {
+      "bytes": 377,
+      "sha256": "0036d738bc90d686100d81f328ba0003bf07863f5500b792c8da391d149750fa"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright-core\\bin\\reinstall_msedge_beta_win.ps1": {
+      "bytes": 874,
+      "sha256": "b173c378a59f0cc38033cee702de1f44f09276c9b2270d1a650ebe66ee312433"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright-core\\bin\\reinstall_msedge_dev_linux.sh": {
+      "bytes": 1489,
+      "sha256": "00e4947e7a4f8339c6db09c87976d808583c07f9179e4aa7694d88614b82fe95"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright-core\\bin\\reinstall_msedge_dev_mac.sh": {
+      "bytes": 372,
+      "sha256": "6f899e3b311f742c24ca37ff9e32298e8290514ffc14bf588cc51556a29da4c0"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright-core\\bin\\reinstall_msedge_dev_win.ps1": {
+      "bytes": 869,
+      "sha256": "46f7f98c81cb0abe687d7f4a5afea9b897a38d2a6dd6f6662fbd847f7a22bd51"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright-core\\bin\\reinstall_msedge_stable_linux.sh": {
+      "bytes": 1507,
+      "sha256": "ec0a31a5f09c565e108473a1850895a4458ab00c713ac1de3aa2001912e4668f"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright-core\\bin\\reinstall_msedge_stable_mac.sh": {
+      "bytes": 371,
+      "sha256": "3af1e893527ff2257aa2dbc3b259a053b92f45c3eadb13e38eba46e87902655d"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright-core\\bin\\reinstall_msedge_stable_win.ps1": {
+      "bytes": 856,
+      "sha256": "40bb5fcbfcebbbe2ce43c6e736e7c5deefc5be03b6e9c6914423c06ec1f591be"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright-core\\browsers.json": {
+      "bytes": 1939,
+      "sha256": "ee39bc924bc3d1bd895626c2910f1292d109bbfeeb5abd113acb45e1951cc942"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright-core\\cli.js": {
+      "bytes": 839,
+      "sha256": "f1c4075aef116c766092250d7f37b3249a7cee6465d953207fc38c8f6145becd"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright-core\\index.d.ts": {
+      "bytes": 634,
+      "sha256": "7a8ec10b0834eb7183e4bfcd929838ac77583828e343211bb73676d1e47f6f01"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright-core\\index.js": {
+      "bytes": 697,
+      "sha256": "a58fb2cec4293e7dcf73c58a179898a4f3986666451a19da4e731fa3af63265b"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright-core\\index.mjs": {
+      "bytes": 1063,
+      "sha256": "3d36e2132d3c8b62397d23f0bb4177336aaee503203ae2a2c90fbeb5bf3317dd"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright-core\\lib\\bootstrap.js": {
+      "bytes": 3481,
+      "sha256": "97ffe165e8e45f1b51a713b3f380d383e4e183727135fe9a5e045ec62e9310ab"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright-core\\lib\\coreBundle.js": {
+      "bytes": 3352341,
+      "sha256": "6be5c2ea035554e9b184b1dbc7aa5e7f1fb428dd1b5c202022858dcfae9bee27"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright-core\\lib\\entry\\cliDaemon.js": {
+      "bytes": 197,
+      "sha256": "062f256fb29a7bf91793a014b9c3f1f9cf2dc6b12e40a8a2ebba88a630ae16a0"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright-core\\lib\\entry\\dashboardApp.js": {
+      "bytes": 108,
+      "sha256": "209962c6eaeef11629f226d6a2ab33ec7a2480754242b6e19590a9e6eb71d126"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright-core\\lib\\entry\\mcp.js": {
+      "bytes": 442,
+      "sha256": "cc87dc0020cb41caebbf04f50e42bc7835b033a6d80e9c3f0a3d0b3dbdf341c7"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright-core\\lib\\entry\\oopBrowserDownload.js": {
+      "bytes": 120,
+      "sha256": "87567cdbd67dd2f50bb232d47d3784701ece7c81e39c0287bb7d1b466b68cf06"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright-core\\lib\\package.js": {
+      "bytes": 2112,
+      "sha256": "9f938e1d44a0dd231b1660ca62f7dae964859b79cbdc370b8542c5d375ca3c05"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright-core\\lib\\server\\chromium\\appIcon.png": {
+      "bytes": 16565,
+      "sha256": "6ba994f05c5cf18e22d9b6bef9898fbdec6ad4d4d77f5187d0609cb42d72d01e"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright-core\\lib\\server\\deviceDescriptorsSource.json": {
+      "bytes": 80785,
+      "sha256": "796ff93bfd5e38b84541a1e8745a7abcbccba54d440fb3b7a1acec0655d056cc"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright-core\\lib\\server\\electron\\loader.js": {
+      "bytes": 4821,
+      "sha256": "8c99c632a9fcef9d691160954d01acdf374ba15566e153bef7fb61b0d3796e6d"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright-core\\lib\\serverRegistry.js": {
+      "bytes": 247050,
+      "sha256": "85f63dbf8dc73fa651dcf046a732d78a86dbda401084b1d144d5a1ef1a59730d"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright-core\\lib\\serverRegistry.js.LICENSE": {
+      "bytes": 18617,
+      "sha256": "5cf540fe55a2ba9bcf0eb76e739b454faa8581e2f1a0f777602ef0855534302e"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright-core\\lib\\tools\\cli-client\\channelSessions.js": {
+      "bytes": 7087,
+      "sha256": "6b9c613e87340f48ad7182addd7495a8ff3fbe55feb1bbd0ce04f59f1552e126"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright-core\\lib\\tools\\cli-client\\cli.js": {
+      "bytes": 153,
+      "sha256": "dfde8e9dfde30c4b3914eb25ba1c5a8524ec64651d866171d75cd7b41a827180"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright-core\\lib\\tools\\cli-client\\help.json": {
+      "bytes": 36596,
+      "sha256": "961a8792b8b4e43f6d28d8d3029f6b3b7fa2e04d04d84fb0590bd0d759d2c456"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright-core\\lib\\tools\\cli-client\\minimist.js": {
+      "bytes": 4106,
+      "sha256": "1d200627373a367e0097f1abeaaa4d67cde2c33f2e5efca5cb55222c7667adc3"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright-core\\lib\\tools\\cli-client\\output.js": {
+      "bytes": 11703,
+      "sha256": "2eace914547a487b2aa1dc34af787fe92168f0b7b3dde24f2b127e817cc9b2b4"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright-core\\lib\\tools\\cli-client\\program.js": {
+      "bytes": 16054,
+      "sha256": "722f00475112d4a3b569af51172e0bd88d1e4627a65ed8a2245031e08e7cc1ec"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright-core\\lib\\tools\\cli-client\\registry.js": {
+      "bytes": 6662,
+      "sha256": "c11d278e05542808ba37bdb032018eccf9dc78377f8025bd74fa906ae009ca30"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright-core\\lib\\tools\\cli-client\\session.js": {
+      "bytes": 9395,
+      "sha256": "c47202e7886ddd17ad2ce3e7f4b893f751e0e074cb1111a8bbc20fd33ecec800"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright-core\\lib\\tools\\cli-client\\skill\\references\\element-attributes.md": {
+      "bytes": 665,
+      "sha256": "bf19aa4671e0a50a0fefa9c790f39124e803060eefe395042b723c29fcb7faa2"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright-core\\lib\\tools\\cli-client\\skill\\references\\playwright-tests.md": {
+      "bytes": 1690,
+      "sha256": "c5b0719fef2cfdff50bd744051b2f9afc119775db4b48e9b2882c1cf3886797c"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright-core\\lib\\tools\\cli-client\\skill\\references\\request-mocking.md": {
+      "bytes": 2182,
+      "sha256": "54e801c9663fc2b6d68ceb058cb1c360724c2499f42acc7852a68e83e5b5f37c"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright-core\\lib\\tools\\cli-client\\skill\\references\\running-code.md": {
+      "bytes": 5642,
+      "sha256": "d95c539a5990b71d02d8bdf1d9414df16191eb6cff95b0063820518b7a13dcb2"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright-core\\lib\\tools\\cli-client\\skill\\references\\session-management.md": {
+      "bytes": 5671,
+      "sha256": "cd3e261b8763bf952f1e371b876cb78d054379afec85482f9250633e1b7e6c44"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright-core\\lib\\tools\\cli-client\\skill\\references\\spec-driven-testing.md": {
+      "bytes": 11578,
+      "sha256": "3326b3af65ed6e05180aa394a7fd578f29822e67bde9f22f7c7f94e6c8e3a594"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright-core\\lib\\tools\\cli-client\\skill\\references\\storage-state.md": {
+      "bytes": 5198,
+      "sha256": "9ac47f9ae4a1aedcd2077f8ac9ab1ba6bee1962cb83ff51adcd36fb6d83b5ec6"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright-core\\lib\\tools\\cli-client\\skill\\references\\test-generation.md": {
+      "bytes": 4585,
+      "sha256": "2a9c4d94effa31b05cf367dfa8bbace8874a3bc9799987ad2b03269af224d299"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright-core\\lib\\tools\\cli-client\\skill\\references\\tracing.md": {
+      "bytes": 3440,
+      "sha256": "792e0ac7705e56ac48df84c0f5400221ce86107897c671590a64a4ea6a82508e"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright-core\\lib\\tools\\cli-client\\skill\\references\\video-recording.md": {
+      "bytes": 5387,
+      "sha256": "8555ab5400df0d90e66318aacc0a8a4418fbf872e7463824d55d5c41615abd83"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright-core\\lib\\tools\\cli-client\\skill\\SKILL.md": {
+      "bytes": 11869,
+      "sha256": "b4c81c39e39f30e4790607e57b12283878f3751daca9c0e44f301899f2108b13"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright-core\\lib\\tools\\dashboard\\appIcon.png": {
+      "bytes": 18945,
+      "sha256": "38037bcf18c7f9b950da2e1a2d8800d38fb27637ccda293d38368a3704b67f18"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright-core\\lib\\tools\\trace\\SKILL.md": {
+      "bytes": 4712,
+      "sha256": "df85506bfa8a445c961efa1ac244cca733667b717711bcc99c1f93994c29d5dc"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright-core\\lib\\tools\\utils\\extension.js": {
+      "bytes": 3132,
+      "sha256": "c07d365ccff8c7fab3d65848bc01616c74e422f3be7b1c0e7b587b84ef866ada"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright-core\\lib\\tools\\utils\\socketConnection.js": {
+      "bytes": 3317,
+      "sha256": "973c2bea70a1f1445f4673f99e9fa351e50a2ec9fd93d7381b2c41bb4de764dd"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright-core\\lib\\utilsBundle.js": {
+      "bytes": 3143574,
+      "sha256": "1295945f0054d2504c9b751945b15aa3c672530ad5a340f3f9636e5e238f304a"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright-core\\lib\\utilsBundle.js.LICENSE": {
+      "bytes": 110417,
+      "sha256": "e3f91eea8ba98019d8e65ec61756af34a67e170070005a09d1fc6f49a64b544b"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright-core\\lib\\vite\\dashboard\\assets\\codicon-DCmgc-ay.ttf": {
+      "bytes": 80340,
+      "sha256": "0f1d5219934e96e83b8db162d60b4d8c09b5de1e7d38031cbafe4a3c0f2889c9"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright-core\\lib\\vite\\dashboard\\assets\\firefox-1bWoP6pv.svg": {
+      "bytes": 7488,
+      "sha256": "3f3742d1e78c0db6c2d3531250f70c30675ee5310de32fa89befaf738c54efd0"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright-core\\lib\\vite\\dashboard\\assets\\firefox-beta-k3eOH_eK.svg": {
+      "bytes": 9280,
+      "sha256": "7eab5ffdc25903ba33a7202f7fffa1999f119c7be45a39e9e703c118904f917a"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright-core\\lib\\vite\\dashboard\\assets\\firefox-nightly-Cp5nfeDT.svg": {
+      "bytes": 9143,
+      "sha256": "f311c074b0fa999fcd6b73441301fb54ee87a48ff3bf05f318647928110476da"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright-core\\lib\\vite\\dashboard\\assets\\index-BY2S1tHT.css": {
+      "bytes": 142433,
+      "sha256": "4e741ba6be0fb15305f6dfd907e245e68554f6dbd5282a58dcc1e9d2493eb917"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright-core\\lib\\vite\\dashboard\\assets\\index-C_5TMfeg.js": {
+      "bytes": 331501,
+      "sha256": "cf991b92763fb3b3759e9c5b9839e3625b351041db4199501a53c3c82bd2e28c"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright-core\\lib\\vite\\dashboard\\assets\\safari-na3_-uQk.svg": {
+      "bytes": 5254,
+      "sha256": "80fd72ca5eb8545f1981277b31f4f92951d469d4efebd078e4086b676fe517dc"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright-core\\lib\\vite\\dashboard\\index.html": {
+      "bytes": 1078,
+      "sha256": "1025839f364c006a0a3b6f94196a630fdbec355cfe15de3777d975e725c915c7"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright-core\\lib\\vite\\dashboard\\playwright-logo.svg": {
+      "bytes": 5645,
+      "sha256": "511524a1c145819303a18fb71870a4307c3e740f9e9722f7686a2b42b0995b6c"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright-core\\lib\\vite\\htmlReport\\index.html": {
+      "bytes": 464,
+      "sha256": "ce7c098020a0eb9ce10edd416245ea6da50dfeaab18dfd0a2176979d22643be6"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright-core\\lib\\vite\\htmlReport\\report.css": {
+      "bytes": 108330,
+      "sha256": "3298f11062d5112516c8b3fa2368c6138b4700aa9fa215bb5fc0a1f0efe94e3f"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright-core\\lib\\vite\\htmlReport\\report.js": {
+      "bytes": 416009,
+      "sha256": "9e7baad230ee5aec5af605ac4687687cf0e079f3299423811aa9768543d8947b"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright-core\\lib\\vite\\recorder\\assets\\codeMirrorModule-DeBYQozu.js": {
+      "bytes": 313009,
+      "sha256": "f4ad79265956fe5186af9d2b8ebcf4c0e40ec8d0405ab623471a6cecb22bc1d7"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright-core\\lib\\vite\\recorder\\assets\\codeMirrorModule-DYBRYzYX.css": {
+      "bytes": 6421,
+      "sha256": "70bf421a13e87857ca684bfa2cc55f06d7c5a50f71253a3ff1d74769b14a957e"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright-core\\lib\\vite\\recorder\\assets\\codicon-DCmgc-ay.ttf": {
+      "bytes": 80340,
+      "sha256": "0f1d5219934e96e83b8db162d60b4d8c09b5de1e7d38031cbafe4a3c0f2889c9"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright-core\\lib\\vite\\recorder\\assets\\index-4ZiSSCmn.css": {
+      "bytes": 92234,
+      "sha256": "4278e600a533667369328e9eb52a212693d52e46072ec37228e0ef8621a48ead"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright-core\\lib\\vite\\recorder\\assets\\index-Bq-mQf8S.js": {
+      "bytes": 365888,
+      "sha256": "b9215ab0e84dba105788f7ae82559892b4ebab1e9c7cde479d00a381e8375c40"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright-core\\lib\\vite\\recorder\\index.html": {
+      "bytes": 1078,
+      "sha256": "a02e5446589dc2515a986f9944918029df332418db0f706a819d3bf1a0bf7fa3"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright-core\\lib\\vite\\recorder\\playwright-logo.svg": {
+      "bytes": 5033,
+      "sha256": "6b0a4367bdeab10995bc239278f04c68c10e48adbec15e799e01909a0d66dcb9"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright-core\\lib\\vite\\traceViewer\\assets\\codeMirrorModule-LEHpjmcn.js": {
+      "bytes": 313054,
+      "sha256": "e3d682edfb4dd1fa17882466dd15058120278b27ff1101785a57b6df4db7ada5"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright-core\\lib\\vite\\traceViewer\\assets\\defaultSettingsView-BNmKHKpQ.js": {
+      "bytes": 658064,
+      "sha256": "f21839cd274944763d12ad24529345b9f8ebf339409f51f4dbe52f9d9baeb09c"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright-core\\lib\\vite\\traceViewer\\assets\\urlMatch-BYQrIQwR.js": {
+      "bytes": 819,
+      "sha256": "168c4dee4815ea8d3c131a504033cd23d4b15aefa0209dd10ad3f643e8f1d8a7"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright-core\\lib\\vite\\traceViewer\\assets\\xtermModule-CsJ4vdCR.js": {
+      "bytes": 292244,
+      "sha256": "4aa82b0448cef1cf951bbe0ac80bf2d2b7c5d279dd74bcc798a9e563e98e5295"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright-core\\lib\\vite\\traceViewer\\codeMirrorModule.DYBRYzYX.css": {
+      "bytes": 6421,
+      "sha256": "70bf421a13e87857ca684bfa2cc55f06d7c5a50f71253a3ff1d74769b14a957e"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright-core\\lib\\vite\\traceViewer\\codicon.DCmgc-ay.ttf": {
+      "bytes": 80340,
+      "sha256": "0f1d5219934e96e83b8db162d60b4d8c09b5de1e7d38031cbafe4a3c0f2889c9"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright-core\\lib\\vite\\traceViewer\\defaultSettingsView.CjdS-WJx.css": {
+      "bytes": 112258,
+      "sha256": "de9c068d0e8043820fe42f30558e972eb7e2a8a45a34f65c7c8f73fa2dbc9fd0"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright-core\\lib\\vite\\traceViewer\\index.CzXZzn5A.css": {
+      "bytes": 2111,
+      "sha256": "4ec2a3d49db259ce9025cb4fa48d73b1afd58215e567eef3b4a4cbf76c1674d9"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright-core\\lib\\vite\\traceViewer\\index.DMMX1gXU.js": {
+      "bytes": 6547,
+      "sha256": "f33ceae71f13fde446a244c113548fec5ef890bf7b93ded7b861bebcebaa3e23"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright-core\\lib\\vite\\traceViewer\\index.html": {
+      "bytes": 2363,
+      "sha256": "5ced36d3feb5bbbc0e8350330be0a293a1b4784ddecb6e58e1851323a93640cc"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright-core\\lib\\vite\\traceViewer\\manifest.webmanifest": {
+      "bytes": 429,
+      "sha256": "d8540500603a32a39fe7e5a0375dc0f9ebafd11118e06a846db7efc608223ab9"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright-core\\lib\\vite\\traceViewer\\playwright-logo.svg": {
+      "bytes": 5033,
+      "sha256": "6b0a4367bdeab10995bc239278f04c68c10e48adbec15e799e01909a0d66dcb9"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright-core\\lib\\vite\\traceViewer\\snapshot.html": {
+      "bytes": 389,
+      "sha256": "11c80efe4f4424fa59004bcc71fed77a420d2da5f199790e355c30a5b965d0cd"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright-core\\lib\\vite\\traceViewer\\snapshot.v8KI4P3m.js": {
+      "bytes": 660,
+      "sha256": "97a3cd6d67aaac66efc838d7d743ac51bbf7d272e1287981c11758fca21a0657"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright-core\\lib\\vite\\traceViewer\\sw.bundle.js": {
+      "bytes": 95855,
+      "sha256": "5237c6c68ba1f3591caf8cf951be4873192342a72fbcc31e5a667f7a7904c624"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright-core\\lib\\vite\\traceViewer\\uiMode.BZQ54Kgt.css": {
+      "bytes": 60311,
+      "sha256": "a548cd88f2041433da2d60fd3a33ef23af2fb8ddf2557b7bef79806364498e57"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright-core\\lib\\vite\\traceViewer\\uiMode.html": {
+      "bytes": 727,
+      "sha256": "95bf648d76d380b779770aae1c560b58ee456096b2b3b02922e629af29e3d492"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright-core\\lib\\vite\\traceViewer\\uiMode.Ut8wwJNp.js": {
+      "bytes": 38514,
+      "sha256": "0ab1e917250833c3f6b3ed3ae3f359158bf68cd2d9951163ee6edff9b8ed1e5b"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright-core\\lib\\vite\\traceViewer\\xtermModule.DYP7pi_n.css": {
+      "bytes": 4150,
+      "sha256": "7c5a01f382f76539fc9b4db6b18e18a7035741845fd14968c5cdc0a7e373d817"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright-core\\lib\\xdg-open": {
+      "bytes": 25778,
+      "sha256": "2e79a4d5171dd384d20a75b023dfe0e9f4330cdb5d441f6c3859a11fce3db51a"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright-core\\LICENSE": {
+      "bytes": 11601,
+      "sha256": "45873d00a0dd243596deb4aa23b2493b3d1f0671921bf2538ea431d7380220eb"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright-core\\NOTICE": {
+      "bytes": 254,
+      "sha256": "6d602191187b35b9b01d2cffa01c8469c2c8d9de8a96f1bf868e0f264f51c81d"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright-core\\package.json": {
+      "bytes": 876,
+      "sha256": "759e376f995bf39edd4810d699b99469bab1d7428b6fbc78d41912f367df7ba9"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright-core\\README.md": {
+      "bytes": 120,
+      "sha256": "d16ff7f8e38fa1fc954f695ad551cdc118d9c9bdd5f3d83203901f4c317d7d7e"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright-core\\ThirdPartyNotices.txt": {
+      "bytes": 676,
+      "sha256": "a549d329bad8806fe279f0ecae0fc0270dec7e7c2dc8ec10f90e394f7c32b144"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright-core\\types\\protocol.d.ts": {
+      "bytes": 814471,
+      "sha256": "17c6561066a9708a09115ad4b49ff23cf81a607f54278c9b9b5865964906f415"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright-core\\types\\structs.d.ts": {
+      "bytes": 2103,
+      "sha256": "32727845ab5bd8a9ef3e4844c567c09f6d418fcf0f90d381c00652a6f23e7f6e"
+    },
+    "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright-core\\types\\types.d.ts": {
+      "bytes": 1003279,
+      "sha256": "60200590d8ecf247a6e9c769c6b79bd8e688c3af14ef208072d0c6954b25f125"
+    }
+  },
+  "harness": {
+    "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\hmh-greybox-meadows-browser-smoke.mjs": {
+      "bytes": 17864,
+      "sha256": "e0b52210403720a27b3161ca5a996615011ef0e772ec88fa43932b67bb0cdddb"
+    },
+    "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\owned-windows-preview-child.mjs": {
+      "bytes": 3476,
+      "sha256": "6f4903a66d324a01a476eebefdfac68663dde2c573f62f637c4b7537ccb0d631"
+    },
+    "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\prepare-world-meadows-browser.mjs": {
+      "bytes": 5350,
+      "sha256": "1cd818215d5ead35dc62b07a8a16ccd2fce14d55648948f963bc4aa0bb73dcf1"
+    }
+  },
+  "protectedFiles": {
+    "apps/hmh-reboot/src/level-one-world.mjs": {
+      "bytes": 36585,
+      "sha256": "173d43a2718919dc93a5c9e2c5b061a1cb1821fc6969d9f9bd7c4f5d435c69a1"
+    },
+    "apps/hmh-reboot/src/enemy-navgrid.mjs": {
+      "bytes": 30791,
+      "sha256": "da338be023aeeaadf0d5eb00a7ceef0adbd82e3ab7eb1b833fe7171445f595c3"
+    },
+    "apps/hmh-reboot/src/elevation.mjs": {
+      "bytes": 19061,
+      "sha256": "afab7fb53ba657f13f1646d533909ae68544754c1de24ccef786ee156a57c4ea"
+    },
+    "apps/hmh-reboot/src/collision.mjs": {
+      "bytes": 18604,
+      "sha256": "94a90d4a68c9e66b54ff0332e8cf60aaeaff06c02734aed07a3e420e7eb52593"
+    },
+    "apps/hmh-reboot/src/movement.mjs": {
+      "bytes": 8122,
+      "sha256": "7fd15d97e91f67fda97b0d0c59b7a128400e4db8494f8b9d7c2fc570cc774480"
+    },
+    "apps/hmh-reboot/src/main.mjs": {
+      "bytes": 325923,
+      "sha256": "389e6f9a85c123eeebd3adcfa9a78542165e68b4446b83d9d89be90df7e658a1"
+    },
+    "scripts/lib/hmh-greybox-layout-check.mjs": {
+      "bytes": 5996,
+      "sha256": "7296aaf2767d5d77d759c7b7a3c9757dc931ba98e1db126436e11525533fb55e"
+    }
+  },
+  "node": {
+    "executable": "C:\\Program Files\\nodejs\\node.exe",
+    "version": "v24.17.0",
+    "bytes": 92299080,
+    "sha256": "c6335d08331c23d68b9f2b18adb102002d76ef150b47248e954c507e0d033664"
+  },
+  "chrome": {
+    "executable": "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+    "bytes": 4538520,
+    "sha256": "96512cf816b5c7d6d82b53aeb314f6c95cd971c0288202852ba56cbaec8a842a"
+  }
+}

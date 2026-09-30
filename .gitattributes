@@ -75,3 +75,5 @@ docs/2.0/receipts/achievement-collection-model/** -text
 
 docs/2.0/receipts/achievement-collection-profile/** -text
 docs/2.1/source-originals/** -text
+
+docs/2.0/receipts/world-meadows/** -text whitespace=cr-at-eol

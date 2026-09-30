@@ -1,0 +1,306 @@
+{
+  "schema": "world-meadows-raw-archive-v1",
+  "scope": "Exact raw RED/GREEN/local browser/scoped-parse observations and source copies; first unexecuted browser review candidate retained. No reruns, asset-source generation, production/phone/performance/W3/owner/full-release acceptance.",
+  "entries": [
+    {
+      "archive": "red-01/apps/hmh-reboot/src/dev/greybox-kit.mjs.txt",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-meadows-flow-red-20260929-01\\apps\\hmh-reboot\\src\\dev\\greybox-kit.mjs.txt",
+      "bytes": 5168,
+      "sha256": "b453096397f610445bd8a548e8ed70b883544d947e8cc98518b82fb7c756c349"
+    },
+    {
+      "archive": "red-01/apps/hmh-reboot/src/dev/greybox-world-v1.mjs.txt",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-meadows-flow-red-20260929-01\\apps\\hmh-reboot\\src\\dev\\greybox-world-v1.mjs.txt",
+      "bytes": 9180,
+      "sha256": "530fca52570c69cb3f9d5b3c6f2c9018336b077b5d1f81134d7148bcc415dc1e"
+    },
+    {
+      "archive": "red-01/helper.mjs.txt",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-meadows-flow-red-20260929-01\\helper.mjs.txt",
+      "bytes": 3475,
+      "sha256": "a5177337fcf6ec41f285fc105b93d0b4b94ee1101cb14a653a91e9b8b075b0d9"
+    },
+    {
+      "archive": "red-01/red-report.json",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-meadows-flow-red-20260929-01\\red-report.json",
+      "bytes": 7556,
+      "sha256": "fa68299785cb41f1cedbec32b12ac0eddf2e5251d7f088b2d239b4686bca6e38"
+    },
+    {
+      "archive": "red-01/runner.mjs.txt",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-meadows-flow-red-20260929-01\\runner.mjs.txt",
+      "bytes": 4280,
+      "sha256": "c445392114967164b8f19f60c328b832a7d570b3d070883ea663a6ceaf854e46"
+    },
+    {
+      "archive": "red-01/scripts/lib/hmh-greybox-world-check.mjs.txt",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-meadows-flow-red-20260929-01\\scripts\\lib\\hmh-greybox-world-check.mjs.txt",
+      "bytes": 12483,
+      "sha256": "c00dddfc587bbedb100315cb0233694472f4593bef7d6396029368a77b03e36a"
+    },
+    {
+      "archive": "red-01/tests/hmh-greybox-meadows-flow.test.mjs.txt",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-meadows-flow-red-20260929-01\\tests\\hmh-greybox-meadows-flow.test.mjs.txt",
+      "bytes": 4638,
+      "sha256": "9a504bb2a95d76cc77d0206c1b7e6c4924a5b6256b2ab88331554c06b364f77f"
+    },
+    {
+      "archive": "green-02/gate-report.json",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-meadows-green-20260929-02\\gate-report.json",
+      "bytes": 21558,
+      "sha256": "ab13ea6a810630519172390a708446e0ce762b1f9ccf3138f8653b12074a8732"
+    },
+    {
+      "archive": "green-02/bindings.json",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-meadows-green-20260929-02\\bindings.json",
+      "bytes": 9504,
+      "sha256": "3a194bee390b784ed3cbc35f2bb449701429db519c79168099b2143b93fa47a4"
+    },
+    {
+      "archive": "green-02/runner.mjs.txt",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-meadows-green-20260929-02\\runner.mjs.txt",
+      "bytes": 4731,
+      "sha256": "8d4f65684f77b3d053c8e350f60627363c4cbba94d1f20ce80ea4830aea14c87"
+    },
+    {
+      "archive": "green-02/layout-report.json",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-meadows-green-20260929-02\\layout-report.json",
+      "bytes": 55796,
+      "sha256": "be41fe20408200b61e44f971a38ead63920f8ec5e4e7a0ac328e8154654827b2"
+    },
+    {
+      "archive": "green-02/source-copy/apps/hmh-reboot/src/blocker-bounds.mjs.txt",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-meadows-green-20260929-02\\source-copy\\apps\\hmh-reboot\\src\\blocker-bounds.mjs",
+      "bytes": 4684,
+      "sha256": "7f94d7f336a697e806ce92d1f5eedf9674d9d948f6366a958ba27e7124d2bf8a"
+    },
+    {
+      "archive": "green-02/source-copy/apps/hmh-reboot/src/collision.mjs.txt",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-meadows-green-20260929-02\\source-copy\\apps\\hmh-reboot\\src\\collision.mjs",
+      "bytes": 18604,
+      "sha256": "94a90d4a68c9e66b54ff0332e8cf60aaeaff06c02734aed07a3e420e7eb52593"
+    },
+    {
+      "archive": "green-02/source-copy/apps/hmh-reboot/src/dev/greybox-closed-masses.mjs.txt",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-meadows-green-20260929-02\\source-copy\\apps\\hmh-reboot\\src\\dev\\greybox-closed-masses.mjs",
+      "bytes": 5250,
+      "sha256": "f1562f9f5c0be11d4b0c7a397e39187dc536a9546be7497ecfa75ea5ea0826cc"
+    },
+    {
+      "archive": "green-02/source-copy/apps/hmh-reboot/src/dev/greybox-kit.mjs.txt",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-meadows-green-20260929-02\\source-copy\\apps\\hmh-reboot\\src\\dev\\greybox-kit.mjs",
+      "bytes": 5168,
+      "sha256": "b453096397f610445bd8a548e8ed70b883544d947e8cc98518b82fb7c756c349"
+    },
+    {
+      "archive": "green-02/source-copy/apps/hmh-reboot/src/dev/greybox-meadows.mjs.txt",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-meadows-green-20260929-02\\source-copy\\apps\\hmh-reboot\\src\\dev\\greybox-meadows.mjs",
+      "bytes": 3661,
+      "sha256": "7d69ab91dd7e678af19b14b296d7e977e6ed7fe619a910d9ce9c93f2ed33516e"
+    },
+    {
+      "archive": "green-02/source-copy/apps/hmh-reboot/src/dev/greybox-world-v1.mjs.txt",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-meadows-green-20260929-02\\source-copy\\apps\\hmh-reboot\\src\\dev\\greybox-world-v1.mjs",
+      "bytes": 9333,
+      "sha256": "9d37bc9a8aad0ab5ca5a9722975fd282e18f5c7d87d2b8796077b029aba05ef7"
+    },
+    {
+      "archive": "green-02/source-copy/apps/hmh-reboot/src/elevation.mjs.txt",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-meadows-green-20260929-02\\source-copy\\apps\\hmh-reboot\\src\\elevation.mjs",
+      "bytes": 19061,
+      "sha256": "afab7fb53ba657f13f1646d533909ae68544754c1de24ccef786ee156a57c4ea"
+    },
+    {
+      "archive": "green-02/source-copy/apps/hmh-reboot/src/enemy-navgrid.mjs.txt",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-meadows-green-20260929-02\\source-copy\\apps\\hmh-reboot\\src\\enemy-navgrid.mjs",
+      "bytes": 30791,
+      "sha256": "da338be023aeeaadf0d5eb00a7ceef0adbd82e3ab7eb1b833fe7171445f595c3"
+    },
+    {
+      "archive": "green-02/source-copy/apps/hmh-reboot/src/value-guards.mjs.txt",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-meadows-green-20260929-02\\source-copy\\apps\\hmh-reboot\\src\\value-guards.mjs",
+      "bytes": 2596,
+      "sha256": "8576f65fd1f8a4680578580a150bd3acdec43f555e6c8f1181e54ae92771cb94"
+    },
+    {
+      "archive": "green-02/source-copy/scripts/lib/hmh-greybox-layout-check.mjs.txt",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-meadows-green-20260929-02\\source-copy\\scripts\\lib\\hmh-greybox-layout-check.mjs",
+      "bytes": 5996,
+      "sha256": "7296aaf2767d5d77d759c7b7a3c9757dc931ba98e1db126436e11525533fb55e"
+    },
+    {
+      "archive": "green-02/source-copy/scripts/lib/hmh-greybox-world-check.mjs.txt",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-meadows-green-20260929-02\\source-copy\\scripts\\lib\\hmh-greybox-world-check.mjs",
+      "bytes": 14521,
+      "sha256": "5e7bc94f8200c15d73cd53e94193464697e8b6c804a793b80b3ce652214e448c"
+    },
+    {
+      "archive": "green-02/source-copy/tests/hmh-greybox-closed-masses.test.mjs.txt",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-meadows-green-20260929-02\\source-copy\\tests\\hmh-greybox-closed-masses.test.mjs",
+      "bytes": 3899,
+      "sha256": "b744cb42468d2ee1bc7b0ab776c82afa783cfb8a2d6a5d8a8741ed0387e2e7d3"
+    },
+    {
+      "archive": "green-02/source-copy/tests/hmh-greybox-kit-polygon-contract.test.mjs.txt",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-meadows-green-20260929-02\\source-copy\\tests\\hmh-greybox-kit-polygon-contract.test.mjs",
+      "bytes": 1727,
+      "sha256": "7cda487e835a76ca65a91e308debbb7e1d64e3c06429068f1ea6373794ed0abe"
+    },
+    {
+      "archive": "green-02/source-copy/tests/hmh-greybox-meadows-flow.test.mjs.txt",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-meadows-green-20260929-02\\source-copy\\tests\\hmh-greybox-meadows-flow.test.mjs",
+      "bytes": 4638,
+      "sha256": "9a504bb2a95d76cc77d0206c1b7e6c4924a5b6256b2ab88331554c06b364f77f"
+    },
+    {
+      "archive": "green-02/source-copy/tests/hmh-greybox-world.test.mjs.txt",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-meadows-green-20260929-02\\source-copy\\tests\\hmh-greybox-world.test.mjs",
+      "bytes": 10049,
+      "sha256": "0f0893929fc1067cf287dbd48d4140a0366c54e6286cb37f5b9c4d289e6bc0a6"
+    },
+    {
+      "archive": "green-02/harness/prepare-world-meadows-green.mjs.txt",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\prepare-world-meadows-green.mjs",
+      "bytes": 2071,
+      "sha256": "50ebc64d5cae71cda5c16d560594e43cf0ee4e3efd917f567ac6360fd8e6ddcc"
+    },
+    {
+      "archive": "green-02/harness/world-w1b-diagnostic.mjs.txt",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w1b-diagnostic.mjs",
+      "bytes": 996,
+      "sha256": "3acd40e7081ad26462471ed1b2979ccee00851b71734eb06d7076365f04b5812"
+    },
+    {
+      "archive": "green-02/harness/owned-windows-child.mjs.txt",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\owned-windows-child.mjs",
+      "bytes": 3475,
+      "sha256": "a5177337fcf6ec41f285fc105b93d0b4b94ee1101cb14a653a91e9b8b075b0d9"
+    },
+    {
+      "archive": "presentation/greybox-playtest.mjs.txt",
+      "source": "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0\\apps\\hmh-reboot\\src\\dev\\greybox-playtest.mjs",
+      "bytes": 11910,
+      "sha256": "6915622ca937151eef0a696fa268ac577f197a622a78036ef9e2ebdac96afa81"
+    },
+    {
+      "archive": "unexecuted-browser-source-review-01/hmh-greybox-meadows-browser-smoke.mjs.txt",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-meadows-browser-prereview-01\\hmh-greybox-meadows-browser-smoke.mjs",
+      "bytes": 17864,
+      "sha256": "e0b52210403720a27b3161ca5a996615011ef0e772ec88fa43932b67bb0cdddb"
+    },
+    {
+      "archive": "unexecuted-browser-source-review-01/prepare-world-meadows-browser.mjs.txt",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-meadows-browser-prereview-01\\prepare-world-meadows-browser.mjs",
+      "bytes": 5350,
+      "sha256": "1cd818215d5ead35dc62b07a8a16ccd2fce14d55648948f963bc4aa0bb73dcf1"
+    },
+    {
+      "archive": "unexecuted-browser-source-review-01/run-world-meadows-preview-browser.mjs.txt",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-meadows-browser-prereview-01\\run-world-meadows-preview-browser.mjs",
+      "bytes": 9524,
+      "sha256": "a6c5b2086b5f0d8b3379e5fb7fa86b13b7f3107e24b68e8e0c46558bdaa9e42d"
+    },
+    {
+      "archive": "unexecuted-browser-source-review-01/world-meadows-browser-bindings.json",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-meadows-browser-prereview-01\\world-meadows-browser-bindings.json",
+      "bytes": 66247,
+      "sha256": "8eeeb180dddcaf595a746d5e12e184950517267957e44b3db2b79e5d31b13482"
+    },
+    {
+      "archive": "browser-01/gate-report.json",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-meadows-preview-browser-20260930-01\\gate-report.json",
+      "bytes": 249544,
+      "sha256": "f26f838f030e945cfd322d0a2efbb8b923d138d5c54a32cf59ba469dad912ada"
+    },
+    {
+      "archive": "browser-01/bindings.json",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-meadows-preview-browser-20260930-01\\bindings.json",
+      "bytes": 66247,
+      "sha256": "6c5899e0b5b36c9e834eb9e660d9d7a1e376147af6db0f01e727b87e3d161a8a"
+    },
+    {
+      "archive": "browser-01/runner.mjs.txt",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-meadows-preview-browser-20260930-01\\runner.mjs.txt",
+      "bytes": 9741,
+      "sha256": "c53ad085e2fd4b321d202a6211fadaf5c835a4d98e26f4d74f07da0f1f80486d"
+    },
+    {
+      "archive": "browser-01/browser-report.json",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-meadows-preview-browser-20260930-01\\browser\\browser-report.json",
+      "bytes": 120136,
+      "sha256": "be2565ae0869b5ab689472f671943ca05e7a1c6f40d18cf7633fe21fe9610f8f"
+    },
+    {
+      "archive": "browser-01/harness/hmh-greybox-meadows-browser-smoke.mjs.txt",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-meadows-preview-browser-20260930-01\\inputs\\harness\\hmh-greybox-meadows-browser-smoke.mjs",
+      "bytes": 18013,
+      "sha256": "c6e1d2bf107d12157a55014bb0a9e11eff1f50108250405c418785a4de2a6e86"
+    },
+    {
+      "archive": "browser-01/harness/prepare-world-meadows-browser.mjs.txt",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-meadows-preview-browser-20260930-01\\inputs\\harness\\prepare-world-meadows-browser.mjs",
+      "bytes": 5353,
+      "sha256": "e7bf7c549588c19d7f4e560ce66f7adc35d6dc5995b01bd20fa06eababaaba3e"
+    },
+    {
+      "archive": "browser-01/harness/owned-windows-preview-child.mjs.txt",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-meadows-preview-browser-20260930-01\\inputs\\harness\\owned-windows-preview-child.mjs",
+      "bytes": 3476,
+      "sha256": "6f4903a66d324a01a476eebefdfac68663dde2c573f62f637c4b7537ccb0d631"
+    },
+    {
+      "archive": "syntax-01/report.json",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-meadows-syntax-20260930-01\\report.json",
+      "bytes": 5312,
+      "sha256": "6141a7553772f558b0c9042bbf5dc815cd3ede52a8b0f0adfbcf9750f2e5c117"
+    },
+    {
+      "archive": "syntax-01/runner.mjs.txt",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-meadows-syntax-20260930-01\\runner.mjs.txt",
+      "bytes": 3746,
+      "sha256": "abf62b52af7756cab87b93a419cdc027a1ee19c3973e47af86316e1122ef2e33"
+    },
+    {
+      "archive": "syntax-01/syntax-check.mjs.txt",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-meadows-syntax-20260930-01\\inputs\\scripts\\syntax-check.mjs.txt",
+      "bytes": 64150,
+      "sha256": "0332665155d1c4fa04491abd1e50331545514bbaa8796f22d7f2a8b9568521a7"
+    },
+    {
+      "archive": "browser-01/built/apps/portal/dist/hmh-greybox/entry.js.txt",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-meadows-preview-browser-20260930-01\\built\\apps\\portal\\dist\\hmh-greybox\\entry.js",
+      "bytes": 2100,
+      "sha256": "c78b6fe468a35918e0062e1924afdeedebcd1a5be2823f70816f061d1a340dbc"
+    },
+    {
+      "archive": "browser-01/built/apps/portal/dist/hmh-greybox/chunks/greybox-playtest-X77XYGT3.js.txt",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-meadows-preview-browser-20260930-01\\built\\apps\\portal\\dist\\hmh-greybox\\chunks\\greybox-playtest-X77XYGT3.js",
+      "bytes": 59550,
+      "sha256": "05efbe885868de4323693c8937753aa9f135953b08aa4d190ba332b851249858"
+    },
+    {
+      "archive": "browser-01/built/apps/portal/dist/hmh-greybox/meta.json.txt",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-meadows-preview-browser-20260930-01\\built\\apps\\portal\\dist\\hmh-greybox\\meta.json",
+      "bytes": 9633,
+      "sha256": "869194735ca4d73cadc44b439cd75e8cb959b7652eb81c45f7188caaf397cd4e"
+    },
+    {
+      "archive": "browser-01/built/apps/portal/dist/hmh-greybox/index.html.txt",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-meadows-preview-browser-20260930-01\\built\\apps\\portal\\dist\\hmh-greybox\\index.html",
+      "bytes": 322,
+      "sha256": "1d64724a9521e8d24a2a657f6942baa97e4978af833ee3a0d56fd6eae8b516b9"
+    },
+    {
+      "archive": "browser-01/built/apps/portal/dist/hmh-greybox/preview.css.txt",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-meadows-preview-browser-20260930-01\\built\\apps\\portal\\dist\\hmh-greybox\\preview.css",
+      "bytes": 2979,
+      "sha256": "e16de9444570ddfa9fe801d6dc247cc0062d03c9ee7f79a54b0e5b45b7f171c2"
+    },
+    {
+      "archive": "browser-01/author-image-review.json",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-meadows-author-image-review.json",
+      "bytes": 954,
+      "sha256": "9f90636bd850394cb69ffad0e4640c19f1461d150ad7e31233d0289f3e20dfc4"
+    }
+  ]
+}

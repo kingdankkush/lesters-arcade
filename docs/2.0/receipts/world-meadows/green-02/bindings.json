@@ -1,0 +1,246 @@
+{
+  "schema": "world-meadows-source-copy-binding-v1",
+  "roots": [
+    "tests/hmh-greybox-world.test.mjs",
+    "tests/hmh-greybox-closed-masses.test.mjs",
+    "tests/hmh-greybox-kit-polygon-contract.test.mjs",
+    "tests/hmh-greybox-meadows-flow.test.mjs"
+  ],
+  "sources": {
+    "tests/hmh-greybox-world.test.mjs": {
+      "bytes": 10049,
+      "sha256": "0f0893929fc1067cf287dbd48d4140a0366c54e6286cb37f5b9c4d289e6bc0a6"
+    },
+    "apps/hmh-reboot/src/collision.mjs": {
+      "bytes": 18604,
+      "sha256": "94a90d4a68c9e66b54ff0332e8cf60aaeaff06c02734aed07a3e420e7eb52593"
+    },
+    "apps/hmh-reboot/src/value-guards.mjs": {
+      "bytes": 2596,
+      "sha256": "8576f65fd1f8a4680578580a150bd3acdec43f555e6c8f1181e54ae92771cb94"
+    },
+    "apps/hmh-reboot/src/blocker-bounds.mjs": {
+      "bytes": 4684,
+      "sha256": "7f94d7f336a697e806ce92d1f5eedf9674d9d948f6366a958ba27e7124d2bf8a"
+    },
+    "apps/hmh-reboot/src/dev/greybox-kit.mjs": {
+      "bytes": 5168,
+      "sha256": "b453096397f610445bd8a548e8ed70b883544d947e8cc98518b82fb7c756c349"
+    },
+    "apps/hmh-reboot/src/elevation.mjs": {
+      "bytes": 19061,
+      "sha256": "afab7fb53ba657f13f1646d533909ae68544754c1de24ccef786ee156a57c4ea"
+    },
+    "apps/hmh-reboot/src/dev/greybox-world-v1.mjs": {
+      "bytes": 9333,
+      "sha256": "9d37bc9a8aad0ab5ca5a9722975fd282e18f5c7d87d2b8796077b029aba05ef7"
+    },
+    "apps/hmh-reboot/src/dev/greybox-closed-masses.mjs": {
+      "bytes": 5250,
+      "sha256": "f1562f9f5c0be11d4b0c7a397e39187dc536a9546be7497ecfa75ea5ea0826cc"
+    },
+    "apps/hmh-reboot/src/dev/greybox-meadows.mjs": {
+      "bytes": 3661,
+      "sha256": "7d69ab91dd7e678af19b14b296d7e977e6ed7fe619a910d9ce9c93f2ed33516e"
+    },
+    "scripts/lib/hmh-greybox-world-check.mjs": {
+      "bytes": 14521,
+      "sha256": "5e7bc94f8200c15d73cd53e94193464697e8b6c804a793b80b3ce652214e448c"
+    },
+    "scripts/lib/hmh-greybox-layout-check.mjs": {
+      "bytes": 5996,
+      "sha256": "7296aaf2767d5d77d759c7b7a3c9757dc931ba98e1db126436e11525533fb55e"
+    },
+    "apps/hmh-reboot/src/enemy-navgrid.mjs": {
+      "bytes": 30791,
+      "sha256": "da338be023aeeaadf0d5eb00a7ceef0adbd82e3ab7eb1b833fe7171445f595c3"
+    },
+    "tests/hmh-greybox-closed-masses.test.mjs": {
+      "bytes": 3899,
+      "sha256": "b744cb42468d2ee1bc7b0ab776c82afa783cfb8a2d6a5d8a8741ed0387e2e7d3"
+    },
+    "tests/hmh-greybox-kit-polygon-contract.test.mjs": {
+      "bytes": 1727,
+      "sha256": "7cda487e835a76ca65a91e308debbb7e1d64e3c06429068f1ea6373794ed0abe"
+    },
+    "tests/hmh-greybox-meadows-flow.test.mjs": {
+      "bytes": 4638,
+      "sha256": "9a504bb2a95d76cc77d0206c1b7e6c4924a5b6256b2ab88331554c06b364f77f"
+    }
+  },
+  "edges": [
+    {
+      "file": "tests/hmh-greybox-world.test.mjs",
+      "specifier": "../apps/hmh-reboot/src/collision.mjs",
+      "resolved": "apps/hmh-reboot/src/collision.mjs"
+    },
+    {
+      "file": "apps/hmh-reboot/src/collision.mjs",
+      "specifier": "./value-guards.mjs",
+      "resolved": "apps/hmh-reboot/src/value-guards.mjs"
+    },
+    {
+      "file": "apps/hmh-reboot/src/collision.mjs",
+      "specifier": "./blocker-bounds.mjs",
+      "resolved": "apps/hmh-reboot/src/blocker-bounds.mjs"
+    },
+    {
+      "file": "apps/hmh-reboot/src/blocker-bounds.mjs",
+      "specifier": "./value-guards.mjs",
+      "resolved": "apps/hmh-reboot/src/value-guards.mjs"
+    },
+    {
+      "file": "tests/hmh-greybox-world.test.mjs",
+      "specifier": "../apps/hmh-reboot/src/dev/greybox-kit.mjs",
+      "resolved": "apps/hmh-reboot/src/dev/greybox-kit.mjs"
+    },
+    {
+      "file": "apps/hmh-reboot/src/dev/greybox-kit.mjs",
+      "specifier": "../collision.mjs",
+      "resolved": "apps/hmh-reboot/src/collision.mjs"
+    },
+    {
+      "file": "apps/hmh-reboot/src/dev/greybox-kit.mjs",
+      "specifier": "../elevation.mjs",
+      "resolved": "apps/hmh-reboot/src/elevation.mjs"
+    },
+    {
+      "file": "apps/hmh-reboot/src/elevation.mjs",
+      "specifier": "./value-guards.mjs",
+      "resolved": "apps/hmh-reboot/src/value-guards.mjs"
+    },
+    {
+      "file": "apps/hmh-reboot/src/elevation.mjs",
+      "specifier": "./blocker-bounds.mjs",
+      "resolved": "apps/hmh-reboot/src/blocker-bounds.mjs"
+    },
+    {
+      "file": "apps/hmh-reboot/src/elevation.mjs",
+      "specifier": "./value-guards.mjs",
+      "resolved": "apps/hmh-reboot/src/value-guards.mjs"
+    },
+    {
+      "file": "apps/hmh-reboot/src/dev/greybox-kit.mjs",
+      "specifier": "../value-guards.mjs",
+      "resolved": "apps/hmh-reboot/src/value-guards.mjs"
+    },
+    {
+      "file": "tests/hmh-greybox-world.test.mjs",
+      "specifier": "../apps/hmh-reboot/src/dev/greybox-world-v1.mjs",
+      "resolved": "apps/hmh-reboot/src/dev/greybox-world-v1.mjs"
+    },
+    {
+      "file": "apps/hmh-reboot/src/dev/greybox-world-v1.mjs",
+      "specifier": "./greybox-kit.mjs",
+      "resolved": "apps/hmh-reboot/src/dev/greybox-kit.mjs"
+    },
+    {
+      "file": "apps/hmh-reboot/src/dev/greybox-world-v1.mjs",
+      "specifier": "../elevation.mjs",
+      "resolved": "apps/hmh-reboot/src/elevation.mjs"
+    },
+    {
+      "file": "apps/hmh-reboot/src/dev/greybox-world-v1.mjs",
+      "specifier": "../value-guards.mjs",
+      "resolved": "apps/hmh-reboot/src/value-guards.mjs"
+    },
+    {
+      "file": "apps/hmh-reboot/src/dev/greybox-world-v1.mjs",
+      "specifier": "./greybox-closed-masses.mjs",
+      "resolved": "apps/hmh-reboot/src/dev/greybox-closed-masses.mjs"
+    },
+    {
+      "file": "apps/hmh-reboot/src/dev/greybox-closed-masses.mjs",
+      "specifier": "../value-guards.mjs",
+      "resolved": "apps/hmh-reboot/src/value-guards.mjs"
+    },
+    {
+      "file": "apps/hmh-reboot/src/dev/greybox-world-v1.mjs",
+      "specifier": "./greybox-meadows.mjs",
+      "resolved": "apps/hmh-reboot/src/dev/greybox-meadows.mjs"
+    },
+    {
+      "file": "apps/hmh-reboot/src/dev/greybox-meadows.mjs",
+      "specifier": "./greybox-kit.mjs",
+      "resolved": "apps/hmh-reboot/src/dev/greybox-kit.mjs"
+    },
+    {
+      "file": "tests/hmh-greybox-world.test.mjs",
+      "specifier": "../scripts/lib/hmh-greybox-world-check.mjs",
+      "resolved": "scripts/lib/hmh-greybox-world-check.mjs"
+    },
+    {
+      "file": "scripts/lib/hmh-greybox-world-check.mjs",
+      "specifier": "./hmh-greybox-layout-check.mjs",
+      "resolved": "scripts/lib/hmh-greybox-layout-check.mjs"
+    },
+    {
+      "file": "scripts/lib/hmh-greybox-layout-check.mjs",
+      "specifier": "../../apps/hmh-reboot/src/enemy-navgrid.mjs",
+      "resolved": "apps/hmh-reboot/src/enemy-navgrid.mjs"
+    },
+    {
+      "file": "apps/hmh-reboot/src/enemy-navgrid.mjs",
+      "specifier": "./elevation.mjs",
+      "resolved": "apps/hmh-reboot/src/elevation.mjs"
+    },
+    {
+      "file": "scripts/lib/hmh-greybox-world-check.mjs",
+      "specifier": "../../apps/hmh-reboot/src/collision.mjs",
+      "resolved": "apps/hmh-reboot/src/collision.mjs"
+    },
+    {
+      "file": "scripts/lib/hmh-greybox-world-check.mjs",
+      "specifier": "../../apps/hmh-reboot/src/elevation.mjs",
+      "resolved": "apps/hmh-reboot/src/elevation.mjs"
+    },
+    {
+      "file": "tests/hmh-greybox-closed-masses.test.mjs",
+      "specifier": "../apps/hmh-reboot/src/collision.mjs",
+      "resolved": "apps/hmh-reboot/src/collision.mjs"
+    },
+    {
+      "file": "tests/hmh-greybox-closed-masses.test.mjs",
+      "specifier": "../apps/hmh-reboot/src/dev/greybox-closed-masses.mjs",
+      "resolved": "apps/hmh-reboot/src/dev/greybox-closed-masses.mjs"
+    },
+    {
+      "file": "tests/hmh-greybox-kit-polygon-contract.test.mjs",
+      "specifier": "../apps/hmh-reboot/src/dev/greybox-kit.mjs",
+      "resolved": "apps/hmh-reboot/src/dev/greybox-kit.mjs"
+    },
+    {
+      "file": "tests/hmh-greybox-meadows-flow.test.mjs",
+      "specifier": "../apps/hmh-reboot/src/dev/greybox-world-v1.mjs",
+      "resolved": "apps/hmh-reboot/src/dev/greybox-world-v1.mjs"
+    },
+    {
+      "file": "tests/hmh-greybox-meadows-flow.test.mjs",
+      "specifier": "../apps/hmh-reboot/src/dev/greybox-kit.mjs",
+      "resolved": "apps/hmh-reboot/src/dev/greybox-kit.mjs"
+    },
+    {
+      "file": "tests/hmh-greybox-meadows-flow.test.mjs",
+      "specifier": "../scripts/lib/hmh-greybox-world-check.mjs",
+      "resolved": "scripts/lib/hmh-greybox-world-check.mjs"
+    },
+    {
+      "file": "tests/hmh-greybox-meadows-flow.test.mjs",
+      "specifier": "../apps/hmh-reboot/src/collision.mjs",
+      "resolved": "apps/hmh-reboot/src/collision.mjs"
+    }
+  ],
+  "protectedFiles": {
+    "apps/hmh-reboot/src/level-one-world.mjs": "173d43a2718919dc93a5c9e2c5b061a1cb1821fc6969d9f9bd7c4f5d435c69a1",
+    "apps/hmh-reboot/src/enemy-navgrid.mjs": "da338be023aeeaadf0d5eb00a7ceef0adbd82e3ab7eb1b833fe7171445f595c3",
+    "apps/hmh-reboot/src/elevation.mjs": "afab7fb53ba657f13f1646d533909ae68544754c1de24ccef786ee156a57c4ea",
+    "apps/hmh-reboot/src/collision.mjs": "94a90d4a68c9e66b54ff0332e8cf60aaeaff06c02734aed07a3e420e7eb52593",
+    "apps/hmh-reboot/src/movement.mjs": "7fd15d97e91f67fda97b0d0c59b7a128400e4db8494f8b9d7c2fc570cc774480",
+    "apps/hmh-reboot/src/main.mjs": "389e6f9a85c123eeebd3adcfa9a78542165e68b4446b83d9d89be90df7e658a1",
+    "scripts/lib/hmh-greybox-layout-check.mjs": "7296aaf2767d5d77d759c7b7a3c9757dc931ba98e1db126436e11525533fb55e"
+  },
+  "harness": {
+    "work/owned-windows-child.mjs": "a5177337fcf6ec41f285fc105b93d0b4b94ee1101cb14a653a91e9b8b075b0d9",
+    "work/world-w1b-diagnostic.mjs": "3acd40e7081ad26462471ed1b2979ccee00851b71734eb06d7076365f04b5812"
+  }
+}

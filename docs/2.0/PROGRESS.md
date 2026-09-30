@@ -495,3 +495,34 @@ and connected-ground art correction resumed with serialized shared heavy jobs.
 ## G2b collection profile preview — 2026-09-30
 
 Default-off collection is integrated into the actual hosted Profile route. Final45source checks and19exact no-Git/no-modules/empty-PATH copy checks pass. First real browser found the option-value DOM factory mismatch; original failure retained, regression reproduced and fixed. Fresh build budgets remain HMH1,039,992B/STACKED577,431B. Second real Chrome run passes7cases with desktop/phone-size captures, truthful malformed-response fallback, accessible focus/open details, default/duplicate-off lazy loading and lifecycle recreation. No page errors/overflow; actual Chrome/HTTP/children closed and matching markers released. See slices/ACHIEVEMENT-COLLECTION-G2B.md and raw receipt. Current badge art is retained pending its overhaul; not a physical-phone or final-art gate.
+
+### W2b Meadows authored-flow navigation checkpoint
+
+One inner Meadows neighbourhood now has a quiet entry, offset relay approach,
+fenced garden loop/rejoin and the retained raised porch/ramp. Other9areas,14global
+roads/endpoints, protectedspawn/radius24 and7old authority helpers stay unchanged.
+Five same-area site-bound routes use actual two-way radius24 collision/ground;
+combat/objectives/cover/climb/drop remain staged. RED1PASS3FAIL is preserved;
+GREEN26/26 and same26/26 exact15-file emptyPATH/no.git/noModules pass with0skips.
+Actual unfiltered nav37,580/77,589IN-BOUNDScentres=48.4347%; full334x234 includes
+567rounded-outsidecentres, allblocked/outsidewalkable0.98sites/14roads remain
+reachable/clear;615visiblepieces/575blockers. River-Woods nominal38.17s warning
+remains, and fullwidth/sampled120-unitcourt-floor limits remain explicit.
+
+One privatepreviewbuild and one actual62.431s nativeChrome attempt pass:24desktop
+keyboardlegs,2phoneproxytouchlegs,12originalcaptures, zeroinspectionjumps,
+actualporchgroundZ24 and separatevisiblefencecontact1. Fourstrictentrydenials
+andbothpagehideinput/atlascleanup pass with0errors. Node17228/14440, ownedChrome
+31264exit0/noSignal andHTTP127.0.0.1:53172 close before matchingmarkerrelease.
+29source/7authority/2approvedasset/188dependency/3harness andactualbuilt/served/PNG
+bytecustody match. Two scopedparses/exactsingleregistrations pass; no fresh normal
+build/defaultvisual/targetrerun claimed. Raw50entryarchive and first unexecuted
+browser-review corrections remain in receipts/world-meadows. See
+slices/WORLD-W2B-MEADOWS.md and the distinct manual local outputs reviewbundle.
+
+Author inspected all12 originalcaptures; lead inspected relay/garden. Human and
+controls readable, but phoneGardenlane label overlapsminimap, worldlabels clip
+andporchlabels repeat. Court/widerdistrict sparse; other9areas repetitive.
+This is a local navigation design checkpoint, not owner-approved/final10area
+leveldesign/art, combat/pacing/fullwidth, officialFree/W3Ranked map, streaming,
+physicalphone/performance or fullrelease acceptance. No credits/push/deploy/version.

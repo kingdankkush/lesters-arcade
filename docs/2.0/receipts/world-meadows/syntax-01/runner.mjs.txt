@@ -1,0 +1,29 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import assert from 'node:assert/strict';
+import {createHash,randomUUID} from 'node:crypto';
+import {runOwnedWindowsChild} from './owned-windows-child.mjs';
+const repo='C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0',marker='C:\\Users\\just_\\lesters-arcade-wt\\.locks\\heavy.lock',out=path.resolve('work/world-meadows-syntax-20260930-01');
+const sha=b=>createHash('sha256').update(b).digest('hex');
+const bindingFile=path.resolve('work/world-meadows-browser-bindings-02.json');assert.equal(sha(fs.readFileSync(bindingFile)),'6c5899e0b5b36c9e834eb9e660d9d7a1e376147af6db0f01e727b87e3d161a8a');
+assert.equal(sha(fs.readFileSync(path.resolve('work/owned-windows-child.mjs'))),'a5177337fcf6ec41f285fc105b93d0b4b94ee1101cb14a653a91e9b8b075b0d9');
+const binding=JSON.parse(fs.readFileSync(bindingFile)),files=['apps/hmh-reboot/src/dev/greybox-meadows.mjs','tests/hmh-greybox-meadows-flow.test.mjs'];
+const syntax=fs.readFileSync(path.join(repo,'scripts/syntax-check.mjs'),'utf8');
+for(const file of files)assert.equal(syntax.split(`'${file}'`).length-1,1,`exact single registration:${file}`);
+function capture(){const result={};for(const file of new Set([...files,'scripts/syntax-check.mjs',...Object.keys(binding.protectedFiles)])){const bytes=fs.readFileSync(path.join(repo,file));result[file]={bytes:bytes.length,sha256:sha(bytes)};if(binding.protectedFiles[file])assert.deepEqual(result[file],binding.protectedFiles[file]);else if(binding.sources[file])assert.deepEqual(result[file],binding.sources[file]);}return result;}
+const before=capture();assert.equal(fs.existsSync(out),false);assert.equal(fs.existsSync(marker),false);
+const token=`world-meadows-syntax-${randomUUID()}`;fs.mkdirSync(marker);fs.writeFileSync(path.join(marker,'owner.json'),JSON.stringify({owner:'/root/world_w0_audit',task:'Two scoped Meadows parses/registrations only',token}),{flag:'wx'});
+let certain=true;const report={schema:'world-meadows-two-scoped-parses-v1',scope:'Two source parses and exact single registrations only. No target tests, nav, build, browser, performance or acceptance.',passed:false,before,after:null,commands:[],errors:[]};
+fs.mkdirSync(out);const save=()=>fs.writeFileSync(path.join(out,'report.json'),JSON.stringify(report,null,2));
+fs.copyFileSync(new URL(import.meta.url),path.join(out,'runner.mjs.txt'));
+for(const file of Object.keys(before)){const target=path.join(out,'inputs',file+'.txt');fs.mkdirSync(path.dirname(target),{recursive:true});fs.copyFileSync(path.join(repo,file),target);}
+try{
+  save();for(const file of files){certain=false;const command=await runOwnedWindowsChild(process.execPath,['--check',file],{cwd:repo,watchdogMs:10_000});report.commands.push({file,command});certain=command.childClosureConfirmed;save();assert.ok(certain,'actual scoped parse child closure uncertain');assert.ok(command.normalExit,`parse failed:${file}`);}
+  report.after=capture();assert.deepEqual(report.after,before);report.passed=true;
+}catch(error){report.errors.push({message:error.message,stack:error.stack});process.exitCode=1;}
+finally{
+  try{report.after=capture();assert.deepEqual(report.after,before);}catch(error){report.errors.push({phase:'final-custody',message:error.message});report.passed=false;process.exitCode=1;}
+  report.markerRetainedForUnconfirmedShutdown=!certain;
+  if(certain){assert.equal(JSON.parse(fs.readFileSync(path.join(marker,'owner.json'))).token,token);fs.unlinkSync(path.join(marker,'owner.json'));fs.rmdirSync(marker);report.markerReleased=true;}
+  save();console.log(JSON.stringify({out,passed:report.passed,parses:report.commands.length,normalClosed:report.commands.every(x=>x.command.normalExit),markerReleased:report.markerReleased??false}));
+}

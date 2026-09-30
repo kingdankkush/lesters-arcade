@@ -1,0 +1,11 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import { pathToFileURL } from 'node:url';
+const [root,output]=process.argv.slice(2);
+const {createGreyboxWorld}=await import(pathToFileURL(path.join(root,'apps/hmh-reboot/src/dev/greybox-world-v1.mjs')));
+const {checkGreyboxWorld}=await import(pathToFileURL(path.join(root,'scripts/lib/hmh-greybox-world-check.mjs')));
+const world=createGreyboxWorld(),report=checkGreyboxWorld(world);
+report.authoringCounts={pieces:world.pieces.length,closedMassPieces:world.pieces.filter(piece=>piece.id.startsWith('closed-mass-')).length,guardPieces:world.pieces.filter(piece=>piece.id.startsWith('world-guard-')).length,staticBlockers:world.collisionBlockers.length,declaredSites:world.sites.length,roads:world.roads.length};
+fs.writeFileSync(output,JSON.stringify(report,null,2));
+console.log(JSON.stringify({passed:report.passed,issues:report.issues,warnings:report.warnings,metrics:report.navigation.metrics}));
+if(!report.passed)process.exitCode=1;

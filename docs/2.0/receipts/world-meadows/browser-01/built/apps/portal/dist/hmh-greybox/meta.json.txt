@@ -1,0 +1,333 @@
+{
+  "inputs": {
+    "apps/hmh-reboot/src/dev/greybox-access.mjs": {
+      "bytes": 872,
+      "imports": [],
+      "format": "esm"
+    },
+    "apps/hmh-reboot/src/dev/greybox-preview-launch.mjs": {
+      "bytes": 1016,
+      "imports": [],
+      "format": "esm"
+    },
+    "apps/hmh-reboot/src/value-guards.mjs": {
+      "bytes": 2596,
+      "imports": [],
+      "format": "esm"
+    },
+    "apps/hmh-reboot/src/blocker-bounds.mjs": {
+      "bytes": 4684,
+      "imports": [
+        {
+          "path": "apps/hmh-reboot/src/value-guards.mjs",
+          "kind": "import-statement",
+          "original": "./value-guards.mjs"
+        }
+      ],
+      "format": "esm"
+    },
+    "apps/hmh-reboot/src/collision.mjs": {
+      "bytes": 18604,
+      "imports": [
+        {
+          "path": "apps/hmh-reboot/src/value-guards.mjs",
+          "kind": "import-statement",
+          "original": "./value-guards.mjs"
+        },
+        {
+          "path": "apps/hmh-reboot/src/blocker-bounds.mjs",
+          "kind": "import-statement",
+          "original": "./blocker-bounds.mjs"
+        }
+      ],
+      "format": "esm"
+    },
+    "apps/hmh-reboot/src/elevation.mjs": {
+      "bytes": 19061,
+      "imports": [
+        {
+          "path": "apps/hmh-reboot/src/value-guards.mjs",
+          "kind": "import-statement",
+          "original": "./value-guards.mjs"
+        },
+        {
+          "path": "apps/hmh-reboot/src/blocker-bounds.mjs",
+          "kind": "import-statement",
+          "original": "./blocker-bounds.mjs"
+        },
+        {
+          "path": "apps/hmh-reboot/src/value-guards.mjs",
+          "kind": "import-statement",
+          "original": "./value-guards.mjs"
+        }
+      ],
+      "format": "esm"
+    },
+    "apps/hmh-reboot/src/dev/greybox-kit.mjs": {
+      "bytes": 5168,
+      "imports": [
+        {
+          "path": "apps/hmh-reboot/src/collision.mjs",
+          "kind": "import-statement",
+          "original": "../collision.mjs"
+        },
+        {
+          "path": "apps/hmh-reboot/src/elevation.mjs",
+          "kind": "import-statement",
+          "original": "../elevation.mjs"
+        },
+        {
+          "path": "apps/hmh-reboot/src/value-guards.mjs",
+          "kind": "import-statement",
+          "original": "../value-guards.mjs"
+        }
+      ],
+      "format": "esm"
+    },
+    "apps/hmh-reboot/src/dev/greybox-closed-masses.mjs": {
+      "bytes": 5250,
+      "imports": [
+        {
+          "path": "apps/hmh-reboot/src/value-guards.mjs",
+          "kind": "import-statement",
+          "original": "../value-guards.mjs"
+        }
+      ],
+      "format": "esm"
+    },
+    "apps/hmh-reboot/src/dev/greybox-meadows.mjs": {
+      "bytes": 3661,
+      "imports": [
+        {
+          "path": "apps/hmh-reboot/src/dev/greybox-kit.mjs",
+          "kind": "import-statement",
+          "original": "./greybox-kit.mjs"
+        }
+      ],
+      "format": "esm"
+    },
+    "apps/hmh-reboot/src/dev/greybox-world-v1.mjs": {
+      "bytes": 9333,
+      "imports": [
+        {
+          "path": "apps/hmh-reboot/src/dev/greybox-kit.mjs",
+          "kind": "import-statement",
+          "original": "./greybox-kit.mjs"
+        },
+        {
+          "path": "apps/hmh-reboot/src/elevation.mjs",
+          "kind": "import-statement",
+          "original": "../elevation.mjs"
+        },
+        {
+          "path": "apps/hmh-reboot/src/value-guards.mjs",
+          "kind": "import-statement",
+          "original": "../value-guards.mjs"
+        },
+        {
+          "path": "apps/hmh-reboot/src/dev/greybox-closed-masses.mjs",
+          "kind": "import-statement",
+          "original": "./greybox-closed-masses.mjs"
+        },
+        {
+          "path": "apps/hmh-reboot/src/dev/greybox-meadows.mjs",
+          "kind": "import-statement",
+          "original": "./greybox-meadows.mjs"
+        }
+      ],
+      "format": "esm"
+    },
+    "apps/hmh-reboot/src/movement.mjs": {
+      "bytes": 8122,
+      "imports": [
+        {
+          "path": "apps/hmh-reboot/src/value-guards.mjs",
+          "kind": "import-statement",
+          "original": "./value-guards.mjs"
+        }
+      ],
+      "format": "esm"
+    },
+    "apps/hmh-reboot/src/dev/greybox-navigation.mjs": {
+      "bytes": 4687,
+      "imports": [
+        {
+          "path": "apps/hmh-reboot/src/movement.mjs",
+          "kind": "import-statement",
+          "original": "../movement.mjs"
+        },
+        {
+          "path": "apps/hmh-reboot/src/collision.mjs",
+          "kind": "import-statement",
+          "original": "../collision.mjs"
+        },
+        {
+          "path": "apps/hmh-reboot/src/elevation.mjs",
+          "kind": "import-statement",
+          "original": "../elevation.mjs"
+        }
+      ],
+      "format": "esm"
+    },
+    "apps/hmh-reboot/src/production-hero-assets.mjs": {
+      "bytes": 2011,
+      "imports": [],
+      "format": "esm"
+    },
+    "apps/hmh-reboot/src/held-weapon-atlas.mjs": {
+      "bytes": 13349,
+      "imports": [
+        {
+          "path": "apps/hmh-reboot/src/value-guards.mjs",
+          "kind": "import-statement",
+          "original": "./value-guards.mjs"
+        }
+      ],
+      "format": "esm"
+    },
+    "apps/hmh-reboot/src/production-hero-atlas.mjs": {
+      "bytes": 32486,
+      "imports": [
+        {
+          "path": "apps/hmh-reboot/src/production-hero-assets.mjs",
+          "kind": "import-statement",
+          "original": "./production-hero-assets.mjs"
+        },
+        {
+          "path": "apps/hmh-reboot/src/held-weapon-atlas.mjs",
+          "kind": "import-statement",
+          "original": "./held-weapon-atlas.mjs"
+        },
+        {
+          "path": "apps/hmh-reboot/src/production-hero-assets.mjs",
+          "kind": "import-statement",
+          "original": "./production-hero-assets.mjs"
+        }
+      ],
+      "format": "esm"
+    },
+    "apps/hmh-reboot/src/dev/greybox-playtest.mjs": {
+      "bytes": 11910,
+      "imports": [
+        {
+          "path": "apps/hmh-reboot/src/dev/greybox-world-v1.mjs",
+          "kind": "import-statement",
+          "original": "./greybox-world-v1.mjs"
+        },
+        {
+          "path": "apps/hmh-reboot/src/dev/greybox-navigation.mjs",
+          "kind": "import-statement",
+          "original": "./greybox-navigation.mjs"
+        },
+        {
+          "path": "apps/hmh-reboot/src/production-hero-assets.mjs",
+          "kind": "import-statement",
+          "original": "../production-hero-assets.mjs"
+        },
+        {
+          "path": "apps/hmh-reboot/src/production-hero-atlas.mjs",
+          "kind": "import-statement",
+          "original": "../production-hero-atlas.mjs"
+        }
+      ],
+      "format": "esm"
+    },
+    "apps/hmh-reboot/src/dev/greybox-entry.mjs": {
+      "bytes": 1140,
+      "imports": [
+        {
+          "path": "apps/hmh-reboot/src/dev/greybox-access.mjs",
+          "kind": "import-statement",
+          "original": "./greybox-access.mjs"
+        },
+        {
+          "path": "apps/hmh-reboot/src/dev/greybox-preview-launch.mjs",
+          "kind": "import-statement",
+          "original": "./greybox-preview-launch.mjs"
+        },
+        {
+          "path": "apps/hmh-reboot/src/dev/greybox-playtest.mjs",
+          "kind": "dynamic-import",
+          "original": "./greybox-playtest.mjs"
+        }
+      ],
+      "format": "esm"
+    }
+  },
+  "outputs": {
+    "apps/portal/dist/hmh-greybox/entry.js": {
+      "imports": [
+        {
+          "path": "apps/portal/dist/hmh-greybox/chunks/greybox-playtest-X77XYGT3.js",
+          "kind": "dynamic-import"
+        }
+      ],
+      "exports": [],
+      "entryPoint": "apps/hmh-reboot/src/dev/greybox-entry.mjs",
+      "inputs": {
+        "apps/hmh-reboot/src/dev/greybox-access.mjs": {
+          "bytesInOutput": 625
+        },
+        "apps/hmh-reboot/src/dev/greybox-preview-launch.mjs": {
+          "bytesInOutput": 618
+        },
+        "apps/hmh-reboot/src/dev/greybox-entry.mjs": {
+          "bytesInOutput": 856
+        }
+      },
+      "bytes": 2100
+    },
+    "apps/portal/dist/hmh-greybox/chunks/greybox-playtest-X77XYGT3.js": {
+      "imports": [],
+      "exports": [
+        "mountGreyboxPlaytest"
+      ],
+      "entryPoint": "apps/hmh-reboot/src/dev/greybox-playtest.mjs",
+      "inputs": {
+        "apps/hmh-reboot/src/value-guards.mjs": {
+          "bytesInOutput": 714
+        },
+        "apps/hmh-reboot/src/blocker-bounds.mjs": {
+          "bytesInOutput": 2318
+        },
+        "apps/hmh-reboot/src/collision.mjs": {
+          "bytesInOutput": 8055
+        },
+        "apps/hmh-reboot/src/elevation.mjs": {
+          "bytesInOutput": 6211
+        },
+        "apps/hmh-reboot/src/dev/greybox-kit.mjs": {
+          "bytesInOutput": 3291
+        },
+        "apps/hmh-reboot/src/dev/greybox-closed-masses.mjs": {
+          "bytesInOutput": 3141
+        },
+        "apps/hmh-reboot/src/dev/greybox-meadows.mjs": {
+          "bytesInOutput": 2728
+        },
+        "apps/hmh-reboot/src/dev/greybox-world-v1.mjs": {
+          "bytesInOutput": 6713
+        },
+        "apps/hmh-reboot/src/movement.mjs": {
+          "bytesInOutput": 2420
+        },
+        "apps/hmh-reboot/src/dev/greybox-navigation.mjs": {
+          "bytesInOutput": 2772
+        },
+        "apps/hmh-reboot/src/production-hero-assets.mjs": {
+          "bytesInOutput": 1550
+        },
+        "apps/hmh-reboot/src/held-weapon-atlas.mjs": {
+          "bytesInOutput": 483
+        },
+        "apps/hmh-reboot/src/production-hero-atlas.mjs": {
+          "bytesInOutput": 11022
+        },
+        "apps/hmh-reboot/src/dev/greybox-playtest.mjs": {
+          "bytesInOutput": 8096
+        }
+      },
+      "bytes": 59550
+    }
+  }
+}

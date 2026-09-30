@@ -1,0 +1,47 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import assert from 'node:assert/strict';
+import {createHash,randomUUID} from 'node:crypto';
+import {runOwnedWindowsChild} from './owned-windows-child.mjs';
+const root='C:/Users/just_/lesters-arcade-wt/200-world-w0';
+const marker='C:/Users/just_/lesters-arcade-wt/.locks/heavy.lock';
+const output=path.resolve('work/world-meadows-flow-red-20260929-01');
+const hash=file=>createHash('sha256').update(fs.readFileSync(file)).digest('hex');
+const target='tests/hmh-greybox-meadows-flow.test.mjs';
+const helper=path.resolve('work/owned-windows-child.mjs');
+const expected={
+  [target]:'9a504bb2a95d76cc77d0206c1b7e6c4924a5b6256b2ab88331554c06b364f77f',
+  'apps/hmh-reboot/src/dev/greybox-kit.mjs':'b453096397f610445bd8a548e8ed70b883544d947e8cc98518b82fb7c756c349',
+  'apps/hmh-reboot/src/dev/greybox-world-v1.mjs':'530fca52570c69cb3f9d5b3c6f2c9018336b077b5d1f81134d7148bcc415dc1e',
+  'scripts/lib/hmh-greybox-world-check.mjs':'c00dddfc587bbedb100315cb0233694472f4593bef7d6396029368a77b03e36a'
+};
+assert.equal(hash(helper),'a5177337fcf6ec41f285fc105b93d0b4b94ee1101cb14a653a91e9b8b075b0d9');
+for(const[file,sha]of Object.entries(expected))assert.equal(hash(path.join(root,file)),sha);
+const protectedFiles=['apps/hmh-reboot/src/level-one-world.mjs','apps/hmh-reboot/src/enemy-navgrid.mjs','apps/hmh-reboot/src/elevation.mjs','apps/hmh-reboot/src/collision.mjs','apps/hmh-reboot/src/movement.mjs','apps/hmh-reboot/src/main.mjs','scripts/lib/hmh-greybox-layout-check.mjs'];
+const protectedHashes=()=>Object.fromEntries(protectedFiles.map(file=>[file,hash(path.join(root,file))]));
+const before=protectedHashes();
+assert.equal(fs.existsSync(output),false);assert.equal(fs.existsSync(marker),false);
+const token='world-meadows-flow-red-'+randomUUID();
+fs.mkdirSync(marker);fs.writeFileSync(path.join(marker,'owner.json'),JSON.stringify({owner:'/root/world_w0_audit',task:'Meadows flow RED only',token}),{flag:'wx'});
+const report={schema:'world-meadows-flow-red-v1',scope:'Four actual authoring/layout tests against existing bare world: absent flow declaration, ignored blocked local route and endpoint mismatch plus existing physical exit control. Not gameplay, timings, browser/device/world acceptance.',protectedBefore:before,sourceBefore:expected};
+let certain=true;
+try{
+  fs.mkdirSync(output);
+  for(const file of Object.keys(expected)){const destination=path.join(output,file+'.txt');fs.mkdirSync(path.dirname(destination),{recursive:true});fs.copyFileSync(path.join(root,file),destination);}
+  fs.copyFileSync(helper,path.join(output,'helper.mjs.txt'));fs.copyFileSync(new URL(import.meta.url),path.join(output,'runner.mjs.txt'));
+  certain=false;
+  report.command=await runOwnedWindowsChild(process.execPath,['--test','--test-reporter=tap',target],{cwd:root,watchdogMs:20000});
+  certain=report.command.childClosureConfirmed;
+  report.protectedAfter=protectedHashes();assert.deepEqual(report.protectedAfter,before);
+  report.sourceAfter=Object.fromEntries(Object.keys(expected).map(file=>[file,hash(path.join(root,file))]));assert.deepEqual(report.sourceAfter,expected);
+  report.counts=Object.fromEntries(['tests','pass','fail','cancelled','skipped','todo'].map(label=>[label,Number(report.command.stdout.match(new RegExp('^# '+label+' (\\d+)$','m'))?.[1])]));
+  report.passed=certain&&!report.command.watchdogTriggered&&!report.command.outputLimitTriggered&&!report.command.spawnError&&!report.command.signal&&report.command.exitCode===1&&report.counts.tests===4&&report.counts.pass===1&&report.counts.fail===3&&['cancelled','skipped','todo'].every(key=>report.counts[key]===0);
+  if(!report.passed)process.exitCode=1;
+}catch(error){report.failure={message:error.message,stack:error.stack};process.exitCode=1;}
+finally{
+  report.markerRetainedForUnconfirmedShutdown=!certain;
+  if(certain){assert.equal(JSON.parse(fs.readFileSync(path.join(marker,'owner.json'))).token,token);fs.unlinkSync(path.join(marker,'owner.json'));fs.rmdirSync(marker);report.markerReleased=true;}
+  fs.writeFileSync(path.join(output,'red-report.json'),JSON.stringify(report,null,2)+'\n');
+  console.log(JSON.stringify({passed:report.passed,counts:report.counts,markerReleased:report.markerReleased??false,output}));
+  if(!certain)process.exit(1);
+}
