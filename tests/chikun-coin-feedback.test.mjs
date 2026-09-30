@@ -5,9 +5,10 @@ const dom = await import('../apps/chikun/src/coin-feedback-dom.mjs').catch(() =>
 const { planChikunVfx, updateChikunVfxMotion } = await import('../apps/chikun/src/vfx.mjs');
 const event = (coinsCollected, tick = 1) => ({ coinsCollected, tick, chikun: { x: 280, y: 360 } });
 
-test('positive pickup switch is exact and default-off', () => {
+test('positive pickup is on by default and retains an explicit legacy fallback', () => {
   assert.equal(typeof module.isChikunCoinFeedbackEnabled, 'function');
-  for (const query of ['', 'coinFeedback=1', 'coinFeedback=positive-v1x'])
+  assert.equal(module.isChikunCoinFeedbackEnabled(new URLSearchParams()), true);
+  for (const query of ['coinFeedback=off', 'coinFeedback=1', 'coinFeedback=positive-v1x'])
     assert.equal(module.isChikunCoinFeedbackEnabled(new URLSearchParams(query)), false);
   assert.equal(module.isChikunCoinFeedbackEnabled(new URLSearchParams('coinFeedback=positive-v1')), true);
 });

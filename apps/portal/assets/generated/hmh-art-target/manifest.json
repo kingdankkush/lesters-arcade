@@ -1,0 +1,234 @@
+{
+  "schema": "hmh-meadows-art-target/v1",
+  "runtimeAuthority": "projection-only",
+  "ownerAccepted": false,
+  "palette": "muted-environment",
+  "calibrationPreview": true,
+  "projectionAdapter": {
+    "cameraPitchFromVerticalDegrees": 55.0,
+    "zPrewarp": 0.7002075382097098,
+    "spriteYScale": 1.7434467956210982,
+    "handedness": "worldY=-BlenderY"
+  },
+  "previewDensity": {
+    "texelsPerMetre": 64,
+    "final128TexelsPerMetreAccepted": false
+  },
+  "sources": {
+    "oak": {
+      "method": "existing-owner-mixed-vegetation-study",
+      "sha256": "e30a5009fa1c987947b1ef2236bb74e384e0a397773823ee8f579ff6748e9211"
+    },
+    "house": {
+      "method": "existing-owner-model",
+      "sha256": "a63251de2278f8de195776a0d9eac2304c1ad70224063f1ec87b57f491356fb8"
+    }
+  },
+  "mixedVegetationStudy": {
+    "schema": "hmh-mixed-vegetation-study/v1",
+    "nativeComplete": true,
+    "calibrationPreview": true,
+    "artAccepted": false,
+    "runtimeAdmission": false,
+    "visibleBarrierAccepted": false,
+    "sources": {
+      "oak": {
+        "sourceSha256": "63c8da08bfcd68b4d078ffd6be1b4ef3d15f91c0f6aabb3b38790c4bb5f0c17c",
+        "beforeDataSha256": "391e141e97a91630a3d0857e1fd810ff35e54faee1815f4adef9e4cc97a95a5e",
+        "afterDataSha256": "391e141e97a91630a3d0857e1fd810ff35e54faee1815f4adef9e4cc97a95a5e"
+      },
+      "shrub": {
+        "sourceSha256": "61cc66284f586d05ca11607ebcd4a4639365da4d000b08c394e79b6101ed93cf",
+        "beforeDataSha256": "0529af78a35ffe20a54015e1574a2c06e4c7c1079c08482b51142035dc8bc195",
+        "afterDataSha256": "0529af78a35ffe20a54015e1574a2c06e4c7c1079c08482b51142035dc8bc195"
+      },
+      "fern": {
+        "sourceSha256": "4fc71c6927acd1b8f4e7b5efa02ae045edc307c5bf790e5d4e864f15449b8041",
+        "beforeDataSha256": "a35de3d40615570548b8a9b6869bbcea409dc8b54323d02133c54dbb0e14f951",
+        "afterDataSha256": "a35de3d40615570548b8a9b6869bbcea409dc8b54323d02133c54dbb0e14f951"
+      }
+    },
+    "materialStudy": {
+      "oakMaterialCopyOnly": false,
+      "allChangesObjectLinked": true,
+      "lowerPalette": {
+        "hue": 0.48,
+        "saturation": 0.72,
+        "value": 1.6,
+        "screenFactor": 0.16,
+        "screenLinear": [
+          0.18,
+          0.21,
+          0.075
+        ],
+        "metallic": 0
+      },
+      "originalTextureBytesPreserved": true,
+      "greenBlueExcessMask": [
+        0.015,
+        0.075
+      ],
+      "hue": 0.38,
+      "saturation": 0.78,
+      "value": 1.12,
+      "shaderFidelityToOriginal": false
+    },
+    "nativeReceiptSha256": "e30a5009fa1c987947b1ef2236bb74e384e0a397773823ee8f579ff6748e9211",
+    "actualPixelsSha256": "9aef3542e9e398026c51ee2fb8d5c148485353548018f6f047f93a15ff1d17da",
+    "inputManifestSha256": "128e02a780c982019b3713b9a1e884966fc6c34fcc2b96d0c7cc4466ac00f1e1"
+  },
+  "tiers": {
+    "desktop": {
+      "pages": [
+        {
+          "image": "ground-north-preview.webp",
+          "width": 1024,
+          "height": 768,
+          "bytes": 725486,
+          "sha256": "a42b56463ff5db0ef0aa4b9ac030e58c015c981d05e4a4bf1d681b26fa948ebc",
+          "decodedRgbaSha256": "e353bea64e05cf6db2f5e7e97343fce9de78b3d3ba8d905976ce3ecab079f77a"
+        },
+        {
+          "image": "ground-south-preview.webp",
+          "width": 1024,
+          "height": 768,
+          "bytes": 731460,
+          "sha256": "51fe2d2b7079e4a77802f2e96078b57b0c75610643ef6e08a49c8d4d96e3bef2",
+          "decodedRgbaSha256": "f8aac86b96fd09809cd89f426cf823c56bbcae571638c4cefcbac7e4cd812b16"
+        },
+        {
+          "image": "props-preview.webp",
+          "width": 768,
+          "height": 1536,
+          "bytes": 472400,
+          "sha256": "660e2f894694edff49fc61f86b9f17655f97fd993f639dc04bce62f569b2ea9a",
+          "decodedRgbaSha256": "dd9bf369c97f6e7eb973323f78ca7dea28c374cb1a3a50c176f530e5e5f10db8"
+        }
+      ],
+      "frames": [
+        {
+          "assetId": "art-target-meadows-tree-oak",
+          "page": 2,
+          "frame": {
+            "x": 0,
+            "y": 0,
+            "w": 768,
+            "h": 768
+          },
+          "anchor": {
+            "x": 0.5082530379295349,
+            "y": 0.6269327998161316
+          },
+          "runtimeScale": 0.49541403849919635,
+          "projectionY": 1.7434467956210982,
+          "alphaBounds": {
+            "x": 60,
+            "y": 260,
+            "w": 650,
+            "h": 266
+          }
+        },
+        {
+          "assetId": "art-target-meadows-house",
+          "page": 2,
+          "frame": {
+            "x": 0,
+            "y": 768,
+            "w": 768,
+            "h": 768
+          },
+          "anchor": {
+            "x": 0.5,
+            "y": 0.7178361415863037
+          },
+          "runtimeScale": 0.44570063551266986,
+          "projectionY": 1.7434467956210982,
+          "alphaBounds": {
+            "x": 133,
+            "y": 156,
+            "w": 502,
+            "h": 553
+          }
+        }
+      ],
+      "decodedBytes": 11010048,
+      "encodedBytes": 1929346
+    },
+    "mobile": {
+      "pages": [
+        {
+          "image": "ground-north-preview.webp",
+          "width": 1024,
+          "height": 768,
+          "bytes": 725486,
+          "sha256": "a42b56463ff5db0ef0aa4b9ac030e58c015c981d05e4a4bf1d681b26fa948ebc",
+          "decodedRgbaSha256": "e353bea64e05cf6db2f5e7e97343fce9de78b3d3ba8d905976ce3ecab079f77a"
+        },
+        {
+          "image": "ground-south-preview.webp",
+          "width": 1024,
+          "height": 768,
+          "bytes": 731460,
+          "sha256": "51fe2d2b7079e4a77802f2e96078b57b0c75610643ef6e08a49c8d4d96e3bef2",
+          "decodedRgbaSha256": "f8aac86b96fd09809cd89f426cf823c56bbcae571638c4cefcbac7e4cd812b16"
+        },
+        {
+          "image": "props-preview.webp",
+          "width": 768,
+          "height": 1536,
+          "bytes": 472400,
+          "sha256": "660e2f894694edff49fc61f86b9f17655f97fd993f639dc04bce62f569b2ea9a",
+          "decodedRgbaSha256": "dd9bf369c97f6e7eb973323f78ca7dea28c374cb1a3a50c176f530e5e5f10db8"
+        }
+      ],
+      "frames": [
+        {
+          "assetId": "art-target-meadows-tree-oak",
+          "page": 2,
+          "frame": {
+            "x": 0,
+            "y": 0,
+            "w": 768,
+            "h": 768
+          },
+          "anchor": {
+            "x": 0.5082530379295349,
+            "y": 0.6269327998161316
+          },
+          "runtimeScale": 0.49541403849919635,
+          "projectionY": 1.7434467956210982,
+          "alphaBounds": {
+            "x": 60,
+            "y": 260,
+            "w": 650,
+            "h": 266
+          }
+        },
+        {
+          "assetId": "art-target-meadows-house",
+          "page": 2,
+          "frame": {
+            "x": 0,
+            "y": 768,
+            "w": 768,
+            "h": 768
+          },
+          "anchor": {
+            "x": 0.5,
+            "y": 0.7178361415863037
+          },
+          "runtimeScale": 0.44570063551266986,
+          "projectionY": 1.7434467956210982,
+          "alphaBounds": {
+            "x": 133,
+            "y": 156,
+            "w": 502,
+            "h": 553
+          }
+        }
+      ],
+      "decodedBytes": 11010048,
+      "encodedBytes": 1929346
+    }
+  }
+}

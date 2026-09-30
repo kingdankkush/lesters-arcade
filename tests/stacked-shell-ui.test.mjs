@@ -14,7 +14,7 @@ test('every element id the child runtime addresses exists exactly once in the sh
   assert.ok(wanted.size >= 40);
   for (const id of ['effectsOff', 'effectsCalm', 'effectsStandard', 'effectsFull', 'effectsHint', 'settingsSaveNote', 'settingsTile', 'preferencePanel', 'volumeRange', 'volumeValue', 'scoresTile', 'freeModeTile', 'rankedModeTile', 'scoreShelf']) assert.ok(wanted.has(id), `the runtime wires #${id}`);
   for (const id of wanted) assert.equal((html.match(new RegExp(`id="${id}"`, 'g')) ?? []).length, 1, `#${id} present once`);
-  for (const id of ['resultScore', 'statLines', 'statLevel', 'statTime', 'statHalvings', 'statCombo']) assert.ok(wanted.has(id), `results grid fills #${id}`);
+  for (const id of ['resultScore', 'statLines', 'statLevel', 'statTime', 'statHalvings', 'statCombo', 'statPieces', 'statSpins', 'statPerfects']) assert.ok(wanted.has(id), `results grid fills #${id}`);
 });
 
 test('the retired settings controls are gone from the shell and the runtime', () => {
@@ -43,7 +43,7 @@ test('settings are four groups on one card, results use a hero score with a stat
   assert.match(group('Play'), /<label class="mobile-hand-option"><input id="leftHandToggle" type="checkbox">/, 'left-handed buttons show on touch screens only');
   assert.match(html, /<div id="resultStats" class="result-stats" hidden><p class="score-hero"><strong id="resultScore">/);
   const stats = html.slice(html.indexOf('id="resultStats"'), html.indexOf('id="resultCause"'));
-  assert.equal((stats.match(/<dt>/g) ?? []).length, 5);
+  assert.equal((stats.match(/<dt>/g) ?? []).length, 8);
   assert.match(html, /<p id="resultCause" class="result-cause">/);
   assert.match(html, /<span id="modeLabel" class="mode-pill">/);
   assert.equal((html.match(/<kbd>/g) ?? []).length, 9);
@@ -107,8 +107,8 @@ test('the stylesheet keeps 44 px targets, visible focus, a 320 px column and red
   assert.match(css, /\.share-row \.share-button\{[^}]*min-height:44px/);
   assert.match(css, /button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible,a:focus-visible\{outline:3px solid/);
   assert.match(css, /@media \(max-width:360px\)\{[^}]*\.overlay\{padding:12px\}/);
-  assert.match(css, /\.stat-grid\{display:grid;grid-template-columns:repeat\(5,1fr\)/);
-  assert.match(css, /\.stat-grid\{grid-template-columns:1fr 1fr\}\.stat-grid div:last-child\{grid-column:1\/-1\}/);
+  assert.match(css, /\.stat-grid\{display:grid;grid-template-columns:repeat\(4,minmax\(0,1fr\)\)/);
+  assert.match(css, /\.stat-grid\{grid-template-columns:1fr 1fr\}/);
   assert.match(css, /#visualPreferences\{grid-template-columns:1fr\}/);
   assert.match(css, /\.menu-tiles\{display:grid;grid-template-columns:repeat\(4,1fr\)/);
   assert.match(css, /\.menu-tiles\{grid-template-columns:1fr 1fr\}/, 'tiles fall to two columns on phones');

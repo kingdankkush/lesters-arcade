@@ -140,3 +140,6 @@ docs/2.0/receipts/blog-render-h2b/*.gz -filter -diff -merge -text
 
 # Compact static journal discovery evidence
 docs/2.0/receipts/blog-pages-h2c/*.gz -filter -diff -merge -text
+
+# Runtime terrain atlas pages
+apps/portal/assets/generated/hmh-art-target/*.webp filter=lfs diff=lfs merge=lfs -text

@@ -490,6 +490,7 @@ function setStatus(status, detail = '') {
 }
 
 async function boot() {
+  let artTarget = null, artTargetDisposed = false, pendingArtCleanup = null;
   if (!stageElement) throw new Error('HMH reboot stage is missing');
   // S0.2: the lazy runtime chunks download while the renderer initialises.
   const lazyRuntimeModules = loadLazyRuntimeModules();
@@ -579,6 +580,9 @@ async function boot() {
           marker.scale.set(1);
           bridge.send('game:state', statePayload('running'));
         } else if (message.type === 'portal:dispose') {
+          artTargetDisposed = true;
+          void artTarget?.dispose();
+          void pendingArtCleanup?.retry();
           actor3dDisposed = true;
           actor3dPilot?.dispose();
           worldLife.dispose();
@@ -645,6 +649,10 @@ async function boot() {
 
   const runtimeParams = new URLSearchParams(window.location.search);
   const pipelinePilotEnabled = runtimeParams.get('pipelinePilot') === '1';
+  // Owner review candidate only. Ordinary sessions never import or fetch it.
+  const artTargetPromise = runtimeParams.get('artTarget') === 'meadows-v1'
+    ? import('./meadows-art-target.mjs').then(module => module.loadMeadowsArtTarget({ enabled: true, world: LEVEL_ONE_WORLD, mobile: performanceProfile.id !== 'desktop', loadTexture: url => Assets.load(url), unloadTexture: url => Assets.unload(url), isDisposed: () => artTargetDisposed || app.stage.destroyed, onCleanupReport: report => { dataset.artTargetCleanupFailures = String(report.failedResources.length); pendingArtCleanup = report.ok ? null : report; if (!report.ok) console.warn('[HMH] Meadows texture cleanup pending', report.failedResources); } })).catch(error => { dataset.artTargetStatus = 'fallback'; console.warn('[HMH] Meadows art target fallback', error); return null; })
+    : Promise.resolve(null);
   // The certified four-layer production hero atlas is the shipped player
   // identity. It used to require ?productionPilot=1, which the portal never
   // sets, so every real run rendered the prototype graybox — a placeholder
@@ -1004,7 +1012,11 @@ async function boot() {
     for (const [id, asset] of worldDesignAssets) candidateAppearance.set(id, asset);
     extendWorldDesignLandmarks(candidateAppearance);
     const townPlacements = buildAuthoredTownPlacements({ worldId: LEVEL_ONE_WORLD.id, index: propIndex }).filter(p=>!candidateBlockerIds.has(p.collisionBlockerId));
-    const placements = Object.freeze([...authoredPropPlacements, ...townPlacements, ...worldDesign.placements, ...siteProps, ...nativeBarrierPlacements]);
+    const candidateArtTarget = await artTargetPromise;
+    if (artTargetDisposed || app.stage.destroyed || !world.parent) { await candidateArtTarget?.dispose(); return; }
+    const basePlacements = Object.freeze([...authoredPropPlacements, ...townPlacements, ...worldDesign.placements, ...siteProps, ...nativeBarrierPlacements]);
+    for (const [id, asset] of candidateArtTarget?.appearance ?? []) candidateAppearance.set(id, asset);
+    const placements = candidateArtTarget?.replacePlacements(basePlacements) ?? basePlacements;
     let display = null;
     let heldWeaponDisplay = null;
     let committed = false;
@@ -1034,9 +1046,11 @@ async function boot() {
       if (bearMarketBurnerEventPlacement) display.addPlacement(bearMarketBurnerEventPlacement);
       if (forkedStandardEventPlacement) display.addPlacement(forkedStandardEventPlacement);
       if (app.stage.destroyed || !world.parent) return;
+      candidateArtTarget?.createGround({ ContainerClass: Container, SpriteClass: Sprite, target: world, before: worldDecalLayer });
       authoredPropLayer.addChild(display.container);
       heldWeaponLayer.addChild(heldWeaponDisplay.container);
       authoredPropDisplay = display;
+      artTarget = candidateArtTarget;
       authoredHeldWeaponDisplay = heldWeaponDisplay;
       tripoPropAppearance = candidateAppearance;
       terrainPinnedPropTextures = [atlasTexture, ...[...candidateAppearance.values()].map(asset => asset.texture)];
@@ -1053,10 +1067,12 @@ async function boot() {
         heldWeaponDisplay?.container?.parent?.removeChild(heldWeaponDisplay.container);
         display?.destroy?.();
         heldWeaponDisplay?.destroy?.();
+        await candidateArtTarget?.dispose();
       }
     }
   }).catch((error) => {
     authoredPropLoadError = error;
+    void artTargetPromise.then(target => target?.dispose());
     worldDesignBlockerIds = new Set();
     dataset.authoredPropStatus = 'fallback';
     dataset.authoredPropError = String(error?.message ?? error);
@@ -2019,6 +2035,7 @@ async function boot() {
       if (lightningLedgerEventPlacement && authoredPropTick < lightningLedgerEventPlacement.availableTick) hiddenAuthoredPropIds.add(lightningLedgerEventPlacement.id);
       if (bearMarketBurnerEventPlacement && authoredPropTick < bearMarketBurnerEventPlacement.availableTick) hiddenAuthoredPropIds.add(bearMarketBurnerEventPlacement.id);
       if (forkedStandardEventPlacement && authoredPropTick < forkedStandardEventPlacement.availableTick) hiddenAuthoredPropIds.add(forkedStandardEventPlacement.id);
+      artTarget?.renderGround({ camera, view, worldToScreen });
       const authoredPropReport = authoredPropDisplay?.render({
         camera,
         view,
@@ -3020,10 +3037,19 @@ async function boot() {
             pose: body.worldDesignPoseInput, originals: [body] };
           break;
         }
+        const boss3d = liquidatorBoss ? {
+          active: liquidatorBoss.active, visible: bossVisual.visible, alpha: bossVisual.alpha,
+          x: interpolateStep(bossPreviousX, liquidatorBoss.x, renderAlpha),
+          y: interpolateStep(bossPreviousY, liquidatorBoss.y, renderAlpha), z: liquidatorBoss.groundZ,
+          bodyHeight: (productionHeroDisplay?.minimumBodyHeight ?? 84) * (1 + (liquidatorBoss.haltFrom >= 0 ? Math.max(0, 45 - (bossVisualTick - liquidatorBoss.haltFrom)) / 250 : 0)),
+          pose: liquidatorPose({ boss: liquidatorBoss, player: actor, tick: bossVisualTick,
+            lastAttack: lastBossResolvedAttack, hitUntil: bossHitVisualUntilTick, deathUntil: bossDeathVisualUntilTick }),
+          original: bossVisual,
+        } : null;
         actor3dPilot.updateGame(productionHeroDisplay ? { actorId: productionHeroId, weaponId: heldWeapon?.id,
           x: renderState.x, y: renderState.y, z: renderState.z, heading: Math.atan2(heldAim.y, heldAim.x),
           action: actor3dHeroAction, actionTick: actor3dHeroTick, moving: motion?.locomotion === 'moving',
-          bodyHeight: productionHeroDisplay.minimumBodyHeight, originals: [actorVisual, heldWeaponLayer] } : null, enemy3d, camera, view);
+          bodyHeight: productionHeroDisplay.minimumBodyHeight, originals: [actorVisual, heldWeaponLayer] } : null, enemy3d, camera, view, boss3d);
       }
       // overlayVisuals sits on the stage and is not shake-offset, so carry
       // the world offset across or pips detach from their bodies mid-shake.
@@ -5779,6 +5805,7 @@ async function boot() {
     }, viewport(), { dtSeconds: Math.max(1 / 240, Math.min(ticker.deltaMS / 1000, 1 / 15)), maxDeadZoneFraction: 0.12 });
     // Owner direction 2026-09-16: desktop wheel zoom scales the readable
     // default after the follow step so the camera lead is unaffected.
+    if (artTarget) camera.zoom = artTarget.resolveCameraZoom(camera.zoom);
     if (!touchUiEnabled) camera.zoom *= userZoom.factor;
     // Shake offsets the render container only. It deliberately does NOT touch
     // camera.shakeX/Y: those are read back by screenToGround, so shaking the

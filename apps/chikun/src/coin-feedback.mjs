@@ -1,5 +1,9 @@
 // Small detached presentation plans. Neither the simulation nor replay imports this module.
-export const isChikunCoinFeedbackEnabled = params => params?.get?.('coinFeedback') === 'positive-v1';
+// Positive feedback is the default; an explicit switch retains the legacy fallback for comparison.
+export const isChikunCoinFeedbackEnabled = params => {
+  const value = params?.get?.('coinFeedback');
+  return value == null || value === 'positive-v1';
+};
 
 export function createChikunCoinFeedback() {
   let previousCoins = 0, previousTick = 0, pickupTick = -Infinity, streak = 0;

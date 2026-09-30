@@ -132,7 +132,7 @@ async function finish() {
   $('overlayCopy').textContent = run.assisted ? 'Assisted Free practice. No profile or leaderboard write.' : 'Verifying your recorded run…';
   $('resultScore').textContent = s.score.toLocaleString();
   if (init.dailyChallenge) $('dailyRunBest').textContent = 'Your result is shown below';
-  for (const [id, value] of [['statLines', s.lines], ['statLevel', s.level], ['statTime', Math.floor(s.tick / 3600) + ':' + String(Math.floor(s.tick / 60) % 60).padStart(2, '0')], ['statHalvings', s.quadClears], ['statCombo', s.maxCombo]]) $(id).textContent = String(value);
+  for (const [id, value] of [['statLines', s.lines], ['statLevel', s.level], ['statTime', Math.floor(s.tick / 3600) + ':' + String(Math.floor(s.tick / 60) % 60).padStart(2, '0')], ['statHalvings', s.quadClears], ['statCombo', s.maxCombo], ['statPieces', s.piecesSpawned], ['statSpins', s.spinsMini + s.spinsFull], ['statPerfects', s.perfectClears]]) $(id).textContent = String(value);
   $('resultStats').hidden = false;
   $('resultCause').textContent = {'block-out':'The next piece had no room to enter. Try keeping the center of the stack low.','lock-out':'A piece locked above the rim. Use your landing guide and hold to make space.','garbage-out':'The rising ledger pushed the stack over the rim. Clear lower rows to leave room.','tick-ceiling':'You reached the end of the ledger.'}[s.terminalReason] ?? 'The stack reached the top. Clear space early and keep a landing route open.';
   $('continueButton').hidden = true; $('restartButton').hidden = false; $('restartButton').textContent = init.mode === 'ranked' ? 'Choose a new Ranked run' : 'Play again';

@@ -1,5 +1,40 @@
 # Lester's Arcade 2.0 progress
 
+## September 30: bounded production integration
+
+Latest owner direction permits parallel art/model/animation/VFX/UI agents and
+prioritizes visible delivery over more harnesses or prototype loops.
+
+- HMH: A23 farmhouse/foliage and terrain atlas are now in the combined worktree
+  behind `?artTarget=meadows-v1`. Desktop and phone-sized game views load correctly
+  with no overflow or browser errors. The boundary is softer; flat lawn/path and
+  sparse planting still fall below final art quality. This is not final world art.
+- Characters: corrected Liquidator geometry/skin is integrated into the existing
+  `?actor3dPilot=1` renderer, replacing the rusher slot while the boss is visible.
+  The two-display cap and sprite fallback remain. Thirty saved reimported poses
+  and37 existing actor checks pass. Earlier desktop game view passed; its remote
+  video retrieval failed before phone capture. No physical-phone performance claim.
+- STACKED: results emphasize score and practice best, with pieces, spins and all
+  clears added to the existing five stats. Actual desktop/phone Free completions
+  show all eight stats and a visible Play again action without horizontal overflow.
+  Eight existing shell checks pass. The first viewer stopped on an iframe-replace
+  race after results were saved; the missing farmhouse phone capture completed
+  separately. All browser/server resources closed.
+- Chikun: the previously reviewed positive coin flight/chime/counter pulse is now
+  enabled by default. `?coinFeedback=off` retains the old presentation for comparison.
+  Eight existing feedback checks pass; earlier actual replay-parity proof is reused.
+- Combined build passes: HMH initial/shared1,041,310B (limit1,048,576), STACKED580,963B
+  (limit607,000). Runtime atlas pages and the corrected model use Git LFS.
+- Final integrated startup check: actor3d ready/count2 and all three local GLBs
+  return200 with no browser errors. The final screenshot does not frame the boss,
+  so it proves startup/loading only. Normal portal Chikun Free launch has no
+  preview query and reports coin feedback ready. Browser/server closed cleanly.
+
+Expanded visual/performance/release gates are deferred per owner direction, not
+counted as passed. No paid generation, release version bump, push or deployment.
+The overall overhaul, final art/roster, physical-device acceptance and release
+remain unfinished. Current captures: local workspace `outputs/stacked-results-polish/`.
+
 Updated: 2026-09-30. All ten distinct local HMH greyboxes are gathered. Optional
 STACKED tutorial, daily challenge and playable local versus are browser-checked.
 Versus includes results/rematch, clean lifecycle ownership, readable landing

@@ -1,6 +1,6 @@
-# Chikun E0: positive coin pickup prototype
+# Chikun E0: positive coin pickup
 
-2026-09-29. Default-off `?coinFeedback=positive-v1`. No course, collision, random streams, rules, score, replay format, server verifier or version changed. No new assets/generation/credits.
+Current candidate, September 30: enabled by default. `?coinFeedback=off` retains the old presentation for comparison. The September 29 evidence below covers the same effect while it was optional. No course, collision, random streams, rules, score, replay format, server verifier or version changed. No new assets/generation/credits.
 
 Audit found existing coin collection added a camera bump/white flash. The prototype gives one small gold sparkle and coin-to-counter flight per observed pickup batch, a semitone chime streak capped at sqrt(2), and a short counter colour pulse. Its detached scalar tracker deduplicates snapshots and resets on a new run/gap/rewind. A four-node pool uses the existing frame clock, ignores pointer input and creates no extra timers/listeners. Reduced motion removes active travel and uses the counter pulse. Positive pickup feedback preserves simultaneous hazard shake/flash. The lazy download can fail without stopping the existing game; disposal prevents late import revival and removes owned nodes immediately.
 

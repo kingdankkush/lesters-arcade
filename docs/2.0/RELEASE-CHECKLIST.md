@@ -7,18 +7,18 @@ estimate was subjective and must not be treated as a measured audit.
 | Work | Current state | Next deliverable |
 | --- | --- | --- |
 | HMH world | Ten-area private greybox has movement and prop residency. One Meadows relay is integrated; its source checks passed before the workflow reset. | Finish and use the playable world, integrate terrain and objectives; avoid another general framework. |
-| HMH terrain | A22 farmhouse/ground/foliage rendered in actual desktop/phone game; dirt stamps removed. Ground edge remains visibly rectangular. Assets are still private, not finished production art. | Blend the boundary and move the usable art into the combined candidate. |
-| HMH characters | Existing3D renderer and model work are reusable. Corrected Liquidator body has163 repaired skin vertices. Graft blocked by a13.2867mm root-space offset between donor and parent. | Fix that specific coordinate conversion, view the character, then use one working pipeline for the roster. |
+| HMH terrain | A23 terrain atlas and farmhouse/foliage loader are integrated behind the art-target switch. Desktop game review confirms a softer ground boundary. Flat lawn/path and sparse planting still need art improvement. | Improve the terrain materials and natural placement; reuse the integrated assets. |
+| HMH characters | Existing3D renderer and model work are reusable. Corrected Liquidator body has163 repaired skin vertices. Root-space conversion is corrected; the model passes saved-pose checks and renders in the desktop game. Integrated into the existing character switch, replacing the rusher slot when the boss is visible. | Improve its dark/narrow appearance; reuse the working conversion for the roster. |
 | HMH readability | Painted-bounds prop fading fixed and committed. Objective pointer/text overlap fixed and confirmed in actual phone-framed game. | Keep these fixes in the combined candidate. |
-| Chikun | Prior visual/course work exists; final creature art and versioned additions remain unfinished. | Review what is already playable and finish one coherent visual package. |
-| STACKED | Replay and local-versus/audio work, tutorial/daily/visualizer work exist. Final integration and polish remain. | Make the completed modes and visuals usable together in the candidate. |
+| Chikun | Positive coin flight, chime and counter feedback enabled by default in the candidate. Existing parity checks are retained; final creature art and versioned additions remain unfinished. | Review what is already playable and finish one coherent visual package. |
+| STACKED | Solo results now show a clear score, practice best and eight stats; actual desktop/phone views fit. Prior versus/audio/tutorial/daily/visualizer work remains gathered. | Make the completed modes and visuals usable together in the candidate. |
 | Achievements and site | Collection/rarity and blog rendering infrastructure exist. Final rewards, earning/Locker integration and publication remain. | Finish the player-facing collection/rewards flow using existing infrastructure. |
 | Release | Production remains1.9.4 at last live verification; nothing from this checkpoint deployed. | Produce a concrete integrated candidate and an accurate list of shipped/deferred items. |
 
 ## Execution rules
 
-- Default to one implementation lane. Short independent reviews only where they
-  materially protect gameplay/verifier behavior; no continuously running agents.
+- Use bounded parallel production lanes for art, models/rigs/animation, VFX and UI.
+  Root integrates each tangible deliverable; stop agents when that work is done.
 - No new harness families, speculative prototypes, extra scope or paid asset
   generation. Reuse current models, exporters and tools.
 - Per latest owner instruction, defer expanded testing and prototype cycles.
@@ -36,3 +36,5 @@ The already-running broad visual job ended with a Chrome-close deadline and is
 not counted as passing; all recorded processes were confirmed absent and its
 owned lock released. No repeat was launched. Evidence remains in the local
 workspace at `outputs/hmh-a22-game-preview-01/`; no duplicate receipt archive.
+
+Owner clarification: parallel agents are authorized for bounded production art, modeling/rigging/animation, VFX and UI deliverables. Avoid open-ended harness/prototype work; root integrates the finished content.
