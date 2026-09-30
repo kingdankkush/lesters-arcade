@@ -1040,3 +1040,25 @@ Eight originals were reviewed. A fresh World-worktree normal build and standard
 these are not combined-root release results. Final terrain/art, streaming,
 complete gameplay and physical-device acceptance remain open. See
 [W3d evidence and limits](slices/WORLD-W3D-PRIVATE-PIXI-SCENE.md).
+
+## Terrain/character priority and source review — September 30
+
+Owner approval to improve terrain and characters is reaffirmed. Root new site work
+stops at committed H2c while these visual corrections take priority. W3d private
+movement scene is gathered as9b10c5610; source closure was checked against63 pins,
+preserving the existing root STACKED build delta explicitly.
+
+A18 improves ground continuity but remains below the art bar. Complete-source house
+comparison identifies the broad A5 roof as an architectural regression: the original
+owner geometry preserves upper windows and the separate porch roof. Use that original
+geometry in the next private composition. Porch darkness remains separate. A wrong raw
+source-path attempt was rejected before import and is retained; corrected exact-source
+and road47 top-view diagnostics pass, original inputs unchanged, all children closed.
+Road aggregate/crack detail is suitable for a small localized bake, still unmade.
+
+Character native05 completed52,490 regional comparisons; a separate body importance
+study now addresses limb geometry without rewriting weights or raising the8,000-body
+triangle cap. A19 grass-form source checks pass24 plus identical isolated24; native
+visual review is next. These agent-local studies are not accepted runtime art.
+See [source review and limits](slices/TERRAIN-HOUSE-SOURCE-REVIEW.md). Full completed
+combined release remains authorized only after its required work and checks pass.

@@ -1,0 +1,142 @@
+[
+  {
+    "source": "terrain-source-audit/inventory.json",
+    "archive": "00-inventory.json.gz",
+    "bytes": 11593,
+    "sha256": "2baf1bbef875445e2b6d6ab1ac1f5be31c03aba91a27b9ae24bcab966e38f132",
+    "packedBytes": 2113
+  },
+  {
+    "source": "terrain-source-audit/ART-MATERIAL-RECOMMENDATIONS.md",
+    "archive": "01-ART-MATERIAL-RECOMMENDATIONS.md.gz",
+    "bytes": 6035,
+    "sha256": "f6ad6a1208f8c449219dc9fee1954742653126c16a619d8578452776d65f7dca",
+    "packedBytes": 2911
+  },
+  {
+    "source": "world-w3d-root-equivalence.json",
+    "archive": "02-world-w3d-root-equivalence.json.gz",
+    "bytes": 13407,
+    "sha256": "45dffb8859c2b1168d0a524d91202d04973c55a83bace9222be81232e839758a",
+    "packedBytes": 3488
+  },
+  {
+    "source": "verify-world-w3d-gather.mjs",
+    "archive": "03-verify-world-w3d-gather.mjs.gz",
+    "bytes": 2193,
+    "sha256": "4ac0d2f583101f9efd09a7229334da30249211d4a7bb6bdc3aa82f8cec7087aa",
+    "packedBytes": 1118
+  },
+  {
+    "source": "inspect-meadows-house.py",
+    "archive": "04-inspect-meadows-house.py.gz",
+    "bytes": 5987,
+    "sha256": "c33665fee74cb13bd9446ef109211a2acae521575ebb0572b3bd06f3409c99e5",
+    "packedBytes": 2387
+  },
+  {
+    "source": "run-house-diagnostic.mjs",
+    "archive": "05-run-house-diagnostic.mjs.gz",
+    "bytes": 2892,
+    "sha256": "5d466395ce6a6876efb89e2d88d34c5eab2d56906ac162f6cc4b6c813f5d5964",
+    "packedBytes": 1316
+  },
+  {
+    "source": "house-component-window/report.json",
+    "archive": "06-report.json.gz",
+    "bytes": 8669,
+    "sha256": "6dad9da9abe7a26fc13c57e0b881586855f47a5453a99547564e27853bb874da",
+    "packedBytes": 1887
+  },
+  {
+    "source": "inspect-house-owner-source.py",
+    "archive": "07-inspect-house-owner-source.py.gz",
+    "bytes": 8114,
+    "sha256": "13c2ea3dfec8b9293fa325a83a493a7b0eef833162beab6de278942b5c06e8e2",
+    "packedBytes": 2999
+  },
+  {
+    "source": "run-house-owner-diagnostic.mjs",
+    "archive": "08-run-house-owner-diagnostic.mjs.gz",
+    "bytes": 3011,
+    "sha256": "af3ac4bf70015b0d7a3f9a342a65c1bdc9b3288ed57c4f8802bd7d2c1b421509",
+    "packedBytes": 1382
+  },
+  {
+    "source": "house-owner-window/report.json",
+    "archive": "09-report.json.gz",
+    "bytes": 4726,
+    "sha256": "83fc07cf884bbc58d50d0770546f90e577bdc2ca214c25083740e11c07bbd0ee",
+    "packedBytes": 1388
+  },
+  {
+    "source": "inspect-house-owner-source-02.py",
+    "archive": "10-inspect-house-owner-source-02.py.gz",
+    "bytes": 8148,
+    "sha256": "b123325d6469b22b65859e17803f7909613ec4235a7f16c5033c75df2bb5ee61",
+    "packedBytes": 3019
+  },
+  {
+    "source": "run-house-owner-diagnostic-02.mjs",
+    "archive": "11-run-house-owner-diagnostic-02.mjs.gz",
+    "bytes": 3054,
+    "sha256": "4e4acbeea742fd868e070e4c3f43c48e79d7c1aa4406a96e76d16d2a3d5901ca",
+    "packedBytes": 1404
+  },
+  {
+    "source": "house-owner-window-02/report.json",
+    "archive": "12-report.json.gz",
+    "bytes": 6595,
+    "sha256": "41a2b38ec57e7ab4d34398d7b996439e5d94ee47474d182fff2966deaf9cf0bd",
+    "packedBytes": 1861
+  },
+  {
+    "source": "inspect-road47-top.py",
+    "archive": "13-inspect-road47-top.py.gz",
+    "bytes": 4607,
+    "sha256": "99212d1dc0a507a6658fa5993dd260a8d0a0eff2dc9f1843a73fe754cdfce86c",
+    "packedBytes": 1986
+  },
+  {
+    "source": "run-road47-diagnostic.mjs",
+    "archive": "14-run-road47-diagnostic.mjs.gz",
+    "bytes": 2934,
+    "sha256": "4ce6a47bc8ea27b5de568f10b6685e7f966f117468e50076b5e5b7bc45ac8196",
+    "packedBytes": 1351
+  },
+  {
+    "source": "road47-source-window/report.json",
+    "archive": "15-report.json.gz",
+    "bytes": 5041,
+    "sha256": "e3784bae204b4ad8023b906e8dd5383602b8490364d0da7e432a10ed3460241e",
+    "packedBytes": 1573
+  },
+  {
+    "source": "art-a6-owned-native-child.mjs",
+    "archive": "16-art-a6-owned-native-child.mjs.gz",
+    "bytes": 3476,
+    "sha256": "13ca87aa10b07bdbf54ba4dbd41b9ca7fc035c6792d4a7775d946df1c8b34fec",
+    "packedBytes": 1360
+  },
+  {
+    "source": "../outputs/hmh-house-component-review/report.json",
+    "archive": "17-report.json.gz",
+    "bytes": 4477,
+    "sha256": "713d30afe7273e0571a7cde6a5fd7f32cb41e5b8376d5e1712861f1fdcc76fcf",
+    "packedBytes": 1077
+  },
+  {
+    "source": "../outputs/hmh-house-owner-review-02/report.json",
+    "archive": "18-report.json.gz",
+    "bytes": 1965,
+    "sha256": "d3ffef392df8d9b2e7f2d78b460cdee74f5abb201d8764c94cc3a4b134ced885",
+    "packedBytes": 906
+  },
+  {
+    "source": "../outputs/hmh-road47-source-review/report.json",
+    "archive": "19-report.json.gz",
+    "bytes": 1218,
+    "sha256": "3e72f32bc645e5f3567ae6b5723e72d6d20b2d832f06de72f6cee02c0d5d42d2",
+    "packedBytes": 615
+  }
+]
