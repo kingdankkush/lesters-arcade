@@ -204,9 +204,13 @@ test('the child loads every scalable page through the profile texture loader', (
     'createHeldWeaponLoader({ selection, display, Assets: textureAssets })',
   ]) assert.ok(main.includes(call), call);
   // Only the pages with their own mobile tiers and the pilot-only mannequin
-  // still load straight through Pixi.
+  // still load straight through Pixi: the opt-in Meadows art target
+  // (validateMeadowsArtMetadata picks 'mobile' or 'desktop' itself), the
+  // mannequin, native barriers and the world design pages.
   const direct = [...main.matchAll(/\bAssets\.load\(([^)]*)\)/gu)].map((match) => match[1]);
-  assert.deepEqual(direct, ['MANNEQUIN_ATLAS_IMAGE_URL', 'url', 'url']);
+  assert.deepEqual(direct, ['url', 'MANNEQUIN_ATLAS_IMAGE_URL', 'url', 'url']);
+  assert.match(main, /loadMeadowsArtTarget\(\{ enabled: true, world: LEVEL_ONE_WORLD, mobile: performanceProfile\.id !== 'desktop', loadTexture: url => Assets\.load\(url\)/u,
+    'the Meadows loader receives the profile tier and picks its own page set');
 });
 
 // A TextureSource of the page's logical size at the given resolution: what

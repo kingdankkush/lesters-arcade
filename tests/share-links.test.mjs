@@ -415,6 +415,10 @@ test('child share rows are hidden for Ranked runs and link Free runs to their /f
     const copied = [];
     const live = [];
     const navigatorRef = { share: async (payload) => { shared.push(payload); }, clipboard: { writeText: async (text) => { copied.push(text); } } };
+    // The private course-two preview is a module-level gate in the cabinet; the
+    // share row reads it like `mode`, so the sandbox mirrors that binding.
+    assert.match(chikunMain, /^const courseTwoActive=\(\)=>/mu, 'the cabinet declares the course-two gate at module scope');
+    let courseTwo = false;
     const context = childShareRow(chikunMain, {
       start: 'let shareRow = null;\nfunction renderShareRow(result) {',
       end: '\nwatchReplayButton?.addEventListener',
@@ -422,6 +426,7 @@ test('child share rows are hidden for Ranked runs and link Free runs to their /f
         document: { ...documentRef, querySelector: (selector) => (selector === '#shareRow' ? mount : null) },
         navigator: navigatorRef, setTimeout,
         shareRunButton, mode: 'ranked', dailyChallenge: null, setLive: (message) => live.push(message),
+        courseTwoActive: () => courseTwo,
         buildShareLinks, buildFreeShareText: texts, createShareRow: rows, encodeFreeShareToken, freeSharePageUrl, freeShareCardPath,
       },
     });
@@ -431,7 +436,17 @@ test('child share rows are hidden for Ranked runs and link Free runs to their /f
     assert.equal(texts.calls.length + rows.calls.length, 0, 'Ranked builds no share text and no row');
     await shareRunButton.dispatch('click');
     assert.deepEqual([shared, copied], [[], []], 'the hidden Ranked Share Run button is inert');
+    // A Free run on the private course-two preview never advertises a public
+    // /f/ page: its results are local-only and unsigned.
     context.mode = 'free';
+    courseTwo = true;
+    context.renderShareRow(result);
+    assert.equal(mount.hidden, true, 'Chikun course-two preview: share row hidden');
+    assert.equal(shareRunButton.hidden, true, 'Chikun course-two preview: Share Run hidden');
+    assert.equal(texts.calls.length + rows.calls.length, 0, 'the course-two preview builds no share text and no row');
+    await shareRunButton.dispatch('click');
+    assert.deepEqual([shared, copied], [[], []], 'the hidden course-two Share Run button is inert');
+    courseTwo = false;
     context.dailyChallenge = { label: 'Daily 2026-09-26' };
     context.renderShareRow(result);
     assert.equal(mount.hidden, false, 'Chikun Free: share row shown');

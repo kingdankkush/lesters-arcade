@@ -373,7 +373,9 @@ test('main.mjs wires the weapon VFX layer above combat visuals, emits surface-ty
   assert.ok(layerAt > names.indexOf('combatVisuals'), 'pooled sprites draw above the vector combat layer');
   assert.ok(layerAt > names.indexOf('actorVisual'), 'muzzle sprites must not be occluded by the hero');
   assert.ok(layerAt < names.indexOf('projectileImpacts'), 'the gold hit ring stays on top');
-  assert.equal((source.match(/world\.addChild\(/gu) ?? []).length, 1, 'the layer order stays a single call');
+  // Only the ordered, comma-separated layer list counts: the actor-3d pilot attaches one
+  // display per hero/enemy into the depth layer at runtime with a single-argument call.
+  assert.equal((source.match(/world\.addChild\([^)]*,[^)]*\)/gu) ?? []).length, 1, 'the layer order stays a single call');
   for (const pin of [
     /createWeaponVfxTextures\(/u,
     /createWeaponVfxPool\(/u,

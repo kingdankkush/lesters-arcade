@@ -169,7 +169,7 @@ export async function createActor3dPixiBackend({ renderer, signal, maxActors = 2
       uNormalTexture: Texture.WHITE.source, uNormalSampler: Texture.WHITE.source.style,
       uMaterialTexture: Texture.WHITE.source, uMaterialSampler: Texture.WHITE.source.style,
     } });
-    const mesh = new ActorPrimitive({ geometry, shader, state, texture: weapon.texture }); mesh.pilotBounds = new Bounds(); mesh.eventMode = 'none';
+    const mesh = new ActorPrimitive({ geometry, shader, state, texture: weapon.texture }); mesh.pilotBounds = new Bounds();
     display.addChild(mesh); display.weaponMesh = mesh; display.weaponMeshId = id; display.weaponAttachment = attachment;
     // The seated model draws through the proven hero program; prove this
     // geometry/texture binding the same way before the sprite hero is hidden.
@@ -247,7 +247,7 @@ export async function createActor3dPixiBackend({ renderer, signal, maxActors = 2
       return false;
     },
     heroMuzzle() { return heroMuzzle; },
-    createDisplay(id) { order.add(id); const display = new Container({ label: `actor-3d:${id}` }); display.eventMode = 'none'; display.pilotId = id; live.add(display); return display; },
+    createDisplay(id) { order.add(id); const display = new Container({ label: `actor-3d:${id}` }); display.pilotId = id; live.add(display); return display; },
     beginFrame(frame) { bands = order.frame(frame); },
     renderActor(display, projection) {
       if (disposed || renderer.gl.isContextLost()) throw new Error('pilot context unavailable');
@@ -273,7 +273,7 @@ export async function createActor3dPixiBackend({ renderer, signal, maxActors = 2
             uNormalTexture: normal.source, uNormalSampler: normal.source.style,
             uMaterialTexture: mr.source, uMaterialSampler: mr.source.style,
           } });
-          const mesh = new ActorPrimitive({ geometry: asset.geometry[i], shader, state, texture: base }); mesh.pilotBounds = new Bounds(); mesh.eventMode = 'none'; display.addChild(mesh);
+          const mesh = new ActorPrimitive({ geometry: asset.geometry[i], shader, state, texture: base }); mesh.pilotBounds = new Bounds(); display.addChild(mesh);
         }
       }
       if (display.pilotAsset !== asset) throw new Error('pilot actor identity immutable');

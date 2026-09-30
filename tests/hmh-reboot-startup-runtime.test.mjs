@@ -28,6 +28,26 @@ const tickerNode = findNode(node => node.type === 'CallExpression'
 const continueNode = findNode(node => node.type === 'CallExpression'
   && source.slice(node.callee.start, node.callee.end) === 'startupContinue?.addEventListener').arguments[1];
 
+// The sandbox below stubs the bindings the ticker closes over. Every stub must
+// mirror a binding that is really declared in a scope enclosing the ticker in
+// main.mjs, or the sandbox could pass while the shipped ticker throws a
+// ReferenceError on the first frame.
+function enclosingFunctions(target, node = ast, found = []) {
+  if (!node || typeof node !== 'object' || node.start > target.start || node.end < target.end) return found;
+  if (/Function/.test(node.type ?? '')) found.push(node);
+  for (const value of Object.values(node)) {
+    if (Array.isArray(value)) value.forEach(item => enclosingFunctions(target, item, found));
+    else if (value && typeof value === 'object') enclosingFunctions(target, value, found);
+  }
+  return found;
+}
+for (const name of ['terrainAreaStreaming', 'terrainAreaStreamingEnabled']) {
+  const declarator = findNode(node => node.type === 'VariableDeclarator' && node.id.name === name);
+  assert.ok(declarator, `main.mjs declares ${name}`);
+  const scope = enclosingFunctions(declarator).at(-1);
+  assert.ok(scope && scope.start <= tickerNode.start && scope.end >= tickerNode.end, `${name} is declared in a scope enclosing the ticker`);
+}
+
 // Execute the shipped handlers rather than a second implementation of their
 // loading conditions. The renderer and transport are only observation stubs.
 function runtime({ paused = true } = {}) {
@@ -44,6 +64,9 @@ function runtime({ paused = true } = {}) {
     enemyRosterIndexes: new Map([['bagholder-rusher', {}], ['forkrunner', {}]]), enemyRosterLoadError: null,
     terrainTilesEnabled: true, TERRAIN_MATERIAL_IDS: ['asphalt', 'grass', 'sand'],
     terrainTiles: { ready: true, loadedIds: ['asphalt', 'grass', 'sand'] }, terrainTileLoadError: null,
+    // Opt-in terrain source leases (areaStreaming=1) are off in this loading
+    // test, exactly as they are for a default production start.
+    terrainAreaStreaming: null, terrainAreaStreamingEnabled: false, viewport: () => ({ width: 0, height: 0 }),
     startupPanel: { hidden: false }, startupContinue: { hidden: true }, startupCopy: { textContent: '' },
     performance: { now: () => 100 }, input: { reset: reason => events.push(['input-reset', reason]) },
     renderWorld: () => events.push(['render']), requestEnemyRosterAtlas: id => events.push(['prewarm', id]),

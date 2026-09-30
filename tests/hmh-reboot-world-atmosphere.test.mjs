@@ -405,7 +405,9 @@ test('main.mjs draws the atmosphere above every body and below every HUD element
   const raw = await readFile(mainUrl, 'utf8');
   const source = stripComments(raw);
   assert.match(source, /from '\.\/world-atmosphere\.mjs'/u);
-  assert.equal((source.match(/world\.addChild\(/gu) ?? []).length, 1, 'the layer order stays a single call');
+  // Only the ordered, comma-separated layer list counts: the actor-3d pilot attaches one
+  // display per hero/enemy into the depth layer at runtime with a single-argument call.
+  assert.equal((source.match(/world\.addChild\([^)]*,[^)]*\)/gu) ?? []).length, 1, 'the layer order stays a single call');
   const order = /world\.addChild\(([^)]*)\)/u.exec(source);
   assert.ok(order, 'could not read the world layer order');
   const names = order[1].split(',').map((entry) => entry.trim());
