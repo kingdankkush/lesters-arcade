@@ -1,0 +1,97 @@
+{
+  "scope": "Source input adapter and private actual two-board browser probe; no portal-versus integration or physical controllers/phone",
+  "files": [
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-local-input-source-red-01\\report.json",
+      "archive": "stacked-local-input-source-red-01__report.json.gz",
+      "rawBytes": 18516,
+      "gzipBytes": 2498,
+      "sha256": "e4f2eae88e1023d79cb2ea86d7c3a47103930d648a719993add413c49027fb34"
+    },
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-local-input-source-green-01\\report.json",
+      "archive": "stacked-local-input-source-green-01__report.json.gz",
+      "rawBytes": 12592,
+      "gzipBytes": 2390,
+      "sha256": "65dc87f876d0cdf7a5548aa2438b9736dea706a02f6c1c835fe04a05fcb5e433"
+    },
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-local-input-built-01\\report.json",
+      "archive": "stacked-local-input-built-01__report.json.gz",
+      "rawBytes": 158981,
+      "gzipBytes": 42073,
+      "sha256": "e602e74c44165ecb8d05f88cb0b06f7a1bdd82396ce51269e9ebf888c598ccdf"
+    },
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-local-input-browser-01\\report.json",
+      "archive": "stacked-local-input-browser-01__report.json.gz",
+      "rawBytes": 2978,
+      "gzipBytes": 1163,
+      "sha256": "5242d8d246e78af81b0f0bc817d8ed701d2ef6db760f371dcd8c362a7a92eacf"
+    },
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-local-input-probe-01\\meta.json",
+      "archive": "stacked-local-input-probe-01__meta.json.gz",
+      "rawBytes": 1069475,
+      "gzipBytes": 81600,
+      "sha256": "17bc1310952ab44fdd1d56ec1420126409ddad8f4f8b1c64ef49a368d8895c14"
+    },
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-local-input-probe-01\\entry-source.mjs.txt",
+      "archive": "stacked-local-input-probe-01__entry-source.mjs.txt.gz",
+      "rawBytes": 4012,
+      "gzipBytes": 1574,
+      "sha256": "1922defeb25fd772c6ef96eaaf097d9e797479ce14e6a7e07fb0a4ac258bf84e"
+    },
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-local-input-probe-01\\index.html",
+      "archive": "stacked-local-input-probe-01__index.html.gz",
+      "rawBytes": 1537,
+      "gzipBytes": 896,
+      "sha256": "ef8289a35940e80a1d474b1460408a8ed49392b9045184ebe43f0cc950c6b39d"
+    },
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\run-stacked-local-input-source.mjs",
+      "archive": "run-stacked-local-input-source.mjs.gz",
+      "rawBytes": 2958,
+      "gzipBytes": 1339,
+      "sha256": "b552bb6fbe2d5524f294f91ed3a0e371eca312212b6fdc7d62777c8815c031d7"
+    },
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\run-stacked-local-browser.mjs",
+      "archive": "run-stacked-local-browser.mjs.gz",
+      "rawBytes": 3873,
+      "gzipBytes": 1472,
+      "sha256": "0a0a9e2045e1731018361b3f13e3406cb7a833eb2207d6f06950b0fa47e8e6ab"
+    },
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-local-input-browser.mjs",
+      "archive": "stacked-local-input-browser.mjs.gz",
+      "rawBytes": 7647,
+      "gzipBytes": 2833,
+      "sha256": "f607fc2df1c77167add04326ae5bc7f967903be7f3c8b8e6a246aef59341351d"
+    },
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\build-stacked-local-probe.mjs",
+      "archive": "build-stacked-local-probe.mjs.gz",
+      "rawBytes": 6623,
+      "gzipBytes": 2919,
+      "sha256": "f545571904747f603a62d84611b8b2511287b987c570ddc9996afbc85f865579"
+    },
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\owned-windows-child.mjs",
+      "archive": "owned-windows-child.mjs.gz",
+      "rawBytes": 3475,
+      "gzipBytes": 1360,
+      "sha256": "a5177337fcf6ec41f285fc105b93d0b4b94ee1101cb14a653a91e9b8b075b0d9"
+    },
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\owned-windows-preview-child.mjs",
+      "archive": "owned-windows-preview-child.mjs.gz",
+      "rawBytes": 3476,
+      "gzipBytes": 1360,
+      "sha256": "6f4903a66d324a01a476eebefdfac68663dde2c573f62f637c4b7537ccb0d631"
+    }
+  ],
+  "gzipBytes": 143477
+}

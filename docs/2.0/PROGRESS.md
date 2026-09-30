@@ -751,3 +751,16 @@ bindings are under `receipts/world-woods/`; exact manual compiled bundle:
 `outputs/hmh-woods-authored-flow-preview.zip` in the task workspace, port 8802.
 No source trees were duplicated in this archive. All protected authorities
 remain unchanged. No push, version bump or deployment.
+
+### STACKED F2c — local two-player input foundation
+
+Two independent existing adapters now support immutable split-keyboard or
+indexed standard-pad claims. Disconnect (including same-model reconnect),
+focus, blur and pause clear both streams; activation waits for neutral pads.
+Independent review preceded implementation. RED17, GREEN17+same17 isolated,
+related51 and seven private actual-Chrome match/board cases pass. All three
+original captures reviewed; desktop two-board control is legible, while small
+landscape labels and portrait helper spacing remain probe limitations.
+No production importer/UI, physical controller/phone, finished-versus, full
+build/release or deployment claim. All children/Chrome/HTTP closed; markers
+released. See slices/STACKED-F2C-LOCAL-INPUT.md and receipts/stacked-local-input-f2c.

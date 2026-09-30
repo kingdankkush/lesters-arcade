@@ -1278,6 +1278,8 @@ const NODE_CHECK_FILES = [
   "apps/portal/src/stacked-daily-date.mjs",
   "apps/portal/src/stacked-daily-challenge.mjs",
   "tests/stacked-daily-challenge.test.mjs",
+  "apps/stacked/src/local-input.mjs",
+  "tests/stacked-local-input.test.mjs",
   "tests/stacked-daily-bridge.test.mjs",
   "apps/portal/src/stacked-evidence-transport.mjs",
   "apps/portal/src/stacked-bridge-protocol.mjs",

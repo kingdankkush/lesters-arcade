@@ -105,3 +105,6 @@ docs/2.0/receipts/world-fortress/** -text
 
 # Compact exact Woods authoring evidence
 docs/2.0/receipts/world-woods/** -text
+
+# Compact local two-player controls observations
+docs/2.0/receipts/stacked-local-input-f2c/*.gz -filter -diff -merge -text
