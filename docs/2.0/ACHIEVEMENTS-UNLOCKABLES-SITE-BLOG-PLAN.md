@@ -105,6 +105,32 @@ check is claimed for these items, and no real wallet has earned anything.
   this repository (the shared Codex workspace `outputs/replacement-rewards-review/`);
   its archive check must read `textContent` or use the matcher. That browser
   run has not been repeated here; no other assertion changed.
+- **Trophy criteria audit and catalog entries — implemented, source-checked.**
+  Re-audit: the 13 existing `nft: true` candidates are unchanged (3 HMH run
+  totals, 5 Chikun platinum, 5 STACKED platinum). Added, all with stable ids
+  and criteria from existing server-verified stats:
+  - HMH `full-roster-run` (mythic, boss, trophy): one kill of each schema-7
+    boss row (`killsByRole` for `rug-pull-baron`, `lockkeeper`,
+    `fifty-one-percent-foreman`, `liquidator`) in one run; a schema-6 summary
+    can never earn it.
+  - HMH `boss-rush-fifty` (mythic, boss, trophy): Σ `bossKills ≥ 50`, i.e.
+    fifty Liquidator runs (plausibility caps a run at one).
+  - STACKED `stacked-final-zone` (mythic, zone, trophy): `zone ≥ 5` in one
+    run, the last simulation zone (25 minutes). The soak pilot never reaches
+    it (p99 17.03 min); the owner may lower it to zone 4.
+  - HMH `world-escape` (mythic, level-clear) `available: false`: every verified
+    HMH run must end `defeated` and the ten-area world has no exit; needs an
+    `escaped` end state and world/exit fields in a later run-summary schema.
+  - Chikun `chikun-escape-complete` (platinum, escape) `available: false`:
+    the replayed result records no course finish (the course loops; `laps ≥ 1`
+    is already `chikun-loop-1`); needs an `escaped` terminal state.
+
+  The three available trophies are catalog-only and server-derived (no
+  device-local definition; parity tests exempt them). ERC-721 metadata files
+  were regenerated for them; posters reuse existing badge art as labelled
+  placeholders. No minting, contract or 3D work. Decision for the integration
+  owner: the two HMH trophies rest on plausibility-checked boss facts, unlike
+  the three run-total HMH candidates.
 
 ## G4 replacement package — implementation recommendation (September 30)
 

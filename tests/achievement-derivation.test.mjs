@@ -14,7 +14,8 @@ import {
   achievementById, achievementId32, catalogFor, deriveEarnedAchievements, emptyHistory, historyFieldsFor, nftAchievementIds,
 } from '../apps/portal/src/achievements/index.mjs';
 import { statAt } from '../apps/portal/src/achievements/entry.mjs';
-import { HMH_DAMAGE_CHAIN_DAMAGE, HMH_DISTRICT_STAGES } from '../apps/portal/src/achievements/hmh.mjs';
+import { HMH_2_0_TROPHY_IDS, HMH_BOSS_ROLE_IDS, HMH_BOSS_RUSH_FIFTY_TARGET, HMH_DAMAGE_CHAIN_DAMAGE, HMH_DISTRICT_STAGES } from '../apps/portal/src/achievements/hmh.mjs';
+import { STACKED_FINAL_ZONE } from '../apps/portal/src/achievements/stacked.mjs';
 import {
   hmhRecordScoreInputsFromRunSummary, hmhResolverInputsFromRunSummary, statsFromChikunResult, statsFromHmhRunSummary, statsFromStackedTuple,
 } from '../apps/portal/src/achievements/stats.mjs';
@@ -362,12 +363,13 @@ function docCatalog(heading) {
     if (runsMatch) rule = { kind: 'runs', path: null, target: number(runsMatch[1]) };
     else if (reachMatch) rule = { kind: 'reach', path: 'regionIndexReached', target: number(reachMatch[1]) };
     else if (ruleMatch) rule = { kind: ruleMatch[1] ? 'total' : 'best', path: ruleMatch[2], target: number(ruleMatch[3]) };
+    else if (/^Intended: /.test(criterion) && /^\*\*no\*\*/.test(available)) rule = { kind: 'unavailable', path: null, target: null };
     assert.ok(rule, `${heading} row ${id}: criterion "${criterion}" names one rule`);
     rows.set(id.replace(/`/g, ''), { ...rule, title, tier, category, available, nft, source });
   }
   return rows;
 }
-const DOC_RULES = { chikun: docCatalog("Chikun's Escape (40)"), stacked: docCatalog('STACKED (40)') };
+const DOC_RULES = { chikun: docCatalog("Chikun's Escape (41)"), stacked: docCatalog('STACKED (41)') };
 const statsWith = (path, value) => (path.includes('.') ? { [path.split('.')[0]]: { [path.split('.')[1]]: value } } : { [path]: value });
 
 test('Chikun and STACKED thresholds match the owner-review doc and rise with the tier', () => {
@@ -377,6 +379,12 @@ test('Chikun and STACKED thresholds match the owner-review doc and rise with the
     for (const entry of entries) {
       const rule = rules.get(entry.id);
       assert.deepEqual([rule.title, rule.tier, rule.category, rule.nft.startsWith('**yes**')], [entry.title, entry.tier, entry.category, entry.nft], entry.id);
+      assert.equal(rule.kind === 'unavailable', !entry.available, `${entry.id}: the doc and the catalog agree on availability`);
+      if (!entry.available) {
+        assert.equal(entry.progress, null, entry.id);
+        assert.equal(entry.criteria(run(gameId, { laps: 99, regionIndexReached: 6, zone: 99, survivalSeconds: 1e6 }), history(gameId, { runs: 999 })), false, `${entry.id} cannot be earned`);
+        continue;
+      }
       const empty = history(gameId);
       const at = (stats, prior = empty) => entry.criteria(run(gameId, stats), prior);
       const below = rule.target - 1e-6;
@@ -400,7 +408,7 @@ test('Chikun and STACKED thresholds match the owner-review doc and rise with the
       }
     }
     // Within one stat and rule kind, a rarer tier always needs strictly more.
-    const ordered = [...rules].filter(([, rule]) => rule.kind !== 'runs');
+    const ordered = [...rules].filter(([, rule]) => rule.kind !== 'runs' && rule.kind !== 'unavailable');
     for (const [idA, a] of ordered) {
       for (const [idB, b] of ordered) {
         if (a.kind === b.kind && a.path === b.path && TIER_RANK[a.tier] < TIER_RANK[b.tier]) {
@@ -464,7 +472,7 @@ test('bronze thresholds are reachable at the novice median, platinum sits at or 
   }
   const exceptionalP90 = run('chikun', lower(chikunProfileStats('exceptional', 'p90', 'exceptional')));
   const exceptionalP99 = chikunAt('exceptional', 'p99');
-  for (const entry of catalogFor('chikun').filter((e) => e.tier === 'platinum')) {
+  for (const entry of catalogFor('chikun').filter((e) => e.tier === 'platinum' && e.available)) {
     assert.equal(entry.criteria(exceptionalP99, history('chikun')), true, `${entry.id} is reached by the exceptional p99`);
     const decided = CHIKUN_PLATINUM_BY_DECISION[entry.id];
     if (decided) {
@@ -702,8 +710,10 @@ function legacyIds(summary, prior = history('lester-blaster')) {
     damageDealt: stats.damageDealt,
   });
 }
-// Unavailable ids (documented) and cabinet-pioneer (the browser unlocks it at wallet connect, not in the resolver).
-const PARITY_EXEMPT = new Set([...catalogFor('lester-blaster').filter((e) => !e.available).map((e) => e.id), 'cabinet-pioneer']);
+// Unavailable ids (documented), cabinet-pioneer (the browser unlocks it at wallet
+// connect, not in the resolver) and the 2.0 trophies (catalog-only, server-derived:
+// the device-local resolver has no definition for them).
+const PARITY_EXEMPT = new Set([...catalogFor('lester-blaster').filter((e) => !e.available).map((e) => e.id), 'cabinet-pioneer', ...HMH_2_0_TROPHY_IDS]);
 const serverIds = (summary, prior = history('lester-blaster')) => ids(deriveEarnedAchievements('lester-blaster', run('lester-blaster', statsFromHmhRunSummary(summary)), prior));
 
 test('legacy resolver and server derivation agree on HMH fixtures', () => {
@@ -827,12 +837,36 @@ test('device-local recordScore and server derivation unlock the same HMH ids run
   assert.equal(state.profiles[WALLET].progress['lester-blaster'].enemyKillsByType['fud-goblin'], 80);
 });
 
-test('HMH NFT candidates are only server-counted run totals', () => {
+test('the legacy HMH NFT candidates are server-counted run totals; the 2.0 trophies are plausibility-bounded boss facts', () => {
   const nft = nftAchievementIds('lester-blaster').map((id) => achievementById('lester-blaster', id));
-  assert.deepEqual(nft.map((entry) => [entry.id, entry.tier]), [['two-hundred-ranked-runs', 'mythic'], ['two-fifty-ranked-runs', 'mythic'], ['arcade-legend-500', 'mythic']]);
+  assert.deepEqual(nft.map((entry) => [entry.id, entry.tier]), [['two-hundred-ranked-runs', 'mythic'], ['two-fifty-ranked-runs', 'mythic'], ['arcade-legend-500', 'mythic'], ['full-roster-run', 'mythic'], ['boss-rush-fifty', 'mythic']]);
   const empty = run('lester-blaster', {});
   const huge = run('lester-blaster', { ...hmhRun('boss-run').stats, kills: 1e9, survivalSeconds: 1e9, noDamage: 1, perfectBossKill: 1 });
-  for (const entry of nft) {
+  // Full Roster Run: one kill of each schema-7 boss in this run. A schema-6
+  // summary has no district-boss rows (the committed fixtures), so it never earns it.
+  const roster = achievementById('lester-blaster', 'full-roster-run');
+  const allFour = Object.fromEntries(HMH_BOSS_ROLE_IDS.map((role) => [role, 1]));
+  assert.equal(roster.criteria(run('lester-blaster', { killsByRole: allFour }), history('lester-blaster')), true);
+  assert.equal(roster.criteria(run('lester-blaster', { killsByRole: { ...allFour, liquidator: 0 }, bossKills: 1 }), history('lester-blaster')), false, 'bossKills alone is not the Liquidator row');
+  for (const role of HMH_BOSS_ROLE_IDS) {
+    assert.equal(roster.criteria(run('lester-blaster', { killsByRole: { ...allFour, [role]: 0 } }), history('lester-blaster')), false, `${role} missing`);
+    assert.equal(roster.criteria(run('lester-blaster', { killsByRole: { ...allFour, [role]: '1' } }), history('lester-blaster')), false, `${role} must be a number`);
+  }
+  assert.equal(roster.criteria(run('lester-blaster', { killsByRole: { ...allFour, liquidator: 0 } }), history('lester-blaster', { runs: 99, sums: { bossKills: 1e6 } })), false, 'history never completes a roster');
+  for (const name of Object.keys(HMH.runs)) assert.equal(roster.criteria(hmhRun(name), history('lester-blaster')), false, `${name}: schema 6 has no district bosses`);
+  assert.equal(roster.progress, null, 'a compound condition shows no bar');
+  // Boss Rush Fifty: fifty Liquidator defeats across verified runs (kills.boss, at most one per run by plausibility).
+  const fifty = achievementById('lester-blaster', 'boss-rush-fifty');
+  assert.equal(HMH_BOSS_RUSH_FIFTY_TARGET, 50);
+  assert.equal(fifty.criteria(run('lester-blaster', { bossKills: 1 }), history('lester-blaster', { sums: { ...history('lester-blaster').sums, bossKills: 49 } })), true);
+  assert.equal(fifty.criteria(run('lester-blaster', { bossKills: 0 }), history('lester-blaster', { sums: { ...history('lester-blaster').sums, bossKills: 49 } })), false);
+  assert.equal(fifty.criteria(run('lester-blaster', { bossKills: 50 }), history('lester-blaster')), true, 'the rule itself is a plain total; the verifier caps a run at one Liquidator');
+  assert.deepEqual(fifty.progress(run('lester-blaster', { bossKills: 1 }), history('lester-blaster', { sums: { ...history('lester-blaster').sums, bossKills: 9 } })), { current: 10, target: 50 });
+  assert.ok(achievementById('lester-blaster', 'boss-rush-ten').progress(null, history('lester-blaster')).target < 50, 'rarer than Boss Rush Ten');
+  // World Escape waits for an escape end state: never earned, no progress.
+  const escape = achievementById('lester-blaster', 'world-escape');
+  assert.deepEqual([escape.available, escape.nft, escape.progress, escape.criteria(huge, history('lester-blaster', { runs: 999 }))], [false, false, null, false]);
+  for (const entry of nft.slice(0, 3)) {
     const target = entry.progress(null, history('lester-blaster')).target;
     for (const runs of [0, target - 2, target - 1, target, target + 5]) {
       const prior = history('lester-blaster', { runs, sums: { kills: 1e9, survivalSeconds: 1e9 } });

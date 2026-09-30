@@ -21,14 +21,14 @@ test('collection renders available locked and verified owned badges without clai
  const {createAchievementCollectionView}=await load();
  const view=createAchievementCollectionView({...deps,fetchImpl:null});
  const card=view.render({unlocks:owned});
- assert.equal(byClass(card,'collection-badge').length,125);assert.equal(byClass(card,'collection-badge-owned').length,1);
- assert.equal(byClass(card,'collection-tier').length,125);
+ assert.equal(byClass(card,'collection-badge').length,128);assert.equal(byClass(card,'collection-badge-owned').length,1);
+ assert.equal(byClass(card,'collection-tier').length,128);
  assert.equal(byClass(card,'collection-game-remaining').length,4);
  const earnedBadge=byClass(card,'collection-badge-owned')[0];
  assert.equal(earnedBadge.children[0].className,'collection-badge-heading');
  assert.match(text(earnedBadge.children[0]),/Earned/);
- assert.equal(byClass(card,'collection-game-completion').length,4);assert.match(text(card),/1 \/ 125/);
- assert.match(text(card),/13 trophy achievements/);assert.doesNotMatch(text(card),/NFT minted|on-chain token|100% progress/);
+ assert.equal(byClass(card,'collection-game-completion').length,4);assert.match(text(card),/1 \/ 128/);
+ assert.match(text(card),/16 trophy achievements/);assert.doesNotMatch(text(card),/NFT minted|on-chain token|100% progress/);
  assert.equal(all(card).filter(item=>item.tag==='progress').length,4,'only measured collection completion, no guessed condition progress');
  view.dispose();
 });
@@ -42,7 +42,7 @@ test('native filter and search events update only results while retaining the co
  assert.equal(byClass(card,'collection-badge').length,39);
  search.value='FIRST FLIGHT';search.listeners.input();assert.equal(byClass(card,'collection-badge').length,0);assert.match(text(card),/No matching achievements/);
  filter.value='all';filter.listeners.change();assert.equal(byClass(card,'collection-badge').length,1);
- assert.equal(control('search'),search);assert.equal(control('game'),game);assert.match(text(card),/1 \/ 125/);
+ assert.equal(control('search'),search);assert.equal(control('game'),game);assert.match(text(card),/1 \/ 128/);
  view.dispose();
 });
 
@@ -149,5 +149,5 @@ test('pending badge import cannot open after collection disposal or profile repl
 test('optional badge viewer failure retains requirements and communicates the fallback',async()=>{
  const {createAchievementCollectionView}=await load();const view=createAchievementCollectionView({...deps,fetchImpl:null,loadDetail:async()=>{throw Error('offline');}});
  const card=view.render({unlocks:owned}),button=byClass(card,'collection-detail-button')[0];assert.ok(button);await button.listeners.click();
- assert.match(text(card),/Preview unavailable/);assert.match(text(card),/Rarity unavailable/);assert.equal(byClass(card,'collection-badge').length,125);view.dispose();
+ assert.match(text(card),/Preview unavailable/);assert.match(text(card),/Rarity unavailable/);assert.equal(byClass(card,'collection-badge').length,128);view.dispose();
 });
