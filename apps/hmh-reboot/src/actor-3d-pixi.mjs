@@ -92,7 +92,7 @@ export async function createActor3dPixiBackend({ renderer, signal, fetchAsset = 
     program = GlProgram.from({ name: 'hmh-actor-3d-pilot', vertex, fragment });
     probeTarget = RenderTexture.create({ width: 2, height: 2, resolution: 1 });
     // Sequential load bounds peak decode memory and allows coherent cleanup.
-    for (const id of ['lit-commando', 'bagholder-rusher']) {
+    for (const id of ['lit-commando', 'bagholder-rusher', 'the-liquidator']) {
       signal?.throwIfAborted();
       const response = await fetchAsset(`/assets/generated/hmh-actor-3d-pilot/${id}.glb`, { signal });
       if (!response.ok) throw new Error('pilot asset unavailable');

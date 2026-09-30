@@ -1,6 +1,6 @@
 // Default-off two-instance proof. Owns presentation displays and visibility
 // only; its backend receives detached frozen projections, never simulation.
-import { createActor3dProjection, createActor3dPilotSession } from './actor-3d-projection.mjs';
+import { createActor3dProjection, createActor3dPilotSession, createLiquidator3dEntries } from './actor-3d-projection.mjs';
 
 export function actor3dDepthBands(frame, creationOrder) {
   if (frame.length > 2 || frame.some(p => !Number.isFinite(p.depth))) throw new TypeError('bounded finite actor depth required');
@@ -39,7 +39,7 @@ function supported(renderer, canvas) {
   finally { if (previous) { try { renderer.renderTarget.bind(previous, false); } catch { return false; } } }
 }
 
-export function createActor3dPresentationEntries(hero, enemy) {
+export function createActor3dPresentationEntries(hero, enemy, boss = null) {
   const entries = [], pixelsPerMetre = Number.isFinite(hero?.bodyHeight) && hero.bodyHeight > 0 ? hero.bodyHeight / 2.1 : 40;
   if (hero?.actorId === 'lit-commando' && hero.weaponId === 'coin-blaster' && hero.action !== 'interact') {
     const clip = hero.action === 'aim' && hero.moving ? 'run' : hero.action;
@@ -47,6 +47,8 @@ export function createActor3dPresentationEntries(hero, enemy) {
     entries.push({ descriptor: { id: 'hero', actorId: hero.actorId, x: hero.x, y: hero.y, z: hero.z, heading: hero.heading,
       clip, clipTimeSeconds: loop ? Math.max(0, hero.actionTick % 60) / 60 : Math.min(1, Math.max(0, hero.actionTick) / duration), pixelsPerMetre }, originals: hero.originals });
   }
+  const bossEntries = createLiquidator3dEntries(boss);
+  if (bossEntries.length) return entries.concat(bossEntries);
   if (enemy && ['idle', 'run', 'tell', 'attack', 'hit', 'death'].includes(enemy.pose?.state)) {
     const pose = enemy.pose, time = Math.max(0, pose.phaseTick ?? pose.tick ?? 0) / 60;
     entries.push({ descriptor: { id: `enemy:${enemy.id}`, actorId: 'bagholder-rusher', x: enemy.x, y: enemy.y, z: enemy.z,
@@ -82,7 +84,7 @@ export function createActor3dPilotController({ renderer, canvas, attachDisplay =
         onTelemetry({ status: session.status, count: frame.length }); return true;
       } catch { session.handleFailure(); return false; }
     },
-    updateGame(hero, enemy, camera, viewport) { return controller.update(createActor3dPresentationEntries(hero, enemy), camera, viewport); },
+    updateGame(hero, enemy, camera, viewport, boss = null) { return controller.update(createActor3dPresentationEntries(hero, enemy, boss), camera, viewport); },
     dispose() {
       if (disposed) return; disposed = true; abort.abort(); restore(); session.dispose(); canvas?.removeEventListener('webglcontextlost', lost);
     },

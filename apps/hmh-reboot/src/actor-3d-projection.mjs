@@ -108,3 +108,19 @@ export function createActor3dPilotSession({ enabled = false, supported = false, 
   };
   return Object.freeze(session);
 }
+
+export function createLiquidator3dEntries(input) {
+  if(!input?.active||!input.visible||input.alpha!==1
+    ||!['idle','run','tell','attack','hit','death'].includes(input.pose?.state))return Object.freeze([]);
+  const {x,y,z,bodyHeight,pose,original}=input;
+  if(![x,y,z,bodyHeight].every(Number.isFinite)||bodyHeight<=0)throw new TypeError('private boss finite position and positive body scale required');
+  if(!original||typeof original!=='object'||typeof original.renderable!=='boolean')throw new TypeError('private boss original display required');
+  if(!Number.isInteger(pose.direction)||pose.direction<0||pose.direction>7)throw new TypeError('private boss pose direction required');
+  const tick=pose.phaseTick??pose.tick;
+  if(!Number.isFinite(tick))throw new TypeError('private boss finite pose clock required');
+  const seconds=Math.max(0,tick)/60;
+  const descriptor=Object.freeze({id:'boss:liquidator',actorId:'the-liquidator',x,y,z,
+    heading:pose.direction*Math.PI/4,clip:pose.state,
+    clipTimeSeconds:['idle','run'].includes(pose.state)?seconds%1:Math.min(1,seconds),pixelsPerMetre:bodyHeight/2.1});
+  return Object.freeze([Object.freeze({descriptor,originals:Object.freeze([original])})]);
+}

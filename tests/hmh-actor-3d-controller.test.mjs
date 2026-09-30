@@ -117,3 +117,23 @@ test('pending load disposal aborts the backend resource request', async () => {
     backendFactory: options => { signal = options.signal; return backend(); } });
   await controller.start(); assert.equal(signal?.aborted, false); controller.dispose(); assert.equal(signal.aborted, true);
 });
+
+
+test('Liquidator takes the second pilot slot and restores sprites when its eligible pose ends', async () => {
+  const hero={actorId:'lit-commando',weaponId:'coin-blaster',x:0,y:0,z:0,heading:0,action:'idle',actionTick:0,bodyHeight:84,originals:[{renderable:true}]};
+  const enemy={id:'rusher',x:1,y:1,z:0,pose:{state:'run',direction:2,tick:4},originals:[{renderable:true}]};
+  const boss={active:true,visible:true,alpha:1,x:2,y:3,z:0,bodyHeight:84,pose:{state:'hit',direction:4,phaseTick:4},original:{renderable:true}};
+  const before=JSON.stringify([hero,enemy,boss]);
+  const frame=module.createActor3dPresentationEntries(hero,enemy,boss);
+  assert.deepEqual(frame.map(e=>e.descriptor.actorId),['lit-commando','the-liquidator']);
+  assert.equal(frame[1].descriptor.heading,Math.PI);assert.equal(frame[1].descriptor.clipTimeSeconds,4/60);
+  assert.equal(JSON.stringify([hero,enemy,boss]),before);
+  const gpu=backend(),surface=canvas(),controller=module.createActor3dPilotController({renderer:renderer(),canvas:surface,backendFactory:()=>gpu});
+  await controller.start();controller.updateGame(hero,enemy,camera,view,boss);
+  assert.equal(boss.original.renderable,false);assert.equal(enemy.originals[0].renderable,true);
+  controller.updateGame(hero,enemy,camera,view,{...boss,alpha:.5});
+  assert.equal(boss.original.renderable,true);assert.equal(enemy.originals[0].renderable,false);
+  assert.equal(controller.status,'ready');assert.equal(gpu.frames.at(-1).length,2);
+  controller.updateGame(hero,enemy,camera,view,boss);surface.events.get('webglcontextlost')();
+  assert.equal(boss.original.renderable,true);assert.equal(hero.originals[0].renderable,true);controller.dispose();
+});

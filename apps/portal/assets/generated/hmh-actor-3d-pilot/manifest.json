@@ -298,6 +298,143 @@
         "textureBytesRgba8": 3149824,
         "textureBytesRgba8Mipmaps": 4199756
       }
+    },
+    "the-liquidator": {
+      "file": "the-liquidator.glb",
+      "sha256": "33a3f0eeac1f33b88c6c950dcb1109bcd6aeb7dbd8879f6ecf91796a3894ae91",
+      "sourceSha256": "56a9e240a8cc053f09e2ef95046bf84520ffa65ec561c5dec5e1f46c6ebed574",
+      "requiredClips": [
+        "idle",
+        "run",
+        "tell",
+        "attack",
+        "hit",
+        "death"
+      ],
+      "experimentalTier": "medium-16k-body",
+      "correctedSkinVertices": 163,
+      "originalSourcesUnchanged": true,
+      "artAccepted": false,
+      "physicalPhonePerformanceAccepted": false,
+      "inspection": {
+        "bytes": 4274116,
+        "vertices": 22145,
+        "triangles": 23887,
+        "skinnedMeshes": 2,
+        "joints": 19,
+        "clips": [
+          {
+            "name": "attack",
+            "durationSeconds": 1,
+            "channels": 63
+          },
+          {
+            "name": "death",
+            "durationSeconds": 1,
+            "channels": 63
+          },
+          {
+            "name": "hit",
+            "durationSeconds": 1,
+            "channels": 63
+          },
+          {
+            "name": "idle",
+            "durationSeconds": 1,
+            "channels": 63
+          },
+          {
+            "name": "run",
+            "durationSeconds": 1,
+            "channels": 63
+          },
+          {
+            "name": "tell",
+            "durationSeconds": 1,
+            "channels": 63
+          }
+        ],
+        "bounds": {
+          "min": [
+            -0.441074401140213,
+            -0.013049911707639694,
+            -0.428659588098526
+          ],
+          "max": [
+            0.44038379192352295,
+            1.9292681217193604,
+            0.42909929156303406
+          ]
+        },
+        "embeddedImages": 9,
+        "images": [
+          {
+            "name": "battered+zombie+warrior+3d+model_normal",
+            "format": "png",
+            "width": 512,
+            "height": 512,
+            "bytes": 329218
+          },
+          {
+            "name": "battered+zombie+warrior+3d+model_basecolor",
+            "format": "png",
+            "width": 512,
+            "height": 512,
+            "bytes": 489060
+          },
+          {
+            "name": "battered+zombie+warrior+3d+model_rm",
+            "format": "png",
+            "width": 512,
+            "height": 512,
+            "bytes": 404884
+          },
+          {
+            "name": "bagholder-rusher Accent Authored | Authored PBR Bake",
+            "format": "png",
+            "width": 16,
+            "height": 16,
+            "bytes": 274
+          },
+          {
+            "name": "bagholder-rusher Secondary Authored | Authored PBR Bake",
+            "format": "png",
+            "width": 16,
+            "height": 16,
+            "bytes": 274
+          },
+          {
+            "name": "costume-emission",
+            "format": "png",
+            "width": 512,
+            "height": 512,
+            "bytes": 15287
+          },
+          {
+            "name": "costume-normal",
+            "format": "png",
+            "width": 512,
+            "height": 512,
+            "bytes": 338802
+          },
+          {
+            "name": "costume-baseColor",
+            "format": "png",
+            "width": 512,
+            "height": 512,
+            "bytes": 287240
+          },
+          {
+            "name": "costume-metallicRoughness",
+            "format": "png",
+            "width": 512,
+            "height": 512,
+            "bytes": 73981
+          }
+        ],
+        "textureBytesRgba8": 7342080,
+        "textureBytesRgba8Mipmaps": 9789428
+      }
     }
   }
 }
