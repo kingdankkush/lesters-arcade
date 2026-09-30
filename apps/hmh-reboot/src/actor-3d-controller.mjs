@@ -7,6 +7,10 @@ import { HERO_ACTOR_IDS, createIdleFidgetPicker, heroClipTime, heroHasClip } fro
 // hmh-actor-3d-pilot/) without touching the initial bundle or the legacy tables.
 export const ACTOR3D_ENEMY_IDS = Object.freeze(['bagholder-rusher', 'forkrunner', 'liquidator-agent', 'whale-enforcer', 'gas-bomber', 'validator-cultist',
   'tollkeeper', 'money-printer', 'pump-and-dump-bloater', 'hodl-revenant', 'rug-puller', 'oracle-marksman']);
+// Guns the 3D hero can hold: the native pistol, or a lazily seated weapon
+// model (2.0 weapons lane). Until that model is resident the sprite hero and
+// its held-weapon page keep drawing, so a slow fetch never empties the hand.
+export const ACTOR3D_HERO_WEAPON_IDS = Object.freeze(['coin-blaster', 'scatter-shotgun', 'auto-miner', 'hash-rail', 'lightning-ledger', 'bear-market-burner', 'forked-standard', 'launcher-rig']);
 
 export const ACTOR3D_QUALITY_LIMITS = Object.freeze({ low: 8, medium: 24, high: 64 });
 const actorLimit = value => {
@@ -55,13 +59,13 @@ function supported(renderer, canvas) {
 export function createActor3dPresentationEntries(hero, enemies, boss = null, maxActors = ACTOR3D_QUALITY_LIMITS.medium, focus = hero) {
   actorLimit(maxActors);
   const entries = [], pixelsPerMetre = Number.isFinite(hero?.bodyHeight) && hero.bodyHeight > 0 ? hero.bodyHeight / 2.1 : 40;
-  if (HERO_ACTOR_IDS.includes(hero?.actorId) && hero.weaponId === 'coin-blaster' && hero.action !== 'interact') {
+  if (HERO_ACTOR_IDS.includes(hero?.actorId) && ACTOR3D_HERO_WEAPON_IDS.includes(hero.weaponId) && hero.action !== 'interact') {
     // Existing states map exactly as before; a named library clip (cover, traversal,
     // fidget...) is selected only when it exists for this hero and carries its own tick.
     let clip = hero.action === 'aim' && hero.moving ? 'run' : hero.action, tick = hero.actionTick;
     if (heroHasClip(hero.actorId, hero.clip) && Number.isFinite(hero.clipTick)) { clip = hero.clip; tick = hero.clipTick; }
     entries.push({ descriptor: { id: 'hero', actorId: hero.actorId, x: hero.x, y: hero.y, z: hero.z, heading: hero.heading,
-      bodyTint: hero.bodyTint, weaponTint: hero.weaponTint,
+      bodyTint: hero.bodyTint, weaponTint: hero.weaponTint, weaponId: hero.weaponId,
       clip, clipTimeSeconds: heroClipTime(clip, tick), pixelsPerMetre }, originals: hero.originals });
   }
   entries.push(...createLiquidator3dEntries(boss));
@@ -101,12 +105,16 @@ export function createActor3dPilotController({ renderer, canvas, qualityTier = '
   const controller = {
     get status() { return session.status; },
     ownsOriginal(display, id) { return hidden.get(display)?.id === id && session.status === 'ready'; },
+    // World-unit offset of the drawn hero's muzzle from its foot position for
+    // the last rendered frame, or null while sprites own the hero.
+    heroMuzzleOffset() { return !disposed && session.status === 'ready' && hidden.size > 0 ? backend?.heroMuzzle?.() ?? null : null; },
     async start() { const status = await session.start(); if (!disposed && status !== 'fallback') onTelemetry({ status, count: 0 }); return status; },
     update(entries, camera, viewport) {
       restore(); if (disposed || session.status !== 'ready') return false;
       try {
         if (!Array.isArray(entries) || entries.length > maxActors) throw new TypeError('quality-bounded actor frame required');
-        entries = entries.filter(entry => backend?.prepareActor?.(entry.descriptor.actorId) !== false);
+        entries = entries.filter(entry => backend?.prepareActor?.(entry.descriptor.actorId) !== false
+          && (entry.descriptor.id !== 'hero' || !entry.descriptor.weaponId || entry.descriptor.weaponId === 'coin-blaster' || backend?.prepareWeapon?.(entry.descriptor.weaponId) === true));
         const frame = entries.map(entry => createActor3dProjection(entry.descriptor, camera, viewport));
         if (!session.render(frame)) return false;
         for (const entry of entries) for (const display of entry.originals ?? []) {

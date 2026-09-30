@@ -1,7 +1,12 @@
 import { collectibleIsAvailable } from './objective-rewards.mjs';
 // Persistent pickup landmarks use only presentation inputs. Hidden or collected
 // items never advertise themselves, and reduced motion keeps a steady marker.
-export function pickupIndicators({state,tick,camera,view,worldToScreen,queryGround,reduceMotion=false}) {
+//
+// When the world's authored prop display is handed in, the HD kit pickup cards
+// (pickup-world-cards.mjs, a further lazy chunk) replace the flat world icons
+// and add their glow and collect-burst markers to the list drawn here.
+let cards = null, cardsRequested = false;
+export function pickupIndicators({state,tick,camera,view,worldToScreen,queryGround,reduceMotion=false,display=null,Assets=null,Texture=null,Rectangle=null,collectedEvent=null,hidden=null}) {
   const markers=[];
   for (const {placement:p,effect} of state?.entries ?? []) {
     if(!collectibleIsAvailable(state,p,tick)) continue;
@@ -13,12 +18,16 @@ export function pickupIndicators({state,tick,camera,view,worldToScreen,queryGrou
       sparks:reduceMotion?[]:[0,1].map(i=>{const f=((tick+i*52)%120)/120;return {x:q.x+Math.sin(phase+i*3)*12*camera.zoom,y:q.y-(12+f*42)*camera.zoom,alpha:(1-f)*.55};})});
     if(markers.length===20) break;
   }
+  if(display&&Assets&&!cardsRequested){cardsRequested=true;import('./pickup-world-cards.mjs').then(m=>{cards=m.createPickupWorldCards({display,Assets,Texture,Rectangle});}).catch(()=>{});}
+  if(cards&&cards.display===display) markers.push(...cards.update({state,tick,camera,view,worldToScreen,queryGround,reduceMotion,collectedEvent,hidden}));
   return markers;
 }
 
 export function drawPickupIndicators(graphics,markers,zoom) {
   graphics.clear();
   for(const m of markers) {
+    if(m.type==='glow'){graphics.circle(m.x,m.y,m.radius*1.7).fill({color:m.color,alpha:m.alpha*.35});graphics.circle(m.x,m.y,m.radius).fill({color:m.color,alpha:m.alpha});continue;}
+    if(m.type==='burst'){graphics.circle(m.x,m.y,m.ringRadius).stroke({color:m.color,width:2.2*zoom,alpha:m.ringAlpha});for(const s of m.sparks) graphics.circle(s.x,s.y,1.8*zoom).fill({color:m.color,alpha:s.alpha});continue;}
     const r=m.radius*m.pulse;
     graphics.ellipse(m.x,m.y,r*1.4,r*.55).fill({color:m.color,alpha:.08});
     graphics.ellipse(m.x,m.y,r,r*.4).stroke({color:m.color,width:1.6,alpha:.78});

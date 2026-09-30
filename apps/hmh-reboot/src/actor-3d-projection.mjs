@@ -32,6 +32,9 @@ export function createActor3dProjection(actor, camera, viewport) {
     clip: identity(actor?.clip ?? 'idle', 'clip'), clipTimeSeconds,
     pixelsPerMetre: finite(actor?.pixelsPerMetre ?? 40, 'pixelsPerMetre'),
     zoom: finite(camera?.zoom ?? 1, 'zoom'),
+    // Presentation identity of the held weapon (2.0 weapons lane); the
+    // lazy backend may seat a weapon model on the hero's socket for it.
+    weaponId: typeof actor?.weaponId === 'string' && actor.weaponId ? actor.weaponId : null,
   });
   if (projection.pixelsPerMetre <= 0 || projection.zoom <= 0) throw new TypeError('positive presentation scale required');
   projections.add(projection);

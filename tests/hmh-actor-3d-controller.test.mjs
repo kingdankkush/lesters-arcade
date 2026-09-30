@@ -94,7 +94,11 @@ test('game presentation selects only the reviewed identity/weapon/clips and pres
   assert.equal(frame[0].descriptor.pixelsPerMetre, 40); assert.equal(frame[1].descriptor.clip, 'tell');
   assert.equal(frame[1].descriptor.clipTimeSeconds, 10 / 60); assert.equal(frame[1].descriptor.heading, 0);
   assert.equal(JSON.stringify([hero, enemy]), before);
-  assert.equal(module.createActor3dPresentationEntries({ ...hero, weaponId: 'hash-rail' }, enemy).length, 1);
+  // 2.0 weapons lane: every gun is a candidate (the controller keeps the sprite
+  // hero until its seated model is resident); unknown weapons stay excluded.
+  const railFrame = module.createActor3dPresentationEntries({ ...hero, weaponId: 'hash-rail' }, enemy);
+  assert.equal(railFrame.length, 2); assert.equal(railFrame[0].descriptor.weaponId, 'hash-rail');
+  assert.equal(module.createActor3dPresentationEntries({ ...hero, weaponId: 'litecoin-knife' }, enemy).length, 1);
   assert.equal(module.createActor3dPresentationEntries({ ...hero, action: 'interact' }, null).length, 0);
   assert.equal(module.createActor3dPresentationEntries({ ...hero, actorId: 'unapproved-hero' }, null).length, 0);
 });

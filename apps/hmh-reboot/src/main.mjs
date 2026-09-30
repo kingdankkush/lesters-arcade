@@ -2120,7 +2120,8 @@ async function boot() {
       }
       if (pickupPresentation) {
         const pickupMarkers = pickupPresentation.pickupIndicators({state:collectibleState,tick:authoredPropTick,camera,view,worldToScreen,queryGround,
-          reduceMotion:settings.reduceMotion || performanceProfile.particlesPerHazard === 0});
+          reduceMotion:settings.reduceMotion || performanceProfile.particlesPerHazard === 0,
+          display:authoredPropDisplay,Assets:textureAssets,Texture,Rectangle,collectedEvent:lastCollectibleEvent,hidden:hiddenCollectibleIds(collectibleState,authoredPropTick)});
         pickupPresentation.drawPickupIndicators(pickupSignals,pickupMarkers,camera.zoom);
         dataset.pickupMarkers = String(pickupMarkers.length);
       }
@@ -4776,13 +4777,16 @@ async function boot() {
         triggerCameraShake(tick, weaponRecoilShake(event.weaponId));
         // A held-weapon page reports where this frame's barrel ends; the
         // native pistol and the overlay keep the fixed chest-height offset.
+        // The 3D hero reports its drawn muzzle (seated weapon model or native
+        // pistol) through the socket joint; the sprite paths are unchanged.
         const heldMuzzle = productionHeroDisplay?.container.heldWeaponMuzzle;
+        const muzzle3d = actor3dPilot?.heroMuzzleOffset();
         pushCombatVisualEvent({
           type: 'muzzle',
           tick,
           weaponId: event.weaponId,
           direction: { x: aimIntent.direction.x, y: aimIntent.direction.y },
-          point: heldMuzzle ? {
+          point: muzzle3d ? { x: actor.x + muzzle3d.x, y: actor.y + muzzle3d.y, z: actor.groundZ + muzzle3d.z } : heldMuzzle ? {
             x: actor.x + heldMuzzle.x * PRODUCTION_HERO_RUNTIME_SCALE,
             y: actor.y,
             z: actor.groundZ - heldMuzzle.y * PRODUCTION_HERO_RUNTIME_SCALE,
