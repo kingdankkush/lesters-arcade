@@ -550,3 +550,25 @@ sparse, landmarks plain and some inspection labels overlap. This is local flow
 staging, not owner-approved final area/art, physical-phone performance, official
 Free/Ranked map/version, world streaming or release certification. No extra full
 syntax/normal-build/default-visual rerun, credits, push, deploy or version bump.
+
+
+### W2d Litecoin City local-flow checkpoint
+
+City now has public crossing streets, a narrower framed service loop, a separate
+exchange plaza with two approaches and a returnable ramped gantry. Twelve varied
+pieces replace its generic layout; the brief records deliberate terrain/prop
+placement by use. Genuine RED5FAIL/1PASS preceded36/36focused and the same36/36
+exact19-file noGit/noModules/emptyPATH copy. Blocking the whole plaza leaves both
+public streets and the service alley usable. Actual nav37,097/77,589 (47.8122%),
+outside0; all98sites/14roads/sevenCity routes pass. Prior pacing warning retained.
+
+One preview build and104.255s Chrome check passed23desktop plus five phone-view
+native legs,12captures, gantry groundZ24 and exchange contacty8326. Four denied
+entries and pagehide cleanup pass. Exact children45652/17912/15480 and HTTP close
+were observed before marker release; source/built/served pins match. All12
+originals inspected: lane/plaza flow readable, actor and controls contained;
+plain masses/sparse space/tiny clipped labels/contact-frame overlap remain.
+This is local navigation design, not final art, complete world acceptance,
+physical-phone performance, official map/verifier or release certification.
+See slices/WORLD-W2D-CITY.md and receipts/world-city. Manual bundle is separate
+at outputs/hmh-city-authored-flow-preview.zip. No credits/push/deploy/version.

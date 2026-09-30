@@ -80,3 +80,6 @@ docs/2.0/receipts/world-meadows/** -text whitespace=cr-at-eol
 
 # Exact compressed Farms authoring evidence
 docs/2.0/receipts/world-farms/** -text
+
+# Exact compressed City authoring evidence
+docs/2.0/receipts/world-city/** -text

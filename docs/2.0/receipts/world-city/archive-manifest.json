@@ -1,0 +1,393 @@
+{
+  "schema": "world-city-raw-archive-v1",
+  "scope": "Exact source RED/GREEN/copy/diagnostic and one native browser attempt. Lossless gzip with raw and stored identities. Not a release gate, physical-device result or final-art acceptance.",
+  "entries": [
+    {
+      "archive": "red-01/apps/hmh-reboot/src/blocker-bounds.mjs.txt.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-city-flow-red-20260930-01\\apps\\hmh-reboot\\src\\blocker-bounds.mjs.txt",
+      "bytes": 4684,
+      "sha256": "7f94d7f336a697e806ce92d1f5eedf9674d9d948f6366a958ba27e7124d2bf8a",
+      "storedBytes": 1757,
+      "storedSha256": "19850a1a0ba5829abc3f51fcb60578eca29f05e01775452fd2554aad9b8cbfff",
+      "compression": "gzip"
+    },
+    {
+      "archive": "red-01/apps/hmh-reboot/src/dev/greybox-closed-masses.mjs.txt.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-city-flow-red-20260930-01\\apps\\hmh-reboot\\src\\dev\\greybox-closed-masses.mjs.txt",
+      "bytes": 5250,
+      "sha256": "f1562f9f5c0be11d4b0c7a397e39187dc536a9546be7497ecfa75ea5ea0826cc",
+      "storedBytes": 1939,
+      "storedSha256": "d9b5425b00cfecfa4ef08ec78723c7b348291665197984e6bb198b18543307de",
+      "compression": "gzip"
+    },
+    {
+      "archive": "red-01/apps/hmh-reboot/src/dev/greybox-farms.mjs.txt.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-city-flow-red-20260930-01\\apps\\hmh-reboot\\src\\dev\\greybox-farms.mjs.txt",
+      "bytes": 3861,
+      "sha256": "b5c5e82f417b20c87eed92c5214f9521008193cee6a10b42507670497e090a6a",
+      "storedBytes": 1522,
+      "storedSha256": "e94c8a41912469d5681f8ece0969391dbe7080de0d07dec2cafbc896ec8b413f",
+      "compression": "gzip"
+    },
+    {
+      "archive": "red-01/apps/hmh-reboot/src/dev/greybox-kit.mjs.txt.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-city-flow-red-20260930-01\\apps\\hmh-reboot\\src\\dev\\greybox-kit.mjs.txt",
+      "bytes": 5168,
+      "sha256": "b453096397f610445bd8a548e8ed70b883544d947e8cc98518b82fb7c756c349",
+      "storedBytes": 1937,
+      "storedSha256": "b0a44281f5cade14473cbdf1565ba94d4b07d449d8a0107020f0fdfdeede04ac",
+      "compression": "gzip"
+    },
+    {
+      "archive": "red-01/apps/hmh-reboot/src/dev/greybox-meadows.mjs.txt.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-city-flow-red-20260930-01\\apps\\hmh-reboot\\src\\dev\\greybox-meadows.mjs.txt",
+      "bytes": 3661,
+      "sha256": "7d69ab91dd7e678af19b14b296d7e977e6ed7fe619a910d9ce9c93f2ed33516e",
+      "storedBytes": 1490,
+      "storedSha256": "54d0cd764c808693a5bad803868c6a1dc71c98ba05a4b031ea448b411ea99bdc",
+      "compression": "gzip"
+    },
+    {
+      "archive": "red-01/apps/hmh-reboot/src/dev/greybox-world-v1.mjs.txt.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-city-flow-red-20260930-01\\apps\\hmh-reboot\\src\\dev\\greybox-world-v1.mjs.txt",
+      "bytes": 9481,
+      "sha256": "a1cff732c32905f4a4f95bb4bc8a89970832024cf36c3b5a5f8f98651da2e13f",
+      "storedBytes": 3170,
+      "storedSha256": "0e3f55991aab6ddd308c9bbde705cb5c38b6b4075de8d78ea60cbadab3853b32",
+      "compression": "gzip"
+    },
+    {
+      "archive": "red-01/apps/hmh-reboot/src/value-guards.mjs.txt.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-city-flow-red-20260930-01\\apps\\hmh-reboot\\src\\value-guards.mjs.txt",
+      "bytes": 2596,
+      "sha256": "8576f65fd1f8a4680578580a150bd3acdec43f555e6c8f1181e54ae92771cb94",
+      "storedBytes": 936,
+      "storedSha256": "91ada625932506cb5e73e391280c7eca3f10cfe9b8a8c8ea867fa68ed72c7b45",
+      "compression": "gzip"
+    },
+    {
+      "archive": "red-01/helper.mjs.txt.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-city-flow-red-20260930-01\\helper.mjs.txt",
+      "bytes": 3475,
+      "sha256": "a5177337fcf6ec41f285fc105b93d0b4b94ee1101cb14a653a91e9b8b075b0d9",
+      "storedBytes": 1360,
+      "storedSha256": "ade927025e2afbae667182802dfce78d9ddd6b3afea7cfd48a5b40eac5e8ea4b",
+      "compression": "gzip"
+    },
+    {
+      "archive": "red-01/red-report.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-city-flow-red-20260930-01\\red-report.json",
+      "bytes": 11570,
+      "sha256": "ef9df944bf4eb9cd69bfb31d2d132dc5f8c596671cadc4b9ffe4a580d8e1562d",
+      "storedBytes": 2547,
+      "storedSha256": "3cf255e5e212cb84e60cc52c809dafaef0da09b4fea2b5b6200af9b2a75054dd",
+      "compression": "gzip"
+    },
+    {
+      "archive": "red-01/runner.mjs.txt.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-city-flow-red-20260930-01\\runner.mjs.txt",
+      "bytes": 5063,
+      "sha256": "a5e4279068428814ce8eec0490bcca724838890436e6ee85f12eafdd9ee03996",
+      "storedBytes": 2209,
+      "storedSha256": "e05eed1b04ac6c7fb304e6ccfff1d78d983179defadfb86b1327786c5af7f56b",
+      "compression": "gzip"
+    },
+    {
+      "archive": "red-01/scripts/lib/hmh-greybox-world-check.mjs.txt.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-city-flow-red-20260930-01\\scripts\\lib\\hmh-greybox-world-check.mjs.txt",
+      "bytes": 14521,
+      "sha256": "5e7bc94f8200c15d73cd53e94193464697e8b6c804a793b80b3ce652214e448c",
+      "storedBytes": 4778,
+      "storedSha256": "60f1d9111b5269e40f280ddf6981c8247399ae2c46d02695762e0112c81386de",
+      "compression": "gzip"
+    },
+    {
+      "archive": "red-01/tests/hmh-greybox-city-flow.test.mjs.txt.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-city-flow-red-20260930-01\\tests\\hmh-greybox-city-flow.test.mjs.txt",
+      "bytes": 8388,
+      "sha256": "4c736822846ed7fd39486f3ca6c47a98e0776a2c20e704eebc25f0b0f736379e",
+      "storedBytes": 2698,
+      "storedSha256": "bda7508faba5c8e89f76f1b4f718ed4b6353acf078543e1fb18b0c475e823c79",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-01/bindings.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-city-green-20260930-01\\bindings.json",
+      "bytes": 12824,
+      "sha256": "90c4fabea6d045c6ac1a12b79ed09edc561f782c4b6c6576aa6af2b565924689",
+      "storedBytes": 1965,
+      "storedSha256": "3dfd319d18dd5217e7129dc3718c920f0373b26e23bcd5df3fc3d026cba568ef",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-01/gate-report.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-city-green-20260930-01\\gate-report.json",
+      "bytes": 27777,
+      "sha256": "24c16908d7bfffce6a3134a449d977b2a949ce01e0ccc46d7ffe126ae5550b6c",
+      "storedBytes": 4959,
+      "storedSha256": "8b020ed983689b14bfe3b6e3e7cdf726624bbaf3e027ec88f4718084d5d2c288",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-01/layout-report.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-city-green-20260930-01\\layout-report.json",
+      "bytes": 60113,
+      "sha256": "1052e9749269b88131e322f0aed1dfc1f2d34756deff573b2b50a4628330a634",
+      "storedBytes": 5034,
+      "storedSha256": "7e81010458472f4bfd8da97c3cf9fd6dcec36bad9008e9ebaa47359e128b370b",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-01/runner.mjs.txt.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-city-green-20260930-01\\runner.mjs.txt",
+      "bytes": 4842,
+      "sha256": "1d4baa1df281c82e5796e6da15cab366d80c32ef9beee1ee2ae8ac2ea9367037",
+      "storedBytes": 1875,
+      "storedSha256": "21ffc2698456000850953a725c7a492e9ed9c6b2647057381d21851ec4ed2b44",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-01/source-copy/apps/hmh-reboot/src/blocker-bounds.mjs.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-city-green-20260930-01\\source-copy\\apps\\hmh-reboot\\src\\blocker-bounds.mjs",
+      "bytes": 4684,
+      "sha256": "7f94d7f336a697e806ce92d1f5eedf9674d9d948f6366a958ba27e7124d2bf8a",
+      "storedBytes": 1757,
+      "storedSha256": "19850a1a0ba5829abc3f51fcb60578eca29f05e01775452fd2554aad9b8cbfff",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-01/source-copy/apps/hmh-reboot/src/collision.mjs.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-city-green-20260930-01\\source-copy\\apps\\hmh-reboot\\src\\collision.mjs",
+      "bytes": 18604,
+      "sha256": "94a90d4a68c9e66b54ff0332e8cf60aaeaff06c02734aed07a3e420e7eb52593",
+      "storedBytes": 4972,
+      "storedSha256": "48ee1efefabcbf889f8f99e24c1da389852688febec79de2c6103ca58541082a",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-01/source-copy/apps/hmh-reboot/src/dev/greybox-city.mjs.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-city-green-20260930-01\\source-copy\\apps\\hmh-reboot\\src\\dev\\greybox-city.mjs",
+      "bytes": 4124,
+      "sha256": "df4e65c70cdd587bf459414db643b7a83fde2b520ad5e88269315cdd82f87c80",
+      "storedBytes": 1703,
+      "storedSha256": "0b537e727676db13a20d09a97b36f6d1b6653c6aec63b5a13da8488b295e4224",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-01/source-copy/apps/hmh-reboot/src/dev/greybox-closed-masses.mjs.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-city-green-20260930-01\\source-copy\\apps\\hmh-reboot\\src\\dev\\greybox-closed-masses.mjs",
+      "bytes": 5250,
+      "sha256": "f1562f9f5c0be11d4b0c7a397e39187dc536a9546be7497ecfa75ea5ea0826cc",
+      "storedBytes": 1939,
+      "storedSha256": "d9b5425b00cfecfa4ef08ec78723c7b348291665197984e6bb198b18543307de",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-01/source-copy/apps/hmh-reboot/src/dev/greybox-farms.mjs.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-city-green-20260930-01\\source-copy\\apps\\hmh-reboot\\src\\dev\\greybox-farms.mjs",
+      "bytes": 3861,
+      "sha256": "b5c5e82f417b20c87eed92c5214f9521008193cee6a10b42507670497e090a6a",
+      "storedBytes": 1522,
+      "storedSha256": "e94c8a41912469d5681f8ece0969391dbe7080de0d07dec2cafbc896ec8b413f",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-01/source-copy/apps/hmh-reboot/src/dev/greybox-kit.mjs.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-city-green-20260930-01\\source-copy\\apps\\hmh-reboot\\src\\dev\\greybox-kit.mjs",
+      "bytes": 5168,
+      "sha256": "b453096397f610445bd8a548e8ed70b883544d947e8cc98518b82fb7c756c349",
+      "storedBytes": 1937,
+      "storedSha256": "b0a44281f5cade14473cbdf1565ba94d4b07d449d8a0107020f0fdfdeede04ac",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-01/source-copy/apps/hmh-reboot/src/dev/greybox-meadows.mjs.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-city-green-20260930-01\\source-copy\\apps\\hmh-reboot\\src\\dev\\greybox-meadows.mjs",
+      "bytes": 3661,
+      "sha256": "7d69ab91dd7e678af19b14b296d7e977e6ed7fe619a910d9ce9c93f2ed33516e",
+      "storedBytes": 1490,
+      "storedSha256": "54d0cd764c808693a5bad803868c6a1dc71c98ba05a4b031ea448b411ea99bdc",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-01/source-copy/apps/hmh-reboot/src/dev/greybox-world-v1.mjs.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-city-green-20260930-01\\source-copy\\apps\\hmh-reboot\\src\\dev\\greybox-world-v1.mjs",
+      "bytes": 9626,
+      "sha256": "45897710f72eb6049aa3a9821100cf0155983c2db2f2eeb9bab435e18b122167",
+      "storedBytes": 3190,
+      "storedSha256": "99585afbdcce32f372cdd619f3769334ef0bc08846822f5a4dc2552364678a4c",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-01/source-copy/apps/hmh-reboot/src/elevation.mjs.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-city-green-20260930-01\\source-copy\\apps\\hmh-reboot\\src\\elevation.mjs",
+      "bytes": 19061,
+      "sha256": "afab7fb53ba657f13f1646d533909ae68544754c1de24ccef786ee156a57c4ea",
+      "storedBytes": 5734,
+      "storedSha256": "84f69341733cc434408d92af1b1e759319e4b473e67a257da11bcacfecf7bc92",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-01/source-copy/apps/hmh-reboot/src/enemy-navgrid.mjs.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-city-green-20260930-01\\source-copy\\apps\\hmh-reboot\\src\\enemy-navgrid.mjs",
+      "bytes": 30791,
+      "sha256": "da338be023aeeaadf0d5eb00a7ceef0adbd82e3ab7eb1b833fe7171445f595c3",
+      "storedBytes": 8280,
+      "storedSha256": "5e4b59e7d8785f3cc232091828e2e4909ce2cc3bc03cf601bb4f520f817d5c4a",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-01/source-copy/apps/hmh-reboot/src/value-guards.mjs.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-city-green-20260930-01\\source-copy\\apps\\hmh-reboot\\src\\value-guards.mjs",
+      "bytes": 2596,
+      "sha256": "8576f65fd1f8a4680578580a150bd3acdec43f555e6c8f1181e54ae92771cb94",
+      "storedBytes": 936,
+      "storedSha256": "91ada625932506cb5e73e391280c7eca3f10cfe9b8a8c8ea867fa68ed72c7b45",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-01/source-copy/scripts/lib/hmh-greybox-layout-check.mjs.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-city-green-20260930-01\\source-copy\\scripts\\lib\\hmh-greybox-layout-check.mjs",
+      "bytes": 5996,
+      "sha256": "7296aaf2767d5d77d759c7b7a3c9757dc931ba98e1db126436e11525533fb55e",
+      "storedBytes": 2289,
+      "storedSha256": "1f1291689e31abbcbd2eb0bcefcc248df5cb56d3f758262f5211daa2b6ccfddf",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-01/source-copy/scripts/lib/hmh-greybox-world-check.mjs.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-city-green-20260930-01\\source-copy\\scripts\\lib\\hmh-greybox-world-check.mjs",
+      "bytes": 14521,
+      "sha256": "5e7bc94f8200c15d73cd53e94193464697e8b6c804a793b80b3ce652214e448c",
+      "storedBytes": 4778,
+      "storedSha256": "60f1d9111b5269e40f280ddf6981c8247399ae2c46d02695762e0112c81386de",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-01/source-copy/tests/hmh-greybox-city-flow.test.mjs.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-city-green-20260930-01\\source-copy\\tests\\hmh-greybox-city-flow.test.mjs",
+      "bytes": 8388,
+      "sha256": "4c736822846ed7fd39486f3ca6c47a98e0776a2c20e704eebc25f0b0f736379e",
+      "storedBytes": 2698,
+      "storedSha256": "bda7508faba5c8e89f76f1b4f718ed4b6353acf078543e1fb18b0c475e823c79",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-01/source-copy/tests/hmh-greybox-closed-masses.test.mjs.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-city-green-20260930-01\\source-copy\\tests\\hmh-greybox-closed-masses.test.mjs",
+      "bytes": 3899,
+      "sha256": "b744cb42468d2ee1bc7b0ab776c82afa783cfb8a2d6a5d8a8741ed0387e2e7d3",
+      "storedBytes": 1670,
+      "storedSha256": "fc2f1ba129a56bfdac04332ed2a31fac96cd736169cdac6537357afca9d59ed6",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-01/source-copy/tests/hmh-greybox-farms-flow.test.mjs.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-city-green-20260930-01\\source-copy\\tests\\hmh-greybox-farms-flow.test.mjs",
+      "bytes": 5834,
+      "sha256": "44120d901a9ea16380ccf6b0e0a03f954c671b3d62f304075dfbc3fb5192c30c",
+      "storedBytes": 2005,
+      "storedSha256": "3763b52635efe109a433e31dfeebd3c14cf7b6d372eb25b72f2490ea61ae1b17",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-01/source-copy/tests/hmh-greybox-kit-polygon-contract.test.mjs.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-city-green-20260930-01\\source-copy\\tests\\hmh-greybox-kit-polygon-contract.test.mjs",
+      "bytes": 1727,
+      "sha256": "7cda487e835a76ca65a91e308debbb7e1d64e3c06429068f1ea6373794ed0abe",
+      "storedBytes": 744,
+      "storedSha256": "e7fadc55f4ddb121713df8be3f6859c4cd9a20a3fa50e7d825465f7a867775ea",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-01/source-copy/tests/hmh-greybox-meadows-flow.test.mjs.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-city-green-20260930-01\\source-copy\\tests\\hmh-greybox-meadows-flow.test.mjs",
+      "bytes": 4638,
+      "sha256": "9a504bb2a95d76cc77d0206c1b7e6c4924a5b6256b2ab88331554c06b364f77f",
+      "storedBytes": 1729,
+      "storedSha256": "57954731488ba3051ff4316b9de19ea1a0894da87e722d83f7f376b74ff691de",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-01/source-copy/tests/hmh-greybox-world.test.mjs.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-city-green-20260930-01\\source-copy\\tests\\hmh-greybox-world.test.mjs",
+      "bytes": 10049,
+      "sha256": "0f0893929fc1067cf287dbd48d4140a0366c54e6286cb37f5b9c4d289e6bc0a6",
+      "storedBytes": 3172,
+      "storedSha256": "e528b2bda4f2d86357cf04e3d9c5680c410ef2d8dc34857aa7f81a2b433a6ddb",
+      "compression": "gzip"
+    },
+    {
+      "archive": "browser-01/gate-report.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-city-preview-browser-20260930-01\\gate-report.json",
+      "bytes": 257407,
+      "sha256": "3bc5f2cfa34e743cf42699c367e4f47d5f6ca78a0f0db739f23b9c3e3ffd8031",
+      "storedBytes": 33175,
+      "storedSha256": "44665627cb91ff020f1b5faffff631280815ea1c1b919950c2a53ffd72e39396",
+      "compression": "gzip"
+    },
+    {
+      "archive": "browser-01/bindings.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-city-preview-browser-20260930-01\\bindings.json",
+      "bytes": 69530,
+      "sha256": "919f76bd8e7d2c85090c47627af50b43dc14aacf6a633edabc90062943fc81a3",
+      "storedBytes": 13982,
+      "storedSha256": "e591af8cc1c6273d2d7d41e31630ca16041c5ddae73033592aa829c5b3926a17",
+      "compression": "gzip"
+    },
+    {
+      "archive": "browser-01/runner.mjs.txt.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-city-preview-browser-20260930-01\\runner.mjs.txt",
+      "bytes": 9715,
+      "sha256": "b7fe7bc2466a2d6221675d4e54f383cfe777b2d1b70943a61e32dd5ea434ba07",
+      "storedBytes": 3242,
+      "storedSha256": "73d1abcda938f8c0ed8ff9d6e813d6e81ffb822cefe5257918ea8d534a90c1ac",
+      "compression": "gzip"
+    },
+    {
+      "archive": "browser-01/browser/browser-report.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-city-preview-browser-20260930-01\\browser\\browser-report.json",
+      "bytes": 126112,
+      "sha256": "f17b3c5feb3168f5b642c9ca10b66710781081a8877592dc5219cea7e282a068",
+      "storedBytes": 6566,
+      "storedSha256": "d5bd06cef98547aeb2a9c3763448c4032c770d92154623f6ae43015572729d9d",
+      "compression": "gzip"
+    },
+    {
+      "archive": "browser-01/harness/hmh-greybox-city-browser-smoke.mjs.txt.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\hmh-greybox-city-browser-smoke.mjs",
+      "bytes": 18330,
+      "sha256": "6d2800d226c46c0341b2a0adf3d6db078e1d373a9547e2f5e0e094cb41a83c08",
+      "storedBytes": 6079,
+      "storedSha256": "f54c7c7ffab6888d44b5c844c7cd17122f715ccbf90608874c53b3ff1da8663c",
+      "compression": "gzip"
+    },
+    {
+      "archive": "browser-01/harness/prepare-world-city-browser.mjs.txt.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\prepare-world-city-browser.mjs",
+      "bytes": 5417,
+      "sha256": "b6e18d479f19071db086b9f0c83e9225a04060d6514605556f0e5eb8f815a493",
+      "storedBytes": 2290,
+      "storedSha256": "a796d6e55bba0d3d377f2978e7499b6cd67799dc714f848dcb511c87c97ecd84",
+      "compression": "gzip"
+    },
+    {
+      "archive": "browser-01/harness/owned-windows-preview-child.mjs.txt.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\owned-windows-preview-child.mjs",
+      "bytes": 3476,
+      "sha256": "6f4903a66d324a01a476eebefdfac68663dde2c573f62f637c4b7537ccb0d631",
+      "storedBytes": 1360,
+      "storedSha256": "18c5cfc758da42cddbb922c7989a0204d20eb87c1d5d359985932ef89f92c162",
+      "compression": "gzip"
+    },
+    {
+      "archive": "author-image-review.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-city-author-image-review.json",
+      "bytes": 1108,
+      "sha256": "06a79340b0448910faec3b8347906bc6f2f3e097f38642fc04bc5beab70de152",
+      "storedBytes": 674,
+      "storedSha256": "9d1ae1f65363404e892394cfe016425421bfcef2186091be91114c40599745fb",
+      "compression": "gzip"
+    }
+  ]
+}
