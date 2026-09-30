@@ -293,3 +293,16 @@ reviews pass. This structural sentinel is not a surviving run; the genuine
 longest-run195.2793ms proof remains separate. ProductionCPU, worst surviving
 workload and globalS0 remain open. No runtime/build/browser changes in this slice.
 See slices/STACKED-S0F-CODEC-BOUNDARY.md and its exact receipts.
+
+
+## STACKED F1a — source-only living journey
+
+An unmounted presentation director prepares the requested automatic eight-scene
+deck, isolated cosmetic order, smooth tempo/forward flight and early portals.
+Eleven behavior cases and the same eleven in an exact two-file emptyPATH/noGit/
+noModules source copy pass; independent source-only review passes. Both test
+children close normally and the marker is released. No runtime entry, rendering,
+settings, simulation, verifier, versions or evidence changed, and no browser or
+physical acceptance is claimed. Actual lazy integration/Matrix/portal aperture/
+resource pools, combined game parity, final art/flash review and modes remain open.
+See slices/STACKED-F1A-JOURNEY-SOURCE.md.

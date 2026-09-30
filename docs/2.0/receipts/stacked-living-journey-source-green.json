@@ -1,0 +1,76 @@
+{
+  "schema": "stacked-living-journey-source-green-v1",
+  "before": {
+    "apps/stacked/src/render/living-journey.mjs": "4d55ab64a9e8813d9e0d5f5c372337b21476a9d40922ec27f24f2803d6daf39f",
+    "tests/stacked-living-journey.test.mjs": "59abb92345fd50a3704d00c8fee6215ea188cf7003d6ba91530ecf6975cd0d71"
+  },
+  "commands": [
+    {
+      "entry": "root",
+      "command": {
+        "program": "C:\\Program Files\\nodejs\\node.exe",
+        "args": [
+          "--test",
+          "tests/stacked-living-journey.test.mjs"
+        ],
+        "cwd": "C:/Users/just_/lesters-arcade-wt/visual-overhaul-200",
+        "startedAt": "2026-09-30T04:03:28.757Z",
+        "stdout": "✔ automatic cosmetic deck includes Matrix and all existing worlds and scenes (5.536ms)\n✔ cosmetic seed determines a repeatable deck without global or simulation randomness (3.6844ms)\n✔ beat-driven automatic morphs continue without line clears (1.1306ms)\n✔ forward flight is continuous and responds smoothly to tempo and combo (0.151ms)\n✔ a Halving requests one early portal and repeated snapshots do not retrigger it (0.3746ms)\n✔ a rising large combo can trigger a portal, a sustained combo cannot spam it (0.3818ms)\n✔ portal mix and radius grow continuously and finish in the next scene (0.3455ms)\n✔ reduced motion holds flight and deck still, including during an active portal (0.5757ms)\n✔ rewound and invalid clocks do not rewind flight or create a catch-up burst (0.1528ms)\n✔ feedback and beat changes do not produce brightness flashes; danger dims smoothly (0.2856ms)\n✔ long presentation updates reuse one bounded state and preserve input objects (5.66ms)\nℹ tests 11\nℹ suites 0\nℹ pass 11\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 131.8189\n",
+        "stderr": "",
+        "watchdogMs": 10000,
+        "watchdogTriggered": false,
+        "spawnError": null,
+        "treeStop": null,
+        "shutdownCloseDeadlineMs": 20000,
+        "childClosureConfirmed": true,
+        "outputLimitTriggered": false,
+        "spawnedPid": 20368,
+        "exitCode": 0,
+        "signal": null,
+        "closeObservedAt": "2026-09-30T04:03:28.968Z",
+        "finishedAt": "2026-09-30T04:03:28.968Z",
+        "wholeChildWallMs": 209.2815,
+        "normalExit": true
+      }
+    },
+    {
+      "entry": "source-copy",
+      "command": {
+        "program": "C:\\Program Files\\nodejs\\node.exe",
+        "args": [
+          "--test",
+          "tests/stacked-living-journey.test.mjs"
+        ],
+        "cwd": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-living-journey-green-01\\source-copy",
+        "startedAt": "2026-09-30T04:03:28.976Z",
+        "stdout": "✔ automatic cosmetic deck includes Matrix and all existing worlds and scenes (5.4943ms)\n✔ cosmetic seed determines a repeatable deck without global or simulation randomness (3.9021ms)\n✔ beat-driven automatic morphs continue without line clears (1.2699ms)\n✔ forward flight is continuous and responds smoothly to tempo and combo (0.1709ms)\n✔ a Halving requests one early portal and repeated snapshots do not retrigger it (0.5102ms)\n✔ a rising large combo can trigger a portal, a sustained combo cannot spam it (0.3701ms)\n✔ portal mix and radius grow continuously and finish in the next scene (0.44ms)\n✔ reduced motion holds flight and deck still, including during an active portal (0.5313ms)\n✔ rewound and invalid clocks do not rewind flight or create a catch-up burst (0.1487ms)\n✔ feedback and beat changes do not produce brightness flashes; danger dims smoothly (0.276ms)\n✔ long presentation updates reuse one bounded state and preserve input objects (6.152ms)\nℹ tests 11\nℹ suites 0\nℹ pass 11\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 138.5001\n",
+        "stderr": "",
+        "watchdogMs": 10000,
+        "watchdogTriggered": false,
+        "spawnError": null,
+        "treeStop": null,
+        "shutdownCloseDeadlineMs": 20000,
+        "childClosureConfirmed": true,
+        "outputLimitTriggered": false,
+        "spawnedPid": 23216,
+        "exitCode": 0,
+        "signal": null,
+        "closeObservedAt": "2026-09-30T04:03:29.207Z",
+        "finishedAt": "2026-09-30T04:03:29.207Z",
+        "wholeChildWallMs": 231.19109999999998,
+        "normalExit": true
+      }
+    }
+  ],
+  "passed": true,
+  "scope": "Source-only presentation director. No real renderer, board, browser, art, physical, soak or release acceptance.",
+  "after": {
+    "apps/stacked/src/render/living-journey.mjs": "4d55ab64a9e8813d9e0d5f5c372337b21476a9d40922ec27f24f2803d6daf39f",
+    "tests/stacked-living-journey.test.mjs": "59abb92345fd50a3704d00c8fee6215ea188cf7003d6ba91530ecf6975cd0d71"
+  },
+  "sourceCopyAfter": {
+    "apps/stacked/src/render/living-journey.mjs": "4d55ab64a9e8813d9e0d5f5c372337b21476a9d40922ec27f24f2803d6daf39f",
+    "tests/stacked-living-journey.test.mjs": "59abb92345fd50a3704d00c8fee6215ea188cf7003d6ba91530ecf6975cd0d71"
+  },
+  "markerRetained": false
+}

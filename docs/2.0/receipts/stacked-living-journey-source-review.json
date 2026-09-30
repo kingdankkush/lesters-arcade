@@ -1,0 +1,20 @@
+{
+  "schema": "stacked-living-journey-independent-source-review-v1",
+  "reviewer": "/root/world_w0_audit",
+  "sourceReview": "PASS",
+  "sourceHashes": {
+    "apps/stacked/src/render/living-journey.mjs": "4d55ab64a9e8813d9e0d5f5c372337b21476a9d40922ec27f24f2803d6daf39f",
+    "tests/stacked-living-journey.test.mjs": "59abb92345fd50a3704d00c8fee6215ea188cf7003d6ba91530ecf6975cd0d71"
+  },
+  "targetRerun": false,
+  "findings": "Private seeded fixed deck only; clamped monotonic cosmetic clock; clear deltas and rising combo edges; Halving priority in bounded pending slot; four-beat uninterrupted transitions and hold; reduced motion consumes events while freezing flight/mix; no timers or simulation imports; fixed deck/state.",
+  "open": [
+    "renderer integration",
+    "actual Matrix/portal images",
+    "rendered luminance/flash limits",
+    "settings and quality governor wiring",
+    "game evidence parity",
+    "browser/device/soak",
+    "global replay/release acceptance"
+  ]
+}
