@@ -19,7 +19,15 @@ export async function mountLocalStacked() {
   stage.append(app.canvas);app.canvas.tabIndex=0;app.canvas.setAttribute('aria-label','Player one and player two STACKED boards');
   const views=[0,1].map(index=>createStackedBoardView({index,frame:'wide',ghostOutline:true,geometry:{PIECE_CELLS,cellsFor,collides},Container,Graphics,Text}));
   for(const view of views){app.stage.addChild(view.root);view.layers.hudLayer.visible=false;view.setTrails(false);view.setColorblindPieces(true);}
-  const hud=views.map((_,i)=>{const el=document.createElement('div');el.className='player-hud';el.innerHTML='<aside class="hold"><h3>HOLD</h3><div class="held piece"></div><div class="hud-score"><strong class="score">0</strong>points<br><span class="lines">0</span> lines</div><div class="incoming"><strong class="rows">0</strong>incoming rows</div></aside><aside class="queue"><h3>NEXT</h3><div class="next"></div></aside>';$('hud').append(el);return el;});
+  // Static HUD skeleton built with DOM APIs (no innerHTML): the WO-39 security sweep
+  // forbids markup strings in runtime content creation, and present() only ever
+  // writes textContent / replaceChildren into these nodes.
+  const node=(tag,className,...children)=>{const el=document.createElement(tag);if(className)el.className=className;el.append(...children);return el;};
+  const hud=views.map(()=>{const el=node('div','player-hud',
+    node('aside','hold',node('h3','','HOLD'),node('div','held piece'),
+      node('div','hud-score',node('strong','score','0'),'points',node('br'),node('span','lines','0'),' lines'),
+      node('div','incoming',node('strong','rows','0'),'incoming rows')),
+    node('aside','queue',node('h3','','NEXT'),node('div','next')));$('hud').append(el);return el;});
   let run=null, input=null, disposed=false, raf=0, setupMode=true, layout={playable:false,slots:[]}, lastTick=-1, lastStatus='', deviceScanAt=0, lastDeviceText='';
   const pads=()=>{try{return navigator.getGamepads?.()??[];}catch{return [];}};
   $('deviceChoice').value=recommendedLocalControls(pads());
