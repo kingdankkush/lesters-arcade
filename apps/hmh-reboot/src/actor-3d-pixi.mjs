@@ -54,7 +54,13 @@ void main() {
   vec3 albedo=pow(max(base.rgb,vec3(0.0)),vec3(2.2));
   float diffuse=max(0.0,dot(n,light));
   float spec=pow(max(0.0,dot(n,normalize(light+eye))),mix(96.0,8.0,rough));
-  vec3 linear=albedo*(0.40+0.80*diffuse)*(1.0-0.35*metal)+mix(vec3(0.04),albedo,metal)*spec*0.65;
+  // Broad sky/ground bounce and a camera-side fill keep faces and folds
+  // readable at gameplay size, while the warm key retains directional form.
+  float sky=smoothstep(-0.35,0.80,n.y);
+  vec3 bounce=mix(vec3(0.42,0.38,0.34),vec3(0.63,0.67,0.72),sky);
+  float fill=0.30*max(0.0,dot(n,eye));
+  vec3 illumination=bounce+vec3(0.98,0.94,0.88)*(0.66*diffuse)+vec3(0.96,1.0,1.03)*fill;
+  vec3 linear=albedo*illumination*(1.0-0.35*metal)+mix(vec3(0.04),albedo,metal)*spec*0.65;
   vec3 color=pow(clamp(linear,0.0,1.0),vec3(1.0/2.2));
   float alpha=base.a*vColor.a; outColor=vec4(color*vColor.rgb*alpha,alpha);
 }`;
