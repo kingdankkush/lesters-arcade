@@ -51,7 +51,15 @@ const LOCAL_APP = 'apps/stacked/src/local-app.mjs';
 const LOCAL_MATCH = 'apps/stacked/src/local-match.mjs';
 const LOCAL_ACCESS = 'apps/stacked/src/local-access.mjs';
 const LOCAL_TABLE = 'apps/portal/src/stacked-versus-table.mjs';
+// The HMH world-v2 local page (scripts/build-hmh-world-v2-local.mjs) is the same kind of
+// private loopback-only entry: its access gate may be imported only by its own entry module,
+// never by the portal, the official HMH child, a Worker or the server. It is listed first
+// because the protected-name lookup below matches specifier basenames by inclusion, and
+// 'world-v2-local-access.mjs' contains the STACKED 'local-access.mjs' basename.
+const WORLD_V2_LOCAL_ENTRY = 'apps/hmh-reboot/src/dev/world-v2-local-entry.mjs';
+const WORLD_V2_LOCAL_ACCESS = 'apps/hmh-reboot/src/dev/world-v2-local-access.mjs';
 const LOCAL_IMPORTERS = new Map([
+  [WORLD_V2_LOCAL_ACCESS, new Set([WORLD_V2_LOCAL_ENTRY])],
   [LOCAL_ENTRY, new Set()], [LOCAL_APP, new Set([LOCAL_ENTRY])],
   [LOCAL_MATCH, new Set([LOCAL_APP])], [LOCAL_ACCESS, new Set([LOCAL_ENTRY, LOCAL_MATCH])],
   [LOCAL_TABLE, new Set([LOCAL_MATCH])],
