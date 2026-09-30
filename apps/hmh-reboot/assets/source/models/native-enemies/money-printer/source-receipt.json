@@ -1,0 +1,123 @@
+{
+  "schema": 1,
+  "status": "editable-native-candidate",
+  "actorId": "money-printer",
+  "identityForm": "human",
+  "boss": false,
+  "phaseVisuals": {},
+  "baseSource": "owner-assets/military character 3d model.glb",
+  "baseSha256": "af40b958cd2079a440756dff05161b151c99f5a473cecbd7bf12d835a1040709",
+  "baseBytes": 17353808,
+  "sourceUnchanged": true,
+  "casting": {
+    "name": "Money Printer",
+    "rationale": "Cyber berserker: the remaining licensed textured human; the brass press backpack, note roll and green visor are costume geometry (the reference's suit is not represented).",
+    "reference": "Enemy and Boss References 03_34_03 (brass printing press backpack, banknotes, green visor)",
+    "textured": true,
+    "sheetFigure": "front"
+  },
+  "figureExtraction": {
+    "looseParts": 4,
+    "clusters": 3,
+    "kept": 1,
+    "discarded": 3,
+    "sheet": true,
+    "largestParts": [
+      {
+        "triangles": 72138,
+        "kept": false,
+        "min": [
+          0.189,
+          -0.135,
+          0.0
+        ],
+        "max": [
+          0.491,
+          0.09,
+          0.54
+        ]
+      },
+      {
+        "triangles": 59152,
+        "kept": false,
+        "min": [
+          -0.202,
+          -0.13,
+          0.0
+        ],
+        "max": [
+          -0.071,
+          0.135,
+          0.542
+        ]
+      },
+      {
+        "triangles": 57682,
+        "kept": true,
+        "min": [
+          -0.491,
+          -0.048,
+          0.0
+        ],
+        "max": [
+          -0.232,
+          0.079,
+          0.54
+        ]
+      },
+      {
+        "triangles": 51028,
+        "kept": false,
+        "min": [
+          -0.059,
+          -0.085,
+          0.001
+        ],
+        "max": [
+          0.201,
+          0.05,
+          0.543
+        ]
+      }
+    ]
+  },
+  "importedTriangles": 486962,
+  "sourceTriangles": 57682,
+  "landmarks": {
+    "armDetected": true,
+    "legDetected": true,
+    "neckZ": 0.9,
+    "torsoY": -0.026347732171416283,
+    "rawHeight": 0.5394958080578363,
+    "scale": 3.4105918387464915
+  },
+  "weightMethod": "bone-heat",
+  "unweightedVertices": 0,
+  "source": "money-printer.blend",
+  "sourceSha256": "95aba5555990af371070b8ec372704d698ebb4bc6a5b982e99061c7feb65400a",
+  "sourceBytes": 14091134,
+  "armature": "money-printer Native Rig",
+  "bones": 19,
+  "nativeBodyVertices": 28827,
+  "costumeMeshes": 0,
+  "gearMeshes": 10,
+  "clipActions": {
+    "idle": "HMH_money-printer_idle",
+    "run": "HMH_money-printer_run",
+    "tell": "HMH_money-printer_tell",
+    "attack": "HMH_money-printer_attack",
+    "hit": "HMH_money-printer_hit",
+    "death": "HMH_money-printer_death"
+  },
+  "runtimeAuthority": "projection-only",
+  "height": 1.832399983406067,
+  "animationProfile": {
+    "kind": "gas-bomber-canister-lob-v1",
+    "damageResponse": "canister-protective-stagger-v1"
+  },
+  "stoop": 0.04,
+  "builderSha256": "89386ac5255d22f969bafd2e1b90e935d86f302922cd655276e264a940491593",
+  "castingSha256": "bb175a1037eeae1cff461358ce6d90c121d56073ce1a03a33b0f9b39ae1f69c3",
+  "poseAuthorSha256": "113c81d1514ec7768361332c9191436ea5171b3fef1d9028aa556711b88c7648",
+  "rights": "Owner-supplied licensed model, read-only; no generation service, credit or new licence was used."
+}

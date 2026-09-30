@@ -1,0 +1,130 @@
+{
+  "schema": 1,
+  "classification": "unapproved-runtime-character-pilot",
+  "activeRuntimeIntegration": false,
+  "cameraDegreesFromVertical": 55,
+  "groundPivot": "existing-world-foot-position",
+  "simulationAuthority": "none",
+  "actors": {
+    "money-printer": {
+      "file": "money-printer.glb",
+      "sha256": "f8e88ef8dfaa2f71077701671e731d03b67ab46f40ce0bff59e6b97a8578dedd",
+      "sourceSha256": "95aba5555990af371070b8ec372704d698ebb4bc6a5b982e99061c7feb65400a",
+      "sourceBytes": 14091134,
+      "sourceTriangles": 57970,
+      "requiredClips": [
+        "idle",
+        "run",
+        "tell",
+        "attack",
+        "hit",
+        "death"
+      ],
+      "inspection": {
+        "bytes": 2030068,
+        "vertices": 8027,
+        "triangles": 8958,
+        "skinnedMeshes": 2,
+        "joints": 19,
+        "clips": [
+          {
+            "name": "attack",
+            "durationSeconds": 1,
+            "channels": 63
+          },
+          {
+            "name": "death",
+            "durationSeconds": 1,
+            "channels": 63
+          },
+          {
+            "name": "hit",
+            "durationSeconds": 1,
+            "channels": 63
+          },
+          {
+            "name": "idle",
+            "durationSeconds": 1,
+            "channels": 63
+          },
+          {
+            "name": "run",
+            "durationSeconds": 1,
+            "channels": 63
+          },
+          {
+            "name": "tell",
+            "durationSeconds": 1,
+            "channels": 63
+          }
+        ],
+        "bounds": {
+          "min": [
+            -0.44197067618370056,
+            0.0004393976414576173,
+            -0.5621681809425354
+          ],
+          "max": [
+            0.44273680448532104,
+            1.840033769607544,
+            0.2155877649784088
+          ]
+        },
+        "embeddedImages": 7,
+        "images": [
+          {
+            "name": "costume-emission",
+            "format": "png",
+            "width": 512,
+            "height": 512,
+            "bytes": 10159
+          },
+          {
+            "name": "costume-normal",
+            "format": "png",
+            "width": 512,
+            "height": 512,
+            "bytes": 19013
+          },
+          {
+            "name": "costume-baseColor",
+            "format": "png",
+            "width": 512,
+            "height": 512,
+            "bytes": 20913
+          },
+          {
+            "name": "costume-metallicRoughness",
+            "format": "png",
+            "width": 512,
+            "height": 512,
+            "bytes": 21810
+          },
+          {
+            "name": "military+character+3d+model_normal",
+            "format": "png",
+            "width": 512,
+            "height": 512,
+            "bytes": 289497
+          },
+          {
+            "name": "military+character+3d+model_basecolor",
+            "format": "png",
+            "width": 512,
+            "height": 512,
+            "bytes": 483291
+          },
+          {
+            "name": "military+character+3d+model_rm",
+            "format": "png",
+            "width": 512,
+            "height": 512,
+            "bytes": 400858
+          }
+        ],
+        "textureBytesRgba8": 7340032,
+        "textureBytesRgba8Mipmaps": 9786700
+      }
+    }
+  }
+}
