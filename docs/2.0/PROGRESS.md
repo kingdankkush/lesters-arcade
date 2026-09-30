@@ -859,3 +859,13 @@ pass. Root and Art viewed the final desktop/landscape originals. Combined gather
 world/local source checks also passed260 before this presentation-only polish.
 Current budgets remain HMH1,039,992B/STACKED580,861B. No physical-device/soak,
 full gate, credits or deploy. See slices/STACKED-F2F-GHOST-READABILITY.md.
+
+## W3a — legacy verifier map context
+
+The actual HMH verification path now selects immutable legacy v6/v7 map contexts
+after unchanged validation and score gates. Genuine RED was eight missing-selector
+failures plus eight controls; final 150/150 source and identical 150/150 isolated
+checks pass, including all 248 recorded child summaries and existing modeled
+corpus coverage. Independent review is clear, exact children/marker are closed,
+and legacy tables/evidence remain unchanged. No new map, gameplay, schema, seed,
+settlement or release is activated. See [W3a evidence and limits](slices/WORLD-W3A-LEGACY-CONTEXT.md).

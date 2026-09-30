@@ -8,7 +8,7 @@ import { validateRunSummaryPayload } from '../../sdk/hmh-run-summary-schema-v7.m
 import { isHmhV7Build } from '../../sdk/hmh-run-contract-v7.mjs';
 import { canonicalSessionJson, sha256Hex } from '../../apps/portal/src/session-integrity.mjs';
 import { HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG } from '../../apps/portal/src/hmh-character-config.mjs';
-import { validateRebootRunPlausibility } from './hmh-plausibility.mjs';
+import { resolveHmhMapContext } from './hmh-map-context.mjs';
 import { buildVerifiedRun, invalid, isPlainObject, rejected, scoreOutOfBounds } from './verified-run.mjs';
 
 export const HMH_GAME_ID = 'lester-blaster';
@@ -87,7 +87,11 @@ export async function verifyHmhRun({ identity, evidence, nowMs }) {
 
   const score = runSummary.totals.score;
   if (score > 10_000_000_000) return scoreOutOfBounds(score);
-  const plausibility = validateRebootRunPlausibility(runSummary);
+  // Canonical identity, terminal evidence and score bounds have already passed.
+  // Old child schemas retain their legacy map under newer portal identities.
+  const mapContext = resolveHmhMapContext({ identity, schemaVersion: runSummary.schemaVersion });
+  if (!mapContext) return invalid('run-summary-invalid', 'unsupported HMH map context');
+  const plausibility = mapContext.validatePlausibility(runSummary);
   if (plausibility.verdict === 'rejected') return rejected('implausible-run', { flags: plausibility.flags });
 
   return buildVerifiedRun({

@@ -1,0 +1,96 @@
+{
+  "schema": "world-w3a-compact-archive-v1",
+  "scope": "Lossless actual legacy-map context RED/GREEN and exact no-Git source-copy gate, process closure and independent review. No duplicated source tree, map activation, browser/full-release or production claims.",
+  "entries": [
+    {
+      "archive": "red-01/red-report.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3a-map-context-red-20260930-01\\red-report.json",
+      "bytes": 48051,
+      "sha256": "4a97a4c2385ec125281820a4138ff62f2228289f1448900bf76aef782a828fe1",
+      "storedBytes": 9663,
+      "storedSha256": "4268252fa9cba80220fb863029b6fd8774b26eba0485db13d4e6218b1c73aeb1",
+      "compression": "gzip"
+    },
+    {
+      "archive": "red-01/bindings.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3a-map-context-red-20260930-01\\bindings.json",
+      "bytes": 87226,
+      "sha256": "1beca91e411f4533cb038b9c96010cf88262a62a430e72108a126f60b95c004f",
+      "storedBytes": 12030,
+      "storedSha256": "fc0de621c0821ceff584fc009473713ce6be1683cbcc6b4030e5de5b4f0eee4e",
+      "compression": "gzip"
+    },
+    {
+      "archive": "red-01/runner.mjs.txt.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3a-map-context-red-20260930-01\\runner.mjs.txt",
+      "bytes": 4168,
+      "sha256": "c0114362f0e3ea0e733a7d742b020b4aad9747cbba4ae238acc1a3a1fed7039c",
+      "storedBytes": 1695,
+      "storedSha256": "96f7f577bd8400a30c2f0e62e5b3f51de9a989279ae0395f72a7dd6c5af5d4f9",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-01/gate-report.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3a-map-context-green-20260930-01\\gate-report.json",
+      "bytes": 112720,
+      "sha256": "5f443c487d0e7daafce74eb3720658878cecff411c618027948ace39058877b2",
+      "storedBytes": 29168,
+      "storedSha256": "7f5adc9365d1c3213fa8d017307c17ee93a05ca0aa987620fcd73f9d68c76994",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-01/bindings.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3a-map-context-green-20260930-01\\bindings.json",
+      "bytes": 87888,
+      "sha256": "635030ce180dde577ec2631d030de7e8aa89b7ef9b47861175794a208396dcf3",
+      "storedBytes": 12127,
+      "storedSha256": "3e196ecfac1f2f826837e3a88001d07e7bf4c8163786c3f85f1e488948c10081",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-01/runner.mjs.txt.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3a-map-context-green-20260930-01\\runner.mjs.txt",
+      "bytes": 5297,
+      "sha256": "88250ec433d0a5f8c8ef24fb981ad8ecfa4465a04002c3af292f96351b712aec",
+      "storedBytes": 2008,
+      "storedSha256": "ed2698df511e34baba3c5cd4b520f1626bcf063aa6b7d60166db275a0b66e03d",
+      "compression": "gzip"
+    },
+    {
+      "archive": "world-w3a-red-closure.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3a-red-closure.json",
+      "bytes": 122,
+      "sha256": "db4c1a7f603c148dd764bcbe425cb03d86bf7014ad61e83300bc9f60b88c0b43",
+      "storedBytes": 117,
+      "storedSha256": "ba6ecd19cc51c9383733c1fc7b9aa15d4b914d96781b90bef71e84ce6d4a50fd",
+      "compression": "gzip"
+    },
+    {
+      "archive": "world-w3a-green-closure.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3a-green-closure.json",
+      "bytes": 1731,
+      "sha256": "65ebf6d0dbd6714ad81100a85728391bf93061f19336b3ff7341e4136747287a",
+      "storedBytes": 385,
+      "storedSha256": "c2f7fc38a320b915bc84b1cced4b1906c4a9116e9e6cfd1daac6ef533c023bb4",
+      "compression": "gzip"
+    },
+    {
+      "archive": "world-w3a-review.md.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3a-review.md",
+      "bytes": 1370,
+      "sha256": "855f1b74fbc21bb0a8d1048397b0c902c5354bd9beb6983e976ec483cb956112",
+      "storedBytes": 764,
+      "storedSha256": "9e1004cc58bb353b423795cf8161f58ef1eddb4c5acfc3fbcc5b57f9e2687738",
+      "compression": "gzip"
+    },
+    {
+      "archive": "owned-windows-child.mjs.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\owned-windows-child.mjs",
+      "bytes": 3475,
+      "sha256": "a5177337fcf6ec41f285fc105b93d0b4b94ee1101cb14a653a91e9b8b075b0d9",
+      "storedBytes": 1353,
+      "storedSha256": "02e4475db1d22cb3a147a2e8df889e12f6857d38c4c60a8b4be99e5a04b4e2e7",
+      "compression": "gzip"
+    }
+  ]
+}
