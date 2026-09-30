@@ -60,6 +60,7 @@ const NODE_CHECK_FILES = [
   'tests/stacked-living-journey.test.mjs',
   'scripts/lib/stacked-codec-boundary.mjs',
   'tests/stacked-codec-boundary.test.mjs',
+  'scripts/generate-stacked-longest-legal-fixture.mjs',
   'tests/source-art-paths.test.mjs',
   'tests/hmh-cockpit-lazy-startup.test.mjs',
   'scripts/lib/hmh-greybox-layout-check.mjs',
