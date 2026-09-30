@@ -61,6 +61,27 @@ work; the two-day goal is not evidence of completion. Progress is tracked by
 checked slices, not a percentage.
 
 
+## Rewards lane status (September 30, `claude/200-rewards`)
+
+Source-checked only: no build, browser run, deployment or physical-device
+check is claimed for these items, and no real wallet has earned anything.
+
+- **Early Supporter badge — implemented, source-checked.** `early-supporter`
+  (gold, category `founder`) is a parent-owned entry in the new
+  `apps/portal/src/achievements/arcade.mjs` catalog (`gameId` `arcade`, not a
+  cabinet). Criterion: the run's server `verifiedAt` stamp is before
+  `EARLY_SUPPORTER_CUTOFF_ISO`, in any cabinet. **The cutoff
+  `2026-10-31T00:00:00Z` is a placeholder; the 2.0 release commit must fix the
+  real date.** Earning goes only through the existing server derivation
+  (`deriveEarnedAchievements`, after the cabinet's own entries); the unlock is
+  recorded under the cabinet of the qualifying run, the §6.5 history carries
+  parent-owned unlocks from every cabinet, so it is earned once per wallet.
+  Rarity: `GET /api/achievements/stats?game=arcade` counts every cabinet's
+  eligible players and each wallet once; below twenty players it stays
+  `Early`. The profile collection gains a "Lester's Arcade" section. Badge art
+  is a labelled placeholder (the Cabinet Pioneer badge). Tier `gold` is a
+  lane judgment pending the badge theme.
+
 ## G4 replacement package — implementation recommendation (September 30)
 
 The original downloaded reward-definition guide is no longer present. Under the

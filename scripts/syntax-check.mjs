@@ -642,6 +642,8 @@ const NODE_CHECK_FILES = [
   "tests/achievement-progress.test.mjs",
   'apps/portal/src/achievements/entry.mjs',
   'apps/portal/src/achievements/index.mjs',
+  'apps/portal/src/achievements/arcade.mjs',
+  'tests/achievement-early-supporter.test.mjs',
   'apps/portal/src/achievements/hmh.mjs',
   'apps/portal/src/achievements/chikun.mjs',
   'apps/portal/src/achievements/stacked.mjs',

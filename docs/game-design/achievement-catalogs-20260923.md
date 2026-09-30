@@ -185,6 +185,14 @@ The ids, titles and tiers are unchanged from `ACHIEVEMENT_DEFINITIONS` (a test p
 | 56 | `l2-ngmi` | Not Gonna Make It... Did | diamond | level-clear | Intended: Defeat Mr. NGMI and clear Level 2: Litecoin City. | **no**: Coming with Level 2 (the reboot has no Level 2). | no | Coming with Level 2 |
 | 57 | `l2-no-damage-ngmi` | Influencer Immune | mythic | skill | Intended: Defeat Mr. NGMI without taking damage during the boss phase. | **no**: Coming with Level 2 (the reboot has no Level 2). | no | Coming with Level 2 |
 
+## Lester's Arcade, parent-owned (1)
+
+Parent-owned entries live in `achievements/arcade.mjs` under the id `arcade`, which is not a cabinet. Any cabinet's server-verified Ranked run can earn them: `deriveEarnedAchievements` evaluates them after the cabinet's own entries, the settle server records the unlock under the cabinet of that run (`achievement_unlocks.game_id` allows only the three games), and the §6.5 history lists their unlocks from every cabinet (`historyFieldsFor(gameId).shared`), so each is earned once per wallet. Their ids are reserved across the game catalogs (the registry refuses a reuse). Rarity comes from `GET /api/achievements/stats?game=arcade`: the cohort is every cabinet's eligible verified Ranked players and a wallet counts once whichever cabinet recorded the unlock; fewer than twenty players shows `Early`.
+
+| # | Id | Title | Tier | Category | Criterion | Available | NFT proposal | Calibration / source |
+| ---: | --- | --- | --- | --- | --- | --- | --- | --- |
+| 1 | `early-supporter` | Early Supporter | gold | founder | The run's server `verifiedAt` stamp (`new Date(nowMs).toISOString()` in `server/verify/verified-run.mjs`) is before `EARLY_SUPPORTER_CUTOFF_ISO`; any cabinet | yes | no | Owner-approved recognition (2.0 plan). The cutoff `2026-10-31T00:00:00Z` is a **placeholder**: the 2.0 release commit fixes the real date. Badge art is a labelled placeholder (the Cabinet Pioneer badge). |
+
 ## Chikun's Escape (40)
 
 The tiers are 14 bronze, 12 silver, 9 gold and 5 platinum. "Harness" is the harness JSON and "skim" is the near-miss-chasing sample. Region `i` counts as reached when the run passes an obstacle in it, or finishes a loop.

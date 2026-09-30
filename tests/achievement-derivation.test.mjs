@@ -293,7 +293,8 @@ test('history field paths are safe SQL identifiers', () => {
   const samples = { 'lester-blaster': hmhRun('boss-run').stats, chikun: chikunRun('hardcore').stats, stacked: stackedRun().stats };
   for (const [gameId, stats] of Object.entries(samples)) {
     const fields = historyFieldsFor(gameId);
-    assert.deepEqual(Object.keys(fields), ['sum', 'max']);
+    assert.deepEqual(Object.keys(fields), ['sum', 'max', 'shared']);
+    assert.deepEqual(fields.shared, ['early-supporter'], `${gameId} shares the parent-owned ids`);
     assert.ok(fields.sum.length > 0 && fields.max.length > 0, gameId);
     for (const path of [...fields.sum, ...fields.max]) {
       assert.match(path, pattern, `${gameId} ${path}`);

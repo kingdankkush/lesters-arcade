@@ -5,12 +5,15 @@ import {ensureSchema} from '../../server/neon/migrations.mjs';
 import {resolveGameId} from '../../server/neon/rows.mjs';
 import {readAchievementStats} from '../../server/neon/achievement-stats.mjs';
 import {ACHIEVEMENT_RARITY_MIN_PLAYERS} from '../../apps/portal/src/achievements/rarity.mjs';
+import {ACHIEVEMENT_PARENT_ID} from '../../apps/portal/src/achievements/index.mjs';
 export const ACHIEVEMENT_STATS_CACHE='public, s-maxage=300, stale-while-revalidate=300';
 const cache={};
 export async function buildDeps(env=process.env,overrides={}) {return buildBaseDeps(env,overrides,cache);}
 const fail=(status,error)=>({status,body:{ok:false,error},headers:{'Cache-Control':'no-store'}});
 export async function achievementStatsRequest({query={}}={},deps) {
- const gameId=resolveGameId(query.game);
+ // A cabinet alias, or the parent-owned catalog ('arcade': every cabinet's cohort).
+ const requested=String(query.game??'').trim().toLowerCase();
+ const gameId=requested===ACHIEVEMENT_PARENT_ID?ACHIEVEMENT_PARENT_ID:resolveGameId(requested);
  if(!gameId)return fail(400,'invalid-game');
  if(!deps.db)return fail(503,'index-not-configured');
  await ensureSchema(deps.db);

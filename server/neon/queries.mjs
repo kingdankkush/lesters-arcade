@@ -446,6 +446,18 @@ function validatedPaths(paths, label) {
   return [...new Set(list)];
 }
 
+// Parent-owned achievement ids (achievements/arcade.mjs): their unlocks count
+// for the wallet whichever cabinet recorded them. Same shape as the
+// achievement_unlocks.achievement_id CHECK.
+const ACHIEVEMENT_ID = /^[a-z0-9][a-z0-9-]{1,63}$/;
+function validatedSharedIds(ids) {
+  const list = Array.isArray(ids) ? ids : [];
+  for (const id of list) {
+    if (typeof id !== 'string' || !ACHIEVEMENT_ID.test(id)) throw new TypeError('unsafe history shared id');
+  }
+  return [...new Set(list)];
+}
+
 function pathSql(path) {
   // Segments are [a-zA-Z0-9] only (HISTORY_PATH), so the literal is safe.
   const segments = path.split('.');
@@ -454,12 +466,14 @@ function pathSql(path) {
 
 // §6.5. The SQL is built only from validated stats paths (never user input):
 // sums and maxima over the wallet's other sessions for the game (all
-// statuses), and every achievement it has recorded for the game.
+// statuses), and every achievement it has recorded for the game, plus the
+// parent-owned ids (fields.shared) it has recorded under any cabinet.
 export async function readAchievementHistory(db, { wallet, gameId, fields = {}, excludeSessionId32 = null } = {}) {
   const who = requireWallet(wallet);
   requireGame(gameId);
   const sumPaths = validatedPaths(fields.sum, 'sum');
   const maxPaths = validatedPaths(fields.max, 'max');
+  const sharedIds = validatedSharedIds(fields.shared);
   if (excludeSessionId32 !== null && excludeSessionId32 !== undefined && !SESSION_ID32.test(String(excludeSessionId32))) {
     throw new TypeError('excludeSessionId32 must be 0x + 64 lowercase hex');
   }
@@ -473,14 +487,15 @@ export async function readAchievementHistory(db, { wallet, gameId, fields = {}, 
       const sql = pathSql(path);
       return `coalesce(max(CASE WHEN jsonb_typeof(${sql.json}) = 'number' THEN (${sql.text})::numeric END), 0)::text AS m${index}`;
     }),
-    `(SELECT coalesce(array_to_json(array_agg(u.achievement_id ORDER BY u.achievement_id)), '[]'::json)::text
-      FROM achievement_unlocks u WHERE u.wallet = $1 AND u.game_id = $2) AS unlocked`,
+    `(SELECT coalesce(array_to_json(array_agg(DISTINCT u.achievement_id)), '[]'::json)::text
+      FROM achievement_unlocks u WHERE u.wallet = $1
+        AND (u.game_id = $2 OR u.achievement_id IN (SELECT jsonb_array_elements_text($4::jsonb)))) AS unlocked`,
   ];
   const rows = await db.query(
     `SELECT ${columns.join(',\n       ')}
      FROM verified_sessions
      WHERE wallet = $1 AND game_id = $2 AND ($3::text IS NULL OR session_id32 <> $3::text)`,
-    [who, gameId, excludeSessionId32 ?? null],
+    [who, gameId, excludeSessionId32 ?? null, JSON.stringify(sharedIds)],
   );
   const row = rows[0] ?? {};
   return {

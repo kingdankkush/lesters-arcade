@@ -11,14 +11,14 @@ import { CHIKUN_REGIONS } from '../apps/portal/src/chikun-course-regions.mjs';
 import { FREE_MEDALS } from '../apps/stacked/src/free-medals.mjs';
 import { HMH_RUN_SUMMARY_CATALOGS } from '../sdk/hmh-run-summary-schema.mjs';
 import {
-  ACHIEVEMENT_GAME_IDS, achievementById, catalogFor, nftAchievementIds,
+  ACHIEVEMENT_GAME_IDS, ACHIEVEMENT_PARENT_ID, achievementById, catalogFor, nftAchievementIds, parentCatalog,
 } from '../apps/portal/src/achievements/index.mjs';
 import { HMH_FAMILY_IDS, HMH_ROLE_FAMILIES } from '../apps/portal/src/achievements/hmh.mjs';
 import { CHIKUN_REGION_IDS } from '../apps/portal/src/achievements/chikun.mjs';
 
 const repoRoot = fileURLToPath(new URL('..', import.meta.url));
 const moduleDir = join(repoRoot, 'apps/portal/src/achievements');
-const MODULES = ['index', 'hmh', 'chikun', 'stacked', 'stats', 'metadata', 'entry'].map((name) => join(moduleDir, `${name}.mjs`));
+const MODULES = ['index', 'hmh', 'chikun', 'stacked', 'arcade', 'stats', 'metadata', 'entry'].map((name) => join(moduleDir, `${name}.mjs`));
 const ENTRY_KEYS = ['available', 'category', 'criteria', 'description', 'gameId', 'id', 'image', 'lockedImage', 'nft', 'order', 'progress', 'tier', 'title'];
 const tiersOf = (entries) => entries.reduce((out, entry) => ({ ...out, [entry.tier]: (out[entry.tier] ?? 0) + 1 }), {});
 
@@ -75,7 +75,11 @@ test('HMH catalog mirrors ACHIEVEMENT_DEFINITIONS ids, titles and tiers', () => 
 
 test('every entry is frozen, uniquely identified and image-backed', () => {
   const ids = new Set();
-  for (const gameId of ACHIEVEMENT_GAME_IDS) {
+  // The parent-owned catalog shares the id space: its ids are reserved in every game.
+  assert.equal(ACHIEVEMENT_PARENT_ID, 'arcade');
+  assert.ok(!ACHIEVEMENT_GAME_IDS.includes(ACHIEVEMENT_PARENT_ID), 'the parent catalog is not a cabinet');
+  assert.equal(catalogFor(ACHIEVEMENT_PARENT_ID), parentCatalog());
+  for (const gameId of [...ACHIEVEMENT_GAME_IDS, ACHIEVEMENT_PARENT_ID]) {
     const entries = catalogFor(gameId);
     assert.ok(Object.isFrozen(entries), `${gameId} catalog array is frozen`);
     entries.forEach((entry, index) => {
@@ -106,7 +110,7 @@ test('every entry is frozen, uniquely identified and image-backed', () => {
       assert.doesNotMatch(`${entry.title} ${entry.description}`, /\bnft|soulbound|mint/i, entry.id);
     });
   }
-  assert.equal(ids.size, 137);
+  assert.equal(ids.size, 138);
 
   // Other achievement-like ids players see: STACKED Free medals never share an
   // id with a Ranked entry (a merged profile view would show one as the other).
@@ -182,7 +186,7 @@ test('catalog modules import without arcade-core or DOM', () => {
   assert.ok(!files.some((file) => file.startsWith('apps/hmh-reboot/')), 'no child runtime modules');
   // The catalog registry itself stays small: index + catalogs + builder only.
   const registry = importGraph([join(moduleDir, 'index.mjs')]);
-  assert.deepEqual([...registry.keys()].map((file) => relative(moduleDir, file).split('\\').join('/')).sort(), ['chikun.mjs', 'entry.mjs', 'hmh.mjs', 'index.mjs', 'stacked.mjs']);
+  assert.deepEqual([...registry.keys()].map((file) => relative(moduleDir, file).split('\\').join('/')).sort(), ['arcade.mjs', 'chikun.mjs', 'entry.mjs', 'hmh.mjs', 'index.mjs', 'stacked.mjs']);
   // The achievements modules themselves: no DOM, clock, randomness, environment or eval.
   for (const file of MODULES) assert.deepEqual(forbiddenGlobals(graph.get(file).ast), [], relative(repoRoot, file));
 });
