@@ -1,0 +1,141 @@
+{
+  "schema": "world-woods-raw-archive-v1",
+  "scope": "Exact RED/GREEN/copy/diagnostic outputs with input hashes, and one native browser attempt with one explicit inspection jump per viewport before local walks. Lossless gzip with raw and stored identities. Not a release gate, continuous regional journey, physical-device result or final-art acceptance.",
+  "entries": [
+    {
+      "archive": "red-01/red-report.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-woods-flow-red-20260930-01\\red-report.json",
+      "bytes": 13078,
+      "sha256": "e9f7eee23eb74701172969fd1065c9f674563ec9724bed860c737ebb630dcd03",
+      "storedBytes": 2846,
+      "storedSha256": "5cf77a313f740e8f2e0254cd9361bf3540429d72f0d0b0b3e7d54ae2532a00bc",
+      "compression": "gzip"
+    },
+    {
+      "archive": "red-01/runner.mjs.txt.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-woods-flow-red-20260930-01\\runner.mjs.txt",
+      "bytes": 5659,
+      "sha256": "05698260edd0dc844c9563483ef988e88bf56486e07c78d10b01817f7725a72d",
+      "storedBytes": 2473,
+      "storedSha256": "81a50269cd556ed309847391660d0876f22a34ab1e5a062b941dc463dc2d4d1f",
+      "compression": "gzip"
+    },
+    {
+      "archive": "red-01/helper.mjs.txt.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-woods-flow-red-20260930-01\\helper.mjs.txt",
+      "bytes": 3475,
+      "sha256": "a5177337fcf6ec41f285fc105b93d0b4b94ee1101cb14a653a91e9b8b075b0d9",
+      "storedBytes": 1360,
+      "storedSha256": "ade927025e2afbae667182802dfce78d9ddd6b3afea7cfd48a5b40eac5e8ea4b",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-01/gate-report.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-woods-green-20260930-01\\gate-report.json",
+      "bytes": 45892,
+      "sha256": "d2fb3632e25e49b38bd117174bb7fcded8255801a6d1eba51565a4ea2b5ce8d0",
+      "storedBytes": 7210,
+      "storedSha256": "9dd7dffe80dfe480de6d2dfd690ef4f07a84c5ba231991f323e04a949de2741c",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-01/bindings.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-woods-green-20260930-01\\bindings.json",
+      "bytes": 21194,
+      "sha256": "4d5294d778133660e1957324db5cc61c5c033e99edd38d73119d633dec5f1d79",
+      "storedBytes": 2735,
+      "storedSha256": "b926db136b7e9d0bf00a23bd97c870e35b69eb30be9e31f71e269bef5bb05fc8",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-01/runner.mjs.txt.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-woods-green-20260930-01\\runner.mjs.txt",
+      "bytes": 4918,
+      "sha256": "3ace4b3c25c8cd2ba0afd9b4e7d67037fa4775e4ce2483489004ab330b34c1c6",
+      "storedBytes": 1912,
+      "storedSha256": "17d4b97cc84870031772d4187f76dbdf94fe2bd4f002975e692981a838bb2f40",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-01/layout-report.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-woods-green-20260930-01\\layout-report.json",
+      "bytes": 71755,
+      "sha256": "3493db7d2dcc015398d4bf833e1320d610e2e192de179a927cb70c796ebb426d",
+      "storedBytes": 6079,
+      "storedSha256": "13771590c6a59990ee3ac9b13752b7544af9cf0fdc9d701d8c12c3b0f08b3867",
+      "compression": "gzip"
+    },
+    {
+      "archive": "browser-01/gate-report.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-woods-preview-browser-20260930-01\\gate-report.json",
+      "bytes": 263149,
+      "sha256": "1b4628fdecc5362167f241b8382e80d9afd8ef7be9ee227dff1d6ad9e39ef7a6",
+      "storedBytes": 34243,
+      "storedSha256": "5c3e86bddb2cd60925622736dc77e6ddae39b1499ee09b2c9dd5affdaf94cdb9",
+      "compression": "gzip"
+    },
+    {
+      "archive": "browser-01/bindings.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-woods-preview-browser-20260930-01\\bindings.json",
+      "bytes": 77833,
+      "sha256": "e79f1c2d2b5f53ffaa5a1eb0da3f0c6f7cda1be0e2b1fcc06b34b4de75cc9157",
+      "storedBytes": 14755,
+      "storedSha256": "41e563c57a99ec0e41fe2418a34ec91dd97ec5a9e8c423154d3e460559ed886b",
+      "compression": "gzip"
+    },
+    {
+      "archive": "browser-01/runner.mjs.txt.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-woods-preview-browser-20260930-01\\runner.mjs.txt",
+      "bytes": 9828,
+      "sha256": "112da2b0f691f948338b30816e5b46665521eeb000bd89e14b6311cde97b27ad",
+      "storedBytes": 3288,
+      "storedSha256": "5506054dab5a540b9dee769e6c3c582d7ba0a4a2e8aa9b829e846d4086c4006e",
+      "compression": "gzip"
+    },
+    {
+      "archive": "browser-01/browser/browser-report.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-woods-preview-browser-20260930-01\\browser\\browser-report.json",
+      "bytes": 127773,
+      "sha256": "3734ca0e56b400ed36249756b1284208e575f51d6d0f47f87b3cb8deaa66aef2",
+      "storedBytes": 6478,
+      "storedSha256": "b0b3d8bc1d987fb4d8127ef54aa6ea1dbbea4f3e5d4b54a5c90b3c0f80556dda",
+      "compression": "gzip"
+    },
+    {
+      "archive": "browser-01/harness/hmh-greybox-woods-browser-smoke.mjs.txt.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\hmh-greybox-woods-browser-smoke.mjs",
+      "bytes": 18921,
+      "sha256": "fab30d3cc2c26aeb01b2a74620b24dada454fb7565a329aa33387d79539947ae",
+      "storedBytes": 6185,
+      "storedSha256": "719247acd4416ef825f7dad2148e0625d1b269a7de5edd61a38048c57ae0cbe9",
+      "compression": "gzip"
+    },
+    {
+      "archive": "browser-01/harness/prepare-world-woods-browser.mjs.txt.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\prepare-world-woods-browser.mjs",
+      "bytes": 5625,
+      "sha256": "a4fd0461a5a3a3d99fc627ecb3ecddfd8193ebe29eee6ae8abfa557e95d4b540",
+      "storedBytes": 2327,
+      "storedSha256": "ea8182581ce3128d645ff99e4e7101321eec6004389aa6c26f8800a9d9f075c1",
+      "compression": "gzip"
+    },
+    {
+      "archive": "browser-01/harness/owned-windows-preview-child.mjs.txt.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\owned-windows-preview-child.mjs",
+      "bytes": 3476,
+      "sha256": "6f4903a66d324a01a476eebefdfac68663dde2c573f62f637c4b7537ccb0d631",
+      "storedBytes": 1360,
+      "storedSha256": "18c5cfc758da42cddbb922c7989a0204d20eb87c1d5d359985932ef89f92c162",
+      "compression": "gzip"
+    },
+    {
+      "archive": "author-image-review.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-woods-author-image-review.json",
+      "bytes": 1551,
+      "sha256": "51f422fbaced21c0db2fabbfe08703e023dee0eea8d6830cd681211a7d3977ee",
+      "storedBytes": 876,
+      "storedSha256": "a654d305ff552a9bedb2f21e01328fa5170a215f4728549ba6b11a11602f50cd",
+      "compression": "gzip"
+    }
+  ]
+}

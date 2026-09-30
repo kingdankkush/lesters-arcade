@@ -717,3 +717,37 @@ See slices/WORLD-W2H-FORTRESS.md and compact receipts/world-fortress. No duplica
 source trees added to these receipts. Local bundle:
 outputs/hmh-fortress-authored-flow-preview.zip. No final art/whole-map owner,
 physical phone, official-map/verifier or release acceptance; no credits/deploy.
+
+## 2026-09-30 — W2i: Rugpull Woods local camp and trail checkpoint
+
+Replaced Woods' repeated kit with 15 pieces and seven local paths: a quiet
+four-way junction beside the eastern supply camp, a two-ramp northern lookout
+and returning abandoned-store track. Three shaped banks frame the spaces.
+The complete camp court can be blocked while the regional trail stays usable.
+No patrols, objectives, reward state, official map, version or verifier changed.
+
+Actual six-case RED gave five intended failures and one authority control.
+The first kit passed 66 focused cases plus the same 66 in an exact 29-file
+no-Git/no-node_modules empty-PATH copy. Walkability is 36,242/77,589 (46.71023%),
+with zero outside; 98 sites, 14 roads and all seven Woods routes pass. Solids
+total 1,853,800 units² within the old 2,060,800 allowance. Court floor is
+202/225 samples clear (89.78%). The original River-Woods pacing warning remains.
+
+One bounded preview build and actual Chrome attempt passed: 26 desktop and
+three touch legs after one visible inspection jump per viewport, two-ramp
+height checks, real shelter contact, four denied entries and both cleanups.
+Children 6664/2804 and owned Chrome 25464 exited 0/no signal, independently
+absent; HTTP 50663 closed, exact shared marker released/absent and handed to Art.
+
+Viewed all 11 original PNGs. Plans show distinct camp/route placement, and
+shelter frontage/contact align. Sparse entry/camp views, tiny plan labels,
+oversized overlapping site markers and flat placeholder art remain. This is
+not owner acceptance, a real iPhone result or finished woodland art. Eight of
+ten areas now have distinct local greybox checkpoints; Bayou/River remain
+templates. Local water/bridge authoring is the proposed next bounded scope.
+
+See [W2i checks and limits](slices/WORLD-W2I-WOODS.md). Compact raw outputs and
+bindings are under `receipts/world-woods/`; exact manual compiled bundle:
+`outputs/hmh-woods-authored-flow-preview.zip` in the task workspace, port 8802.
+No source trees were duplicated in this archive. All protected authorities
+remain unchanged. No push, version bump or deployment.
