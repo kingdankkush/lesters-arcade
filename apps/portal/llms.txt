@@ -28,5 +28,5 @@ Free play needs no wallet and never touches the chain.
 Ranked runs are checked by the arcade's server and published on LitVM, then appear on the leaderboards, your profile and your achievements.
 Steps: play Free; connect a wallet; the site adds the LitVM LiteForge testnet (chain 4441); get free zkLTC from the LiteForge faucet; sign in with one free signature; choose Ranked and confirm 0.012 zkLTC; play while the server checks the run; the relayer publishes it on LitVM, usually within about a minute.
 The 0.01 entry is split 85% to the game's developer and 15% to the arcade; the 0.002 pays the relayer that publishes the score.
-Weekly boards reset every Monday 00:00 UTC; Monthly boards on the 1st of each month, 00:00 UTC. 124 achievements (Hard Money Heroes 44, Chikun's Escape 40, STACKED 40) are earned from verified Ranked runs.
+Weekly boards reset every Monday 00:00 UTC; Monthly boards on the 1st of each month, 00:00 UTC. 127 achievements (Hard Money Heroes 46, Chikun's Escape 40, STACKED 41) are earned from verified Ranked runs.
 Testnet zkLTC has no monetary value.

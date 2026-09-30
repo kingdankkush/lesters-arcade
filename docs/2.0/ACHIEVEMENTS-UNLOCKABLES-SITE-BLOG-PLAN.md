@@ -130,7 +130,10 @@ check is claimed for these items, and no real wallet has earned anything.
   were regenerated for them; posters reuse existing badge art as labelled
   placeholders. No minting, contract or 3D work. Decision for the integration
   owner: the two HMH trophies rest on plausibility-checked boss facts, unlike
-  the three run-total HMH candidates.
+  the three run-total HMH candidates. The public Ranked facts
+  (`ranked-facts.mjs`: 46 / 40 / 41, 127 in all) and the generated guide,
+  discover pages and `llms.txt` were regenerated to match; the parent-owned
+  Early Supporter badge is not a cabinet entry and is not counted there.
 
 ## G4 replacement package — implementation recommendation (September 30)
 
