@@ -10,6 +10,11 @@
 // fixture key below, the ticket seed, and evidence played at that seed:
 //   - Chikun: a headless bot (scripts/lib/chikun-bots.mjs) plays the live v6
 //     course, then stops pressing after `maxMinutes` until the run ends.
+//   - Chikun course two (CHIKUN_V7_FIXTURE_NAMES, kept apart from FIXTURE_NAMES):
+//     the region autopilot (scripts/chikun-course-pilot.mjs) flies the course-two
+//     runtime with held-glide input, then stops pressing until the run ends
+//     (see buildChikunCourseTwoEvidence). Verified with the course-two gate
+//     injected open; a default settle refuses the body.
 //   - STACKED: the Free-only soak pilot plays under the Ranked replay config
 //     (maxTicks = STACKED_MAX_TICKS, startLevel 1) until `topOutAtTick`, then
 //     hard drops until the board blocks out, so the run is short but terminal.
@@ -30,6 +35,8 @@ import * as liveCourse from '../../../apps/portal/src/chikun-ground-course.mjs';
 import { GROUND_PHYSICS } from '../../../apps/portal/src/chikun-ground-runtime.mjs';
 import { createChikunRuntime } from '../../../apps/portal/src/chikun-cabinet.mjs';
 import { botProfile, createChikunBot } from '../../../scripts/lib/chikun-bots.mjs';
+import { routePilot } from '../../../scripts/chikun-course-pilot.mjs';
+import { CHIKUN_OFFICIAL_COURSES_BY_ID } from '../../../apps/portal/src/chikun-official-course.mjs';
 import { createStackedInputRecorder, createStackedRuntime } from '../../../apps/portal/src/stacked-sim.mjs';
 import { STACKED_ACTIONS, STACKED_MAX_TICKS } from '../../../apps/portal/src/stacked-contracts.mjs';
 import { encodeStackedBase64 } from '../../../apps/portal/src/stacked-evidence-transport.mjs';
@@ -131,6 +138,27 @@ export function buildChikunEvidence({ seed, profile = 'expert', maxMinutes = 2, 
     runtime.step({ flap: snapshot.tick < stopTick ? bot.decide(snapshot) : false });
   }
   const result = runtime.result();
+  return { flap: plain(result.evidence), score: result.score, survivalTicks: result.survivalTicks };
+}
+
+// Course two (chikun-input-evidence-v7): the run starts on the ground long
+// enough to take the first Scrypt Shield, then the region autopilot flies the
+// high line; the jump key is held whenever Chikun is airborne and falling, so
+// the evidence carries real held-glide transitions alongside the flaps. After
+// `maxMinutes` nothing is pressed and the run ends on the course.
+export function buildChikunCourseTwoEvidence({ seed, maxMinutes = 2, maxTicks = 216_000, groundTicks = 120 } = {}) {
+  const course = CHIKUN_OFFICIAL_COURSES_BY_ID[2];
+  const runtime = createChikunRuntime({ seed, maxTicks, evidenceVersion: course.evidenceVersion });
+  const stopTick = Math.round(maxMinutes * TICKS_PER_MINUTE);
+  while (!runtime.terminal) {
+    const snapshot = runtime.snapshot();
+    const active = snapshot.tick < stopTick;
+    const flap = active && snapshot.tick >= groundTicks ? routePilot(snapshot) : false;
+    const glide = active && snapshot.chikun.locomotion !== 'run' && snapshot.chikun.velocityY > 0.5;
+    runtime.step({ flap, glide });
+  }
+  const result = runtime.result();
+  if (result.evidence.version !== course.evidenceVersion || !result.evidence.glideDeltas.length || !result.evidence.flapDeltas.length) throw new Error('course-two evidence must carry flaps and held-glide transitions');
   return { flap: plain(result.evidence), score: result.score, survivalTicks: result.survivalTicks };
 }
 
@@ -724,8 +752,9 @@ export async function buildFixtureBody({
   let evidence;
   let claimScore;
   if (gameId === 'chikun') {
-    const built = buildChikunEvidence({ seed, ...evidenceOptions });
-    evidence = { encoding: game.evidenceEncoding, flap: built.flap };
+    const { course = 1, ...chikunOptions } = evidenceOptions;
+    const built = course === 2 ? buildChikunCourseTwoEvidence({ seed, ...chikunOptions }) : buildChikunEvidence({ seed, ...chikunOptions });
+    evidence = { encoding: CHIKUN_OFFICIAL_COURSES_BY_ID[course].encoding, flap: built.flap };
     claimScore = built.score;
   } else if (gameId === 'stacked') {
     const built = buildStackedEvidence({ seed, buildHash, seasonId: game.seasonId, ...evidenceOptions });
@@ -782,6 +811,14 @@ export const HMH_V7_FIXTURE_SPECS = Object.freeze({
   'hmh-v7-future-four-bosses': Object.freeze({ gameId: 'lester-blaster', buildHash: HMH_V7_FIXTURE_BUILD_HASH, future: true, salt: fixtureSalt('hmh-v7-four-bosses:1'), note: 'FUTURE (dark in 1.9.0, rejected): run summary v7 over 18 minutes, every objective and prisoner, all four bosses defeated (the Liquidator through the Dark Pool), the Pistol evolved with a Genesis Seal, three Seals banked, one Golden Parachute revive, and Forked Standard kills with their strike trail.', evidence: { v7Plan: 'four-bosses' } }),
 });
 export const HMH_V7_FIXTURE_NAMES = Object.freeze(Object.keys(HMH_V7_FIXTURE_SPECS));
+
+// Chikun course two (chikun-input-evidence-v7). Kept out of FIXTURE_NAMES: a
+// default settle refuses it (CHIKUN_OFFICIAL_COURSE_TWO_ENABLED is false), so
+// the builder verifies it with the gate injected open and records that run.
+export const CHIKUN_V7_FIXTURE_SPECS = Object.freeze({
+  'chikun-course-two': Object.freeze({ gameId: 'chikun', note: 'GATED (course two, chikun-input-evidence-v7): 2 minutes of the region autopilot with held glides on the course-two runtime, then no presses until the run ends. Verifies only with courseTwoEnabled: true.', evidence: { course: 2, maxMinutes: 2 } }),
+});
+export const CHIKUN_V7_FIXTURE_NAMES = Object.freeze(Object.keys(CHIKUN_V7_FIXTURE_SPECS));
 
 export function fixturePath(name) {
   return `${FIXTURE_DIR}${name}.json`;
@@ -863,8 +900,46 @@ async function buildHmhV7Fixture(name) {
   };
 }
 
+// A course-two fixture: the same shape as a committed fixture, verified with
+// the gate open, plus the gate-closed refusal a default settle answers.
+async function buildChikunV7Fixture(name) {
+  const spec = CHIKUN_V7_FIXTURE_SPECS[name];
+  const salt = spec.salt ?? fixtureSalt(name);
+  const { body } = await buildFixtureBody({ gameId: spec.gameId, salt, evidence: spec.evidence });
+  const closed = await verifyRankedRun(body, fixtureVerifyOptions());
+  if (closed.ok) throw new Error(`fixture ${name} must not verify while the course-two gate is closed`);
+  const verified = await verifyRankedRun(body, fixtureVerifyOptions({ courseTwoEnabled: true }));
+  if (!verified.ok) throw new Error(`fixture ${name} does not verify with the gate open: ${JSON.stringify(verified)}`);
+  return {
+    fixture: name,
+    note: spec.note,
+    gameId: spec.gameId,
+    wallet: FIXTURE_WALLET,
+    registry: FIXTURE_REGISTRY,
+    chainId: FIXTURE_CHAIN_ID,
+    salt,
+    issuedAt: FIXTURE_ISSUED_AT,
+    verifyAtMs: FIXTURE_VERIFY_AT_MS,
+    body,
+    expected: {
+      gateClosed: closed,
+      score: verified.score,
+      contract: verified.contract,
+      runtimeId: verified.runtimeId,
+      stats: verified.stats,
+      envelopeHash: verified.envelopeHash,
+      evidenceEncoding: verified.evidence.encoding,
+      evidenceDigest: verified.evidence.digest,
+      evidenceBytes: verified.evidence.bytes,
+      seed: verified.seed,
+      plausibility: verified.plausibility,
+    },
+  };
+}
+
 export async function buildFixture(name) {
   if (Object.hasOwn(HMH_V7_FIXTURE_SPECS, name)) return buildHmhV7Fixture(name);
+  if (Object.hasOwn(CHIKUN_V7_FIXTURE_SPECS, name)) return buildChikunV7Fixture(name);
   const spec = FIXTURE_SPECS[name];
   if (!spec) throw new Error(`unknown fixture ${name}`);
   const salt = spec.salt ?? fixtureSalt(name);
@@ -897,7 +972,7 @@ export async function buildFixture(name) {
 async function main(argv) {
   const write = argv.includes('--write');
   const names = argv.filter((arg) => !arg.startsWith('--'));
-  const selected = names.length ? names : [...FIXTURE_NAMES, ...HMH_V7_FIXTURE_NAMES];
+  const selected = names.length ? names : [...FIXTURE_NAMES, ...HMH_V7_FIXTURE_NAMES, ...CHIKUN_V7_FIXTURE_NAMES];
   let drift = 0;
   for (const name of selected) {
     const started = Date.now();
