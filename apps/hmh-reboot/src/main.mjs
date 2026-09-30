@@ -576,6 +576,7 @@ async function boot() {
         } else if (message.type === 'portal:dispose') {
           actor3dDisposed = true;
           actor3dPilot?.dispose();
+          worldLife.dispose();
           document.removeEventListener('visibilitychange', handleVisibilityChange);
           window.removeEventListener('keydown', handleExitKey);
           app.renderer.off('resize', handleResize);
@@ -651,7 +652,7 @@ async function boot() {
     .then(({ drawDistrictMaterial }) => { worldProduction.groundFallback.draw = drawDistrictMaterial; })
     .catch(() => {});
   if (!terrainTilesEnabled) await loadGroundFallback();
-  const worldLife = createWorldDesignLife({ ContainerClass: Container, GraphicsClass: Graphics, TextClass: Text });
+  const worldLife = createWorldDesignLife({ ContainerClass: Container, GraphicsClass: Graphics, TextClass: Text, canvas: app.canvas });
   // T2: ground decals sit above the terrain material and BELOW every prop and
   // actor layer, so a mark on the floor can never occlude something the player
   // needs to read.

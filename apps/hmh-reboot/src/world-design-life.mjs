@@ -119,7 +119,7 @@ export function missionGuidanceStations(mission, { collectibles = null, canColle
   });
 }
 
-export function createWorldDesignLife({ContainerClass,GraphicsClass,TextClass}) {
+export function createWorldDesignLife({ContainerClass,GraphicsClass,TextClass,canvas=null}) {
   const ground=new GraphicsClass(), effects=new GraphicsClass(), pill=new GraphicsClass(), overlay=new ContainerClass();
   const prompt=new TextClass({text:'',style:{fontFamily:'system-ui',fontSize:13,fontWeight:'700',fill:0xeef6e9,stroke:{color:0x12211e,width:4},align:'center'}});
   const tracker=new TextClass({text:'',style:{fontFamily:'system-ui',fontSize:13,fontWeight:'700',fill:MISSION_PALETTE.mechanism.ring,align:'center'}});
@@ -128,6 +128,13 @@ export function createWorldDesignLife({ContainerClass,GraphicsClass,TextClass}) 
   prompt.anchor.set(.5,1); tracker.anchor.set(.5,.5); needs.anchor.set(.5,0); bossNote.anchor.set(.5,0);
   overlay.addChild(effects,pill,prompt,tracker,needs,bossNote);
   ground.label='world-interaction-ground'; overlay.label='world-interaction-prompts';
+  // Pixi's WebGL text canvases are returned to a cleared pool after upload.
+  // Reclaim only these four owned GPU views after restoration so the next
+  // draw regenerates them from their unchanged semantic text and style.
+  const restoreTextResources=()=>{for(const text of [prompt,tracker,needs,bossNote])text.unload();};
+  canvas?.addEventListener('webglcontextrestored',restoreTextResources);
+  let disposed=false;
+  const dispose=()=>{if(disposed)return;disposed=true;canvas?.removeEventListener('webglcontextrestored',restoreTextResources);};
   let lastPrompt='', lastTracker='', lastNeeds='', lastTrack=null, lastBossNote='';
   const lastWarned=new Map();
   const render=({mission,destructibleState,actor,camera,view,worldToScreen,queryGround,tick,reduceMotion=false,reduceFlash=false,particleBudget=10,campfirePlacements=[],hazards=[],announce=null,guidance=null,bossArena=null,mobile=false})=>{
@@ -385,5 +392,5 @@ export function createWorldDesignLife({ContainerClass,GraphicsClass,TextClass}) 
     }
     return {visibleSites,particles:particles+campfires.embers.length,campfireLights:campfires.fires.length,campfireEmbers:campfires.embers.length,hazardTelegraphs,beams,trackedId:track?.id??null,trackerText:track?lastTracker:''};
   };
-  return {ground,overlay,render};
+  return {ground,overlay,render,dispose};
 }
