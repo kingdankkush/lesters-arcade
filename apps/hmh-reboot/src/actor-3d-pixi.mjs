@@ -3,7 +3,7 @@
 import { Bounds, Container, Geometry, GlProgram, Mesh, RenderTexture, Shader, State, Texture, UniformGroup } from 'pixi.js';
 import { decodeActor3dGlb, createActor3dPoseWorkspace, evaluateActor3dPose,
   createActor3dJointBounds, projectActor3dBounds } from './actor-3d-model.mjs';
-import { createActor3dDepthRegistry } from './actor-3d-controller.mjs';
+import { createActor3dDepthRegistry, ACTOR3D_ENEMY_IDS } from './actor-3d-controller.mjs';
 
 const vertex = `#version 300 es
 precision highp float;
@@ -89,10 +89,11 @@ export function actor3dPrimitiveTint(name, projection) {
 }
 
 export async function createActor3dPixiBackend({ renderer, signal, maxActors = 24, heroActorId = 'lit-commando', fetchAsset = fetch, decodeImage = createImageBitmap } = {}) {
-  const assets = new Map(), live = new Set(), order = createActor3dDepthRegistry(maxActors); let bands = new Map(), disposed = false;
-  let program = null, probeTarget = null;
+  const assets = new Map(), ready = new Set(), pending = new Set(), failed = new Set(), live = new Set(), order = createActor3dDepthRegistry(maxActors); let bands = new Map(), disposed = false;
+  let program = null, probeTarget = null, loadQueue = Promise.resolve();
   const state = new State(); state.depthTest = true; state.depthMask = true; state.cullMode = 'none';
   const disposeAsset = asset => {
+    if (asset.disposed) return; asset.disposed = true;
     for (const geometry of asset.geometry) geometry.destroy(true);
     for (const texture of asset.textures) texture.destroy(true);
     for (const bitmap of asset.bitmaps) bitmap.close();
@@ -104,21 +105,17 @@ export async function createActor3dPixiBackend({ renderer, signal, maxActors = 2
     display.destroy({ children: true });
   };
   const dispose = () => { if (disposed) return; disposed = true; for (const display of [...live]) removeDisplay(display); for (const asset of assets.values()) disposeAsset(asset); assets.clear(); order.clear(); probeTarget?.destroy(true); program?.destroy(); };
-  try {
-    signal?.throwIfAborted();
-    program = GlProgram.from({ name: 'hmh-actor-3d-pilot', vertex, fragment });
-    probeTarget = RenderTexture.create({ width: 2, height: 2, resolution: 1 });
-    if (heroActorId !== null && !['lit-commando', 'lilly', 'lit-valkyrie', 'lester-original'].includes(heroActorId)) throw new Error('unreviewed hero asset');
-    // Sequential load bounds peak decode memory and allows coherent cleanup.
-    for (const id of [heroActorId, 'bagholder-rusher', 'the-liquidator'].filter(Boolean)) {
-      signal?.throwIfAborted();
+  const loadAsset = async id => {
+      signal?.throwIfAborted(); if (disposed) throw new Error('disposed actor loader');
       const response = await fetchAsset(`/assets/generated/hmh-actor-3d-pilot/${id}.glb`, { signal });
       if (!response.ok) throw new Error('pilot asset unavailable');
-      const bytes = await response.arrayBuffer(); signal?.throwIfAborted(); const model = decodeActor3dGlb(bytes);
+      const bytes = await response.arrayBuffer(); signal?.throwIfAborted(); if (disposed) throw new Error('disposed actor loader'); const model = decodeActor3dGlb(bytes);
       const asset = { model, geometry: [], textures: [], bitmaps: [], envelopes: createActor3dJointBounds(model) };
       assets.set(id, asset);
       for (const image of model.images) {
-        const bitmap = await decodeImage(new Blob([image.data], { type: image.mimeType })); asset.bitmaps.push(bitmap);
+        const bitmap = await decodeImage(new Blob([image.data], { type: image.mimeType }));
+        if (disposed || signal?.aborted) { bitmap.close(); throw new Error('disposed image decode'); }
+        asset.bitmaps.push(bitmap);
         signal?.throwIfAborted();
         const texture = Texture.from(bitmap); asset.textures.push(texture);
         renderer.texture.bind(texture.source, 0);
@@ -136,9 +133,33 @@ export async function createActor3dPixiBackend({ renderer, signal, maxActors = 2
       const probe = new Shader({ glProgram: program }); renderer.shader.bind(probe, true);
       const linked = renderer.gl.getProgramParameter(renderer.gl.getParameter(renderer.gl.CURRENT_PROGRAM), renderer.gl.LINK_STATUS);
       renderer.shader.resetState(); probe.destroy(); if (!linked) throw new Error('pilot shader unavailable');
-    }
+      ready.add(id);
+  };
+  try {
+    signal?.throwIfAborted();
+    program = GlProgram.from({ name: 'hmh-actor-3d-pilot', vertex, fragment });
+    probeTarget = RenderTexture.create({ width: 2, height: 2, resolution: 1 });
+    if (heroActorId !== null && !['lit-commando', 'lilly', 'lit-valkyrie', 'lester-original'].includes(heroActorId)) throw new Error('unreviewed hero asset');
+    // Startup remains one selected hero plus the two established shared actors.
+    for (const id of [heroActorId, 'bagholder-rusher', 'the-liquidator'].filter(Boolean)) await loadAsset(id);
   } catch (error) { dispose(); throw error; }
   return {
+    prepareActor(id) {
+      if (disposed) return false;
+      if (ready.has(id)) return true;
+      if (!ACTOR3D_ENEMY_IDS.includes(id) || pending.has(id) || failed.has(id)) return false;
+      pending.add(id);
+      // One decode/upload at a time. A failed optional archetype retains its
+      // original sprites; it cannot retire already working hero/boss assets.
+      loadQueue = loadQueue.then(async () => {
+        if (!disposed) await loadAsset(id);
+      }).catch(() => {
+        failed.add(id);
+        const asset = assets.get(id); if (asset) disposeAsset(asset);
+        assets.delete(id); ready.delete(id);
+      }).finally(() => pending.delete(id));
+      return false;
+    },
     createDisplay(id) { order.add(id); const display = new Container({ label: `actor-3d:${id}` }); display.eventMode = 'none'; display.pilotId = id; live.add(display); return display; },
     beginFrame(frame) { bands = order.frame(frame); },
     renderActor(display, projection) {

@@ -45,8 +45,8 @@ const hash = value => typeof value === 'string' && /^0x[a-f0-9]{64}$/.test(value
 // Unlockable looks (contract §7.9): one optional `cosmetics` key, ids from this
 // fixed allowlist or null. Palettes and grades live in the lazy render modules.
 export const STACKED_COSMETIC_IDS = Object.freeze({
-  pieceSkin: Object.freeze(['stacked-pieces-silver', 'stacked-pieces-sunset', 'stacked-pieces-seafoam', 'stacked-pieces-gold']),
-  scene: Object.freeze(['stacked-scene-noir', 'stacked-scene-sunset', 'stacked-scene-forge']),
+  pieceSkin: Object.freeze(['stacked-pieces-prism', 'stacked-pieces-polar', 'stacked-pieces-emberglass', 'stacked-pieces-silver', 'stacked-pieces-sunset', 'stacked-pieces-seafoam', 'stacked-pieces-gold']),
+  scene: Object.freeze(['stacked-scene-midnight-aurora', 'stacked-scene-noir', 'stacked-scene-sunset', 'stacked-scene-forge']),
 });
 const look = ids => v => v === null || ids.includes(v);
 

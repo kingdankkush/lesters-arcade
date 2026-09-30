@@ -1,7 +1,7 @@
 // Lazy static Locker inspection. No loop, game session, rewards or persistence.
 import { CHIKUN_CHARACTERS, drawChikunStill, chikunTrailParticles } from '../../../chikun/src/character.mjs';
 import { planChikunVfx } from '../../../chikun/src/vfx.mjs';
-import { piecePaletteFor } from '../../../stacked/src/render/cosmetic-palettes.mjs';
+import { piecePaletteFor, sceneGradeFor } from '../../../stacked/src/render/cosmetic-palettes.mjs';
 import { PIECE_COLORS } from '../../../stacked/src/render/board-view.mjs';
 import { PIECE_CELLS } from '../stacked-sim.mjs';
 
@@ -10,6 +10,17 @@ export function stackedPreviewPieces(pieceSkin) {
   return Object.entries(PIECE_CELLS).map(([kind, rotations]) => ({ kind, cells: rotations[0], color: '#' + colors[kind].toString(16).padStart(6, '0') }));
 }
 
+export const stackedPreviewGrade=id=>sceneGradeFor({cosmetics:{scene:id}});
+let sceneImage;
+async function sceneBackdrop(ImageClass){
+  if(!sceneImage)sceneImage=(async()=>{
+    const image=new ImageClass();image.src='/assets/stacked-mode-select/stacked-mode-bg.svg';let timer;
+    try{await Promise.race([image.decode(),new Promise((_,reject)=>{timer=setTimeout(()=>reject(new Error('Preview image timeout')),8000);})]);return image;}
+    catch(error){image.src='';sceneImage=null;throw error;}
+    finally{clearTimeout(timer);}
+  })();
+  return sceneImage;
+}
 let sheet;
 function chikunSheet(ImageClass) {
   if (!sheet) sheet = (async () => {
@@ -64,6 +75,12 @@ export async function mountUnlockablePreview(figure, { gameId, slot, id, title, 
     caption = slot === 'coat' && id && !filterWorks ? 'Classic coat shown · colour filters unavailable in this browser' : slot === 'trail' ? 'In-game flap colours · still preview' : 'In-game sprite and cosmetic · still preview';
   } else if (gameId === 'stacked' && slot === 'piece-skin') {
     piecesCanvas(ctx, id); caption = 'All seven pieces · in-game palette';
+  } else if(gameId==='stacked'&&slot==='scene'){
+    const image=await sceneBackdrop(documentRef.defaultView.Image);if(!current())return false;
+    const scale=Math.max(640/image.naturalWidth,400/image.naturalHeight),width=image.naturalWidth*scale,height=image.naturalHeight*scale;
+    ctx.drawImage(image,(640-width)/2,(400-height)/2,width,height);ctx.globalCompositeOperation='multiply';
+    ctx.fillStyle='#'+stackedPreviewGrade(id).toString(16).padStart(6,'0');ctx.fillRect(0,0,640,400);ctx.globalCompositeOperation='source-over';
+    caption='In-game colour grade on reference backdrop · all music worlds stay free';
   } else return false;
   if (!current()) return false;
   const label = documentRef.createElement('figcaption'); label.textContent = caption;

@@ -2,6 +2,8 @@
 // only; its backend receives detached frozen projections, never simulation.
 import { createActor3dProjection, createActor3dPilotSession, createLiquidator3dEntries } from './actor-3d-projection.mjs';
 
+export const ACTOR3D_ENEMY_IDS = Object.freeze(['bagholder-rusher', 'forkrunner', 'liquidator-agent', 'whale-enforcer', 'gas-bomber', 'validator-cultist']);
+
 export const ACTOR3D_QUALITY_LIMITS = Object.freeze({ low: 8, medium: 24, high: 64 });
 const actorLimit = value => {
   if (!Number.isInteger(value) || value < 2 || value > ACTOR3D_QUALITY_LIMITS.high) throw new TypeError('bounded actor limit required');
@@ -59,7 +61,7 @@ export function createActor3dPresentationEntries(hero, enemies, boss = null, max
   entries.push(...createLiquidator3dEntries(boss));
   const originX = Number.isFinite(focus?.x) ? focus.x : 0, originY = Number.isFinite(focus?.y) ? focus.y : 0;
   const candidates = (Array.isArray(enemies) ? enemies : enemies ? [enemies] : []).filter(enemy =>
-    enemy?.actorId === 'bagholder-rusher' && enemy.active === true && enemy.visible === true && enemy.alpha === 1
+    ACTOR3D_ENEMY_IDS.includes(enemy?.actorId) && enemy.active === true && enemy.visible === true && enemy.alpha === 1
     && ['idle', 'run', 'tell', 'attack', 'hit', 'death'].includes(enemy.pose?.state)
     && [enemy.x, enemy.y, enemy.z ?? 0, enemy.pose.phaseTick ?? enemy.pose.tick ?? 0].every(Number.isFinite))
     .map(enemy => ({ enemy, id: String(enemy.id), distance: (enemy.x - originX) ** 2 + (enemy.y - originY) ** 2 }))
@@ -67,7 +69,7 @@ export function createActor3dPresentationEntries(hero, enemies, boss = null, max
   for (const { enemy } of candidates) {
     if (entries.length >= maxActors) break;
     const pose = enemy.pose, time = Math.max(0, pose.phaseTick ?? pose.tick ?? 0) / 60;
-    entries.push({ descriptor: { id: `enemy:${enemy.id}`, actorId: 'bagholder-rusher', x: enemy.x, y: enemy.y, z: enemy.z,
+    entries.push({ descriptor: { id: `enemy:${enemy.id}`, actorId: enemy.actorId, x: enemy.x, y: enemy.y, z: enemy.z,
       heading: (2 - (pose.direction ?? 0)) * Math.PI / 4, clip: pose.state,
       clipTimeSeconds: ['idle', 'run'].includes(pose.state) ? time % 1 : Math.min(1, time), pixelsPerMetre }, originals: enemy.originals });
   }
@@ -80,9 +82,9 @@ export function createActor3dPilotController({ renderer, canvas, qualityTier = '
   const maxActors = ACTOR3D_QUALITY_LIMITS[tier];
   const selectedHero = ['lit-commando', 'lilly', 'lit-valkyrie', 'lester-original'].includes(heroActorId) ? heroActorId : null;
   const abort = new AbortController();
-  const hidden = new Map(); let disposed = false;
+  const hidden = new Map(); let disposed = false, backend = null;
   const restore = () => { for (const [display, record] of hidden) if (!display.destroyed) display.renderable = record.value; hidden.clear(); };
-  const session = createActor3dPilotSession({ enabled: true, supported: supported(renderer, canvas), createBackend: () => backendFactory({ signal: abort.signal, maxActors, heroActorId: selectedHero }), attachDisplay,
+  const session = createActor3dPilotSession({ enabled: true, supported: supported(renderer, canvas), createBackend: async () => (backend = await backendFactory({ signal: abort.signal, maxActors, heroActorId: selectedHero })), attachDisplay,
     onFallback: reason => { abort.abort(); restore(); onTelemetry({ status: 'fallback', count: 0, reason }); } });
   const lost = () => session.handleContextLoss();
   canvas?.addEventListener('webglcontextlost', lost);
@@ -94,6 +96,7 @@ export function createActor3dPilotController({ renderer, canvas, qualityTier = '
       restore(); if (disposed || session.status !== 'ready') return false;
       try {
         if (!Array.isArray(entries) || entries.length > maxActors) throw new TypeError('quality-bounded actor frame required');
+        entries = entries.filter(entry => backend?.prepareActor?.(entry.descriptor.actorId) !== false);
         const frame = entries.map(entry => createActor3dProjection(entry.descriptor, camera, viewport));
         if (!session.render(frame)) return false;
         for (const entry of entries) for (const display of entry.originals ?? []) {

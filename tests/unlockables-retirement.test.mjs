@@ -7,7 +7,7 @@ const freeze=value=>{if(value&&typeof value==='object'){Object.values(value).for
 test('retirement inventory matches exactly the 25 old cosmetics and excludes both heroes',async()=>{
  const {RETIRED_COSMETICS_2_0}=await load();
  assert.equal(RETIRED_COSMETICS_2_0.length,25);
- assert.deepEqual(RETIRED_COSMETICS_2_0.map(r=>[r.gameId,r.slot,r.id]).sort(),UNLOCKABLES.filter(r=>r.kind!=='character').map(r=>[r.gameId,r.kind,r.id]).sort());
+ assert.deepEqual(RETIRED_COSMETICS_2_0.map(r=>[r.gameId,r.slot,r.id]).sort(),UNLOCKABLES.filter(r=>r.retired).map(r=>[r.gameId,r.kind,r.id]).sort());
  assert.deepEqual(['lester-blaster','chikun','stacked'].map(g=>RETIRED_COSMETICS_2_0.filter(r=>r.gameId===g).length),[8,10,7]);
  assert.ok(Object.isFrozen(RETIRED_COSMETICS_2_0)&&RETIRED_COSMETICS_2_0.every(Object.isFrozen));
 });

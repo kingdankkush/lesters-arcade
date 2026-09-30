@@ -53,9 +53,9 @@ function validateProfile(value) {
 // `cosmetics` key with ids from this fixed allowlist, or null for the default
 // look. The child only draws them; they never reach evidence or a result.
 export const CHIKUN_COSMETIC_IDS = Object.freeze({
-  coat: Object.freeze(['chikun-coat-golden', 'chikun-coat-glacier', 'chikun-coat-emerald', 'chikun-coat-royal']),
-  trail: Object.freeze(['chikun-trail-gold', 'chikun-trail-neon', 'chikun-trail-ember']),
-  hat: Object.freeze(['chikun-hat-cap', 'chikun-hat-top', 'chikun-hat-crown']),
+  coat: Object.freeze(['chikun-coat-aurora', 'chikun-coat-golden', 'chikun-coat-glacier', 'chikun-coat-emerald', 'chikun-coat-royal']),
+  trail: Object.freeze(['chikun-trail-comet', 'chikun-trail-gold', 'chikun-trail-neon', 'chikun-trail-ember']),
+  hat: Object.freeze(['chikun-hat-flight-goggles', 'chikun-hat-prospector', 'chikun-hat-cap', 'chikun-hat-top', 'chikun-hat-crown']),
 });
 
 function validateCosmetics(value) {

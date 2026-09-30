@@ -59,3 +59,14 @@ for (const [actorId,joints,sourceSha256] of [
   const receipt=JSON.parse(readFileSync(new URL(`../docs/2.0/receipts/${actorId}-glb-reimport.json`,import.meta.url)));
   assert.equal(receipt.glbSha256,lilly.sha256);assert.equal(receipt.clips.length,9);assert.ok(receipt.clips.every(clip=>clip.samples.length===5));
 });
+
+for(const [actorId,joints,sourceSha256] of [["forkrunner", 24, "a3f56a810c4dde961c9b7d7391bd95d89603a765636a98e522395c5ba6f9dc67"], ["liquidator-agent", 22, "6a9ac0ba9ae273be91a08cc0f717b0b3190b169b53362075eb8081ac8e0645a6"], ["whale-enforcer", 19, "9e2ded2b63c852e46ea3b49349ca48f8e7fe1eb73804438ea5b306a737fefe50"], ["gas-bomber", 19, "620289a19cb8e5a025b2c614b90bc938e8db55e846924a92e41e7c679366c6f4"], ["validator-cultist", 19, "202e9ff2487d989655ee3c132e19e8d828f0522bcdadab8e87387c6259658efc"]]) test(`${actorId} keeps native source identity, six actions and bounded packed geometry`,()=>{
+  const actor=JSON.parse(readFileSync(new URL(`${actorId}-manifest.json`,directory))).actors[actorId];
+  const bytes=readFileSync(new URL(actor.file,directory));
+  assert.equal(createHash('sha256').update(bytes).digest('hex'),actor.sha256);assert.equal(actor.sourceSha256,sourceSha256);
+  const actual=inspectActorGlb(bytes,{requiredClips:actor.requiredClips});assert.deepEqual(actual,actor.inspection);
+  assert.equal(actual.joints,joints);assert.equal(actual.clips.length,6);assert.ok(actual.triangles<=30000&&actual.vertices<=30000&&actual.bytes<=8*1024*1024);
+  assert.ok(actual.images.every(image=>image.width<=1024&&image.height<=1024));
+  const receipt=JSON.parse(readFileSync(new URL(`../docs/2.0/receipts/${actorId}-glb-reimport.json`,import.meta.url)));
+  assert.equal(receipt.glbSha256,actor.sha256);assert.equal(receipt.clips.length,6);assert.ok(receipt.clips.every(clip=>clip.samples.length===5));
+});

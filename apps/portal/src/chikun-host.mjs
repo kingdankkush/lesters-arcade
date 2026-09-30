@@ -92,6 +92,10 @@ export function createChikunHost({
     iframe.className = 'chikun-game-frame';
     iframe.title = "Chikun's Escape runtime";
     iframe.src = `${origin}/chikun/index.html${chikunPresentationSuffix(search)}`;
+    // Private course review never changes a Ranked session's rules.
+    if(session.mode==='free'&&session.session?.rankedEligible===false&&new URLSearchParams(search).getAll('course').length===1&&new URLSearchParams(search).get('course')==='2'){
+      const reviewUrl=new URL(iframe.src);reviewUrl.searchParams.set('course','2');iframe.src=reviewUrl.href;
+    }
     iframe.loading = 'eager';
     iframe.referrerPolicy = 'same-origin';
     // allow-popups(-to-escape-sandbox): the results share row opens x.com and

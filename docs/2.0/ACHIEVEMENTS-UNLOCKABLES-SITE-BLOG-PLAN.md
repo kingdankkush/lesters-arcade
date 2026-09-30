@@ -59,3 +59,53 @@ The existing full-gate, physical-device, art-review and specific-release approva
 requirements remain. This substantial additional scope increases the remaining
 work; the two-day goal is not evidence of completion. Progress is tracked by
 checked slices, not a percentage.
+
+
+## G4 replacement package — implementation recommendation (September 30)
+
+The original downloaded reward-definition guide is no longer present. Under the
+owner’s best-judgment authorization, these twelve designs are the implementation
+recommendation, not a claim to have recovered its missing definitions:
+
+| Cabinet | Reward | Existing achievement |
+| --- | --- | --- |
+| HMH | Silver Sentinel body finish | `score-10000` |
+| HMH | Blood Moon body finish | `enemy-reaper-250` |
+| HMH | Ion Pulse weapon finish | `hash-rail-specialist` |
+| HMH | Sunforge weapon finish | `grenade-century` |
+| Chikun | Aurora coat | `chikun-reach-coast` |
+| Chikun | Comet Wake trail | `chikun-close-call` |
+| Chikun | Flight Goggles | `chikun-first-flight` |
+| Chikun | Prospector Helmet | `chikun-survive-4m` |
+| STACKED | Arcade Prism pieces | `stacked-first-line` |
+| STACKED | Polar Circuit pieces | `stacked-level-10` |
+| STACKED | Emberglass pieces | `stacked-halvings-3` |
+| STACKED | Midnight Aurora scene grade | `stacked-survive-7m` |
+
+The new Chikun accessories share the actual game/Locker painter. Piece previews
+share the game palettes; the scene inspection applies the real grade to an
+existing reference backdrop. HMH finishes are colour tints, with honestly labelled
+reference previews. This does not deliver new hero costumes or visualizer modes.
+
+The 25 classic entries remain in the ownership catalogue and inspectable archive,
+with original gates intact. Only their equipped preferences retire to default;
+Lester/Lilly and achievement records remain. Local cleanup does not overwrite a
+wallet pick. Retired cached self preferences require a fresh wallet read; only
+matching current-wallet responses can queue a save. Newer local picks merge,
+failed saves retain retry state, and classics cannot be re-equipped.
+
+Source checks: 56 existing reward/Locker/child/retirement cases passed, including
+old Chikun and STACKED replay parity, HMH summary parity, the fresh-wallet race,
+concurrent pick, failed save/retry, archive inspection and both child allowlists.
+The root combined build was reviewed in actual Chrome: all twelve desktop reward
+inspections and three phone inspections loaded, stayed horizontally contained and
+kept unearned equip controls disabled. Eight original captures were inspected; no
+page/console errors or non-read network requests occurred. The final Classic
+archive check stopped on a viewer string assertion: CSS displays `ARCHIVED LOOK`
+where the assertion expected `Archived look`. This is retained as a failed final
+assertion, not a full browser pass; the source archive checks remain passing.
+Chrome, HTTP and the owned child closed, and the shared lock was released.
+Screenshots and the exact partial report are in the shared workspace
+`outputs/replacement-rewards-review/`. HMH remains a labelled reference preview;
+phone captures are a desktop Chrome device proxy, not a physical-device result.
+No migration ran against a real wallet and nothing has been deployed.

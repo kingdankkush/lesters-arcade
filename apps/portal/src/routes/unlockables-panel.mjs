@@ -29,7 +29,7 @@ import {
   unlockState,
 } from '../unlockables.mjs';
 
-export const UNLOCKABLES_PANEL_STYLESHEET = './src/styles/unlockables-panel.css?v=locker-preview-20260930';
+export const UNLOCKABLES_PANEL_STYLESHEET = './src/styles/unlockables-panel.css?v=locker-rewards-20260930';
 export const UNLOCKABLES_PANEL_ID = 'unlockablesPanel';
 export const UNLOCKABLES_GAME_TITLES = Object.freeze({ 'lester-blaster': 'Hard Money Heroes', chikun: 'Chikun’s Escape', stacked: 'STACKED' });
 export const UNLOCKABLES_SLOT_LABELS = Object.freeze({
@@ -127,6 +127,7 @@ export function buildUnlockablesPanelModel(snapshot, { heroEntries = null, canva
     const status = item.artStatus !== 'ready' ? 'coming-soon' : state.unlocked ? (item.id === selectedId ? 'selected' : 'unlocked') : 'locked';
     return Object.freeze({
       id: item.id,
+      retired: item.retired===true,
       title: item.title,
       swatch: item.swatch ?? null,
       preview: item.preview ?? null,
@@ -145,7 +146,8 @@ export function buildUnlockablesPanelModel(snapshot, { heroEntries = null, canva
       title: UNLOCKABLES_GAME_TITLES[gameId],
       heroes: Object.freeze(heroes),
       slots: Object.freeze(slots.map((slot) => {
-        const items = UNLOCKABLES.filter((item) => item.gameId === gameId && item.kind === slot);
+        const allItems = UNLOCKABLES.filter((item) => item.gameId === gameId && item.kind === slot);
+        const items=allItems.filter(item=>!item.retired);
         const chosen = selection?.[gameId]?.[slot] ?? null;
         const chosenItem = items.find((item) => item.id === chosen);
         const selectedId = chosenItem && unlockState(chosenItem, unlocks).unlocked ? chosen : null;
@@ -154,6 +156,7 @@ export function buildUnlockablesPanelModel(snapshot, { heroEntries = null, canva
           label: UNLOCKABLES_SLOT_LABELS[slot],
           note: slot === 'coat' && !canvasFilter ? NOTES.coat : null,
           selectedId,
+          classics:Object.freeze(allItems.filter(item=>item.retired).map(item=>optionFor(item,null))),
           options: Object.freeze([
             Object.freeze({ id: null, title: DEFAULT_LOOKS[slot], swatch: null, status: selectedId === null ? 'selected' : 'unlocked', requirement: '', achievementId: null, achievementTitle: null, progress: null }),
             ...items.map((item) => optionFor(item, selectedId)),
@@ -264,6 +267,7 @@ function paint(host, state) {
   const looks = model.games.flatMap(game => game.slots.flatMap(slot => slot.options.filter(option => option.id !== null)));
   const available = looks.filter(option => option.status === 'unlocked' || option.status === 'selected').length;
   header.append(text(documentRef, 'p', `${available} / ${looks.length} looks unlocked · Inspect a look, then equip it`, 'unlockables-overview'));
+  header.append(text(documentRef,'p',snapshot.classicReset?'Your classic selections have reset to the original looks. Earned achievements and hero unlocks are unchanged.':'Twelve new looks. Classic rewards remain in the archive; old equipped classics reset to the original look.','unlockables-notice'));
   body.push(header);
 
   const live = text(documentRef, 'p', state.status, 'unlockables-status');
@@ -285,7 +289,7 @@ function paint(host, state) {
   body.push(games);
   const activeGame = model.games.find(game => game.gameId === state.gameId) ?? model.games[0];
   const inspectedSlot = activeGame.slots.find(slot => slot.slot === state.inspected?.slot) ?? activeGame.slots[0];
-  const inspectedOption = inspectedSlot.options.find(option => state.inspected && option.id === state.inspected.id)
+  const inspectedOption = [...inspectedSlot.options,...inspectedSlot.classics].find(option => state.inspected && option.id === state.inspected.id)
     ?? inspectedSlot.options.find(option => option.id && ['selected', 'unlocked'].includes(option.status))
     ?? inspectedSlot.options[1] ?? inspectedSlot.options[0];
   body.push(renderInspection(host, state, activeGame, inspectedSlot, inspectedOption));
@@ -301,6 +305,11 @@ function paint(host, state) {
     section.append(heading);
     if (game.heroes.length) section.append(renderHeroes(documentRef, game.heroes));
     for (const slot of game.slots) section.append(renderSlot(host, state, game, slot));
+    const archive=documentRef.createElement('details');archive.className='unlockables-classic-archive';
+    archive.append(text(documentRef,'summary','Classic archive · earned history'));
+    archive.append(text(documentRef,'p','Inspect the original rewards and their unlock requirements. Classic looks are retired from equipment; earned records remain.','unlockables-notice'));
+    for(const slot of game.slots)archive.append(renderSlot(host,state,game,{...slot,options:slot.classics}));
+    section.append(archive);
     body.push(section);
   }
   host.replaceChildren(...body);
@@ -333,7 +342,7 @@ function renderInspection(host, state, game, slot, option) {
     image.loading = 'lazy'; image.decoding = 'async'; figure.append(image);
   } else figure.append(text(documentRef, 'span', '✦', 'unlockables-default-art'));
   figure.append(text(documentRef, 'figcaption', option.preview ? 'Reference art · colour swatch' : 'Original game look'));
-  if ((game.gameId === 'chikun' && ['coat', 'trail', 'hat'].includes(slot.slot)) || (game.gameId === 'stacked' && slot.slot === 'piece-skin')) {
+  if ((game.gameId === 'chikun' && ['coat', 'trail', 'hat'].includes(slot.slot)) || (game.gameId === 'stacked' && ['piece-skin','scene'].includes(slot.slot))) {
     const generation = state.previewGeneration;
     const current = () => state.previewGeneration === generation && figure.isConnected && !host.hidden;
     void import('./unlockables-preview.mjs').then(({ mountUnlockablePreview }) => {
@@ -344,15 +353,15 @@ function renderInspection(host, state, game, slot, option) {
   const copy = documentRef.createElement('div'); copy.className = 'unlockables-inspection-copy';
   copy.append(text(documentRef, 'p', `${game.title} · ${slot.label}`, 'unlockables-inspection-kicker'));
   const title = text(documentRef, 'h3', option.title); title.id = 'locker-inspection-title'; title.tabIndex = -1;
-  copy.append(title, text(documentRef, 'p', STATUS_WORDS[option.status], 'unlockables-inspection-state'));
+  copy.append(title, text(documentRef, 'p', option.retired?`Classic archive · ${STATUS_WORDS[option.status]}`:STATUS_WORDS[option.status], 'unlockables-inspection-state'));
   copy.append(text(documentRef, 'p', option.id ? LOOK_EFFECT[slot.slot] : 'The original look, always available.'));
   if (option.id) {
     copy.append(renderRequirement(host, state, game.gameId, option));
     if (option.description) copy.append(text(documentRef, 'p', option.description, 'unlockables-goal'));
     if (option.progress) copy.append(renderProgress(documentRef, option.progress, option.title));
   }
-  const equip = text(documentRef, 'button', option.status === 'selected' ? 'Equipped' : option.status === 'unlocked' ? 'Equip look' : 'Locked', 'unlockables-equip');
-  equip.type = 'button'; equip.id = 'locker-equip'; equip.disabled = option.status !== 'unlocked';
+  const equip = text(documentRef, 'button', option.retired?'Archived look':option.status === 'selected' ? 'Equipped' : option.status === 'unlocked' ? 'Equip look' : 'Locked', 'unlockables-equip');
+  equip.type = 'button'; equip.id = 'locker-equip'; equip.disabled = option.retired || option.status !== 'unlocked';
   equip.addEventListener('click', () => {
     if (option.status !== 'unlocked' || equip.disabled) return;
     state.gameId = game.gameId; state.inspected = { slot: slot.slot, id: option.id }; equip.disabled = true;
@@ -389,6 +398,7 @@ function renderSlot(host, state, game, slot) {
   const fieldset = documentRef.createElement('fieldset');
   fieldset.className = 'unlockables-slot';
   fieldset.dataset.slot = slot.slot;
+  if(slot.options.every(option=>option.retired))fieldset.dataset.archive='true';
   fieldset.append(text(documentRef, 'legend', slot.label, 'unlockables-slot-label'));
   if (slot.note) fieldset.append(text(documentRef, 'p', slot.note, 'unlockables-requirement'));
   const list = documentRef.createElement('ul');
@@ -406,7 +416,7 @@ function renderSlot(host, state, game, slot) {
     input.value = option.id ?? '';
     input.className = 'unlockables-radio';
     input.checked = option.status === 'selected';
-    input.disabled = option.status === 'locked' || option.status === 'coming-soon';
+    input.disabled = option.retired || option.status === 'locked' || option.status === 'coming-soon';
     const label = documentRef.createElement('label');
     label.htmlFor = inputId;
     label.className = 'unlockables-card';
@@ -429,7 +439,7 @@ function renderSlot(host, state, game, slot) {
     item.append(inspect);
     if (option.status === 'locked' || option.status === 'coming-soon') item.append(renderRequirement(host, state, game.gameId, option));
     input.addEventListener('change', () => {
-      if (!input.checked) return;
+      if (!input.checked || input.disabled) return;
       void choose(host, state, game.gameId, slot, option);
     });
     list.append(item);

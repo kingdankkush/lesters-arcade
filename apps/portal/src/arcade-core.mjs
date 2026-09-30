@@ -2046,16 +2046,20 @@ export const LESTER_BLASTER_SOUND_DESIGN = Object.freeze({
 // gate, and equals requirementText() of its `unlockableId` in unlockables.mjs
 // (a test keeps the two in step). No NFT wording in phase 1 (A32).
 export const LESTER_BLASTER_UNLOCKABLES = Object.freeze([
+  Object.freeze({id:'skin-silver-sentinel',type:'skin',title:'Silver Sentinel',unlock:'Earn 10K Neon Run',unlockableId:'hmh-hero-sentinel'}),
+  Object.freeze({id:'skin-blood-moon',type:'skin',title:'Blood Moon',unlock:'Earn Enemy Reaper 250',unlockableId:'hmh-hero-blood-moon'}),
+  Object.freeze({id:'weapon-ion-pulse',type:'weapon-skin',title:'Ion Pulse',unlock:'Earn Hash Rail Specialist',unlockableId:'hmh-weapon-ion-pulse'}),
+  Object.freeze({id:'weapon-sunforge',type:'weapon-skin',title:'Sunforge',unlock:'Earn Grenade Century',unlockableId:'hmh-weapon-sunforge'}),
   Object.freeze({ id: 'character-lester', type: 'character', title: 'Lester', unlock: 'Finish 5 verified Ranked runs', unlockableId: 'hmh-hero-lester' }),
   Object.freeze({ id: 'character-lilly', type: 'character', title: 'Lilly', unlock: 'Finish 10 verified Ranked runs', unlockableId: 'hmh-hero-lilly' }),
-  Object.freeze({ id: 'skin-litecoin-silver', type: 'skin', title: 'Litecoin Silver Hero Skin', unlock: 'Earn 10K Neon Run', unlockableId: 'hmh-hero-silver' }),
-  Object.freeze({ id: 'skin-neon-signal', type: 'skin', title: 'Neon Signal Hero Skin', unlock: 'Earn Big Combo', unlockableId: 'hmh-hero-neon' }),
-  Object.freeze({ id: 'skin-gold-reserve', type: 'skin', title: 'Gold Reserve Hero Skin', unlock: 'Earn Boss Breaker', unlockableId: 'hmh-hero-gold' }),
-  Object.freeze({ id: 'skin-liquidation-red', type: 'skin', title: 'Liquidation Red Hero Skin', unlock: 'Earn Enemy Reaper 250', unlockableId: 'hmh-hero-crimson' }),
-  Object.freeze({ id: 'weapon-hashstorm', type: 'weapon-skin', title: 'Hashstorm Violet Weapon Skin', unlock: 'Earn Weapon Collector', unlockableId: 'hmh-weapon-hashstorm' }),
-  Object.freeze({ id: 'weapon-blast-amber', type: 'weapon-skin', title: 'Blast Amber Weapon Skin', unlock: 'Earn Grenade Century', unlockableId: 'hmh-weapon-amber' }),
-  Object.freeze({ id: 'weapon-seafoam-tracer', type: 'weapon-skin', title: 'Seafoam Tracer Weapon Skin', unlock: 'Earn Hash Rail Specialist', unlockableId: 'hmh-weapon-seafoam' }),
-  Object.freeze({ id: 'weapon-veteran-steel', type: 'weapon-skin', title: 'Veteran Steel Weapon Skin', unlock: 'Finish 25 verified Ranked runs', unlockableId: 'hmh-weapon-veteran' }),
+  Object.freeze({ id: 'skin-litecoin-silver', type: 'skin', title: 'Classic · Litecoin Silver Hero Skin', unlock: 'Earn 10K Neon Run', unlockableId: 'hmh-hero-silver' }),
+  Object.freeze({ id: 'skin-neon-signal', type: 'skin', title: 'Classic · Neon Signal Hero Skin', unlock: 'Earn Big Combo', unlockableId: 'hmh-hero-neon' }),
+  Object.freeze({ id: 'skin-gold-reserve', type: 'skin', title: 'Classic · Gold Reserve Hero Skin', unlock: 'Earn Boss Breaker', unlockableId: 'hmh-hero-gold' }),
+  Object.freeze({ id: 'skin-liquidation-red', type: 'skin', title: 'Classic · Liquidation Red Hero Skin', unlock: 'Earn Enemy Reaper 250', unlockableId: 'hmh-hero-crimson' }),
+  Object.freeze({ id: 'weapon-hashstorm', type: 'weapon-skin', title: 'Classic · Hashstorm Violet Weapon Skin', unlock: 'Earn Weapon Collector', unlockableId: 'hmh-weapon-hashstorm' }),
+  Object.freeze({ id: 'weapon-blast-amber', type: 'weapon-skin', title: 'Classic · Blast Amber Weapon Skin', unlock: 'Earn Grenade Century', unlockableId: 'hmh-weapon-amber' }),
+  Object.freeze({ id: 'weapon-seafoam-tracer', type: 'weapon-skin', title: 'Classic · Seafoam Tracer Weapon Skin', unlock: 'Earn Hash Rail Specialist', unlockableId: 'hmh-weapon-seafoam' }),
+  Object.freeze({ id: 'weapon-veteran-steel', type: 'weapon-skin', title: 'Classic · Veteran Steel Weapon Skin', unlock: 'Finish 25 verified Ranked runs', unlockableId: 'hmh-weapon-veteran' }),
 ]);
 
 export const LESTER_BLASTER_AI_DIRECTOR = Object.freeze({

@@ -6,6 +6,8 @@ import { createChikunCharacter, chikunCoatFilter, chikunTrailParticles, CHIKUN_F
 import { createChikunWorld, drawChikunObstacle } from './world.mjs';
 import { createChikunAudio } from './audio.mjs';
 import { isChikunCoinFeedbackEnabled } from './coin-feedback.mjs';
+import {drawCourseV2,drawCourseV2Obstacle} from './course-v2-view.mjs';
+import {COURSE_V2_EVIDENCE} from '../../portal/src/chikun-course-v2-runtime.mjs';
 import { startChikunObstaclePresentation } from './obstacle-loop-bootstrap.mjs';
 import { chikunObstaclePresentationOptions } from '../../portal/src/chikun-presentation-switch.mjs';
 import { buildChikunViewport, chikunForkInView, upcomingChikunObstacle } from './viewport.mjs';
@@ -145,6 +147,9 @@ let phase = 'waiting';
 let paused = false;
 let muted = false;
 let flapQueued = false;
+let glideHeld=false;
+const courseTwoRequested=new URLSearchParams(window.location.search).get('course')==='2';
+const courseTwoActive=()=>courseTwoRequested&&mode==='free'&&initPayload?.session?.rankedEligible===false;
 let accumulator = 0;
 let previousFrameAt = 0;
 let latestSnapshot = null;
@@ -366,6 +371,7 @@ function tone(frequency, duration = 0.08, gainValue = 0.035, type = 'triangle', 
 }
 
 function loadGhostForSeed(seed) {
+  if(courseTwoActive()){ghostTrack=null;return;}
   try {
     const record = readChikunGhostRecord(globalThis.localStorage, seed);
     ghostTrack = record?.samples?.length ? record : null;
@@ -376,7 +382,7 @@ function loadGhostForSeed(seed) {
 
 function setModePresentation() {
   const ranked = mode === 'ranked';
-  dailyChallenge = ranked ? null : chikunDailyChallengeForSeed(initPayload?.session?.seed);
+  dailyChallenge = ranked||courseTwoActive() ? null : chikunDailyChallengeForSeed(initPayload?.session?.seed);
   shell.dataset.mode = mode;
   // The child is never told the settlement flags, so the Ranked lines read
   // true both in the device-local preview and once runs publish on LitVM.
@@ -391,6 +397,7 @@ function setModePresentation() {
       ? `The ${dailyChallenge.dayKey} course resets at 00:00 UTC. Collect Litecoin and beat your best on this device. This flight keeps its course through reset.`
       : 'Collect Litecoin and skim the edges for bonuses. Practice scores stay separate from your Ranked profile.';
   loadGhostForSeed(initPayload?.session?.seed);
+  if(courseTwoActive()){modeLabel.textContent='COURSE TWO PREVIEW';modeCopy.textContent='Shield: survive one hit. Magnet: collect nearby coins for eight seconds. Feather: hold jump over one gap to glide. Take the upper coin route or the clear lower path. Local testing only; no Ranked or daily records.';}
   renderModeTease();
 }
 
@@ -470,7 +477,8 @@ function prepareRun() {
   positiveCoinFeedback?.tracker.reset(); positiveCoinFeedback?.overlay.reset();
   ragdoll?.dispose(); ragdoll = null;
   terminalAge = 0; flapAge = Infinity; flightEventAge = Infinity; flightEvent = '';
-  runtime = createChikunRuntime({ seed: initPayload.session.seed, maxTicks: MAX_RUN_TICKS });
+  glideHeld=false;
+  runtime = createChikunRuntime({ seed: initPayload.session.seed, maxTicks: MAX_RUN_TICKS,...(courseTwoActive()?{evidenceVersion:COURSE_V2_EVIDENCE}:{}) });
   latestSnapshot = runtime.snapshot();
   updateHud();
   draw(latestSnapshot);
@@ -509,6 +517,7 @@ function startRun() {
   canvas.focus();
   const flightLabel = mode === 'ranked' ? 'Ranked' : dailyChallenge ? dailyChallenge.label : 'Free';
   setLive(`${flightLabel} flight started. Tap to jump, tap again to fly. Descend to land and run.`);
+  if(courseTwoActive())setLive('Course two preview. S: one-hit shield. M: eight-second magnet. F: hold jump to glide over one gap. No official results.');
   flightAudio.unlock().then(() => { if (!disposed && phase === 'running') flightAudio.play('launch'); });
   sendState('running');
 }
@@ -532,11 +541,11 @@ function finishRun() {
   if(result.crashed)ragdoll=createChikunRagdoll({...latestSnapshot.chikun,...latestSnapshot.impact,kind:result.finalState.terminalReason,tick:latestSnapshot.tick,grounded:latestSnapshot.chikun.y>610,reduceMotion:reduceMotion(),gore:goreEnabled});
   lastCompletedResult = result;
   let ghostComparison = null;
-  if (ghostTrack && ghostTrack.seed === result.seed) {
+  if (!courseTwoActive() && ghostTrack && ghostTrack.seed === result.seed) {
     try { ghostComparison = compareChikunGhost({ run: result, ghost: ghostTrack }); } catch { ghostComparison = null; }
   }
   try {
-    const stored = writeChikunGhostRecord(globalThis.localStorage, createChikunGhostRecord(result));
+    const stored = !courseTwoActive() && writeChikunGhostRecord(globalThis.localStorage, createChikunGhostRecord(result));
     if (stored?.samples?.length) ghostTrack = stored;
   } catch { /* local ghost storage is optional */ }
   if (!crashVfxPlayed) { spawnVfx('crash'); crashVfxPlayed = true; }
@@ -559,7 +568,7 @@ function finishRun() {
     replayClaim,
   };
   tone(96, 0.38, 0.07, 'sawtooth');
-  send('game:result', payload);
+  if(!courseTwoActive())send('game:result', payload);
   resultEyebrow.textContent = mode === 'ranked'
     ? 'Ranked flight complete'
     : dailyChallenge
@@ -572,6 +581,7 @@ function finishRun() {
       ? `${ghostComparison.beatGhost ? 'You beat your daily best' : 'Your daily best leads'} by ${Math.abs(ghostComparison.scoreDelta)} points. Practice score only.`
       : 'Practice score only. Nothing was written to Ranked progress or leaderboards.';
   resultStats.replaceChildren();
+  if(courseTwoActive()){resultEyebrow.textContent='Course two preview';resultCopy.textContent='Local course test only. Shield, magnet, glide and route rules are separate from the released course. Nothing was submitted or saved to daily bests.';}
   const cause = {ground:'Reached the ground',ceiling:'Reached the flight ceiling',fork:'Hit a gate',tree:'Hit a tree',drone:'Decapitated by a drone',rock:'Hit a boulder',log:'Hit a fallen log',thorn:'Caught in thorns',hurdle:'Hit a hurdle',crate:'Hit a crate',shiba:'Caught by a Shiba',pit:'Fell into a gap',waterfall:'Fell into the waterfall',forest:'Crashed into the forest',town:{city:'Crashed into a city block',suburb:'Crashed into a suburban home'}[latestSnapshot?.impact?.variant]??'Crashed into town',canopy:'Hit a low canopy',hawk:'Hit a hawk',eagle:'Hit an eagle',pelican:'Hit a pelican',plane:'Hit a plane',storm:'Caught in a storm',pipe:'Hit an industrial pipe','run-complete':'Course complete'}[result.finalState?.terminalReason ?? latestSnapshot?.terminalReason];
   const statLabels = [`Ł ${result.coinsCollected} coins`, `${result.forksPassed} obstacles`, `${result.nearMisses} near misses`, `${result.bestCombo} best combo`, `${result.survivalTime.toFixed(1)} seconds`];
   if(cause)statLabels.unshift(cause);
@@ -597,7 +607,7 @@ function finishRun() {
 function togglePause(source = 'user', force = null) {
   if (phase !== 'running') return;
   paused = force === null ? !paused : Boolean(force);
-  if(paused)flapQueued=false;
+  if(paused){flapQueued=false;glideHeld=false;}
   pauseOverlay.classList.toggle('is-hidden', !paused);
   if (paused) resumeButton.focus({preventScroll:true});
   pauseButton.textContent = paused ? '▶' : 'Ⅱ';
@@ -631,6 +641,7 @@ function drawSky(snapshot) {
 }
 
 function drawFork(fork) {
+  if(drawCourseV2Obstacle(ctx,fork))return;
   if(fork.family)drawGroundObstacle(ctx, fork, latestSnapshot?.tick ?? 0, reduceMotion(), obstaclePresentation);
   else drawChikunObstacle(ctx, fork, latestSnapshot?.tick ?? 0, reduceMotion());
 }
@@ -704,6 +715,7 @@ function draw(snapshot = latestSnapshot) {
     drawChikun(snapshot);
   }
   drawVfx(snapshot);
+  drawCourseV2(ctx,snapshot,{reduced:reduceMotion(),left:flightViewport.left});
   positiveCoinFeedback?.overlay.render(renderDt, flightViewport, { reduceMotion: reduceMotion() });
   const approaching = phase === 'running' ? upcomingChikunObstacle(snapshot?.forks ?? [], flightViewport, snapshot?.difficulty?.speedMultiplier??1) : null;
   if (approaching) {
@@ -760,7 +772,13 @@ function stepFrame(now) {
     try {
       while (accumulator >= STEP_MS && !runtime.terminal && steps < MAX_CATCH_UP_STEPS) {
         if (flapQueued) { flapAge = 0; flapVelocity = latestSnapshot?.chikun?.velocityY ?? 0; }
-        latestSnapshot = runtime.step({ flap: flapQueued });
+        const beforePowers=latestSnapshot?.powers;
+        latestSnapshot = runtime.step({ flap: flapQueued,glide:courseTwoActive()&&glideHeld });
+        const afterPowers=latestSnapshot.powers;
+        if(afterPowers&&beforePowers){
+          if(afterPowers.shieldsUsed>beforePowers.shieldsUsed){showCallout('Shield saved you!');flightAudio.play('impact');spawnVfx('near-miss');}
+          else if(afterPowers.pickups>beforePowers.pickups){showCallout(afterPowers.magnetTicks>beforePowers.magnetTicks?'Coin magnet · 8 seconds':afterPowers.feather&&!beforePowers.feather?'Feather ready · hold to glide':'Scrypt shield ready');flightAudio.play('coin');spawnVfx('coin');}
+        }
         if (flapQueued) {
           flapQueued = false;
           tone(560, 0.055, 0.025, 'square');
@@ -897,9 +915,12 @@ startButton.addEventListener('click', startRun);
 canvas.addEventListener('pointerdown', () => flightAudio.unlock(), { once: true });
 canvas.addEventListener('keydown', () => flightAudio.unlock(), { once: true });
 canvas.addEventListener('pointerdown', queueFlap);
+canvas.addEventListener('pointerdown',event=>{if(event.button===0&&event.isPrimary!==false&&phase==='running'&&!paused){glideHeld=true;canvas.setPointerCapture?.(event.pointerId);}});
+for(const name of ['pointerup','pointercancel','lostpointercapture'])canvas.addEventListener(name,()=>{glideHeld=false;});
+window.addEventListener('keyup',event=>{if(['Space','ArrowUp','Enter'].includes(event.code))glideHeld=false;});
 canvas.addEventListener('keydown', (event) => {
   if (event.repeat) return;
-  if (event.code === 'Space' || event.code === 'ArrowUp' || event.key === 'Enter') { event.preventDefault(); queueFlap(event); }
+  if (event.code === 'Space' || event.code === 'ArrowUp' || event.key === 'Enter') { event.preventDefault(); queueFlap(event);glideHeld=phase==='running'&&!paused; }
   else if (event.key.toLowerCase() === 'p' || event.key === 'Escape') { event.preventDefault(); togglePause('user'); }
   else if (event.key.toLowerCase() === 'm') toggleMute();
 });
@@ -925,8 +946,8 @@ let shareRow = null;
 function renderShareRow(result) {
   const mount = document.querySelector('#shareRow');
   if (!mount) return;
-  mount.hidden = shareRunButton.hidden = mode === 'ranked';
-  if (mode === 'ranked') return;
+  mount.hidden = shareRunButton.hidden = mode === 'ranked'||courseTwoActive();
+  if (mode === 'ranked'||courseTwoActive()) return;
   const values = { region: result.regionReached, laps: result.laps, score: result.score, forksPassed: result.forksPassed, nearMisses: result.nearMisses, coinsCollected: result.coinsCollected, bestCombo: result.bestCombo, survivalSeconds: result.survivalTime, daily: Boolean(dailyChallenge) };
   const token = encodeFreeShareToken('chikun', values);
   const links = buildShareLinks({
@@ -948,6 +969,7 @@ function renderShareRow(result) {
   mount.replaceChildren(shareRow);
 }
 shareRunButton.addEventListener('click', async () => {
+  if(courseTwoActive())return;
   if (!shareRow?.links || mode === 'ranked') return;
   try {
     if (navigator.share) await shareRow.native.share();
@@ -990,6 +1012,7 @@ document.addEventListener('visibilitychange', () => {
   else if (document.visibilityState === 'visible') { accumulator = 0; previousFrameAt = performance.now(); }
 });
 window.addEventListener('blur', () => {
+  glideHeld=false;
   flapQueued = false;
   if (phase === 'running' && !paused) togglePause('visibility', true);
 });
@@ -1022,7 +1045,7 @@ document.querySelector('#importReplayButton').addEventListener('click',()=>docum
 function showImportedReplay(imported){
  stopReplayViewer();lastCompletedResult=imported;ragdoll?.dispose();ragdoll=null;
  renderReplayTimeline(imported.evidence);resultScore.textContent=String(imported.score);resultStats.replaceChildren();document.querySelector('#runObjectives').textContent='';
- resultEyebrow.textContent=['chikun-flap-evidence-v3','chikun-flap-evidence-v5','chikun-flap-evidence-v6'].includes(imported.evidence.version)?'Imported replay · Ground & Sky':'Imported historical flight';
+ resultEyebrow.textContent=imported.evidence.version===COURSE_V2_EVIDENCE?'Imported course two preview':['chikun-flap-evidence-v3','chikun-flap-evidence-v5','chikun-flap-evidence-v6'].includes(imported.evidence.version)?'Imported replay · Ground & Sky':'Imported historical flight';
  resultCopy.textContent='Playback only. This replay does not write a score, best, achievement or profile record.';startReplayViewer();
 }
 document.querySelector('#replayFile').addEventListener('change',async event=>{

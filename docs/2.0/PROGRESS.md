@@ -1,5 +1,72 @@
 # Lester's Arcade 2.0 progress
 
+## September 30: enemy roster, replacement rewards, Woods and course two
+
+Full scope remains required. No deployment, release-version change, paid
+asset generation, contract/settlement change or physical-phone claim.
+
+- Added five source-bound rigged enemies: Forkrunner, Liquidator Agent, Whale
+  Enforcer, Gas Bomber and Validator Cultist, six native clips each. Derived
+  hood/visor/respirator placement was corrected against native head geometry.
+  Models are3.09–6.40MB and13,772–24,914 triangles. Exact identities lazy-load
+  serially when visible; pending/failed loads retain sprites. Geometry/textures
+  remain shared and are released at session disposal. Root's47 model/pose,
+  asset/controller checks all pass, resolving Character's old-manifest-only
+  failure. Source/export producer commit760544023 remains in the Character
+  worktree; its producer patch does not apply to root's older exporter, so it
+  was not forced. Root gathered only runtime deltas/assets/receipts/tests.
+- Twelve replacement rewards now have actual earning gates and appearances:
+  four HMH finishes, Chikun coat/trail/goggles/helmet, three STACKED palettes
+  and one scene grade. The25 Classic looks remain inspectable with earned
+  history; retired selections clear safely. Fresh same-wallet reads, newer
+  local choices and failed-save retries are covered; no new earning rules or
+  server authority.56 focused checks pass. All12 desktop and3 phone previews
+  loaded without overflow/errors/writes. The final archive-label assertion
+  failed on CSS uppercase text; retained as an incomplete browser assertion,
+  not relabelled a fully passing run. Eight original images inspected.
+- Rugpull Woods is dressed in the private connected world using existing
+  terrain and14 image assets (850,143B download /5,242,880B decoded).140 trees,
+  240 low plants and3 stumps remain on/around authored banks and clear routes.
+  First actual image was rejected as empty and diagram-like. Subsequent changes
+  narrowed trails, removed overlapping translucent shoulders and hard-edged
+  litter polygons, and added central undergrowth. Center and camp were viewed
+  at desktop/phone sizes. Camp cards remain visibly soft at scale and the
+  central clearing remains sparse: this is NOT final Woods/full-world art
+  acceptance. Art commits ef1929580,13d0deeaa,b68078009; baseline5a5c13f79 not
+  gathered. No collision, terrain height or objective authority changed.
+- Chikun course two is playable through the actual Free cabinet with
+  `?course=2`: shield, eight-second magnet, held feather glide, upper coin/lower
+  safe route and seeded tractor/hawk chase. Its input-evidence-v7 is isolated
+  from releasedv6, and the actual replay viewer/file path supports held input.
+  Preview is explicitly unranked, sends no result, writes no daily best/ghost
+  and exposes no score sharing. Independent review found/fixed final-input
+  overflow, a doubled middle coin, shield-hit near-miss scoring, stuck held
+  keys after toolbar focus and mixed daily/share labels. Existing v6 fixtures
+  and server verification pass; current Ranked rejectsv7. Official version
+  dispatch, balance/full power-up playtests and final obstacle art remain.
+  See slices/CHIKUN-COURSE-TWO.md for the concrete rules and remaining work.
+
+Final combined build: HMH initial/shared1,041,883B (6,693B spare), STACKED
+581,120B. Actual browser review completed8 views: all six enemies plus hero
+in the optional3D roster, Woods center/camp and Chikun, each at desktop/414px
+phone framing. Both rosters reached7 actors and fetched every new model.
+Browser errors absent; owned Chrome/server closed and exact heavy lock removed.
+Earlier Chikun readiness waits timed out because the review froze animation
+frames while using the default frame-polled wait; changing the review to timed
+polling completed it. A separate early phone assertion ran before bridge init;
+its ready-label wait is now explicit. These were review failures, not passes.
+
+Evidence: workspace outputs/woods-course-review/review.json and original PNGs;
+outputs/replacement-rewards-review and hmh-ordinary-enemy-batch-20260930.
+The shared heavy lock surrounded builds, native work and browser jobs. Expanded
+visual/release gates were not run; no real-phone FPS, memory or soak claim.
+Repo-health strict was run and FAILED: tracked source/runtime assets remain far
+above the350MB cap (878MB before this batch's untracked additions). Source-art
+archive migration is still required; referenced files were not deleted to hide
+this failure. Full world/art/action/boss scope, final trophy art, official
+course version dispatch, physical XS Max acceptance and release certification
+still prevent the owner's full-scope release.
+
 ## September 30: three rigged heroes, ground detail, Matrix and collection polish
 
 Full scope remains required before publication. This is a committed production

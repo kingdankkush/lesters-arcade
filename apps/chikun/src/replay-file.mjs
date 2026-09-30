@@ -12,7 +12,8 @@ export function importChikunReplay(text){
  const e=data.evidence;
  // v6 files carry flapDeltas; historical v1-v5 files carry flapSteps.
  const flapKey=e&&Object.hasOwn(e,'flapDeltas')?'flapDeltas':'flapSteps';
- if(!e||Object.keys(e).some(k=>!['version','seed','fixedStepHz','maxTicks',flapKey].includes(k))||!Number.isInteger(e.seed)||e.seed<0||e.seed>0xffffffff)throw new Error('Replay metadata is invalid.');
+ const extra=e?.version==='chikun-input-evidence-v7'?['glideDeltas']:[];
+ if(!e||Object.keys(e).some(k=>!['version','seed','fixedStepHz','maxTicks',flapKey,...extra].includes(k))||!Number.isInteger(e.seed)||e.seed<0||e.seed>0xffffffff)throw new Error('Replay metadata is invalid.');
  // Imports run locally and never call the bridge, storage or score submission.
  return replayChikunRun(e);
 }

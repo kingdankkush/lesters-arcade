@@ -1,4 +1,4 @@
-// Dormant 2.0 preparation. This pure plan is not imported by a live route/store.
+// 2.0 preference migration. The store applies this plan to exact retired picks.
 // It removes selections only, never earned records, ownership or hero gates.
 // Keep the inventory explicit: future catalog additions must not be retired.
 const group=(gameId,slot,ids)=>ids.map(id=>Object.freeze({gameId,slot,id}));

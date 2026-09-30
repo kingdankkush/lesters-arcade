@@ -261,6 +261,7 @@ test('the hat sits on the crest found in the frame and keeps to pixel rectangles
 test('the polished hat package preserves earned IDs and bounded crest-sized artwork', async () => {
   const { UNLOCKABLES } = await import('../apps/portal/src/unlockables.mjs');
   assert.deepEqual(UNLOCKABLES.filter(item => item.gameId === 'chikun' && item.kind === 'hat').map(item => [item.id, item.requires.achievementId]), [
+    ['chikun-hat-flight-goggles','chikun-first-flight'], ['chikun-hat-prospector','chikun-survive-4m'],
     ['chikun-hat-cap', 'chikun-first-flight'], ['chikun-hat-top', 'chikun-survive-4m'], ['chikun-hat-crown', 'chikun-loop-2'],
   ]);
   for (const rects of Object.values(CHIKUN_COSMETIC_LOOKS.hat)) {
@@ -338,7 +339,7 @@ test('STACKED looks stay out of the entry, the simulation and the visualizer cho
   assert.match(entry, /import\('\.\/render\/renderer\.mjs'\)/, 'the renderer stays a dynamic import');
   // Every visualizer stays free: no look gates a visualizer id.
   const visualizers = ['journey', 'living', 'aurora', 'orbit', 'spectrum'];
-  assert.ok(UNLOCKABLES.every((item) => !visualizers.some((name) => item.id.includes(name))));
+  assert.ok(UNLOCKABLES.every(item=>!visualizers.includes(item.id)&&item.kind!=='visualizer'&&!Object.hasOwn(item,'visualizerId')));
 });
 
 // ---------------------------------------------------------------------------
@@ -407,8 +408,8 @@ test('HMH tints reach the child through its settings and never the run summary',
   // Source audit of the child: looks are read only where tints are applied.
   const main = read('apps/hmh-reboot/src/main.mjs');
   const lines = main.split('\n').filter((line) => line.includes('cosmetics'));
-  assert.equal(lines.length, 2);
-  for (const line of lines) assert.match(line, /\.tint = |\.setTint\(/, line.trim());
+  assert.equal(lines.length, 4);
+  for (const line of lines) assert.match(line, /\.tint = |\.setTint\(|bodyTint:|weaponTint:/, line.trim());
   const accumulator = main.slice(main.indexOf('runSummaryAccumulator = createRunSummaryAccumulator('), main.indexOf('});', main.indexOf('runSummaryAccumulator = createRunSummaryAccumulator(')));
   assert.equal(/settings/.test(accumulator), false, 'the run summary never reads settings');
   for (const path of ['sdk/hmh-run-summary.mjs', 'sdk/hmh-run-summary-schema.mjs', 'apps/hmh-reboot/src/simulation.mjs', 'apps/hmh-reboot/src/run-adapters.mjs']) {

@@ -39,6 +39,7 @@ import {
   unlockableById,
   unlocksFromProfileResponse,
 } from './unlockables.mjs';
+import { planCosmeticRetirement } from './unlockables-retirement.mjs';
 
 export const UNLOCKS_CACHE_PREFIX = 'lesters-arcade-unlocks-v1:';
 export const UNLOCKS_CACHE_TTL_MS = 7 * 24 * 60 * 60 * 1000;
@@ -138,6 +139,7 @@ export function createUnlockablesStore({
   let wallet = null;
   let announced = null; // the wallet the last authenticated wallet-session named
   let unlocks = emptyUnlocks();
+  let classicReset = false;
   let source = 'none'; // 'none' | 'cache' | 'server'
   let savedAt = null;
   let selection = {};
@@ -175,8 +177,16 @@ export function createUnlockablesStore({
         savedAt = cached.savedAt;
       }
     }
-    selection = readCosmeticSelection(storage, wallet);
+    const local = planCosmeticRetirement({cosmetics:readCosmeticSelection(storage, wallet)});
+    classicReset = local.changed;
+    selection = normalizeCosmeticSelection(local.preferences.cosmetics);
     unsaved = live && wallet ? readUnsavedSlots(storage, wallet) : new Set();
+    if(local.changed){
+      writeCosmeticSelection(storage,wallet,selection);
+      // Clearing an old device pick is not permission to overwrite a newer wallet pick.
+      for(const item of local.removed)unsaved.delete(`${item.gameId}:${item.slot}`);
+      if(live&&wallet)writeUnsavedSlots(storage,wallet,unsaved);
+    }
   }
 
   function currentWallet() {
@@ -210,8 +220,11 @@ export function createUnlockablesStore({
     writeUnlocksCache(storage, wallet, unlocks, { now });
     if (!self) return;
     // The self view carries this wallet's saved picks (E6 preferences).
-    const remote = body?.preferences?.cosmetics;
+    const retirement=planCosmeticRetirement({cosmetics:body?.preferences?.cosmetics??null});
+    classicReset ||= retirement.changed;
+    const remote = retirement.preferences.cosmetics;
     const saved = remote && typeof remote === 'object' && !Array.isArray(remote) ? normalizeCosmeticSelection(remote) : null;
+    const rememberRetirement=()=>{if(!fresh)return;for(const item of retirement.removed)unsaved.add(`${item.gameId}:${item.slot}`);writeUnsavedSlots(storage,wallet,unsaved);};
     if (unsaved.size) {
       // Picks the wallet copy lacks win slot by slot and are saved now; the
       // other slots follow the wallet.
@@ -222,6 +235,7 @@ export function createUnlockablesStore({
       }
       selection = normalizeCosmeticSelection(merged);
       writeCosmeticSelection(storage, wallet, selection);
+      rememberRetirement();
       void push();
       return;
     }
@@ -229,6 +243,7 @@ export function createUnlockablesStore({
     if (fresh && saved) {
       selection = saved;
       writeCosmeticSelection(storage, wallet, selection);
+      if(retirement.changed){rememberRetirement();void push();}
     }
   }
 
@@ -270,7 +285,7 @@ export function createUnlockablesStore({
     if (!force) {
       let cached = null;
       try { cached = getCachedSelfProfile(who); } catch { cached = null; }
-      if (cached && normalizeUnlockWallet(cached.wallet) === who) {
+      if (cached && normalizeUnlockWallet(cached.wallet) === who && !planCosmeticRetirement({cosmetics:cached.preferences?.cosmetics??null}).changed) {
         // The route's copy may predate a pick made during this visit.
         adopt(cached, { self: true, fresh: pickSerial === 0 });
         emit();
@@ -306,6 +321,7 @@ export function createUnlockablesStore({
       const item = unlockableById(id);
       if (!item || item.gameId !== gameId || item.kind !== slot) return { ok: false, error: 'invalid-cosmetic' };
       if (!stateOf(item).unlocked) return { ok: false, error: 'locked' };
+      if (item.retired) return { ok:false,error:'retired' };
     }
     // normalizeCosmeticSelection drops the null slot and any empty game.
     selection = normalizeCosmeticSelection({ ...selection, [gameId]: { ...(selection[gameId] ?? {}), [slot]: id } });
@@ -347,6 +363,7 @@ export function createUnlockablesStore({
       authenticated: authenticated(),
       source,
       savedAt,
+      classicReset,
       loading: Boolean(refreshing) || refreshQueued,
       unsaved: unsaved.size > 0,
       unlocks: {

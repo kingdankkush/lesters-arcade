@@ -2,6 +2,7 @@ import { createChikunRuntime as createLegacyRuntime } from './chikun-flight-lega
 import { createGroundRuntime as createGroundV3Runtime } from './chikun-ground-v3-runtime.mjs';
 import { createGroundRuntime as createGroundV5Runtime } from './chikun-ground-v5-runtime.mjs';
 import { createGroundRuntime, groundDifficulty } from './chikun-ground-runtime.mjs';
+import {createCourseV2Runtime, replayCourseV2, COURSE_V2_EVIDENCE} from './chikun-course-v2-runtime.mjs';
 import { ARCADE_SDK_VERSION } from './arcade-sdk.mjs';
 import { createInProcessGameAdapter } from './game-adapter.mjs';
 
@@ -155,6 +156,7 @@ function buildChikunEvidence({ seed, taps, maxTicks, evidenceVersion = CHIKUN_EV
 
 export const buildChikunDifficulty = groundDifficulty;
 export function createChikunRuntime({ seed = 1, maxTicks = 60, evidenceVersion = CHIKUN_EVIDENCE_VERSION } = {}) {
+ if(evidenceVersion===COURSE_V2_EVIDENCE)return createCourseV2Runtime({seed,maxTicks});
  // Historical courses replay on frozen copies; only the current version uses the live course.
  if (evidenceVersion === CHIKUN_EVIDENCE_VERSION) return createGroundRuntime({seed,maxTicks});
  if (evidenceVersion === 'chikun-flap-evidence-v5') return createGroundV5Runtime({seed,maxTicks});
@@ -175,6 +177,7 @@ export function simulateChikunRun({ seed = 1, taps = [], maxTicks = 60, evidence
 }
 
 export function replayChikunRun(evidence = {}) {
+  if(evidence?.version===COURSE_V2_EVIDENCE)return replayCourseV2(evidence);
   if (!evidence || typeof evidence !== 'object' || Array.isArray(evidence)) throw new Error('Chikun replay evidence must be an object');
   if (!SUPPORTED_EVIDENCE_VERSIONS.includes(evidence.version)) throw new Error(`Unsupported Chikun evidence version: ${String(evidence.version ?? '')}`);
   if (evidence.fixedStepHz !== CHIKUN_FIXED_STEP_HZ) throw new Error(`Chikun evidence fixedStepHz must be ${CHIKUN_FIXED_STEP_HZ}`);

@@ -25,13 +25,27 @@ export const CHIKUN_CLIPS = Object.freeze({
 //   each), x from the crest centre, y up from the base line sunk into the crest.
 export const CHIKUN_COSMETIC_LOOKS = Object.freeze({
   coat: Object.freeze({
+    'chikun-coat-aurora': 'sepia(.35) hue-rotate(135deg) saturate(1.45) brightness(1.08)',
     'chikun-coat-golden': 'sepia(0.55) saturate(2.4) hue-rotate(-8deg)',
     'chikun-coat-glacier': 'sepia(0.45) hue-rotate(160deg) saturate(1.8)',
     'chikun-coat-emerald': 'sepia(0.45) hue-rotate(70deg) saturate(1.9)',
     'chikun-coat-royal': 'sepia(0.4) hue-rotate(215deg) saturate(1.7)',
   }),
-  trail: Object.freeze({ 'chikun-trail-gold': '#ffd84a', 'chikun-trail-neon': '#19f7ff', 'chikun-trail-ember': '#ff7b2f' }),
+  trail: Object.freeze({ 'chikun-trail-comet':'#8eeaff', 'chikun-trail-gold': '#ffd84a', 'chikun-trail-neon': '#19f7ff', 'chikun-trail-ember': '#ff7b2f' }),
   hat: Object.freeze({
+    // Leather flight cap with paired cyan lenses, and a brass mining helmet.
+    'chikun-hat-flight-goggles':Object.freeze([
+      [-5,-5,10,5,'#674831'],[-4,-7,8,2,'#906443'],[-3,-8,6,1,'#b88753'],[-5,-2,10,1,'#342b29'],
+      [-6,-5,5,4,'#d4b779'],[1,-5,5,4,'#d4b779'],[-5.5,-4.5,4,3,'#153847'],[1.5,-4.5,4,3,'#153847'],
+      [-5,-4,3,2,'#45b6cc'],[2,-4,3,2,'#45b6cc'],[-5,-4,1,.5,'#ddffff'],[2,-4,1,.5,'#ddffff'],
+      [-1,-4,2,1,'#b48d54'],[-6,-1,2,2,'#4d3326'],[4,-1,2,2,'#4d3326'],[-3,-7,.5,2,'#dbb381'],
+    ]),
+    'chikun-hat-prospector':Object.freeze([
+      [-7,-1,14,2,'#936429'],[-6,-1,12,.5,'#ffe49a'],[-5,-5,10,4,'#cb8c32'],[-4,-7,8,2,'#e4ae4d'],
+      [-3,-8,6,1,'#f8ce75'],[-4,-5,7,3,'#efb853'],[-3.5,-6.5,1,3,'#ffdd87'],[3,-5,1.5,3,'#a26a27'],
+      [-5,-2,10,1,'#6f4b2d'],[-1.5,-6,4,4,'#493e35'],[-1,-5.5,3,3,'#c8d5d0'],[-.5,-5,2,2,'#fff4ba'],
+      [0,-4.5,1,1,'#ffffff'],[4,-2,1,1,'#e8d8a0'],[-5,-.5,9,.5,'#c38632'],
+    ]),
     // Same silhouettes/crest anchors and earned IDs, with material planes,
     // stitching and small inset highlights that remain still under reduced motion.
     'chikun-hat-cap': Object.freeze([

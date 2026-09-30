@@ -195,14 +195,14 @@ test('cache survives reload and expires after seven days', async () => {
   const now = () => clock;
   const storage = memoryStorage();
   const windowRef = eventTarget();
-  const api = fakeIndexApi({ profile: (wallet, self) => profileBody({ wallet, achievements: [['chikun', 'chikun-first-flight']], confirmedRuns: { 'lester-blaster': 10 }, preferences: self ? { cosmetics: { chikun: { hat: 'chikun-hat-cap' } } } : null }) });
+  const api = fakeIndexApi({ profile: (wallet, self) => profileBody({ wallet, achievements: [['chikun', 'chikun-first-flight']], confirmedRuns: { 'lester-blaster': 10 }, preferences: self ? { cosmetics: { chikun: { hat: 'chikun-hat-flight-goggles' } } } : null }) });
   let wallet = WALLET;
   const first = createUnlockablesStore({ hosted: true, storage, indexApi: api, windowRef, getWallet: () => wallet, isAuthenticated: () => true, now });
   await settle();
   assert.deepEqual(api.calls[0], ['profile', WALLET, true], 'a signed-in wallet reads its self view on load');
   assert.equal(first.snapshot().source, 'server');
   assert.equal(first.verifiedRuns(), 10);
-  assert.deepEqual(first.cosmeticsFor('chikun'), { coat: null, trail: null, hat: 'chikun-hat-cap' }, 'the self view carries the saved picks');
+  assert.deepEqual(first.cosmeticsFor('chikun'), { coat: null, trail: null, hat: 'chikun-hat-flight-goggles' }, 'the self view carries the saved picks');
   const key = unlocksCacheKey(WALLET);
   assert.equal(key, `${UNLOCKS_CACHE_PREFIX}${WALLET}`);
   const stored = JSON.parse(storage.getItem(key));
@@ -215,7 +215,7 @@ test('cache survives reload and expires after seven days', async () => {
   const second = createUnlockablesStore({ hosted: true, storage, indexApi: offline, windowRef, getWallet: () => wallet, isAuthenticated: () => false, now });
   assert.equal(second.snapshot().source, 'cache');
   assert.equal(second.verifiedRuns(), 10);
-  assert.deepEqual(second.cosmeticsFor('chikun'), { coat: null, trail: null, hat: 'chikun-hat-cap' }, 'Free Mode and offline keep the unlocked look');
+  assert.deepEqual(second.cosmeticsFor('chikun'), { coat: null, trail: null, hat: 'chikun-hat-flight-goggles' }, 'Free Mode and offline keep the unlocked look');
   assert.equal(offline.calls.length, 0, 'no sign-in, no refresh trigger: no request');
   second.destroy();
 
@@ -247,7 +247,7 @@ test('preview mode offers defaults only and never fetches', async () => {
   const now = () => Date.parse('2026-09-23T12:00:00.000Z');
   const storage = memoryStorage();
   writeUnlocksCache(storage, WALLET, unlocksFromProfileResponse(profileBody({ achievements: [['chikun', 'chikun-reach-coast']], confirmedRuns: { 'lester-blaster': 99 } })), { now });
-  storage.setItem(`${COSMETICS_SELECTION_PREFIX}${WALLET}`, JSON.stringify({ chikun: { coat: 'chikun-coat-glacier' } }));
+  storage.setItem(`${COSMETICS_SELECTION_PREFIX}${WALLET}`, JSON.stringify({ chikun: { coat: 'chikun-coat-aurora' } }));
   const windowRef = eventTarget();
   const api = fakeIndexApi();
   const store = createUnlockablesStore({ hosted: false, storage, indexApi: api, windowRef, getWallet: () => WALLET, isAuthenticated: () => true, now });
@@ -263,7 +263,7 @@ test('preview mode offers defaults only and never fetches', async () => {
   for (const gameId of Object.keys(COSMETIC_SLOTS)) {
     assert.ok(Object.values(store.cosmeticsFor(gameId)).every((value) => value === null), `${gameId} gets the default looks`);
   }
-  assert.deepEqual(await store.select('chikun', 'coat', 'chikun-coat-glacier'), { ok: false, error: 'locked' });
+  assert.deepEqual(await store.select('chikun', 'coat', 'chikun-coat-aurora'), { ok: false, error: 'locked' });
   assert.deepEqual(await store.select('chikun', 'coat', null), { ok: true, saved: 'device' });
   assert.equal(api.calls.length, 0, 'choosing the default look writes nothing to the server');
   store.destroy();
@@ -291,7 +291,7 @@ test('refreshes follow wallet sign-in, profile changes and published Ranked runs
   windowRef.dispatch('lesters:wallet-session', { wallet: WALLET, authenticated: true });
   await settle();
   assert.deepEqual(api.calls.at(-1), ['profile', WALLET, true]);
-  assert.equal(store.stateOf(unlockableById('chikun-hat-cap')).unlocked, true);
+  assert.equal(store.stateOf(unlockableById('chikun-hat-flight-goggles')).unlocked, true);
 
   achievements.push(['chikun', 'chikun-survive-4m']);
   windowRef.dispatch('lesters:profile-changed', { wallet: OTHER, displayName: null, avatarUri: null });
@@ -300,7 +300,7 @@ test('refreshes follow wallet sign-in, profile changes and published Ranked runs
   windowRef.dispatch('lesters:profile-changed', { wallet: WALLET.toUpperCase().replace('0X', '0x'), displayName: 'Lit', avatarUri: null });
   await settle();
   assert.equal(api.calls.length, 2);
-  assert.equal(store.stateOf(unlockableById('chikun-hat-top')).unlocked, true);
+  assert.equal(store.stateOf(unlockableById('chikun-hat-prospector')).unlocked, true);
 
   // A Ranked run refreshes once its settlement handle is published.
   const subscribers = new Set();
@@ -335,25 +335,25 @@ test('refreshes follow wallet sign-in, profile changes and published Ranked runs
 test('picks persist to preferences.cosmetics when signed in and to this device otherwise', async () => {
   const storage = memoryStorage();
   const windowRef = eventTarget();
-  const api = fakeIndexApi({ profile: (wallet) => profileBody({ wallet, achievements: [['stacked', 'stacked-level-10'], ['stacked', 'stacked-survive-2m']] }) });
+  const api = fakeIndexApi({ profile: (wallet) => profileBody({ wallet, achievements: [['stacked', 'stacked-level-10'], ['stacked', 'stacked-survive-7m']] }) });
   let signedIn = true;
   const store = createUnlockablesStore({ hosted: true, storage, indexApi: api, windowRef, getWallet: () => WALLET, isAuthenticated: () => signedIn });
   await settle();
-  assert.deepEqual(await store.select('stacked', 'piece-skin', 'stacked-pieces-seafoam'), { ok: true, saved: 'wallet' });
-  assert.deepEqual(api.calls.at(-1), ['savePreferences', { cosmetics: { stacked: { 'piece-skin': 'stacked-pieces-seafoam' } } }], 'PUT /api/profile with the whole cosmetics map');
-  assert.deepEqual(JSON.parse(storage.getItem(`${COSMETICS_SELECTION_PREFIX}${WALLET}`)), { stacked: { 'piece-skin': 'stacked-pieces-seafoam' } });
-  assert.deepEqual(await store.select('stacked', 'scene', 'stacked-scene-noir'), { ok: true, saved: 'wallet' });
-  assert.deepEqual(api.calls.at(-1)[1], { cosmetics: { stacked: { 'piece-skin': 'stacked-pieces-seafoam', scene: 'stacked-scene-noir' } } });
-  assert.deepEqual(await store.select('stacked', 'scene', 'stacked-scene-forge'), { ok: false, error: 'locked' });
+  assert.deepEqual(await store.select('stacked', 'piece-skin', 'stacked-pieces-polar'), { ok: true, saved: 'wallet' });
+  assert.deepEqual(api.calls.at(-1), ['savePreferences', { cosmetics: { stacked: { 'piece-skin': 'stacked-pieces-polar' } } }], 'PUT /api/profile with the whole cosmetics map');
+  assert.deepEqual(JSON.parse(storage.getItem(`${COSMETICS_SELECTION_PREFIX}${WALLET}`)), { stacked: { 'piece-skin': 'stacked-pieces-polar' } });
+  assert.deepEqual(await store.select('stacked', 'scene', 'stacked-scene-midnight-aurora'), { ok: true, saved: 'wallet' });
+  assert.deepEqual(api.calls.at(-1)[1], { cosmetics: { stacked: { 'piece-skin': 'stacked-pieces-polar', scene: 'stacked-scene-midnight-aurora' } } });
+  assert.deepEqual(await store.select('stacked', 'piece-skin', 'stacked-pieces-emberglass'), { ok: false, error: 'locked' });
   assert.deepEqual(await store.select('stacked', 'scene', 'chikun-coat-golden'), { ok: false, error: 'invalid-cosmetic' });
   assert.deepEqual(await store.select('stacked', 'coat', null), { ok: false, error: 'invalid-slot' });
   assert.deepEqual(await store.select('stacked', 'scene', null), { ok: true, saved: 'wallet' });
-  assert.deepEqual(api.calls.at(-1)[1], { cosmetics: { stacked: { 'piece-skin': 'stacked-pieces-seafoam' } } });
+  assert.deepEqual(api.calls.at(-1)[1], { cosmetics: { stacked: { 'piece-skin': 'stacked-pieces-polar' } } });
   signedIn = false;
   const saves = api.calls.filter((call) => call[0] === 'savePreferences').length;
-  assert.deepEqual(await store.select('stacked', 'scene', 'stacked-scene-noir'), { ok: true, saved: 'device' });
+  assert.deepEqual(await store.select('stacked', 'scene', 'stacked-scene-midnight-aurora'), { ok: true, saved: 'device' });
   assert.equal(api.calls.filter((call) => call[0] === 'savePreferences').length, saves, 'no Bearer, no PUT');
-  assert.deepEqual(store.cosmeticsFor('stacked'), { pieceSkin: 'stacked-pieces-seafoam', scene: 'stacked-scene-noir' });
+  assert.deepEqual(store.cosmeticsFor('stacked'), { pieceSkin: 'stacked-pieces-polar', scene: 'stacked-scene-midnight-aurora' });
   // A failed PUT keeps the device copy and says so.
   signedIn = true;
   const failing = createUnlockablesStore({ hosted: true, storage, indexApi: { ...api, savePreferences: async () => ({ ok: false, error: 'network' }) }, windowRef, getWallet: () => WALLET, isAuthenticated: () => true, getCachedSelfProfile: () => profileBody({ achievements: [['stacked', 'stacked-level-10']] }) });
@@ -366,7 +366,7 @@ test('picks persist to preferences.cosmetics when signed in and to this device o
 test('a silent restore refreshes even when the wallet-session event fires before main.js names the wallet', async () => {
   const storage = memoryStorage();
   const windowRef = eventTarget();
-  const api = fakeIndexApi({ profile: (wallet, self) => profileBody({ wallet, achievements: [['chikun', 'chikun-first-flight']], confirmedRuns: { 'lester-blaster': 10 }, preferences: self ? { cosmetics: { chikun: { hat: 'chikun-hat-cap' } } } : null }) });
+  const api = fakeIndexApi({ profile: (wallet, self) => profileBody({ wallet, achievements: [['chikun', 'chikun-first-flight']], confirmedRuns: { 'lester-blaster': 10 }, preferences: self ? { cosmetics: { chikun: { hat: 'chikun-hat-flight-goggles' } } } : null }) });
   let connectedWallet = null;
   const store = createUnlockablesStore({ hosted: true, storage, indexApi: api, windowRef, getWallet: () => connectedWallet, isAuthenticated: (wallet) => wallet === WALLET });
   await settle();
@@ -381,7 +381,7 @@ test('a silent restore refreshes even when the wallet-session event fires before
   assert.deepEqual(api.calls, [['profile', WALLET, true]], 'exactly one self-view read');
   assert.equal(store.snapshot().source, 'server');
   assert.equal(store.verifiedRuns(), 10, 'the hero gates get the verified count');
-  assert.deepEqual(store.cosmeticsFor('chikun'), { coat: null, trail: null, hat: 'chikun-hat-cap' }, 'the saved picks reach the child');
+  assert.deepEqual(store.cosmeticsFor('chikun'), { coat: null, trail: null, hat: 'chikun-hat-flight-goggles' }, 'the saved picks reach the child');
   assert.equal(store.snapshot().loading, false);
   // Signing out forgets the announced wallet.
   connectedWallet = null;
@@ -429,25 +429,25 @@ function cosmeticsServer({ cosmetics = null, achievements = [] } = {}) {
   };
   return server;
 }
-const CHIKUN_LOOKS = [['chikun', 'chikun-first-flight'], ['chikun', 'chikun-survive-4m'], ['chikun', 'chikun-reach-coast'], ['chikun', 'chikun-stack-three']];
+const CHIKUN_LOOKS = [['chikun', 'chikun-first-flight'], ['chikun', 'chikun-survive-4m'], ['chikun', 'chikun-reach-coast'], ['chikun', 'chikun-close-call']];
 
 test('a pick whose save failed is saved by the next read, after a reload and when back online, never reverted', async () => {
   const storage = memoryStorage();
   const windowRef = eventTarget();
-  const server = cosmeticsServer({ cosmetics: { chikun: { hat: 'chikun-hat-cap' } }, achievements: CHIKUN_LOOKS });
+  const server = cosmeticsServer({ cosmetics: { chikun: { hat: 'chikun-hat-flight-goggles' } }, achievements: CHIKUN_LOOKS });
   const store = createUnlockablesStore({ hosted: true, storage, indexApi: server.api, windowRef, getWallet: () => WALLET, isAuthenticated: () => true });
   await settle();
-  assert.deepEqual(store.snapshot().selection, { chikun: { hat: 'chikun-hat-cap' } }, 'the wallet copy loads');
+  assert.deepEqual(store.snapshot().selection, { chikun: { hat: 'chikun-hat-flight-goggles' } }, 'the wallet copy loads');
   server.failSaves = true;
-  assert.deepEqual(await store.select('chikun', 'hat', 'chikun-hat-top'), { ok: true, saved: 'device', error: 'network' });
+  assert.deepEqual(await store.select('chikun', 'hat', 'chikun-hat-prospector'), { ok: true, saved: 'device', error: 'network' });
   assert.equal(store.snapshot().unsaved, true);
   // The next read (a profile change) keeps the pick instead of the older wallet
   // copy, and saves it once the server answers.
   windowRef.dispatch('lesters:profile-changed', { wallet: WALLET });
   await settle();
-  assert.deepEqual(store.snapshot().selection, { chikun: { hat: 'chikun-hat-top' } }, 'the failed pick is not reverted');
-  assert.deepEqual(store.cosmeticsFor('chikun'), { coat: null, trail: null, hat: 'chikun-hat-top' });
-  assert.deepEqual(server.cosmetics, { chikun: { hat: 'chikun-hat-cap' } }, 'still failing');
+  assert.deepEqual(store.snapshot().selection, { chikun: { hat: 'chikun-hat-prospector' } }, 'the failed pick is not reverted');
+  assert.deepEqual(store.cosmeticsFor('chikun'), { coat: null, trail: null, hat: 'chikun-hat-prospector' });
+  assert.deepEqual(server.cosmetics, { chikun: { hat: 'chikun-hat-flight-goggles' } }, 'still failing');
   store.destroy();
 
   // Reload: the unsaved slot survives on this device, and the first read saves it.
@@ -455,7 +455,7 @@ test('a pick whose save failed is saved by the next read, after a reload and whe
   const reloaded = createUnlockablesStore({ hosted: true, storage, indexApi: server.api, windowRef: eventTarget(), getWallet: () => WALLET, isAuthenticated: () => true });
   assert.equal(reloaded.snapshot().unsaved, true);
   await settle();
-  assert.deepEqual(server.cosmetics, { chikun: { hat: 'chikun-hat-top' } }, 'saved to the wallet after the reload');
+  assert.deepEqual(server.cosmetics, { chikun: { hat: 'chikun-hat-prospector' } }, 'saved to the wallet after the reload');
   assert.equal(reloaded.snapshot().unsaved, false);
   assert.equal(storage.getItem(`lesters-arcade-cosmetics-unsaved-v1:${WALLET}`), null);
 
@@ -464,11 +464,11 @@ test('a pick whose save failed is saved by the next read, after a reload and whe
   const onlineWindow = eventTarget();
   const online = createUnlockablesStore({ hosted: true, storage, indexApi: server.api, windowRef: onlineWindow, getWallet: () => WALLET, isAuthenticated: () => true });
   await settle();
-  assert.deepEqual(await online.select('chikun', 'trail', 'chikun-trail-gold'), { ok: true, saved: 'device', error: 'network' });
+  assert.deepEqual(await online.select('chikun', 'trail', 'chikun-trail-comet'), { ok: true, saved: 'device', error: 'network' });
   server.failSaves = false;
   onlineWindow.dispatch('online', {});
   await settle();
-  assert.deepEqual(server.cosmetics, { chikun: { hat: 'chikun-hat-top', trail: 'chikun-trail-gold' } });
+  assert.deepEqual(server.cosmetics, { chikun: { hat: 'chikun-hat-prospector', trail: 'chikun-trail-comet' } });
   assert.equal(online.snapshot().unsaved, false);
   online.destroy();
   reloaded.destroy();
@@ -479,20 +479,20 @@ test('picks made before sign-in are saved to the wallet at sign-in, merged slot 
   const storage = memoryStorage();
   writeUnlocksCache(storage, WALLET, unlocksFromProfileResponse(profileBody({ achievements: CHIKUN_LOOKS })), { now });
   const windowRef = eventTarget();
-  const server = cosmeticsServer({ cosmetics: { chikun: { hat: 'chikun-hat-cap', trail: 'chikun-trail-gold' } }, achievements: CHIKUN_LOOKS });
+  const server = cosmeticsServer({ cosmetics: { chikun: { hat: 'chikun-hat-flight-goggles', trail: 'chikun-trail-comet' } }, achievements: CHIKUN_LOOKS });
   let signedIn = false;
   const store = createUnlockablesStore({ hosted: true, storage, indexApi: server.api, windowRef, getWallet: () => WALLET, isAuthenticated: () => signedIn, now });
   await settle();
-  assert.deepEqual(await store.select('chikun', 'coat', 'chikun-coat-glacier'), { ok: true, saved: 'device' });
+  assert.deepEqual(await store.select('chikun', 'coat', 'chikun-coat-aurora'), { ok: true, saved: 'device' });
   assert.deepEqual(await store.select('chikun', 'hat', null), { ok: true, saved: 'device' }, 'the default look is a pick too');
   assert.deepEqual(server.calls, [], 'no Bearer, no request');
   signedIn = true;
   windowRef.dispatch('lesters:wallet-session', { wallet: WALLET, authenticated: true });
   await settle();
-  const expected = { chikun: { trail: 'chikun-trail-gold', coat: 'chikun-coat-glacier' } };
+  const expected = { chikun: { trail: 'chikun-trail-comet', coat: 'chikun-coat-aurora' } };
   assert.deepEqual(server.cosmetics, expected, 'this device\'s picks win their slots; the wallet keeps the rest');
   assert.deepEqual(store.snapshot().selection, expected);
-  assert.deepEqual(store.cosmeticsFor('chikun'), { coat: 'chikun-coat-glacier', trail: 'chikun-trail-gold', hat: null });
+  assert.deepEqual(store.cosmeticsFor('chikun'), { coat: 'chikun-coat-aurora', trail: 'chikun-trail-comet', hat: null });
   assert.equal(store.snapshot().unsaved, false);
   store.destroy();
 });
@@ -500,7 +500,7 @@ test('picks made before sign-in are saved to the wallet at sign-in, merged slot 
 test('a read that started before a pick never replaces it, and saves never overlap', async () => {
   const storage = memoryStorage();
   const windowRef = eventTarget();
-  const server = cosmeticsServer({ cosmetics: { chikun: { hat: 'chikun-hat-cap' } }, achievements: CHIKUN_LOOKS });
+  const server = cosmeticsServer({ cosmetics: { chikun: { hat: 'chikun-hat-flight-goggles' } }, achievements: CHIKUN_LOOKS });
   const store = createUnlockablesStore({ hosted: true, storage, indexApi: server.api, windowRef, getWallet: () => WALLET, isAuthenticated: () => true });
   await settle();
   // A profile change starts a read of the old wallet copy …
@@ -509,19 +509,19 @@ test('a read that started before a pick never replaces it, and saves never overl
   await settle();
   assert.equal(server.heldReads.length, 1);
   // … the player picks while it is in flight, and the save lands first.
-  assert.deepEqual(await store.select('chikun', 'hat', 'chikun-hat-top'), { ok: true, saved: 'wallet' });
+  assert.deepEqual(await store.select('chikun', 'hat', 'chikun-hat-prospector'), { ok: true, saved: 'wallet' });
   server.heldReads.shift()();
   await settle();
-  assert.deepEqual(store.snapshot().selection, { chikun: { hat: 'chikun-hat-top' } }, 'the older copy does not replace the pick');
-  assert.deepEqual(JSON.parse(storage.getItem(`${COSMETICS_SELECTION_PREFIX}${WALLET}`)), { chikun: { hat: 'chikun-hat-top' } });
-  assert.deepEqual(store.cosmeticsFor('chikun'), { coat: null, trail: null, hat: 'chikun-hat-top' });
+  assert.deepEqual(store.snapshot().selection, { chikun: { hat: 'chikun-hat-prospector' } }, 'the older copy does not replace the pick');
+  assert.deepEqual(JSON.parse(storage.getItem(`${COSMETICS_SELECTION_PREFIX}${WALLET}`)), { chikun: { hat: 'chikun-hat-prospector' } });
+  assert.deepEqual(store.cosmeticsFor('chikun'), { coat: null, trail: null, hat: 'chikun-hat-prospector' });
   server.holdReads = false;
 
   // Two quick picks: one PUT at a time, and the last one carries both.
   server.holdSaves = true;
-  const first = store.select('chikun', 'coat', 'chikun-coat-glacier');
+  const first = store.select('chikun', 'coat', 'chikun-coat-aurora');
   await settle();
-  const second = store.select('chikun', 'trail', 'chikun-trail-gold');
+  const second = store.select('chikun', 'trail', 'chikun-trail-comet');
   await settle();
   assert.equal(server.held.length, 1, 'the second save waits for the first');
   server.held.shift()();
@@ -530,7 +530,7 @@ test('a read that started before a pick never replaces it, and saves never overl
   server.held.shift()();
   assert.deepEqual(await Promise.all([first, second]), [{ ok: true, saved: 'wallet' }, { ok: true, saved: 'wallet' }]);
   assert.equal(server.maxInFlight, 1);
-  const both = { chikun: { hat: 'chikun-hat-top', coat: 'chikun-coat-glacier', trail: 'chikun-trail-gold' } };
+  const both = { chikun: { hat: 'chikun-hat-prospector', coat: 'chikun-coat-aurora', trail: 'chikun-trail-comet' } };
   assert.deepEqual(server.cosmetics, both);
   assert.deepEqual(server.calls.filter(([kind]) => kind === 'save').at(-1)[1], both);
   store.destroy();
@@ -539,12 +539,12 @@ test('a read that started before a pick never replaces it, and saves never overl
 test('every storage access is guarded, so blocked storage leaves the store working', async () => {
   const throwing = { getItem() { throw new Error('denied'); }, setItem() { throw new Error('quota'); }, removeItem() { throw new Error('denied'); } };
   const windowRef = eventTarget();
-  const api = fakeIndexApi({ profile: (wallet) => profileBody({ wallet, achievements: [['chikun', 'chikun-stack-three']] }) });
+  const api = fakeIndexApi({ profile: (wallet) => profileBody({ wallet, achievements: [['chikun', 'chikun-close-call']] }) });
   const store = createUnlockablesStore({ hosted: true, storage: throwing, indexApi: api, windowRef, getWallet: () => WALLET, isAuthenticated: () => false });
   await store.refresh({ force: true });
   assert.equal(store.snapshot().source, 'server');
-  assert.deepEqual(await store.select('chikun', 'trail', 'chikun-trail-gold'), { ok: true, saved: 'session' });
-  assert.deepEqual(store.cosmeticsFor('chikun'), { coat: null, trail: 'chikun-trail-gold', hat: null });
+  assert.deepEqual(await store.select('chikun', 'trail', 'chikun-trail-comet'), { ok: true, saved: 'session' });
+  assert.deepEqual(store.cosmeticsFor('chikun'), { coat: null, trail: 'chikun-trail-comet', hat: null });
   assert.equal(readUnlocksCache(throwing, WALLET), null);
   assert.equal(writeUnlocksCache(throwing, WALLET, emptyUnlocks()), false);
   store.destroy();
@@ -578,4 +578,63 @@ test('HMH codex lines name real achievements or verified run gates', () => {
 test('phase 1 copy never says NFT, soulbound or minting', () => {
   const copy = JSON.stringify([UNLOCKABLES.map((item) => [item.title, requirementText(item)]), LESTER_BLASTER_UNLOCKABLES]);
   assert.doesNotMatch(copy, /\bnft\b|soulbound|minting|minted|\bmint\b/i);
+});
+
+
+test('2.0 offers twelve new earned cosmetics while classic ownership and both heroes remain', () => {
+  const replacements=UNLOCKABLES.filter(item=>item.edition==='2.0');
+  assert.equal(replacements.length,12);
+  assert.deepEqual(ACHIEVEMENT_GAME_IDS.map(game=>replacements.filter(item=>item.gameId===game).length),[4,4,4]);
+  assert.equal(UNLOCKABLES.filter(item=>item.retired).length,25);
+  for(const item of replacements){
+    assert.equal(achievementById(item.gameId,item.requires.achievementId)?.available,true);
+    assert.equal(unlockState(item,emptyUnlocks()).unlocked,false);
+    const earned=emptyUnlocks();earned.achievementIds.add(item.requires.achievementId);
+    assert.equal(unlockState(item,earned).unlocked,true);
+  }
+  const classic=unlockableById('chikun-hat-cap'),earned=emptyUnlocks();earned.achievementIds.add('chikun-first-flight');
+  assert.equal(classic.retired,true);assert.equal(unlockState(classic,earned).unlocked,true);
+});
+
+test('retired preferences reset from fresh wallet data while history and new picks survive', async () => {
+ const storage=memoryStorage({[`${COSMETICS_SELECTION_PREFIX}${WALLET}`]:JSON.stringify({chikun:{hat:'chikun-hat-cap'}})});
+ const api=fakeIndexApi({profile:()=>profileBody({achievements:[['chikun','chikun-first-flight']],confirmedRuns:{'lester-blaster':10},preferences:{selectedCharacterId:'lilly',cosmetics:{chikun:{hat:'chikun-hat-cap'}}}})});
+ const store=createUnlockablesStore({hosted:true,storage,indexApi:api,windowRef:eventTarget(),getWallet:()=>WALLET,isAuthenticated:()=>true});
+ await settle();await settle();
+ assert.deepEqual(store.snapshot().selection,{});assert.equal(store.snapshot().classicReset,true);
+ assert.equal(store.stateOf(unlockableById('chikun-hat-cap')).unlocked,true);
+ assert.equal(store.verifiedRuns(),10);
+ assert.deepEqual(api.calls.filter(call=>call[0]==='savePreferences').at(-1),['savePreferences',{cosmetics:{}}]);
+ assert.deepEqual(await store.select('chikun','hat','chikun-hat-cap'),{ok:false,error:'retired'});
+ assert.equal((await store.select('chikun','hat','chikun-hat-flight-goggles')).ok,true);
+ assert.equal(store.cosmeticsFor('chikun').hat,'chikun-hat-flight-goggles');store.destroy();
+});
+
+test('retirement never pushes an old wallet read over a newer pick or another wallet', async () => {
+ let release;const api=fakeIndexApi({profile:()=>new Promise(resolve=>{release=resolve;})}),storage=memoryStorage();let who=WALLET;
+ const store=createUnlockablesStore({hosted:true,storage,indexApi:api,windowRef:eventTarget(),getWallet:()=>who,isAuthenticated:()=>true});
+ await settle();who=OTHER;store.cosmeticsFor('chikun');
+ release(profileBody({achievements:[['chikun','chikun-first-flight']],preferences:{cosmetics:{chikun:{hat:'chikun-hat-cap'}}}}));
+ await settle();assert.equal(api.calls.filter(call=>call[0]==='savePreferences').length,0);assert.deepEqual(store.snapshot().selection,{});store.destroy();
+});
+
+
+test('a new earned pick wins over the retired preference read already in flight', async () => {
+ const storage=memoryStorage();writeUnlocksCache(storage,WALLET,unlocksFromProfileResponse(profileBody({achievements:[['chikun','chikun-first-flight']]})));
+ let release;const api=fakeIndexApi({profile:()=>new Promise(resolve=>{release=resolve;})});
+ const store=createUnlockablesStore({hosted:true,storage,indexApi:api,windowRef:eventTarget(),getWallet:()=>WALLET,isAuthenticated:()=>true});
+ await settle();const picking=store.select('chikun','hat','chikun-hat-flight-goggles');
+ release(profileBody({achievements:[['chikun','chikun-first-flight']],preferences:{cosmetics:{chikun:{hat:'chikun-hat-cap'}}}}));
+ await picking;assert.equal(store.cosmeticsFor('chikun').hat,'chikun-hat-flight-goggles');
+ assert.ok(api.calls.filter(call=>call[0]==='savePreferences').every(call=>call[1].cosmetics.chikun?.hat==='chikun-hat-flight-goggles'));store.destroy();
+});
+
+test('failed retirement saves retain retry state and never alter achievements', async () => {
+ let fail=true;const history=[['chikun','chikun-first-flight']];
+ const api=fakeIndexApi({profile:()=>profileBody({achievements:history,preferences:{cosmetics:{chikun:{hat:'chikun-hat-cap'}}}}),save:()=>fail?{ok:false,error:'network'}:{ok:true}});
+ const events=eventTarget(),store=createUnlockablesStore({hosted:true,storage:memoryStorage(),indexApi:api,windowRef:events,getWallet:()=>WALLET,isAuthenticated:()=>true});
+ await settle();await settle();assert.equal(store.snapshot().unsaved,true);assert.deepEqual(store.snapshot().selection,{});
+ assert.equal(store.snapshot().unlocks.achievementIds.has('chikun-first-flight'),true);
+ fail=false;events.dispatch('online',{});await settle();await settle();assert.equal(store.snapshot().unsaved,false);
+ assert.deepEqual(api.calls.filter(call=>call[0]==='savePreferences').at(-1),['savePreferences',{cosmetics:{}}]);store.destroy();
 });

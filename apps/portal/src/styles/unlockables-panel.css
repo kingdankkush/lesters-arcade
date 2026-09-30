@@ -321,3 +321,7 @@
 .unlockables-cosmetic-canvas{display:block;width:100%;height:auto;aspect-ratio:8/5}
 .unlockables-preview[data-preview="ready"]{background:#132536!important}
 .unlockables-preview[data-preview="ready"] figcaption{font-size:11px}
+
+.unlockables-classic-archive { margin-top: 24px; padding-top: 16px; border-top: 1px solid #69808066; }
+.unlockables-classic-archive > summary { min-height: 44px; padding: 10px 0; color: #c6d3d2; cursor: pointer; font-weight: 600; }
+.unlockables-classic-archive > summary:focus-visible { outline: 3px solid #a3d2ce; outline-offset: 3px; }

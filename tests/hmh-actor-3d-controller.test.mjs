@@ -214,3 +214,51 @@ test('equipped body and weapon colours survive detached 3D projection and restor
   controller.updateGame(hero,[],camera,view);assert.equal(gpu.frames.at(-1)[0].weaponTint,0xeebb55);
   hero.bodyTint=0;assert.equal(equipped.bodyTint,0x55aacc);assert.ok(Object.isFrozen(equipped));controller.dispose();
 });
+
+
+test('all exact native enemy identities retain sprites until ready and after removal', async () => {
+  const gpu=backend(), ready=new Set(['lit-commando','bagholder-rusher']), requested=[];
+  gpu.prepareActor=id=>{requested.push(id);return ready.has(id);};
+  const controller=module.createActor3dPilotController({renderer:renderer(),canvas:canvas(),backendFactory:()=>gpu});
+  const enemies=module.ACTOR3D_ENEMY_IDS.map((actorId,i)=>({id:actorId,actorId,active:true,visible:true,alpha:1,x:i,y:0,z:0,pose:{state:'run',direction:2,tick:4},originals:[{renderable:true}]}));
+  await controller.start();controller.updateGame(null,enemies,camera,view);
+  assert.deepEqual(gpu.frames.at(-1).map(p=>p.actorId),['bagholder-rusher']);
+  assert.ok(enemies.slice(1).every(e=>e.originals[0].renderable));
+  for(const id of module.ACTOR3D_ENEMY_IDS)ready.add(id);
+  controller.updateGame(null,enemies,camera,view);
+  assert.deepEqual(gpu.frames.at(-1).map(p=>p.actorId),module.ACTOR3D_ENEMY_IDS);
+  assert.ok(enemies.every(e=>!e.originals[0].renderable));
+  controller.updateGame(null,[{...enemies[0],actorId:'unknown-zombie'}],camera,view);
+  assert.equal(gpu.frames.at(-1).length,0);assert.ok(enemies.every(e=>e.originals[0].renderable));
+  assert.ok(!requested.includes('unknown-zombie'));controller.dispose();
+});
+
+test('actual optional backend serializes archetype loads, isolates failure and closes late decoded images', async () => {
+  const {readFileSync}=await import('node:fs'),vm=await import('node:vm');
+  const source=readFileSync(new URL('../apps/hmh-reboot/src/actor-3d-pixi.mjs',import.meta.url),'utf8');
+  const code=source.slice(source.indexOf('export async function createActor3dPixiBackend')).replace('export ','');
+  const urls=[],closed=[],textures=[];let waitingResolve,hold=false;
+  const context=vm.createContext({Blob,Promise,vertex:'',fragment:'',ACTOR3D_ENEMY_IDS:module.ACTOR3D_ENEMY_IDS,
+    createActor3dDepthRegistry:module.createActor3dDepthRegistry,State:class{},
+    GlProgram:{from:()=>({destroy(){}})},RenderTexture:{create:()=>({destroy(){}})},
+    Texture:{from:bitmap=>{const t={source:{},destroy(){textures.push(bitmap.id);}};return t;}},
+    Shader:class{destroy(){}},decodeActor3dGlb:()=>({images:[{data:new Uint8Array([1]),mimeType:'image/png'}],primitives:[]}),createActor3dJointBounds:()=>[],
+  });vm.runInContext(code,context);
+  const render={texture:{bind(){}},shader:{bind(){},resetState(){}},gl:{NO_ERROR:0,getError:()=>0,getParameter:()=>({}),getProgramParameter:()=>true}};
+  let imageId=0;
+  const gpu=await context.createActor3dPixiBackend({renderer:render,heroActorId:null,
+    fetchAsset:async url=>{urls.push(url);if(url.includes('validator-cultist'))throw Error('missing optional model');return {ok:true,arrayBuffer:async()=>new ArrayBuffer(1)};},
+    decodeImage:async()=>{const id=++imageId;if(hold)return new Promise(resolve=>{waitingResolve=()=>resolve({id,close(){closed.push(id);}});});return {id,close(){closed.push(id);}};},
+  });
+  assert.equal(urls.length,2);assert.equal(gpu.prepareActor('bagholder-rusher'),true);
+  assert.equal(gpu.prepareActor('validator-cultist'),false);
+  for(let i=0;i<12;i++)await Promise.resolve();
+  assert.equal(gpu.prepareActor('validator-cultist'),false);assert.equal(gpu.prepareActor('bagholder-rusher'),true);
+  assert.equal(urls.filter(x=>x.includes('validator-cultist')).length,1);
+  hold=true;assert.equal(gpu.prepareActor('forkrunner'),false);assert.equal(gpu.prepareActor('forkrunner'),false);assert.equal(gpu.prepareActor('gas-bomber'),false);
+  for(let i=0;i<12&&!waitingResolve;i++)await Promise.resolve();
+  assert.equal(typeof waitingResolve,'function');assert.equal(urls.filter(x=>x.includes('forkrunner')).length,1);assert.ok(!urls.some(x=>x.includes('gas-bomber')));
+  gpu.dispose();waitingResolve();for(let i=0;i<20;i++)await Promise.resolve();
+  assert.deepEqual(closed.sort(),[1,2,3]);assert.deepEqual(textures.sort(),[1,2]);
+  assert.ok(!urls.some(x=>x.includes('gas-bomber')));assert.equal(gpu.prepareActor('forkrunner'),false);gpu.dispose();
+});

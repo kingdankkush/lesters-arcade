@@ -131,14 +131,14 @@ test('preview shows the default looks equipped and every other look locked with 
       const [first, ...rest] = slot.options;
       assert.equal(first.id, null);
       assert.equal(first.status, 'selected', `${game.gameId} ${slot.slot} default is equipped`);
-      assert.ok(rest.length >= 3);
+      assert.ok(rest.length >= 1);
       for (const option of rest) {
         assert.equal(option.status, 'locked', option.id);
         assert.match(option.requirement, /^(Earn .+|Finish \d+ verified Ranked runs)$/);
       }
     }
   }
-  const glacier = model.games.find((game) => game.gameId === 'chikun').slots.find((slot) => slot.slot === 'coat').options.find((option) => option.id === 'chikun-coat-glacier');
+  const glacier = model.games.find((game) => game.gameId === 'chikun').slots.find((slot) => slot.slot === 'coat').options.find((option) => option.id === 'chikun-coat-aurora');
   assert.deepEqual([glacier.requirement, glacier.achievementId, glacier.achievementTitle], ['Earn Coastal Escape', 'chikun-reach-coast', 'Coastal Escape']);
   // Without the hero select's entries, preview makes no claim about heroes.
   const heroes = model.games[0].heroes;
@@ -217,15 +217,15 @@ test('the panel shows on Settings and the own profile only, and says when coats 
 });
 
 test('hosted unlocks show unlocked and equipped looks, and a locked pick is not honoured', () => {
-  const model = buildUnlockablesPanelModel(hostedSnapshot({ chikun: { coat: 'chikun-coat-glacier', hat: 'chikun-hat-crown' } }));
+  const model = buildUnlockablesPanelModel(hostedSnapshot({ chikun: { coat: 'chikun-coat-aurora', hat: 'chikun-hat-crown' } }));
   const chikun = model.games.find((game) => game.gameId === 'chikun');
   const coat = chikun.slots.find((slot) => slot.slot === 'coat');
-  assert.equal(coat.selectedId, 'chikun-coat-glacier');
-  assert.deepEqual(coat.options.map((option) => [option.id, option.status]), [[null, 'unlocked'], ['chikun-coat-golden', 'locked'], ['chikun-coat-glacier', 'selected'], ['chikun-coat-emerald', 'locked'], ['chikun-coat-royal', 'locked']]);
+  assert.equal(coat.selectedId, 'chikun-coat-aurora');
+  assert.deepEqual(coat.options.map((option) => [option.id, option.status]), [[null, 'unlocked'], ['chikun-coat-aurora', 'selected']]);
   const hat = chikun.slots.find((slot) => slot.slot === 'hat');
   assert.equal(hat.selectedId, null, 'the locked crown is not honoured');
   assert.equal(hat.options[0].status, 'selected');
-  assert.equal(model.games.find((game) => game.gameId === 'stacked').slots[0].options.find((option) => option.id === 'stacked-pieces-silver').status, 'unlocked');
+  assert.equal(model.games.find((game) => game.gameId === 'stacked').slots[0].options.find((option) => option.id === 'stacked-pieces-prism').status, 'unlocked');
   assert.deepEqual(model.games[0].heroes.map((hero) => hero.status), ['unlocked', 'locked']);
   // Notices by mode.
   assert.match(unlockablesNotice({ hosted: true, wallet: null }), /^Sign in with a wallet/);
@@ -256,7 +256,7 @@ test('the panel renders an accessible radio group per slot after the route grid'
     const heading = section.children.find((child) => child.tagName === 'H3');
     assert.equal(section.getAttribute('aria-labelledby'), heading.id);
   }
-  const fieldsets = host.all((node) => node.tagName === 'FIELDSET');
+  const fieldsets = host.all((node) => node.tagName === 'FIELDSET' && node.dataset.archive !== 'true');
   assert.equal(fieldsets.length, Object.values(COSMETIC_SLOTS).flat().length);
   for (const fieldset of fieldsets) {
     assert.equal(fieldset.children[0].tagName, 'LEGEND');
@@ -290,21 +290,21 @@ test('the panel renders an accessible radio group per slot after the route grid'
   assert.match(host.textContent, /Lilly.*Locked · Finish 10 verified Ranked runs \(6\/10\)/);
 
   // Choosing an unlocked look saves through the store and announces it.
-  const silver = host.all((node) => node.tagName === 'INPUT' && node.value === 'stacked-pieces-silver')[0];
+  const silver = host.all((node) => node.tagName === 'INPUT' && node.value === 'stacked-pieces-prism')[0];
   assert.equal(silver.disabled, false);
   silver.checked = true;
   silver.dispatch('change');
   await new Promise((resolve) => setTimeout(resolve, 0));
-  assert.deepEqual(store.selects, [['stacked', 'piece-skin', 'stacked-pieces-silver']]);
+  assert.deepEqual(store.selects, [['stacked', 'piece-skin', 'stacked-pieces-prism']]);
   const status = host.all((node) => node.getAttribute('role') === 'status')[0];
   assert.equal(status.getAttribute('aria-live'), 'polite');
-  assert.equal(status.textContent, 'Piece skin: Litecoin Silver saved to your wallet.');
-  const equipped = host.all((node) => node.tagName === 'INPUT' && node.value === 'stacked-pieces-silver')[0];
+  assert.equal(status.textContent, 'Piece skin: Arcade Prism saved to your wallet.');
+  const equipped = host.all((node) => node.tagName === 'INPUT' && node.value === 'stacked-pieces-prism')[0];
   assert.equal(equipped.checked, true);
   assert.equal(documentRef.activeElement, equipped, 'focus stays on the chosen look after the repaint');
 
   // A store update repaints; a second render reuses the host and the stylesheet.
-  store.emit(hostedSnapshot({ stacked: { 'piece-skin': 'stacked-pieces-silver' } }));
+  store.emit(hostedSnapshot({ stacked: { 'piece-skin': 'stacked-pieces-prism' } }));
   const again = renderUnlockablesPanel({ store, view: 'profile', own: true, documentRef, after: grid, app, openAchievements: () => {} });
   assert.equal(again, host);
   assert.equal(documentRef.head.all((node) => node.tagName === 'LINK').length, 1);
@@ -399,14 +399,14 @@ test('Locker inspection is read-only, game filtering preserves choices, and equi
   const host = renderUnlockablesPanel({ store, documentRef, after: grid, app });
   documentRef.getElementById('locker-game-chikun').dispatch('click');
   assert.deepEqual(host.all(n => n.dataset.game && !n.hidden).map(n => n.dataset.game), ['chikun']);
-  documentRef.getElementById('unlockables-chikun-coat-chikun-coat-glacier-inspect').dispatch('click');
+  documentRef.getElementById('unlockables-chikun-coat-chikun-coat-aurora-inspect').dispatch('click');
   assert.equal(documentRef.activeElement.id, 'locker-inspection-title');
-  assert.equal(documentRef.activeElement.textContent, 'Glacier Coat');
+  assert.equal(documentRef.activeElement.textContent, 'Aurora');
   assert.deepEqual(store.selects, [], 'inspection never equips');
   assert.equal(documentRef.getElementById('locker-equip').disabled, false);
   documentRef.getElementById('locker-equip').dispatch('click');
   await new Promise(resolve => setTimeout(resolve, 0));
-  assert.deepEqual(store.selects, [['chikun', 'coat', 'chikun-coat-glacier']]);
+  assert.deepEqual(store.selects, [['chikun', 'coat', 'chikun-coat-aurora']]);
   assert.equal(documentRef.getElementById('locker-equip').textContent, 'Equipped');
   assert.equal(documentRef.activeElement.id, 'locker-inspection-title');
   documentRef.getElementById('unlockables-chikun-coat-default-inspect').dispatch('click');
@@ -437,7 +437,7 @@ test('a late equip response cannot announce another wallet’s saved choice', as
   const { documentRef, app, grid } = fakeDocument(), store = fakeStore(hostedSnapshot({}));
   let resolve; store.select = () => new Promise(done => { resolve = done; });
   const host = renderUnlockablesPanel({ store, documentRef, after: grid, app });
-  documentRef.getElementById('unlockables-chikun-coat-chikun-coat-glacier-inspect').dispatch('click');
+  documentRef.getElementById('unlockables-chikun-coat-chikun-coat-aurora-inspect').dispatch('click');
   documentRef.getElementById('locker-equip').dispatch('click');
   store.emit({ ...hostedSnapshot({}), wallet: '0x' + '9'.repeat(40) });
   resolve({ ok: true, saved: 'wallet' }); await new Promise(done => setTimeout(done, 0));
@@ -465,11 +465,38 @@ test('Locker Chikun still uses the game filter and crest-attached hat without a 
   const calls = [], ctx = { filter: 'none', save() {}, restore() {}, drawImage(...args) { calls.push(['sprite', this.filter, ...args]); }, fillRect(...args) { calls.push(['hat', this.fillStyle, ...args]); } };
   const pixels = new Uint8ClampedArray(96 * 96 * 4);pixels.set([220, 20, 20, 255], (20 * 96 + 50) * 4);
   const probe = { getContext() { return { clearRect() {}, drawImage() {}, getImageData() { return { data: pixels }; } }; } };
-  const cosmetics = { coat: 'chikun-coat-glacier', hat: 'chikun-hat-crown' }, image = {};
+  const cosmetics = { coat: 'chikun-coat-aurora', hat: 'chikun-hat-crown' }, image = {};
   drawChikunStill(ctx, image, { x: 96, y: 96, size: 192, cosmetics, probe });
   assert.equal(calls[0][0], 'sprite');assert.equal(calls[0][1], chikunCoatFilter(cosmetics));
   assert.equal(calls[0][2], image);assert.deepEqual(calls[0].slice(3), [0, 0, 192, 192, 0, 0, 192, 192]);
   assert.ok(calls.some(call => call[0] === 'hat' && call[1] === '#ffd23f' && call[2] === 82 && call[3] === 40));
   calls.length = 0;drawChikunStill(ctx, image, { x: 96, y: 96, size: 192, cosmetics: {}, probe });
   assert.equal(calls.length, 1);assert.equal(calls[0][1], 'none');
+});
+
+
+test('replacement Locker keeps the classic archive inspectable without offering retired equipment', () => {
+ const model=buildUnlockablesPanelModel(hostedSnapshot({}));
+ assert.equal(model.games.flatMap(game=>game.slots.flatMap(slot=>slot.options.filter(option=>option.id))).length,12);
+ const classics=model.games.flatMap(game=>game.slots.flatMap(slot=>slot.classics));assert.equal(classics.length,25);
+ assert.equal(classics.find(option=>option.id==='chikun-coat-glacier').status,'unlocked');
+ assert.ok(classics.every(option=>option.retired));
+});
+
+
+test('retired classics remain earned and inspectable but cannot trigger equip', () => {
+ const {documentRef,app,grid}=fakeDocument(),store=fakeStore(hostedSnapshot({}));
+ const host=renderUnlockablesPanel({store,documentRef,after:grid,app});
+ documentRef.getElementById('locker-game-chikun').dispatch('click');
+ documentRef.getElementById('unlockables-chikun-coat-chikun-coat-glacier-inspect').dispatch('click');
+ assert.match(host.textContent,/Classic archive · Unlocked/);
+ const equip=documentRef.getElementById('locker-equip');assert.equal(equip.disabled,true);assert.equal(equip.textContent,'Archived look');equip.dispatch('click');
+ const radio=documentRef.getElementById('unlockables-chikun-coat-chikun-coat-glacier');assert.equal(radio.disabled,true);radio.checked=true;radio.dispatch('change');
+ assert.deepEqual(store.selects,[]);
+});
+
+test('scene inspection uses the same grade value as the actual visualizer renderer', async () => {
+ const {stackedPreviewGrade}=await import('../apps/portal/src/routes/unlockables-preview.mjs');
+ const {sceneGradeFor}=await import('../apps/stacked/src/render/cosmetic-palettes.mjs');
+ for(const id of [null,'stacked-scene-midnight-aurora','stacked-scene-noir'])assert.equal(stackedPreviewGrade(id),sceneGradeFor({cosmetics:{scene:id}}));
 });

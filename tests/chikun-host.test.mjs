@@ -14,14 +14,14 @@ class FakeDocument {
   createElement(tag) { assert.equal(tag, 'iframe'); return new FakeIframe(); }
 }
 
-function fixture() {
+function fixture(search='') {
   const documentRef = new FakeDocument();
   const mount = { children: [], replaceChildren(...children) { this.children = children; for (const child of children) child.contentWindow = { focus() {} }; } };
   const bridges = [];
   const ready = []; const states = []; const results = []; const restarts = []; const errors = [];
   const timers = [];
   const host = createChikunHost({
-    mount, documentRef, expectedOrigin: 'https://arcade.test',
+    mount, documentRef, expectedOrigin: 'https://arcade.test',search,
     bridgeFactory(options) {
       const bridge = { options, connects: 0, sent: [], destroyed: false, connect() { this.connects += 1; }, send(type, payload) { this.sent.push({ type, payload }); }, destroy() { this.destroyed = true; } };
       bridges.push(bridge); return bridge;
@@ -40,6 +40,14 @@ function fixture() {
   };
   return { host, mount, documentRef, bridges, ready, states, results, restarts, errors, timers, session };
 }
+
+test('course two is forwarded only for explicitly unranked Free sessions',()=>{
+ for(const [mode,eligible,expected]of[['free',false,true],['ranked',true,false],['free',true,false],['free',undefined,false],['paid',false,false]]){
+  const f=fixture('?course=2');f.session.mode=mode;f.session.session.rankedEligible=eligible;
+  const frame=f.host.mountSession(f.session);assert.equal(new URL(frame.src).searchParams.get('course')==='2',expected);f.host.destroy();
+ }
+ const f=fixture('?course=2&course=2');assert.equal(new URL(f.host.mountSession(f.session).src).searchParams.has('course'),false);f.host.destroy();
+});
 
 test('Chikun host mounts an input-owning same-origin sandbox with no navigation capability', () => {
   const { host, mount, documentRef, bridges, session } = fixture();

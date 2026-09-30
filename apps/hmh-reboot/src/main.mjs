@@ -3034,7 +3034,7 @@ async function boot() {
         const enemy3d = [];
         for (const enemy of grayboxEnemies) {
           const body = enemyMarkers.get(enemy.id);
-          if (enemy.archetypeId !== 'bagholder-rusher' || !enemy.active || !body?.visible || body.alpha !== 1 || !body.worldDesignPoseInput) continue;
+          if (!enemy.active || !body?.visible || body.alpha !== 1 || !body.worldDesignPoseInput) continue;
           const bounds = body.getBounds();
           if (bounds.x + bounds.width <= 0 || bounds.y + bounds.height <= 0 || bounds.x >= view.width || bounds.y >= view.height) continue;
           enemy3d.push({ id: enemy.id, actorId: enemy.archetypeId, active: true, visible: true, alpha: body.alpha,

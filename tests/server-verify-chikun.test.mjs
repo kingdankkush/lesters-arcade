@@ -28,6 +28,11 @@ const bodyWith = (mutate) => {
 };
 const verify = (body, overrides) => verifyRankedRun(body, fixtureVerifyOptions(overrides));
 
+test('private course two evidence cannot enter current Ranked verification',async()=>{
+ const body=bodyWith(b=>{b.evidence.flap.version='chikun-input-evidence-v7';b.evidence.flap.glideDeltas=[];});
+ const result=await verify(body);assert.equal(result.ok,false);
+});
+
 test('valid v6 run verifies with server-derived stats and envelope', async () => {
   const run = await verify(fixture.body);
   assert.equal(run.ok, true, JSON.stringify(run));

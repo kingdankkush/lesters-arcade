@@ -11,6 +11,9 @@
 const KINDS = Object.freeze(['I', 'J', 'L', 'O', 'S', 'T', 'Z']);
 
 export const STACKED_PIECE_PALETTES = Object.freeze({
+  'stacked-pieces-prism':Object.freeze({I:0x76e5ef,J:0x6c8df1,L:0xffaa68,O:0xffe284,S:0x81dda6,T:0xc898ed,Z:0xf17f96,garbage:0x526674}),
+  'stacked-pieces-polar':Object.freeze({I:0xb8f4ff,J:0x658ad2,L:0xc9b6f2,O:0xf3ebbf,S:0x70d7bf,T:0x919cec,Z:0xc57ca6,garbage:0x465771}),
+  'stacked-pieces-emberglass':Object.freeze({I:0x89d3d8,J:0x9b83bd,L:0xf9a26a,O:0xffda82,S:0xafc475,T:0xd890b5,Z:0xe57668,garbage:0x67515c}),
   'stacked-pieces-silver': Object.freeze({ I: 0xe3edff, J: 0x8ea8d8, L: 0xc4d2ea, O: 0xf6f8ff, S: 0xa9bddc, T: 0x7d93c4, Z: 0x5f7196, garbage: 0x4a5570 }),
   'stacked-pieces-sunset': Object.freeze({ I: 0xffd166, J: 0xff6f59, L: 0xff9f43, O: 0xffe7a3, S: 0xf78fb3, T: 0xc56cf0, Z: 0xe0405a, garbage: 0x6b4a5a }),
   'stacked-pieces-seafoam': Object.freeze({ I: 0x7dffd1, J: 0x2fb886, L: 0xbaffdf, O: 0xecfff5, S: 0x39d9a6, T: 0x62c7e8, Z: 0x138f70, garbage: 0x3d5f55 }),
@@ -18,6 +21,7 @@ export const STACKED_PIECE_PALETTES = Object.freeze({
 });
 
 export const STACKED_SCENE_GRADES = Object.freeze({
+  'stacked-scene-midnight-aurora':0xadb9ef,
   'stacked-scene-noir': 0xa9b8d8,
   'stacked-scene-sunset': 0xffb892,
   'stacked-scene-forge': 0x9dffbf,

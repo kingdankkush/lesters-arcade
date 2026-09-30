@@ -46,7 +46,7 @@ export const CHILD_COSMETIC_KEYS = Object.freeze({
 const CHIKUN_PREVIEW = '/assets/generated/chikun-flight-v3/poster.webp';
 const entry = (value) => Object.freeze({ artStatus: 'ready', ...value, requires: Object.freeze({ ...value.requires }) });
 
-export const UNLOCKABLES = Object.freeze([
+const ORIGINAL_UNLOCKABLES = Object.freeze([
   // Hard Money Heroes heroes. The hero select owns the choice
   // (hmh-character-config.mjs buildCharacterUnlockMap); the panel only shows them.
   entry({ id: 'hmh-hero-lester', gameId: 'lester-blaster', kind: 'character', characterId: 'lester-original', title: 'Lester', requires: { confirmedRuns: 5 }, preview: '/assets/generated/hmh-hero-portraits/lester-original.webp', swatch: '#345dcc' }),
@@ -84,6 +84,28 @@ export const UNLOCKABLES = Object.freeze([
   entry({ id: 'stacked-scene-noir', gameId: 'stacked', kind: 'scene', title: 'Noir Grade', swatch: '#9fb2d6', requires: { achievementId: 'stacked-survive-2m' }, preview: '/assets/stacked-mode-select/stacked-mode-bg.svg' }),
   entry({ id: 'stacked-scene-sunset', gameId: 'stacked', kind: 'scene', title: 'Sunset Grade', swatch: '#ffb48c', requires: { achievementId: 'stacked-chain-5' }, preview: '/assets/stacked-mode-select/stacked-mode-bg.svg' }),
   entry({ id: 'stacked-scene-forge', gameId: 'stacked', kind: 'scene', title: 'Hashrate Green', swatch: '#8effb4', requires: { achievementId: 'stacked-survive-7m' }, preview: '/assets/stacked-mode-select/stacked-mode-bg.svg' }),
+]);
+
+// 2.0 recommendations use existing earned records, never new earning rules.
+// Classic entries remain addressable for ownership/history and archive inspection.
+export const REPLACEMENT_UNLOCKABLES_2_0 = Object.freeze([
+  entry({ id:'hmh-hero-sentinel', gameId:'lester-blaster', kind:'hero-skin', title:'Silver Sentinel', tint:0xdbe8f0, swatch:'#dbe8f0', requires:{achievementId:'score-10000'}, preview:'/assets/generated/hmh-hero-portraits/lit-commando.webp' }),
+  entry({ id:'hmh-hero-blood-moon', gameId:'lester-blaster', kind:'hero-skin', title:'Blood Moon', tint:0xff9eae, swatch:'#ff9eae', requires:{achievementId:'enemy-reaper-250'}, preview:'/assets/generated/hmh-hero-portraits/lit-valkyrie.webp' }),
+  entry({ id:'hmh-weapon-ion-pulse', gameId:'lester-blaster', kind:'weapon-skin', title:'Ion Pulse', tint:0x76f6ed, swatch:'#76f6ed', requires:{achievementId:'hash-rail-specialist'}, preview:'/assets/lester-blaster-weapons.svg' }),
+  entry({ id:'hmh-weapon-sunforge', gameId:'lester-blaster', kind:'weapon-skin', title:'Sunforge', tint:0xffd18a, swatch:'#ffd18a', requires:{achievementId:'grenade-century'}, preview:'/assets/lester-blaster-weapons.svg' }),
+  entry({ id:'chikun-coat-aurora', gameId:'chikun', kind:'coat', title:'Aurora', swatch:'#a7e7ed', requires:{achievementId:'chikun-reach-coast'}, preview:CHIKUN_PREVIEW }),
+  entry({ id:'chikun-trail-comet', gameId:'chikun', kind:'trail', title:'Comet Wake', swatch:'#8eeaff', requires:{achievementId:'chikun-close-call'}, preview:CHIKUN_PREVIEW }),
+  entry({ id:'chikun-hat-flight-goggles', gameId:'chikun', kind:'hat', title:'Flight Goggles', swatch:'#85e8f5', requires:{achievementId:'chikun-first-flight'}, preview:CHIKUN_PREVIEW }),
+  entry({ id:'chikun-hat-prospector', gameId:'chikun', kind:'hat', title:'Prospector Helmet', swatch:'#efb853', requires:{achievementId:'chikun-survive-4m'}, preview:CHIKUN_PREVIEW }),
+  entry({ id:'stacked-pieces-prism', gameId:'stacked', kind:'piece-skin', title:'Arcade Prism', swatch:'#91deed', requires:{achievementId:'stacked-first-line'}, preview:'/assets/cartridge-stacked.svg' }),
+  entry({ id:'stacked-pieces-polar', gameId:'stacked', kind:'piece-skin', title:'Polar Circuit', swatch:'#9bddeb', requires:{achievementId:'stacked-level-10'}, preview:'/assets/cartridge-stacked.svg' }),
+  entry({ id:'stacked-pieces-emberglass', gameId:'stacked', kind:'piece-skin', title:'Emberglass', swatch:'#f6ae73', requires:{achievementId:'stacked-halvings-3'}, preview:'/assets/cartridge-stacked.svg' }),
+  entry({ id:'stacked-scene-midnight-aurora', gameId:'stacked', kind:'scene', title:'Midnight Aurora', swatch:'#adb9ef', requires:{achievementId:'stacked-survive-7m'}, preview:'/assets/stacked-mode-select/stacked-mode-bg.svg' }),
+].map(item=>entry({...item,edition:'2.0'})));
+export const UNLOCKABLES = Object.freeze([
+  ...ORIGINAL_UNLOCKABLES.filter(item=>item.kind==='character'),
+  ...REPLACEMENT_UNLOCKABLES_2_0,
+  ...ORIGINAL_UNLOCKABLES.filter(item=>item.kind!=='character').map(item=>entry({...item,retired:true})),
 ]);
 
 const BY_ID = new Map(UNLOCKABLES.map((item) => [item.id, item]));

@@ -93,7 +93,7 @@ function fixture({appGate,decodeGate,navGates=[],metadataFailure=null,partialIni
       navigationAt(){return Object.freeze({returnDistance:0});}};
     runtimes.push(runtime);return runtime;
   }
-  const imports={Application,Container:Display,Graphics:Graphic,Sprite:Display,Texture,Rectangle:class{},
+  const imports={createWoodsArt:()=>null,Application,Container:Display,Graphics:Graphic,Sprite:Display,Texture,Rectangle:class{},
     createGreyboxWorld:()=>testWorld,createGreyboxGroundPaint,createWorldV2Geometry,createWorldV2LocalRuntime:createRuntime,
     createGreyboxPropResidency:residencyModule.createGreyboxPropResidency,
     createLocalMeadowsRelayPlan:world=>{assert.equal(world,testWorld);return relayPlan;},
@@ -101,7 +101,7 @@ function fixture({appGate,decodeGate,navGates=[],metadataFailure=null,partialIni
     PRODUCTION_HERO_ASSETS:{'lit-commando':{actorId:'lit-commando',metadataUrl:'/human.json',imageUrl:'/human.webp'}},PRODUCTION_HERO_RUNTIME_SCALE:.58,
     createProductionHeroAtlasIndex:()=>({}),createProductionHeroDisplay:()=>({container:new Display(),artSource:'packed-textured-blend',applyPose(pose){poses.push(pose);},setLayerVisible(layer,visible){layers.push({layer,visible});}})};
   const allowed=new Set(['pixi.js','./greybox-world-v1.mjs','./greybox-ground-presentation.mjs','../world-v2-geometry.mjs','./world-v2-local-runtime.mjs',
-    '../input.mjs','../touch-controls.mjs','../world-space.mjs','../elevation.mjs','../production-hero-atlas.mjs','../production-hero-assets.mjs','./greybox-prop-residency.mjs','./world-v2-local-relay.mjs','../movement.mjs']);
+    '../input.mjs','../touch-controls.mjs','../world-space.mjs','../elevation.mjs','../production-hero-atlas.mjs','../production-hero-assets.mjs','./greybox-prop-residency.mjs','./world-v2-local-relay.mjs','../movement.mjs','./world-v2-woods-art.mjs']);
   const executable=source.replace(/^import\s*\{([^}]+)\}\s*from\s*['"]([^'"]+)['"];?\s*$/gm,(_line,names,specifier)=>{
     assert.ok(allowed.has(specifier),specifier);for(const name of names.split(',').map(x=>x.trim()).filter(Boolean))assert.ok(Object.hasOwn(imports,name),name);return '';
   }).replace('export function mountGreyboxPlaytest','function mountGreyboxPlaytest');
@@ -265,4 +265,26 @@ test('inspection replacement resets only the temporary relay and close releases 
   assert.equal(f.runtimes[1].snapshot().relay.completionTick,null);assert.match(f.nodes['[data-relay-task]'].textContent,/Restore/);
   const cues=f.graphics.filter(g=>['local-relay-ring','local-relay-lamp'].includes(g.label));assert.equal(cues.length,2);
   f.close();assert.ok(cues.every(g=>g.destroyed));assert.equal(f.frames.size,0);
+});
+
+test('Woods art uses actual bank roots and keeps authored trails and authority intact',async()=>{
+  const {createGreyboxWorld}=await import('../apps/hmh-reboot/src/dev/greybox-world-v1.mjs');
+  const {createWoodsArtPlan}=await import('../apps/hmh-reboot/src/dev/world-v2-woods-art.mjs');
+  const world=createGreyboxWorld(),before=JSON.stringify(world),plan=createWoodsArtPlan(world);
+  const woods=world.areas.find(area=>area.id==='rugpull-woods');
+  const inside=(p,vertices)=>{let result=false;for(let i=0,j=vertices.length-1;i<vertices.length;j=i++){
+    const a=vertices[i],b=vertices[j];if((a.y>p.y)!==(b.y>p.y)&&p.x<(b.x-a.x)*(p.y-a.y)/(b.y-a.y)+a.x)result=!result;}return result;};
+  const solids=world.pieces.filter(p=>p.blocker),trees=plan.decor.filter(p=>p.height>160),low=plan.decor.filter(p=>['01','04'].includes(p.source));
+  assert.equal(plan.runtimeAuthority,'projection-only');assert.deepEqual(plan.bounds,woods.bounds);
+  assert.deepEqual(plan.solidIds,world.pieces.filter(p=>p.visible.areaId==='rugpull-woods'&&p.blocker).map(p=>p.id));
+  assert.ok(plan.solidIds.length>=8);assert.ok(trees.length>30&&trees.length<200);assert.ok(low.length>150&&low.length<260);
+  for(const tree of trees)assert.ok(solids.some(p=>inside(tree,p.blocker.shape.vertices)&&p.visible.height===tree.groundZ),`root ${tree.id} requires an existing matching-height bank`);
+  for(const plant of low){
+    assert.ok(!solids.some(p=>inside(plant,p.blocker.shape.vertices)));
+    for(const {a,b,width}of plan.routes){const dx=b.x-a.x,dy=b.y-a.y,d=dx*dx+dy*dy,t=d?Math.max(0,Math.min(1,((plant.x-a.x)*dx+(plant.y-a.y)*dy)/d)):0;
+      assert.ok(Math.hypot(plant.x-a.x-t*dx,plant.y-a.y-t*dy)>=width/2+64);}
+  }
+  assert.ok(plan.routes.every(route=>route.width>=44&&route.width<=58),'worn presentation trails stay narrow');
+  assert.ok(low.filter(p=>Math.abs(p.x-woods.center.x)<550&&Math.abs(p.y-woods.center.y)<480).length>=60,'actual center framing contains low planted pockets');
+  assert.equal(JSON.stringify(world),before,'art planning does not mutate the gameplay world');
 });
