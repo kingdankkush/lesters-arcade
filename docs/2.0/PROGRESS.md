@@ -691,3 +691,29 @@ in the fresh successful build. Seven originals reviewed across five widths.
 All children/Chrome/HTTP closed, PIDs absent and owned markers released.
 See slices/STACKED-F2B-DAILY.md and receipts/stacked-daily-f2b. No physical phone,
 soak, release gate, owner acceptance, version, push or deployment claimed.
+
+### W2h Fork Fortress local-flow checkpoint
+
+Fortress now has a gatehouse/keep approach, independent lower loading route,
+store-side return and two-ended maintenance platform. Fourteen pieces/five
+paths replace its template; seven of ten areas now have distinct local layouts.
+The Foreman remains a staged label only. Source RED was 5 expected failures /
+1 control; first GREEN is 60/60 plus the same 60 in an exact 27-file isolated
+no-Git/empty-PATH copy. Closing the entire court leaves the lower connection
+usable. Solid footprint is 1,700,100 units² below 2,060,800; unchanged nav improves
+62 cells to 36,229/77,589 (46.6935%), outside 0. All 98 sites out/back and 14 roads
+pass. Court 219/225 open (97.3333%) has two reachable exits and both cover heights.
+
+One preview build and one 86.106-second actual Chrome attempt passed 22 desktop /
+4 touch legs after one visible inspection jump each, platform 24/return 0,
+gatehouse contact x11654.000001, four denied entries and pagehide cleanup. Own
+dist containment/nonjunction ancestry verified. Children 13708/54684/49544 closed
+0/null and were observed absent; HTTP 63627 closed and marker released. All pins
+and served/captured bytes match. All 11 original images were reviewed: compound
+routes and structural faces read, while sparse phone views, flat blocks, tiny
+plan labels, clipped Foreman staging text and site-outline overlaps remain.
+
+See slices/WORLD-W2H-FORTRESS.md and compact receipts/world-fortress. No duplicated
+source trees added to these receipts. Local bundle:
+outputs/hmh-fortress-authored-flow-preview.zip. No final art/whole-map owner,
+physical phone, official-map/verifier or release acceptance; no credits/deploy.

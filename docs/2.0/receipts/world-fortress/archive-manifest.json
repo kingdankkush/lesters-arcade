@@ -1,0 +1,141 @@
+{
+  "schema": "world-fortress-raw-archive-v1",
+  "scope": "Exact RED/GREEN/copy/diagnostic outputs with input hashes, and one native browser attempt with one explicit inspection jump per viewport before local walks. Lossless gzip with raw and stored identities. Not a release gate, continuous regional journey, physical-device result or final-art acceptance.",
+  "entries": [
+    {
+      "archive": "red-01/red-report.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-fortress-flow-red-20260930-01\\red-report.json",
+      "bytes": 12746,
+      "sha256": "713a3c0d8f24dbcdce99669aaaa3d5863537d69bba1731b64a44c8d6e044e554",
+      "storedBytes": 2783,
+      "storedSha256": "afbcacfc97547775edb4668a010d91af1ea4547ca67b1d67538af183e6f23746",
+      "compression": "gzip"
+    },
+    {
+      "archive": "red-01/runner.mjs.txt.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-fortress-flow-red-20260930-01\\runner.mjs.txt",
+      "bytes": 5568,
+      "sha256": "5dbee800aa5d3cf37a9b7b8c992dc488ee22f483a1a90dedbbedf6f07a3cb47b",
+      "storedBytes": 2429,
+      "storedSha256": "40c74bec823a37f783d0db31516a423c787b2ad0a2a381b6f74a6441eeff9d60",
+      "compression": "gzip"
+    },
+    {
+      "archive": "red-01/helper.mjs.txt.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-fortress-flow-red-20260930-01\\helper.mjs.txt",
+      "bytes": 3475,
+      "sha256": "a5177337fcf6ec41f285fc105b93d0b4b94ee1101cb14a653a91e9b8b075b0d9",
+      "storedBytes": 1360,
+      "storedSha256": "ade927025e2afbae667182802dfce78d9ddd6b3afea7cfd48a5b40eac5e8ea4b",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-01/gate-report.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-fortress-green-20260930-01\\gate-report.json",
+      "bytes": 42208,
+      "sha256": "7f1b213efbb9a0ac496f5134996b6037ae749e14cee04bb75e1220e8ba860947",
+      "storedBytes": 6753,
+      "storedSha256": "cff11cee5538208c6f09ecdfdb17cfb2e41303fac7646f38f028c0b5596a85b2",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-01/bindings.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-fortress-green-20260930-01\\bindings.json",
+      "bytes": 19530,
+      "sha256": "e42161d131971f0e2fedef217206c911ab055da86067393d1e0456f1209d6fce",
+      "storedBytes": 2583,
+      "storedSha256": "2d39d95013ee6ce57dfcc2317cdf11a627265857f25267f2ef85e676f959ee04",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-01/runner.mjs.txt.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-fortress-green-20260930-01\\runner.mjs.txt",
+      "bytes": 4932,
+      "sha256": "9a0744fc2e45137303f3cde02fe10758876e932edb7efbc5e7e353177b152e06",
+      "storedBytes": 1906,
+      "storedSha256": "d095362b7b56f958735d5899fbf00edf2c9fff8a0ffbc71ff52377ef425b0d96",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-01/layout-report.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-fortress-green-20260930-01\\layout-report.json",
+      "bytes": 68942,
+      "sha256": "8decfdb942927ad3529f10b8d24ab594fa04d6fae5459d726a7ee6b396cf94b3",
+      "storedBytes": 5862,
+      "storedSha256": "41142a7e6182e18f0ef57a883677b81c1e064170a3265952b2d60640aed4f651",
+      "compression": "gzip"
+    },
+    {
+      "archive": "browser-01/gate-report.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-fortress-preview-browser-20260930-01\\gate-report.json",
+      "bytes": 252183,
+      "sha256": "5fa1707ca70e3a8df92cf328e9f438cca5d7adbd4286b47337544f5e2e803752",
+      "storedBytes": 33756,
+      "storedSha256": "e1c5782a5cfb359df16f9016b412ca6a5b659fb053a0f9501ce81870f6d19d52",
+      "compression": "gzip"
+    },
+    {
+      "archive": "browser-01/bindings.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-fortress-preview-browser-20260930-01\\bindings.json",
+      "bytes": 76192,
+      "sha256": "68859fa2e8a4f95bc7d09e683b9735d5a51fe415164da6b984ea5780f097133a",
+      "storedBytes": 14604,
+      "storedSha256": "af61874a94be65f37ce39e26d6e6d636d2472773e78ce51abadca94a5cc64fd6",
+      "compression": "gzip"
+    },
+    {
+      "archive": "browser-01/runner.mjs.txt.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-fortress-preview-browser-20260930-01\\runner.mjs.txt",
+      "bytes": 9852,
+      "sha256": "3b32fa76bd23a0a7e53d31b1ab44a06eb5fbe4e846abb7a0336c4a93db7db1e3",
+      "storedBytes": 3296,
+      "storedSha256": "c28cef4e31855039262917a03c1b8f356a30bd05af957a0a1f9edecdc8957fe3",
+      "compression": "gzip"
+    },
+    {
+      "archive": "browser-01/browser/browser-report.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-fortress-preview-browser-20260930-01\\browser\\browser-report.json",
+      "bytes": 118129,
+      "sha256": "838726cfc7eb8266c99d4ea363821fdaaf726ce78d5ea575433f5f349e062577",
+      "storedBytes": 6214,
+      "storedSha256": "a9c111f5f3aeb3dafaa82be04c84dcc5265ffba7f3be41ff1592f09a4fb41886",
+      "compression": "gzip"
+    },
+    {
+      "archive": "browser-01/harness/hmh-greybox-fortress-browser-smoke.mjs.txt.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\hmh-greybox-fortress-browser-smoke.mjs",
+      "bytes": 18888,
+      "sha256": "375e536cc894f8c0428f1f2bf1144520646dcf664378ea98e0d275bd5745d0e3",
+      "storedBytes": 6172,
+      "storedSha256": "375b94d322450b0991666ee89077d1b30a48028b18fcca926e8abd99d73d784c",
+      "compression": "gzip"
+    },
+    {
+      "archive": "browser-01/harness/prepare-world-fortress-browser.mjs.txt.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\prepare-world-fortress-browser.mjs",
+      "bytes": 5600,
+      "sha256": "81643236f6dc1969c4cd620cac80bb1a9640dc4bd68a4328359a2b47a9fc05fc",
+      "storedBytes": 2316,
+      "storedSha256": "b9999f66824d2b56d8e7b6f2aad72523f3338961293881e0abf218785c21c3e5",
+      "compression": "gzip"
+    },
+    {
+      "archive": "browser-01/harness/owned-windows-preview-child.mjs.txt.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\owned-windows-preview-child.mjs",
+      "bytes": 3476,
+      "sha256": "6f4903a66d324a01a476eebefdfac68663dde2c573f62f637c4b7537ccb0d631",
+      "storedBytes": 1360,
+      "storedSha256": "18c5cfc758da42cddbb922c7989a0204d20eb87c1d5d359985932ef89f92c162",
+      "compression": "gzip"
+    },
+    {
+      "archive": "author-image-review.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-fortress-author-image-review.json",
+      "bytes": 1491,
+      "sha256": "06503ffa058e30f053762df5f61e7a31e49571dd38ae8a958bb5ef13a9136d4f",
+      "storedBytes": 835,
+      "storedSha256": "94f7c28b9fe2ff9939d1708a23a7e519a2dc4292877a19aa650bba5a992a40d5",
+      "compression": "gzip"
+    }
+  ]
+}

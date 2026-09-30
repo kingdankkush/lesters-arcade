@@ -99,3 +99,6 @@ docs/2.0/receipts/world-ridge/** -text
 docs/2.0/receipts/world-pines/** -text
 
 docs/2.0/receipts/stacked-daily-f2b/** -filter -diff -merge
+
+# Compact exact Fortress authoring evidence
+docs/2.0/receipts/world-fortress/** -text
