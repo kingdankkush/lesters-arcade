@@ -1,0 +1,9 @@
+{
+  "schema": "opening-slices-local-gather-bindings-v1",
+  "stackedExactFileBindings": 19,
+  "characterAuthorityMainSourceMatches": true,
+  "chikunExactRuntimeBindings": 4,
+  "chikunCommittedQaLfMatches": true,
+  "allRequiredSyntaxRegistrationsRetained": true,
+  "scope": "read-only source/data byte check; not fresh combined build/browser/performance/release gate"
+}
