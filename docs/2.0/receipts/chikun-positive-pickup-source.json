@@ -70,5 +70,8 @@
     },
     "scope": "targeted additional fresh proof; earlier complete runtime parity batch is unchanged and source-bound"
   },
-  "referenceBoardReceiptSha256": "9ad6d6fa5a7bad748c1bb2dd56c60f47a8eb5989f04f69cc02261635e5ab53d2"
+  "referenceBoardReceiptSha256": "9ad6d6fa5a7bad748c1bb2dd56c60f47a8eb5989f04f69cc02261635e5ab53d2",
+  "finalBrowserHarnessWorkingBytesSha256": "5bd279c80f8aa3093d9cef3d7c7505fe1ab30cc40272ed3a2620866db990e8ee",
+  "finalBrowserHarnessCommittedLfSha256": "41d4a77d1ac6fd87cb10df065f6c1ea9007baa145d5de5d3bd9a87fe093a1478",
+  "harnessLineEndingNote": "only QA script normalized by Git; exact runtime source hashes are unchanged; diagnostic ran equivalent CRLF source"
 }
