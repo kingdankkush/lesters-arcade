@@ -54,6 +54,10 @@ const NODE_CHECK_FILES = [
   'tests/hmh-actor-glb.test.mjs',
   'tests/hmh-actor-glb-pilot-assets.test.mjs',
   'tests/hmh-actor-pilot-paths.test.mjs',
+  'tests/stacked-evidence-copy-boundary.test.mjs',
+  'tests/stacked-priority-hold-short-terminal-replay.test.mjs',
+  'tests/fixtures/stacked-transport-copy-iteration-worker.mjs',
+
   'apps/hmh-reboot/src/area-texture-leases.mjs',
   'apps/hmh-reboot/src/terrain-area-streaming.mjs',
   'tests/hmh-terrain-area-streaming.test.mjs',

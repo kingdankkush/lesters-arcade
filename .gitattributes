@@ -60,3 +60,5 @@ docs/qa/hmh-world-w0b-native-source/*.mjs.txt -text whitespace=cr-at-eol
 docs/qa/stacked-s0d-native-source/** -text whitespace=cr-at-eol
 docs/qa/stacked-s0c-profile-source/** -text whitespace=cr-at-eol
 docs/qa/stacked-s0c-profile-20260929.cpuprofile -text
+
+docs/2.0/receipts/stacked-transport-copy-paired-raw.json -text

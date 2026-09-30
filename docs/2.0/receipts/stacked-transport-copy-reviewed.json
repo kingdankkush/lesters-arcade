@@ -1,0 +1,1163 @@
+{
+  "schema": "stacked-transport-copy-reviewed-checkpoint-v1",
+  "source": "Actual saved results; no target execution by this preservation helper",
+  "red": {
+    "schema": "stacked-transport-copy-red-v1",
+    "before": {
+      "tests/stacked-evidence-copy-boundary.test.mjs": "1b0b3fa79bf6f265fcfba2ce90e1cd5d0ee0f7b910a134586befca8019e70dac",
+      "tests/fixtures/stacked-transport-copy-iteration-worker.mjs": "242c46bc63ec29b5f2d79b298f051e466aecaf82f8ae4b084ab18c547331e27c",
+      "apps/portal/src/stacked-evidence-transport.mjs": "059afcbf2801e7d34c946101d41ddd0c6bfc06508743076c57d8704ab9ab2a84",
+      "apps/portal/src/stacked-sim.mjs": "5b5fe17c237389bd48834b757166c8afc0b58c801246806275d25fa16ae82114",
+      "apps/portal/src/stacked-contracts.mjs": "5ee0d079f2688b02217a60f4695e41944504b0759e87004da6a213e926be9ec6",
+      "apps/portal/src/seeded-rng.mjs": "b6eed9c993e1efd38871c14d50b580ea15133fdcef020e81ffe7051e24b3ebc7"
+    },
+    "after": {
+      "tests/stacked-evidence-copy-boundary.test.mjs": "1b0b3fa79bf6f265fcfba2ce90e1cd5d0ee0f7b910a134586befca8019e70dac",
+      "tests/fixtures/stacked-transport-copy-iteration-worker.mjs": "242c46bc63ec29b5f2d79b298f051e466aecaf82f8ae4b084ab18c547331e27c",
+      "apps/portal/src/stacked-evidence-transport.mjs": "059afcbf2801e7d34c946101d41ddd0c6bfc06508743076c57d8704ab9ab2a84",
+      "apps/portal/src/stacked-sim.mjs": "5b5fe17c237389bd48834b757166c8afc0b58c801246806275d25fa16ae82114",
+      "apps/portal/src/stacked-contracts.mjs": "5ee0d079f2688b02217a60f4695e41944504b0759e87004da6a213e926be9ec6",
+      "apps/portal/src/seeded-rng.mjs": "b6eed9c993e1efd38871c14d50b580ea15133fdcef020e81ffe7051e24b3ebc7"
+    },
+    "command": {
+      "args": [
+        "--test",
+        "--test-reporter=tap",
+        "tests/stacked-evidence-copy-boundary.test.mjs"
+      ],
+      "startedAt": "2026-09-30T02:17:38.495Z",
+      "stdout": "TAP version 13\n# Subtest: transport returns one owned bounded byte buffer without a per-byte string iterator detour\nnot ok 1 - transport returns one owned bounded byte buffer without a per-byte string iterator detour\n  ---\n  duration_ms: 52.751\n  type: 'test'\n  location: 'C:\\\\Users\\\\just_\\\\lesters-arcade-wt\\\\200-world-w0\\\\tests\\\\stacked-evidence-copy-boundary.test.mjs:34:1'\n  failureType: 'testCodeFailure'\n  error: |-\n    transport must not create per-byte string iterator results beyond the unchanged native canonical round trip\n    \n    32768 !== 0\n    \n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected: 0\n  actual: 32768\n  operator: 'strictEqual'\n  stack: |-\n    TestContext.<anonymous> (file:///C:/Users/just_/lesters-arcade-wt/200-world-w0/tests/stacked-evidence-copy-boundary.test.mjs:40:10)\n    process.processTicksAndRejections (node:internal/process/task_queues:104:5)\n    async Test.run (node:internal/test_runner/test:1313:7)\n    async startSubtestAfterBootstrap (node:internal/test_runner/harness:385:3)\n  ...\n# Subtest: transport preserves every ordered byte value and returns detached fresh results\nok 2 - transport preserves every ordered byte value and returns detached fresh results\n  ---\n  duration_ms: 0.7819\n  type: 'test'\n  ...\n# Subtest: independent RFC vectors preserve empty, partial and complete triples\nok 3 - independent RFC vectors preserve empty, partial and complete triples\n  ---\n  duration_ms: 0.1558\n  type: 'test'\n  ...\n# Subtest: raw/chunk caps preserve exact inclusive boundaries and zero-cap behavior\nok 4 - raw/chunk caps preserve exact inclusive boundaries and zero-cap behavior\n  ---\n  duration_ms: 107.4594\n  type: 'test'\n  ...\n# Subtest: noncanonical padding bits retain native round-trip rejection semantics\nok 5 - noncanonical padding bits retain native round-trip rejection semantics\n  ---\n  duration_ms: 0.3668\n  type: 'test'\n  ...\n# Subtest: malformed text and cap types retain exact pre-decode rejection class/message\nok 6 - malformed text and cap types retain exact pre-decode rejection class/message\n  ---\n  duration_ms: 0.2819\n  type: 'test'\n  ...\n1..6\n# tests 6\n# suites 0\n# pass 5\n# fail 1\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 311.8762\n",
+      "stderr": "",
+      "watchdogSeconds": 30,
+      "watchdogTriggered": false,
+      "killRequested": false,
+      "killError": null,
+      "spawnError": null,
+      "exitCode": 1,
+      "signal": null,
+      "finishedAt": "2026-09-30T02:17:38.894Z",
+      "wholeChildWallMs": 397.1672
+    },
+    "tests": 6,
+    "pass": 5,
+    "fail": 1,
+    "skipped": 0,
+    "todo": 0,
+    "scope": "Real shared transport boundary RED and byte/canonical goldens only. No simulator run, CPU profile, timing/headroom batch, browser/phone/production acceptance or runtime edit."
+  },
+  "green": {
+    "schema": "stacked-transport-copy-green-v1",
+    "sourceBefore": {
+      "apps/portal/src/achievements/entry.mjs": "a4e55551ae0b7aca76bda548659155ab22294e049fdcd02bf9462f224ce8b98e",
+      "apps/portal/src/achievements/hmh.mjs": "044a813a78829bf0c27eff8a94cefaf94dd7af3a1802e13624b79c6c79916751",
+      "apps/portal/src/achievements/stats.mjs": "704f8ffefec2f9572243f98e85e71a67f0c4afc64be4fc9225da2dbd4baa13d6",
+      "apps/portal/src/chikun-course-regions.mjs": "0d43a3b3f8a2bf06db2c8e381290376696a9270e3f5d0d101d707720faf6941a",
+      "apps/portal/src/chikun-ground-course.mjs": "a29626fe35d1d92979c5950ef0cd17efdfe2340ba98c5a3a7a772403c32fb7ca",
+      "apps/portal/src/ranked-identity.mjs": "225a1f2c89a2f3cad7d5ef0f7b732ffae0347acd7d6c7a156d7227e60acd8056",
+      "apps/portal/src/seeded-rng.mjs": "b6eed9c993e1efd38871c14d50b580ea15133fdcef020e81ffe7051e24b3ebc7",
+      "apps/portal/src/session-integrity.mjs": "26785093fba615224ddfcc85ec6e3094c6e2e8a5b48f932da34bcbc427136157",
+      "apps/portal/src/session-seed.mjs": "4602de3e82949c72b635666225c877beb71b6c02e023ab735e91877c181f2c80",
+      "apps/portal/src/stacked-contracts.mjs": "5ee0d079f2688b02217a60f4695e41944504b0759e87004da6a213e926be9ec6",
+      "apps/portal/src/stacked-evidence-transport.mjs": "f9e8c11fdd032390f4220580cbc5569c7080e05e689644e06f350300bb3d502d",
+      "apps/portal/src/stacked-sim.mjs": "5b5fe17c237389bd48834b757166c8afc0b58c801246806275d25fa16ae82114",
+      "apps/stacked/src/dev/soak-pilot.mjs": "aba5c692371256a34e9eefbe63f3e4772b438829712aa8030cd0b14a88434156",
+      "apps/stacked/src/verify-worker.mjs": "7b277fd34cb069eca000b2753f1f94b346633c8645045efdd49ed73a1c04da09",
+      "sdk/hmh-run-summary-schema-v7.mjs": "81fd2c2fc109bd0856ba6acff19f1c379f5835b72365e57abf6a762cdc61ed98",
+      "sdk/hmh-run-summary-schema.mjs": "c5428b534378cd85fd71662409657bea652cf8737755513e5e573f4a0dcfa47a",
+      "server/verify/stacked.mjs": "9bcb1aee7ed466e799c83495307c489e7f54201b177c2691ab6d101187418493",
+      "server/verify/verified-run.mjs": "1e5c0079536ab3a94ba867b205f7bde11a0bb0d7e99d7b0ec2963a51dd71bfd8",
+      "tests/fixtures/ranked/build-fixtures.mjs": "3881337cdea3f274829a5ef03dd82233730c00a1e52b64e95dc7b294f5b2de2d",
+      "tests/fixtures/ranked/chikun-10min.json": "71f30754c77a47f90f2211ad25104f041cf5e718cf340e5c44af06f862ce61cd",
+      "tests/fixtures/ranked/chikun-valid.json": "158eb8791825539e8bf85467643642050d3cfd2069181c19e2f278a8123ccae1",
+      "tests/fixtures/ranked/hmh-honest-corpus.mjs": "eb5ccb0644ee90e35d8c1a79d259592ec88a825cd71987e90ff7d2b8c8d6686b",
+      "tests/fixtures/ranked/hmh-level-90.json": "00bdfaced2baa18466277594308f70bf76ed4be6a86820f79442c24a6b431160",
+      "tests/fixtures/ranked/hmh-realistic.json": "82f4052e70bf0751d87e11790ab6736bdbcaacf5c3d2cb775649a22e4490d51b",
+      "tests/fixtures/ranked/hmh-v7-future-districts.json": "5681a4cf68de784564927646d0496340d2e25985eeb9514f8bb4928241466c4a",
+      "tests/fixtures/ranked/hmh-v7-future-four-bosses.json": "16cd3d2c6c0aa1fdfed12ef54c28f326fccda3699b63a0fc5d9491f9609ef4c4",
+      "tests/fixtures/ranked/hmh-v7-liquidator.json": "5ee3985b490b1dab0a3fdd3068c78a504795a933d052d030f42ee5f1c0d75db1",
+      "tests/fixtures/ranked/hmh-valid.json": "137b2b8d94f69cec2ecf026561da93d5cdaa7b9441a79cfe83d097efc79ed39d",
+      "tests/fixtures/ranked/stacked-15min.json": "fb63161bd24c2159dfedee65d47517c148d630a6c9cfc3606de9bb1e5d6474f1",
+      "tests/fixtures/ranked/stacked-valid.json": "be8ac5cd2392ae5709a8120bd942714e62f083dbf2ef13c3fa3eb2b683f367d4",
+      "tests/fixtures/stacked-golden-run.json": "690a817c53ba6e89780260f3ec661d2d5e348144fa5f64fa9fc7bbc5a800a874",
+      "tests/fixtures/stacked-maximal-multibit-run.json": "405827e03625005e638c4c6b75af404e8937c4bf994e4a6df0377f9f3e2de04e",
+      "tests/fixtures/stacked-maximal-multibit-run.sic1.gz": "10a89692f844f370bc48774ed1dafeb77df1af225163ae9f44e4554312fb1203",
+      "tests/fixtures/stacked-maximal-priority-rotation-run.json": "5b6091ba5ab57a5a190befa914f570c3bf5ea1711cf3dedf2d0ea898f644a1c5",
+      "tests/fixtures/stacked-maximal-priority-rotation-run.sic1.gz": "7ca81104a46f33f6003eb56f58112933eaa50cd9dcdfb33329f472d851b79bef",
+      "tests/fixtures/stacked-priority-hold-short-terminal-run.json": "cf2f54c176191b4636093b48d0c5a54142294ae528058c43804da1c70cb5498a",
+      "tests/fixtures/stacked-priority-hold-short-terminal-run.sic1.gz": "6b6f7e4abe3a910dd7474ce7bed1132d1f06a508bc378098169b4045a9e69e62",
+      "tests/fixtures/stacked-transport-copy-iteration-worker.mjs": "242c46bc63ec29b5f2d79b298f051e466aecaf82f8ae4b084ab18c547331e27c",
+      "tests/fixtures/stacked-worker-runner.mjs": "7b9a48320583d12d2d012480f84ae7eb7dac1169ff598220912ea6cf8612774d",
+      "tests/server-verify-identity.test.mjs": "f51871b05e1f04e3fdc94db52c204392a95736db067b28fec0b5b5564ac28953",
+      "tests/server-verify-stacked.test.mjs": "22c88bf09476e2feb147fc703e1b60014985a6acbd1930db671d0ba6517044f8",
+      "tests/stacked-bridge-protocol.test.mjs": "edeff4501380d60b2771c82b242762e3088db8d54b46658868a82fd0f02101f7",
+      "tests/stacked-evidence-codec.test.mjs": "b1a5aed8bb077b89957e82741c3bb858fa6f7c630c2532b908ee0d5623b2fc4f",
+      "tests/stacked-evidence-copy-boundary.test.mjs": "1b0b3fa79bf6f265fcfba2ce90e1cd5d0ee0f7b910a134586befca8019e70dac",
+      "tests/stacked-evidence-transport.test.mjs": "f0ca0fe5e8d1720b31062f23fd442878f5765a6067f854f16b7022d31583c1bf",
+      "tests/stacked-evidence-varint-boundaries.test.mjs": "671f51f496cd6db23aabcfc1ed3042a2dd92a1e82cc1a0f3e88739333e2861e7",
+      "tests/stacked-headless-projection.test.mjs": "39f985361ca2f1285399a3e575a111dd90e957fdae4cbceaacc7978046902704",
+      "tests/stacked-input-codec.test.mjs": "d8fdaa682017f0848890bdb4410f2ce970ef740c6e142306842e3ebcceb34a4a",
+      "tests/stacked-maximal-multibit-replay.test.mjs": "5d2c7603b7ba58427d21c94d9f23bc2be90d5c830cc10e0497bb355980b27f3d",
+      "tests/stacked-maximal-priority-rotation-replay.test.mjs": "cd0d86cf36eb6edb12d73b51322755278900ccf9adc2714b20966d7cdf4b2eab",
+      "tests/stacked-priority-hold-short-terminal-replay.test.mjs": "7028a33b4a2b2caf7bfa82539713a4ba6c17a83b42a96b725f6ca71cf8466a12",
+      "tests/stacked-review-boundaries.test.mjs": "f548dc34db066797f9ff1e537f3527a9247575a3853f91a816f2caf0f8f1435d",
+      "tests/stacked-sim-determinism.test.mjs": "296ff63c049c6fb0d40f5e6ad97ff4598c4042fcecf3ec2fd7d70d772cc0e881",
+      "tests/stacked-verify-worker.test.mjs": "059c83e7d1c4800b2f712a3599c3cd84c220cec44e0849f8f926216c73f20407"
+    },
+    "sourceAfter": {
+      "apps/portal/src/achievements/entry.mjs": "a4e55551ae0b7aca76bda548659155ab22294e049fdcd02bf9462f224ce8b98e",
+      "apps/portal/src/achievements/hmh.mjs": "044a813a78829bf0c27eff8a94cefaf94dd7af3a1802e13624b79c6c79916751",
+      "apps/portal/src/achievements/stats.mjs": "704f8ffefec2f9572243f98e85e71a67f0c4afc64be4fc9225da2dbd4baa13d6",
+      "apps/portal/src/chikun-course-regions.mjs": "0d43a3b3f8a2bf06db2c8e381290376696a9270e3f5d0d101d707720faf6941a",
+      "apps/portal/src/chikun-ground-course.mjs": "a29626fe35d1d92979c5950ef0cd17efdfe2340ba98c5a3a7a772403c32fb7ca",
+      "apps/portal/src/ranked-identity.mjs": "225a1f2c89a2f3cad7d5ef0f7b732ffae0347acd7d6c7a156d7227e60acd8056",
+      "apps/portal/src/seeded-rng.mjs": "b6eed9c993e1efd38871c14d50b580ea15133fdcef020e81ffe7051e24b3ebc7",
+      "apps/portal/src/session-integrity.mjs": "26785093fba615224ddfcc85ec6e3094c6e2e8a5b48f932da34bcbc427136157",
+      "apps/portal/src/session-seed.mjs": "4602de3e82949c72b635666225c877beb71b6c02e023ab735e91877c181f2c80",
+      "apps/portal/src/stacked-contracts.mjs": "5ee0d079f2688b02217a60f4695e41944504b0759e87004da6a213e926be9ec6",
+      "apps/portal/src/stacked-evidence-transport.mjs": "f9e8c11fdd032390f4220580cbc5569c7080e05e689644e06f350300bb3d502d",
+      "apps/portal/src/stacked-sim.mjs": "5b5fe17c237389bd48834b757166c8afc0b58c801246806275d25fa16ae82114",
+      "apps/stacked/src/dev/soak-pilot.mjs": "aba5c692371256a34e9eefbe63f3e4772b438829712aa8030cd0b14a88434156",
+      "apps/stacked/src/verify-worker.mjs": "7b277fd34cb069eca000b2753f1f94b346633c8645045efdd49ed73a1c04da09",
+      "sdk/hmh-run-summary-schema-v7.mjs": "81fd2c2fc109bd0856ba6acff19f1c379f5835b72365e57abf6a762cdc61ed98",
+      "sdk/hmh-run-summary-schema.mjs": "c5428b534378cd85fd71662409657bea652cf8737755513e5e573f4a0dcfa47a",
+      "server/verify/stacked.mjs": "9bcb1aee7ed466e799c83495307c489e7f54201b177c2691ab6d101187418493",
+      "server/verify/verified-run.mjs": "1e5c0079536ab3a94ba867b205f7bde11a0bb0d7e99d7b0ec2963a51dd71bfd8",
+      "tests/fixtures/ranked/build-fixtures.mjs": "3881337cdea3f274829a5ef03dd82233730c00a1e52b64e95dc7b294f5b2de2d",
+      "tests/fixtures/ranked/chikun-10min.json": "71f30754c77a47f90f2211ad25104f041cf5e718cf340e5c44af06f862ce61cd",
+      "tests/fixtures/ranked/chikun-valid.json": "158eb8791825539e8bf85467643642050d3cfd2069181c19e2f278a8123ccae1",
+      "tests/fixtures/ranked/hmh-honest-corpus.mjs": "eb5ccb0644ee90e35d8c1a79d259592ec88a825cd71987e90ff7d2b8c8d6686b",
+      "tests/fixtures/ranked/hmh-level-90.json": "00bdfaced2baa18466277594308f70bf76ed4be6a86820f79442c24a6b431160",
+      "tests/fixtures/ranked/hmh-realistic.json": "82f4052e70bf0751d87e11790ab6736bdbcaacf5c3d2cb775649a22e4490d51b",
+      "tests/fixtures/ranked/hmh-v7-future-districts.json": "5681a4cf68de784564927646d0496340d2e25985eeb9514f8bb4928241466c4a",
+      "tests/fixtures/ranked/hmh-v7-future-four-bosses.json": "16cd3d2c6c0aa1fdfed12ef54c28f326fccda3699b63a0fc5d9491f9609ef4c4",
+      "tests/fixtures/ranked/hmh-v7-liquidator.json": "5ee3985b490b1dab0a3fdd3068c78a504795a933d052d030f42ee5f1c0d75db1",
+      "tests/fixtures/ranked/hmh-valid.json": "137b2b8d94f69cec2ecf026561da93d5cdaa7b9441a79cfe83d097efc79ed39d",
+      "tests/fixtures/ranked/stacked-15min.json": "fb63161bd24c2159dfedee65d47517c148d630a6c9cfc3606de9bb1e5d6474f1",
+      "tests/fixtures/ranked/stacked-valid.json": "be8ac5cd2392ae5709a8120bd942714e62f083dbf2ef13c3fa3eb2b683f367d4",
+      "tests/fixtures/stacked-golden-run.json": "690a817c53ba6e89780260f3ec661d2d5e348144fa5f64fa9fc7bbc5a800a874",
+      "tests/fixtures/stacked-maximal-multibit-run.json": "405827e03625005e638c4c6b75af404e8937c4bf994e4a6df0377f9f3e2de04e",
+      "tests/fixtures/stacked-maximal-multibit-run.sic1.gz": "10a89692f844f370bc48774ed1dafeb77df1af225163ae9f44e4554312fb1203",
+      "tests/fixtures/stacked-maximal-priority-rotation-run.json": "5b6091ba5ab57a5a190befa914f570c3bf5ea1711cf3dedf2d0ea898f644a1c5",
+      "tests/fixtures/stacked-maximal-priority-rotation-run.sic1.gz": "7ca81104a46f33f6003eb56f58112933eaa50cd9dcdfb33329f472d851b79bef",
+      "tests/fixtures/stacked-priority-hold-short-terminal-run.json": "cf2f54c176191b4636093b48d0c5a54142294ae528058c43804da1c70cb5498a",
+      "tests/fixtures/stacked-priority-hold-short-terminal-run.sic1.gz": "6b6f7e4abe3a910dd7474ce7bed1132d1f06a508bc378098169b4045a9e69e62",
+      "tests/fixtures/stacked-transport-copy-iteration-worker.mjs": "242c46bc63ec29b5f2d79b298f051e466aecaf82f8ae4b084ab18c547331e27c",
+      "tests/fixtures/stacked-worker-runner.mjs": "7b9a48320583d12d2d012480f84ae7eb7dac1169ff598220912ea6cf8612774d",
+      "tests/server-verify-identity.test.mjs": "f51871b05e1f04e3fdc94db52c204392a95736db067b28fec0b5b5564ac28953",
+      "tests/server-verify-stacked.test.mjs": "22c88bf09476e2feb147fc703e1b60014985a6acbd1930db671d0ba6517044f8",
+      "tests/stacked-bridge-protocol.test.mjs": "edeff4501380d60b2771c82b242762e3088db8d54b46658868a82fd0f02101f7",
+      "tests/stacked-evidence-codec.test.mjs": "b1a5aed8bb077b89957e82741c3bb858fa6f7c630c2532b908ee0d5623b2fc4f",
+      "tests/stacked-evidence-copy-boundary.test.mjs": "1b0b3fa79bf6f265fcfba2ce90e1cd5d0ee0f7b910a134586befca8019e70dac",
+      "tests/stacked-evidence-transport.test.mjs": "f0ca0fe5e8d1720b31062f23fd442878f5765a6067f854f16b7022d31583c1bf",
+      "tests/stacked-evidence-varint-boundaries.test.mjs": "671f51f496cd6db23aabcfc1ed3042a2dd92a1e82cc1a0f3e88739333e2861e7",
+      "tests/stacked-headless-projection.test.mjs": "39f985361ca2f1285399a3e575a111dd90e957fdae4cbceaacc7978046902704",
+      "tests/stacked-input-codec.test.mjs": "d8fdaa682017f0848890bdb4410f2ce970ef740c6e142306842e3ebcceb34a4a",
+      "tests/stacked-maximal-multibit-replay.test.mjs": "5d2c7603b7ba58427d21c94d9f23bc2be90d5c830cc10e0497bb355980b27f3d",
+      "tests/stacked-maximal-priority-rotation-replay.test.mjs": "cd0d86cf36eb6edb12d73b51322755278900ccf9adc2714b20966d7cdf4b2eab",
+      "tests/stacked-priority-hold-short-terminal-replay.test.mjs": "7028a33b4a2b2caf7bfa82539713a4ba6c17a83b42a96b725f6ca71cf8466a12",
+      "tests/stacked-review-boundaries.test.mjs": "f548dc34db066797f9ff1e537f3527a9247575a3853f91a816f2caf0f8f1435d",
+      "tests/stacked-sim-determinism.test.mjs": "296ff63c049c6fb0d40f5e6ad97ff4598c4042fcecf3ec2fd7d70d772cc0e881",
+      "tests/stacked-verify-worker.test.mjs": "059c83e7d1c4800b2f712a3599c3cd84c220cec44e0849f8f926216c73f20407"
+    },
+    "noGitClosure": {
+      "files": {
+        "tests/stacked-evidence-copy-boundary.test.mjs": {
+          "bytes": 5909,
+          "sha256": "1b0b3fa79bf6f265fcfba2ce90e1cd5d0ee0f7b910a134586befca8019e70dac"
+        },
+        "apps/portal/src/stacked-evidence-transport.mjs": {
+          "bytes": 6744,
+          "sha256": "f9e8c11fdd032390f4220580cbc5569c7080e05e689644e06f350300bb3d502d"
+        },
+        "apps/portal/src/stacked-contracts.mjs": {
+          "bytes": 6193,
+          "sha256": "5ee0d079f2688b02217a60f4695e41944504b0759e87004da6a213e926be9ec6"
+        },
+        "apps/portal/src/stacked-sim.mjs": {
+          "bytes": 52630,
+          "sha256": "5b5fe17c237389bd48834b757166c8afc0b58c801246806275d25fa16ae82114"
+        },
+        "apps/portal/src/seeded-rng.mjs": {
+          "bytes": 5300,
+          "sha256": "b6eed9c993e1efd38871c14d50b580ea15133fdcef020e81ffe7051e24b3ebc7"
+        },
+        "tests/fixtures/stacked-transport-copy-iteration-worker.mjs": {
+          "bytes": 3103,
+          "sha256": "242c46bc63ec29b5f2d79b298f051e466aecaf82f8ae4b084ab18c547331e27c"
+        }
+      },
+      "builtins": [
+        "node:assert/strict",
+        "node:test",
+        "node:worker_threads"
+      ],
+      "edges": [
+        {
+          "from": "tests/stacked-evidence-copy-boundary.test.mjs",
+          "specifier": "node:test",
+          "builtin": true
+        },
+        {
+          "from": "tests/stacked-evidence-copy-boundary.test.mjs",
+          "specifier": "node:assert/strict",
+          "builtin": true
+        },
+        {
+          "from": "tests/stacked-evidence-copy-boundary.test.mjs",
+          "specifier": "node:worker_threads",
+          "builtin": true
+        },
+        {
+          "from": "tests/stacked-evidence-copy-boundary.test.mjs",
+          "specifier": "../apps/portal/src/stacked-evidence-transport.mjs",
+          "to": "apps/portal/src/stacked-evidence-transport.mjs"
+        },
+        {
+          "from": "apps/portal/src/stacked-evidence-transport.mjs",
+          "specifier": "./stacked-contracts.mjs",
+          "to": "apps/portal/src/stacked-contracts.mjs"
+        },
+        {
+          "from": "apps/portal/src/stacked-evidence-transport.mjs",
+          "specifier": "./stacked-sim.mjs",
+          "to": "apps/portal/src/stacked-sim.mjs"
+        },
+        {
+          "from": "apps/portal/src/stacked-sim.mjs",
+          "specifier": "./seeded-rng.mjs",
+          "to": "apps/portal/src/seeded-rng.mjs"
+        },
+        {
+          "from": "apps/portal/src/stacked-sim.mjs",
+          "specifier": "./stacked-contracts.mjs",
+          "to": "apps/portal/src/stacked-contracts.mjs"
+        },
+        {
+          "from": "tests/stacked-evidence-copy-boundary.test.mjs",
+          "specifier": "../apps/portal/src/stacked-contracts.mjs",
+          "to": "apps/portal/src/stacked-contracts.mjs"
+        }
+      ],
+      "scope": "Exact literal ESM import/export/import-expression source closure; rejects nonliteral import, require/eval and external package dependency. Actual child resolver additionally checks every resolved target file against this manifest.",
+      "declaredWorkerEdges": [
+        {
+          "from": "tests/stacked-evidence-copy-boundary.test.mjs",
+          "to": "tests/fixtures/stacked-transport-copy-iteration-worker.mjs",
+          "mechanism": "literal worker helper URL"
+        },
+        {
+          "from": "tests/fixtures/stacked-transport-copy-iteration-worker.mjs",
+          "to": "apps/portal/src/stacked-evidence-transport.mjs",
+          "mechanism": "exact transportUrl provided by the reviewed parent test"
+        }
+      ]
+    },
+    "focusedFiles": [
+      "tests/stacked-evidence-copy-boundary.test.mjs",
+      "tests/stacked-evidence-codec.test.mjs",
+      "tests/stacked-evidence-varint-boundaries.test.mjs",
+      "tests/stacked-evidence-transport.test.mjs",
+      "tests/stacked-bridge-protocol.test.mjs",
+      "tests/stacked-review-boundaries.test.mjs",
+      "tests/stacked-verify-worker.test.mjs",
+      "tests/stacked-input-codec.test.mjs",
+      "tests/stacked-sim-determinism.test.mjs",
+      "tests/stacked-headless-projection.test.mjs",
+      "tests/stacked-maximal-multibit-replay.test.mjs",
+      "tests/stacked-maximal-priority-rotation-replay.test.mjs",
+      "tests/stacked-priority-hold-short-terminal-replay.test.mjs",
+      "tests/server-verify-stacked.test.mjs",
+      "tests/server-verify-identity.test.mjs"
+    ],
+    "commands": [
+      {
+        "name": "focused-old-corpus",
+        "args": [
+          "--test",
+          "--test-reporter=tap",
+          "--test-concurrency=1",
+          "tests/stacked-evidence-copy-boundary.test.mjs",
+          "tests/stacked-evidence-codec.test.mjs",
+          "tests/stacked-evidence-varint-boundaries.test.mjs",
+          "tests/stacked-evidence-transport.test.mjs",
+          "tests/stacked-bridge-protocol.test.mjs",
+          "tests/stacked-review-boundaries.test.mjs",
+          "tests/stacked-verify-worker.test.mjs",
+          "tests/stacked-input-codec.test.mjs",
+          "tests/stacked-sim-determinism.test.mjs",
+          "tests/stacked-headless-projection.test.mjs",
+          "tests/stacked-maximal-multibit-replay.test.mjs",
+          "tests/stacked-maximal-priority-rotation-replay.test.mjs",
+          "tests/stacked-priority-hold-short-terminal-replay.test.mjs",
+          "tests/server-verify-stacked.test.mjs",
+          "tests/server-verify-identity.test.mjs"
+        ],
+        "cwd": "C:\\Users\\just_\\lesters-arcade-wt\\200-world-w0",
+        "startedAt": "2026-09-30T02:31:55.101Z",
+        "stdout": "TAP version 13\n# Subtest: \u00a75.2 check 1: identity-invalid (object with exactly the 9 keys)\nok 1 - \u00a75.2 check 1: identity-invalid (object with exactly the 9 keys)\n  ---\n  duration_ms: 1.4186\n  type: 'test'\n  ...\n# Subtest: \u00a75.2 check 2: identity-game-unknown (gameId \u2208 RANKED_GAMES)\nok 2 - \u00a75.2 check 2: identity-game-unknown (gameId \u2208 RANKED_GAMES)\n  ---\n  duration_ms: 0.2457\n  type: 'test'\n  ...\n# Subtest: \u00a75.2 check 3: identity-invalid (gameId === body.gameId)\nok 3 - \u00a75.2 check 3: identity-invalid (gameId === body.gameId)\n  ---\n  duration_ms: 0.1377\n  type: 'test'\n  ...\n# Subtest: \u00a75.2 check 4: identity-chain-mismatch (chainId === the configured chain)\nok 4 - \u00a75.2 check 4: identity-chain-mismatch (chainId === the configured chain)\n  ---\n  duration_ms: 0.1375\n  type: 'test'\n  ...\n# Subtest: \u00a75.2 check 5: identity-registry-mismatch (registry equals config)\nok 5 - \u00a75.2 check 5: identity-registry-mismatch (registry equals config)\n  ---\n  duration_ms: 0.2197\n  type: 'test'\n  ...\n# Subtest: \u00a75.2 check 6: identity-wallet-mismatch (wallet equals the token wallet)\nok 6 - \u00a75.2 check 6: identity-wallet-mismatch (wallet equals the token wallet)\n  ---\n  duration_ms: 0.113\n  type: 'test'\n  ...\n# Subtest: \u00a75.2 check 7: identity-season-mismatch (seasonId is the game season)\nok 7 - \u00a75.2 check 7: identity-season-mismatch (seasonId is the game season)\n  ---\n  duration_ms: 0.0932\n  type: 'test'\n  ...\n# Subtest: \u00a75.2 check 8: identity-buildhash-invalid (buildHash format (A11))\nok 8 - \u00a75.2 check 8: identity-buildhash-invalid (buildHash format (A11))\n  ---\n  duration_ms: 0.1728\n  type: 'test'\n  ...\n# Subtest: \u00a75.2 check 9: identity-session-invalid (handle regex (\u00a72.3))\nok 9 - \u00a75.2 check 9: identity-session-invalid (handle regex (\u00a72.3))\n  ---\n  duration_ms: 0.1852\n  type: 'test'\n  ...\n# Subtest: \u00a75.2 check 10: identity-nonce-mismatch (nonce is the uuid part)\nok 10 - \u00a75.2 check 10: identity-nonce-mismatch (nonce is the uuid part)\n  ---\n  duration_ms: 0.1762\n  type: 'test'\n  ...\n# Subtest: \u00a75.2 check 11: seed-ticket-invalid (seed ticket shape, time and MAC)\nok 11 - \u00a75.2 check 11: seed-ticket-invalid (seed ticket shape, time and MAC)\n  ---\n  duration_ms: 0.7985\n  type: 'test'\n  ...\n# Subtest: \u00a75.2 check 12: identity-seed-mismatch (seed is the ticket seed)\nok 12 - \u00a75.2 check 12: identity-seed-mismatch (seed is the ticket seed)\n  ---\n  duration_ms: 4.6274\n  type: 'test'\n  ...\n# Subtest: \u00a75.2 check 13: session-key-mismatch (the recomputed session key)\nok 13 - \u00a75.2 check 13: session-key-mismatch (the recomputed session key)\n  ---\n  duration_ms: 0.8437\n  type: 'test'\n  ...\n# Subtest: binding succeeds with the canonical identity and malformed identities are identity-invalid\nok 14 - binding succeeds with the canonical identity and malformed identities are identity-invalid\n  ---\n  duration_ms: 0.7546\n  type: 'test'\n  ...\n# Subtest: wallet must equal the token wallet\nok 15 - wallet must equal the token wallet\n  ---\n  duration_ms: 0.4768\n  type: 'test'\n  ...\n# Subtest: the FNV seed is refused for a live settle\nok 16 - the FNV seed is refused for a live settle\n  ---\n  duration_ms: 0.572\n  type: 'test'\n  ...\n# Subtest: evidence digest is computed without replay\nok 17 - evidence digest is computed without replay\n  ---\n  duration_ms: 275.6073\n  type: 'test'\n  ...\n# Subtest: binding does no replay\nok 18 - binding does no replay\n  ---\n  duration_ms: 102.3928\n  type: 'test'\n  ...\n# Subtest: stored runs re-verify to the same VerifiedRun\nok 19 - stored runs re-verify to the same VerifiedRun\n  ---\n  duration_ms: 531.1765\n  type: 'test'\n  ...\n# Subtest: scores above the contract MAX_SCORE are rejected for every game\nok 20 - scores above the contract MAX_SCORE are rejected for every game\n  ---\n  duration_ms: 98.3463\n  type: 'test'\n  ...\n# Subtest: stats come from the achievements exports exactly, through a static import\nok 21 - stats come from the achievements exports exactly, through a static import\n  ---\n  duration_ms: 0.5831\n  type: 'test'\n  ...\n# Subtest: every committed ranked fixture verifies to the achievements stats of its own replay\nok 22 - every committed ranked fixture verifies to the achievements stats of its own replay\n  ---\n  duration_ms: 1205.4655\n  type: 'test'\n  ...\n# Subtest: a stats mapper that throws propagates as a server error, never a rejected run\nok 23 - a stats mapper that throws propagates as a server error, never a rejected run\n  ---\n  duration_ms: 100.5424\n  type: 'test'\n  ...\n# Subtest: the server verifier loads in Node with no flags\nok 24 - the server verifier loads in Node with no flags\n  ---\n  duration_ms: 102.703\n  type: 'test'\n  ...\n# Subtest: server verification never loads arcade-core, hmh-run-integrity or rendering code\nok 25 - server verification never loads arcade-core, hmh-run-integrity or rendering code\n  ---\n  duration_ms: 6.9953\n  type: 'test'\n  ...\n# Subtest: valid SIC1 replays to the canonical tuple\nok 26 - valid SIC1 replays to the canonical tuple\n  ---\n  duration_ms: 20.6935\n  type: 'test'\n  ...\n# Subtest: header seed mismatch is rejected\nok 27 - header seed mismatch is rejected\n  ---\n  duration_ms: 4.1345\n  type: 'test'\n  ...\n# Subtest: truncated or non-canonical base64 is rejected\nok 28 - truncated or non-canonical base64 is rejected\n  ---\n  duration_ms: 3.7881\n  type: 'test'\n  ...\n# Subtest: startLevel other than 1 is rejected\nok 29 - startLevel other than 1 is rejected\n  ---\n  duration_ms: 1.3742\n  type: 'test'\n  ...\n# Subtest: a replay that ends before a terminal state is rejected\nok 30 - a replay that ends before a terminal state is rejected\n  ---\n  duration_ms: 2.1986\n  type: 'test'\n  ...\n# Subtest: maxCombo is clamped to the contract bound while stats keep the full value\nok 31 - maxCombo is clamped to the contract bound while stats keep the full value\n  ---\n  duration_ms: 5.1649\n  type: 'test'\n  ...\n# Subtest: score above 1e10 is rejected\nok 32 - score above 1e10 is rejected\n  ---\n  duration_ms: 4.8549\n  type: 'test'\n  ...\n# Subtest: 15-minute replay stays within budget\nok 33 - 15-minute replay stays within budget\n  ---\n  duration_ms: 33.4353\n  type: 'test'\n  ...\n# Subtest: the per-game verifier matches the dispatcher\nok 34 - the per-game verifier matches the dispatcher\n  ---\n  duration_ms: 5.3676\n  type: 'test'\n  ...\n# Subtest: the committed STACKED fixture rebuilds from build-fixtures.mjs\nok 35 - the committed STACKED fixture rebuilds from build-fixtures.mjs\n  ---\n  duration_ms: 1393.5047\n  type: 'test'\n  ...\n# Subtest: bridge accepts all eleven allowlisted exact payloads and rejects unknown/missing envelope fields\nok 36 - bridge accepts all eleven allowlisted exact payloads and rejects unknown/missing envelope fields\n  ---\n  duration_ms: 6.5964\n  type: 'test'\n  ...\n# Subtest: bridge rejects unknown and missing keys recursively in every object payload\nok 37 - bridge rejects unknown and missing keys recursively in every object payload\n  ---\n  duration_ms: 6.1397\n  type: 'test'\n  ...\n# Subtest: bridge rejects session/settings injection, Ranked start levels and inconsistent result identities\nok 38 - bridge rejects session/settings injection, Ranked start levels and inconsistent result identities\n  ---\n  duration_ms: 1.0203\n  type: 'test'\n  ...\n# Subtest: result tuple holds cannot exceed spawned pieces despite a superficially valid hold/drop sum\nok 39 - result tuple holds cannot exceed spawned pieces despite a superficially valid hold/drop sum\n  ---\n  duration_ms: 0.3024\n  type: 'test'\n  ...\n# Subtest: result transition claims cannot exceed the SIC1 tick count\nok 40 - result transition claims cannot exceed the SIC1 tick count\n  ---\n  duration_ms: 0.2117\n  type: 'test'\n  ...\n# Subtest: result perfect-clear claims cannot exceed total cleared lines\nok 41 - result perfect-clear claims cannot exceed total cleared lines\n  ---\n  duration_ms: 0.1958\n  type: 'test'\n  ...\n# Subtest: effects preset, scene mode and reactive board are optional bounded presentation keys\nok 42 - effects preset, scene mode and reactive board are optional bounded presentation keys\n  ---\n  duration_ms: 0.5805\n  type: 'test'\n  ...\n# Subtest: SIC1 pinned header, short/general records, terminator and unsigned seed\nok 43 - SIC1 pinned header, short/general records, terminator and unsigned seed\n  ---\n  duration_ms: 1.3164\n  type: 'test'\n  ...\n# Subtest: SIC1 round-trips 10000 seeded legal streams without losing tick zero/last tick\nok 44 - SIC1 round-trips 10000 seeded legal streams without losing tick zero/last tick\n  ---\n  duration_ms: 78.8394\n  type: 'test'\n  ...\n# Subtest: SIC1 encoder rejects malformed, sparse, nonmonotonic and over-limit records\nok 45 - SIC1 encoder rejects malformed, sparse, nonmonotonic and over-limit records\n  ---\n  duration_ms: 1.0599\n  type: 'test'\n  ...\n# Subtest: SIC1 decoder fails closed on reserved tags, malformed varints, corrupt and trailing data\nok 46 - SIC1 decoder fails closed on reserved tags, malformed varints, corrupt and trailing data\n  ---\n  duration_ms: 1.5329\n  type: 'test'\n  ...\n# Subtest: max-density legal stream remains below evidence ceiling at the tick ceiling\nok 47 - max-density legal stream remains below evidence ceiling at the tick ceiling\n  ---\n  duration_ms: 223.0865\n  type: 'test'\n  ...\n# Subtest: transport returns one owned bounded byte buffer without a per-byte string iterator detour\nok 48 - transport returns one owned bounded byte buffer without a per-byte string iterator detour\n  ---\n  duration_ms: 33.4768\n  type: 'test'\n  ...\n# Subtest: transport preserves every ordered byte value and returns detached fresh results\nok 49 - transport preserves every ordered byte value and returns detached fresh results\n  ---\n  duration_ms: 0.4131\n  type: 'test'\n  ...\n# Subtest: independent RFC vectors preserve empty, partial and complete triples\nok 50 - independent RFC vectors preserve empty, partial and complete triples\n  ---\n  duration_ms: 0.1456\n  type: 'test'\n  ...\n# Subtest: raw/chunk caps preserve exact inclusive boundaries and zero-cap behavior\nok 51 - raw/chunk caps preserve exact inclusive boundaries and zero-cap behavior\n  ---\n  duration_ms: 46.1382\n  type: 'test'\n  ...\n# Subtest: noncanonical padding bits retain native round-trip rejection semantics\nok 52 - noncanonical padding bits retain native round-trip rejection semantics\n  ---\n  duration_ms: 0.3523\n  type: 'test'\n  ...\n# Subtest: malformed text and cap types retain exact pre-decode rejection class/message\nok 53 - malformed text and cap types retain exact pre-decode rejection class/message\n  ---\n  duration_ms: 0.3282\n  type: 'test'\n  ...\n# Subtest: chunk transport includes exact envelope and round-trips max-density bytes under bridge cap\nok 54 - chunk transport includes exact envelope and round-trips max-density bytes under bridge cap\n  ---\n  duration_ms: 173.1847\n  type: 'test'\n  ...\n# Subtest: chunk reassembly rejects missing, duplicate, reordered, changed totals and cross-session messages\nok 55 - chunk reassembly rejects missing, duplicate, reordered, changed totals and cross-session messages\n  ---\n  duration_ms: 10.4333\n  type: 'test'\n  ...\n# Subtest: reassembly rejects bad magic/checksum before allocating a decoded transition stream\nok 56 - reassembly rejects bad magic/checksum before allocating a decoded transition stream\n  ---\n  duration_ms: 0.6872\n  type: 'test'\n  ...\n# Subtest: sim predictor agrees with the actual SIC1 bytes at gap=1, mask=1\nok 57 - sim predictor agrees with the actual SIC1 bytes at gap=1, mask=1\n  ---\n  duration_ms: 0.9208\n  type: 'test'\n  ...\n# Subtest: sim predictor agrees with the actual SIC1 bytes at gap=1, mask=3\nok 58 - sim predictor agrees with the actual SIC1 bytes at gap=1, mask=3\n  ---\n  duration_ms: 0.1127\n  type: 'test'\n  ...\n# Subtest: sim predictor agrees with the actual SIC1 bytes at gap=16, mask=1\nok 59 - sim predictor agrees with the actual SIC1 bytes at gap=16, mask=1\n  ---\n  duration_ms: 0.0804\n  type: 'test'\n  ...\n# Subtest: sim predictor agrees with the actual SIC1 bytes at gap=16, mask=3\nok 60 - sim predictor agrees with the actual SIC1 bytes at gap=16, mask=3\n  ---\n  duration_ms: 0.086\n  type: 'test'\n  ...\n# Subtest: sim predictor agrees with the actual SIC1 bytes at gap=17, mask=1\nok 61 - sim predictor agrees with the actual SIC1 bytes at gap=17, mask=1\n  ---\n  duration_ms: 0.0899\n  type: 'test'\n  ...\n# Subtest: sim predictor agrees with the actual SIC1 bytes at gap=17, mask=3\nok 62 - sim predictor agrees with the actual SIC1 bytes at gap=17, mask=3\n  ---\n  duration_ms: 0.074\n  type: 'test'\n  ...\n# Subtest: sim predictor agrees with the actual SIC1 bytes at gap=128, mask=1\nok 63 - sim predictor agrees with the actual SIC1 bytes at gap=128, mask=1\n  ---\n  duration_ms: 0.0974\n  type: 'test'\n  ...\n# Subtest: sim predictor agrees with the actual SIC1 bytes at gap=128, mask=3\nok 64 - sim predictor agrees with the actual SIC1 bytes at gap=128, mask=3\n  ---\n  duration_ms: 0.5224\n  type: 'test'\n  ...\n# Subtest: sim predictor agrees with the actual SIC1 bytes at gap=129, mask=1\nok 65 - sim predictor agrees with the actual SIC1 bytes at gap=129, mask=1\n  ---\n  duration_ms: 0.0885\n  type: 'test'\n  ...\n# Subtest: sim predictor agrees with the actual SIC1 bytes at gap=129, mask=3\nok 66 - sim predictor agrees with the actual SIC1 bytes at gap=129, mask=3\n  ---\n  duration_ms: 0.1229\n  type: 'test'\n  ...\n# Subtest: sim predictor agrees with the actual SIC1 bytes at gap=16384, mask=1\nok 67 - sim predictor agrees with the actual SIC1 bytes at gap=16384, mask=1\n  ---\n  duration_ms: 0.0781\n  type: 'test'\n  ...\n# Subtest: sim predictor agrees with the actual SIC1 bytes at gap=16384, mask=3\nok 68 - sim predictor agrees with the actual SIC1 bytes at gap=16384, mask=3\n  ---\n  duration_ms: 0.0788\n  type: 'test'\n  ...\n# Subtest: sim predictor agrees with the actual SIC1 bytes at gap=16385, mask=1\nok 69 - sim predictor agrees with the actual SIC1 bytes at gap=16385, mask=1\n  ---\n  duration_ms: 0.034\n  type: 'test'\n  ...\n# Subtest: sim predictor agrees with the actual SIC1 bytes at gap=16385, mask=3\nok 70 - sim predictor agrees with the actual SIC1 bytes at gap=16385, mask=3\n  ---\n  duration_ms: 0.0287\n  type: 'test'\n  ...\n# Subtest: sim predictor agrees with the actual SIC1 bytes at gap=432000, mask=1\nok 71 - sim predictor agrees with the actual SIC1 bytes at gap=432000, mask=1\n  ---\n  duration_ms: 0.0484\n  type: 'test'\n  ...\n# Subtest: sim predictor agrees with the actual SIC1 bytes at gap=432000, mask=3\nok 72 - sim predictor agrees with the actual SIC1 bytes at gap=432000, mask=3\n  ---\n  duration_ms: 0.031\n  type: 'test'\n  ...\n# Subtest: sim predictor does not charge repeated identical input\nok 73 - sim predictor does not charge repeated identical input\n  ---\n  duration_ms: 0.0807\n  type: 'test'\n  ...\n# Subtest: sim predictor rejects inputs outside the bounded byte/tick format\nok 74 - sim predictor rejects inputs outside the bounded byte/tick format\n  ---\n  duration_ms: 0.229\n  type: 'test'\n  ...\n# Subtest: headless replay does not allocate or freeze a renderer board projection at each step\nok 75 - headless replay does not allocate or freeze a renderer board projection at each step\n  ---\n  duration_ms: 4.2977\n  type: 'test'\n  ...\n# Subtest: public step continues to return isolated deep-frozen projections\nok 76 - public step continues to return isolated deep-frozen projections\n  ---\n  duration_ms: 0.2001\n  type: 'test'\n  ...\n# Subtest: tick recorder forces tick zero neutral and coalesces only the pending tick\nok 77 - tick recorder forces tick zero neutral and coalesces only the pending tick\n  ---\n  duration_ms: 1.7902\n  type: 'test'\n  ...\n# Subtest: every recorder commit is exactly the byte stepped and replayed\nok 78 - every recorder commit is exactly the byte stepped and replayed\n  ---\n  duration_ms: 2.9452\n  type: 'test'\n  ...\n# Subtest: pause, blur and hidden synthesize pending neutral without rewriting consumed evidence\nok 79 - pause, blur and hidden synthesize pending neutral without rewriting consumed evidence\n  ---\n  duration_ms: 0.2948\n  type: 'test'\n  ...\n# Subtest: recorder rejects invalid seed, mask, tick and unknown stop reason\nok 80 - recorder rejects invalid seed, mask, tick and unknown stop reason\n  ---\n  duration_ms: 0.1298\n  type: 'test'\n  ...\n# Subtest: replay and simulation reject incomplete runs, extra ticks and seed/config substitution\nok 81 - replay and simulation reject incomplete runs, extra ticks and seed/config substitution\n  ---\n  duration_ms: 0.7711\n  type: 'test'\n  ...\n# Subtest: S0b durable distinct multibit evidence is canonical and covers the unchanged maximal tick ceiling\nok 82 - S0b durable distinct multibit evidence is canonical and covers the unchanged maximal tick ceiling\n  ---\n  duration_ms: 260.9924\n  type: 'test'\n  ...\n# Subtest: S0b public runtime stays alive continuously and matches full canonical checkpoints and the terminal tuple\nok 83 - S0b public runtime stays alive continuously and matches full canonical checkpoints and the terminal tuple\n  ---\n  duration_ms: 2407.3114\n  type: 'test'\n  ...\n# Subtest: S0b actual old-protocol per-game verifier preserves all canonical fields and exact distinct evidence\nok 84 - S0b actual old-protocol per-game verifier preserves all canonical fields and exact distinct evidence\n  ---\n  duration_ms: 197.4625\n  type: 'test'\n  ...\n# Subtest: S0b checksum corruption and seed mismatch reject without a trusted result\nok 85 - S0b checksum corruption and seed mismatch reject without a trusted result\n  ---\n  duration_ms: 30.0838\n  type: 'test'\n  ...\n# Subtest: S0c durable distinct multibit evidence is canonical and covers the unchanged maximal tick ceiling\nok 86 - S0c durable distinct multibit evidence is canonical and covers the unchanged maximal tick ceiling\n  ---\n  duration_ms: 260.983\n  type: 'test'\n  ...\n# Subtest: S0c public runtime stays alive continuously and matches full canonical checkpoints and the terminal tuple\nok 87 - S0c public runtime stays alive continuously and matches full canonical checkpoints and the terminal tuple\n  ---\n  duration_ms: 2417.7606\n  type: 'test'\n  ...\n# Subtest: S0c actual old-protocol per-game verifier preserves all canonical fields and exact distinct evidence\nok 88 - S0c actual old-protocol per-game verifier preserves all canonical fields and exact distinct evidence\n  ---\n  duration_ms: 205.7601\n  type: 'test'\n  ...\n# Subtest: S0c checksum corruption and seed mismatch reject without a trusted result\nok 89 - S0c checksum corruption and seed mismatch reject without a trusted result\n  ---\n  duration_ms: 33.2313\n  type: 'test'\n  ...\n# Subtest: old genuine Hold short terminal retains canonical checkpoints, exact replay and full VerifiedRun\nok 90 - old genuine Hold short terminal retains canonical checkpoints, exact replay and full VerifiedRun\n  ---\n  duration_ms: 517.4215\n  type: 'test'\n  ...\n# Subtest: canonical result builder rejects more transitions than elapsed ticks\nok 91 - canonical result builder rejects more transitions than elapsed ticks\n  ---\n  duration_ms: 1.785\n  type: 'test'\n  ...\n# Subtest: worker accepts the bounded, data-only lock-out control request\nok 92 - worker accepts the bounded, data-only lock-out control request\n  ---\n  duration_ms: 38.6849\n  type: 'test'\n  ...\n# Subtest: worker rejects an explicitly invalid maxTicks: undefined\nok 93 - worker rejects an explicitly invalid maxTicks: undefined\n  ---\n  duration_ms: 0.1506\n  type: 'test'\n  ...\n# Subtest: worker rejects an explicitly invalid maxTicks: null\nok 94 - worker rejects an explicitly invalid maxTicks: null\n  ---\n  duration_ms: 0.0611\n  type: 'test'\n  ...\n# Subtest: worker rejects an explicitly invalid maxTicks: 0\nok 95 - worker rejects an explicitly invalid maxTicks: 0\n  ---\n  duration_ms: 0.0779\n  type: 'test'\n  ...\n# Subtest: worker rejects an explicitly invalid maxTicks: -1\nok 96 - worker rejects an explicitly invalid maxTicks: -1\n  ---\n  duration_ms: 0.0522\n  type: 'test'\n  ...\n# Subtest: worker rejects an explicitly invalid maxTicks: 1.5\nok 97 - worker rejects an explicitly invalid maxTicks: 1.5\n  ---\n  duration_ms: 0.0569\n  type: 'test'\n  ...\n# Subtest: worker rejects an explicitly invalid maxTicks: NaN\nok 98 - worker rejects an explicitly invalid maxTicks: NaN\n  ---\n  duration_ms: 0.0701\n  type: 'test'\n  ...\n# Subtest: worker rejects an explicitly invalid maxTicks: Infinity\nok 99 - worker rejects an explicitly invalid maxTicks: Infinity\n  ---\n  duration_ms: 0.0702\n  type: 'test'\n  ...\n# Subtest: worker rejects an explicitly invalid maxTicks: 432001\nok 100 - worker rejects an explicitly invalid maxTicks: 432001\n  ---\n  duration_ms: 0.098\n  type: 'test'\n  ...\n# Subtest: worker rejects a nonenumerable request field\nok 101 - worker rejects a nonenumerable request field\n  ---\n  duration_ms: 0.0988\n  type: 'test'\n  ...\n# Subtest: worker rejects a nonenumerable config field\nok 102 - worker rejects a nonenumerable config field\n  ---\n  duration_ms: 0.1259\n  type: 'test'\n  ...\n# Subtest: worker rejects an accessor without invoking it\nok 103 - worker rejects an accessor without invoking it\n  ---\n  duration_ms: 0.0899\n  type: 'test'\n  ...\n# Subtest: worker handles a throwing request-id accessor as invalid input\nok 104 - worker handles a throwing request-id accessor as invalid input\n  ---\n  duration_ms: 0.5604\n  type: 'test'\n  ...\n# Subtest: every consecutive bag window is a permutation and drought is at most 12\nok 105 - every consecutive bag window is a permutation and drought is at most 12\n  ---\n  duration_ms: 6.0431\n  type: 'test'\n  ...\n# Subtest: 256 seeds produce at least 250 first-bag orderings\nok 106 - 256 seeds produce at least 250 first-bag orderings\n  ---\n  duration_ms: 1.0861\n  type: 'test'\n  ...\n# Subtest: contract-winning refill timing and draw accounting are exact\nok 107 - contract-winning refill timing and draw accounting are exact\n  ---\n  duration_ms: 0.1336\n  type: 'test'\n  ...\n# Subtest: first forty pieces are pinned for seed 20260906\nok 108 - first forty pieces are pinned for seed 20260906\n  ---\n  duration_ms: 0.0799\n  type: 'test'\n  ...\n# Subtest: same seed/masks repeat byte-identically; different seed diverges; batching is irrelevant\nok 109 - same seed/masks repeat byte-identically; different seed diverges; batching is irrelevant\n  ---\n  duration_ms: 18.3824\n  type: 'test'\n  ...\n# Subtest: a freshly imported module instance repeats the same snapshot chain\nok 110 - a freshly imported module instance repeats the same snapshot chain\n  ---\n  duration_ms: 3.8735\n  type: 'test'\n  ...\n# Subtest: real isolated worker and inline replay return identical canonical golden tuple\nok 111 - real isolated worker and inline replay return identical canonical golden tuple\n  ---\n  duration_ms: 37.8203\n  type: 'test'\n  ...\n# Subtest: worker rejects malformed requests without issuing any verified stamp\nok 112 - worker rejects malformed requests without issuing any verified stamp\n  ---\n  duration_ms: 0.4695\n  type: 'test'\n  ...\n1..112\n# tests 112\n# suites 0\n# pass 112\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 12886.6697\n",
+        "stderr": "",
+        "watchdogSeconds": 45,
+        "watchdogTriggered": false,
+        "treeStop": null,
+        "shutdownCloseDeadlineSeconds": 20,
+        "spawnError": null,
+        "childClosureConfirmed": true,
+        "spawnedPid": 30016,
+        "exitCode": 0,
+        "signal": null,
+        "closeObservedAt": "2026-09-30T02:32:08.135Z",
+        "finishedAt": "2026-09-30T02:32:08.135Z",
+        "counts": {
+          "tests": 112,
+          "pass": 112,
+          "fail": 0,
+          "cancelled": 0,
+          "skipped": 0,
+          "todo": 0
+        },
+        "passed": true
+      },
+      {
+        "name": "no-git-no-node-modules-boundary",
+        "args": [
+          "--test",
+          "--test-reporter=tap",
+          "tests/stacked-evidence-copy-boundary.test.mjs"
+        ],
+        "cwd": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-transport-copy-green-20260929-01\\no-git",
+        "startedAt": "2026-09-30T02:32:08.138Z",
+        "stdout": "TAP version 13\n# Subtest: transport returns one owned bounded byte buffer without a per-byte string iterator detour\nok 1 - transport returns one owned bounded byte buffer without a per-byte string iterator detour\n  ---\n  duration_ms: 32.5139\n  type: 'test'\n  ...\n# Subtest: transport preserves every ordered byte value and returns detached fresh results\nok 2 - transport preserves every ordered byte value and returns detached fresh results\n  ---\n  duration_ms: 0.3681\n  type: 'test'\n  ...\n# Subtest: independent RFC vectors preserve empty, partial and complete triples\nok 3 - independent RFC vectors preserve empty, partial and complete triples\n  ---\n  duration_ms: 0.1458\n  type: 'test'\n  ...\n# Subtest: raw/chunk caps preserve exact inclusive boundaries and zero-cap behavior\nok 4 - raw/chunk caps preserve exact inclusive boundaries and zero-cap behavior\n  ---\n  duration_ms: 44.4056\n  type: 'test'\n  ...\n# Subtest: noncanonical padding bits retain native round-trip rejection semantics\nok 5 - noncanonical padding bits retain native round-trip rejection semantics\n  ---\n  duration_ms: 0.3698\n  type: 'test'\n  ...\n# Subtest: malformed text and cap types retain exact pre-decode rejection class/message\nok 6 - malformed text and cap types retain exact pre-decode rejection class/message\n  ---\n  duration_ms: 0.3353\n  type: 'test'\n  ...\n1..6\n# tests 6\n# suites 0\n# pass 6\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 199.2259\n",
+        "stderr": "",
+        "watchdogSeconds": 45,
+        "watchdogTriggered": false,
+        "treeStop": null,
+        "shutdownCloseDeadlineSeconds": 20,
+        "spawnError": null,
+        "childClosureConfirmed": true,
+        "spawnedPid": 27132,
+        "exitCode": 0,
+        "signal": null,
+        "closeObservedAt": "2026-09-30T02:32:08.409Z",
+        "finishedAt": "2026-09-30T02:32:08.409Z",
+        "counts": {
+          "tests": 6,
+          "pass": 6,
+          "fail": 0,
+          "cancelled": 0,
+          "skipped": 0,
+          "todo": 0
+        },
+        "passed": true
+      }
+    ],
+    "passed": true,
+    "scope": "Focused correctness/old corpus and source-free six-test boundary proof. Existing legacy 15-minute timing test remains its prior warm/fastest semantics, never new S0 acceptance. No new uninstrumented measurement batch, browser/phone/production/global S0 acceptance.",
+    "harnessBefore": {
+      "runner": {
+        "path": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\run-stacked-transport-copy-green.mjs",
+        "sha256": "794b3aa11c0af282ee23a1206db74fd753d10ee6d50036193648ebc837ff5a1d"
+      },
+      "closure": {
+        "path": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-s0c-profile-closure.mjs",
+        "sha256": "74682d3d075e0a167146dd88cbfde5e3854f24a305eae7129b6f121651ececf6"
+      },
+      "bindings": {
+        "path": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-transport-copy-green-bindings.json",
+        "sha256": "bbdd8aa9a848929c64b110be6be324fcbc9a8f854879db8c4c201732bff5eed6"
+      },
+      "preparer": {
+        "path": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\prepare-stacked-transport-copy-green-bindings.mjs",
+        "sha256": "84ed3e11ea58286b51e1c3e2bc826189b0b30ac6424f1c05332950f087eb259a"
+      }
+    },
+    "noGitCopiedFiles": [
+      "tests/stacked-evidence-copy-boundary.test.mjs",
+      "apps/portal/src/stacked-evidence-transport.mjs",
+      "apps/portal/src/stacked-contracts.mjs",
+      "apps/portal/src/stacked-sim.mjs",
+      "apps/portal/src/seeded-rng.mjs",
+      "tests/fixtures/stacked-transport-copy-iteration-worker.mjs"
+    ],
+    "noGitEnvironment": {
+      "gitOnPath": false,
+      "sourceContainsGit": false,
+      "sourceContainsNodeModules": false,
+      "basis": "PATH/Path explicitly empty; absolute Node executable; separately copied complete literal/declared worker-target source closure."
+    },
+    "harnessAfter": {
+      "runner": {
+        "path": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\run-stacked-transport-copy-green.mjs",
+        "sha256": "794b3aa11c0af282ee23a1206db74fd753d10ee6d50036193648ebc837ff5a1d"
+      },
+      "closure": {
+        "path": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-s0c-profile-closure.mjs",
+        "sha256": "74682d3d075e0a167146dd88cbfde5e3854f24a305eae7129b6f121651ececf6"
+      },
+      "bindings": {
+        "path": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-transport-copy-green-bindings.json",
+        "sha256": "bbdd8aa9a848929c64b110be6be324fcbc9a8f854879db8c4c201732bff5eed6"
+      },
+      "preparer": {
+        "path": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\prepare-stacked-transport-copy-green-bindings.mjs",
+        "sha256": "84ed3e11ea58286b51e1c3e2bc826189b0b30ac6424f1c05332950f087eb259a"
+      }
+    },
+    "markerRetainedForUnconfirmedShutdown": false
+  },
+  "localPairedReview": {
+    "result": "PASS",
+    "source": "Root independent saved-record review; no target execution or new measurement",
+    "pairedReportSha256": "3dec03e1821669ac76af068105b410bd9dd170af2752f1d76154b91273e9e8af",
+    "frozenFilesChecked": 38,
+    "helpersChecked": 6,
+    "commandsChecked": 42,
+    "environment": {
+      "node": "v24.17.0",
+      "platform": "win32",
+      "arch": "x64",
+      "cpu": "12th Gen Intel(R) Core(TM) i9-12900K",
+      "logicalCpus": 24,
+      "totalMemoryBytes": 34088464384
+    },
+    "statistics": {
+      "decode": {
+        "baseline": {
+          "min": 55.870999999999995,
+          "median": 58.4255,
+          "max": 60.78489999999999
+        },
+        "candidate": {
+          "min": 16.179499999999997,
+          "median": 17.2915,
+          "max": 18.3866
+        },
+        "pairedDeltaMin": -43.0341,
+        "pairedDeltaMedian": -41.087,
+        "pairedDeltaMax": -39.05879999999999
+      },
+      "replay": {
+        "baseline": {
+          "min": 171.385,
+          "median": 173.72910000000002,
+          "max": 176.25169999999997
+        },
+        "candidate": {
+          "min": 170.96179999999998,
+          "median": 173.74349999999998,
+          "max": 174.70510000000002
+        },
+        "pairedDeltaMin": -3.832299999999975,
+        "pairedDeltaMedian": 0.01439999999996644,
+        "pairedDeltaMax": 3.0927000000000078
+      },
+      "verify": {
+        "baseline": {
+          "min": 232.7342,
+          "median": 233.579,
+          "max": 238.9879
+        },
+        "candidate": {
+          "min": 192.7575,
+          "median": 193.30599999999998,
+          "max": 195.27929999999998
+        },
+        "pairedDeltaMin": -44.68600000000001,
+        "pairedDeltaMedian": -40.5881,
+        "pairedDeltaMax": -39.68090000000001
+      }
+    },
+    "candidateVerifierMarginMs": 54.72070000000002,
+    "localCopyBenefitAccepted": true,
+    "globalS0Accepted": false,
+    "limitations": [
+      "One local Windows i9/Node24 fixture-specific batch",
+      "Target timings exclude startup/imports/input preparation/auth/API/network",
+      "Not largest accepted encoding or production/device performance",
+      "Browser and fresh build remain separate checks"
+    ]
+  },
+  "independentPairedReview": {
+    "scope": "Independent saved-only source/harness/raw hash/schedule/parser/assessment/range review; no decoder, simulation, verifier or fresh timing run",
+    "result": "PASS for exact local S0c copy benefit and canonical evidence correctness; no global S0 closure",
+    "rawVariantFilesChecked": 38,
+    "helpersChecked": 5,
+    "samples": 42,
+    "indicesPerPhase": 7,
+    "phases": 3,
+    "variants": 2,
+    "actualResolvedFiles": 16,
+    "sourceBeforeAfterExact": true,
+    "oneEnvironment": {
+      "node": "v24.17.0",
+      "platform": "win32",
+      "arch": "x64",
+      "cpu": "12th Gen Intel(R) Core(TM) i9-12900K",
+      "logicalCpus": 24,
+      "totalMemoryBytes": 34088464384
+    },
+    "ranges": {
+      "decode": {
+        "baselineMin": 55.870999999999995,
+        "baselineMax": 60.78489999999999,
+        "candidateMin": 16.179499999999997,
+        "candidateMax": 18.3866,
+        "pairedGainMinMs": 39.05879999999999,
+        "pairedGainMaxMs": 43.0341,
+        "medianCandidateMinusBaselineMs": -41.087
+      },
+      "replay": {
+        "baselineMin": 171.385,
+        "baselineMax": 176.25169999999997,
+        "candidateMin": 170.96179999999998,
+        "candidateMax": 174.70510000000002,
+        "pairedGainMinMs": -3.0927000000000078,
+        "pairedGainMaxMs": 3.832299999999975,
+        "medianCandidateMinusBaselineMs": 0.01439999999996644
+      },
+      "verify": {
+        "baselineMin": 232.7342,
+        "baselineMax": 238.9879,
+        "candidateMin": 192.7575,
+        "candidateMax": 195.27929999999998,
+        "pairedGainMinMs": 39.68090000000001,
+        "pairedGainMaxMs": 44.68600000000001,
+        "medianCandidateMinusBaselineMs": -40.5881
+      }
+    },
+    "candidateLocalVerifyMarginMs": 54.72070000000002,
+    "measuredBatchWholeWallMs": 11137.3303,
+    "sourceOnlyReason": "Native atob returns Latin-1; indexed copy after unchanged native canonical round trip removes iterator detour while preserving bytes/rejections. No other variant file changed.",
+    "limitations": [
+      "One i9/Node24 local fixture-specific fresh-process operation batch with prepared evidence/imports excluded",
+      "250ms applies complete per-game target wall including awaited verification; target phases are separate samples, not sums",
+      "No largest legal encoding, production CPU, auth/API/browser/phone or global S0/release closure",
+      "Memory deltas are aggregate before/after rather than peak/allocation-site proof",
+      "Old corpus and six-test portability GREEN supplied by author; not reexecuted by this reviewer"
+    ]
+  },
+  "actualBrowser": {
+    "scope": "One actual Windows Chrome shared native base64 transport -> freshly built real module Worker -> exact frozen S0c canonical tuple. Proxy compatibility only; no physical phone/performance/Ranked network/global S0/release acceptance.",
+    "sourceBefore": {
+      "apps/stacked/src/verify-worker.mjs": "7b277fd34cb069eca000b2753f1f94b346633c8645045efdd49ed73a1c04da09",
+      "apps/portal/src/stacked-evidence-transport.mjs": "f9e8c11fdd032390f4220580cbc5569c7080e05e689644e06f350300bb3d502d",
+      "apps/portal/src/stacked-sim.mjs": "5b5fe17c237389bd48834b757166c8afc0b58c801246806275d25fa16ae82114",
+      "apps/portal/src/stacked-contracts.mjs": "5ee0d079f2688b02217a60f4695e41944504b0759e87004da6a213e926be9ec6",
+      "apps/portal/src/seeded-rng.mjs": "b6eed9c993e1efd38871c14d50b580ea15133fdcef020e81ffe7051e24b3ebc7"
+    },
+    "sourceAfter": {
+      "apps/stacked/src/verify-worker.mjs": "7b277fd34cb069eca000b2753f1f94b346633c8645045efdd49ed73a1c04da09",
+      "apps/portal/src/stacked-evidence-transport.mjs": "f9e8c11fdd032390f4220580cbc5569c7080e05e689644e06f350300bb3d502d",
+      "apps/portal/src/stacked-sim.mjs": "5b5fe17c237389bd48834b757166c8afc0b58c801246806275d25fa16ae82114",
+      "apps/portal/src/stacked-contracts.mjs": "5ee0d079f2688b02217a60f4695e41944504b0759e87004da6a213e926be9ec6",
+      "apps/portal/src/seeded-rng.mjs": "b6eed9c993e1efd38871c14d50b580ea15133fdcef020e81ffe7051e24b3ebc7"
+    },
+    "fixture": {
+      "manifestSha256": "5b6091ba5ab57a5a190befa914f570c3bf5ea1711cf3dedf2d0ea898f644a1c5",
+      "gzipSha256": "7ca81104a46f33f6003eb56f58112933eaa50cd9dcdfb33329f472d851b79bef",
+      "rawBytes": 757272,
+      "rawSha256": "9ae11c4d47455bf92aed1424e9cd730ece503cf3f1f5fa2e00a18f9affb95ca4"
+    },
+    "budgets": {
+      "hmh-reboot": {
+        "files": [
+          {
+            "file": "apps/portal/dist/hmh-reboot/game.js",
+            "bytes": 316337,
+            "sha256": "47f317e0e006e234e3353de9b3ca5eeeea4f878cff71bd5952ee4ec8dd1ebac5"
+          },
+          {
+            "file": "apps/portal/dist/chunks/chunk-2BH2DUJT.js",
+            "bytes": 28251,
+            "sha256": "b46a980688107505e390484d081e257045cab2db851b020bb3b989ddce936828"
+          },
+          {
+            "file": "apps/portal/dist/chunks/chunk-2GEB7OBA.js",
+            "bytes": 4219,
+            "sha256": "70a65bc4522fc364187cf2e23a1673dad5cc19d199e4c823fecd18f976813d9f"
+          },
+          {
+            "file": "apps/portal/dist/chunks/chunk-2WGYLO4P.js",
+            "bytes": 655,
+            "sha256": "fe5865361e105c752963ffcabdae4f585e39639d8f0a1167a65ce795bfd94776"
+          },
+          {
+            "file": "apps/portal/dist/chunks/chunk-35BRWECB.js",
+            "bytes": 3356,
+            "sha256": "902447d40ec443e1cdfad763ac26008351d9e6b5f949b2a1c887c0a50173ada9"
+          },
+          {
+            "file": "apps/portal/dist/chunks/chunk-66IU6Y7X.js",
+            "bytes": 33466,
+            "sha256": "051838ac99e143fe98fb6a3619d596ef2f66adbe26a17c89c44b495606dc7343"
+          },
+          {
+            "file": "apps/portal/dist/chunks/chunk-6DDQFTGU.js",
+            "bytes": 5708,
+            "sha256": "86ee5aaba5bc334fcdef63133cedea9b897a4dc5c73e8896e6f95160c6a1be47"
+          },
+          {
+            "file": "apps/portal/dist/chunks/chunk-74RWV2R2.js",
+            "bytes": 1275,
+            "sha256": "0e58e1f13487f162562313478c6ebcfd099a69049a8bf6ade3ef5c654f757f58"
+          },
+          {
+            "file": "apps/portal/dist/chunks/chunk-74ZJNIIV.js",
+            "bytes": 35584,
+            "sha256": "d6a7ec2d2df9af1c7f3c5f2d3e796a2010ed5b371810208cb07432c2b225845e"
+          },
+          {
+            "file": "apps/portal/dist/chunks/chunk-B2364FTF.js",
+            "bytes": 12061,
+            "sha256": "757de212e9fddbcb84d2423308a3168473d81822d1c52d145cd32354cb9e00cd"
+          },
+          {
+            "file": "apps/portal/dist/chunks/chunk-EKYRYSFG.js",
+            "bytes": 8142,
+            "sha256": "80a236e8f7ba1e0c0a27ce41f3a79030a0dce726377f9a722b77dff47f39dac8"
+          },
+          {
+            "file": "apps/portal/dist/chunks/chunk-ESDQIMBA.js",
+            "bytes": 965,
+            "sha256": "b8b27a8e8a339ff957517d24f55d5e43e19257a3d84afa800dcb6a4a36335ae6"
+          },
+          {
+            "file": "apps/portal/dist/chunks/chunk-FJSVRC2T.js",
+            "bytes": 3368,
+            "sha256": "9db85111ba86baf3c2c56720931ce6de6b09fdc11dfff016afa2da664970923c"
+          },
+          {
+            "file": "apps/portal/dist/chunks/chunk-HRT7TI5W.js",
+            "bytes": 1590,
+            "sha256": "4024f32d830d0a10cab912a25fb48fc25e7e66cce3cb4e6bd4e11bd2047397ee"
+          },
+          {
+            "file": "apps/portal/dist/chunks/chunk-IZH6NDGR.js",
+            "bytes": 8119,
+            "sha256": "717cc54567e4da4278370a10d392edd2f55566d58cf010a0bd909a3addae26d5"
+          },
+          {
+            "file": "apps/portal/dist/chunks/chunk-JW3WZOLP.js",
+            "bytes": 481,
+            "sha256": "1408f3bf522dca3a38a8506c8bed7426ce280669de684ec106feddc04993357b"
+          },
+          {
+            "file": "apps/portal/dist/chunks/chunk-KIEFYNSW.js",
+            "bytes": 1478,
+            "sha256": "6c1187374a3f5b26b4f25f12a9aac90068325e6cf7ef8f3a3154d52b9d90d136"
+          },
+          {
+            "file": "apps/portal/dist/chunks/chunk-MMSI7XOT.js",
+            "bytes": 10801,
+            "sha256": "628c514e29dfeaf75b2d2139eca21c246025185d4bf3cb2222897eaf3a5a2770"
+          },
+          {
+            "file": "apps/portal/dist/chunks/chunk-NSYVAXWR.js",
+            "bytes": 13104,
+            "sha256": "a8ec51079fd382283f7a361f482ce8ea6e36eacc2e97ff38bdff86338779d315"
+          },
+          {
+            "file": "apps/portal/dist/chunks/chunk-OQWCW7H2.js",
+            "bytes": 524,
+            "sha256": "d63df405a33525fdfc80c5840831f92e1a192e401fe482f6a13bb537fb270ee6"
+          },
+          {
+            "file": "apps/portal/dist/chunks/chunk-PBEL7OZC.js",
+            "bytes": 1800,
+            "sha256": "e02b932100995c4ed0eade95ef56e213187ea60f7719bc4db3f3e13b3ef3ef18"
+          },
+          {
+            "file": "apps/portal/dist/chunks/chunk-QZQQZ67Q.js",
+            "bytes": 24953,
+            "sha256": "cc5ac6a3fb21aa7a9dc7a24975ccd630c96430beaf305425d477403417de791d"
+          },
+          {
+            "file": "apps/portal/dist/chunks/chunk-TH556TFN.js",
+            "bytes": 4375,
+            "sha256": "b98e4b917d2fa6e05401cab2f934e57b7e7969b6c60d7db59a08a0bbb9463ae5"
+          },
+          {
+            "file": "apps/portal/dist/chunks/chunk-UJHJCWV2.js",
+            "bytes": 4574,
+            "sha256": "5858b9b450a5ba4d382bb385423239c040f7480386c850addd930620265b0332"
+          },
+          {
+            "file": "apps/portal/dist/chunks/chunk-V6Q2KNOM.js",
+            "bytes": 3416,
+            "sha256": "1562970a6389619131513d12c918168ecc54c5acb83b588413019b7ab311a797"
+          },
+          {
+            "file": "apps/portal/dist/chunks/chunk-VDJRWC6L.js",
+            "bytes": 1904,
+            "sha256": "b9e0b429ca20baee726d10c1939d6f4d3ea2cc8ebc571a462521ce1df75792ff"
+          },
+          {
+            "file": "apps/portal/dist/chunks/chunk-WNDYD35G.js",
+            "bytes": 2376,
+            "sha256": "56836055d2a51efe654caf08e95b85e600979fcbf209eefb90415a30d39d0023"
+          },
+          {
+            "file": "apps/portal/dist/chunks/chunk-YKUM7VFD.js",
+            "bytes": 42284,
+            "sha256": "fa12b6d0b7e7346b6515c4b5d64eebffaac4a12cb73535dcce4a63c395278b82"
+          },
+          {
+            "file": "apps/portal/dist/chunks/hmh-pixi.js",
+            "bytes": 465746,
+            "sha256": "5da86a3125f1f0d35c88edbbfb6a454aada982908aef710771105f96eecc1c2c"
+          }
+        ],
+        "totalBytes": 1040912,
+        "capBytes": 1048576,
+        "headroomBytes": 7664
+      },
+      "stacked": {
+        "files": [
+          {
+            "file": "apps/portal/dist/stacked/game.js",
+            "bytes": 25966,
+            "sha256": "a2d6d5e9cd2a8ad3dc9a70d699c7cf0d56a606eb0a8e1416ec16835e7bc7a03d"
+          },
+          {
+            "file": "apps/portal/dist/chunks/chunk-2WGYLO4P.js",
+            "bytes": 655,
+            "sha256": "fe5865361e105c752963ffcabdae4f585e39639d8f0a1167a65ce795bfd94776"
+          },
+          {
+            "file": "apps/portal/dist/chunks/chunk-7Z3MKT4T.js",
+            "bytes": 7859,
+            "sha256": "a706e9a16fd93e22cf9a4c3101837669926361d02d6c70cd722f81310c9f204b"
+          },
+          {
+            "file": "apps/portal/dist/chunks/chunk-DYBTERKK.js",
+            "bytes": 12714,
+            "sha256": "7fed14e18bd73c121d602f3f331929b85489e533a1e6541cacf032f8b53d3176"
+          },
+          {
+            "file": "apps/portal/dist/chunks/chunk-N53BCL72.js",
+            "bytes": 2605,
+            "sha256": "ac20fc0af4052d9370a3cb5cba303399a2f0877306e17ab7dd8dd10ad4990a42"
+          },
+          {
+            "file": "apps/portal/dist/chunks/chunk-Q5BBAG26.js",
+            "bytes": 3926,
+            "sha256": "38f2f066d499163c6ba0ef6b6ea49d9c81614bfec5d709b134301c9c97def98d"
+          },
+          {
+            "file": "apps/portal/dist/chunks/chunk-SFMOJRWV.js",
+            "bytes": 825,
+            "sha256": "c3ed249a216df94b7fa688e857640e04962af4acb1c2403635851287df2df0f5"
+          },
+          {
+            "file": "apps/portal/dist/chunks/chunk-YH74QWYW.js",
+            "bytes": 1928,
+            "sha256": "6bbd0214c84876118404897dccedb5f3e03588f9cf5428c76788d53ed0d18076"
+          },
+          {
+            "file": "apps/portal/dist/chunks/chunk-Z6AGTUFW.js",
+            "bytes": 23007,
+            "sha256": "b4d6f116bb9c92f93537f2765c9bb7214978f31a3a3cfe1e50d3e82be14df924"
+          },
+          {
+            "file": "apps/portal/dist/stacked/stacked-pixi-v1.js",
+            "bytes": 496615,
+            "sha256": "6c9a15983644f0883e50c0723874e3e6e88f8cd8968f881253d15143c1732db3"
+          }
+        ],
+        "totalBytes": 576100,
+        "capBytes": 607000,
+        "headroomBytes": 30900
+      }
+    },
+    "actual": {
+      "rawBytes": 757272,
+      "sha256": "9ae11c4d47455bf92aed1424e9cd730ece503cf3f1f5fa2e00a18f9affb95ca4",
+      "requestId": "transport-s0c-v1",
+      "response": {
+        "requestId": "transport-s0c-v1",
+        "ok": true,
+        "tuple": {
+          "v": "stacked-result-v1",
+          "gameId": "stacked",
+          "seed": 3978027289,
+          "buildHash": "site-1.7.0:game-1.7.0:cabinet-0.2.0",
+          "seasonId": "stacked-season-preview-1",
+          "ticks": 432000,
+          "pieces": 52900,
+          "lines": 23989,
+          "level": 30,
+          "score": 96604870,
+          "quadClears": 66,
+          "spins": 0,
+          "perfectClears": 6,
+          "maxCombo": 6,
+          "maxBackToBack": 1,
+          "garbageRowsReceived": 3148,
+          "garbageGroups": 3271,
+          "garbageRowsCleared": 3146,
+          "holdsUsed": 0,
+          "bagRefills": 7559,
+          "bagDraws": 45354,
+          "garbageDraws": 4614,
+          "transitionCount": 432000,
+          "boardHash": "0x6c3f0fc121eb6504f9cd00f47bf69146f6428b0e7d52a801d97fc7ac3f547342",
+          "terminalReason": "tick-ceiling"
+        }
+      },
+      "workerTerminationRequested": true
+    },
+    "workers": [
+      {
+        "url": "http://127.0.0.1:56231/dist/stacked/verify-worker.js",
+        "closed": true
+      }
+    ],
+    "browser": {
+      "version": "154.0.8037.58",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/154.0.0.0 Safari/537.36",
+      "platform": "win32",
+      "physicalPhone": false,
+      "performanceMeasured": false
+    },
+    "gameBootCases": [
+      {
+        "name": "desktop",
+        "viewport": {
+          "width": 1440,
+          "height": 1000
+        },
+        "responses": {
+          "http://127.0.0.1:56231/assets/audio/playlist/hard-money-heroes-16-bit-arcade-music.mp3": {
+            "status": 200,
+            "type": "media"
+          },
+          "http://127.0.0.1:56231/assets/video/arcade-splash-loop.mp4": {
+            "status": 200,
+            "type": "media"
+          },
+          "http://127.0.0.1:56231/assets/audio/playlist/speedster-16-bit-arcade-music-track-1.mp3": {
+            "status": 200,
+            "type": "media"
+          }
+        },
+        "rawRequestFailures": [
+          {
+            "kind": "request",
+            "url": "http://127.0.0.1:56231/assets/audio/playlist/hard-money-heroes-16-bit-arcade-music.mp3",
+            "type": "media",
+            "failure": {
+              "errorText": "net::ERR_ABORTED"
+            }
+          }
+        ],
+        "expectedMusicCancellations": [
+          {
+            "kind": "request",
+            "url": "http://127.0.0.1:56231/assets/audio/playlist/hard-money-heroes-16-bit-arcade-music.mp3",
+            "type": "media",
+            "failure": {
+              "errorText": "net::ERR_ABORTED"
+            },
+            "reason": "observed native track load changed source",
+            "servedSha256": "101da360846707c57b4cba2a2a51fe74718bf0be8e633599eb7b13cac7345727"
+          }
+        ],
+        "source": "Actual current portal Guest -> STACKED -> Free -> Start native controls",
+        "errors": [],
+        "actualPhone": false,
+        "performanceMeasured": false,
+        "before": {
+          "mobileGameplay": "false",
+          "particleCapacity": "384",
+          "pieceFxCapacity": "288",
+          "rootScale": "0.702",
+          "assetsReady": "true",
+          "visualizerTier": "full",
+          "renderScale": "1",
+          "visualizerPhase": "swimming",
+          "visualizerGeneration": "0",
+          "visualizerMode": "living",
+          "visualizerScene": "tunnel",
+          "sceneTransitions": "0",
+          "feedback": "",
+          "gameplayParticles": "0",
+          "particleEvent": "",
+          "clearTier": "0",
+          "lockGlows": "0",
+          "visualizerParticles": "648",
+          "visualizerOrganisms": "9",
+          "particlesEmitted": "0",
+          "pieceFx": "0",
+          "pieceFxEvent": "",
+          "pieceFxShake": "0.00",
+          "boardTrauma": "0.00",
+          "rowSquash": "0",
+          "boardPulse": "0.067",
+          "renderedCells": "8",
+          "simulationTick": "31",
+          "runScore": "0",
+          "renderedParticles": "648",
+          "audioAvailable": "true"
+        },
+        "nativeInputs": [
+          "ArrowRight down -> four actual ticks -> up",
+          "ArrowUp down -> two actual ticks -> up"
+        ],
+        "after": {
+          "mobileGameplay": "false",
+          "particleCapacity": "384",
+          "pieceFxCapacity": "288",
+          "rootScale": "0.702",
+          "assetsReady": "true",
+          "visualizerTier": "full",
+          "renderScale": "1",
+          "visualizerPhase": "swimming",
+          "visualizerGeneration": "0",
+          "visualizerMode": "living",
+          "visualizerScene": "tunnel",
+          "sceneTransitions": "0",
+          "feedback": "",
+          "gameplayParticles": "4",
+          "particleEvent": "drop",
+          "clearTier": "0",
+          "lockGlows": "0",
+          "visualizerParticles": "648",
+          "visualizerOrganisms": "9",
+          "particlesEmitted": "19",
+          "pieceFx": "0",
+          "pieceFxEvent": "",
+          "pieceFxShake": "0.00",
+          "boardTrauma": "0.00",
+          "rowSquash": "0",
+          "boardPulse": "0.066",
+          "renderedCells": "8",
+          "simulationTick": "62",
+          "runScore": "10",
+          "renderedParticles": "648",
+          "audioAvailable": "true"
+        },
+        "layout": {
+          "viewport": {
+            "width": 1400,
+            "height": 840
+          },
+          "scrollWidth": 1400,
+          "clientWidth": 1400,
+          "canvas": {
+            "x": 0,
+            "y": 72,
+            "width": 1400,
+            "height": 702
+          }
+        },
+        "musicWitness": {
+          "loads": [
+            {
+              "src": "http://127.0.0.1:56231/assets/audio/playlist/hard-money-heroes-16-bit-arcade-music.mp3",
+              "trackId": "hard-money-heroes-16-bit-arcade-music",
+              "preload": "metadata"
+            },
+            {
+              "src": "http://127.0.0.1:56231/assets/audio/playlist/speedster-16-bit-arcade-music-track-1.mp3",
+              "trackId": "speedster-16-bit-arcade-music-track-1",
+              "preload": "metadata"
+            }
+          ],
+          "errors": [],
+          "currentSrc": "http://127.0.0.1:56231/assets/audio/playlist/speedster-16-bit-arcade-music-track-1.mp3",
+          "mediaError": null
+        },
+        "nativeExitObserved": true,
+        "passed": true,
+        "contextClosed": true
+      },
+      {
+        "name": "phone-proxy",
+        "viewport": {
+          "width": 414,
+          "height": 896
+        },
+        "responses": {
+          "http://127.0.0.1:56231/assets/audio/playlist/hard-money-heroes-16-bit-arcade-music.mp3": {
+            "status": 200,
+            "type": "media"
+          },
+          "http://127.0.0.1:56231/assets/audio/playlist/lit-man-16-bit-arcade-music-track-2.mp3": {
+            "status": 200,
+            "type": "media"
+          }
+        },
+        "rawRequestFailures": [
+          {
+            "kind": "request",
+            "url": "http://127.0.0.1:56231/assets/audio/playlist/hard-money-heroes-16-bit-arcade-music.mp3",
+            "type": "media",
+            "failure": {
+              "errorText": "net::ERR_ABORTED"
+            }
+          }
+        ],
+        "expectedMusicCancellations": [
+          {
+            "kind": "request",
+            "url": "http://127.0.0.1:56231/assets/audio/playlist/hard-money-heroes-16-bit-arcade-music.mp3",
+            "type": "media",
+            "failure": {
+              "errorText": "net::ERR_ABORTED"
+            },
+            "reason": "observed native track load changed source",
+            "servedSha256": "101da360846707c57b4cba2a2a51fe74718bf0be8e633599eb7b13cac7345727"
+          }
+        ],
+        "source": "Actual current portal Guest -> STACKED -> Free -> Start native controls",
+        "errors": [],
+        "actualPhone": false,
+        "performanceMeasured": false,
+        "before": {
+          "mobileGameplay": "true",
+          "particleCapacity": "256",
+          "pieceFxCapacity": "192",
+          "rootScale": "0.696",
+          "assetsReady": "true",
+          "visualizerTier": "full",
+          "renderScale": "1",
+          "visualizerPhase": "swimming",
+          "visualizerGeneration": "0",
+          "visualizerMode": "living",
+          "visualizerScene": "tunnel",
+          "sceneTransitions": "0",
+          "feedback": "",
+          "gameplayParticles": "0",
+          "particleEvent": "",
+          "clearTier": "0",
+          "lockGlows": "0",
+          "visualizerParticles": "432",
+          "visualizerOrganisms": "9",
+          "particlesEmitted": "0",
+          "pieceFx": "0",
+          "pieceFxEvent": "",
+          "pieceFxShake": "0.00",
+          "boardTrauma": "0.00",
+          "rowSquash": "0",
+          "boardPulse": "0.068",
+          "renderedCells": "6",
+          "simulationTick": "31",
+          "runScore": "0",
+          "renderedParticles": "432",
+          "audioAvailable": "true"
+        },
+        "nativeInputs": [
+          "ArrowRight down -> four actual ticks -> up",
+          "ArrowUp down -> two actual ticks -> up"
+        ],
+        "after": {
+          "mobileGameplay": "true",
+          "particleCapacity": "256",
+          "pieceFxCapacity": "192",
+          "rootScale": "0.696",
+          "assetsReady": "true",
+          "visualizerTier": "full",
+          "renderScale": "1",
+          "visualizerPhase": "swimming",
+          "visualizerGeneration": "0",
+          "visualizerMode": "living",
+          "visualizerScene": "tunnel",
+          "sceneTransitions": "0",
+          "feedback": "",
+          "gameplayParticles": "4",
+          "particleEvent": "drop",
+          "clearTier": "0",
+          "lockGlows": "0",
+          "visualizerParticles": "432",
+          "visualizerOrganisms": "9",
+          "particlesEmitted": "19",
+          "pieceFx": "0",
+          "pieceFxEvent": "",
+          "pieceFxShake": "0.00",
+          "boardTrauma": "0.00",
+          "rowSquash": "0",
+          "boardPulse": "0.068",
+          "renderedCells": "8",
+          "simulationTick": "62",
+          "runScore": "10",
+          "renderedParticles": "432",
+          "audioAvailable": "true"
+        },
+        "layout": {
+          "viewport": {
+            "width": 414,
+            "height": 896
+          },
+          "scrollWidth": 414,
+          "clientWidth": 414,
+          "canvas": {
+            "x": 0,
+            "y": 60,
+            "width": 414,
+            "height": 696
+          }
+        },
+        "musicWitness": {
+          "loads": [
+            {
+              "src": "http://127.0.0.1:56231/assets/audio/playlist/hard-money-heroes-16-bit-arcade-music.mp3",
+              "trackId": "hard-money-heroes-16-bit-arcade-music",
+              "preload": "metadata"
+            },
+            {
+              "src": "http://127.0.0.1:56231/assets/audio/playlist/lit-man-16-bit-arcade-music-track-2.mp3",
+              "trackId": "lit-man-16-bit-arcade-music-track-2",
+              "preload": "metadata"
+            }
+          ],
+          "errors": [],
+          "currentSrc": "http://127.0.0.1:56231/assets/audio/playlist/lit-man-16-bit-arcade-music-track-2.mp3",
+          "mediaError": null
+        },
+        "nativeExitObserved": true,
+        "passed": true,
+        "contextClosed": true
+      }
+    ],
+    "errors": [],
+    "cleanupErrors": [],
+    "passed": true,
+    "chromeProcessCloseObserved": true,
+    "serverCloseObserved": true,
+    "browserServerClosed": true
+  },
+  "completeBrowserCustodyEqual": true,
+  "completeContinuationCustodyEqual": true,
+  "rawFiles": {
+    "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-transport-copy-paired-20260929-01\\paired-report.json": {
+      "bytes": 273586,
+      "sha256": "3dec03e1821669ac76af068105b410bd9dd170af2752f1d76154b91273e9e8af"
+    },
+    "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-transport-copy-browser-20260929-03\\browser-report.json": {
+      "bytes": 2579437,
+      "sha256": "076e3f394054f29a5183d53800627ad2f4d08004268f76b1643ce638385bcbdc"
+    },
+    "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-transport-copy-browser-continuation-20260929-03\\continuation-report.json": {
+      "bytes": 4977682,
+      "sha256": "c214d6a724fbe707c0487f3729e4ca6befda5a038e2b34acefd5914318568970"
+    },
+    "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-transport-copy-browser-build-20260929-01\\build-browser-report.json": {
+      "bytes": 1537216,
+      "sha256": "fea107f7c724e4839ab77b7505e0860e67cc736adfbf1d261539f9dee4959034"
+    },
+    "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-transport-copy-browser-20260929-02\\browser-report.json": {
+      "bytes": 2496326,
+      "sha256": "3dd07e1d2aa837f4e387aa050f5aa54acb32f8e7cf4a2763a5b5f54ef4931dba"
+    }
+  },
+  "retainedFailures": [
+    "First fresh build passed; HMH vendor witness used the wrong path before browser launch.",
+    "Second proof passed actual transport/Worker and desktop input; aborted on intentional native music switch. Phone was not run in that attempt.",
+    "The final proof observes original native media load calls, records all failed requests and separates only served HTTP200 playlist ERR_ABORTED with observed track change/owned closure."
+  ],
+  "limitations": [
+    "One local fixture/environment, no largest legal encoding or productionCPU/global S0 closure.",
+    "Fresh operation timings exclude process/imports/preparation/auth/API/network; no performance claims from browser proof.",
+    "Windows Free proxies are not physical XS Max acceptance, touch-input/framing acceptance or Ranked end-to-end.",
+    "No final combined root build, release gate, version bump or deployment at this checkpoint."
+  ]
+}

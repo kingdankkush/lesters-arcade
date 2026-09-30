@@ -35,7 +35,9 @@ export function decodeStackedBase64(text, maxBytes = STACKED_EVIDENCE_CHUNK_RAW_
   if (!integer(maxBytes, 0, STACKED_MAX_EVIDENCE_BYTES) || typeof text !== 'string' || text.length > Math.ceil(maxBytes / 3) * 4 || !/^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/.test(text)) throw new Error('base64 payload invalid');
   const binary = atob(text);
   if (binary.length > maxBytes || btoa(binary) !== text) throw new Error('noncanonical base64 payload');
-  return Uint8Array.from(binary, char => char.charCodeAt(0));
+  const bytes = new Uint8Array(binary.length);
+  for (let index = 0; index < binary.length; index += 1) bytes[index] = binary.charCodeAt(index);
+  return bytes;
 }
 export function validateStackedChunkMessage(message) {
   try {
