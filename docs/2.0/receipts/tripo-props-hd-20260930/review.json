@@ -1,0 +1,416 @@
+{
+  "pipelineId": "hmh-tripo-static-props-hd/v1",
+  "reviewedBy": "Claude Fable 5.1 (world-art lane), labelled contact sheets read at full 2048 px",
+  "reviewedUtc": "2026-09-30T22:20:00Z",
+  "scope": "self-review of native re-renders; owner art acceptance is not claimed",
+  "checks": [
+    "camera facing (front toward camera, long axis on screen)",
+    "base contact / floating pivot",
+    "clipped bases (renderer refuses edge contact)",
+    "missing or black textures",
+    "transparent-hole artifacts",
+    "A/B render exactness"
+  ],
+  "summary": {
+    "ok": 84,
+    "fixed": 12,
+    "rejected": 0
+  },
+  "items": {
+    "b1-01": {
+      "status": "ok",
+      "reason": "Contact-sheet review: facing, base contact, textures and alpha edges read correctly at the packed size."
+    },
+    "b1-02": {
+      "status": "ok",
+      "reason": "Contact-sheet review: facing, base contact, textures and alpha edges read correctly at the packed size."
+    },
+    "b1-03": {
+      "status": "ok",
+      "reason": "Contact-sheet review: facing, base contact, textures and alpha edges read correctly at the packed size."
+    },
+    "b1-04": {
+      "status": "ok",
+      "reason": "Contact-sheet review: facing, base contact, textures and alpha edges read correctly at the packed size."
+    },
+    "b1-05": {
+      "status": "ok",
+      "reason": "Contact-sheet review: facing, base contact, textures and alpha edges read correctly at the packed size."
+    },
+    "b1-06": {
+      "status": "ok",
+      "reason": "Contact-sheet review: facing, base contact, textures and alpha edges read correctly at the packed size."
+    },
+    "b1-07": {
+      "status": "ok",
+      "reason": "Contact-sheet review: facing, base contact, textures and alpha edges read correctly at the packed size."
+    },
+    "b1-08": {
+      "status": "ok",
+      "reason": "Contact-sheet review: facing, base contact, textures and alpha edges read correctly at the packed size."
+    },
+    "b1-09": {
+      "status": "ok",
+      "reason": "Contact-sheet review: facing, base contact, textures and alpha edges read correctly at the packed size."
+    },
+    "b1-10": {
+      "status": "ok",
+      "reason": "Contact-sheet review: facing, base contact, textures and alpha edges read correctly at the packed size."
+    },
+    "b1-11": {
+      "status": "ok",
+      "reason": "Contact-sheet review: facing, base contact, textures and alpha edges read correctly at the packed size."
+    },
+    "b1-12": {
+      "status": "ok",
+      "reason": "Contact-sheet review: facing, base contact, textures and alpha edges read correctly at the packed size."
+    },
+    "b1-13": {
+      "status": "ok",
+      "reason": "Contact-sheet review: facing, base contact, textures and alpha edges read correctly at the packed size."
+    },
+    "b1-14": {
+      "status": "ok",
+      "reason": "Contact-sheet review: facing, base contact, textures and alpha edges read correctly at the packed size."
+    },
+    "b1-15": {
+      "status": "ok",
+      "reason": "Contact-sheet review: facing, base contact, textures and alpha edges read correctly at the packed size."
+    },
+    "b1-16": {
+      "status": "ok",
+      "reason": "Contact-sheet review: facing, base contact, textures and alpha edges read correctly at the packed size."
+    },
+    "b1-17": {
+      "status": "ok",
+      "reason": "Contact-sheet review: facing, base contact, textures and alpha edges read correctly at the packed size."
+    },
+    "b1-18": {
+      "status": "ok",
+      "reason": "Contact-sheet review: facing, base contact, textures and alpha edges read correctly at the packed size."
+    },
+    "b1-19": {
+      "status": "ok",
+      "reason": "Contact-sheet review: facing, base contact, textures and alpha edges read correctly at the packed size."
+    },
+    "b1-20": {
+      "status": "ok",
+      "reason": "Contact-sheet review: facing, base contact, textures and alpha edges read correctly at the packed size."
+    },
+    "b1-21": {
+      "status": "ok",
+      "reason": "Contact-sheet review: facing, base contact, textures and alpha edges read correctly at the packed size."
+    },
+    "b1-22": {
+      "status": "ok",
+      "reason": "Contact-sheet review: facing, base contact, textures and alpha edges read correctly at the packed size."
+    },
+    "b1-23": {
+      "status": "ok",
+      "reason": "Contact-sheet review: facing, base contact, textures and alpha edges read correctly at the packed size."
+    },
+    "b1-24": {
+      "status": "ok",
+      "reason": "Contact-sheet review: facing, base contact, textures and alpha edges read correctly at the packed size."
+    },
+    "b1-25": {
+      "status": "ok",
+      "reason": "Contact-sheet review: facing, base contact, textures and alpha edges read correctly at the packed size."
+    },
+    "b1-26": {
+      "status": "ok",
+      "reason": "Contact-sheet review: facing, base contact, textures and alpha edges read correctly at the packed size."
+    },
+    "b1-27": {
+      "status": "ok",
+      "reason": "Contact-sheet review: facing, base contact, textures and alpha edges read correctly at the packed size."
+    },
+    "b1-28": {
+      "status": "ok",
+      "reason": "Contact-sheet review: facing, base contact, textures and alpha edges read correctly at the packed size."
+    },
+    "b1-29": {
+      "status": "ok",
+      "reason": "Contact-sheet review: facing, base contact, textures and alpha edges read correctly at the packed size."
+    },
+    "b1-30": {
+      "status": "ok",
+      "reason": "Contact-sheet review: facing, base contact, textures and alpha edges read correctly at the packed size."
+    },
+    "b1-31": {
+      "status": "fixed",
+      "reason": "Mesh bounds include invisible geometry below the painted model, so the model-derived ground pivot floated below the visible base; pivot y snapped to the painted base (groundAnchorMethod painted-base-review-fix).",
+      "pivotFix": "painted-base"
+    },
+    "b1-32": {
+      "status": "ok",
+      "reason": "Contact-sheet review: facing, base contact, textures and alpha edges read correctly at the packed size."
+    },
+    "b1-33": {
+      "status": "ok",
+      "reason": "Contact-sheet review: facing, base contact, textures and alpha edges read correctly at the packed size."
+    },
+    "b1-34": {
+      "status": "ok",
+      "reason": "Contact-sheet review: facing, base contact, textures and alpha edges read correctly at the packed size."
+    },
+    "b1-35": {
+      "status": "ok",
+      "reason": "Contact-sheet review: facing, base contact, textures and alpha edges read correctly at the packed size."
+    },
+    "b1-36": {
+      "status": "ok",
+      "reason": "Contact-sheet review: facing, base contact, textures and alpha edges read correctly at the packed size."
+    },
+    "b1-37": {
+      "status": "ok",
+      "reason": "Contact-sheet review: facing, base contact, textures and alpha edges read correctly at the packed size."
+    },
+    "b1-38": {
+      "status": "ok",
+      "reason": "Contact-sheet review: facing, base contact, textures and alpha edges read correctly at the packed size."
+    },
+    "b1-39": {
+      "status": "ok",
+      "reason": "Contact-sheet review: facing, base contact, textures and alpha edges read correctly at the packed size."
+    },
+    "b1-40": {
+      "status": "ok",
+      "reason": "Contact-sheet review: facing, base contact, textures and alpha edges read correctly at the packed size."
+    },
+    "b1-41": {
+      "status": "ok",
+      "reason": "Contact-sheet review: facing, base contact, textures and alpha edges read correctly at the packed size."
+    },
+    "b1-42": {
+      "status": "ok",
+      "reason": "Contact-sheet review: facing, base contact, textures and alpha edges read correctly at the packed size."
+    },
+    "b1-43": {
+      "status": "ok",
+      "reason": "Contact-sheet review: facing, base contact, textures and alpha edges read correctly at the packed size."
+    },
+    "b1-44": {
+      "status": "ok",
+      "reason": "Contact-sheet review: facing, base contact, textures and alpha edges read correctly at the packed size."
+    },
+    "b1-45": {
+      "status": "ok",
+      "reason": "Contact-sheet review: facing, base contact, textures and alpha edges read correctly at the packed size."
+    },
+    "b1-46": {
+      "status": "ok",
+      "reason": "Contact-sheet review: facing, base contact, textures and alpha edges read correctly at the packed size."
+    },
+    "b1-47": {
+      "status": "ok",
+      "reason": "Contact-sheet review: facing, base contact, textures and alpha edges read correctly at the packed size."
+    },
+    "b1-48": {
+      "status": "ok",
+      "reason": "Contact-sheet review: facing, base contact, textures and alpha edges read correctly at the packed size."
+    },
+    "b1-49": {
+      "status": "ok",
+      "reason": "Contact-sheet review: facing, base contact, textures and alpha edges read correctly at the packed size."
+    },
+    "b1-50": {
+      "status": "ok",
+      "reason": "Contact-sheet review: facing, base contact, textures and alpha edges read correctly at the packed size."
+    },
+    "b1-51": {
+      "status": "ok",
+      "reason": "Contact-sheet review: facing, base contact, textures and alpha edges read correctly at the packed size."
+    },
+    "b1-52": {
+      "status": "ok",
+      "reason": "Contact-sheet review: facing, base contact, textures and alpha edges read correctly at the packed size."
+    },
+    "b1-53": {
+      "status": "ok",
+      "reason": "Contact-sheet review: facing, base contact, textures and alpha edges read correctly at the packed size."
+    },
+    "b1-54": {
+      "status": "ok",
+      "reason": "Contact-sheet review: facing, base contact, textures and alpha edges read correctly at the packed size."
+    },
+    "b1-55": {
+      "status": "ok",
+      "reason": "Contact-sheet review: facing, base contact, textures and alpha edges read correctly at the packed size."
+    },
+    "b1-56": {
+      "status": "ok",
+      "reason": "Contact-sheet review: facing, base contact, textures and alpha edges read correctly at the packed size."
+    },
+    "b2-41": {
+      "status": "ok",
+      "reason": "Contact-sheet review: facing, base contact, textures and alpha edges read correctly at the packed size."
+    },
+    "b2-42": {
+      "status": "ok",
+      "reason": "Contact-sheet review: facing, base contact, textures and alpha edges read correctly at the packed size."
+    },
+    "b2-43": {
+      "status": "fixed",
+      "reason": "Steel truss span is modelled along X while the other bridges span along Y; re-rendered at yaw 90 so its span and visible deck match b2-41/42/44.",
+      "cameraYawDegrees": 90
+    },
+    "b2-44": {
+      "status": "ok",
+      "reason": "Contact-sheet review: facing, base contact, textures and alpha edges read correctly at the packed size."
+    },
+    "b2-45": {
+      "status": "ok",
+      "reason": "Contact-sheet review: facing, base contact, textures and alpha edges read correctly at the packed size."
+    },
+    "b2-46": {
+      "status": "ok",
+      "reason": "Contact-sheet review: facing, base contact, textures and alpha edges read correctly at the packed size."
+    },
+    "b2-47": {
+      "status": "ok",
+      "reason": "Contact-sheet review: facing, base contact, textures and alpha edges read correctly at the packed size."
+    },
+    "b2-48": {
+      "status": "fixed",
+      "reason": "Source rendered end-on at the default yaw 0 (long axis along the camera depth); re-rendered at yaw 90 so the side profile reads on screen.",
+      "cameraYawDegrees": 90
+    },
+    "b2-49": {
+      "status": "ok",
+      "reason": "Contact-sheet review: facing, base contact, textures and alpha edges read correctly at the packed size."
+    },
+    "b2-50": {
+      "status": "ok",
+      "reason": "Contact-sheet review: facing, base contact, textures and alpha edges read correctly at the packed size."
+    },
+    "b2-51": {
+      "status": "fixed",
+      "reason": "Source rendered end-on at the default yaw 0 (long axis along the camera depth); re-rendered at yaw 90 so the side profile reads on screen. A/B passes are non-exact within the recorded sub-perceptual tolerance (13 px, peak channel delta 7) from z-fighting on the owner-corrected two-sided sign panels; accepted at tolerance.",
+      "cameraYawDegrees": 90
+    },
+    "b2-52": {
+      "status": "fixed",
+      "reason": "Mesh bounds include invisible geometry below the painted model, so the model-derived ground pivot floated below the visible base; pivot y snapped to the painted base (groundAnchorMethod painted-base-review-fix).",
+      "pivotFix": "painted-base"
+    },
+    "b2-53": {
+      "status": "fixed",
+      "reason": "Default yaw showed the closed back panel; re-rendered at yaw 180 so the open side with the bench faces the camera.",
+      "cameraYawDegrees": 180
+    },
+    "b2-54": {
+      "status": "ok",
+      "reason": "Contact-sheet review: facing, base contact, textures and alpha edges read correctly at the packed size."
+    },
+    "b2-55": {
+      "status": "fixed",
+      "reason": "Source rendered end-on at the default yaw 0 (long axis along the camera depth); re-rendered at yaw 90 so the side profile reads on screen.",
+      "cameraYawDegrees": 90
+    },
+    "b2-56": {
+      "status": "ok",
+      "reason": "Contact-sheet review: facing, base contact, textures and alpha edges read correctly at the packed size."
+    },
+    "b2-57": {
+      "status": "ok",
+      "reason": "Contact-sheet review: facing, base contact, textures and alpha edges read correctly at the packed size."
+    },
+    "b2-58": {
+      "status": "ok",
+      "reason": "Contact-sheet review: facing, base contact, textures and alpha edges read correctly at the packed size."
+    },
+    "b2-59": {
+      "status": "fixed",
+      "reason": "Source rendered end-on at the default yaw 0 (long axis along the camera depth); re-rendered at yaw 90 so the side profile reads on screen.",
+      "cameraYawDegrees": 90
+    },
+    "b2-60": {
+      "status": "ok",
+      "reason": "Contact-sheet review: facing, base contact, textures and alpha edges read correctly at the packed size."
+    },
+    "b2-61": {
+      "status": "fixed",
+      "reason": "Source rendered end-on at the default yaw 0 (long axis along the camera depth); re-rendered at yaw 90 so the side profile reads on screen.",
+      "cameraYawDegrees": 90
+    },
+    "b2-62": {
+      "status": "ok",
+      "reason": "Contact-sheet review: facing, base contact, textures and alpha edges read correctly at the packed size."
+    },
+    "b2-63": {
+      "status": "ok",
+      "reason": "Contact-sheet review: facing, base contact, textures and alpha edges read correctly at the packed size."
+    },
+    "b2-64": {
+      "status": "ok",
+      "reason": "Contact-sheet review: facing, base contact, textures and alpha edges read correctly at the packed size."
+    },
+    "b2-65": {
+      "status": "ok",
+      "reason": "Contact-sheet review: facing, base contact, textures and alpha edges read correctly at the packed size."
+    },
+    "b2-66": {
+      "status": "ok",
+      "reason": "Contact-sheet review: facing, base contact, textures and alpha edges read correctly at the packed size."
+    },
+    "b2-67": {
+      "status": "ok",
+      "reason": "Contact-sheet review: facing, base contact, textures and alpha edges read correctly at the packed size."
+    },
+    "b2-68": {
+      "status": "ok",
+      "reason": "Contact-sheet review: facing, base contact, textures and alpha edges read correctly at the packed size."
+    },
+    "b2-69": {
+      "status": "ok",
+      "reason": "Contact-sheet review: facing, base contact, textures and alpha edges read correctly at the packed size."
+    },
+    "b2-70": {
+      "status": "ok",
+      "reason": "Contact-sheet review: facing, base contact, textures and alpha edges read correctly at the packed size."
+    },
+    "b2-71": {
+      "status": "fixed",
+      "reason": "A/B passes are non-exact within the recorded sub-perceptual tolerance (45 px, peak channel delta 4) from z-fighting between the owner-added supplemental canopy and the original leaf surfaces; accepted at tolerance. Facing and grounding read correctly."
+    },
+    "b2-72": {
+      "status": "ok",
+      "reason": "Contact-sheet review: facing, base contact, textures and alpha edges read correctly at the packed size."
+    },
+    "b2-73": {
+      "status": "ok",
+      "reason": "Contact-sheet review: facing, base contact, textures and alpha edges read correctly at the packed size."
+    },
+    "b2-74": {
+      "status": "ok",
+      "reason": "Contact-sheet review: facing, base contact, textures and alpha edges read correctly at the packed size."
+    },
+    "b2-75": {
+      "status": "fixed",
+      "reason": "Source rendered end-on at the default yaw 0 (long axis along the camera depth); re-rendered at yaw 90 so the side profile reads on screen.",
+      "cameraYawDegrees": 90
+    },
+    "b2-76": {
+      "status": "ok",
+      "reason": "Contact-sheet review: facing, base contact, textures and alpha edges read correctly at the packed size."
+    },
+    "b2-77": {
+      "status": "fixed",
+      "reason": "Default yaw showed the rubble back of the mound; re-rendered at yaw 180 so the timbered (intentionally blocked) portal faces the camera.",
+      "cameraYawDegrees": 180
+    },
+    "b2-78": {
+      "status": "ok",
+      "reason": "Contact-sheet review: facing, base contact, textures and alpha edges read correctly at the packed size."
+    },
+    "b2-79": {
+      "status": "ok",
+      "reason": "Contact-sheet review: facing, base contact, textures and alpha edges read correctly at the packed size."
+    },
+    "b2-80": {
+      "status": "ok",
+      "reason": "Contact-sheet review: facing, base contact, textures and alpha edges read correctly at the packed size."
+    }
+  }
+}
