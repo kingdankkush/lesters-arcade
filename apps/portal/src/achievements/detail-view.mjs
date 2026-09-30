@@ -90,4 +90,3 @@ export function createAchievementDetail({documentRef=globalThis.document,windowR
   }
   return Object.freeze({open,dispose});
 }
-
