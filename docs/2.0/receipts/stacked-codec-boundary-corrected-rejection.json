@@ -1,0 +1,794 @@
+{
+  "schema": "stacked-maximal-codec-boundary-first-use-v1",
+  "startedAt": "2026-09-30T03:52:16.697Z",
+  "before": {
+    "manifestHash": "cff998b65ea9ebd85159448efd5b2c8f1710fe827f27c059b3ced84b1f86ba68",
+    "files": {
+      "apps/portal/src/achievements/entry.mjs": "a4e55551ae0b7aca76bda548659155ab22294e049fdcd02bf9462f224ce8b98e",
+      "apps/portal/src/achievements/hmh.mjs": "044a813a78829bf0c27eff8a94cefaf94dd7af3a1802e13624b79c6c79916751",
+      "apps/portal/src/achievements/stats.mjs": "704f8ffefec2f9572243f98e85e71a67f0c4afc64be4fc9225da2dbd4baa13d6",
+      "apps/portal/src/chikun-course-regions.mjs": "0d43a3b3f8a2bf06db2c8e381290376696a9270e3f5d0d101d707720faf6941a",
+      "apps/portal/src/chikun-ground-course.mjs": "a29626fe35d1d92979c5950ef0cd17efdfe2340ba98c5a3a7a772403c32fb7ca",
+      "apps/portal/src/ranked-identity.mjs": "225a1f2c89a2f3cad7d5ef0f7b732ffae0347acd7d6c7a156d7227e60acd8056",
+      "apps/portal/src/seeded-rng.mjs": "b6eed9c993e1efd38871c14d50b580ea15133fdcef020e81ffe7051e24b3ebc7",
+      "apps/portal/src/session-integrity.mjs": "26785093fba615224ddfcc85ec6e3094c6e2e8a5b48f932da34bcbc427136157",
+      "apps/portal/src/session-seed.mjs": "4602de3e82949c72b635666225c877beb71b6c02e023ab735e91877c181f2c80",
+      "apps/portal/src/stacked-contracts.mjs": "5ee0d079f2688b02217a60f4695e41944504b0759e87004da6a213e926be9ec6",
+      "apps/portal/src/stacked-evidence-transport.mjs": "f9e8c11fdd032390f4220580cbc5569c7080e05e689644e06f350300bb3d502d",
+      "apps/portal/src/stacked-sim.mjs": "5b5fe17c237389bd48834b757166c8afc0b58c801246806275d25fa16ae82114",
+      "sdk/hmh-run-summary-schema-v7.mjs": "81fd2c2fc109bd0856ba6acff19f1c379f5835b72365e57abf6a762cdc61ed98",
+      "sdk/hmh-run-summary-schema.mjs": "c5428b534378cd85fd71662409657bea652cf8737755513e5e573f4a0dcfa47a",
+      "server/verify/stacked.mjs": "9bcb1aee7ed466e799c83495307c489e7f54201b177c2691ab6d101187418493",
+      "server/verify/verified-run.mjs": "1e5c0079536ab3a94ba867b205f7bde11a0bb0d7e99d7b0ec2963a51dd71bfd8",
+      "scripts/lib/stacked-codec-boundary.mjs": "8bab288425e6d10090dd7b7e441617a20b02c9c36f1da2033cef69be518174d7",
+      "tests/stacked-codec-boundary.test.mjs": "33a1d187e5b2bdd6af66eca4f2e25f291c6046c9e4c99548c9d4f7653c41a05b"
+    },
+    "helpers": {
+      "work/stacked-codec-boundary-sample-corrected.mjs": {
+        "path": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-codec-boundary-sample-corrected.mjs",
+        "sha256": "d9a342df7125e3a3cb70e6b7e1e08e2b30d1dbdaf289d4239341fa5ce888edcc"
+      },
+      "work/owned-windows-child.mjs": {
+        "path": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\owned-windows-child.mjs",
+        "sha256": "a5177337fcf6ec41f285fc105b93d0b4b94ee1101cb14a653a91e9b8b075b0d9"
+      },
+      "work/run-stacked-codec-boundary-timing-corrected.mjs": {
+        "path": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\run-stacked-codec-boundary-timing-corrected.mjs",
+        "sha256": "646185709a6e1fccf943742e1a18e6cf2fefd5391c31638e13e7784cdf907678"
+      }
+    },
+    "raw": {
+      "path": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-codec-boundary-timing-01\\canonical-boundary-not-run.sic1",
+      "bytes": 1296028,
+      "sha256": "00607511b0b3b34856a0cc512786cbb8f6ebc7f6e2bf4a4e6ce7113849266fd2"
+    }
+  },
+  "schedule": [
+    {
+      "index": 0,
+      "phase": "reject-verify"
+    },
+    {
+      "index": 1,
+      "phase": "reject-verify"
+    },
+    {
+      "index": 2,
+      "phase": "reject-verify"
+    },
+    {
+      "index": 3,
+      "phase": "reject-verify"
+    },
+    {
+      "index": 4,
+      "phase": "reject-verify"
+    },
+    {
+      "index": 5,
+      "phase": "reject-verify"
+    },
+    {
+      "index": 6,
+      "phase": "reject-verify"
+    }
+  ],
+  "commands": [
+    {
+      "slot": {
+        "index": 0,
+        "phase": "reject-verify"
+      },
+      "launched": true,
+      "command": {
+        "program": "C:\\Program Files\\nodejs\\node.exe",
+        "args": [
+          "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-codec-boundary-sample-corrected.mjs",
+          "reject-verify",
+          "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-codec-boundary-timing-02\\inputs.json"
+        ],
+        "cwd": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-codec-boundary-timing-02",
+        "startedAt": "2026-09-30T03:52:16.700Z",
+        "stdout": "{\"phase\":\"reject-verify\",\"ok\":true,\"wallMs\":46.4576,\"cpuMs\":47,\"cpuClock\":\"thread\",\"evidenceBytes\":1296028,\"evidenceSha256\":\"00607511b0b3b34856a0cc512786cbb8f6ebc7f6e2bf4a4e6ce7113849266fd2\",\"firstUse\":true,\"warmup\":false,\"actualResolvedFiles\":[\"apps/portal/src/achievements/entry.mjs\",\"apps/portal/src/achievements/hmh.mjs\",\"apps/portal/src/achievements/stats.mjs\",\"apps/portal/src/chikun-course-regions.mjs\",\"apps/portal/src/chikun-ground-course.mjs\",\"apps/portal/src/ranked-identity.mjs\",\"apps/portal/src/seeded-rng.mjs\",\"apps/portal/src/session-integrity.mjs\",\"apps/portal/src/session-seed.mjs\",\"apps/portal/src/stacked-contracts.mjs\",\"apps/portal/src/stacked-evidence-transport.mjs\",\"apps/portal/src/stacked-sim.mjs\",\"sdk/hmh-run-summary-schema-v7.mjs\",\"sdk/hmh-run-summary-schema.mjs\",\"server/verify/stacked.mjs\",\"server/verify/verified-run.mjs\"],\"cleanupError\":null,\"boundaryKind\":\"canonical-codec-boundary-not-surviving-run\",\"verifiedRunAccepted\":false,\"targetFailure\":{\"error\":\"replay-rejected\",\"detail\":\"cannot step terminal STACKED runtime\"},\"memoryDelta\":{\"rss\":6905856,\"heapTotal\":2621440,\"heapUsed\":-595208,\"external\":4587229,\"arrayBuffers\":3249022},\"environment\":{\"node\":\"v24.17.0\",\"platform\":\"win32\",\"arch\":\"x64\",\"cpu\":\"12th Gen Intel(R) Core(TM) i9-12900K\",\"logicalCpus\":24,\"totalMemoryBytes\":34088464384},\"exclusions\":[\"process/import startup\",\"saved raw evidence read/base64 preparation\",\"source/hash/result assertions\",\"surviving longest run\",\"production CPU/API/auth/network\",\"browser/phone\"],\"memoryScope\":\"Aggregate deltas, not peak memory; no forced GC\"}\n",
+        "stderr": "",
+        "watchdogMs": 10000,
+        "watchdogTriggered": false,
+        "spawnError": null,
+        "treeStop": null,
+        "shutdownCloseDeadlineMs": 20000,
+        "childClosureConfirmed": true,
+        "outputLimitTriggered": false,
+        "spawnedPid": 49096,
+        "exitCode": 0,
+        "signal": null,
+        "closeObservedAt": "2026-09-30T03:52:16.869Z",
+        "finishedAt": "2026-09-30T03:52:16.870Z",
+        "wholeChildWallMs": 169.2065,
+        "normalExit": true
+      }
+    },
+    {
+      "slot": {
+        "index": 1,
+        "phase": "reject-verify"
+      },
+      "launched": true,
+      "command": {
+        "program": "C:\\Program Files\\nodejs\\node.exe",
+        "args": [
+          "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-codec-boundary-sample-corrected.mjs",
+          "reject-verify",
+          "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-codec-boundary-timing-02\\inputs.json"
+        ],
+        "cwd": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-codec-boundary-timing-02",
+        "startedAt": "2026-09-30T03:52:16.875Z",
+        "stdout": "{\"phase\":\"reject-verify\",\"ok\":true,\"wallMs\":46.5888,\"cpuMs\":47,\"cpuClock\":\"thread\",\"evidenceBytes\":1296028,\"evidenceSha256\":\"00607511b0b3b34856a0cc512786cbb8f6ebc7f6e2bf4a4e6ce7113849266fd2\",\"firstUse\":true,\"warmup\":false,\"actualResolvedFiles\":[\"apps/portal/src/achievements/entry.mjs\",\"apps/portal/src/achievements/hmh.mjs\",\"apps/portal/src/achievements/stats.mjs\",\"apps/portal/src/chikun-course-regions.mjs\",\"apps/portal/src/chikun-ground-course.mjs\",\"apps/portal/src/ranked-identity.mjs\",\"apps/portal/src/seeded-rng.mjs\",\"apps/portal/src/session-integrity.mjs\",\"apps/portal/src/session-seed.mjs\",\"apps/portal/src/stacked-contracts.mjs\",\"apps/portal/src/stacked-evidence-transport.mjs\",\"apps/portal/src/stacked-sim.mjs\",\"sdk/hmh-run-summary-schema-v7.mjs\",\"sdk/hmh-run-summary-schema.mjs\",\"server/verify/stacked.mjs\",\"server/verify/verified-run.mjs\"],\"cleanupError\":null,\"boundaryKind\":\"canonical-codec-boundary-not-surviving-run\",\"verifiedRunAccepted\":false,\"targetFailure\":{\"error\":\"replay-rejected\",\"detail\":\"cannot step terminal STACKED runtime\"},\"memoryDelta\":{\"rss\":6668288,\"heapTotal\":2621440,\"heapUsed\":-573608,\"external\":4587229,\"arrayBuffers\":3249022},\"environment\":{\"node\":\"v24.17.0\",\"platform\":\"win32\",\"arch\":\"x64\",\"cpu\":\"12th Gen Intel(R) Core(TM) i9-12900K\",\"logicalCpus\":24,\"totalMemoryBytes\":34088464384},\"exclusions\":[\"process/import startup\",\"saved raw evidence read/base64 preparation\",\"source/hash/result assertions\",\"surviving longest run\",\"production CPU/API/auth/network\",\"browser/phone\"],\"memoryScope\":\"Aggregate deltas, not peak memory; no forced GC\"}\n",
+        "stderr": "",
+        "watchdogMs": 10000,
+        "watchdogTriggered": false,
+        "spawnError": null,
+        "treeStop": null,
+        "shutdownCloseDeadlineMs": 20000,
+        "childClosureConfirmed": true,
+        "outputLimitTriggered": false,
+        "spawnedPid": 46568,
+        "exitCode": 0,
+        "signal": null,
+        "closeObservedAt": "2026-09-30T03:52:17.029Z",
+        "finishedAt": "2026-09-30T03:52:17.029Z",
+        "wholeChildWallMs": 154.4895,
+        "normalExit": true
+      }
+    },
+    {
+      "slot": {
+        "index": 2,
+        "phase": "reject-verify"
+      },
+      "launched": true,
+      "command": {
+        "program": "C:\\Program Files\\nodejs\\node.exe",
+        "args": [
+          "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-codec-boundary-sample-corrected.mjs",
+          "reject-verify",
+          "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-codec-boundary-timing-02\\inputs.json"
+        ],
+        "cwd": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-codec-boundary-timing-02",
+        "startedAt": "2026-09-30T03:52:17.034Z",
+        "stdout": "{\"phase\":\"reject-verify\",\"ok\":true,\"wallMs\":48.272,\"cpuMs\":47,\"cpuClock\":\"thread\",\"evidenceBytes\":1296028,\"evidenceSha256\":\"00607511b0b3b34856a0cc512786cbb8f6ebc7f6e2bf4a4e6ce7113849266fd2\",\"firstUse\":true,\"warmup\":false,\"actualResolvedFiles\":[\"apps/portal/src/achievements/entry.mjs\",\"apps/portal/src/achievements/hmh.mjs\",\"apps/portal/src/achievements/stats.mjs\",\"apps/portal/src/chikun-course-regions.mjs\",\"apps/portal/src/chikun-ground-course.mjs\",\"apps/portal/src/ranked-identity.mjs\",\"apps/portal/src/seeded-rng.mjs\",\"apps/portal/src/session-integrity.mjs\",\"apps/portal/src/session-seed.mjs\",\"apps/portal/src/stacked-contracts.mjs\",\"apps/portal/src/stacked-evidence-transport.mjs\",\"apps/portal/src/stacked-sim.mjs\",\"sdk/hmh-run-summary-schema-v7.mjs\",\"sdk/hmh-run-summary-schema.mjs\",\"server/verify/stacked.mjs\",\"server/verify/verified-run.mjs\"],\"cleanupError\":null,\"boundaryKind\":\"canonical-codec-boundary-not-surviving-run\",\"verifiedRunAccepted\":false,\"targetFailure\":{\"error\":\"replay-rejected\",\"detail\":\"cannot step terminal STACKED runtime\"},\"memoryDelta\":{\"rss\":6959104,\"heapTotal\":2621440,\"heapUsed\":-569160,\"external\":4587229,\"arrayBuffers\":3249022},\"environment\":{\"node\":\"v24.17.0\",\"platform\":\"win32\",\"arch\":\"x64\",\"cpu\":\"12th Gen Intel(R) Core(TM) i9-12900K\",\"logicalCpus\":24,\"totalMemoryBytes\":34088464384},\"exclusions\":[\"process/import startup\",\"saved raw evidence read/base64 preparation\",\"source/hash/result assertions\",\"surviving longest run\",\"production CPU/API/auth/network\",\"browser/phone\"],\"memoryScope\":\"Aggregate deltas, not peak memory; no forced GC\"}\n",
+        "stderr": "",
+        "watchdogMs": 10000,
+        "watchdogTriggered": false,
+        "spawnError": null,
+        "treeStop": null,
+        "shutdownCloseDeadlineMs": 20000,
+        "childClosureConfirmed": true,
+        "outputLimitTriggered": false,
+        "spawnedPid": 28304,
+        "exitCode": 0,
+        "signal": null,
+        "closeObservedAt": "2026-09-30T03:52:17.190Z",
+        "finishedAt": "2026-09-30T03:52:17.190Z",
+        "wholeChildWallMs": 155.53289999999998,
+        "normalExit": true
+      }
+    },
+    {
+      "slot": {
+        "index": 3,
+        "phase": "reject-verify"
+      },
+      "launched": true,
+      "command": {
+        "program": "C:\\Program Files\\nodejs\\node.exe",
+        "args": [
+          "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-codec-boundary-sample-corrected.mjs",
+          "reject-verify",
+          "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-codec-boundary-timing-02\\inputs.json"
+        ],
+        "cwd": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-codec-boundary-timing-02",
+        "startedAt": "2026-09-30T03:52:17.194Z",
+        "stdout": "{\"phase\":\"reject-verify\",\"ok\":true,\"wallMs\":44.712,\"cpuMs\":47,\"cpuClock\":\"thread\",\"evidenceBytes\":1296028,\"evidenceSha256\":\"00607511b0b3b34856a0cc512786cbb8f6ebc7f6e2bf4a4e6ce7113849266fd2\",\"firstUse\":true,\"warmup\":false,\"actualResolvedFiles\":[\"apps/portal/src/achievements/entry.mjs\",\"apps/portal/src/achievements/hmh.mjs\",\"apps/portal/src/achievements/stats.mjs\",\"apps/portal/src/chikun-course-regions.mjs\",\"apps/portal/src/chikun-ground-course.mjs\",\"apps/portal/src/ranked-identity.mjs\",\"apps/portal/src/seeded-rng.mjs\",\"apps/portal/src/session-integrity.mjs\",\"apps/portal/src/session-seed.mjs\",\"apps/portal/src/stacked-contracts.mjs\",\"apps/portal/src/stacked-evidence-transport.mjs\",\"apps/portal/src/stacked-sim.mjs\",\"sdk/hmh-run-summary-schema-v7.mjs\",\"sdk/hmh-run-summary-schema.mjs\",\"server/verify/stacked.mjs\",\"server/verify/verified-run.mjs\"],\"cleanupError\":null,\"boundaryKind\":\"canonical-codec-boundary-not-surviving-run\",\"verifiedRunAccepted\":false,\"targetFailure\":{\"error\":\"replay-rejected\",\"detail\":\"cannot step terminal STACKED runtime\"},\"memoryDelta\":{\"rss\":9424896,\"heapTotal\":5492736,\"heapUsed\":2434808,\"external\":4587229,\"arrayBuffers\":4545086},\"environment\":{\"node\":\"v24.17.0\",\"platform\":\"win32\",\"arch\":\"x64\",\"cpu\":\"12th Gen Intel(R) Core(TM) i9-12900K\",\"logicalCpus\":24,\"totalMemoryBytes\":34088464384},\"exclusions\":[\"process/import startup\",\"saved raw evidence read/base64 preparation\",\"source/hash/result assertions\",\"surviving longest run\",\"production CPU/API/auth/network\",\"browser/phone\"],\"memoryScope\":\"Aggregate deltas, not peak memory; no forced GC\"}\n",
+        "stderr": "",
+        "watchdogMs": 10000,
+        "watchdogTriggered": false,
+        "spawnError": null,
+        "treeStop": null,
+        "shutdownCloseDeadlineMs": 20000,
+        "childClosureConfirmed": true,
+        "outputLimitTriggered": false,
+        "spawnedPid": 36432,
+        "exitCode": 0,
+        "signal": null,
+        "closeObservedAt": "2026-09-30T03:52:17.358Z",
+        "finishedAt": "2026-09-30T03:52:17.358Z",
+        "wholeChildWallMs": 163.53729999999996,
+        "normalExit": true
+      }
+    },
+    {
+      "slot": {
+        "index": 4,
+        "phase": "reject-verify"
+      },
+      "launched": true,
+      "command": {
+        "program": "C:\\Program Files\\nodejs\\node.exe",
+        "args": [
+          "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-codec-boundary-sample-corrected.mjs",
+          "reject-verify",
+          "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-codec-boundary-timing-02\\inputs.json"
+        ],
+        "cwd": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-codec-boundary-timing-02",
+        "startedAt": "2026-09-30T03:52:17.364Z",
+        "stdout": "{\"phase\":\"reject-verify\",\"ok\":true,\"wallMs\":44.19969999999999,\"cpuMs\":47,\"cpuClock\":\"thread\",\"evidenceBytes\":1296028,\"evidenceSha256\":\"00607511b0b3b34856a0cc512786cbb8f6ebc7f6e2bf4a4e6ce7113849266fd2\",\"firstUse\":true,\"warmup\":false,\"actualResolvedFiles\":[\"apps/portal/src/achievements/entry.mjs\",\"apps/portal/src/achievements/hmh.mjs\",\"apps/portal/src/achievements/stats.mjs\",\"apps/portal/src/chikun-course-regions.mjs\",\"apps/portal/src/chikun-ground-course.mjs\",\"apps/portal/src/ranked-identity.mjs\",\"apps/portal/src/seeded-rng.mjs\",\"apps/portal/src/session-integrity.mjs\",\"apps/portal/src/session-seed.mjs\",\"apps/portal/src/stacked-contracts.mjs\",\"apps/portal/src/stacked-evidence-transport.mjs\",\"apps/portal/src/stacked-sim.mjs\",\"sdk/hmh-run-summary-schema-v7.mjs\",\"sdk/hmh-run-summary-schema.mjs\",\"server/verify/stacked.mjs\",\"server/verify/verified-run.mjs\"],\"cleanupError\":null,\"boundaryKind\":\"canonical-codec-boundary-not-surviving-run\",\"verifiedRunAccepted\":false,\"targetFailure\":{\"error\":\"replay-rejected\",\"detail\":\"cannot step terminal STACKED runtime\"},\"memoryDelta\":{\"rss\":9494528,\"heapTotal\":2871296,\"heapUsed\":2391128,\"external\":4603690,\"arrayBuffers\":4561547},\"environment\":{\"node\":\"v24.17.0\",\"platform\":\"win32\",\"arch\":\"x64\",\"cpu\":\"12th Gen Intel(R) Core(TM) i9-12900K\",\"logicalCpus\":24,\"totalMemoryBytes\":34088464384},\"exclusions\":[\"process/import startup\",\"saved raw evidence read/base64 preparation\",\"source/hash/result assertions\",\"surviving longest run\",\"production CPU/API/auth/network\",\"browser/phone\"],\"memoryScope\":\"Aggregate deltas, not peak memory; no forced GC\"}\n",
+        "stderr": "",
+        "watchdogMs": 10000,
+        "watchdogTriggered": false,
+        "spawnError": null,
+        "treeStop": null,
+        "shutdownCloseDeadlineMs": 20000,
+        "childClosureConfirmed": true,
+        "outputLimitTriggered": false,
+        "spawnedPid": 50328,
+        "exitCode": 0,
+        "signal": null,
+        "closeObservedAt": "2026-09-30T03:52:17.519Z",
+        "finishedAt": "2026-09-30T03:52:17.519Z",
+        "wholeChildWallMs": 154.9239,
+        "normalExit": true
+      }
+    },
+    {
+      "slot": {
+        "index": 5,
+        "phase": "reject-verify"
+      },
+      "launched": true,
+      "command": {
+        "program": "C:\\Program Files\\nodejs\\node.exe",
+        "args": [
+          "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-codec-boundary-sample-corrected.mjs",
+          "reject-verify",
+          "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-codec-boundary-timing-02\\inputs.json"
+        ],
+        "cwd": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-codec-boundary-timing-02",
+        "startedAt": "2026-09-30T03:52:17.527Z",
+        "stdout": "{\"phase\":\"reject-verify\",\"ok\":true,\"wallMs\":44.2961,\"cpuMs\":46,\"cpuClock\":\"thread\",\"evidenceBytes\":1296028,\"evidenceSha256\":\"00607511b0b3b34856a0cc512786cbb8f6ebc7f6e2bf4a4e6ce7113849266fd2\",\"firstUse\":true,\"warmup\":false,\"actualResolvedFiles\":[\"apps/portal/src/achievements/entry.mjs\",\"apps/portal/src/achievements/hmh.mjs\",\"apps/portal/src/achievements/stats.mjs\",\"apps/portal/src/chikun-course-regions.mjs\",\"apps/portal/src/chikun-ground-course.mjs\",\"apps/portal/src/ranked-identity.mjs\",\"apps/portal/src/seeded-rng.mjs\",\"apps/portal/src/session-integrity.mjs\",\"apps/portal/src/session-seed.mjs\",\"apps/portal/src/stacked-contracts.mjs\",\"apps/portal/src/stacked-evidence-transport.mjs\",\"apps/portal/src/stacked-sim.mjs\",\"sdk/hmh-run-summary-schema-v7.mjs\",\"sdk/hmh-run-summary-schema.mjs\",\"server/verify/stacked.mjs\",\"server/verify/verified-run.mjs\"],\"cleanupError\":null,\"boundaryKind\":\"canonical-codec-boundary-not-surviving-run\",\"verifiedRunAccepted\":false,\"targetFailure\":{\"error\":\"replay-rejected\",\"detail\":\"cannot step terminal STACKED runtime\"},\"memoryDelta\":{\"rss\":6803456,\"heapTotal\":2621440,\"heapUsed\":-579944,\"external\":4587229,\"arrayBuffers\":3249022},\"environment\":{\"node\":\"v24.17.0\",\"platform\":\"win32\",\"arch\":\"x64\",\"cpu\":\"12th Gen Intel(R) Core(TM) i9-12900K\",\"logicalCpus\":24,\"totalMemoryBytes\":34088464384},\"exclusions\":[\"process/import startup\",\"saved raw evidence read/base64 preparation\",\"source/hash/result assertions\",\"surviving longest run\",\"production CPU/API/auth/network\",\"browser/phone\"],\"memoryScope\":\"Aggregate deltas, not peak memory; no forced GC\"}\n",
+        "stderr": "",
+        "watchdogMs": 10000,
+        "watchdogTriggered": false,
+        "spawnError": null,
+        "treeStop": null,
+        "shutdownCloseDeadlineMs": 20000,
+        "childClosureConfirmed": true,
+        "outputLimitTriggered": false,
+        "spawnedPid": 52864,
+        "exitCode": 0,
+        "signal": null,
+        "closeObservedAt": "2026-09-30T03:52:17.686Z",
+        "finishedAt": "2026-09-30T03:52:17.686Z",
+        "wholeChildWallMs": 159.01019999999994,
+        "normalExit": true
+      }
+    },
+    {
+      "slot": {
+        "index": 6,
+        "phase": "reject-verify"
+      },
+      "launched": true,
+      "command": {
+        "program": "C:\\Program Files\\nodejs\\node.exe",
+        "args": [
+          "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-codec-boundary-sample-corrected.mjs",
+          "reject-verify",
+          "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-codec-boundary-timing-02\\inputs.json"
+        ],
+        "cwd": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-codec-boundary-timing-02",
+        "startedAt": "2026-09-30T03:52:17.693Z",
+        "stdout": "{\"phase\":\"reject-verify\",\"ok\":true,\"wallMs\":44.72840000000001,\"cpuMs\":31,\"cpuClock\":\"thread\",\"evidenceBytes\":1296028,\"evidenceSha256\":\"00607511b0b3b34856a0cc512786cbb8f6ebc7f6e2bf4a4e6ce7113849266fd2\",\"firstUse\":true,\"warmup\":false,\"actualResolvedFiles\":[\"apps/portal/src/achievements/entry.mjs\",\"apps/portal/src/achievements/hmh.mjs\",\"apps/portal/src/achievements/stats.mjs\",\"apps/portal/src/chikun-course-regions.mjs\",\"apps/portal/src/chikun-ground-course.mjs\",\"apps/portal/src/ranked-identity.mjs\",\"apps/portal/src/seeded-rng.mjs\",\"apps/portal/src/session-integrity.mjs\",\"apps/portal/src/session-seed.mjs\",\"apps/portal/src/stacked-contracts.mjs\",\"apps/portal/src/stacked-evidence-transport.mjs\",\"apps/portal/src/stacked-sim.mjs\",\"sdk/hmh-run-summary-schema-v7.mjs\",\"sdk/hmh-run-summary-schema.mjs\",\"server/verify/stacked.mjs\",\"server/verify/verified-run.mjs\"],\"cleanupError\":null,\"boundaryKind\":\"canonical-codec-boundary-not-surviving-run\",\"verifiedRunAccepted\":false,\"targetFailure\":{\"error\":\"replay-rejected\",\"detail\":\"cannot step terminal STACKED runtime\"},\"memoryDelta\":{\"rss\":6787072,\"heapTotal\":3145728,\"heapUsed\":-571704,\"external\":4587229,\"arrayBuffers\":3249022},\"environment\":{\"node\":\"v24.17.0\",\"platform\":\"win32\",\"arch\":\"x64\",\"cpu\":\"12th Gen Intel(R) Core(TM) i9-12900K\",\"logicalCpus\":24,\"totalMemoryBytes\":34088464384},\"exclusions\":[\"process/import startup\",\"saved raw evidence read/base64 preparation\",\"source/hash/result assertions\",\"surviving longest run\",\"production CPU/API/auth/network\",\"browser/phone\"],\"memoryScope\":\"Aggregate deltas, not peak memory; no forced GC\"}\n",
+        "stderr": "",
+        "watchdogMs": 10000,
+        "watchdogTriggered": false,
+        "spawnError": null,
+        "treeStop": null,
+        "shutdownCloseDeadlineMs": 20000,
+        "childClosureConfirmed": true,
+        "outputLimitTriggered": false,
+        "spawnedPid": 24360,
+        "exitCode": 0,
+        "signal": null,
+        "closeObservedAt": "2026-09-30T03:52:17.852Z",
+        "finishedAt": "2026-09-30T03:52:17.853Z",
+        "wholeChildWallMs": 159.02219999999988,
+        "normalExit": true
+      }
+    }
+  ],
+  "samples": [
+    {
+      "phase": "reject-verify",
+      "ok": true,
+      "wallMs": 46.4576,
+      "cpuMs": 47,
+      "cpuClock": "thread",
+      "evidenceBytes": 1296028,
+      "evidenceSha256": "00607511b0b3b34856a0cc512786cbb8f6ebc7f6e2bf4a4e6ce7113849266fd2",
+      "firstUse": true,
+      "warmup": false,
+      "actualResolvedFiles": [
+        "apps/portal/src/achievements/entry.mjs",
+        "apps/portal/src/achievements/hmh.mjs",
+        "apps/portal/src/achievements/stats.mjs",
+        "apps/portal/src/chikun-course-regions.mjs",
+        "apps/portal/src/chikun-ground-course.mjs",
+        "apps/portal/src/ranked-identity.mjs",
+        "apps/portal/src/seeded-rng.mjs",
+        "apps/portal/src/session-integrity.mjs",
+        "apps/portal/src/session-seed.mjs",
+        "apps/portal/src/stacked-contracts.mjs",
+        "apps/portal/src/stacked-evidence-transport.mjs",
+        "apps/portal/src/stacked-sim.mjs",
+        "sdk/hmh-run-summary-schema-v7.mjs",
+        "sdk/hmh-run-summary-schema.mjs",
+        "server/verify/stacked.mjs",
+        "server/verify/verified-run.mjs"
+      ],
+      "cleanupError": null,
+      "boundaryKind": "canonical-codec-boundary-not-surviving-run",
+      "verifiedRunAccepted": false,
+      "targetFailure": {
+        "error": "replay-rejected",
+        "detail": "cannot step terminal STACKED runtime"
+      },
+      "memoryDelta": {
+        "rss": 6905856,
+        "heapTotal": 2621440,
+        "heapUsed": -595208,
+        "external": 4587229,
+        "arrayBuffers": 3249022
+      },
+      "environment": {
+        "node": "v24.17.0",
+        "platform": "win32",
+        "arch": "x64",
+        "cpu": "12th Gen Intel(R) Core(TM) i9-12900K",
+        "logicalCpus": 24,
+        "totalMemoryBytes": 34088464384
+      },
+      "exclusions": [
+        "process/import startup",
+        "saved raw evidence read/base64 preparation",
+        "source/hash/result assertions",
+        "surviving longest run",
+        "production CPU/API/auth/network",
+        "browser/phone"
+      ],
+      "memoryScope": "Aggregate deltas, not peak memory; no forced GC",
+      "index": 0
+    },
+    {
+      "phase": "reject-verify",
+      "ok": true,
+      "wallMs": 46.5888,
+      "cpuMs": 47,
+      "cpuClock": "thread",
+      "evidenceBytes": 1296028,
+      "evidenceSha256": "00607511b0b3b34856a0cc512786cbb8f6ebc7f6e2bf4a4e6ce7113849266fd2",
+      "firstUse": true,
+      "warmup": false,
+      "actualResolvedFiles": [
+        "apps/portal/src/achievements/entry.mjs",
+        "apps/portal/src/achievements/hmh.mjs",
+        "apps/portal/src/achievements/stats.mjs",
+        "apps/portal/src/chikun-course-regions.mjs",
+        "apps/portal/src/chikun-ground-course.mjs",
+        "apps/portal/src/ranked-identity.mjs",
+        "apps/portal/src/seeded-rng.mjs",
+        "apps/portal/src/session-integrity.mjs",
+        "apps/portal/src/session-seed.mjs",
+        "apps/portal/src/stacked-contracts.mjs",
+        "apps/portal/src/stacked-evidence-transport.mjs",
+        "apps/portal/src/stacked-sim.mjs",
+        "sdk/hmh-run-summary-schema-v7.mjs",
+        "sdk/hmh-run-summary-schema.mjs",
+        "server/verify/stacked.mjs",
+        "server/verify/verified-run.mjs"
+      ],
+      "cleanupError": null,
+      "boundaryKind": "canonical-codec-boundary-not-surviving-run",
+      "verifiedRunAccepted": false,
+      "targetFailure": {
+        "error": "replay-rejected",
+        "detail": "cannot step terminal STACKED runtime"
+      },
+      "memoryDelta": {
+        "rss": 6668288,
+        "heapTotal": 2621440,
+        "heapUsed": -573608,
+        "external": 4587229,
+        "arrayBuffers": 3249022
+      },
+      "environment": {
+        "node": "v24.17.0",
+        "platform": "win32",
+        "arch": "x64",
+        "cpu": "12th Gen Intel(R) Core(TM) i9-12900K",
+        "logicalCpus": 24,
+        "totalMemoryBytes": 34088464384
+      },
+      "exclusions": [
+        "process/import startup",
+        "saved raw evidence read/base64 preparation",
+        "source/hash/result assertions",
+        "surviving longest run",
+        "production CPU/API/auth/network",
+        "browser/phone"
+      ],
+      "memoryScope": "Aggregate deltas, not peak memory; no forced GC",
+      "index": 1
+    },
+    {
+      "phase": "reject-verify",
+      "ok": true,
+      "wallMs": 48.272,
+      "cpuMs": 47,
+      "cpuClock": "thread",
+      "evidenceBytes": 1296028,
+      "evidenceSha256": "00607511b0b3b34856a0cc512786cbb8f6ebc7f6e2bf4a4e6ce7113849266fd2",
+      "firstUse": true,
+      "warmup": false,
+      "actualResolvedFiles": [
+        "apps/portal/src/achievements/entry.mjs",
+        "apps/portal/src/achievements/hmh.mjs",
+        "apps/portal/src/achievements/stats.mjs",
+        "apps/portal/src/chikun-course-regions.mjs",
+        "apps/portal/src/chikun-ground-course.mjs",
+        "apps/portal/src/ranked-identity.mjs",
+        "apps/portal/src/seeded-rng.mjs",
+        "apps/portal/src/session-integrity.mjs",
+        "apps/portal/src/session-seed.mjs",
+        "apps/portal/src/stacked-contracts.mjs",
+        "apps/portal/src/stacked-evidence-transport.mjs",
+        "apps/portal/src/stacked-sim.mjs",
+        "sdk/hmh-run-summary-schema-v7.mjs",
+        "sdk/hmh-run-summary-schema.mjs",
+        "server/verify/stacked.mjs",
+        "server/verify/verified-run.mjs"
+      ],
+      "cleanupError": null,
+      "boundaryKind": "canonical-codec-boundary-not-surviving-run",
+      "verifiedRunAccepted": false,
+      "targetFailure": {
+        "error": "replay-rejected",
+        "detail": "cannot step terminal STACKED runtime"
+      },
+      "memoryDelta": {
+        "rss": 6959104,
+        "heapTotal": 2621440,
+        "heapUsed": -569160,
+        "external": 4587229,
+        "arrayBuffers": 3249022
+      },
+      "environment": {
+        "node": "v24.17.0",
+        "platform": "win32",
+        "arch": "x64",
+        "cpu": "12th Gen Intel(R) Core(TM) i9-12900K",
+        "logicalCpus": 24,
+        "totalMemoryBytes": 34088464384
+      },
+      "exclusions": [
+        "process/import startup",
+        "saved raw evidence read/base64 preparation",
+        "source/hash/result assertions",
+        "surviving longest run",
+        "production CPU/API/auth/network",
+        "browser/phone"
+      ],
+      "memoryScope": "Aggregate deltas, not peak memory; no forced GC",
+      "index": 2
+    },
+    {
+      "phase": "reject-verify",
+      "ok": true,
+      "wallMs": 44.712,
+      "cpuMs": 47,
+      "cpuClock": "thread",
+      "evidenceBytes": 1296028,
+      "evidenceSha256": "00607511b0b3b34856a0cc512786cbb8f6ebc7f6e2bf4a4e6ce7113849266fd2",
+      "firstUse": true,
+      "warmup": false,
+      "actualResolvedFiles": [
+        "apps/portal/src/achievements/entry.mjs",
+        "apps/portal/src/achievements/hmh.mjs",
+        "apps/portal/src/achievements/stats.mjs",
+        "apps/portal/src/chikun-course-regions.mjs",
+        "apps/portal/src/chikun-ground-course.mjs",
+        "apps/portal/src/ranked-identity.mjs",
+        "apps/portal/src/seeded-rng.mjs",
+        "apps/portal/src/session-integrity.mjs",
+        "apps/portal/src/session-seed.mjs",
+        "apps/portal/src/stacked-contracts.mjs",
+        "apps/portal/src/stacked-evidence-transport.mjs",
+        "apps/portal/src/stacked-sim.mjs",
+        "sdk/hmh-run-summary-schema-v7.mjs",
+        "sdk/hmh-run-summary-schema.mjs",
+        "server/verify/stacked.mjs",
+        "server/verify/verified-run.mjs"
+      ],
+      "cleanupError": null,
+      "boundaryKind": "canonical-codec-boundary-not-surviving-run",
+      "verifiedRunAccepted": false,
+      "targetFailure": {
+        "error": "replay-rejected",
+        "detail": "cannot step terminal STACKED runtime"
+      },
+      "memoryDelta": {
+        "rss": 9424896,
+        "heapTotal": 5492736,
+        "heapUsed": 2434808,
+        "external": 4587229,
+        "arrayBuffers": 4545086
+      },
+      "environment": {
+        "node": "v24.17.0",
+        "platform": "win32",
+        "arch": "x64",
+        "cpu": "12th Gen Intel(R) Core(TM) i9-12900K",
+        "logicalCpus": 24,
+        "totalMemoryBytes": 34088464384
+      },
+      "exclusions": [
+        "process/import startup",
+        "saved raw evidence read/base64 preparation",
+        "source/hash/result assertions",
+        "surviving longest run",
+        "production CPU/API/auth/network",
+        "browser/phone"
+      ],
+      "memoryScope": "Aggregate deltas, not peak memory; no forced GC",
+      "index": 3
+    },
+    {
+      "phase": "reject-verify",
+      "ok": true,
+      "wallMs": 44.19969999999999,
+      "cpuMs": 47,
+      "cpuClock": "thread",
+      "evidenceBytes": 1296028,
+      "evidenceSha256": "00607511b0b3b34856a0cc512786cbb8f6ebc7f6e2bf4a4e6ce7113849266fd2",
+      "firstUse": true,
+      "warmup": false,
+      "actualResolvedFiles": [
+        "apps/portal/src/achievements/entry.mjs",
+        "apps/portal/src/achievements/hmh.mjs",
+        "apps/portal/src/achievements/stats.mjs",
+        "apps/portal/src/chikun-course-regions.mjs",
+        "apps/portal/src/chikun-ground-course.mjs",
+        "apps/portal/src/ranked-identity.mjs",
+        "apps/portal/src/seeded-rng.mjs",
+        "apps/portal/src/session-integrity.mjs",
+        "apps/portal/src/session-seed.mjs",
+        "apps/portal/src/stacked-contracts.mjs",
+        "apps/portal/src/stacked-evidence-transport.mjs",
+        "apps/portal/src/stacked-sim.mjs",
+        "sdk/hmh-run-summary-schema-v7.mjs",
+        "sdk/hmh-run-summary-schema.mjs",
+        "server/verify/stacked.mjs",
+        "server/verify/verified-run.mjs"
+      ],
+      "cleanupError": null,
+      "boundaryKind": "canonical-codec-boundary-not-surviving-run",
+      "verifiedRunAccepted": false,
+      "targetFailure": {
+        "error": "replay-rejected",
+        "detail": "cannot step terminal STACKED runtime"
+      },
+      "memoryDelta": {
+        "rss": 9494528,
+        "heapTotal": 2871296,
+        "heapUsed": 2391128,
+        "external": 4603690,
+        "arrayBuffers": 4561547
+      },
+      "environment": {
+        "node": "v24.17.0",
+        "platform": "win32",
+        "arch": "x64",
+        "cpu": "12th Gen Intel(R) Core(TM) i9-12900K",
+        "logicalCpus": 24,
+        "totalMemoryBytes": 34088464384
+      },
+      "exclusions": [
+        "process/import startup",
+        "saved raw evidence read/base64 preparation",
+        "source/hash/result assertions",
+        "surviving longest run",
+        "production CPU/API/auth/network",
+        "browser/phone"
+      ],
+      "memoryScope": "Aggregate deltas, not peak memory; no forced GC",
+      "index": 4
+    },
+    {
+      "phase": "reject-verify",
+      "ok": true,
+      "wallMs": 44.2961,
+      "cpuMs": 46,
+      "cpuClock": "thread",
+      "evidenceBytes": 1296028,
+      "evidenceSha256": "00607511b0b3b34856a0cc512786cbb8f6ebc7f6e2bf4a4e6ce7113849266fd2",
+      "firstUse": true,
+      "warmup": false,
+      "actualResolvedFiles": [
+        "apps/portal/src/achievements/entry.mjs",
+        "apps/portal/src/achievements/hmh.mjs",
+        "apps/portal/src/achievements/stats.mjs",
+        "apps/portal/src/chikun-course-regions.mjs",
+        "apps/portal/src/chikun-ground-course.mjs",
+        "apps/portal/src/ranked-identity.mjs",
+        "apps/portal/src/seeded-rng.mjs",
+        "apps/portal/src/session-integrity.mjs",
+        "apps/portal/src/session-seed.mjs",
+        "apps/portal/src/stacked-contracts.mjs",
+        "apps/portal/src/stacked-evidence-transport.mjs",
+        "apps/portal/src/stacked-sim.mjs",
+        "sdk/hmh-run-summary-schema-v7.mjs",
+        "sdk/hmh-run-summary-schema.mjs",
+        "server/verify/stacked.mjs",
+        "server/verify/verified-run.mjs"
+      ],
+      "cleanupError": null,
+      "boundaryKind": "canonical-codec-boundary-not-surviving-run",
+      "verifiedRunAccepted": false,
+      "targetFailure": {
+        "error": "replay-rejected",
+        "detail": "cannot step terminal STACKED runtime"
+      },
+      "memoryDelta": {
+        "rss": 6803456,
+        "heapTotal": 2621440,
+        "heapUsed": -579944,
+        "external": 4587229,
+        "arrayBuffers": 3249022
+      },
+      "environment": {
+        "node": "v24.17.0",
+        "platform": "win32",
+        "arch": "x64",
+        "cpu": "12th Gen Intel(R) Core(TM) i9-12900K",
+        "logicalCpus": 24,
+        "totalMemoryBytes": 34088464384
+      },
+      "exclusions": [
+        "process/import startup",
+        "saved raw evidence read/base64 preparation",
+        "source/hash/result assertions",
+        "surviving longest run",
+        "production CPU/API/auth/network",
+        "browser/phone"
+      ],
+      "memoryScope": "Aggregate deltas, not peak memory; no forced GC",
+      "index": 5
+    },
+    {
+      "phase": "reject-verify",
+      "ok": true,
+      "wallMs": 44.72840000000001,
+      "cpuMs": 31,
+      "cpuClock": "thread",
+      "evidenceBytes": 1296028,
+      "evidenceSha256": "00607511b0b3b34856a0cc512786cbb8f6ebc7f6e2bf4a4e6ce7113849266fd2",
+      "firstUse": true,
+      "warmup": false,
+      "actualResolvedFiles": [
+        "apps/portal/src/achievements/entry.mjs",
+        "apps/portal/src/achievements/hmh.mjs",
+        "apps/portal/src/achievements/stats.mjs",
+        "apps/portal/src/chikun-course-regions.mjs",
+        "apps/portal/src/chikun-ground-course.mjs",
+        "apps/portal/src/ranked-identity.mjs",
+        "apps/portal/src/seeded-rng.mjs",
+        "apps/portal/src/session-integrity.mjs",
+        "apps/portal/src/session-seed.mjs",
+        "apps/portal/src/stacked-contracts.mjs",
+        "apps/portal/src/stacked-evidence-transport.mjs",
+        "apps/portal/src/stacked-sim.mjs",
+        "sdk/hmh-run-summary-schema-v7.mjs",
+        "sdk/hmh-run-summary-schema.mjs",
+        "server/verify/stacked.mjs",
+        "server/verify/verified-run.mjs"
+      ],
+      "cleanupError": null,
+      "boundaryKind": "canonical-codec-boundary-not-surviving-run",
+      "verifiedRunAccepted": false,
+      "targetFailure": {
+        "error": "replay-rejected",
+        "detail": "cannot step terminal STACKED runtime"
+      },
+      "memoryDelta": {
+        "rss": 6787072,
+        "heapTotal": 3145728,
+        "heapUsed": -571704,
+        "external": 4587229,
+        "arrayBuffers": 3249022
+      },
+      "environment": {
+        "node": "v24.17.0",
+        "platform": "win32",
+        "arch": "x64",
+        "cpu": "12th Gen Intel(R) Core(TM) i9-12900K",
+        "logicalCpus": 24,
+        "totalMemoryBytes": 34088464384
+      },
+      "exclusions": [
+        "process/import startup",
+        "saved raw evidence read/base64 preparation",
+        "source/hash/result assertions",
+        "surviving longest run",
+        "production CPU/API/auth/network",
+        "browser/phone"
+      ],
+      "memoryScope": "Aggregate deltas, not peak memory; no forced GC",
+      "index": 6
+    }
+  ],
+  "passed": true,
+  "scope": "7 fresh first-use rejection children; corrected terminal-message witness. Original seven decode passes and seven witness failures are retained, not retried or erased. Existing genuine longest-run proof is separate. Not production/global S0/release/phone acceptance.",
+  "wholeBatchWallMs": 1154.9391,
+  "after": {
+    "manifestHash": "cff998b65ea9ebd85159448efd5b2c8f1710fe827f27c059b3ced84b1f86ba68",
+    "files": {
+      "apps/portal/src/achievements/entry.mjs": "a4e55551ae0b7aca76bda548659155ab22294e049fdcd02bf9462f224ce8b98e",
+      "apps/portal/src/achievements/hmh.mjs": "044a813a78829bf0c27eff8a94cefaf94dd7af3a1802e13624b79c6c79916751",
+      "apps/portal/src/achievements/stats.mjs": "704f8ffefec2f9572243f98e85e71a67f0c4afc64be4fc9225da2dbd4baa13d6",
+      "apps/portal/src/chikun-course-regions.mjs": "0d43a3b3f8a2bf06db2c8e381290376696a9270e3f5d0d101d707720faf6941a",
+      "apps/portal/src/chikun-ground-course.mjs": "a29626fe35d1d92979c5950ef0cd17efdfe2340ba98c5a3a7a772403c32fb7ca",
+      "apps/portal/src/ranked-identity.mjs": "225a1f2c89a2f3cad7d5ef0f7b732ffae0347acd7d6c7a156d7227e60acd8056",
+      "apps/portal/src/seeded-rng.mjs": "b6eed9c993e1efd38871c14d50b580ea15133fdcef020e81ffe7051e24b3ebc7",
+      "apps/portal/src/session-integrity.mjs": "26785093fba615224ddfcc85ec6e3094c6e2e8a5b48f932da34bcbc427136157",
+      "apps/portal/src/session-seed.mjs": "4602de3e82949c72b635666225c877beb71b6c02e023ab735e91877c181f2c80",
+      "apps/portal/src/stacked-contracts.mjs": "5ee0d079f2688b02217a60f4695e41944504b0759e87004da6a213e926be9ec6",
+      "apps/portal/src/stacked-evidence-transport.mjs": "f9e8c11fdd032390f4220580cbc5569c7080e05e689644e06f350300bb3d502d",
+      "apps/portal/src/stacked-sim.mjs": "5b5fe17c237389bd48834b757166c8afc0b58c801246806275d25fa16ae82114",
+      "sdk/hmh-run-summary-schema-v7.mjs": "81fd2c2fc109bd0856ba6acff19f1c379f5835b72365e57abf6a762cdc61ed98",
+      "sdk/hmh-run-summary-schema.mjs": "c5428b534378cd85fd71662409657bea652cf8737755513e5e573f4a0dcfa47a",
+      "server/verify/stacked.mjs": "9bcb1aee7ed466e799c83495307c489e7f54201b177c2691ab6d101187418493",
+      "server/verify/verified-run.mjs": "1e5c0079536ab3a94ba867b205f7bde11a0bb0d7e99d7b0ec2963a51dd71bfd8",
+      "scripts/lib/stacked-codec-boundary.mjs": "8bab288425e6d10090dd7b7e441617a20b02c9c36f1da2033cef69be518174d7",
+      "tests/stacked-codec-boundary.test.mjs": "33a1d187e5b2bdd6af66eca4f2e25f291c6046c9e4c99548c9d4f7653c41a05b"
+    },
+    "helpers": {
+      "work/stacked-codec-boundary-sample-corrected.mjs": {
+        "path": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-codec-boundary-sample-corrected.mjs",
+        "sha256": "d9a342df7125e3a3cb70e6b7e1e08e2b30d1dbdaf289d4239341fa5ce888edcc"
+      },
+      "work/owned-windows-child.mjs": {
+        "path": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\owned-windows-child.mjs",
+        "sha256": "a5177337fcf6ec41f285fc105b93d0b4b94ee1101cb14a653a91e9b8b075b0d9"
+      },
+      "work/run-stacked-codec-boundary-timing-corrected.mjs": {
+        "path": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\run-stacked-codec-boundary-timing-corrected.mjs",
+        "sha256": "646185709a6e1fccf943742e1a18e6cf2fefd5391c31638e13e7784cdf907678"
+      }
+    },
+    "raw": {
+      "path": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-codec-boundary-timing-01\\canonical-boundary-not-run.sic1",
+      "bytes": 1296028,
+      "sha256": "00607511b0b3b34856a0cc512786cbb8f6ebc7f6e2bf4a4e6ce7113849266fd2"
+    }
+  },
+  "phases": {
+    "reject-verify": {
+      "count": 7,
+      "p50Ms": 44.72840000000001,
+      "maxMs": 48.272,
+      "complete": true,
+      "allPassed": true
+    }
+  },
+  "finishedAt": "2026-09-30T03:52:17.859Z",
+  "markerRetained": false
+}

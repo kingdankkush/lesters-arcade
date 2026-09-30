@@ -20,6 +20,8 @@ const root = fileURLToPath(new URL('..', import.meta.url));
 
 // Every .mjs / .js module that must parse cleanly (node --check).
 const NODE_CHECK_FILES = [
+  'scripts/lib/stacked-codec-boundary.mjs',
+  'tests/stacked-codec-boundary.test.mjs',
   'tests/source-art-paths.test.mjs',
   'tests/hmh-cockpit-lazy-startup.test.mjs',
   'scripts/lib/hmh-greybox-layout-check.mjs',

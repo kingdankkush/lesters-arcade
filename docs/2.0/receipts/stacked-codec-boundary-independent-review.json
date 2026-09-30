@@ -1,0 +1,38 @@
+{
+  "result": "PASS",
+  "reviewer": "/root/world_w0_audit",
+  "scope": "Source and saved-byte/raw-command/statistics review only; no game/codec/simulation/verifier or timing rerun",
+  "bound": "Each positive consumed gap g costs either one compact byte or 2+varintBytes(g-1)<=3g. Disjoint gaps sum<=T. Header24 + terminator1 + minimal varint(T) gives3T+25+varintBytes(T);3/0 every tick genuinely changes two bits and attains1,296,028B at432,000.",
+  "correctness": {
+    "root": 4,
+    "sourceCopy": 4,
+    "files": 18,
+    "noGit": true,
+    "noNodeModules": true
+  },
+  "rawCommandsReviewed": 21,
+  "uniquePids": 21,
+  "originalWitnessFailuresRetained": 7,
+  "rawEvidenceBytes": 1296028,
+  "rawEvidenceSha256": "00607511b0b3b34856a0cc512786cbb8f6ebc7f6e2bf4a4e6ce7113849266fd2",
+  "statistics": {
+    "decode": {
+      "count": 7,
+      "minMs": 29.4703,
+      "p50Ms": 30.574600000000004,
+      "maxMs": 31.215199999999996
+    },
+    "reject-verify": {
+      "count": 7,
+      "minMs": 44.19969999999999,
+      "p50Ms": 44.72840000000001,
+      "maxMs": 48.272
+    }
+  },
+  "limitations": [
+    "This is the maximum canonical structural byte size, not a valid maximum-duration game.",
+    "Rejected hostile sentinel never yields an accepted score/VerifiedRun.",
+    "First-use local i9/Node24 targets exclude imports/read/base64 preparation/assertions; no production/auth/API/browser/phone proof.",
+    "Maximum legal surviving input workload and global S0 performance remain unclosed."
+  ]
+}

@@ -272,3 +272,24 @@ or new runtime/clip/fleet/art acceptance is claimed. Next: separately test a
 rendered-triangle witness while retaining original all-point diagnostics, and
 triangulate only the export copy without changing tolerance or surface/UV/weights.
 That correction still needs independent review and a new bounded pack window.
+
+
+## Two-day sprint and STACKED S0f boundary
+
+The owner has accelerated the target to the next two days; TWO-DAY-SPRINT.md
+supersedes the earlier schedule without removing scope, owner approvals or
+physical-device requirements. All three existing agents resumed successfully.
+Character is testing a rendered-triangle witness before another native attempt;
+art is preparing explicit source-tree intake; world is authoring tested greybox
+data and a labelled local navigation playtest. No native bake/export is claimed.
+
+S0f establishes the canonical encoding bound1,296,028B using the actual codec.
+Four scoped cases and the same four in an18-file emptyPATH/noGit/noModules copy
+pass. Seven fresh decodes max31.2152ms. Seven initial rejection witness failures
+remain preserved; only the expected existing terminal message was corrected,
+and seven fresh rejection samples max48.272ms pass. All21unique children closed,
+all source identities agree and markers released. Root and independent saved
+reviews pass. This structural sentinel is not a surviving run; the genuine
+longest-run195.2793ms proof remains separate. ProductionCPU, worst surviving
+workload and globalS0 remain open. No runtime/build/browser changes in this slice.
+See slices/STACKED-S0F-CODEC-BOUNDARY.md and its exact receipts.

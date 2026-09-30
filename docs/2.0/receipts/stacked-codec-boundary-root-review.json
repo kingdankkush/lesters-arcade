@@ -1,0 +1,32 @@
+{
+  "schema": "root-stacked-codec-boundary-record-review-v1",
+  "passed": true,
+  "sourceFiles": 18,
+  "targetClosureFiles": 16,
+  "freshChildrenClosed": 21,
+  "retainedRejectedWitnessChildren": 7,
+  "correctnessAtRoot": 4,
+  "sameCasesSourceCopy": 4,
+  "observations": {
+    "decode": {
+      "count": 7,
+      "p50Ms": 30.574600000000004,
+      "maxMs": 31.215199999999996
+    },
+    "reject-verify": {
+      "count": 7,
+      "p50Ms": 44.72840000000001,
+      "maxMs": 48.272
+    }
+  },
+  "canonicalBoundBytes": 1296028,
+  "unchangedTransportCapBytes": 1302000,
+  "survivingRun": false,
+  "independentReview": "pending",
+  "globalS0": "open",
+  "reports": {
+    "stacked-codec-boundary-green-02": "da312dcc0ed6d2f3f80d04c40f4a79953f92d6b39bed1354a951762569f76d58",
+    "stacked-codec-boundary-timing-01": "27023565c757818f6e23bd07a445a800fcb04b9a8d553ab3c88c058898c9c522",
+    "stacked-codec-boundary-timing-02": "0938b781cd62982de5de7229be774185fbc33082955cbfa89b725230061431e5"
+  }
+}
