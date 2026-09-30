@@ -1,0 +1,298 @@
+// Run summary catalogues (schema 1-6). A summary carries catalogue indices and
+// ids only, never authored world coordinates. This object is the 1.8.1
+// catalogue set, frozen: schema versions 1-6 validate against it forever.
+// Schema 7 appends to it in sdk/hmh-run-summary-schema-v7.mjs, a separate
+// module so the 1.8.x child and portal bundles, which load this one, do not
+// grow (run summary v7 contract, docs/hmh-reboot/design/
+// HMH-RUN-SUMMARY-V7-CONTRACT.md §2, §3 and §16).
+export const HMH_RUN_SUMMARY_CATALOGS_V6 = Object.freeze({
+  enemyRoles: Object.freeze([
+    'bagholder-rusher',
+    'forkrunner',
+    'liquidator-agent',
+    'whale-enforcer',
+    'gas-bomber',
+    'validator-cultist',
+    'liquidator',
+  ]),
+  weapons: Object.freeze([
+    'coin-blaster',
+    'scatter-shotgun',
+    'auto-miner',
+    'launcher-rig',
+    'hash-rail',
+    'lightning-ledger',
+    'bear-market-burner',
+    'forked-standard',
+    'litecoin-knife',
+    'satoshi-frag',
+    'nuke-liquidation',
+  ]),
+  collectibles: Object.freeze([
+    'bonus-life',
+    'coin-blaster-cache',
+    'scatter-shotgun-cache',
+    'auto-miner-cache',
+    'launcher-rig-cache',
+    'litecoin-token',
+    'hash-rail-core',
+    'lightning-ledger-cache',
+    'bear-market-burner-cache',
+    'forked-standard-cache',
+    'time-dilation',
+    'berserk-candle',
+    'nuke-liquidation',
+  ]),
+  upgrades: Object.freeze([
+    'proof-of-work',
+    'diamond-hands',
+    'gas-optimization',
+    'cold-storage',
+    'block-reward',
+    'validator-training',
+    'compound-interest',
+    'precision-ledger',
+    'hard-fork-rounds',
+    'hot-wallet',
+    'layer-two',
+    'hardened-wallet',
+    'ledger-conductivity',
+    'ledger-voltage',
+    'ledger-reconciliation',
+    'proof-of-network',
+    'burner-liquidity',
+    'burner-volatility',
+    'burner-contagion',
+    'total-selloff',
+    'standard-reach',
+    'standard-force',
+    'standard-tempo',
+    'canonical-fork',
+  ]),
+  districts: Object.freeze([
+    'frontier-relay',
+    'rugpull-ravine',
+    'liquidity-crossing',
+    'hashwood',
+    'mining-camp',
+    'liquidation-yard',
+  ]),
+  pointsOfInterest: Object.freeze([
+    'relay-cache',
+    'relay-armory',
+    'ravine-salvage',
+    'ravine-overlook-cache',
+    'crossing-fuel-depot',
+    'crossing-bank-cache',
+    'hashwood-shrine',
+    'mining-control-room',
+    'yard-extraction-console',
+    'yard-medbay-cache',
+  ]),
+  // Schema 6 milestone catalogs. Ids mirror WORLD_DESIGN_SITES and
+  // WORLD_DESIGN_SECRETS in the child; the summary carries only the catalog
+  // index, so the parent never receives authored world coordinates.
+  worldSites: Object.freeze([
+    'relay-power',
+    'ravine-winch',
+    'crossing-pump',
+    'hashwood-shrine',
+    'mining-valve',
+    'yard-warehouse',
+  ]),
+  secrets: Object.freeze([
+    'farmstead-hidden-supplies',
+    'ravine-surveyor-cache',
+    'warehouse-logbook',
+  ]),
+  // 'unknown' is the defeated fallback when no killing hit was attributed;
+  // 'none' is reserved for runs that did not end in a defeat.
+  defeatKinds: Object.freeze(['none', 'enemy', 'boss', 'hazard', 'self', 'unknown']),
+});
+export const HMH_RUN_SUMMARY_CATALOGS = HMH_RUN_SUMMARY_CATALOGS_V6;
+
+// Bounded catalog-style ids (heroId, defeat causeId); shared with the child
+// accumulator so an unattributable killer is reported rather than transmitted.
+export const HMH_RUN_SUMMARY_ID_PATTERN = /^[a-z0-9][a-z0-9-]{1,63}$/;
+
+const plain = (value) => value !== null && typeof value === 'object' && !Array.isArray(value)
+  && [Object.prototype, null].includes(Object.getPrototypeOf(value));
+const keys = (value, expected, label) => {
+  if (!plain(value)) return `${label} must be a plain object`;
+  const actual = Object.keys(value);
+  if (actual.length !== expected.length) return `${label} must contain exact fields`;
+  for (const key of actual) if (!expected.includes(key)) return `${label} has unexpected field: ${key}`;
+  for (const key of expected) if (!Object.hasOwn(value, key)) return `${label} is missing field: ${key}`;
+  return '';
+};
+const integer = (value, maximum = 1_000_000_000) => Number.isInteger(value) && value >= 0 && value <= maximum;
+const finite = (value) => Number.isFinite(value) && value >= 0 && value <= 1_000_000_000;
+const rows = (value, ids, idKey, fields, label) => {
+  if (!Array.isArray(value) || value.length !== ids.length) return `${label} rows are invalid`;
+  for (let rowIndex = 0; rowIndex < ids.length; rowIndex += 1) {
+    const row = value[rowIndex];
+    const error = keys(row, [idKey, ...fields], `${label}[${rowIndex}]`);
+    if (error) return error;
+    if (row[idKey] !== ids[rowIndex]) return `${label}[${rowIndex}] id is invalid`;
+    for (const field of fields) if (!integer(row[field])) return `${label}[${rowIndex}].${field} is invalid`;
+  }
+  return '';
+};
+// Shared with sdk/hmh-run-summary-schema-v7.mjs.
+export { keys as runSummaryFieldsError, rows as runSummaryRowsError, integer as isRunSummaryInteger };
+
+// Schema 1-6. Schema 7 is validated by the validateRunSummaryPayload of
+// sdk/hmh-run-summary-schema-v7.mjs, which answers exactly as this one for 1-6.
+export function validateRunSummaryPayload(payload) {
+  if (![1, 2, 3, 4, 5, 6].includes(payload?.schemaVersion)) return 'game:run-summary schemaVersion is invalid';
+  return validateRunSummaryRules(payload, HMH_RUN_SUMMARY_CATALOGS_V6);
+}
+
+// The rules of schema versions up to 6 against the catalogues `C`, for a
+// payload whose schemaVersion the caller already accepted. A later schema
+// passes its catalogues and its extra top-level fields, and checks those
+// fields itself afterwards.
+export function validateRunSummaryRules(payload, C, laterFields = []) {
+  const payloadFields = ['schemaVersion', 'identity', 'totals', 'kills', 'weapons', 'grenades', 'collectibles', 'upgrades', 'exploration'];
+  if (payload.schemaVersion >= 3) payloadFields.push('lightningLedger');
+  if (payload.schemaVersion >= 4) payloadFields.push('bearMarketBurner');
+  if (payload.schemaVersion >= 5) payloadFields.push('forkedStandard');
+  if (payload.schemaVersion >= 6) payloadFields.push('defeat', 'milestones');
+  payloadFields.push(...laterFields);
+  let error = keys(payload, payloadFields, 'game:run-summary payload');
+  if (error) return error;
+  const identityFields = ['seed', 'buildHash', 'mode', 'heroId', 'terminalReason', 'startTick', 'endTick'];
+  error = keys(payload.identity, identityFields, 'game:run-summary identity');
+  if (error) return error;
+  const identity = payload.identity;
+  if (!integer(identity.seed, 0xffff_ffff)) return 'game:run-summary seed is invalid';
+  if (typeof identity.buildHash !== 'string' || !/^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$/.test(identity.buildHash)) return 'game:run-summary buildHash is invalid';
+  if (!['free', 'ranked'].includes(identity.mode)) return 'game:run-summary mode is invalid';
+  if (typeof identity.heroId !== 'string' || !HMH_RUN_SUMMARY_ID_PATTERN.test(identity.heroId)) return 'game:run-summary heroId is invalid';
+  if (!['defeated', 'completed', 'abandoned', 'runtime-error'].includes(identity.terminalReason)) return 'game:run-summary terminalReason is invalid';
+  if (!integer(identity.startTick) || !integer(identity.endTick) || identity.endTick < identity.startTick) return 'game:run-summary ticks are invalid';
+
+  const totalFields = ['survivalTicks', 'elapsedMs', 'score', 'level', 'xp', 'litecoin', 'currentCombo', 'maxCombo', 'damageDealt', 'damageTaken', 'healing', 'distanceMilli'];
+  error = keys(payload.totals, totalFields, 'game:run-summary totals');
+  if (error) return error;
+  for (const field of totalFields) if (field !== 'elapsedMs' && !integer(payload.totals[field], field === 'score' || field === 'xp' ? 1_000_000_000_000 : 1_000_000_000)) return `game:run-summary totals.${field} is invalid`;
+  if (!finite(payload.totals.elapsedMs) || payload.totals.level < 1 || payload.totals.currentCombo > payload.totals.maxCombo) return 'game:run-summary totals are invalid';
+  if (payload.totals.survivalTicks !== identity.endTick - identity.startTick) return 'game:run-summary survivalTicks does not match identity';
+
+  error = keys(payload.kills, ['total', 'byEnemyRole', 'byWeapon', 'elite', 'boss'], 'game:run-summary kills');
+  if (error) return error;
+  for (const field of ['total', 'elite', 'boss']) if (!integer(payload.kills[field], 10_000_000)) return `game:run-summary kills.${field} is invalid`;
+  error = rows(payload.kills.byEnemyRole, C.enemyRoles, 'enemyRoleId', ['count'], 'game:run-summary kills.byEnemyRole');
+  if (error) return error;
+  error = rows(payload.kills.byWeapon, C.weapons, 'weaponId', ['count'], 'game:run-summary kills.byWeapon');
+  if (error) return error;
+  if (payload.kills.byEnemyRole.reduce((sum, row) => sum + row.count, 0) !== payload.kills.total
+    || payload.kills.byWeapon.reduce((sum, row) => sum + row.count, 0) !== payload.kills.total
+    || payload.kills.elite > payload.kills.total || payload.kills.boss > payload.kills.total) return 'game:run-summary kill totals are inconsistent';
+
+  const weaponFields = ['pickups', 'swaps', 'triggers', 'triggerContacts', 'projectilesEmitted', 'projectileContacts', 'reloadStarts', 'reloadCompletes', 'emptyAttempts', 'equippedTicks', 'damage', 'kills', 'criticalHits', 'overkill'];
+  if (payload.schemaVersion >= 2) weaponFields.push('chargesStarted', 'chargesCancelled', 'chargedShots', 'cancelledChargeTicks', 'zeroHitShots', 'oneHitShots', 'twoHitShots', 'threePlusHitShots', 'bossHits', 'damageTakenWhileEquipped');
+  error = rows(payload.weapons, C.weapons, 'weaponId', weaponFields, 'game:run-summary weapons');
+  if (error) return error;
+  for (let index = 0; index < payload.weapons.length; index += 1) {
+    const weapon = payload.weapons[index];
+    if (weapon.triggerContacts > weapon.triggers || weapon.reloadCompletes > weapon.reloadStarts
+      || weapon.kills !== payload.kills.byWeapon[index].count) return `game:run-summary weapons[${index}] totals are inconsistent`;
+    if (payload.schemaVersion >= 2 && (weapon.chargesCancelled > weapon.chargesStarted
+      || weapon.chargedShots > weapon.chargesStarted
+      || weapon.zeroHitShots + weapon.oneHitShots + weapon.twoHitShots + weapon.threePlusHitShots > weapon.chargedShots)) return `game:run-summary weapons[${index}] charge totals are inconsistent`;
+  }
+
+  if (payload.schemaVersion >= 3) {
+    const ledgerFields = ['pulses', 'chainedHits', 'longestChain', 'maxRampPermille', 'heldTicks', 'secondsHeld', 'cellsSpent', 'cellsRefunded', 'fullChains', 'overheats', 'capstonePulses', 'interruptions'];
+    error = keys(payload.lightningLedger, ledgerFields, 'game:run-summary lightningLedger');
+    if (error) return error;
+    for (const field of ledgerFields.filter((field) => !['secondsHeld', 'interruptions'].includes(field))) {
+      if (!integer(payload.lightningLedger[field])) return `game:run-summary lightningLedger.${field} is invalid`;
+    }
+    if (!finite(payload.lightningLedger.secondsHeld)) return 'game:run-summary lightningLedger.secondsHeld is invalid';
+    const interruptionFields = ['release', 'switch', 'dodge', 'empty', 'overheat', 'invalidTarget', 'other'];
+    error = keys(payload.lightningLedger.interruptions, interruptionFields, 'game:run-summary lightningLedger.interruptions');
+    if (error) return error;
+    for (const field of interruptionFields) if (!integer(payload.lightningLedger.interruptions[field])) return `game:run-summary lightningLedger.interruptions.${field} is invalid`;
+    if (payload.lightningLedger.longestChain > 8
+      || payload.lightningLedger.maxRampPermille > 3000
+      || payload.lightningLedger.fullChains > payload.lightningLedger.pulses
+      || payload.lightningLedger.capstonePulses > payload.lightningLedger.pulses
+      || payload.lightningLedger.secondsHeld !== Number((payload.lightningLedger.heldTicks / 60).toFixed(3))) return 'game:run-summary lightningLedger totals are inconsistent';
+  }
+
+  if (payload.schemaVersion >= 4) {
+    const burnerFields = ['pulses', 'contacts', 'fuelSpent', 'burnTicks', 'scorchZonesCreated', 'maxActiveBurns', 'totalSelloffPulses', 'emergencyRefills'];
+    error = keys(payload.bearMarketBurner, burnerFields, 'game:run-summary bearMarketBurner');
+    if (error) return error;
+    for (const field of burnerFields) if (!integer(payload.bearMarketBurner[field])) return `game:run-summary bearMarketBurner.${field} is invalid`;
+    if (payload.bearMarketBurner.maxActiveBurns > 64
+      || payload.bearMarketBurner.totalSelloffPulses > payload.bearMarketBurner.pulses
+      || payload.bearMarketBurner.contacts > payload.bearMarketBurner.pulses * 12
+      || payload.bearMarketBurner.emergencyRefills > 1) return 'game:run-summary bearMarketBurner totals are inconsistent';
+  }
+
+  if (payload.schemaVersion >= 5) {
+    const standardFields = ['attacks', 'contacts', 'whiffs', 'thrusts', 'sweeps', 'capstoneAttacks', 'droppedContacts'];
+    error = keys(payload.forkedStandard, standardFields, 'game:run-summary forkedStandard');
+    if (error) return error;
+    for (const field of standardFields) if (!integer(payload.forkedStandard[field])) return `game:run-summary forkedStandard.${field} is invalid`;
+    if (payload.forkedStandard.contacts > payload.forkedStandard.attacks * 6
+      || payload.forkedStandard.whiffs > payload.forkedStandard.attacks
+      || payload.forkedStandard.thrusts + payload.forkedStandard.sweeps !== payload.forkedStandard.attacks
+      || payload.forkedStandard.capstoneAttacks > payload.forkedStandard.attacks) return 'game:run-summary forkedStandard totals are inconsistent';
+  }
+
+  if (payload.schemaVersion >= 6) {
+    // Cause of defeat: the first killing hit the child attributed. The kind is
+    // bound to the terminal reason so a "completed" run can never carry a
+    // killer and a "defeated" run always names one (or admits 'unknown').
+    const defeat = payload.defeat;
+    const milestones = payload.milestones;
+    error = keys(defeat, ['kind', 'causeId', 'tick', 'damage'], 'game:run-summary defeat')
+      || keys(milestones, ['levelUps', 'firstLevelUpTick', 'lastLevelUpTick', 'bossEngagedTick', 'sites', 'secrets'], 'game:run-summary milestones')
+      || rows(milestones.sites, C.worldSites, 'siteId', ['operated', 'tick'], 'game:run-summary sites')
+      || rows(milestones.secrets, C.secrets, 'secretId', ['found', 'tick'], 'game:run-summary secrets');
+    if (error) return error;
+    // Every tick sits inside the run; an event that never fired (flag 0, no
+    // defeat, no level-up) carries tick 0, and a flag is only ever 0 or 1.
+    const inRun = (tick, flag = 1) => integer(tick, identity.endTick) && (flag === 1 || !(flag || tick));
+    const none = defeat.kind === 'none';
+    if (!C.defeatKinds.includes(defeat.kind)
+      || typeof defeat.causeId !== 'string' || !HMH_RUN_SUMMARY_ID_PATTERN.test(defeat.causeId)
+      || !inRun(defeat.tick, +!none) || !finite(defeat.damage)
+      || none !== (identity.terminalReason !== 'defeated')
+      || (none && (defeat.causeId !== 'none' || defeat.damage !== 0))) return 'game:run-summary defeat is invalid';
+    // Level-ups must reconcile with totals.level; the first level-up sits at
+    // or before the last one, which sits inside the run.
+    if (milestones.levelUps !== payload.totals.level - 1
+      || !inRun(milestones.lastLevelUpTick, +(milestones.levelUps > 0)) || !integer(milestones.firstLevelUpTick, milestones.lastLevelUpTick)
+      || !inRun(milestones.bossEngagedTick)
+      || milestones.sites.some((row) => !inRun(row.tick, row.operated))
+      || milestones.secrets.some((row) => !inRun(row.tick, row.found))) return 'game:run-summary milestones are invalid';
+  }
+
+  error = keys(payload.grenades, ['thrown', 'detonated', 'contacts', 'kills', 'selfDamage', 'overflows'], 'game:run-summary grenades');
+  if (error) return error;
+  for (const field of Object.keys(payload.grenades)) if (!integer(payload.grenades[field])) return `game:run-summary grenades.${field} is invalid`;
+  error = rows(payload.collectibles, C.collectibles, 'effectId', ['collected', 'activeTicks'], 'game:run-summary collectibles');
+  if (error) return error;
+  error = rows(payload.upgrades, C.upgrades, 'upgradeId', ['offered', 'selected'], 'game:run-summary upgrades');
+  if (error) return error;
+  for (const upgrade of payload.upgrades) if (upgrade.selected > upgrade.offered) return 'game:run-summary upgrade totals are inconsistent';
+
+  error = keys(payload.exploration, ['visitedDistrictMask', 'discoveredPoiMask', 'revealedCells', 'totalCells', 'revealedPermille', 'distanceMilli'], 'game:run-summary exploration');
+  if (error) return error;
+  for (const field of Object.keys(payload.exploration)) if (!integer(payload.exploration[field])) return `game:run-summary exploration.${field} is invalid`;
+  const exploration = payload.exploration;
+  if (exploration.visitedDistrictMask >= 2 ** C.districts.length
+    || exploration.discoveredPoiMask >= 2 ** C.pointsOfInterest.length
+    || exploration.revealedCells > exploration.totalCells
+    || exploration.revealedPermille > 1000
+    || exploration.revealedPermille !== (exploration.totalCells === 0 ? 0 : Math.round(exploration.revealedCells * 1000 / exploration.totalCells))
+    || exploration.distanceMilli !== payload.totals.distanceMilli) return 'game:run-summary exploration totals are inconsistent';
+  const litecoin = payload.collectibles.find((row) => row.effectId === 'litecoin-token').collected;
+  if (payload.totals.litecoin !== litecoin) return 'game:run-summary Litecoin total is inconsistent';
+  return '';
+}

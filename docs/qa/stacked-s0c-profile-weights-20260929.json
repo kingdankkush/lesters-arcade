@@ -1,0 +1,1397 @@
+{
+  "schema": "stacked-s0c-saved-profile-weights-v1",
+  "scope": "Saved standard Inspector main-thread samples/deltas only; weighted intervals are approximate diagnosis, not total process CPU, allocation/peak measurement or250ms performance certification. Inclusive rows overlap and must not be summed. Async crypto/worker CPU/scheduling are incompletely attributed. No target execution in this analysis.",
+  "samples": 479,
+  "nodes": 79,
+  "standardProfileDurationMs": 268.424,
+  "totalWeightedIntervalsMs": 268.3,
+  "instrumentedVerifierWallMs": 254.0865,
+  "topSelf": [
+    {
+      "id": 8,
+      "function": "decodeStackedBase64",
+      "url": "file:///C:/Users/just_/lesters-arcade-wt/200-world-w0/apps/portal/src/stacked-evidence-transport.mjs",
+      "line": 34,
+      "column": 36,
+      "selfWeightMs": 44.285,
+      "inclusiveWeightMs": 52.613,
+      "selfSharePercent": 16.505777115169586
+    },
+    {
+      "id": 27,
+      "function": "advance",
+      "url": "file:///C:/Users/just_/lesters-arcade-wt/200-world-w0/apps/portal/src/stacked-sim.mjs",
+      "line": 825,
+      "column": 19,
+      "selfWeightMs": 40.553,
+      "inclusiveWeightMs": 167.816,
+      "selfSharePercent": 15.114796869176296
+    },
+    {
+      "id": 31,
+      "function": "processGravityAndLock",
+      "url": "file:///C:/Users/just_/lesters-arcade-wt/200-world-w0/apps/portal/src/stacked-sim.mjs",
+      "line": 805,
+      "column": 33,
+      "selfWeightMs": 27.406,
+      "inclusiveWeightMs": 51.319,
+      "selfSharePercent": 10.214685054043981
+    },
+    {
+      "id": 33,
+      "function": "collidesPiece",
+      "url": "file:///C:/Users/just_/lesters-arcade-wt/200-world-w0/apps/portal/src/stacked-sim.mjs",
+      "line": 60,
+      "column": 23,
+      "selfWeightMs": 22.837,
+      "inclusiveWeightMs": 22.837,
+      "selfSharePercent": 8.51174058889303
+    },
+    {
+      "id": 29,
+      "function": "lock",
+      "url": "file:///C:/Users/just_/lesters-arcade-wt/200-world-w0/apps/portal/src/stacked-sim.mjs",
+      "line": 590,
+      "column": 16,
+      "selfWeightMs": 19.195,
+      "inclusiveWeightMs": 44.383,
+      "selfSharePercent": 7.154304882594111
+    },
+    {
+      "id": 5,
+      "function": "post",
+      "url": "node:inspector",
+      "line": 115,
+      "column": 7,
+      "selfWeightMs": 13.827,
+      "inclusiveWeightMs": 14.362,
+      "selfSharePercent": 5.15355944837868
+    },
+    {
+      "id": 28,
+      "function": "processHardDrop",
+      "url": "file:///C:/Users/just_/lesters-arcade-wt/200-world-w0/apps/portal/src/stacked-sim.mjs",
+      "line": 794,
+      "column": 27,
+      "selfWeightMs": 11.158,
+      "inclusiveWeightMs": 58.297,
+      "selfSharePercent": 4.158777487886694
+    },
+    {
+      "id": 41,
+      "function": "compactCompletedRowsInPlace",
+      "url": "file:///C:/Users/just_/lesters-arcade-wt/200-world-w0/apps/portal/src/stacked-sim.mjs",
+      "line": 196,
+      "column": 37,
+      "selfWeightMs": 9.944,
+      "inclusiveWeightMs": 9.944,
+      "selfSharePercent": 3.7062989191203877
+    },
+    {
+      "id": 14,
+      "function": "(garbage collector)",
+      "url": "",
+      "line": 0,
+      "column": 0,
+      "selfWeightMs": 8.023,
+      "inclusiveWeightMs": 8.023,
+      "selfSharePercent": 2.9903093551994036
+    },
+    {
+      "id": 18,
+      "function": "fnv1a32Bytes",
+      "url": "file:///C:/Users/just_/lesters-arcade-wt/200-world-w0/apps/portal/src/stacked-sim.mjs",
+      "line": 442,
+      "column": 29,
+      "selfWeightMs": 6.609,
+      "inclusiveWeightMs": 6.609,
+      "selfSharePercent": 2.4632873648900486
+    },
+    {
+      "id": 9,
+      "function": "RegExp: ^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$",
+      "url": "",
+      "line": 0,
+      "column": 0,
+      "selfWeightMs": 5.62,
+      "inclusiveWeightMs": 5.62,
+      "selfSharePercent": 2.094670145359672
+    },
+    {
+      "id": 19,
+      "function": "replayStackedRun",
+      "url": "file:///C:/Users/just_/lesters-arcade-wt/200-world-w0/apps/portal/src/stacked-sim.mjs",
+      "line": 1090,
+      "column": 33,
+      "selfWeightMs": 4.429,
+      "inclusiveWeightMs": 182.376,
+      "selfSharePercent": 1.6507640700708162
+    },
+    {
+      "id": 21,
+      "function": "fnv1a32Bytes",
+      "url": "file:///C:/Users/just_/lesters-arcade-wt/200-world-w0/apps/portal/src/stacked-sim.mjs",
+      "line": 442,
+      "column": 29,
+      "selfWeightMs": 4.254,
+      "inclusiveWeightMs": 4.254,
+      "selfSharePercent": 1.5855385762206484
+    },
+    {
+      "id": 20,
+      "function": "decodeSic1Columns",
+      "url": "file:///C:/Users/just_/lesters-arcade-wt/200-world-w0/apps/portal/src/stacked-sim.mjs",
+      "line": 982,
+      "column": 27,
+      "selfWeightMs": 4.123,
+      "inclusiveWeightMs": 8.935,
+      "selfSharePercent": 1.5367126351099516
+    },
+    {
+      "id": 30,
+      "function": "processHorizontal",
+      "url": "file:///C:/Users/just_/lesters-arcade-wt/200-world-w0/apps/portal/src/stacked-sim.mjs",
+      "line": 785,
+      "column": 29,
+      "selfWeightMs": 3.855,
+      "inclusiveWeightMs": 9.566,
+      "selfSharePercent": 1.436824450242266
+    },
+    {
+      "id": 44,
+      "function": "updateMaxStackHeight",
+      "url": "file:///C:/Users/just_/lesters-arcade-wt/200-world-w0/apps/portal/src/stacked-sim.mjs",
+      "line": 564,
+      "column": 32,
+      "selfWeightMs": 3.84,
+      "inclusiveWeightMs": 3.84,
+      "selfSharePercent": 1.4312336936265375
+    },
+    {
+      "id": 34,
+      "function": "move",
+      "url": "file:///C:/Users/just_/lesters-arcade-wt/200-world-w0/apps/portal/src/stacked-sim.mjs",
+      "line": 556,
+      "column": 16,
+      "selfWeightMs": 3.375,
+      "inclusiveWeightMs": 5.711,
+      "selfSharePercent": 1.257920238538949
+    },
+    {
+      "id": 51,
+      "function": "spawnFromQueue",
+      "url": "file:///C:/Users/just_/lesters-arcade-wt/200-world-w0/apps/portal/src/stacked-sim.mjs",
+      "line": 536,
+      "column": 26,
+      "selfWeightMs": 3.303,
+      "inclusiveWeightMs": 7.585,
+      "selfSharePercent": 1.2310846067834513
+    },
+    {
+      "id": 60,
+      "function": "collidesPiece",
+      "url": "file:///C:/Users/just_/lesters-arcade-wt/200-world-w0/apps/portal/src/stacked-sim.mjs",
+      "line": 60,
+      "column": 23,
+      "selfWeightMs": 2.756,
+      "inclusiveWeightMs": 2.756,
+      "selfSharePercent": 1.0272083488632129
+    },
+    {
+      "id": 46,
+      "function": "firstFreeKick",
+      "url": "file:///C:/Users/just_/lesters-arcade-wt/200-world-w0/apps/portal/src/stacked-sim.mjs",
+      "line": 92,
+      "column": 23,
+      "selfWeightMs": 2.709,
+      "inclusiveWeightMs": 3.819,
+      "selfSharePercent": 1.0096906448005964
+    },
+    {
+      "id": 42,
+      "function": "scoreBlock",
+      "url": "file:///C:/Users/just_/lesters-arcade-wt/200-world-w0/apps/portal/src/stacked-sim.mjs",
+      "line": 268,
+      "column": 20,
+      "selfWeightMs": 1.716,
+      "inclusiveWeightMs": 1.716,
+      "selfSharePercent": 0.6395825568393589
+    },
+    {
+      "id": 57,
+      "function": "collidesPiece",
+      "url": "file:///C:/Users/just_/lesters-arcade-wt/200-world-w0/apps/portal/src/stacked-sim.mjs",
+      "line": 60,
+      "column": 23,
+      "selfWeightMs": 1.609,
+      "inclusiveWeightMs": 1.609,
+      "selfSharePercent": 0.5997018263138278
+    },
+    {
+      "id": 54,
+      "function": "collidesPiece",
+      "url": "file:///C:/Users/just_/lesters-arcade-wt/200-world-w0/apps/portal/src/stacked-sim.mjs",
+      "line": 60,
+      "column": 23,
+      "selfWeightMs": 1.603,
+      "inclusiveWeightMs": 1.603,
+      "selfSharePercent": 0.5974655236675364
+    },
+    {
+      "id": 58,
+      "function": "rotationKicks",
+      "url": "file:///C:/Users/just_/lesters-arcade-wt/200-world-w0/apps/portal/src/stacked-sim.mjs",
+      "line": 87,
+      "column": 23,
+      "selfWeightMs": 1.587,
+      "inclusiveWeightMs": 1.587,
+      "selfSharePercent": 0.5915020499440924
+    },
+    {
+      "id": 16,
+      "function": "(anonymous)",
+      "url": "file:///C:/Users/just_/lesters-arcade-wt/200-world-w0/apps/portal/src/stacked-evidence-transport.mjs",
+      "line": 38,
+      "column": 34,
+      "selfWeightMs": 1.583,
+      "inclusiveWeightMs": 1.583,
+      "selfSharePercent": 0.5900111815132315
+    }
+  ],
+  "topInclusive": [
+    {
+      "id": 1,
+      "function": "(root)",
+      "url": "",
+      "line": 0,
+      "column": 0,
+      "selfWeightMs": 0,
+      "inclusiveWeightMs": 268.3,
+      "selfSharePercent": 0
+    },
+    {
+      "id": 2,
+      "function": "(anonymous)",
+      "url": "file:///C:/Users/just_/Documents/Codex/2026-09-29/you-are-taking-over-as-lead/work/profile-stacked-s0c-verifier-child.mjs",
+      "line": 0,
+      "column": 0,
+      "selfWeightMs": 0,
+      "inclusiveWeightMs": 257.575,
+      "selfSharePercent": 0
+    },
+    {
+      "id": 6,
+      "function": "verifyStackedRun",
+      "url": "file:///C:/Users/just_/lesters-arcade-wt/200-world-w0/server/verify/stacked.mjs",
+      "line": 62,
+      "column": 39,
+      "selfWeightMs": 0,
+      "inclusiveWeightMs": 243.213,
+      "selfSharePercent": 0
+    },
+    {
+      "id": 19,
+      "function": "replayStackedRun",
+      "url": "file:///C:/Users/just_/lesters-arcade-wt/200-world-w0/apps/portal/src/stacked-sim.mjs",
+      "line": 1090,
+      "column": 33,
+      "selfWeightMs": 4.429,
+      "inclusiveWeightMs": 182.376,
+      "selfSharePercent": 1.6507640700708162
+    },
+    {
+      "id": 27,
+      "function": "advance",
+      "url": "file:///C:/Users/just_/lesters-arcade-wt/200-world-w0/apps/portal/src/stacked-sim.mjs",
+      "line": 825,
+      "column": 19,
+      "selfWeightMs": 40.553,
+      "inclusiveWeightMs": 167.816,
+      "selfSharePercent": 15.114796869176296
+    },
+    {
+      "id": 7,
+      "function": "decodeStackedEvidence",
+      "url": "file:///C:/Users/just_/lesters-arcade-wt/200-world-w0/server/verify/stacked.mjs",
+      "line": 30,
+      "column": 38,
+      "selfWeightMs": 0,
+      "inclusiveWeightMs": 59.748,
+      "selfSharePercent": 0
+    },
+    {
+      "id": 28,
+      "function": "processHardDrop",
+      "url": "file:///C:/Users/just_/lesters-arcade-wt/200-world-w0/apps/portal/src/stacked-sim.mjs",
+      "line": 794,
+      "column": 27,
+      "selfWeightMs": 11.158,
+      "inclusiveWeightMs": 58.297,
+      "selfSharePercent": 4.158777487886694
+    },
+    {
+      "id": 8,
+      "function": "decodeStackedBase64",
+      "url": "file:///C:/Users/just_/lesters-arcade-wt/200-world-w0/apps/portal/src/stacked-evidence-transport.mjs",
+      "line": 34,
+      "column": 36,
+      "selfWeightMs": 44.285,
+      "inclusiveWeightMs": 52.613,
+      "selfSharePercent": 16.505777115169586
+    },
+    {
+      "id": 31,
+      "function": "processGravityAndLock",
+      "url": "file:///C:/Users/just_/lesters-arcade-wt/200-world-w0/apps/portal/src/stacked-sim.mjs",
+      "line": 805,
+      "column": 33,
+      "selfWeightMs": 27.406,
+      "inclusiveWeightMs": 51.319,
+      "selfSharePercent": 10.214685054043981
+    },
+    {
+      "id": 29,
+      "function": "lock",
+      "url": "file:///C:/Users/just_/lesters-arcade-wt/200-world-w0/apps/portal/src/stacked-sim.mjs",
+      "line": 590,
+      "column": 16,
+      "selfWeightMs": 19.195,
+      "inclusiveWeightMs": 44.383,
+      "selfSharePercent": 7.154304882594111
+    },
+    {
+      "id": 33,
+      "function": "collidesPiece",
+      "url": "file:///C:/Users/just_/lesters-arcade-wt/200-world-w0/apps/portal/src/stacked-sim.mjs",
+      "line": 60,
+      "column": 23,
+      "selfWeightMs": 22.837,
+      "inclusiveWeightMs": 22.837,
+      "selfSharePercent": 8.51174058889303
+    },
+    {
+      "id": 32,
+      "function": "canMove",
+      "url": "file:///C:/Users/just_/lesters-arcade-wt/200-world-w0/apps/portal/src/stacked-sim.mjs",
+      "line": 543,
+      "column": 19,
+      "selfWeightMs": 0,
+      "inclusiveWeightMs": 22.837,
+      "selfSharePercent": 0
+    },
+    {
+      "id": 5,
+      "function": "post",
+      "url": "node:inspector",
+      "line": 115,
+      "column": 7,
+      "selfWeightMs": 13.827,
+      "inclusiveWeightMs": 14.362,
+      "selfSharePercent": 5.15355944837868
+    },
+    {
+      "id": 3,
+      "function": "post",
+      "url": "file:///C:/Users/just_/Documents/Codex/2026-09-29/you-are-taking-over-as-lead/work/profile-stacked-s0c-verifier-child.mjs",
+      "line": 23,
+      "column": 12,
+      "selfWeightMs": 0,
+      "inclusiveWeightMs": 14.362,
+      "selfSharePercent": 0
+    },
+    {
+      "id": 4,
+      "function": "(anonymous)",
+      "url": "file:///C:/Users/just_/Documents/Codex/2026-09-29/you-are-taking-over-as-lead/work/profile-stacked-s0c-verifier-child.mjs",
+      "line": 23,
+      "column": 48,
+      "selfWeightMs": 0,
+      "inclusiveWeightMs": 14.362,
+      "selfSharePercent": 0
+    },
+    {
+      "id": 41,
+      "function": "compactCompletedRowsInPlace",
+      "url": "file:///C:/Users/just_/lesters-arcade-wt/200-world-w0/apps/portal/src/stacked-sim.mjs",
+      "line": 196,
+      "column": 37,
+      "selfWeightMs": 9.944,
+      "inclusiveWeightMs": 9.944,
+      "selfSharePercent": 3.7062989191203877
+    },
+    {
+      "id": 30,
+      "function": "processHorizontal",
+      "url": "file:///C:/Users/just_/lesters-arcade-wt/200-world-w0/apps/portal/src/stacked-sim.mjs",
+      "line": 785,
+      "column": 29,
+      "selfWeightMs": 3.855,
+      "inclusiveWeightMs": 9.566,
+      "selfSharePercent": 1.436824450242266
+    },
+    {
+      "id": 20,
+      "function": "decodeSic1Columns",
+      "url": "file:///C:/Users/just_/lesters-arcade-wt/200-world-w0/apps/portal/src/stacked-sim.mjs",
+      "line": 982,
+      "column": 27,
+      "selfWeightMs": 4.123,
+      "inclusiveWeightMs": 8.935,
+      "selfSharePercent": 1.5367126351099516
+    },
+    {
+      "id": 45,
+      "function": "processRotation",
+      "url": "file:///C:/Users/just_/lesters-arcade-wt/200-world-w0/apps/portal/src/stacked-sim.mjs",
+      "line": 765,
+      "column": 27,
+      "selfWeightMs": 1.58,
+      "inclusiveWeightMs": 8.081,
+      "selfSharePercent": 0.5888930301900858
+    },
+    {
+      "id": 14,
+      "function": "(garbage collector)",
+      "url": "",
+      "line": 0,
+      "column": 0,
+      "selfWeightMs": 8.023,
+      "inclusiveWeightMs": 8.023,
+      "selfSharePercent": 2.9903093551994036
+    }
+  ],
+  "nativeGcIdleUnattributed": [
+    {
+      "id": 14,
+      "function": "(garbage collector)",
+      "url": "",
+      "line": 0,
+      "column": 0,
+      "selfWeightMs": 8.023,
+      "inclusiveWeightMs": 8.023,
+      "selfSharePercent": 2.9903093551994036
+    },
+    {
+      "id": 9,
+      "function": "RegExp: ^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$",
+      "url": "",
+      "line": 0,
+      "column": 0,
+      "selfWeightMs": 5.62,
+      "inclusiveWeightMs": 5.62,
+      "selfSharePercent": 2.094670145359672
+    },
+    {
+      "id": 16,
+      "function": "(anonymous)",
+      "url": "file:///C:/Users/just_/lesters-arcade-wt/200-world-w0/apps/portal/src/stacked-evidence-transport.mjs",
+      "line": 38,
+      "column": 34,
+      "selfWeightMs": 1.583,
+      "inclusiveWeightMs": 1.583,
+      "selfSharePercent": 0.5900111815132315
+    },
+    {
+      "id": 13,
+      "function": "btoa",
+      "url": "",
+      "line": 0,
+      "column": 0,
+      "selfWeightMs": 0.578,
+      "inclusiveWeightMs": 0.578,
+      "selfSharePercent": 0.2154304882594111
+    },
+    {
+      "id": 74,
+      "function": "(idle)",
+      "url": "",
+      "line": 0,
+      "column": 0,
+      "selfWeightMs": 0.558,
+      "inclusiveWeightMs": 0.558,
+      "selfSharePercent": 0.20797614610510623
+    },
+    {
+      "id": 69,
+      "function": "(anonymous)",
+      "url": "node:internal/crypto/webidl",
+      "line": 1,
+      "column": 1,
+      "selfWeightMs": 0.549,
+      "inclusiveWeightMs": 0.549,
+      "selfSharePercent": 0.20462169213566903
+    },
+    {
+      "id": 11,
+      "function": "atob",
+      "url": "",
+      "line": 0,
+      "column": 0,
+      "selfWeightMs": 0.547,
+      "inclusiveWeightMs": 0.547,
+      "selfSharePercent": 0.20387625792023853
+    },
+    {
+      "id": 73,
+      "function": "HashJob",
+      "url": "",
+      "line": 0,
+      "column": 0,
+      "selfWeightMs": 0.54,
+      "inclusiveWeightMs": 0.54,
+      "selfSharePercent": 0.20126723816623182
+    },
+    {
+      "id": 79,
+      "function": "dispatch",
+      "url": "",
+      "line": 0,
+      "column": 0,
+      "selfWeightMs": 0.535,
+      "inclusiveWeightMs": 0.535,
+      "selfSharePercent": 0.1994036526276556
+    },
+    {
+      "id": 15,
+      "function": "(program)",
+      "url": "",
+      "line": 0,
+      "column": 0,
+      "selfWeightMs": 0.531,
+      "inclusiveWeightMs": 0.531,
+      "selfSharePercent": 0.19791278419679464
+    },
+    {
+      "id": 1,
+      "function": "(root)",
+      "url": "",
+      "line": 0,
+      "column": 0,
+      "selfWeightMs": 0,
+      "inclusiveWeightMs": 268.3,
+      "selfSharePercent": 0
+    },
+    {
+      "id": 2,
+      "function": "(anonymous)",
+      "url": "file:///C:/Users/just_/Documents/Codex/2026-09-29/you-are-taking-over-as-lead/work/profile-stacked-s0c-verifier-child.mjs",
+      "line": 0,
+      "column": 0,
+      "selfWeightMs": 0,
+      "inclusiveWeightMs": 257.575,
+      "selfSharePercent": 0
+    },
+    {
+      "id": 4,
+      "function": "(anonymous)",
+      "url": "file:///C:/Users/just_/Documents/Codex/2026-09-29/you-are-taking-over-as-lead/work/profile-stacked-s0c-verifier-child.mjs",
+      "line": 23,
+      "column": 48,
+      "selfWeightMs": 0,
+      "inclusiveWeightMs": 14.362,
+      "selfSharePercent": 0
+    },
+    {
+      "id": 72,
+      "function": "(anonymous)",
+      "url": "node:internal/crypto/hash",
+      "line": 224,
+      "column": 31,
+      "selfWeightMs": 0,
+      "inclusiveWeightMs": 0.54,
+      "selfSharePercent": 0
+    }
+  ],
+  "allRows": [
+    {
+      "id": 8,
+      "function": "decodeStackedBase64",
+      "url": "file:///C:/Users/just_/lesters-arcade-wt/200-world-w0/apps/portal/src/stacked-evidence-transport.mjs",
+      "line": 34,
+      "column": 36,
+      "selfWeightMs": 44.285,
+      "inclusiveWeightMs": 52.613,
+      "selfSharePercent": 16.505777115169586
+    },
+    {
+      "id": 27,
+      "function": "advance",
+      "url": "file:///C:/Users/just_/lesters-arcade-wt/200-world-w0/apps/portal/src/stacked-sim.mjs",
+      "line": 825,
+      "column": 19,
+      "selfWeightMs": 40.553,
+      "inclusiveWeightMs": 167.816,
+      "selfSharePercent": 15.114796869176296
+    },
+    {
+      "id": 31,
+      "function": "processGravityAndLock",
+      "url": "file:///C:/Users/just_/lesters-arcade-wt/200-world-w0/apps/portal/src/stacked-sim.mjs",
+      "line": 805,
+      "column": 33,
+      "selfWeightMs": 27.406,
+      "inclusiveWeightMs": 51.319,
+      "selfSharePercent": 10.214685054043981
+    },
+    {
+      "id": 33,
+      "function": "collidesPiece",
+      "url": "file:///C:/Users/just_/lesters-arcade-wt/200-world-w0/apps/portal/src/stacked-sim.mjs",
+      "line": 60,
+      "column": 23,
+      "selfWeightMs": 22.837,
+      "inclusiveWeightMs": 22.837,
+      "selfSharePercent": 8.51174058889303
+    },
+    {
+      "id": 29,
+      "function": "lock",
+      "url": "file:///C:/Users/just_/lesters-arcade-wt/200-world-w0/apps/portal/src/stacked-sim.mjs",
+      "line": 590,
+      "column": 16,
+      "selfWeightMs": 19.195,
+      "inclusiveWeightMs": 44.383,
+      "selfSharePercent": 7.154304882594111
+    },
+    {
+      "id": 5,
+      "function": "post",
+      "url": "node:inspector",
+      "line": 115,
+      "column": 7,
+      "selfWeightMs": 13.827,
+      "inclusiveWeightMs": 14.362,
+      "selfSharePercent": 5.15355944837868
+    },
+    {
+      "id": 28,
+      "function": "processHardDrop",
+      "url": "file:///C:/Users/just_/lesters-arcade-wt/200-world-w0/apps/portal/src/stacked-sim.mjs",
+      "line": 794,
+      "column": 27,
+      "selfWeightMs": 11.158,
+      "inclusiveWeightMs": 58.297,
+      "selfSharePercent": 4.158777487886694
+    },
+    {
+      "id": 41,
+      "function": "compactCompletedRowsInPlace",
+      "url": "file:///C:/Users/just_/lesters-arcade-wt/200-world-w0/apps/portal/src/stacked-sim.mjs",
+      "line": 196,
+      "column": 37,
+      "selfWeightMs": 9.944,
+      "inclusiveWeightMs": 9.944,
+      "selfSharePercent": 3.7062989191203877
+    },
+    {
+      "id": 14,
+      "function": "(garbage collector)",
+      "url": "",
+      "line": 0,
+      "column": 0,
+      "selfWeightMs": 8.023,
+      "inclusiveWeightMs": 8.023,
+      "selfSharePercent": 2.9903093551994036
+    },
+    {
+      "id": 18,
+      "function": "fnv1a32Bytes",
+      "url": "file:///C:/Users/just_/lesters-arcade-wt/200-world-w0/apps/portal/src/stacked-sim.mjs",
+      "line": 442,
+      "column": 29,
+      "selfWeightMs": 6.609,
+      "inclusiveWeightMs": 6.609,
+      "selfSharePercent": 2.4632873648900486
+    },
+    {
+      "id": 9,
+      "function": "RegExp: ^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$",
+      "url": "",
+      "line": 0,
+      "column": 0,
+      "selfWeightMs": 5.62,
+      "inclusiveWeightMs": 5.62,
+      "selfSharePercent": 2.094670145359672
+    },
+    {
+      "id": 19,
+      "function": "replayStackedRun",
+      "url": "file:///C:/Users/just_/lesters-arcade-wt/200-world-w0/apps/portal/src/stacked-sim.mjs",
+      "line": 1090,
+      "column": 33,
+      "selfWeightMs": 4.429,
+      "inclusiveWeightMs": 182.376,
+      "selfSharePercent": 1.6507640700708162
+    },
+    {
+      "id": 21,
+      "function": "fnv1a32Bytes",
+      "url": "file:///C:/Users/just_/lesters-arcade-wt/200-world-w0/apps/portal/src/stacked-sim.mjs",
+      "line": 442,
+      "column": 29,
+      "selfWeightMs": 4.254,
+      "inclusiveWeightMs": 4.254,
+      "selfSharePercent": 1.5855385762206484
+    },
+    {
+      "id": 20,
+      "function": "decodeSic1Columns",
+      "url": "file:///C:/Users/just_/lesters-arcade-wt/200-world-w0/apps/portal/src/stacked-sim.mjs",
+      "line": 982,
+      "column": 27,
+      "selfWeightMs": 4.123,
+      "inclusiveWeightMs": 8.935,
+      "selfSharePercent": 1.5367126351099516
+    },
+    {
+      "id": 30,
+      "function": "processHorizontal",
+      "url": "file:///C:/Users/just_/lesters-arcade-wt/200-world-w0/apps/portal/src/stacked-sim.mjs",
+      "line": 785,
+      "column": 29,
+      "selfWeightMs": 3.855,
+      "inclusiveWeightMs": 9.566,
+      "selfSharePercent": 1.436824450242266
+    },
+    {
+      "id": 44,
+      "function": "updateMaxStackHeight",
+      "url": "file:///C:/Users/just_/lesters-arcade-wt/200-world-w0/apps/portal/src/stacked-sim.mjs",
+      "line": 564,
+      "column": 32,
+      "selfWeightMs": 3.84,
+      "inclusiveWeightMs": 3.84,
+      "selfSharePercent": 1.4312336936265375
+    },
+    {
+      "id": 34,
+      "function": "move",
+      "url": "file:///C:/Users/just_/lesters-arcade-wt/200-world-w0/apps/portal/src/stacked-sim.mjs",
+      "line": 556,
+      "column": 16,
+      "selfWeightMs": 3.375,
+      "inclusiveWeightMs": 5.711,
+      "selfSharePercent": 1.257920238538949
+    },
+    {
+      "id": 51,
+      "function": "spawnFromQueue",
+      "url": "file:///C:/Users/just_/lesters-arcade-wt/200-world-w0/apps/portal/src/stacked-sim.mjs",
+      "line": 536,
+      "column": 26,
+      "selfWeightMs": 3.303,
+      "inclusiveWeightMs": 7.585,
+      "selfSharePercent": 1.2310846067834513
+    },
+    {
+      "id": 60,
+      "function": "collidesPiece",
+      "url": "file:///C:/Users/just_/lesters-arcade-wt/200-world-w0/apps/portal/src/stacked-sim.mjs",
+      "line": 60,
+      "column": 23,
+      "selfWeightMs": 2.756,
+      "inclusiveWeightMs": 2.756,
+      "selfSharePercent": 1.0272083488632129
+    },
+    {
+      "id": 46,
+      "function": "firstFreeKick",
+      "url": "file:///C:/Users/just_/lesters-arcade-wt/200-world-w0/apps/portal/src/stacked-sim.mjs",
+      "line": 92,
+      "column": 23,
+      "selfWeightMs": 2.709,
+      "inclusiveWeightMs": 3.819,
+      "selfSharePercent": 1.0096906448005964
+    },
+    {
+      "id": 42,
+      "function": "scoreBlock",
+      "url": "file:///C:/Users/just_/lesters-arcade-wt/200-world-w0/apps/portal/src/stacked-sim.mjs",
+      "line": 268,
+      "column": 20,
+      "selfWeightMs": 1.716,
+      "inclusiveWeightMs": 1.716,
+      "selfSharePercent": 0.6395825568393589
+    },
+    {
+      "id": 57,
+      "function": "collidesPiece",
+      "url": "file:///C:/Users/just_/lesters-arcade-wt/200-world-w0/apps/portal/src/stacked-sim.mjs",
+      "line": 60,
+      "column": 23,
+      "selfWeightMs": 1.609,
+      "inclusiveWeightMs": 1.609,
+      "selfSharePercent": 0.5997018263138278
+    },
+    {
+      "id": 54,
+      "function": "collidesPiece",
+      "url": "file:///C:/Users/just_/lesters-arcade-wt/200-world-w0/apps/portal/src/stacked-sim.mjs",
+      "line": 60,
+      "column": 23,
+      "selfWeightMs": 1.603,
+      "inclusiveWeightMs": 1.603,
+      "selfSharePercent": 0.5974655236675364
+    },
+    {
+      "id": 58,
+      "function": "rotationKicks",
+      "url": "file:///C:/Users/just_/lesters-arcade-wt/200-world-w0/apps/portal/src/stacked-sim.mjs",
+      "line": 87,
+      "column": 23,
+      "selfWeightMs": 1.587,
+      "inclusiveWeightMs": 1.587,
+      "selfSharePercent": 0.5915020499440924
+    },
+    {
+      "id": 16,
+      "function": "(anonymous)",
+      "url": "file:///C:/Users/just_/lesters-arcade-wt/200-world-w0/apps/portal/src/stacked-evidence-transport.mjs",
+      "line": 38,
+      "column": 34,
+      "selfWeightMs": 1.583,
+      "inclusiveWeightMs": 1.583,
+      "selfSharePercent": 0.5900111815132315
+    },
+    {
+      "id": 45,
+      "function": "processRotation",
+      "url": "file:///C:/Users/just_/lesters-arcade-wt/200-world-w0/apps/portal/src/stacked-sim.mjs",
+      "line": 765,
+      "column": 27,
+      "selfWeightMs": 1.58,
+      "inclusiveWeightMs": 8.081,
+      "selfSharePercent": 0.5888930301900858
+    },
+    {
+      "id": 47,
+      "function": "collidesPiece",
+      "url": "file:///C:/Users/just_/lesters-arcade-wt/200-world-w0/apps/portal/src/stacked-sim.mjs",
+      "line": 60,
+      "column": 23,
+      "selfWeightMs": 1.11,
+      "inclusiveWeightMs": 1.11,
+      "selfSharePercent": 0.41371598956392097
+    },
+    {
+      "id": 48,
+      "function": "resetForAction",
+      "url": "file:///C:/Users/just_/lesters-arcade-wt/200-world-w0/apps/portal/src/stacked-sim.mjs",
+      "line": 551,
+      "column": 26,
+      "selfWeightMs": 1.095,
+      "inclusiveWeightMs": 1.095,
+      "selfSharePercent": 0.4081252329481923
+    },
+    {
+      "id": 55,
+      "function": "refill",
+      "url": "file:///C:/Users/just_/lesters-arcade-wt/200-world-w0/apps/portal/src/stacked-sim.mjs",
+      "line": 513,
+      "column": 18,
+      "selfWeightMs": 1.084,
+      "inclusiveWeightMs": 1.608,
+      "selfSharePercent": 0.40402534476332463
+    },
+    {
+      "id": 52,
+      "function": "activate",
+      "url": "file:///C:/Users/just_/lesters-arcade-wt/200-world-w0/apps/portal/src/stacked-sim.mjs",
+      "line": 521,
+      "column": 20,
+      "selfWeightMs": 1.065,
+      "inclusiveWeightMs": 2.674,
+      "selfSharePercent": 0.396943719716735
+    },
+    {
+      "id": 35,
+      "function": "collidesPiece",
+      "url": "file:///C:/Users/just_/lesters-arcade-wt/200-world-w0/apps/portal/src/stacked-sim.mjs",
+      "line": 60,
+      "column": 23,
+      "selfWeightMs": 0.733,
+      "inclusiveWeightMs": 0.733,
+      "selfSharePercent": 0.27320163995527397
+    },
+    {
+      "id": 13,
+      "function": "btoa",
+      "url": "",
+      "line": 0,
+      "column": 0,
+      "selfWeightMs": 0.578,
+      "inclusiveWeightMs": 0.578,
+      "selfSharePercent": 0.2154304882594111
+    },
+    {
+      "id": 22,
+      "function": "readVarint",
+      "url": "file:///C:/Users/just_/lesters-arcade-wt/200-world-w0/apps/portal/src/stacked-sim.mjs",
+      "line": 994,
+      "column": 22,
+      "selfWeightMs": 0.558,
+      "inclusiveWeightMs": 0.558,
+      "selfSharePercent": 0.20797614610510623
+    },
+    {
+      "id": 74,
+      "function": "(idle)",
+      "url": "",
+      "line": 0,
+      "column": 0,
+      "selfWeightMs": 0.558,
+      "inclusiveWeightMs": 0.558,
+      "selfSharePercent": 0.20797614610510623
+    },
+    {
+      "id": 69,
+      "function": "(anonymous)",
+      "url": "node:internal/crypto/webidl",
+      "line": 1,
+      "column": 1,
+      "selfWeightMs": 0.549,
+      "inclusiveWeightMs": 0.549,
+      "selfSharePercent": 0.20462169213566903
+    },
+    {
+      "id": 37,
+      "function": "shuffledBag",
+      "url": "file:///C:/Users/just_/lesters-arcade-wt/200-world-w0/apps/portal/src/stacked-sim.mjs",
+      "line": 71,
+      "column": 21,
+      "selfWeightMs": 0.548,
+      "inclusiveWeightMs": 0.758,
+      "selfSharePercent": 0.20424897502795378
+    },
+    {
+      "id": 11,
+      "function": "atob",
+      "url": "",
+      "line": 0,
+      "column": 0,
+      "selfWeightMs": 0.547,
+      "inclusiveWeightMs": 0.547,
+      "selfSharePercent": 0.20387625792023853
+    },
+    {
+      "id": 43,
+      "function": "collidesPiece",
+      "url": "file:///C:/Users/just_/lesters-arcade-wt/200-world-w0/apps/portal/src/stacked-sim.mjs",
+      "line": 60,
+      "column": 23,
+      "selfWeightMs": 0.543,
+      "inclusiveWeightMs": 0.543,
+      "selfSharePercent": 0.20238538948937757
+    },
+    {
+      "id": 26,
+      "function": "shuffledBag",
+      "url": "file:///C:/Users/just_/lesters-arcade-wt/200-world-w0/apps/portal/src/stacked-sim.mjs",
+      "line": 71,
+      "column": 21,
+      "selfWeightMs": 0.542,
+      "inclusiveWeightMs": 0.542,
+      "selfSharePercent": 0.20201267238166232
+    },
+    {
+      "id": 77,
+      "function": "buildVerifiedRun",
+      "url": "file:///C:/Users/just_/lesters-arcade-wt/200-world-w0/server/verify/verified-run.mjs",
+      "line": 74,
+      "column": 39,
+      "selfWeightMs": 0.542,
+      "inclusiveWeightMs": 1.082,
+      "selfSharePercent": 0.20201267238166232
+    },
+    {
+      "id": 64,
+      "function": "boardHash",
+      "url": "file:///C:/Users/just_/lesters-arcade-wt/200-world-w0/apps/portal/src/stacked-sim.mjs",
+      "line": 351,
+      "column": 26,
+      "selfWeightMs": 0.541,
+      "inclusiveWeightMs": 0.541,
+      "selfSharePercent": 0.20163995527394707
+    },
+    {
+      "id": 73,
+      "function": "HashJob",
+      "url": "",
+      "line": 0,
+      "column": 0,
+      "selfWeightMs": 0.54,
+      "inclusiveWeightMs": 0.54,
+      "selfSharePercent": 0.20126723816623182
+    },
+    {
+      "id": 78,
+      "function": "encode",
+      "url": "node:internal/encoding",
+      "line": 355,
+      "column": 9,
+      "selfWeightMs": 0.54,
+      "inclusiveWeightMs": 0.54,
+      "selfSharePercent": 0.20126723816623182
+    },
+    {
+      "id": 36,
+      "function": "refill",
+      "url": "file:///C:/Users/just_/lesters-arcade-wt/200-world-w0/apps/portal/src/stacked-sim.mjs",
+      "line": 513,
+      "column": 18,
+      "selfWeightMs": 0.537,
+      "inclusiveWeightMs": 1.295,
+      "selfSharePercent": 0.2001490868430861
+    },
+    {
+      "id": 79,
+      "function": "dispatch",
+      "url": "",
+      "line": 0,
+      "column": 0,
+      "selfWeightMs": 0.535,
+      "inclusiveWeightMs": 0.535,
+      "selfSharePercent": 0.1994036526276556
+    },
+    {
+      "id": 50,
+      "function": "currentLockDelay",
+      "url": "file:///C:/Users/just_/lesters-arcade-wt/200-world-w0/apps/portal/src/stacked-sim.mjs",
+      "line": 472,
+      "column": 28,
+      "selfWeightMs": 0.533,
+      "inclusiveWeightMs": 0.533,
+      "selfSharePercent": 0.1986582184122251
+    },
+    {
+      "id": 15,
+      "function": "(program)",
+      "url": "",
+      "line": 0,
+      "column": 0,
+      "selfWeightMs": 0.531,
+      "inclusiveWeightMs": 0.531,
+      "selfSharePercent": 0.19791278419679464
+    },
+    {
+      "id": 76,
+      "function": "verifiedRunFromStackedTuple",
+      "url": "file:///C:/Users/just_/lesters-arcade-wt/200-world-w0/server/verify/stacked.mjs",
+      "line": 44,
+      "column": 50,
+      "selfWeightMs": 0.531,
+      "inclusiveWeightMs": 1.613,
+      "selfSharePercent": 0.19791278419679464
+    },
+    {
+      "id": 61,
+      "function": "detectSpin",
+      "url": "file:///C:/Users/just_/lesters-arcade-wt/200-world-w0/apps/portal/src/stacked-sim.mjs",
+      "line": 106,
+      "column": 27,
+      "selfWeightMs": 0.53,
+      "inclusiveWeightMs": 0.53,
+      "selfSharePercent": 0.1975400670890794
+    },
+    {
+      "id": 17,
+      "function": "assertStackedEvidenceHeader",
+      "url": "file:///C:/Users/just_/lesters-arcade-wt/200-world-w0/apps/portal/src/stacked-evidence-transport.mjs",
+      "line": 20,
+      "column": 44,
+      "selfWeightMs": 0.526,
+      "inclusiveWeightMs": 7.135,
+      "selfSharePercent": 0.1960491986582184
+    },
+    {
+      "id": 56,
+      "function": "uint32",
+      "url": "file:///C:/Users/just_/lesters-arcade-wt/200-world-w0/apps/portal/src/seeded-rng.mjs",
+      "line": 83,
+      "column": 9,
+      "selfWeightMs": 0.524,
+      "inclusiveWeightMs": 0.524,
+      "selfSharePercent": 0.19530376444278794
+    },
+    {
+      "id": 38,
+      "function": "drainPendingGarbage",
+      "url": "file:///C:/Users/just_/lesters-arcade-wt/200-world-w0/apps/portal/src/stacked-sim.mjs",
+      "line": 573,
+      "column": 31,
+      "selfWeightMs": 0.278,
+      "inclusiveWeightMs": 0.278,
+      "selfSharePercent": 0.10361535594483787
+    },
+    {
+      "id": 40,
+      "function": "uint32",
+      "url": "file:///C:/Users/just_/lesters-arcade-wt/200-world-w0/apps/portal/src/seeded-rng.mjs",
+      "line": 83,
+      "column": 9,
+      "selfWeightMs": 0.21,
+      "inclusiveWeightMs": 0.21,
+      "selfSharePercent": 0.07827059262020127
+    },
+    {
+      "id": 23,
+      "function": "createStackedRuntime",
+      "url": "file:///C:/Users/just_/lesters-arcade-wt/200-world-w0/apps/portal/src/stacked-sim.mjs",
+      "line": 872,
+      "column": 37,
+      "selfWeightMs": 0.113,
+      "inclusiveWeightMs": 0.655,
+      "selfSharePercent": 0.04211703317182259
+    },
+    {
+      "id": 1,
+      "function": "(root)",
+      "url": "",
+      "line": 0,
+      "column": 0,
+      "selfWeightMs": 0,
+      "inclusiveWeightMs": 268.3,
+      "selfSharePercent": 0
+    },
+    {
+      "id": 2,
+      "function": "(anonymous)",
+      "url": "file:///C:/Users/just_/Documents/Codex/2026-09-29/you-are-taking-over-as-lead/work/profile-stacked-s0c-verifier-child.mjs",
+      "line": 0,
+      "column": 0,
+      "selfWeightMs": 0,
+      "inclusiveWeightMs": 257.575,
+      "selfSharePercent": 0
+    },
+    {
+      "id": 3,
+      "function": "post",
+      "url": "file:///C:/Users/just_/Documents/Codex/2026-09-29/you-are-taking-over-as-lead/work/profile-stacked-s0c-verifier-child.mjs",
+      "line": 23,
+      "column": 12,
+      "selfWeightMs": 0,
+      "inclusiveWeightMs": 14.362,
+      "selfSharePercent": 0
+    },
+    {
+      "id": 4,
+      "function": "(anonymous)",
+      "url": "file:///C:/Users/just_/Documents/Codex/2026-09-29/you-are-taking-over-as-lead/work/profile-stacked-s0c-verifier-child.mjs",
+      "line": 23,
+      "column": 48,
+      "selfWeightMs": 0,
+      "inclusiveWeightMs": 14.362,
+      "selfSharePercent": 0
+    },
+    {
+      "id": 6,
+      "function": "verifyStackedRun",
+      "url": "file:///C:/Users/just_/lesters-arcade-wt/200-world-w0/server/verify/stacked.mjs",
+      "line": 62,
+      "column": 39,
+      "selfWeightMs": 0,
+      "inclusiveWeightMs": 243.213,
+      "selfSharePercent": 0
+    },
+    {
+      "id": 7,
+      "function": "decodeStackedEvidence",
+      "url": "file:///C:/Users/just_/lesters-arcade-wt/200-world-w0/server/verify/stacked.mjs",
+      "line": 30,
+      "column": 38,
+      "selfWeightMs": 0,
+      "inclusiveWeightMs": 59.748,
+      "selfSharePercent": 0
+    },
+    {
+      "id": 10,
+      "function": "atob",
+      "url": "node:buffer",
+      "line": 1378,
+      "column": 14,
+      "selfWeightMs": 0,
+      "inclusiveWeightMs": 0.547,
+      "selfSharePercent": 0
+    },
+    {
+      "id": 12,
+      "function": "btoa",
+      "url": "node:buffer",
+      "line": 1364,
+      "column": 14,
+      "selfWeightMs": 0,
+      "inclusiveWeightMs": 0.578,
+      "selfSharePercent": 0
+    },
+    {
+      "id": 24,
+      "function": "createStackedRuntimeInternal",
+      "url": "file:///C:/Users/just_/lesters-arcade-wt/200-world-w0/apps/portal/src/stacked-sim.mjs",
+      "line": 454,
+      "column": 38,
+      "selfWeightMs": 0,
+      "inclusiveWeightMs": 0.542,
+      "selfSharePercent": 0
+    },
+    {
+      "id": 25,
+      "function": "refill",
+      "url": "file:///C:/Users/just_/lesters-arcade-wt/200-world-w0/apps/portal/src/stacked-sim.mjs",
+      "line": 513,
+      "column": 18,
+      "selfWeightMs": 0,
+      "inclusiveWeightMs": 0.542,
+      "selfSharePercent": 0
+    },
+    {
+      "id": 39,
+      "function": "nextBelow",
+      "url": "file:///C:/Users/just_/lesters-arcade-wt/200-world-w0/apps/portal/src/seeded-rng.mjs",
+      "line": 88,
+      "column": 12,
+      "selfWeightMs": 0,
+      "inclusiveWeightMs": 0.21,
+      "selfSharePercent": 0
+    },
+    {
+      "id": 59,
+      "function": "canMove",
+      "url": "file:///C:/Users/just_/lesters-arcade-wt/200-world-w0/apps/portal/src/stacked-sim.mjs",
+      "line": 543,
+      "column": 19,
+      "selfWeightMs": 0,
+      "inclusiveWeightMs": 2.756,
+      "selfSharePercent": 0
+    },
+    {
+      "id": 53,
+      "function": "canMove",
+      "url": "file:///C:/Users/just_/lesters-arcade-wt/200-world-w0/apps/portal/src/stacked-sim.mjs",
+      "line": 543,
+      "column": 19,
+      "selfWeightMs": 0,
+      "inclusiveWeightMs": 1.603,
+      "selfSharePercent": 0
+    },
+    {
+      "id": 32,
+      "function": "canMove",
+      "url": "file:///C:/Users/just_/lesters-arcade-wt/200-world-w0/apps/portal/src/stacked-sim.mjs",
+      "line": 543,
+      "column": 19,
+      "selfWeightMs": 0,
+      "inclusiveWeightMs": 22.837,
+      "selfSharePercent": 0
+    },
+    {
+      "id": 49,
+      "function": "establishNewLowestY",
+      "url": "file:///C:/Users/just_/lesters-arcade-wt/200-world-w0/apps/portal/src/stacked-sim.mjs",
+      "line": 544,
+      "column": 31,
+      "selfWeightMs": 0,
+      "inclusiveWeightMs": 0.533,
+      "selfSharePercent": 0
+    },
+    {
+      "id": 62,
+      "function": "result",
+      "url": "file:///C:/Users/just_/lesters-arcade-wt/200-world-w0/apps/portal/src/stacked-sim.mjs",
+      "line": 745,
+      "column": 16,
+      "selfWeightMs": 0,
+      "inclusiveWeightMs": 0.541,
+      "selfSharePercent": 0
+    },
+    {
+      "id": 63,
+      "function": "buildStackedResultTuple",
+      "url": "file:///C:/Users/just_/lesters-arcade-wt/200-world-w0/apps/portal/src/stacked-sim.mjs",
+      "line": 376,
+      "column": 40,
+      "selfWeightMs": 0,
+      "inclusiveWeightMs": 0.541,
+      "selfSharePercent": 0
+    },
+    {
+      "id": 65,
+      "function": "sha256BytesHex",
+      "url": "file:///C:/Users/just_/lesters-arcade-wt/200-world-w0/apps/portal/src/ranked-identity.mjs",
+      "line": 154,
+      "column": 37,
+      "selfWeightMs": 0,
+      "inclusiveWeightMs": 1.089,
+      "selfSharePercent": 0
+    },
+    {
+      "id": 66,
+      "function": "digest",
+      "url": "node:internal/crypto/webcrypto",
+      "line": 71,
+      "column": 22,
+      "selfWeightMs": 0,
+      "inclusiveWeightMs": 1.089,
+      "selfSharePercent": 0
+    },
+    {
+      "id": 67,
+      "function": "requireBuiltin",
+      "url": "node:internal/bootstrap/realm",
+      "line": 420,
+      "column": 24,
+      "selfWeightMs": 0,
+      "inclusiveWeightMs": 0.549,
+      "selfSharePercent": 0
+    },
+    {
+      "id": 68,
+      "function": "compileForInternalLoader",
+      "url": "node:internal/bootstrap/realm",
+      "line": 383,
+      "column": 27,
+      "selfWeightMs": 0,
+      "inclusiveWeightMs": 0.549,
+      "selfSharePercent": 0
+    },
+    {
+      "id": 70,
+      "function": "asyncDigest",
+      "url": "node:internal/crypto/hash",
+      "line": 203,
+      "column": 27,
+      "selfWeightMs": 0,
+      "inclusiveWeightMs": 0.54,
+      "selfSharePercent": 0
+    },
+    {
+      "id": 71,
+      "function": "jobPromise",
+      "url": "node:internal/crypto/util",
+      "line": 660,
+      "column": 20,
+      "selfWeightMs": 0,
+      "inclusiveWeightMs": 0.54,
+      "selfSharePercent": 0
+    },
+    {
+      "id": 72,
+      "function": "(anonymous)",
+      "url": "node:internal/crypto/hash",
+      "line": 224,
+      "column": 31,
+      "selfWeightMs": 0,
+      "inclusiveWeightMs": 0.54,
+      "selfSharePercent": 0
+    },
+    {
+      "id": 75,
+      "function": "verifyStackedRun",
+      "url": "file:///C:/Users/just_/lesters-arcade-wt/200-world-w0/server/verify/stacked.mjs",
+      "line": 62,
+      "column": 39,
+      "selfWeightMs": 0,
+      "inclusiveWeightMs": 1.613,
+      "selfSharePercent": 0
+    }
+  ]
+}

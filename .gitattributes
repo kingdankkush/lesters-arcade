@@ -55,3 +55,8 @@ apps/portal/assets/audio/sfx/hmh-objective-cues.json -text whitespace=cr-at-eol
 
 # W0b browser witnesses retain the exact measured producer bytes.
 docs/qa/hmh-world-w0b-native-source/*.mjs.txt -text whitespace=cr-at-eol
+
+# Exact source/profiling witnesses are QA data, never runtime imports.
+docs/qa/stacked-s0d-native-source/** -text whitespace=cr-at-eol
+docs/qa/stacked-s0c-profile-source/** -text whitespace=cr-at-eol
+docs/qa/stacked-s0c-profile-20260929.cpuprofile -text

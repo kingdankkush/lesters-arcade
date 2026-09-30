@@ -1,0 +1,51 @@
+// Exactly one reviewed fresh-process CPU profile. No retry, optimizer or batch.
+import {readFileSync,writeFileSync,mkdirSync,existsSync,unlinkSync,rmdirSync} from 'node:fs';
+import {spawn} from 'node:child_process';
+import {createHash,randomUUID} from 'node:crypto';
+import {join,resolve,dirname} from 'node:path';
+import {fileURLToPath} from 'node:url';
+import {performance} from 'node:perf_hooks';
+const work=fileURLToPath(new URL('.',import.meta.url)),dir=join(work,'stacked-s0c-verifier-profile-20260929-01');
+const lock='C:/Users/just_/lesters-arcade-wt/.locks/heavy.lock',token='stacked-s0c-profile-'+randomUUID();
+const inputsPath=join(work,'stacked-s0c-profile-inputs.json'),expectedInputs='b858648e85ad927dba580f24593affc9c88811b6c43c6497d4e78ffdfe096016';
+const sha=value=>createHash('sha256').update(value).digest('hex'),hash=path=>sha(readFileSync(path));
+if(existsSync(dir))throw new Error('Single profile output exists; no retry permitted');
+if(existsSync(lock))throw new Error('Another heavy owner exists; no profile launched');
+if(hash(inputsPath)!==expectedInputs)throw new Error('Reviewed exact closure/fixture manifest changed');
+const inputs=JSON.parse(readFileSync(inputsPath,'utf8'));
+const allSourceHashes={...Object.fromEntries(Object.entries(inputs.closure.files).map(([name,data])=>[name,data.sha256])),...inputs.frozenSources};
+const sourceHashes=()=>{const actual={};for(const[name,expected]of Object.entries(allSourceHashes)){actual[name]=hash(join(inputs.root,name));if(actual[name]!==expected)throw new Error('Bound profile source differs: '+name);}return actual;};
+const fixtureHashes=()=>{const actual={};for(const[name,expected]of Object.entries(inputs.fixtureFiles)){actual[name]=hash(join(inputs.root,name));if(actual[name]!==expected.sha256)throw new Error('Bound fixture differs: '+name);}return actual;};
+const sourceBefore=sourceHashes(),fixtureBefore=fixtureHashes();
+const witnessFiles=['run-stacked-s0c-verifier-profile.mjs','profile-stacked-s0c-verifier-child.mjs','stacked-s0c-profile-closure.mjs','prepare-stacked-s0c-profile.mjs','stacked-s0c-profile-inputs.json','stacked-s0c-profile-plan.md'];
+// Runner self is bound by the independent review's externally recorded hash;
+// its raw before/after bytes are captured without impossible self-hash recursion.
+const expectedWitnesses={'profile-stacked-s0c-verifier-child.mjs':'6605b84d36decdda2caa4320a7de1aa3c157f61b5c4bef4a0559e563629bca42','stacked-s0c-profile-closure.mjs':'74682d3d075e0a167146dd88cbfde5e3854f24a305eae7129b6f121651ececf6','prepare-stacked-s0c-profile.mjs':'c35d826c15e7a5bf5674aaf605380ae3ceab3a4030ed76845288ef990ceb532e','stacked-s0c-profile-inputs.json':expectedInputs,'stacked-s0c-profile-plan.md':'4631d86e3869207818026b7bf54252dd87743a54a3b26562dc81dffcdb4215d7'};
+const witnessBefore=Object.fromEntries(witnessFiles.map(name=>[name,hash(join(work,name))]));
+for(const[name,expected]of Object.entries(expectedWitnesses))if(witnessBefore[name]!==expected)throw new Error('Independently reviewed harness witness differs before launch: '+name);
+mkdirSync(dir);let acquired=false,item=null,phase='lock-acquisition';
+try{
+  mkdirSync(lock);acquired=true;writeFileSync(join(lock,'owner.json'),JSON.stringify({owner:'/root/world_w0_audit',token,purpose:'One source-reviewed fresh S0c full per-game verifier CPU profile with exact old input/VerifiedRun/public tuple; 15-second outer child watchdog; no timing batch, retry or optimization.',createdAt:new Date().toISOString()})+'\n',{flag:'wx'});
+  phase='source-and-input-preservation';
+  for(const[name]of Object.entries(allSourceHashes)){const target=join(dir,'source',name);mkdirSync(dirname(target),{recursive:true});writeFileSync(target,readFileSync(join(inputs.root,name)),{flag:'wx'});}
+  for(const[name]of Object.entries(inputs.fixtureFiles)){const target=join(dir,'input',name);mkdirSync(dirname(target),{recursive:true});writeFileSync(target,readFileSync(join(inputs.root,name)),{flag:'wx'});}
+  mkdirSync(join(dir,'harness'));for(const name of witnessFiles)writeFileSync(join(dir,'harness',name),readFileSync(join(work,name)),{flag:'wx'});
+  const childOut=join(dir,'child');mkdirSync(childOut);
+  phase='single-profile-child';
+  item={name:'one-fresh-profile',startedAt:new Date().toISOString(),args:[join(work,'profile-stacked-s0c-verifier-child.mjs'),'--inputs='+inputsPath,'--out='+childOut,'--owned-lock-token='+token],stdout:'',stderr:'',exitCode:null,signal:null,childError:null,watchdogSeconds:15,watchdogTriggered:false,killRequested:false,killError:null};
+  const begin=performance.now();const child=spawn(process.execPath,item.args,{cwd:work,windowsHide:true,stdio:['ignore','pipe','pipe']});
+  child.stdout.on('data',data=>{item.stdout+=data;process.stdout.write(data);});child.stderr.on('data',data=>{item.stderr+=data;process.stderr.write(data);});
+  const timer=setTimeout(()=>{item.watchdogTriggered=true;item.watchdogAt=new Date().toISOString();try{item.killRequested=child.kill('SIGTERM');}catch(error){item.killError=String(error.stack);}},15_000);
+  try{await new Promise(yes=>{child.once('error',error=>{item.childError=String(error.stack);});child.once('close',(code,signal)=>{item.exitCode=code;item.signal=signal;yes();});});}finally{clearTimeout(timer);}
+  item.finishedAt=new Date().toISOString();item.wholeChildWallMs=performance.now()-begin;
+  writeFileSync(join(dir,'profile-command.json'),JSON.stringify(item,null,2)+'\n',{flag:'wx'});
+  phase='binding-and-outcome';const sourceAfter=sourceHashes(),fixtureAfter=fixtureHashes();
+  const witnessAfter=Object.fromEntries(witnessFiles.map(name=>[name,hash(join(work,name))]));
+  if(JSON.stringify(witnessBefore)!==JSON.stringify(witnessAfter))throw new Error('Measured harness changed during profile');
+  const reportPath=join(childOut,'profile-report.json'),report=existsSync(reportPath)?JSON.parse(readFileSync(reportPath,'utf8')):null;
+  const validProfile=!item.watchdogTriggered&&item.exitCode===0&&item.signal===null&&item.childError===null&&report?.phase==='complete'&&report.profileCalls===1&&report.verifiedRunExact===true&&report.publicTupleExact===true&&report.validationError===null&&report.profileError===null&&report.disconnectError===null&&report.resolverDeregisterError===null&&report.profile?.file==='complete-verifier.cpuprofile'&&report.profile.samples>0&&hash(join(childOut,report.profile.file))===report.profile.sha256;
+  const receipt={schema:'stacked-s0c-one-profile-source-bound-v1',at:new Date().toISOString(),validProfile,profileOnly:true,noPerformanceGateClaim:true,sourceBefore,sourceAfter,fixtureBefore,fixtureAfter,expectedWitnesses,witnessBefore,witnessAfter,command:item,report,timeoutLostData:item.watchdogTriggered?'Killed child may not have emitted a complete report/CPU profile; only existing raw artifacts and stdout/stderr are preserved. Timeout is not acceptance.':null,scope:'One instrumented diagnostic only. No uninstrumented timing batch, largest legal encoding/production CPU/browser/phone/global S0 acceptance, optimization, rules/codec/protocol/version or old corpus change.'};
+  writeFileSync(join(dir,'profile-scope.json'),JSON.stringify(receipt,null,2)+'\n',{flag:'wx'});
+  console.log(JSON.stringify({validProfile,profileOnly:true,noPerformanceGateClaim:true,instrumentedVerifierWallMs:report?.instrumentedVerifierWallMs,wholeChildWallMs:item.wholeChildWallMs,out:dir}));if(!validProfile)process.exitCode=1;
+}catch(error){if(item&&!existsSync(join(dir,'profile-command.json')))writeFileSync(join(dir,'profile-command.json'),JSON.stringify(item,null,2)+'\n',{flag:'wx'});writeFileSync(join(dir,'window-failure.json'),JSON.stringify({at:new Date().toISOString(),phase,error:String(error.stack),noRetry:true},null,2)+'\n',{flag:'wx'});process.stderr.write(String(error.stack)+'\n');process.exitCode=1;}
+finally{if(acquired){const owner=join(lock,'owner.json');if(resolve(lock).replaceAll('\\','/').toLowerCase()!=='c:/users/just_/lesters-arcade-wt/.locks/heavy.lock'||!existsSync(owner)||JSON.parse(readFileSync(owner,'utf8')).token!==token)throw new Error('Owned marker differs; refusing release');unlinkSync(owner);rmdirSync(lock);console.log(JSON.stringify({ownMarkerReleased:true,token}));}}

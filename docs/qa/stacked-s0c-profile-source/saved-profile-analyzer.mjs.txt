@@ -1,0 +1,19 @@
+// Saved-profile arithmetic only. No target module imports or timing execution.
+import {readFileSync,writeFileSync,existsSync} from 'node:fs';
+import {fileURLToPath} from 'node:url';
+import {join} from 'node:path';
+const dir=fileURLToPath(new URL('./stacked-s0c-verifier-profile-20260929-01/',import.meta.url));
+const p=JSON.parse(readFileSync(join(dir,'child/complete-verifier.cpuprofile'),'utf8'));
+const report=JSON.parse(readFileSync(join(dir,'child/profile-report.json'),'utf8'));
+if(p.samples.length!==p.timeDeltas.length)throw new Error('Profile sample/delta completeness mismatch');
+const nodes=new Map(p.nodes.map(n=>[n.id,n])),parents=new Map();
+for(const n of p.nodes)for(const child of n.children??[])parents.set(child,n.id);
+const self=new Map(),inclusive=new Map();let totalUs=0;
+for(let i=0;i<p.samples.length;i++){
+  const id=p.samples[i],dt=p.timeDeltas[i];if(!nodes.has(id)||!Number.isFinite(dt)||dt<0)throw new Error('Invalid saved profile sample');totalUs+=dt;self.set(id,(self.get(id)??0)+dt);
+  const seen=new Set();let cur=id;while(cur!==undefined){if(seen.has(cur))throw new Error('Profile parent cycle');seen.add(cur);inclusive.set(cur,(inclusive.get(cur)??0)+dt);cur=parents.get(cur);}
+}
+const rows=p.nodes.map(n=>({id:n.id,function:n.callFrame.functionName||'(anonymous)',url:n.callFrame.url,line:n.callFrame.lineNumber+1,column:n.callFrame.columnNumber+1,selfWeightMs:(self.get(n.id)??0)/1000,inclusiveWeightMs:(inclusive.get(n.id)??0)/1000,selfSharePercent:(self.get(n.id)??0)*100/totalUs})).sort((a,b)=>b.selfWeightMs-a.selfWeightMs);
+const result={schema:'stacked-s0c-saved-profile-weights-v1',scope:'Saved standard Inspector main-thread samples/deltas only; weighted intervals are approximate diagnosis, not total process CPU, allocation/peak measurement or250ms performance certification. Inclusive rows overlap and must not be summed. Async crypto/worker CPU/scheduling are incompletely attributed. No target execution in this analysis.',samples:p.samples.length,nodes:p.nodes.length,standardProfileDurationMs:(p.endTime-p.startTime)/1000,totalWeightedIntervalsMs:totalUs/1000,instrumentedVerifierWallMs:report.instrumentedVerifierWallMs,topSelf:rows.slice(0,25),topInclusive:[...rows].sort((a,b)=>b.inclusiveWeightMs-a.inclusiveWeightMs).slice(0,20),nativeGcIdleUnattributed:rows.filter(x=>!x.url||x.function.startsWith('(')),allRows:rows};
+const out=join(dir,'saved-profile-weights.json');if(existsSync(out))throw new Error('Saved analysis exists; preserve it');writeFileSync(out,JSON.stringify(result,null,2)+'\n',{flag:'wx'});
+console.log(JSON.stringify({...result,allRows:undefined,topSelf:result.topSelf.slice(0,15),topInclusive:result.topInclusive.slice(0,12)},null,2));

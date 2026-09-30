@@ -1,0 +1,523 @@
+{
+  "schema": "stacked-s0c-preserved-one-main-thread-cpu-profile-v1",
+  "archiveOnly": true,
+  "scope": {
+    "schema": "stacked-s0c-one-profile-source-bound-v1",
+    "at": "2026-09-30T02:04:31.332Z",
+    "validProfile": true,
+    "profileOnly": true,
+    "noPerformanceGateClaim": true,
+    "sourceBefore": {
+      "server/verify/stacked.mjs": "9bcb1aee7ed466e799c83495307c489e7f54201b177c2691ab6d101187418493",
+      "apps/portal/src/stacked-sim.mjs": "5b5fe17c237389bd48834b757166c8afc0b58c801246806275d25fa16ae82114",
+      "apps/portal/src/seeded-rng.mjs": "b6eed9c993e1efd38871c14d50b580ea15133fdcef020e81ffe7051e24b3ebc7",
+      "apps/portal/src/stacked-contracts.mjs": "5ee0d079f2688b02217a60f4695e41944504b0759e87004da6a213e926be9ec6",
+      "apps/portal/src/stacked-evidence-transport.mjs": "059afcbf2801e7d34c946101d41ddd0c6bfc06508743076c57d8704ab9ab2a84",
+      "apps/portal/src/ranked-identity.mjs": "225a1f2c89a2f3cad7d5ef0f7b732ffae0347acd7d6c7a156d7227e60acd8056",
+      "apps/portal/src/session-integrity.mjs": "26785093fba615224ddfcc85ec6e3094c6e2e8a5b48f932da34bcbc427136157",
+      "apps/portal/src/session-seed.mjs": "4602de3e82949c72b635666225c877beb71b6c02e023ab735e91877c181f2c80",
+      "server/verify/verified-run.mjs": "1e5c0079536ab3a94ba867b205f7bde11a0bb0d7e99d7b0ec2963a51dd71bfd8",
+      "apps/portal/src/achievements/stats.mjs": "704f8ffefec2f9572243f98e85e71a67f0c4afc64be4fc9225da2dbd4baa13d6",
+      "sdk/hmh-run-summary-schema-v7.mjs": "81fd2c2fc109bd0856ba6acff19f1c379f5835b72365e57abf6a762cdc61ed98",
+      "sdk/hmh-run-summary-schema.mjs": "c5428b534378cd85fd71662409657bea652cf8737755513e5e573f4a0dcfa47a",
+      "apps/portal/src/chikun-ground-course.mjs": "a29626fe35d1d92979c5950ef0cd17efdfe2340ba98c5a3a7a772403c32fb7ca",
+      "apps/portal/src/chikun-course-regions.mjs": "0d43a3b3f8a2bf06db2c8e381290376696a9270e3f5d0d101d707720faf6941a",
+      "apps/portal/src/achievements/hmh.mjs": "044a813a78829bf0c27eff8a94cefaf94dd7af3a1802e13624b79c6c79916751",
+      "apps/portal/src/achievements/entry.mjs": "a4e55551ae0b7aca76bda548659155ab22294e049fdcd02bf9462f224ce8b98e",
+      "apps/stacked/src/dev/soak-pilot.mjs": "aba5c692371256a34e9eefbe63f3e4772b438829712aa8030cd0b14a88434156"
+    },
+    "sourceAfter": {
+      "server/verify/stacked.mjs": "9bcb1aee7ed466e799c83495307c489e7f54201b177c2691ab6d101187418493",
+      "apps/portal/src/stacked-sim.mjs": "5b5fe17c237389bd48834b757166c8afc0b58c801246806275d25fa16ae82114",
+      "apps/portal/src/seeded-rng.mjs": "b6eed9c993e1efd38871c14d50b580ea15133fdcef020e81ffe7051e24b3ebc7",
+      "apps/portal/src/stacked-contracts.mjs": "5ee0d079f2688b02217a60f4695e41944504b0759e87004da6a213e926be9ec6",
+      "apps/portal/src/stacked-evidence-transport.mjs": "059afcbf2801e7d34c946101d41ddd0c6bfc06508743076c57d8704ab9ab2a84",
+      "apps/portal/src/ranked-identity.mjs": "225a1f2c89a2f3cad7d5ef0f7b732ffae0347acd7d6c7a156d7227e60acd8056",
+      "apps/portal/src/session-integrity.mjs": "26785093fba615224ddfcc85ec6e3094c6e2e8a5b48f932da34bcbc427136157",
+      "apps/portal/src/session-seed.mjs": "4602de3e82949c72b635666225c877beb71b6c02e023ab735e91877c181f2c80",
+      "server/verify/verified-run.mjs": "1e5c0079536ab3a94ba867b205f7bde11a0bb0d7e99d7b0ec2963a51dd71bfd8",
+      "apps/portal/src/achievements/stats.mjs": "704f8ffefec2f9572243f98e85e71a67f0c4afc64be4fc9225da2dbd4baa13d6",
+      "sdk/hmh-run-summary-schema-v7.mjs": "81fd2c2fc109bd0856ba6acff19f1c379f5835b72365e57abf6a762cdc61ed98",
+      "sdk/hmh-run-summary-schema.mjs": "c5428b534378cd85fd71662409657bea652cf8737755513e5e573f4a0dcfa47a",
+      "apps/portal/src/chikun-ground-course.mjs": "a29626fe35d1d92979c5950ef0cd17efdfe2340ba98c5a3a7a772403c32fb7ca",
+      "apps/portal/src/chikun-course-regions.mjs": "0d43a3b3f8a2bf06db2c8e381290376696a9270e3f5d0d101d707720faf6941a",
+      "apps/portal/src/achievements/hmh.mjs": "044a813a78829bf0c27eff8a94cefaf94dd7af3a1802e13624b79c6c79916751",
+      "apps/portal/src/achievements/entry.mjs": "a4e55551ae0b7aca76bda548659155ab22294e049fdcd02bf9462f224ce8b98e",
+      "apps/stacked/src/dev/soak-pilot.mjs": "aba5c692371256a34e9eefbe63f3e4772b438829712aa8030cd0b14a88434156"
+    },
+    "fixtureBefore": {
+      "tests/fixtures/stacked-maximal-priority-rotation-run.json": "5b6091ba5ab57a5a190befa914f570c3bf5ea1711cf3dedf2d0ea898f644a1c5",
+      "tests/fixtures/stacked-maximal-priority-rotation-run.sic1.gz": "7ca81104a46f33f6003eb56f58112933eaa50cd9dcdfb33329f472d851b79bef"
+    },
+    "fixtureAfter": {
+      "tests/fixtures/stacked-maximal-priority-rotation-run.json": "5b6091ba5ab57a5a190befa914f570c3bf5ea1711cf3dedf2d0ea898f644a1c5",
+      "tests/fixtures/stacked-maximal-priority-rotation-run.sic1.gz": "7ca81104a46f33f6003eb56f58112933eaa50cd9dcdfb33329f472d851b79bef"
+    },
+    "expectedWitnesses": {
+      "profile-stacked-s0c-verifier-child.mjs": "6605b84d36decdda2caa4320a7de1aa3c157f61b5c4bef4a0559e563629bca42",
+      "stacked-s0c-profile-closure.mjs": "74682d3d075e0a167146dd88cbfde5e3854f24a305eae7129b6f121651ececf6",
+      "prepare-stacked-s0c-profile.mjs": "c35d826c15e7a5bf5674aaf605380ae3ceab3a4030ed76845288ef990ceb532e",
+      "stacked-s0c-profile-inputs.json": "b858648e85ad927dba580f24593affc9c88811b6c43c6497d4e78ffdfe096016",
+      "stacked-s0c-profile-plan.md": "4631d86e3869207818026b7bf54252dd87743a54a3b26562dc81dffcdb4215d7"
+    },
+    "witnessBefore": {
+      "run-stacked-s0c-verifier-profile.mjs": "87731ef22a27dd80c2ee8d5b3e2930c89746fdce931d9291981132b77868b07c",
+      "profile-stacked-s0c-verifier-child.mjs": "6605b84d36decdda2caa4320a7de1aa3c157f61b5c4bef4a0559e563629bca42",
+      "stacked-s0c-profile-closure.mjs": "74682d3d075e0a167146dd88cbfde5e3854f24a305eae7129b6f121651ececf6",
+      "prepare-stacked-s0c-profile.mjs": "c35d826c15e7a5bf5674aaf605380ae3ceab3a4030ed76845288ef990ceb532e",
+      "stacked-s0c-profile-inputs.json": "b858648e85ad927dba580f24593affc9c88811b6c43c6497d4e78ffdfe096016",
+      "stacked-s0c-profile-plan.md": "4631d86e3869207818026b7bf54252dd87743a54a3b26562dc81dffcdb4215d7"
+    },
+    "witnessAfter": {
+      "run-stacked-s0c-verifier-profile.mjs": "87731ef22a27dd80c2ee8d5b3e2930c89746fdce931d9291981132b77868b07c",
+      "profile-stacked-s0c-verifier-child.mjs": "6605b84d36decdda2caa4320a7de1aa3c157f61b5c4bef4a0559e563629bca42",
+      "stacked-s0c-profile-closure.mjs": "74682d3d075e0a167146dd88cbfde5e3854f24a305eae7129b6f121651ececf6",
+      "prepare-stacked-s0c-profile.mjs": "c35d826c15e7a5bf5674aaf605380ae3ceab3a4030ed76845288ef990ceb532e",
+      "stacked-s0c-profile-inputs.json": "b858648e85ad927dba580f24593affc9c88811b6c43c6497d4e78ffdfe096016",
+      "stacked-s0c-profile-plan.md": "4631d86e3869207818026b7bf54252dd87743a54a3b26562dc81dffcdb4215d7"
+    },
+    "command": {
+      "name": "one-fresh-profile",
+      "startedAt": "2026-09-30T02:04:30.755Z",
+      "args": [
+        "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\profile-stacked-s0c-verifier-child.mjs",
+        "--inputs=C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-s0c-profile-inputs.json",
+        "--out=C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-s0c-verifier-profile-20260929-01\\child",
+        "--owned-lock-token=stacked-s0c-profile-20d48e71-f5f1-4b88-bdd4-7547aa762f92"
+      ],
+      "stdout": "{\"phase\":\"complete\",\"profileCalls\":1,\"instrumentedVerifierWallMs\":254.0865,\"verifiedRunExact\":true,\"publicTupleExact\":true,\"validationError\":null,\"out\":\"C:\\\\Users\\\\just_\\\\Documents\\\\Codex\\\\2026-09-29\\\\you-are-taking-over-as-lead\\\\work\\\\stacked-s0c-verifier-profile-20260929-01\\\\child\"}\n",
+      "stderr": "",
+      "exitCode": 0,
+      "signal": null,
+      "childError": null,
+      "watchdogSeconds": 15,
+      "watchdogTriggered": false,
+      "killRequested": false,
+      "killError": null,
+      "finishedAt": "2026-09-30T02:04:31.327Z",
+      "wholeChildWallMs": 572.015
+    },
+    "report": {
+      "schema": "stacked-s0c-one-cpu-profile-diagnostic-v1",
+      "at": "2026-09-30T02:04:30.836Z",
+      "node": "v24.17.0",
+      "phase": "complete",
+      "sourceBefore": {
+        "server/verify/stacked.mjs": "9bcb1aee7ed466e799c83495307c489e7f54201b177c2691ab6d101187418493",
+        "apps/portal/src/stacked-sim.mjs": "5b5fe17c237389bd48834b757166c8afc0b58c801246806275d25fa16ae82114",
+        "apps/portal/src/seeded-rng.mjs": "b6eed9c993e1efd38871c14d50b580ea15133fdcef020e81ffe7051e24b3ebc7",
+        "apps/portal/src/stacked-contracts.mjs": "5ee0d079f2688b02217a60f4695e41944504b0759e87004da6a213e926be9ec6",
+        "apps/portal/src/stacked-evidence-transport.mjs": "059afcbf2801e7d34c946101d41ddd0c6bfc06508743076c57d8704ab9ab2a84",
+        "apps/portal/src/ranked-identity.mjs": "225a1f2c89a2f3cad7d5ef0f7b732ffae0347acd7d6c7a156d7227e60acd8056",
+        "apps/portal/src/session-integrity.mjs": "26785093fba615224ddfcc85ec6e3094c6e2e8a5b48f932da34bcbc427136157",
+        "apps/portal/src/session-seed.mjs": "4602de3e82949c72b635666225c877beb71b6c02e023ab735e91877c181f2c80",
+        "server/verify/verified-run.mjs": "1e5c0079536ab3a94ba867b205f7bde11a0bb0d7e99d7b0ec2963a51dd71bfd8",
+        "apps/portal/src/achievements/stats.mjs": "704f8ffefec2f9572243f98e85e71a67f0c4afc64be4fc9225da2dbd4baa13d6",
+        "sdk/hmh-run-summary-schema-v7.mjs": "81fd2c2fc109bd0856ba6acff19f1c379f5835b72365e57abf6a762cdc61ed98",
+        "sdk/hmh-run-summary-schema.mjs": "c5428b534378cd85fd71662409657bea652cf8737755513e5e573f4a0dcfa47a",
+        "apps/portal/src/chikun-ground-course.mjs": "a29626fe35d1d92979c5950ef0cd17efdfe2340ba98c5a3a7a772403c32fb7ca",
+        "apps/portal/src/chikun-course-regions.mjs": "0d43a3b3f8a2bf06db2c8e381290376696a9270e3f5d0d101d707720faf6941a",
+        "apps/portal/src/achievements/hmh.mjs": "044a813a78829bf0c27eff8a94cefaf94dd7af3a1802e13624b79c6c79916751",
+        "apps/portal/src/achievements/entry.mjs": "a4e55551ae0b7aca76bda548659155ab22294e049fdcd02bf9462f224ce8b98e",
+        "apps/stacked/src/dev/soak-pilot.mjs": "aba5c692371256a34e9eefbe63f3e4772b438829712aa8030cd0b14a88434156"
+      },
+      "sampleIntervalUs": 100,
+      "profileScope": "One first-use complete old per-game verifyStackedRun call; main-thread CPU sampling includes harness boundary overhead. Instrumented diagnosis only, not a verifier timing/headroom pass. Imports/disk/gzip/assertions and post-profile public replay are outside the profile.",
+      "exclusions": [
+        "largest legal encoding bound",
+        "production CPU",
+        "cold import headroom",
+        "worker/browser/physical-phone acceptance",
+        "auth/ticket/API/network/entry/settlement",
+        "peak residency/allocation-site measurement",
+        "uninstrumented 250ms gate"
+      ],
+      "noWarmup": true,
+      "noRetry": true,
+      "profileCalls": 1,
+      "verifiedRunExact": true,
+      "publicTupleExact": true,
+      "profileError": null,
+      "validationError": null,
+      "disconnectError": null,
+      "resolverDeregisterError": null,
+      "cpuScope": "Inspector samples only the main JS thread; awaited crypto/worker CPU and scheduling wait are not fully attributed. Complete instrumented verifier wall includes awaited latency. CPU sample self/inclusive weights are not total process CPU or allocation-site measurements. The separate process.cpuUsage delta is aggregate process CPU with profiler overhead.",
+      "input": {
+        "rawBytes": 757272,
+        "rawSha256": "9ae11c4d47455bf92aed1424e9cd730ece503cf3f1f5fa2e00a18f9affb95ca4",
+        "gzipSha256": "7ca81104a46f33f6003eb56f58112933eaa50cd9dcdfb33329f472d851b79bef",
+        "identity": {
+          "version": "lesters-canonical-session-v1",
+          "sessionId": "game-session-11111111-1111-4111-8111-111111111111",
+          "chainId": 4441,
+          "scoreRegistryAddress": "0xc5c5949a02fac9a4115df182672c0f8ceb0eaf55",
+          "wallet": "0x70997970c51812dc3a010c7d01b50e0d17dc79c8",
+          "gameId": "stacked",
+          "seasonId": "stacked-season-preview-1",
+          "buildHash": "site-1.7.0:game-1.7.0:cabinet-0.2.0",
+          "seed": 3978027289,
+          "nonce": "11111111-1111-4111-8111-111111111111",
+          "sessionKey": "0x854f699d003ac1a718d6d4e44845b98e0eb189f685fd40b14a0316ec5221c732"
+        },
+        "replayOptions": {
+          "expectedSeed": 3978027289,
+          "maxTicks": 432000,
+          "config": {
+            "startLevel": 1,
+            "buildHash": "site-1.7.0:game-1.7.0:cabinet-0.2.0",
+            "seasonId": "stacked-season-preview-1"
+          }
+        }
+      },
+      "memoryBefore": {
+        "rss": 61693952,
+        "heapTotal": 12488704,
+        "heapUsed": 8385328,
+        "external": 3519538,
+        "arrayBuffers": 1090559
+      },
+      "cpuBefore": {
+        "user": 15000,
+        "system": 31000
+      },
+      "instrumentedVerifierWallMs": 254.0865,
+      "cpuDelta": {
+        "user": 250000,
+        "system": 125000
+      },
+      "memoryAfter": {
+        "rss": 110333952,
+        "heapTotal": 50634752,
+        "heapUsed": 27545096,
+        "external": 8036837,
+        "arrayBuffers": 5583109
+      },
+      "memoryDelta": {
+        "rss": 48640000,
+        "heapTotal": 38146048,
+        "heapUsed": 19159768,
+        "external": 4517299,
+        "arrayBuffers": 4492550
+      },
+      "profile": {
+        "file": "complete-verifier.cpuprofile",
+        "sha256": "49d57fcf836b0919f7cef39cabb552b6cbdfb6ae0638207da5e4015ff30ffaef",
+        "nodes": 79,
+        "samples": 479,
+        "startTime": 358907513603,
+        "endTime": 358907782027,
+        "standardProfilePreserved": true
+      },
+      "memoryScope": "Aggregate before/after process observations, with profiler overhead; not peak, resident lifetime or allocation-site values; no forced GC. CPU delta includes profiler start/stop overhead beyond the target wall.",
+      "verifiedRun": {
+        "ok": true,
+        "gameId": "stacked",
+        "sessionId32": "0x854f699d003ac1a718d6d4e44845b98e0eb189f685fd40b14a0316ec5221c732",
+        "sessionHandle": "game-session-11111111-1111-4111-8111-111111111111",
+        "wallet": "0x70997970c51812dc3a010c7d01b50e0d17dc79c8",
+        "seasonId": "stacked-season-preview-1",
+        "runtimeId": "stacked:stacked-result-v1",
+        "buildHash": "site-1.7.0:game-1.7.0:cabinet-0.2.0",
+        "seed": 3978027289,
+        "score": 96604870,
+        "contract": {
+          "kills": 23989,
+          "maxCombo": 6,
+          "survivalSeconds": 7200,
+          "bossId": null
+        },
+        "stats": {
+          "score": 96604870,
+          "lines": 23989,
+          "level": 30,
+          "quadClears": 66,
+          "spins": 0,
+          "perfectClears": 6,
+          "maxCombo": 6,
+          "maxBackToBack": 1,
+          "garbageRowsReceived": 3148,
+          "garbageRowsCleared": 3146,
+          "pieces": 52900,
+          "holdsUsed": 0,
+          "ticks": 432000,
+          "survivalSeconds": 7200,
+          "zone": 5,
+          "terminalReason": "tick-ceiling",
+          "boardHash": "0x6c3f0fc121eb6504f9cd00f47bf69146f6428b0e7d52a801d97fc7ac3f547342"
+        },
+        "evidence": {
+          "encoding": "stacked-sic1+base64",
+          "bytes": 1009696,
+          "digest": "0x9ae11c4d47455bf92aed1424e9cd730ece503cf3f1f5fa2e00a18f9affb95ca4"
+        },
+        "envelopeHash": "0x79cf6cc5fa51cca7d44a42ccbe66c5dbbcce2990a3baa122cebc4aeddcf7f2a7",
+        "identity": {
+          "version": "lesters-canonical-session-v1",
+          "sessionId": "game-session-11111111-1111-4111-8111-111111111111",
+          "chainId": 4441,
+          "scoreRegistryAddress": "0xc5c5949a02fac9a4115df182672c0f8ceb0eaf55",
+          "wallet": "0x70997970c51812dc3a010c7d01b50e0d17dc79c8",
+          "gameId": "stacked",
+          "seasonId": "stacked-season-preview-1",
+          "buildHash": "site-1.7.0:game-1.7.0:cabinet-0.2.0",
+          "seed": 3978027289,
+          "nonce": "11111111-1111-4111-8111-111111111111",
+          "sessionKey": "0x854f699d003ac1a718d6d4e44845b98e0eb189f685fd40b14a0316ec5221c732"
+        },
+        "plausibility": null,
+        "verifiedAt": "2026-09-21T14:14:20.000Z"
+      },
+      "evidenceText": {
+        "bytes": 1009696,
+        "sha256": "5f466be52f1fabaf58570c4061beb4c27eb7bd0353c67781b3fc06735fee22d8",
+        "exact": true
+      },
+      "publicTuple": {
+        "v": "stacked-result-v1",
+        "gameId": "stacked",
+        "seed": 3978027289,
+        "buildHash": "site-1.7.0:game-1.7.0:cabinet-0.2.0",
+        "seasonId": "stacked-season-preview-1",
+        "ticks": 432000,
+        "pieces": 52900,
+        "lines": 23989,
+        "level": 30,
+        "score": 96604870,
+        "quadClears": 66,
+        "spins": 0,
+        "perfectClears": 6,
+        "maxCombo": 6,
+        "maxBackToBack": 1,
+        "garbageRowsReceived": 3148,
+        "garbageGroups": 3271,
+        "garbageRowsCleared": 3146,
+        "holdsUsed": 0,
+        "bagRefills": 7559,
+        "bagDraws": 45354,
+        "garbageDraws": 4614,
+        "transitionCount": 432000,
+        "boardHash": "0x6c3f0fc121eb6504f9cd00f47bf69146f6428b0e7d52a801d97fc7ac3f547342",
+        "terminalReason": "tick-ceiling"
+      },
+      "actualResolvedFiles": [
+        "apps/portal/src/achievements/entry.mjs",
+        "apps/portal/src/achievements/hmh.mjs",
+        "apps/portal/src/achievements/stats.mjs",
+        "apps/portal/src/chikun-course-regions.mjs",
+        "apps/portal/src/chikun-ground-course.mjs",
+        "apps/portal/src/ranked-identity.mjs",
+        "apps/portal/src/seeded-rng.mjs",
+        "apps/portal/src/session-integrity.mjs",
+        "apps/portal/src/session-seed.mjs",
+        "apps/portal/src/stacked-contracts.mjs",
+        "apps/portal/src/stacked-evidence-transport.mjs",
+        "apps/portal/src/stacked-sim.mjs",
+        "sdk/hmh-run-summary-schema-v7.mjs",
+        "sdk/hmh-run-summary-schema.mjs",
+        "server/verify/stacked.mjs",
+        "server/verify/verified-run.mjs"
+      ],
+      "actualResolvedBuiltins": [],
+      "sourceAfter": {
+        "server/verify/stacked.mjs": "9bcb1aee7ed466e799c83495307c489e7f54201b177c2691ab6d101187418493",
+        "apps/portal/src/stacked-sim.mjs": "5b5fe17c237389bd48834b757166c8afc0b58c801246806275d25fa16ae82114",
+        "apps/portal/src/seeded-rng.mjs": "b6eed9c993e1efd38871c14d50b580ea15133fdcef020e81ffe7051e24b3ebc7",
+        "apps/portal/src/stacked-contracts.mjs": "5ee0d079f2688b02217a60f4695e41944504b0759e87004da6a213e926be9ec6",
+        "apps/portal/src/stacked-evidence-transport.mjs": "059afcbf2801e7d34c946101d41ddd0c6bfc06508743076c57d8704ab9ab2a84",
+        "apps/portal/src/ranked-identity.mjs": "225a1f2c89a2f3cad7d5ef0f7b732ffae0347acd7d6c7a156d7227e60acd8056",
+        "apps/portal/src/session-integrity.mjs": "26785093fba615224ddfcc85ec6e3094c6e2e8a5b48f932da34bcbc427136157",
+        "apps/portal/src/session-seed.mjs": "4602de3e82949c72b635666225c877beb71b6c02e023ab735e91877c181f2c80",
+        "server/verify/verified-run.mjs": "1e5c0079536ab3a94ba867b205f7bde11a0bb0d7e99d7b0ec2963a51dd71bfd8",
+        "apps/portal/src/achievements/stats.mjs": "704f8ffefec2f9572243f98e85e71a67f0c4afc64be4fc9225da2dbd4baa13d6",
+        "sdk/hmh-run-summary-schema-v7.mjs": "81fd2c2fc109bd0856ba6acff19f1c379f5835b72365e57abf6a762cdc61ed98",
+        "sdk/hmh-run-summary-schema.mjs": "c5428b534378cd85fd71662409657bea652cf8737755513e5e573f4a0dcfa47a",
+        "apps/portal/src/chikun-ground-course.mjs": "a29626fe35d1d92979c5950ef0cd17efdfe2340ba98c5a3a7a772403c32fb7ca",
+        "apps/portal/src/chikun-course-regions.mjs": "0d43a3b3f8a2bf06db2c8e381290376696a9270e3f5d0d101d707720faf6941a",
+        "apps/portal/src/achievements/hmh.mjs": "044a813a78829bf0c27eff8a94cefaf94dd7af3a1802e13624b79c6c79916751",
+        "apps/portal/src/achievements/entry.mjs": "a4e55551ae0b7aca76bda548659155ab22294e049fdcd02bf9462f224ce8b98e",
+        "apps/stacked/src/dev/soak-pilot.mjs": "aba5c692371256a34e9eefbe63f3e4772b438829712aa8030cd0b14a88434156"
+      },
+      "finishedAt": "2026-09-30T02:04:31.313Z"
+    },
+    "timeoutLostData": null,
+    "scope": "One instrumented diagnostic only. No uninstrumented timing batch, largest legal encoding/production CPU/browser/phone/global S0 acceptance, optimization, rules/codec/protocol/version or old corpus change."
+  },
+  "profileCopy": {
+    "file": "docs/qa/stacked-s0c-profile-20260929.cpuprofile",
+    "bytes": 23397,
+    "sha256": "49d57fcf836b0919f7cef39cabb552b6cbdfb6ae0638207da5e4015ff30ffaef"
+  },
+  "sourceCopies": [
+    {
+      "file": "docs/qa/stacked-s0c-profile-source/target/apps/portal/src/achievements/entry.mjs.txt",
+      "bytes": 5402,
+      "sha256": "a4e55551ae0b7aca76bda548659155ab22294e049fdcd02bf9462f224ce8b98e"
+    },
+    {
+      "file": "docs/qa/stacked-s0c-profile-source/target/apps/portal/src/achievements/hmh.mjs.txt",
+      "bytes": 13562,
+      "sha256": "044a813a78829bf0c27eff8a94cefaf94dd7af3a1802e13624b79c6c79916751"
+    },
+    {
+      "file": "docs/qa/stacked-s0c-profile-source/target/apps/portal/src/achievements/stats.mjs.txt",
+      "bytes": 11373,
+      "sha256": "704f8ffefec2f9572243f98e85e71a67f0c4afc64be4fc9225da2dbd4baa13d6"
+    },
+    {
+      "file": "docs/qa/stacked-s0c-profile-source/target/apps/portal/src/chikun-course-regions.mjs.txt",
+      "bytes": 8367,
+      "sha256": "0d43a3b3f8a2bf06db2c8e381290376696a9270e3f5d0d101d707720faf6941a"
+    },
+    {
+      "file": "docs/qa/stacked-s0c-profile-source/target/apps/portal/src/chikun-ground-course.mjs.txt",
+      "bytes": 9192,
+      "sha256": "a29626fe35d1d92979c5950ef0cd17efdfe2340ba98c5a3a7a772403c32fb7ca"
+    },
+    {
+      "file": "docs/qa/stacked-s0c-profile-source/target/apps/portal/src/ranked-identity.mjs.txt",
+      "bytes": 12452,
+      "sha256": "225a1f2c89a2f3cad7d5ef0f7b732ffae0347acd7d6c7a156d7227e60acd8056"
+    },
+    {
+      "file": "docs/qa/stacked-s0c-profile-source/target/apps/portal/src/seeded-rng.mjs.txt",
+      "bytes": 5300,
+      "sha256": "b6eed9c993e1efd38871c14d50b580ea15133fdcef020e81ffe7051e24b3ebc7"
+    },
+    {
+      "file": "docs/qa/stacked-s0c-profile-source/target/apps/portal/src/session-integrity.mjs.txt",
+      "bytes": 5794,
+      "sha256": "26785093fba615224ddfcc85ec6e3094c6e2e8a5b48f932da34bcbc427136157"
+    },
+    {
+      "file": "docs/qa/stacked-s0c-profile-source/target/apps/portal/src/session-seed.mjs.txt",
+      "bytes": 2516,
+      "sha256": "4602de3e82949c72b635666225c877beb71b6c02e023ab735e91877c181f2c80"
+    },
+    {
+      "file": "docs/qa/stacked-s0c-profile-source/target/apps/portal/src/stacked-contracts.mjs.txt",
+      "bytes": 6193,
+      "sha256": "5ee0d079f2688b02217a60f4695e41944504b0759e87004da6a213e926be9ec6"
+    },
+    {
+      "file": "docs/qa/stacked-s0c-profile-source/target/apps/portal/src/stacked-evidence-transport.mjs.txt",
+      "bytes": 6645,
+      "sha256": "059afcbf2801e7d34c946101d41ddd0c6bfc06508743076c57d8704ab9ab2a84"
+    },
+    {
+      "file": "docs/qa/stacked-s0c-profile-source/target/apps/portal/src/stacked-sim.mjs.txt",
+      "bytes": 52630,
+      "sha256": "5b5fe17c237389bd48834b757166c8afc0b58c801246806275d25fa16ae82114"
+    },
+    {
+      "file": "docs/qa/stacked-s0c-profile-source/target/apps/stacked/src/dev/soak-pilot.mjs.txt",
+      "bytes": 15141,
+      "sha256": "aba5c692371256a34e9eefbe63f3e4772b438829712aa8030cd0b14a88434156"
+    },
+    {
+      "file": "docs/qa/stacked-s0c-profile-source/target/sdk/hmh-run-summary-schema-v7.mjs.txt",
+      "bytes": 16461,
+      "sha256": "81fd2c2fc109bd0856ba6acff19f1c379f5835b72365e57abf6a762cdc61ed98"
+    },
+    {
+      "file": "docs/qa/stacked-s0c-profile-source/target/sdk/hmh-run-summary-schema.mjs.txt",
+      "bytes": 17539,
+      "sha256": "c5428b534378cd85fd71662409657bea652cf8737755513e5e573f4a0dcfa47a"
+    },
+    {
+      "file": "docs/qa/stacked-s0c-profile-source/target/server/verify/stacked.mjs.txt",
+      "bytes": 4159,
+      "sha256": "9bcb1aee7ed466e799c83495307c489e7f54201b177c2691ab6d101187418493"
+    },
+    {
+      "file": "docs/qa/stacked-s0c-profile-source/target/server/verify/verified-run.mjs.txt",
+      "bytes": 5676,
+      "sha256": "1e5c0079536ab3a94ba867b205f7bde11a0bb0d7e99d7b0ec2963a51dd71bfd8"
+    }
+  ],
+  "harnessCopies": [
+    {
+      "file": "docs/qa/stacked-s0c-profile-source/harness/prepare-stacked-s0c-profile.mjs.txt",
+      "bytes": 2179,
+      "sha256": "c35d826c15e7a5bf5674aaf605380ae3ceab3a4030ed76845288ef990ceb532e"
+    },
+    {
+      "file": "docs/qa/stacked-s0c-profile-source/harness/profile-stacked-s0c-verifier-child.mjs.txt",
+      "bytes": 8799,
+      "sha256": "6605b84d36decdda2caa4320a7de1aa3c157f61b5c4bef4a0559e563629bca42"
+    },
+    {
+      "file": "docs/qa/stacked-s0c-profile-source/harness/run-stacked-s0c-verifier-profile.mjs.txt",
+      "bytes": 8196,
+      "sha256": "87731ef22a27dd80c2ee8d5b3e2930c89746fdce931d9291981132b77868b07c"
+    },
+    {
+      "file": "docs/qa/stacked-s0c-profile-source/harness/stacked-s0c-profile-closure.mjs.txt",
+      "bytes": 2444,
+      "sha256": "74682d3d075e0a167146dd88cbfde5e3854f24a305eae7129b6f121651ececf6"
+    },
+    {
+      "file": "docs/qa/stacked-s0c-profile-source/harness/stacked-s0c-profile-inputs.json.txt",
+      "bytes": 8459,
+      "sha256": "b858648e85ad927dba580f24593affc9c88811b6c43c6497d4e78ffdfe096016"
+    },
+    {
+      "file": "docs/qa/stacked-s0c-profile-source/harness/stacked-s0c-profile-plan.md.txt",
+      "bytes": 6493,
+      "sha256": "4631d86e3869207818026b7bf54252dd87743a54a3b26562dc81dffcdb4215d7"
+    }
+  ],
+  "analyzerCopy": {
+    "file": "docs/qa/stacked-s0c-profile-source/saved-profile-analyzer.mjs.txt",
+    "bytes": 2712,
+    "sha256": "d5c992649c67223dbbf9ec669fdc6a86231a1483249dbf65b388e19b43dc7a6e"
+  },
+  "weightsCopy": {
+    "file": "docs/qa/stacked-s0c-profile-weights-20260929.json",
+    "bytes": 40618,
+    "sha256": "d66f0da03fbadfa63823d93c2502fccb675e7b80a813ed75e3b9a924a33f7c4e"
+  },
+  "independentSourceReview": {
+    "schema": "stacked-s0c-profile-bounded-independent-source-review/v1",
+    "verdict": "PASS for one instrumented diagnostic source boundary",
+    "runnerSha256": "87731ef22a27dd80c2ee8d5b3e2930c89746fdce931d9291981132b77868b07c",
+    "childSha256": "6605b84d36decdda2caa4320a7de1aa3c157f61b5c4bef4a0559e563629bca42",
+    "closureSha256": "74682d3d075e0a167146dd88cbfde5e3854f24a305eae7129b6f121651ececf6",
+    "preparerSha256": "c35d826c15e7a5bf5674aaf605380ae3ceab3a4030ed76845288ef990ceb532e",
+    "inputsSha256": "b858648e85ad927dba580f24593affc9c88811b6c43c6497d4e78ffdfe096016",
+    "planSha256": "4631d86e3869207818026b7bf54252dd87743a54a3b26562dc81dffcdb4215d7",
+    "reviewed": [
+      "Exact source/input/child hashes reject prelaunch drift and preserve before/after raw bytes",
+      "One fresh process and one Profiler.start, no public replay warmup, retry or timing batch",
+      "Full old per-game verifier interval, exact VerifiedRun/evidence and post-profile public terminal tuple",
+      "Exact literal ESM graph and actual resolver guards, frozen source bytes",
+      "15-second outer child watchdog, error recording without early lock release, close-only completion",
+      "Explicit cleanup errors reject valid-profile classification",
+      "Own atomic marker and token/path-safe release after child close"
+    ],
+    "scope": "Read-only source and hash review. No game imports, decoder, replay, profiler, timing or browser ran in this review. Runner self is externally bound by this exact recorded hash; executing agent must check it before launch.",
+    "caveats": [
+      "Inspector main-thread samples cannot fully attribute awaited crypto/worker CPU or scheduling",
+      "Instrumented wall/samples and aggregate process CPU/memory deltas are not a 250ms pass, allocation-site or peak-residency measurement",
+      "Maximum legal encoding, production CPU, cold-import headroom, worker/browser/phone and global S0 acceptance stay open",
+      "No optimizer, gameplay, codec/protocol/version change is approved by this review"
+    ]
+  },
+  "preparationFailure": {
+    "phase": "AST/source-only manifest preparation before game import or profiling",
+    "errorCode": "ERR_UNSUPPORTED_ESM_URL_SCHEME",
+    "cause": "Windows C:/ absolute ESM import used without file:/// for Acorn; corrected to file:/// before source manifest preparation completed.",
+    "evidenceScope": "Summary of the observed tool diagnostic; the original failing helper/output was not archived as a raw file. No game or profiler retry occurred."
+  },
+  "reviewRepairHistory": [
+    "Before launch, reviewer required expected reviewed harness hashes to be pinned, not merely recorded; corrected and reviewed before the only profile.",
+    "Before launch, reviewer required inspector disconnect/resolver cleanup errors to reject validProfile; corrected and reviewed before the only profile."
+  ],
+  "exclusions": [
+    "Instrumented wall is not the 250ms uninstrumented gate",
+    "Inspector main JS thread, not total process CPU/all awaited worker or crypto work",
+    "Sample weights are not allocation-site or exact savings measurements",
+    "Aggregate memory deltas are not peak residency",
+    "No optimizer, timing batch or retry",
+    "No largest accepted encoding/production/phone/browser/worker/global S0 acceptance"
+  ]
+}

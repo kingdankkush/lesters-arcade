@@ -1,0 +1,63 @@
+// One authorized distinct real-control attempt. No retry or timing batch.
+import { readFileSync,writeFileSync,mkdirSync,rmdirSync,unlinkSync,existsSync } from 'node:fs';
+import { spawn } from 'node:child_process';
+import { createHash,randomUUID } from 'node:crypto';
+import { fileURLToPath } from 'node:url';
+import { join,resolve } from 'node:path';
+import { performance } from 'node:perf_hooks';
+const work=fileURLToPath(new URL('.',import.meta.url));
+const dir=join(work,'stacked-priority-hold-full-20260929-01');
+const lock='C:/Users/just_/lesters-arcade-wt/.locks/heavy.lock';
+const token='stacked-hold-full-'+randomUUID();
+const producer=join(work,'stacked-priority-hold-probe.mjs');
+const expectedProducer='fb91d30e3dae8d7d7aad34481d95b53de01ab970d48dff1fb6e852fd4983950e';
+const engine='C:/Users/just_/lesters-arcade-wt/200-stacked-replay';
+const hash=path=>createHash('sha256').update(readFileSync(path)).digest('hex');
+if(existsSync(dir))throw new Error('Single full-attempt archive exists; no retry permitted');
+if(existsSync(lock))throw new Error('Shared heavy marker exists; no attempt started');
+const prefix=JSON.parse(readFileSync(join(work,'stacked-priority-hold-prefix-20260929-01/prefix-scope.json'),'utf8'));
+if(prefix.supportsFullRecording!==true||prefix.producerSha256!==expectedProducer)throw new Error('Preserved prefix does not support this unchanged-producer attempt');
+const expectedSources=JSON.parse(readFileSync('C:/Users/just_/lesters-arcade-wt/200-world-w0/docs/qa/stacked-s0c-provenance-20260929.json','utf8')).sourceHashes;
+const verifySources=()=>{if(hash(producer)!==expectedProducer)throw new Error('Source-reviewed Hold producer differs');const actual={};for(const[name,expected]of Object.entries(expectedSources))if(!name.startsWith('scratch/')){actual[name]=hash(join(engine,name));if(actual[name]!==expected)throw new Error('Previously measured engine/pilot/verifier source differs: '+name);}return actual;};
+const sourcesBefore=verifySources();
+mkdirSync(dir);
+let acquired=false,item=null,phase='lock-acquisition';
+try{
+  mkdirSync(lock);acquired=true;
+  writeFileSync(join(lock,'owner.json'),JSON.stringify({owner:'/root/world_w0_audit',token,purpose:'One unchanged actual Hold-control 432000-tick attempt, 225-second recording-loop ceiling and 240-second outer child watchdog; archive actual outcome and terminal public replay/old verifier only. No retry, padding, timing batch, optimization, build, browser or release.',createdAt:new Date().toISOString()})+'\n',{flag:'wx'});
+  phase='pre-attempt-source-and-prefix-preservation';
+  writeFileSync(join(dir,'stacked-priority-hold-producer.mjs.txt'),readFileSync(producer),{flag:'wx'});
+  const prefixArchive=join(dir,'prefix');mkdirSync(prefixArchive);
+  const prefixOriginal=join(work,'stacked-priority-hold-prefix-20260929-01');
+  for(const name of ['prefix-command.json','prefix-scope.json'])writeFileSync(join(prefixArchive,name),readFileSync(join(prefixOriginal,name)),{flag:'wx'});
+  for(const name of ['probe-report.json','recorded-run-diagnostic.json','recorded-run.sic1.gz','stacked-priority-hold-producer.mjs.txt'])writeFileSync(join(prefixArchive,name),readFileSync(join(prefixOriginal,'recording',name)),{flag:'wx'});
+  const engineArchive=join(dir,'unchanged-engine-source');
+  for(const name of Object.keys(sourcesBefore)){const target=join(engineArchive,name);mkdirSync(resolve(target,'..'),{recursive:true});writeFileSync(target,readFileSync(join(engine,name)),{flag:'wx'});}
+  phase='actual-recording-attempt';
+  item={name:'actual-hold-full-single-attempt',startedAt:new Date().toISOString(),producerSha256:expectedProducer,sourcesBefore,args:[producer,'--limit-ticks=432000','--max-wall-seconds=225','--owned-lock-token='+token,'--out='+join(dir,'recording')],stdout:'',stderr:'',exitCode:null,signal:null,spawnFailure:null,outerWatchdogSeconds:240,outerWatchdogTriggered:false,outerKillRequested:false,outerKillError:null};
+  const start=performance.now();
+  const child=spawn(process.execPath,item.args,{cwd:work,windowsHide:true,stdio:['ignore','pipe','pipe']});
+  child.stdout.on('data',data=>{item.stdout+=data;process.stdout.write(data);});
+  child.stderr.on('data',data=>{item.stderr+=data;process.stderr.write(data);});
+  const watchdog=setTimeout(()=>{item.outerWatchdogTriggered=true;item.outerWatchdogAt=new Date().toISOString();try{item.outerKillRequested=child.kill('SIGTERM');}catch(error){item.outerKillError=String(error.stack);}},240_000);
+  try{await new Promise(yes=>{child.once('error',error=>{item.spawnFailure=String(error.stack);});child.once('close',(code,signal)=>{item.exitCode=code;item.signal=signal;yes();});});}finally{clearTimeout(watchdog);}
+  item.finishedAt=new Date().toISOString();
+  item.wholeCommandElapsedSeconds=(performance.now()-start)/1000;
+  item.wholeCommandScope='Includes process/import/recording/decoder/archive and any terminal replay/per-game verifier. Diagnostic wall duration, not verifier headroom/performance certification.';
+  writeFileSync(join(dir,'full-command.json'),JSON.stringify(item,null,2)+'\n',{flag:'wx'});
+  phase='source-after-binding';
+  const sourcesAfter=verifySources();
+  const reportFile=join(dir,'recording/probe-report.json');
+  const report=existsSync(reportFile)?JSON.parse(readFileSync(reportFile,'utf8')):null;
+  const acceptedMaximalDuration=!item.outerWatchdogTriggered&&item.spawnFailure===null&&item.signal===null&&item.exitCode===0&&report?.consumedTicks===432000&&report.runtimeSnapshotTick===432000&&report.terminal===true&&report.actualPublicDecoderAccepted===true&&report.replayAccepted===true&&report.oldProtocolVerifierAccepted===true&&report.maximalDurationAccepted===true&&report.recordingFailure===null&&report.validationFailure===null;
+  phase='outcome-preservation';
+  writeFileSync(join(dir,'full-scope.json'),JSON.stringify({at:new Date().toISOString(),acceptedMaximalDuration,producerSha256:expectedProducer,sourcesBefore,sourcesAfter,singleAttempt:true,noRetry:true,recordingWallCeilingSeconds:225,outerChildWatchdogSeconds:240,outerKilledOutcome:item.outerWatchdogTriggered,unsavedControlTail:item.outerWatchdogTriggered?'Any controls absent from the saved diagnostic archive may be lost. The killed runtime input tail cannot be recovered or claimed accepted.':null,report,scope:'Actual distinct uninterrupted control recording and retained outcome. Timeout never establishes maximal-duration acceptance. Terminal replay/old per-game acceptance is only as explicitly reported. No verifier timing batch, largest accepted encoding bound, production CPU, browser/phone/worker, Ranked end-to-end or global S0 headroom acceptance.'},null,2)+'\n',{flag:'wx'});
+  console.log(JSON.stringify({acceptedMaximalDuration,evidenceBytes:report?.evidenceBytes,consumedTicks:report?.consumedTicks,runtimeSnapshotTick:report?.runtimeSnapshotTick,terminal:report?.terminal,actualPublicDecoderAccepted:report?.actualPublicDecoderAccepted,recordingFailure:report?.recordingFailure,validationFailure:report?.validationFailure,out:dir}));
+  if(!acceptedMaximalDuration)process.exitCode=1;
+}catch(error){
+  if(item&&!existsSync(join(dir,'full-command.json')))writeFileSync(join(dir,'full-command.json'),JSON.stringify(item,null,2)+'\n',{flag:'wx'});
+  writeFileSync(join(dir,'window-failure.json'),JSON.stringify({at:new Date().toISOString(),phase,error:String(error.stack),singleAttempt:true,noRetry:true},null,2)+'\n',{flag:'wx'});
+  process.stderr.write(String(error.stack)+'\n');process.exitCode=1;
+}finally{
+  if(acquired){const owner=join(lock,'owner.json');if(resolve(lock).replaceAll('\\','/').toLowerCase()!=='c:/users/just_/lesters-arcade-wt/.locks/heavy.lock'||!existsSync(owner)||JSON.parse(readFileSync(owner,'utf8')).token!==token)throw new Error('Owned marker changed; refusing removal');unlinkSync(owner);rmdirSync(lock);console.log(JSON.stringify({ownMarkerReleased:true,token}));}
+}

@@ -1,0 +1,33 @@
+import {readFileSync} from 'node:fs';
+import {createHash} from 'node:crypto';
+import {resolve,relative,dirname,join} from 'node:path';
+import {parse} from 'file:///C:/Users/just_/lesters-arcade-wt/200-world-w0/node_modules/acorn/dist/acorn.mjs';
+export const sha=value=>createHash('sha256').update(value).digest('hex');
+export function collectClosure(root,entries){
+  const files={},builtins=new Set(),edges=[];
+  const visit=path=>{
+    const absolute=resolve(path),name=relative(root,absolute).replaceAll('\\','/');
+    if(name.startsWith('../')||name==='..'||name.includes(':'))throw new Error('Target closure leaves owned worktree: '+name);
+    if(files[name])return;
+    const bytes=readFileSync(absolute),tree=parse(bytes.toString('utf8'),{ecmaVersion:'latest',sourceType:'module'});
+    files[name]={bytes:bytes.length,sha256:sha(bytes)};
+    const imports=[];
+    const walk=node=>{
+      if(!node||typeof node!=='object'||typeof node.type!=='string')return;
+      if(['ImportDeclaration','ExportNamedDeclaration','ExportAllDeclaration'].includes(node.type)&&node.source)imports.push(node.source);
+      if(node.type==='ImportExpression')imports.push(node.source);
+      if(node.type==='CallExpression'&&node.callee.type==='Identifier'&&['require','eval'].includes(node.callee.name))throw new Error('Unclassified dynamic code/import in '+name);
+      for(const value of Object.values(node))if(Array.isArray(value))value.forEach(walk);else walk(value);
+    };
+    walk(tree);
+    for(const source of imports){
+      if(source.type!=='Literal'||typeof source.value!=='string')throw new Error('Nonliteral dependency in '+name);
+      const specifier=source.value;
+      if(specifier.startsWith('node:')){builtins.add(specifier);edges.push({from:name,specifier,builtin:true});}
+      else if(specifier.startsWith('./')||specifier.startsWith('../')){const target=resolve(dirname(absolute),specifier);edges.push({from:name,specifier,to:relative(root,target).replaceAll('\\','/')});visit(target);}
+      else throw new Error('Unclassified external dependency in '+name+': '+specifier);
+    }
+  };
+  entries.forEach(entry=>visit(join(root,entry)));
+  return {files,builtins:[...builtins].sort(),edges,scope:'Exact literal ESM import/export/import-expression source closure; rejects nonliteral import, require/eval and external package dependency. Actual child resolver additionally checks every resolved target file against this manifest.'};
+}

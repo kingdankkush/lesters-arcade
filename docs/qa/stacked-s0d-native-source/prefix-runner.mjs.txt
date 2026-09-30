@@ -1,0 +1,33 @@
+import { readFileSync,writeFileSync,mkdirSync,rmdirSync,unlinkSync,existsSync } from 'node:fs';
+import { spawn } from 'node:child_process';
+import { createHash,randomUUID } from 'node:crypto';
+import { fileURLToPath } from 'node:url';
+import { join,resolve } from 'node:path';
+const work=fileURLToPath(new URL('.',import.meta.url)), tag=process.env.S0D_PREFIX_TAG||'01';
+if(!/^[a-z0-9-]+$/.test(tag))throw new Error('Bounded prefix tag required');
+const dir=join(work,'stacked-priority-hold-prefix-20260929-'+tag), lock='C:/Users/just_/lesters-arcade-wt/.locks/heavy.lock', token='stacked-hold-prefix-'+randomUUID();
+const producer=join(work,'stacked-priority-hold-probe.mjs'), expectedProducer='fb91d30e3dae8d7d7aad34481d95b53de01ab970d48dff1fb6e852fd4983950e';
+const hash=path=>createHash('sha256').update(readFileSync(path)).digest('hex');
+if(existsSync(dir))throw new Error('Prefix output already exists; preserve it and choose an explicit new diagnostic tag');
+if(hash(producer)!==expectedProducer)throw new Error('Source-reviewed Hold producer differs');
+const prior=JSON.parse(readFileSync('C:/Users/just_/lesters-arcade-wt/200-world-w0/docs/qa/stacked-s0c-provenance-20260929.json','utf8'));
+const engine='C:/Users/just_/lesters-arcade-wt/200-stacked-replay';
+for(const [name,expected]of Object.entries(prior.sourceHashes))if(!name.startsWith('scratch/')&&hash(join(engine,name))!==expected)throw new Error('Previously measured engine/pilot/verifier source differs: '+name);
+let acquired=false;mkdirSync(dir);
+try{
+  mkdirSync(lock);acquired=true;writeFileSync(join(lock,'owner.json'),JSON.stringify({owner:'/root/world_w0_audit',token,purpose:'Bounded actual legal Hold-control prefix only; no simulator mutation, full recording, timing batch, build, browser or release',createdAt:new Date().toISOString()})+'\n',{flag:'wx'});
+  const item={name:'actual-hold-prefix',startedAt:new Date().toISOString(),args:[producer,'--limit-ticks=10800','--max-wall-seconds=30','--owned-lock-token='+token,'--out='+join(dir,'recording')],stdout:'',stderr:'',exitCode:null};
+  const child=spawn(process.execPath,item.args,{cwd:work,windowsHide:true,stdio:['ignore','pipe','pipe']});
+  child.stdout.on('data',data=>{item.stdout+=data;process.stdout.write(data);});child.stderr.on('data',data=>{item.stderr+=data;process.stderr.write(data);});
+  await new Promise((yes,no)=>{child.once('error',no);child.once('close',code=>{item.exitCode=code;yes();});});item.finishedAt=new Date().toISOString();
+  writeFileSync(join(dir,'prefix-command.json'),JSON.stringify(item,null,2)+'\n',{flag:'wx'});
+  if(hash(producer)!==expectedProducer)throw new Error('Producer changed during recording');
+  for(const [name,expected]of Object.entries(prior.sourceHashes))if(!name.startsWith('scratch/')&&hash(join(engine,name))!==expected)throw new Error('Engine changed during recording: '+name);
+  const reportFile=join(dir,'recording/probe-report.json');
+  if(item.exitCode!==0||!existsSync(reportFile))throw new Error('Actual Hold prefix failed; retained command/archive observations, no full run authorized by this result');
+  const report=JSON.parse(readFileSync(reportFile,'utf8'));
+  const supportsFullRecording=report.consumedTicks===10800&&report.runtimeSnapshotTick===10800&&report.terminal===false&&report.actualPublicDecoderAccepted===true&&report.recordingFailure===null&&report.validationFailure===null;
+  writeFileSync(join(dir,'prefix-scope.json'),JSON.stringify({at:new Date().toISOString(),supportsFullRecording,scope:'Real uninterrupted 10,800 input-tick prefix plus public canonical decoder only; excludes complete terminal replay/verifier acceptance, maximum legal encoding and performance headroom',producerSha256:expectedProducer,report},null,2)+'\n',{flag:'wx'});
+  console.log(JSON.stringify({supportsFullRecording,evidenceBytes:report.evidenceBytes,terminal:report.terminal,actualPublicDecoderAccepted:report.actualPublicDecoderAccepted,out:dir}));
+}catch(error){writeFileSync(join(dir,'window-failure.json'),JSON.stringify({at:new Date().toISOString(),error:String(error.stack)},null,2)+'\n',{flag:'wx'});process.stderr.write(String(error.stack)+'\n');process.exitCode=1;}
+finally{if(acquired){const owner=join(lock,'owner.json');if(resolve(lock).replaceAll('\\','/').toLowerCase()!=='c:/users/just_/lesters-arcade-wt/.locks/heavy.lock'||!existsSync(owner)||JSON.parse(readFileSync(owner,'utf8')).token!==token)throw new Error('Owned marker changed; refusing removal');unlinkSync(owner);rmdirSync(lock);console.log(JSON.stringify({ownMarkerReleased:true,token}));}}

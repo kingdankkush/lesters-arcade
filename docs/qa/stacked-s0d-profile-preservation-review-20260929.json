@@ -1,0 +1,20 @@
+{
+  "schema": "stacked-s0d-profile-durable-independent-review/v1",
+  "verdict": "PASS for archive-only shorter adverse fixture and one instrumented diagnostic",
+  "verifiedRawArchiveEntries": 35,
+  "shortTerminalFixtureFullJsonMatchesExceptExplicitFilename": true,
+  "shortControlRawHashMatches": true,
+  "profileScopeExactSavedJsonMatches": true,
+  "cpuSampleWeightsIndependentlyRecomputed": true,
+  "instrumentedVerifierWallMs": 254.0865,
+  "mainThreadSamples": 479,
+  "allNodes": 79,
+  "notes": [
+    "No new target import, decoder, simulation, verifier, profile, timing or browser execution",
+    "S0d is72,520-tick block-out/maximalfalse, not432k acceptance",
+    "Profile wall254.0865 is instrumented diagnostic, not250ms gate",
+    "Observed mean sample spacing560us, requested100us not achieved",
+    "Main-thread samples/aggregate before-after CPU/memory are not all awaited worker cost, allocation sites or peak",
+    "Scoped -text attributes preserve witness bytes; no runtime changes reviewed here"
+  ]
+}

@@ -1,0 +1,23 @@
+// Source/fixture hashing and AST closure preparation only. No game imports or replay.
+import {readFileSync,writeFileSync,existsSync} from 'node:fs';
+import {join} from 'node:path';
+import {fileURLToPath} from 'node:url';
+import {collectClosure,sha} from './stacked-s0c-profile-closure.mjs';
+const work=fileURLToPath(new URL('.',import.meta.url));
+const root='C:/Users/just_/lesters-arcade-wt/200-world-w0';
+const out=join(work,'stacked-s0c-profile-inputs.json');
+if(existsSync(out))throw new Error('Prepared profile inputs already exist; do not silently refresh');
+const prior=JSON.parse(readFileSync(join(root,'docs/qa/stacked-s0c-provenance-20260929.json'),'utf8'));
+const frozenSources={};
+for(const[name,expected]of Object.entries(prior.sourceHashes))if(!name.startsWith('scratch/')){
+  if(sha(readFileSync(join(root,name)))!==expected)throw new Error('Previously accepted source differs: '+name);
+  frozenSources[name]=expected;
+}
+const closure=collectClosure(root,['server/verify/stacked.mjs','apps/portal/src/stacked-sim.mjs']);
+const fixtureFiles=['tests/fixtures/stacked-maximal-priority-rotation-run.json','tests/fixtures/stacked-maximal-priority-rotation-run.sic1.gz'];
+const files=Object.fromEntries(fixtureFiles.map(name=>{const bytes=readFileSync(join(root,name));return[name,{bytes:bytes.length,sha256:sha(bytes)}];}));
+const fixture=JSON.parse(readFileSync(join(root,fixtureFiles[0]),'utf8'));
+if(fixture.evidence.bytes!==757272||fixture.evidence.sha256!=='9ae11c4d47455bf92aed1424e9cd730ece503cf3f1f5fa2e00a18f9affb95ca4'||fixture.expectedTuple.ticks!==432000||fixture.expectedTuple.terminalReason!=='tick-ceiling')throw new Error('Wrong accepted S0c fixture');
+const inputs={schema:'stacked-s0c-profile-prepared-inputs-v1',preparedAt:new Date().toISOString(),root,closure,frozenSources,fixtureFiles:files,rawFixture:{bytes:757272,sha256:fixture.evidence.sha256},profileSampleIntervalUs:100,sourceOnlyPreparation:true,noReplayOrProfileExecuted:true};
+writeFileSync(out,JSON.stringify(inputs,null,2)+'\n',{flag:'wx'});
+console.log(JSON.stringify({out,targetFiles:Object.keys(closure.files).length,targetBuiltins:closure.builtins,fixtureFiles,sourceOnly:true}));

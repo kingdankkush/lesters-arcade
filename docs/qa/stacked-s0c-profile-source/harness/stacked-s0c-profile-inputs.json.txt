@@ -1,0 +1,217 @@
+{
+  "schema": "stacked-s0c-profile-prepared-inputs-v1",
+  "preparedAt": "2026-09-30T01:59:13.482Z",
+  "root": "C:/Users/just_/lesters-arcade-wt/200-world-w0",
+  "closure": {
+    "files": {
+      "server/verify/stacked.mjs": {
+        "bytes": 4159,
+        "sha256": "9bcb1aee7ed466e799c83495307c489e7f54201b177c2691ab6d101187418493"
+      },
+      "apps/portal/src/stacked-sim.mjs": {
+        "bytes": 52630,
+        "sha256": "5b5fe17c237389bd48834b757166c8afc0b58c801246806275d25fa16ae82114"
+      },
+      "apps/portal/src/seeded-rng.mjs": {
+        "bytes": 5300,
+        "sha256": "b6eed9c993e1efd38871c14d50b580ea15133fdcef020e81ffe7051e24b3ebc7"
+      },
+      "apps/portal/src/stacked-contracts.mjs": {
+        "bytes": 6193,
+        "sha256": "5ee0d079f2688b02217a60f4695e41944504b0759e87004da6a213e926be9ec6"
+      },
+      "apps/portal/src/stacked-evidence-transport.mjs": {
+        "bytes": 6645,
+        "sha256": "059afcbf2801e7d34c946101d41ddd0c6bfc06508743076c57d8704ab9ab2a84"
+      },
+      "apps/portal/src/ranked-identity.mjs": {
+        "bytes": 12452,
+        "sha256": "225a1f2c89a2f3cad7d5ef0f7b732ffae0347acd7d6c7a156d7227e60acd8056"
+      },
+      "apps/portal/src/session-integrity.mjs": {
+        "bytes": 5794,
+        "sha256": "26785093fba615224ddfcc85ec6e3094c6e2e8a5b48f932da34bcbc427136157"
+      },
+      "apps/portal/src/session-seed.mjs": {
+        "bytes": 2516,
+        "sha256": "4602de3e82949c72b635666225c877beb71b6c02e023ab735e91877c181f2c80"
+      },
+      "server/verify/verified-run.mjs": {
+        "bytes": 5676,
+        "sha256": "1e5c0079536ab3a94ba867b205f7bde11a0bb0d7e99d7b0ec2963a51dd71bfd8"
+      },
+      "apps/portal/src/achievements/stats.mjs": {
+        "bytes": 11373,
+        "sha256": "704f8ffefec2f9572243f98e85e71a67f0c4afc64be4fc9225da2dbd4baa13d6"
+      },
+      "sdk/hmh-run-summary-schema-v7.mjs": {
+        "bytes": 16461,
+        "sha256": "81fd2c2fc109bd0856ba6acff19f1c379f5835b72365e57abf6a762cdc61ed98"
+      },
+      "sdk/hmh-run-summary-schema.mjs": {
+        "bytes": 17539,
+        "sha256": "c5428b534378cd85fd71662409657bea652cf8737755513e5e573f4a0dcfa47a"
+      },
+      "apps/portal/src/chikun-ground-course.mjs": {
+        "bytes": 9192,
+        "sha256": "a29626fe35d1d92979c5950ef0cd17efdfe2340ba98c5a3a7a772403c32fb7ca"
+      },
+      "apps/portal/src/chikun-course-regions.mjs": {
+        "bytes": 8367,
+        "sha256": "0d43a3b3f8a2bf06db2c8e381290376696a9270e3f5d0d101d707720faf6941a"
+      },
+      "apps/portal/src/achievements/hmh.mjs": {
+        "bytes": 13562,
+        "sha256": "044a813a78829bf0c27eff8a94cefaf94dd7af3a1802e13624b79c6c79916751"
+      },
+      "apps/portal/src/achievements/entry.mjs": {
+        "bytes": 5402,
+        "sha256": "a4e55551ae0b7aca76bda548659155ab22294e049fdcd02bf9462f224ce8b98e"
+      }
+    },
+    "builtins": [],
+    "edges": [
+      {
+        "from": "server/verify/stacked.mjs",
+        "specifier": "../../apps/portal/src/stacked-sim.mjs",
+        "to": "apps/portal/src/stacked-sim.mjs"
+      },
+      {
+        "from": "apps/portal/src/stacked-sim.mjs",
+        "specifier": "./seeded-rng.mjs",
+        "to": "apps/portal/src/seeded-rng.mjs"
+      },
+      {
+        "from": "apps/portal/src/stacked-sim.mjs",
+        "specifier": "./stacked-contracts.mjs",
+        "to": "apps/portal/src/stacked-contracts.mjs"
+      },
+      {
+        "from": "server/verify/stacked.mjs",
+        "specifier": "../../apps/portal/src/stacked-evidence-transport.mjs",
+        "to": "apps/portal/src/stacked-evidence-transport.mjs"
+      },
+      {
+        "from": "apps/portal/src/stacked-evidence-transport.mjs",
+        "specifier": "./stacked-contracts.mjs",
+        "to": "apps/portal/src/stacked-contracts.mjs"
+      },
+      {
+        "from": "apps/portal/src/stacked-evidence-transport.mjs",
+        "specifier": "./stacked-sim.mjs",
+        "to": "apps/portal/src/stacked-sim.mjs"
+      },
+      {
+        "from": "server/verify/stacked.mjs",
+        "specifier": "../../apps/portal/src/stacked-contracts.mjs",
+        "to": "apps/portal/src/stacked-contracts.mjs"
+      },
+      {
+        "from": "server/verify/stacked.mjs",
+        "specifier": "../../apps/portal/src/ranked-identity.mjs",
+        "to": "apps/portal/src/ranked-identity.mjs"
+      },
+      {
+        "from": "apps/portal/src/ranked-identity.mjs",
+        "specifier": "./session-integrity.mjs",
+        "to": "apps/portal/src/session-integrity.mjs"
+      },
+      {
+        "from": "apps/portal/src/ranked-identity.mjs",
+        "specifier": "./session-seed.mjs",
+        "to": "apps/portal/src/session-seed.mjs"
+      },
+      {
+        "from": "apps/portal/src/session-seed.mjs",
+        "specifier": "./session-integrity.mjs",
+        "to": "apps/portal/src/session-integrity.mjs"
+      },
+      {
+        "from": "server/verify/stacked.mjs",
+        "specifier": "./verified-run.mjs",
+        "to": "server/verify/verified-run.mjs"
+      },
+      {
+        "from": "server/verify/verified-run.mjs",
+        "specifier": "../../apps/portal/src/achievements/stats.mjs",
+        "to": "apps/portal/src/achievements/stats.mjs"
+      },
+      {
+        "from": "apps/portal/src/achievements/stats.mjs",
+        "specifier": "../../../../sdk/hmh-run-summary-schema-v7.mjs",
+        "to": "sdk/hmh-run-summary-schema-v7.mjs"
+      },
+      {
+        "from": "sdk/hmh-run-summary-schema-v7.mjs",
+        "specifier": "./hmh-run-summary-schema.mjs",
+        "to": "sdk/hmh-run-summary-schema.mjs"
+      },
+      {
+        "from": "apps/portal/src/achievements/stats.mjs",
+        "specifier": "../chikun-ground-course.mjs",
+        "to": "apps/portal/src/chikun-ground-course.mjs"
+      },
+      {
+        "from": "apps/portal/src/chikun-ground-course.mjs",
+        "specifier": "./chikun-course-regions.mjs",
+        "to": "apps/portal/src/chikun-course-regions.mjs"
+      },
+      {
+        "from": "apps/portal/src/chikun-course-regions.mjs",
+        "specifier": "./chikun-ground-course.mjs",
+        "to": "apps/portal/src/chikun-ground-course.mjs"
+      },
+      {
+        "from": "apps/portal/src/achievements/stats.mjs",
+        "specifier": "../chikun-course-regions.mjs",
+        "to": "apps/portal/src/chikun-course-regions.mjs"
+      },
+      {
+        "from": "apps/portal/src/achievements/stats.mjs",
+        "specifier": "../stacked-sim.mjs",
+        "to": "apps/portal/src/stacked-sim.mjs"
+      },
+      {
+        "from": "apps/portal/src/achievements/stats.mjs",
+        "specifier": "./hmh.mjs",
+        "to": "apps/portal/src/achievements/hmh.mjs"
+      },
+      {
+        "from": "apps/portal/src/achievements/hmh.mjs",
+        "specifier": "./entry.mjs",
+        "to": "apps/portal/src/achievements/entry.mjs"
+      },
+      {
+        "from": "server/verify/verified-run.mjs",
+        "specifier": "../../apps/portal/src/ranked-identity.mjs",
+        "to": "apps/portal/src/ranked-identity.mjs"
+      }
+    ],
+    "scope": "Exact literal ESM import/export/import-expression source closure; rejects nonliteral import, require/eval and external package dependency. Actual child resolver additionally checks every resolved target file against this manifest."
+  },
+  "frozenSources": {
+    "apps/portal/src/stacked-sim.mjs": "5b5fe17c237389bd48834b757166c8afc0b58c801246806275d25fa16ae82114",
+    "apps/portal/src/stacked-contracts.mjs": "5ee0d079f2688b02217a60f4695e41944504b0759e87004da6a213e926be9ec6",
+    "apps/portal/src/seeded-rng.mjs": "b6eed9c993e1efd38871c14d50b580ea15133fdcef020e81ffe7051e24b3ebc7",
+    "apps/stacked/src/dev/soak-pilot.mjs": "aba5c692371256a34e9eefbe63f3e4772b438829712aa8030cd0b14a88434156",
+    "server/verify/stacked.mjs": "9bcb1aee7ed466e799c83495307c489e7f54201b177c2691ab6d101187418493",
+    "server/verify/verified-run.mjs": "1e5c0079536ab3a94ba867b205f7bde11a0bb0d7e99d7b0ec2963a51dd71bfd8"
+  },
+  "fixtureFiles": {
+    "tests/fixtures/stacked-maximal-priority-rotation-run.json": {
+      "bytes": 77895,
+      "sha256": "5b6091ba5ab57a5a190befa914f570c3bf5ea1711cf3dedf2d0ea898f644a1c5"
+    },
+    "tests/fixtures/stacked-maximal-priority-rotation-run.sic1.gz": {
+      "bytes": 54663,
+      "sha256": "7ca81104a46f33f6003eb56f58112933eaa50cd9dcdfb33329f472d851b79bef"
+    }
+  },
+  "rawFixture": {
+    "bytes": 757272,
+    "sha256": "9ae11c4d47455bf92aed1424e9cd730ece503cf3f1f5fa2e00a18f9affb95ca4"
+  },
+  "profileSampleIntervalUs": 100,
+  "sourceOnlyPreparation": true,
+  "noReplayOrProfileExecuted": true
+}

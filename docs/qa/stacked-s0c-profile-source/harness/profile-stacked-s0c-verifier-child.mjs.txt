@@ -1,0 +1,70 @@
+// One fresh first-use complete verifier CPU profile. No game/source mutation.
+import assert from 'node:assert/strict';
+import {readFileSync,writeFileSync} from 'node:fs';
+import {createHash} from 'node:crypto';
+import {gunzipSync} from 'node:zlib';
+import {Session} from 'node:inspector';
+import {registerHooks} from 'node:module';
+import {performance} from 'node:perf_hooks';
+import {fileURLToPath,pathToFileURL} from 'node:url';
+import {join,relative,resolve} from 'node:path';
+const args=Object.fromEntries(process.argv.slice(2).map(arg=>{const match=/^--(inputs|out|owned-lock-token)=(.+)$/.exec(arg);if(!match)throw new Error('Invalid bounded child argument');return[match[1],match[2]];}));
+if(Object.keys(args).length!==3)throw new Error('Require inputs, output and owned marker');
+const inputs=JSON.parse(readFileSync(args.inputs,'utf8')),out=resolve(args.out),root=resolve(inputs.root);
+const owner=JSON.parse(readFileSync('C:/Users/just_/lesters-arcade-wt/.locks/heavy.lock/owner.json','utf8'));
+if(owner.token!==args['owned-lock-token'])throw new Error('Owned heavy marker mismatch');
+const sha=value=>createHash('sha256').update(value).digest('hex');
+const allSources={...Object.fromEntries(Object.entries(inputs.closure.files).map(([name,data])=>[name,data.sha256])),...inputs.frozenSources};
+const verifySources=()=>{const actual={};for(const[name,expected]of Object.entries(allSources)){actual[name]=sha(readFileSync(join(root,name)));assert.equal(actual[name],expected,'Bound target source '+name);}return actual;};
+const report={schema:'stacked-s0c-one-cpu-profile-diagnostic-v1',at:new Date().toISOString(),node:process.version,phase:'source-before',sourceBefore:verifySources(),sampleIntervalUs:100,profileScope:'One first-use complete old per-game verifyStackedRun call; main-thread CPU sampling includes harness boundary overhead. Instrumented diagnosis only, not a verifier timing/headroom pass. Imports/disk/gzip/assertions and post-profile public replay are outside the profile.',exclusions:['largest legal encoding bound','production CPU','cold import headroom','worker/browser/physical-phone acceptance','auth/ticket/API/network/entry/settlement','peak residency/allocation-site measurement','uninstrumented 250ms gate'],noWarmup:true,noRetry:true,profileCalls:0,verifiedRunExact:false,publicTupleExact:false,profileError:null,validationError:null,disconnectError:null,resolverDeregisterError:null};
+report.cpuScope='Inspector samples only the main JS thread; awaited crypto/worker CPU and scheduling wait are not fully attributed. Complete instrumented verifier wall includes awaited latency. CPU sample self/inclusive weights are not total process CPU or allocation-site measurements. The separate process.cpuUsage delta is aggregate process CPU with profiler overhead.';
+let profiler=null,profiling=false,resolver=null,actual=null;
+const resolvedFiles=new Set(),resolvedBuiltins=new Set(),unclassified=[];
+const post=(method,parameters={})=>new Promise((yes,no)=>profiler.post(method,parameters,(error,result)=>error?no(error):yes(result)));
+try{
+  report.phase='fixture-and-closure';
+  for(const[name,expected]of Object.entries(inputs.fixtureFiles)){const bytes=readFileSync(join(root,name));assert.equal(bytes.length,expected.bytes);assert.equal(sha(bytes),expected.sha256,'Fixture bound '+name);}
+  const fixture=JSON.parse(readFileSync(join(root,'tests/fixtures/stacked-maximal-priority-rotation-run.json'),'utf8'));
+  const compressed=readFileSync(join(root,'tests/fixtures/stacked-maximal-priority-rotation-run.sic1.gz'));
+  assert.equal(compressed.length,fixture.evidence.compressedBytes);assert.equal(sha(compressed),fixture.evidence.compressedSha256);
+  const bytes=gunzipSync(compressed,{maxOutputLength:1302000});
+  assert.equal(bytes.length,757272);assert.equal(sha(bytes),'9ae11c4d47455bf92aed1424e9cd730ece503cf3f1f5fa2e00a18f9affb95ca4');
+  assert.equal(fixture.expectedTuple.ticks,432000);assert.equal(fixture.expectedTuple.terminalReason,'tick-ceiling');
+  const evidence={encoding:'stacked-sic1+base64',sic1:bytes.toString('base64'),startLevel:1};
+  report.input={rawBytes:bytes.length,rawSha256:sha(bytes),gzipSha256:sha(compressed),identity:fixture.identity,replayOptions:fixture.replayOptions};
+  resolver=registerHooks({resolve(specifier,context,nextResolve){const result=nextResolve(specifier,context);if(result.url.startsWith('file:')){const name=relative(root,fileURLToPath(result.url)).replaceAll('\\','/');resolvedFiles.add(name);if(!Object.hasOwn(inputs.closure.files,name))unclassified.push({specifier,url:result.url});}else if(result.url.startsWith('node:'))resolvedBuiltins.add(result.url);else unclassified.push({specifier,url:result.url});return result;}});
+  const {verifyStackedRun}=await import(pathToFileURL(join(root,'server/verify/stacked.mjs')).href);
+  const {replayStackedRun}=await import(pathToFileURL(join(root,'apps/portal/src/stacked-sim.mjs')).href);
+  assert.deepEqual(unclassified,[],'Every actual target resolution must belong to the exact closure');
+  assert.deepEqual([...resolvedFiles].sort(),Object.keys(inputs.closure.files).sort(),'Every declared transitive target file actually resolved');
+  report.phase='profiler-setup';
+  profiler=new Session();profiler.connect();await post('Profiler.enable');await post('Profiler.setSamplingInterval',{interval:100});
+  report.memoryBefore=process.memoryUsage();report.cpuBefore=process.cpuUsage();
+  await post('Profiler.start');profiling=true;report.profileCalls=1;
+  report.phase='complete-verifier';
+  const callStart=performance.now();
+  try{actual=await verifyStackedRun({identity:fixture.identity,evidence,nowMs:fixture.verifyAtMs});}finally{report.instrumentedVerifierWallMs=performance.now()-callStart;}
+  report.phase='profile-stop';
+  const {profile}=await post('Profiler.stop');profiling=false;
+  report.cpuDelta=process.cpuUsage(report.cpuBefore);report.memoryAfter=process.memoryUsage();report.memoryDelta=Object.fromEntries(Object.entries(report.memoryAfter).map(([name,value])=>[name,value-report.memoryBefore[name]]));
+  writeFileSync(join(out,'complete-verifier.cpuprofile'),JSON.stringify(profile)+'\n',{flag:'wx'});
+  report.profile={file:'complete-verifier.cpuprofile',sha256:sha(readFileSync(join(out,'complete-verifier.cpuprofile'))),nodes:profile.nodes.length,samples:profile.samples?.length??0,startTime:profile.startTime,endTime:profile.endTime,standardProfilePreserved:true};
+  report.memoryScope='Aggregate before/after process observations, with profiler overhead; not peak, resident lifetime or allocation-site values; no forced GC. CPU delta includes profiler start/stop overhead beyond the target wall.';
+  report.phase='exact-verified-run';
+  assert.equal(actual.ok,true,JSON.stringify(actual));const {text,...metadata}=actual.evidence;
+  assert.equal(text,evidence.sic1,'Exact evidence text retained');assert.equal(metadata.digest,'0x'+sha(bytes));
+  assert.deepEqual({...actual,evidence:metadata},fixture.expectedVerified,'Every old VerifiedRun field retained');report.verifiedRunExact=true;report.verifiedRun={...actual,evidence:metadata};report.evidenceText={bytes:Buffer.byteLength(text),sha256:sha(Buffer.from(text)),exact:true};
+  report.phase='post-profile-public-terminal';
+  const tuple=replayStackedRun(bytes,fixture.replayOptions);assert.deepEqual(tuple,fixture.expectedTuple);report.publicTupleExact=true;report.publicTuple=tuple;
+  report.phase='source-and-resolution-after';
+  assert.deepEqual(unclassified,[],'No target dependency escaped the profiled closure');report.actualResolvedFiles=[...resolvedFiles].sort();report.actualResolvedBuiltins=[...resolvedBuiltins].sort();report.sourceAfter=verifySources();
+  report.phase='complete';
+}catch(error){report.validationError={phase:report.phase,name:error.name,message:error.message,stack:error.stack};process.exitCode=1;}
+finally{
+  if(profiling){try{const {profile}=await post('Profiler.stop');writeFileSync(join(out,'failed-target-partial.cpuprofile'),JSON.stringify(profile)+'\n',{flag:'wx'});report.partialProfile='failed-target-partial.cpuprofile';}catch(error){report.profileError=String(error.stack);}}
+  if(profiler){try{profiler.disconnect();}catch(error){report.disconnectError=String(error.stack);process.exitCode=1;}}
+  if(resolver){try{resolver.deregister();}catch(error){report.resolverDeregisterError=String(error.stack);process.exitCode=1;}}
+  report.finishedAt=new Date().toISOString();
+  writeFileSync(join(out,'profile-report.json'),JSON.stringify(report,null,2)+'\n',{flag:'wx'});
+  console.log(JSON.stringify({phase:report.phase,profileCalls:report.profileCalls,instrumentedVerifierWallMs:report.instrumentedVerifierWallMs,verifiedRunExact:report.verifiedRunExact,publicTupleExact:report.publicTupleExact,validationError:report.validationError,out}));
+}

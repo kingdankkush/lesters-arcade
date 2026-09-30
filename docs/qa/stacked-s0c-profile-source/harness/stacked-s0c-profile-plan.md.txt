@@ -1,0 +1,32 @@
+# S0c profiling proposal — source review only
+
+The accepted S0c fixture is the current measured baseline: 432,000 real ticks, 757,272 canonical bytes, SHA-256 `9ae11c4d47455bf92aed1424e9cd730ece503cf3f1f5fa2e00a18f9affb95ca4`. Its seven uninstrumented complete per-game verifier samples had a maximum of 242.7848 ms on the recorded Windows/Node host. That leaves 7.2152 ms locally and does not establish maximum accepted encoding, production CPU, cold import, browser-worker or physical-phone acceptance. S0d's shorter Hold run does not extend this bound.
+
+## Proposed one-process diagnostic
+
+Reserve one future exclusive shared-lock window. Start one fresh Node child with an outer 15-second watchdog, no warmup, retry, second profile or timing batch. Bind the original compressed/raw fixture hashes and all six previously frozen engine/pilot/verifier files, plus the actual evidence-transport, identity, session-integrity, session-seed and stats files used by the target. Preserve exact child/harness bytes and before/after source hashes. The fixture and accepted protocol stay unchanged.
+
+Outside the profiling interval: import existing modules, load/decompress the fixture, check the pinned raw hash/length, and construct the exact old `stacked-sic1+base64` evidence. Do not run a public replay before the first profiled verifier call, because that would warm the simulation.
+
+Use Node's built-in Inspector CPU profiler, proposed sampling interval 100 microseconds, to start immediately before **one** `verifyStackedRun({ identity, evidence, nowMs: fixture.verifyAtMs })` and stop immediately after its awaited return. Preserve the standard `.cpuprofile`, profiler errors and failed/rejected outcome rather than retrying. The interval includes the complete actual per-game verification: canonical base64/header checks, private SIC1 parser and all replay ticks, terminal tuple, evidence digest, stats, envelope and VerifiedRun. It excludes import, file/gzip handling, harness assertions and authentication/ticket/API/network/entry/settlement.
+
+After stopping the profiler, assert the exact old VerifiedRun including score, contract fields, stats, identity, envelope, digest, timestamp and exact evidence text. Then use the unchanged public `replayStackedRun` once outside the profile and compare its full terminal tuple with the fixture. Report those checks separately; they are not a second profile or an uninstrumented timing sample. No runtime snapshots or state edits are injected.
+
+Record the instrumented call wall and whole-child wall separately. Record `process.memoryUsage()` before/after the target and label the deltas as transient aggregate observations: they are neither peak residency nor an allocation-site profile, and GC can make them negative. Do not force GC or claim that these deltas quantify individual allocation sites. Attribute sampled CPU time by exact function/file/line and self/inclusive weights; retain native/GC/unattributed samples. Sampling weights and instrumented wall are not a new 250-ms pass/fail claim.
+
+Node Inspector samples the main JS thread. Awaited crypto/worker CPU and scheduling wait are not fully attributed by that profile; the complete instrumented verifier wall includes awaited latency. CPU self/inclusive sample weights are not total process CPU. Separate `process.cpuUsage()` deltas aggregate process CPU and profiler overhead; neither representation is an allocation profile.
+
+On watchdog or validation failure: preserve stdout/stderr, process exit/signal, hashes, any profile/report already written and the exact unfinished phase. A killed process may not produce a completed CPU profile; disclose that rather than fabricating samples. Release the shared marker only after actual child close. This proposal has not executed.
+
+## Source candidates to inspect, not measured findings
+
+| Path | Current source behavior | What the profile can resolve |
+| --- | --- | --- |
+| `stacked-evidence-transport.mjs:34` | Canonical regex, `atob`, canonical `btoa` comparison, then `Uint8Array.from(binary, char => char.charCodeAt(0))`. The S0c target processes 757,272 raw characters; strings, callback work and a typed result are real source-level candidates. | Whether transport/character conversion dominates complete verification. Do not replace canonical checks based on this hypothesis. |
+| `stacked-evidence-transport.mjs:20` and `stacked-sim.mjs:982` | The header layer and private parser each check the checksum. The parser copies the input before parsing and preallocates typed tick/mask columns. | Relative checksum/copy/parse cost. The private snapshot and both acceptance boundaries must retain their actual guarantees. Array sizes inferred from source are not measured peak residency. |
+| `stacked-sim.mjs:1090` | Headless replay advances every actual tick through the internal `advance`; it does **not** use public `step()` snapshots per tick or public `decodeSic1`'s per-transition object expansion. | Actual simulation self/inclusive costs; avoid optimizing the wrong public diagnostic path. |
+| `stacked-sim.mjs:590` | Lock/score/spawn/queue/garbage work repeats at real lock boundaries. Score results are frozen objects, spawned active pieces are new objects, and bag refill creates/shuffles an array. | Whether these repeated sites and any associated GC materially contribute. Source allocations are not proof of dominance. |
+| `stacked-sim.mjs:106`, `:765` | Spin/rotation and collision routines can allocate temporary data or iterate authored cells/kicks. | Which actual branches occur/cost time for this fixture; do not change ordering, kicks or rule semantics. |
+| `verified-run.mjs:74` and `ranked-identity.mjs` | Evidence text byte count creates a TextEncoder buffer; digest/envelope/stats/deep-freeze construct the canonical result. | Result-construction/native crypto cost in the complete call. No contract, settlement or identity behavior is edited. |
+
+If this single profile identifies a dominant avoidable allocation/cost, propose the smallest isolated improvement with acceptance/parity tests **before** implementation. Its later gate must preserve every old corpus result, every canonical byte/checkpoint/RNG value, rejection cases, worker parity and exact decoder acceptance. Only then obtain a fresh complete uninstrumented batch; do not compare profiler wall to the saved 242.7848-ms maximum or silently discard slower observations. Largest legal encoding and production CPU remain separate unresolved gates.
