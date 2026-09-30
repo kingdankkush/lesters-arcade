@@ -13,13 +13,19 @@ import {
   revealWorldAt,
 } from './world-v2-runtime-world.mjs';
 import { createWorldV2Gameplay, selectWorldV2Entry } from './world-v2-gameplay.mjs';
+import { createWorldV2NavGrid } from './world-v2-navgrid.mjs';
 
 export function createWorldV2RuntimeContext({ selection } = {}) {
   if (selection?.official !== false || selection?.rankedEligible !== false) throw new TypeError('the ten-area world context requires an unofficial, unranked selection');
-  const world = createWorldV2RuntimeWorld();
-  const audit = auditWorldV2(world);
+  const authored = createWorldV2RuntimeWorld();
+  const audit = auditWorldV2(authored);
   if (!audit.ok) throw new Error(`ten-area world audit failed: ${audit.errors.join('; ')}`);
-  const gameplay = createWorldV2Gameplay(world);
+  const gameplay = createWorldV2Gameplay(authored);
+  // The enemy nav grid is built here, once, with the bucket-indexed walk; the
+  // runtime's chunked builder adopts it instead of walking 78k cells in idle
+  // slices. Same contract object plus `navGrid`.
+  const navGrid = createWorldV2NavGrid({ world: authored, queryGround: createWorldV2GroundQuery(authored) });
+  const world = Object.freeze({ ...authored, navGrid });
   return Object.freeze({
     selection,
     world,

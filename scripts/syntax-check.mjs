@@ -76,6 +76,8 @@ const NODE_CHECK_FILES = [
   'apps/hmh-reboot/src/world-v2-runtime-world.mjs',
   'apps/hmh-reboot/src/world-v2-gameplay.mjs',
   'apps/hmh-reboot/src/world-v2-runtime-context.mjs',
+  'apps/hmh-reboot/src/world-v2-navgrid.mjs',
+  'tests/hmh-world-v2-navgrid.test.mjs',
   'apps/hmh-reboot/src/world-context.mjs',
   'tests/hmh-world-v2-runtime-world.test.mjs',
   'tests/hmh-world-v2-gameplay.test.mjs',

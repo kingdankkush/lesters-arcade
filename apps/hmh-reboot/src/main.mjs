@@ -1032,8 +1032,8 @@ async function boot() {
     textureAssets.load(AUTHORED_PROP_ATLAS_IMAGE_URL),
     import('./authored-prop-display.mjs'),
   ]).then(async ([metadataResponse, atlasTexture, {createAuthoredHeldWeaponDisplay,createAuthoredPropDisplay}]) => {
-    dataset.nativeBarrierStatus = 'loading';
-    const barrierPromise = import('./native-barriers.mjs').then(async module => ({module,assets:await module.loadNativeBarrierAppearance(url=>Assets.load(url),{mobile:performanceProfile.id!=='desktop'})})).catch(error=>{
+    dataset.nativeBarrierStatus = HMH_WORLD_CONTEXT.legacy ? 'loading' : 'skipped';
+    const barrierPromise = !HMH_WORLD_CONTEXT.legacy ? Promise.resolve(null) : import('./native-barriers.mjs').then(async module => ({module,assets:await module.loadNativeBarrierAppearance(url=>Assets.load(url),{mobile:performanceProfile.id!=='desktop'})})).catch(error=>{
       dataset.nativeBarrierStatus='fallback';console.warn('[HMH] Native barrier fallback',error);return null;
     });
     if (!metadataResponse.ok) throw new Error(`Authored prop metadata failed with ${metadataResponse.status}`);
