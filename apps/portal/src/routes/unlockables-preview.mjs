@@ -54,9 +54,9 @@ export async function mountUnlockablePreview(figure, { gameId, slot, id, title, 
       // Three frozen flap bursts show the shipped particle colour; no time loop.
       const particles = chikunTrailParticles(planChikunVfx({ event: 'flap', tick: 36 }).particles, 'flap', cosmetics);
       for (let burst = 0; burst < 3; burst++) for (const p of particles) {
-        const age = 10 + burst * 4, x = 235 - burst * 35 + p.vx * age, y = 235 + p.vy * age;
-        ctx.globalAlpha = 1 - age / p.lifeTicks; ctx.strokeStyle = p.color; ctx.lineWidth = Math.max(1, p.size * .35);
-        ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x - p.size * 1.6, y + p.vy); ctx.stroke();
+        const age = 8 + burst * 4, x = 165 - burst * 45 + p.vx * age, y = 225 + p.vy * age;
+        ctx.globalAlpha = 1 - age / p.lifeTicks; ctx.strokeStyle = p.color; ctx.lineWidth = Math.max(2, p.size * .8);
+        ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x - p.size * 3, y + p.vy); ctx.stroke();
       }
       ctx.globalAlpha = 1;
     }

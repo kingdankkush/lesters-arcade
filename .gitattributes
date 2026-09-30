@@ -143,3 +143,6 @@ docs/2.0/receipts/blog-pages-h2c/*.gz -filter -diff -merge -text
 
 # Runtime terrain atlas pages
 apps/portal/assets/generated/hmh-art-target/*.webp filter=lfs diff=lfs merge=lfs -text
+
+# Tiered Chikun eagle runtime animation
+apps/portal/assets/generated/chikun-obstacle-loop-v1/*.webp filter=lfs diff=lfs merge=lfs -text

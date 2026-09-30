@@ -13,6 +13,13 @@ test('obstacle and quality query switches are exact, unique and cosmetic-only',(
  assert.equal(switches.chikunPresentationSuffix('?obstacleLoops=eagle-v1&obstacleQuality=low&obstacleQuality=high'),'?obstacleLoops=eagle-v1');
  assert.equal(switches.chikunPresentationSuffix('?coinFeedback=positive-v1&obstacleLoops=eagle-v1&obstacleQuality=high'),'?coinFeedback=positive-v1&obstacleLoops=eagle-v1&obstacleQuality=high');
 });
+test('normal play animates the eagle and an explicit opt-out survives the cabinet boundary',()=>{
+ assert.equal(switches.chikunObstaclePresentationOptions('').enabled,true);
+ assert.deepEqual(switches.chikunObstaclePresentationOptions('',2),{enabled:true,tier:'medium'});
+ const forwarded=switches.chikunPresentationSuffix('?obstacleLoops=off&seed=private');
+ assert.equal(forwarded,'?obstacleLoops=off');
+ assert.equal(switches.chikunObstaclePresentationOptions(forwarded).enabled,false);
+});
 test('disabled obstacle presentation starts no module, metadata or texture request',async()=>{
  let calls=0;const optional=bootstrap.startChikunObstaclePresentation({enabled:false,loadModule:()=>{calls++;},fetchRef:()=>{calls++;}});
  assert.equal(await optional.ready,false);assert.equal(optional.draw({}, {},0,false,0,0,0,0),false);assert.equal(calls,0);optional.dispose();

@@ -6,7 +6,7 @@ import {parse} from 'acorn';
 import {loadGroundArt,drawGroundObstacle} from '../apps/chikun/src/ground-world.mjs';
 test('real Chikun host forwards captured cosmetic options and strips all gameplay and replay queries',()=>{
  const mount={replaceChildren(){}},documentRef={documentElement:{dataset:{}},createElement:()=>({dataset:{},setAttribute(){},addEventListener(){}})};
- for(const [search,suffix]of [['?obstacleLoops=eagle-v1&obstacleQuality=medium&seed=9&replay=private','?obstacleLoops=eagle-v1&obstacleQuality=medium'],['?obstacleLoops=eagle-v1&obstacleLoops=eagle-v1','']]){
+ for(const [search,suffix]of [['?obstacleLoops=off&seed=9','?obstacleLoops=off'],['?obstacleLoops=eagle-v1&obstacleQuality=medium&seed=9&replay=private','?obstacleLoops=eagle-v1&obstacleQuality=medium'],['?obstacleLoops=eagle-v1&obstacleLoops=eagle-v1','']]){
   const host=createChikunHost({mount,documentRef,search,expectedOrigin:'http://127.0.0.1:8799',bridgeFactory:()=>({destroy(){}}),setTimeoutRef:()=>1,clearTimeoutRef(){}});
   const iframe=host.mountSession({});assert.equal(iframe.src,'http://127.0.0.1:8799/chikun/index.html'+suffix);host.destroy();
  }

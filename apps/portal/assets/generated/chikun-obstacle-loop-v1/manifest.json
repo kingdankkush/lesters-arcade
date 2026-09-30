@@ -1,0 +1,122 @@
+{
+  "schema": "chikun-obstacle-loop-v1",
+  "actor": "eagle",
+  "frames": 8,
+  "columns": 4,
+  "fps": 12,
+  "registration": {
+    "commonCrop": [
+      131,
+      16,
+      396,
+      206
+    ],
+    "sourceWidth": 512,
+    "sourceHeight": 256,
+    "gutter": 2
+  },
+  "sources": [
+    {
+      "file": "00.png",
+      "bytes": 68529,
+      "sha256": "c2b2aafe6b40a043bdafe1e219fea77ae76b1a804a471ab27e8dc7892fb344de"
+    },
+    {
+      "file": "01.png",
+      "bytes": 63308,
+      "sha256": "6556a2028520e856674a815f8a0e3b9bcd12683c4d837f40e0ad957a2cbfe51d"
+    },
+    {
+      "file": "02.png",
+      "bytes": 61491,
+      "sha256": "038fe0b9c625a3d0f495d6c6c45d54eb3f8ed19f9601080c6e1437514fdea9d6"
+    },
+    {
+      "file": "03.png",
+      "bytes": 63554,
+      "sha256": "9659c07fc4f52a7e8a172b0d1c198748b4374443c72ed68b1fb276230ca53a83"
+    },
+    {
+      "file": "04.png",
+      "bytes": 70171,
+      "sha256": "00236763f46155cdf3979ad267984c5b19f6012ca1ed28bedfc5a7364348ee3f"
+    },
+    {
+      "file": "05.png",
+      "bytes": 72412,
+      "sha256": "0eeebe30261eacadd5c85d9aa6143747b322444ab161422d6334455720294324"
+    },
+    {
+      "file": "06.png",
+      "bytes": 71479,
+      "sha256": "7e4bedc88b8507836bd845e8aa6ed707626d7d096460e41783390402f4cbcf8d"
+    },
+    {
+      "file": "07.png",
+      "bytes": 72390,
+      "sha256": "f02a7ed6c6cf2a9959936fcf3c943deb6828e8cb51607a39e35a8cbc567fb4ee"
+    }
+  ],
+  "tiers": {
+    "low": {
+      "file": "eagle-low.webp",
+      "frameWidth": 128,
+      "frameHeight": 64,
+      "width": 512,
+      "height": 128,
+      "decodedBytes": 262144,
+      "bytes": 26730,
+      "sha256": "bdcf946c928440db4b733e5fc202510728646fe000e231f6968fa45168600b92",
+      "registration": {
+        "cropSize": [
+          84,
+          60
+        ],
+        "offset": [
+          22,
+          2
+        ]
+      }
+    },
+    "medium": {
+      "file": "eagle-medium.webp",
+      "frameWidth": 192,
+      "frameHeight": 96,
+      "width": 768,
+      "height": 192,
+      "decodedBytes": 589824,
+      "bytes": 51100,
+      "sha256": "3631c02e6695e804fc87d17b672a1bde3af12f0d2eb9752b5fa25bf191a74db4",
+      "registration": {
+        "cropSize": [
+          128,
+          92
+        ],
+        "offset": [
+          32,
+          2
+        ]
+      }
+    },
+    "high": {
+      "file": "eagle-high.webp",
+      "frameWidth": 256,
+      "frameHeight": 128,
+      "width": 1024,
+      "height": 256,
+      "decodedBytes": 1048576,
+      "bytes": 81564,
+      "sha256": "47d06763aceb87274e6fb6e28151b25c43931e4d37b73cf5c0c9470438231df7",
+      "registration": {
+        "cropSize": [
+          173,
+          124
+        ],
+        "offset": [
+          41,
+          2
+        ]
+      }
+    }
+  }
+}

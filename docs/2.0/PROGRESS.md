@@ -1,5 +1,54 @@
 # Lester's Arcade 2.0 progress
 
+## September 30: integrated terrain, crowds and cosmetic previews
+
+Full scope retained; release later remains the owner's decision. No deployment,
+version bump, paid generation or new test framework in this batch.
+
+- Terrain A24 recovery succeeds without another render. The art producer now
+  restores exact transform channels instead of decomposing a world matrix; its
+  original tolerance is unchanged. All386 original asset pins are unchanged.
+  The recovered atlas is integrated behind `artTarget=meadows-v1`:2,011,940B
+  encoded /11,010,048B decoded. Producer changes remain committed in the art
+  worktree at f4eaa09e2, following d5873060c. No final-world acceptance claim.
+- HMH commit837f341b2 shares existing model geometry/textures across visible
+  eligible Bagholder rushers, prioritizing hero and Liquidator. Low/medium/high
+  display caps are8/24/64, still behind `actor3dPilot=1`. Unknown actors retain
+  their own sprites.41 focused checks pass. The actual ordinary encounter peaked
+  at2 3D actors on desktop and phone framing; this does NOT establish60-enemy or
+  physical-phone performance. Characters still need readability/detail polish.
+- Locker commitf971b54ed shows actual Chikun coat/hat/trail and all seven STACKED
+  piece shapes in their game palette. Six desktop/phone inspections load without
+  page errors or horizontal overflow. A faint trail found in those views was
+  moved outside the body silhouette and strengthened for its static preview.
+  The final phone screenshot confirms a visible trail with no errors/overflow.
+- Chikun's existing eagle source was refined into shaped flight feathers, layered
+  wing coverts, ivory head/tail and a hooked beak, with eight rendered wing poses.
+  Original source remains unchanged; editable derivative stays outside Git.
+  Runtime sheets are Git LFS and load only the selected low/medium/high tier:
+  26,730 /51,100 /81,564B encoded; decoded sizes256KiB /576KiB /1MiB.
+  The high sheet exceeds the old64KiB prototype limit. The packer keeps that
+  default and accepts an explicit bounded96KiB allowance for this asset; fixed
+  texture dimensions and decoded memory are unchanged. No rerender needed.
+  Animation is enabled in normal play, with `obstacleLoops=off` preserved through
+  the parent/child boundary. Collision, course and evidence are unchanged.
+  Twenty existing/focused JS checks and three existing packer checks pass.
+  Actual desktop and phone-sized course views show all eight eagle poses using
+  their automatically selected tier. Both runs replay exactly to score13,971 with
+  byte-identical evidence. Source/render originals were visually inspected.
+  The viewer first stopped before browser launch because optional build metadata
+  was absent; it was corrected to locate the emitted chunk without rebuilding.
+  The completed course checks were followed by a navigation-check timeout on a
+  mobile-hidden Exit button. That entire viewer is therefore NOT marked passed;
+  course/render/replay results remain valid. Browser/server closed and lock released.
+- Current combined build passes: HMH initial/shared1,041,637B (6,939B headroom),
+  STACKED581,014B (25,986B headroom). Rebuilt once after the observed trail fix.
+  Full visual/performance/release gates remain deferred, not passed.
+
+Current originals are in workspace outputs/locker-cosmetic-previews,
+hmh-crowd-meadows-20260930 and chikun-eagle-refined. Phone views use desktop
+Chrome emulation; iPhone XS Max acceptance is still open.
+
 ## September 30: normal STACKED access and Locker
 
 Owner chose to keep the full overhaul scope and release later, declining a
