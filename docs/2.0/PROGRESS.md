@@ -472,3 +472,26 @@ nav/browser/performance acceptance; Meadows flow and actor-scale review remain n
 ## Owner-requested pause, 2026-09-30
 
 Pause for ChatGPT update. Pure collection projection9+identical9sourcecopy passes, with genuine9RED archived; see slices/ACHIEVEMENT-COLLECTION-G2B.md. UI/CSS drafts saved but unmounted:initial4+copy4 pass; two new adversarial cases remain unrun and malformed-snapshot status needs correction. No new jobs should start until owner resumes. Shared heavy checks/Chrome/servers closed and matching markers released. Root source-only greybox gathers b82c1118/bf8357fd and rarity1578307a are committed; newer Meadows/art/character lane checkpoints stay on their own branches until reviewed/gathered. Versions/production unchanged.
+
+
+## Resumed after app update — 2026-09-30
+
+The owner explicitly resumed all existing 2.0 and achievement/unlockable work.
+Root recovered bf8357fd and saved the already-tested collection projection as
+5a97ddbb. Three UI drafts and their exact pause backups survived. The malformed
+population case reproduced (five pass/one fail), then all six lifecycle cases and
+the identical isolated source copy passed after response validation. A delayed
+population focus/open-disclosure issue and public heading wording remain under
+focused correction before route integration. No browser UI acceptance claimed yet.
+
+New cabinet prompts and 2.1/2.2 roadmap read completely and archived verbatim in
+docs/2.1, with scope reconciliation. Cabinets are a possible early presentation
+slice; current 2.0 remains first. New modes, Level 2 and minting are not activated.
+World lane recovered clean Meadows W2b at 1f6403e0 with saved 26+26 and real Chrome
+walking/touch checks; Farms is in progress on its own branch. Character diagnosis
+and connected-ground art correction resumed with serialized shared heavy jobs.
+
+
+## G2b collection profile preview — 2026-09-30
+
+Default-off collection is integrated into the actual hosted Profile route. Final45source checks and19exact no-Git/no-modules/empty-PATH copy checks pass. First real browser found the option-value DOM factory mismatch; original failure retained, regression reproduced and fixed. Fresh build budgets remain HMH1,039,992B/STACKED577,431B. Second real Chrome run passes7cases with desktop/phone-size captures, truthful malformed-response fallback, accessible focus/open details, default/duplicate-off lazy loading and lifecycle recreation. No page errors/overflow; actual Chrome/HTTP/children closed and matching markers released. See slices/ACHIEVEMENT-COLLECTION-G2B.md and raw receipt. Current badge art is retained pending its overhaul; not a physical-phone or final-art gate.

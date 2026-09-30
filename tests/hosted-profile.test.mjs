@@ -99,6 +99,8 @@ function hostedProfile({
   active = true,
   lazy = false,
   walletProviderForAction = null,
+  runtimeSearch = "",
+  loadCollectionView,
 } = {}) {
   const grid = node('grid');
   const calls = { profile: [], retrySettle: [], events: [], connect: 0, views: [] };
@@ -117,6 +119,8 @@ function hostedProfile({
   const routeState = { gameId: 'lester-blaster', viewedWallet, avatarJustSaved: false, usernameJustSaved: false };
   const route = createOfficialProfileRoute({
     hosted: true,
+    runtimeSearch,
+    ...(loadCollectionView ? { loadCollectionView } : {}),
     indexApi,
     // The view module is handed over directly so it exists on the first
     // render; the lazy default has its own test.
@@ -792,4 +796,35 @@ test('the profile version chip is styled on the status line and never wraps insi
   const board = /\.leaderboard-board-v10 \.lt-version\.is-unknown \{([^}]*)\}/.exec(css)?.[1] ?? '';
   assert.match(muted, /color: #8b9bc0;/);
   assert.equal(muted.trim(), board.trim(), 'the same muted look on the profile and the board');
+});
+
+
+test('collection preview is lazy and requires one exact opt-in value',async()=>{
+ for(const runtimeSearch of ['', '?achievementCollection=wrong', '?achievementCollection=collection-v1&achievementCollection=collection-v1']){
+  let loaded=0;
+  const h=hostedProfile({runtimeSearch,loadCollectionView:()=>{loaded++;throw Error('must stay lazy');}});
+  await rendered(h);assert.equal(loaded,0);assert.equal(byClass(h.grid,'profile-verified-achievements').length,1);
+ }
+ let loaded=0,renderedUnlocks;
+ const records=[{id:'chikun-first-flight',gameId:'chikun',unlockedAt:'2026-09-22T10:00:00.000Z'}];
+ const module={createAchievementCollectionView:()=>({render:({unlocks})=>{renderedUnlocks=unlocks;return node('article',{className:'collection-preview-test'});},dispose(){}})};
+ const h=hostedProfile({runtimeSearch:'?achievementCollection=collection-v1',answers:{[`${ME}|self`]:e6({self:true,achievements:records})},loadCollectionView:async()=>{loaded++;return module;}});
+ await rendered(h);await settle();assert.equal(loaded,1);assert.deepEqual(renderedUnlocks,records);assert.equal(byClass(h.grid,'collection-preview-test').length,1);
+});
+
+test('late collection import renders the currently viewed profile rather than old ownership',async()=>{
+ let release,observed=[];
+ const h=hostedProfile({runtimeSearch:'?achievementCollection=collection-v1',answers:{[`${ME}|self`]:e6({self:true,achievements:[{id:'chikun-first-flight',gameId:'chikun'}]})},
+  loadCollectionView:()=>new Promise(resolve=>{release=()=>resolve({createAchievementCollectionView:()=>({render:({unlocks})=>{observed=unlocks;return node('article',{className:'collection-preview-test'});},dispose(){}})});})});
+ await rendered(h);h.routeState.viewedWallet=OTHER;await rendered(h);
+ assert.equal(typeof release,'function');release();await settle();await settle();
+ assert.deepEqual(observed,[]);assert.equal(byClass(h.grid,'collection-preview-test').length,1);
+});
+
+test('failed collection chunk keeps verified achievements and never retries in a render loop',async()=>{
+ let loaded=0;
+ const records=[{id:'chikun-first-flight',gameId:'chikun'}];
+ const h=hostedProfile({runtimeSearch:'?achievementCollection=collection-v1',answers:{[`${ME}|self`]:e6({self:true,achievements:records})},loadCollectionView:async()=>{loaded++;throw Error('offline optional chunk');}});
+ await rendered(h);await settle();h.route.renderProfile();await settle();
+ assert.equal(loaded,1);assert.match(text(h.grid),/First Flight/);assert.equal(byClass(h.grid,'profile-verified-achievements').length,1);
 });

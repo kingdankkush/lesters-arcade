@@ -1,0 +1,272 @@
+{
+  "schema": "achievement-collection-profile-v1",
+  "scope": "Default-off, read-only hosted profile display; synthetic browser population, not live rewards or final badge art",
+  "sourceCases": 45,
+  "exactSourceCopyCases": 19,
+  "browserCases": [
+    "delayed population keeps requirement and keyboard focus",
+    "game ownership and search filters",
+    "page lifecycle disposal and restored controller",
+    "phone framing touch-size controls and reduced motion",
+    "default profile stays lazy",
+    "duplicate option stays off",
+    "malformed population preserves earned badges"
+  ],
+  "captures": [
+    {
+      "name": "desktop-owned",
+      "file": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\collection-profile-browser-02\\desktop-owned.png",
+      "bytes": 1293739,
+      "sha256": "13c6bf0218ec1a7934a07dc541d55611e3202e589c8bd7306e050681dfebab81",
+      "width": 1440,
+      "height": 2650
+    },
+    {
+      "name": "phone-owned",
+      "file": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\collection-profile-browser-02\\phone-owned.png",
+      "bytes": 1976078,
+      "sha256": "8b1c8c6e0ddf5e74ab9a41d2583ce749644bfca331c81db955deb2ea8a4393b9",
+      "width": 828,
+      "height": 8286
+    }
+  ],
+  "hmhInitialJs": 1039992,
+  "stackedInitialJs": 577431,
+  "inputs": [
+    {
+      "file": "C:\\Users\\just_\\lesters-arcade-wt\\visual-overhaul-200\\apps\\portal\\main.js",
+      "sha256": "e4d35adf5dd9f34f148f3bf51e17d44490886dd3c38c952cdc1506549ed874a9"
+    },
+    {
+      "file": "C:\\Users\\just_\\lesters-arcade-wt\\visual-overhaul-200\\apps\\portal\\src\\routes\\official-profile-route.mjs",
+      "sha256": "8aa19012139d7f7c6d83f4a66c9c7d250bfe4483abcd457a26eaf231fcd31bbe"
+    },
+    {
+      "file": "C:\\Users\\just_\\lesters-arcade-wt\\visual-overhaul-200\\apps\\portal\\src\\routes\\hosted-profile-view.mjs",
+      "sha256": "a47fa45637d4db0554461c3ee64068604c9459444c17e7ccc83557307e702582"
+    },
+    {
+      "file": "C:\\Users\\just_\\lesters-arcade-wt\\visual-overhaul-200\\apps\\portal\\src\\achievements\\collection-view.mjs",
+      "sha256": "819b3b6c503d29960bac5dabaa4b08694e3ba2dc6e9641cf74a7b2b15dc4ef8b"
+    },
+    {
+      "file": "C:\\Users\\just_\\lesters-arcade-wt\\visual-overhaul-200\\apps\\portal\\src\\achievements\\collection-model.mjs",
+      "sha256": "7dfd8e7e1f8ac5fcf844ec904df0038115db87f539257d629941e877739eb60f"
+    },
+    {
+      "file": "C:\\Users\\just_\\lesters-arcade-wt\\visual-overhaul-200\\apps\\portal\\src\\styles\\achievement-collection.css",
+      "sha256": "1da3eebdeb874ec4c83196b20c4de5db9d68ea0c7fb0956d84475c77005d71ad"
+    },
+    {
+      "file": "C:\\Users\\just_\\lesters-arcade-wt\\visual-overhaul-200\\apps\\portal\\src\\focus-keeper.mjs",
+      "sha256": "107fc31f6166115d179cbd12543f8ff83ca97037923db64b660a69fb5b0dbc31"
+    },
+    {
+      "file": "C:\\Users\\just_\\lesters-arcade-wt\\visual-overhaul-200\\tests\\achievement-collection-model.test.mjs",
+      "sha256": "90f1b2ef26476a4d249275f4abe47f01301fe49fdf1e33b18e016ea03b229687"
+    },
+    {
+      "file": "C:\\Users\\just_\\lesters-arcade-wt\\visual-overhaul-200\\tests\\achievement-collection-view.test.mjs",
+      "sha256": "84dc9dfeb0bb439846ce1b3dba6960fbbd085e4c37f1d91bf8990ed174928b3e"
+    },
+    {
+      "file": "C:\\Users\\just_\\lesters-arcade-wt\\visual-overhaul-200\\tests\\hosted-profile.test.mjs",
+      "sha256": "cde9be7e1d0eba09307531c0719a309c82d547bd7837f3196ef328f0541d2935"
+    },
+    {
+      "file": "C:\\Users\\just_\\lesters-arcade-wt\\visual-overhaul-200\\build.mjs",
+      "sha256": "8b1cc3923eecfc866a8bb85246590113f53a51c0f1cc09afb7e7ef1bb2dc7add"
+    },
+    {
+      "file": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\run-collection-profile-browser-02.mjs",
+      "sha256": "3d46c0e06df127ee4cabe0b70f30edf2552ca431938b3beb48af7c3aeb087ed0"
+    },
+    {
+      "file": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\collection-profile-browser-02.mjs",
+      "sha256": "6faa1ab6cc8c7b7ac74b9820800785325aac0566044cfd1ae4e6ef933f1cb4db"
+    },
+    {
+      "file": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\owned-windows-preview-child.mjs",
+      "sha256": "6f4903a66d324a01a476eebefdfac68663dde2c573f62f637c4b7537ccb0d631"
+    }
+  ],
+  "artReview": "Layout usable; existing badge art and surrounding profile remain to be overhauled",
+  "archives": [
+    {
+      "original": "achievement-collection-view-red-01/report.json",
+      "stored": "achievement-collection-view-red-01--report.json.gz",
+      "originalBytes": 11918,
+      "originalSha256": "579fad03586e6532de50d10d3f9b123eae00a0ae7e60ff9a4bb16a5f7c6c582b",
+      "storedBytes": 2105,
+      "storedSha256": "1f990221ff4da2cd7e5e7c849692a0c46f8911d4236ff50de21e5cac8d282835"
+    },
+    {
+      "original": "achievement-collection-view-green-01/report.json",
+      "stored": "achievement-collection-view-green-01--report.json.gz",
+      "originalBytes": 9910,
+      "originalSha256": "e136b1ff4834600d6354b492ad608e4c045c820648746eb6203cdea5bde9036b",
+      "storedBytes": 1866,
+      "storedSha256": "c146cac775f5812de727aac734e48f92fcd6956c91196a135527d933de547cc9"
+    },
+    {
+      "original": "achievement-collection-view-validation-red-01/report.json",
+      "stored": "achievement-collection-view-validation-red-01--report.json.gz",
+      "originalBytes": 29064,
+      "originalSha256": "8b53cb203cc3b4f044a1ca417f4d49d1fbc44de45d5b3a6ac10a6260376f6410",
+      "storedBytes": 4301,
+      "storedSha256": "3a00fd07607924dae49e289718e28c283a7b6bfcb263a2ac518ede2ba4f8b568"
+    },
+    {
+      "original": "achievement-collection-view-validation-green-01/report.json",
+      "stored": "achievement-collection-view-validation-green-01--report.json.gz",
+      "originalBytes": 10885,
+      "originalSha256": "e16df991c7888ff896cde81d353f176fde8b255f109068cfa01576093aa879b5",
+      "storedBytes": 1993,
+      "storedSha256": "b4c0806e932be8049cdd107a20b5bceac1791c782aa07ecee4639d3449672f85"
+    },
+    {
+      "original": "collection-profile-source-red-01/report.json",
+      "stored": "collection-profile-source-red-01--report.json.gz",
+      "originalBytes": 37401,
+      "originalSha256": "f90b0fa3c8a43c0516e5e4d7e1c49c5472ba43d1339a139be19af1ed1560ead8",
+      "storedBytes": 6562,
+      "storedSha256": "37fc545c80d183fd891c5fb5a8b0a861faea7cb7006da5f6f6bcf964ecd0dc76"
+    },
+    {
+      "original": "collection-profile-source-green-01/report.json",
+      "stored": "collection-profile-source-green-01--report.json.gz",
+      "originalBytes": 13060,
+      "originalSha256": "85ebcf0e3e544ee51c61afddf52ce0660cb37b5e28adefa82c0e86893fda4b0d",
+      "storedBytes": 3367,
+      "storedSha256": "bd309ab931153cc26e40ef1d52cc4e779619e58f8746de1dec6c1d4532c9d2e2"
+    },
+    {
+      "original": "collection-profile-built-gate-01/report.json",
+      "stored": "collection-profile-built-gate-01--report.json.gz",
+      "originalBytes": 48214,
+      "originalSha256": "3fad1aebe0018791cbed751372202309a1f0a953903a54b438ee608e129a998b",
+      "storedBytes": 10494,
+      "storedSha256": "cc59c40d38fcd8f395451126c999bfd8ada9333622170142450988d811e712bb"
+    },
+    {
+      "original": "collection-profile-browser-01/report.json",
+      "stored": "collection-profile-browser-01--report.json.gz",
+      "originalBytes": 35322,
+      "originalSha256": "82b378ddb85da35ca70da4970cba996ee8577355c7148c02d353f950d1100f76",
+      "storedBytes": 7150,
+      "storedSha256": "87f6a74f8a34463350ccda5e66e79eb5e1f4c37b6659c4756fd168eb2686d32d"
+    },
+    {
+      "original": "collection-profile-source-red-02/report.json",
+      "stored": "collection-profile-source-red-02--report.json.gz",
+      "originalBytes": 14226,
+      "originalSha256": "e00275305e320c240429db8c22e5068ff75927f3cb3da8ea18f3054c58f49350",
+      "storedBytes": 3763,
+      "storedSha256": "2e09f1d677adc8b574cfef64e2841246dafa076010bbc0170eeeb17dce84b89f"
+    },
+    {
+      "original": "collection-profile-source-green-02/report.json",
+      "stored": "collection-profile-source-green-02--report.json.gz",
+      "originalBytes": 13313,
+      "originalSha256": "2557f2edf2787cac8ac103d39e25a9024b14ad3a9aeec630b39fcf664e2d7b35",
+      "storedBytes": 3422,
+      "storedSha256": "a0d878cdda855ed35a8cdac29f42540e35d762b95459b7d5be2cd2c38e72cbd6"
+    },
+    {
+      "original": "collection-profile-built-gate-02/report.json",
+      "stored": "collection-profile-built-gate-02--report.json.gz",
+      "originalBytes": 50294,
+      "originalSha256": "8219db5c185e04c29e6132aa6086f602816ae2fdf82ec68d72e505676a52fa9b",
+      "storedBytes": 10381,
+      "storedSha256": "80a6c7943e8dc0d7a51d50c14e60ece39bae2617db0654a3efd3465274a0a79b"
+    },
+    {
+      "original": "collection-profile-browser-02/report.json",
+      "stored": "collection-profile-browser-02--report.json.gz",
+      "originalBytes": 38434,
+      "originalSha256": "b8a195ee394bf258173adcc059408ec254de74c7a4e2863b8b09b630fa652518",
+      "storedBytes": 7471,
+      "storedSha256": "e9127eaaed64e411c28eaae6d25e32495a7db5de046ed64754de965e3bf2a2e9"
+    },
+    {
+      "original": "collection-final-source-copy-01/report.json",
+      "stored": "collection-final-source-copy-01--report.json.gz",
+      "originalBytes": 8534,
+      "originalSha256": "6be48858ebff4437b1c18df1980a001323d008083f3a285ba59c533435733225",
+      "storedBytes": 2361,
+      "storedSha256": "df63aa7f7ebfe2f866ffefa0b7c23bf2b9ccfd35399e77d79562d1ea5fb4bc6b"
+    },
+    {
+      "original": "run-collection-profile-source.mjs",
+      "stored": "run-collection-profile-source.mjs.gz",
+      "originalBytes": 3014,
+      "originalSha256": "bcbc333bac995f7bf1b64c8cab89734da7dfdf4b0e16f9c641983e8062723403",
+      "storedBytes": 1270,
+      "storedSha256": "32680364c4483c1ed01dcb70c3042c3b1176d4ac4b0f809eadf3da8f3c3e7b94"
+    },
+    {
+      "original": "run-collection-profile-source-02.mjs",
+      "stored": "run-collection-profile-source-02.mjs.gz",
+      "originalBytes": 3014,
+      "originalSha256": "9ad9eac61251dc55ffbd370bb11b20c2c295f2dbcbe12aeef34349a72c446f2e",
+      "storedBytes": 1266,
+      "storedSha256": "699ba45a735527d0143fc40a73dbcbb232c0f7d5beab1678a3b1cba2653c9e77"
+    },
+    {
+      "original": "collection-profile-browser.mjs",
+      "stored": "collection-profile-browser.mjs.gz",
+      "originalBytes": 11487,
+      "originalSha256": "92ade8950f1b7108a8b1ea0ef218d98f1d592ca5c3346591f356099e9974878c",
+      "storedBytes": 4124,
+      "storedSha256": "3f283ee92955a5e5da51f47038f01a3c4bf2c6dccea3d73416227683e9bb536b"
+    },
+    {
+      "original": "collection-profile-browser-02.mjs",
+      "stored": "collection-profile-browser-02.mjs.gz",
+      "originalBytes": 11487,
+      "originalSha256": "6faa1ab6cc8c7b7ac74b9820800785325aac0566044cfd1ae4e6ef933f1cb4db",
+      "storedBytes": 4123,
+      "storedSha256": "e84092c392ab21845f81996cc8868ae7b76dd5572fe4c4be037371d511b78d72"
+    },
+    {
+      "original": "run-collection-profile-browser.mjs",
+      "stored": "run-collection-profile-browser.mjs.gz",
+      "originalBytes": 4578,
+      "originalSha256": "962966898c435939cab3460a52f16fc2ae434ae59a187b407b63d7c1a873b2b0",
+      "storedBytes": 1733,
+      "storedSha256": "c1f3dc72d8b395ec68739ac9f9e83b6493ea82e3b5f8b3d9d0ef813ad9d908ac"
+    },
+    {
+      "original": "run-collection-profile-browser-02.mjs",
+      "stored": "run-collection-profile-browser-02.mjs.gz",
+      "originalBytes": 4584,
+      "originalSha256": "3d46c0e06df127ee4cabe0b70f30edf2552ca431938b3beb48af7c3aeb087ed0",
+      "storedBytes": 1732,
+      "storedSha256": "ec3680a4f4c418b8a645401ef643b7bcf9e23c9f94671eedc2888026cc5e18e5"
+    },
+    {
+      "original": "run-collection-source-copy.mjs",
+      "stored": "run-collection-source-copy.mjs.gz",
+      "originalBytes": 3147,
+      "originalSha256": "9023a4cc3d4d7da30c4520831f85146ee99dbe166607d5194dbbd434f5c3d381",
+      "storedBytes": 1269,
+      "storedSha256": "42948854a99947ab4d487a28dae8b687c3aea6a3852252b960e3e876fa5a1d84"
+    },
+    {
+      "original": "owned-windows-child.mjs",
+      "stored": "owned-windows-child.mjs.gz",
+      "originalBytes": 3475,
+      "originalSha256": "a5177337fcf6ec41f285fc105b93d0b4b94ee1101cb14a653a91e9b8b075b0d9",
+      "storedBytes": 1360,
+      "storedSha256": "ade927025e2afbae667182802dfce78d9ddd6b3afea7cfd48a5b40eac5e8ea4b"
+    },
+    {
+      "original": "owned-windows-preview-child.mjs",
+      "stored": "owned-windows-preview-child.mjs.gz",
+      "originalBytes": 3476,
+      "originalSha256": "6f4903a66d324a01a476eebefdfac68663dde2c573f62f637c4b7537ccb0d631",
+      "storedBytes": 1360,
+      "storedSha256": "18c5cfc758da42cddbb922c7989a0204d20eb87c1d5d359985932ef89f92c162"
+    }
+  ]
+}

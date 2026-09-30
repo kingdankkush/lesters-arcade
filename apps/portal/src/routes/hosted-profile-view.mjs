@@ -218,6 +218,10 @@ export function createHostedProfileView({
   renderPage,
   requestAnimationFrameRef = globalThis.requestAnimationFrame,
   routeState,
+  runtimeSearch = '',
+  documentRef = globalThis.document,
+  eventTarget = globalThis,
+  loadCollectionView = () => import('../achievements/collection-view.mjs'),
   rpcUrl,
   setTimeoutImpl = (callback, ms) => globalThis.setTimeout(callback, ms),
   setView,
@@ -231,6 +235,41 @@ export function createHostedProfileView({
   loadAvatarUpload = () => import('../avatar-upload.mjs'),
   revokeObjectUrl = (url) => { try { globalThis.URL?.revokeObjectURL?.(url); } catch { /* nothing to free */ } },
 } = {}) {
+  const collectionFlags = new URLSearchParams(runtimeSearch).getAll('achievementCollection');
+  const collectionEnabled = collectionFlags.length === 1 && collectionFlags[0] === 'collection-v1';
+  let collectionView = null, collectionRequest = null, collectionFailed = false;
+  let collectionGeneration = 0, collectionHidden = false;
+
+  function ensureCollectionView() {
+    if (!collectionEnabled || collectionHidden || collectionView || collectionRequest || collectionFailed) return;
+    const generation = collectionGeneration;
+    collectionRequest = Promise.resolve().then(loadCollectionView).then((module) => {
+      if (generation !== collectionGeneration) return;
+      collectionView = module.createAchievementCollectionView({ el, appendText, renderAchievementIcon, documentRef });
+      // Read the current target at render time; a late import owns no wallet data.
+      rerenderIfShown();
+    }).catch(() => {
+      if (generation === collectionGeneration) collectionFailed = true;
+    }).finally(() => {
+      if (generation === collectionGeneration) collectionRequest = null;
+    });
+  }
+  if (collectionEnabled) {
+    eventTarget?.addEventListener?.('pagehide', () => {
+      collectionHidden = true;
+      collectionGeneration += 1;
+      collectionView?.dispose();
+      collectionView = null;
+      collectionRequest = null;
+      collectionFailed = false;
+    });
+    eventTarget?.addEventListener?.('pageshow', () => {
+      if (!collectionHidden) return;
+      collectionHidden = false;
+      rerenderIfShown();
+    });
+  }
+
   const hostedProfiles = new Map(); // `${wallet}|self|public` -> { status, response, request, error }
   const heldTokens = new Map(); // wallet -> { status, confirmed: Set('<gameId>:<id>') }
   const selfRejected = new Set(); // wallets whose token the self view refused (until the session changes)
@@ -643,8 +682,31 @@ export function createHostedProfileView({
     dom.officialCabinetGrid.append(card);
   }
 
+  function decorateHeldAchievement(badge, unlock, target) {
+    const held = heldTokens.get(target.wallet);
+    // Phase 2 (A32): only a token the chain confirms is shown as one.
+    if (unlock.tokenId != null && held?.confirmed?.has(`${unlock.gameId}:${unlock.id}`)) {
+      appendText(badge, 'span', '⛓ Soulbound NFT', 'achievement-token-badge');
+      const collection = deployment?.addresses?.achievementRegistries?.[unlock.gameId];
+      const href = /^0x[0-9a-fA-F]{64}$/.test(String(unlock.mintTxHash ?? ''))
+        ? `${LITEFORGE_EXPLORER}/tx/${unlock.mintTxHash}`
+        : collection ? `${LITEFORGE_EXPLORER}/token/${collection}/instance/${unlock.tokenId}` : null;
+      if (href) badge.append(el('a', { className: 'achievement-token-link', dataset: { achievement: unlock.id, game: unlock.gameId }, href, target: '_blank', rel: 'noopener noreferrer', textContent: 'View token' }));
+    }
+  }
+
   function renderHostedAchievements(target, response) {
     const unlocks = Array.isArray(response?.achievements) ? response.achievements : [];
+    ensureCollectionView();
+    if (collectionView) {
+      const byId = new Map(unlocks.map(unlock => [`${unlock.gameId}:${unlock.id}`, unlock]));
+      const card = collectionView.render({ unlocks, decorateOwnedBadge: (badge, row) => {
+        const unlock = byId.get(`${row.gameId}:${row.id}`);
+        if (unlock) decorateHeldAchievement(badge, unlock, target);
+      } });
+      dom.officialCabinetGrid.append(card);
+      return;
+    }
     const card = el('article', { className: 'official-info-card achievements-card achievements-module profile-verified-achievements' });
     const head = el('div', { className: 'achievements-head' });
     appendText(head, 'span', 'ACHIEVEMENTS', 'cabinet-status-label');
@@ -652,7 +714,6 @@ export function createHostedProfileView({
     card.append(head);
     appendText(card, 'p', 'Earned from verified Ranked runs and recorded by the arcade server against this wallet.', 'tiny-note');
     const grid = el('div', { className: 'achievements-grid profile-achievement-grid' });
-    const held = heldTokens.get(target.wallet);
     for (const unlock of unlocks) {
       let definition = null;
       try { definition = achievementCatalog?.achievementById?.(unlock.gameId, unlock.id) ?? null; } catch { definition = null; }
@@ -669,15 +730,7 @@ export function createHostedProfileView({
         time.setAttribute('datetime', date);
         badge.append(time);
       }
-      // Phase 2 (A32): only a token the chain confirms is shown as one.
-      if (unlock.tokenId != null && held?.confirmed?.has(`${unlock.gameId}:${unlock.id}`)) {
-        appendText(badge, 'span', '⛓ Soulbound NFT', 'achievement-token-badge');
-        const collection = deployment?.addresses?.achievementRegistries?.[unlock.gameId];
-        const href = /^0x[0-9a-fA-F]{64}$/.test(String(unlock.mintTxHash ?? ''))
-          ? `${LITEFORGE_EXPLORER}/tx/${unlock.mintTxHash}`
-          : collection ? `${LITEFORGE_EXPLORER}/token/${collection}/instance/${unlock.tokenId}` : null;
-        if (href) badge.append(el('a', { className: 'achievement-token-link', href, target: '_blank', rel: 'noopener noreferrer', textContent: 'View token' }));
-      }
+      decorateHeldAchievement(badge, unlock, target);
       grid.append(badge);
     }
     if (!unlocks.length) appendText(grid, 'small', target.own ? 'Your first verified Ranked run can unlock achievements.' : 'No achievements yet.', 'profile-empty-state');

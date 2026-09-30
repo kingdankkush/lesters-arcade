@@ -81,3 +81,23 @@ test('collection preview switch accepts one exact value while unrelated query da
  assert.equal(achievementCollectionPreview('?achievementCollection=collection-v1&seed=10'),true);
  for(const search of ['', '?achievementCollection=on','?achievementCollection=collection-v1&achievementCollection=collection-v1','?achievementCollection=collection-v1&achievementCollection=off','?other=collection-v1'])assert.equal(achievementCollectionPreview(search),false);
 });
+
+// Proposed addition to tests/achievement-collection-model.test.mjs.
+// Reuses that file's load, first, population and unlock helpers. Not run here.
+test('rarity ordering distinguishes different int4 fractions that round to one Number', async () => {
+ const {buildAchievementCollection}=await load();
+ const earlier=first('chikun'),later=first('stacked');
+ const earlyCount=2147483646,earlyTotal=2147483647;
+ const laterCount=2147483645,laterTotal=2147483646;
+ // The two exact products differ by one, while both Number percentages tie.
+ assert.equal(BigInt(earlyCount)*BigInt(laterTotal)-BigInt(laterCount)*BigInt(earlyTotal),1n);
+ assert.equal(earlyCount*100/earlyTotal,laterCount*100/laterTotal);
+ const model=buildAchievementCollection({
+  unlocks:[unlock('chikun',earlier.id),unlock('stacked',later.id)],
+  statsByGame:{chikun:population('chikun',earlyTotal,{[earlier.id]:earlyCount}),
+   stacked:population('stacked',laterTotal,{[later.id]:laterCount})},
+  filter:'unlocked',sort:'rarity',
+ });
+ assert.deepEqual(model.rows.map(row=>row.gameId),['stacked','chikun']);
+ assert.equal(model.rarest.gameId,'stacked');
+});

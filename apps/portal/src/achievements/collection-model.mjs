@@ -60,8 +60,13 @@ export function buildAchievementCollection({unlocks=[],statsByGame={},gameId='al
   games.push(Object.freeze({...game,total:rows.length,unlocked,fraction:unlocked/rows.length,
    trophies:Object.freeze({total:rows.filter(row=>row.nft).length,unlocked:rows.filter(row=>row.nft&&row.unlocked).length})}));
  }
- const exactRate=row=>row.rarity?.percentage??Infinity;
- const byRarity=(a,b)=>exactRate(a)-exactRate(b)||a.order-b.order;
+ const byRarity=(a,b)=>{
+  const ar=a.rarity,br=b.rarity;
+  if(ar?.percentage==null||br?.percentage==null)return Number(ar?.percentage==null)-Number(br?.percentage==null)||a.order-b.order;
+  // Cohorts can differ: compare integer ratios without rounding near ties.
+  const difference=BigInt(ar.unlockedPlayers)*BigInt(br.rankedPlayers)-BigInt(br.unlockedPlayers)*BigInt(ar.rankedPlayers);
+  return difference<0n?-1:difference>0n?1:a.order-b.order;
+ };
  const rarest=allRows.filter(row=>row.unlocked&&row.rarity?.percentage!=null).sort(byRarity)[0]??null;
  const needle=String(query).trim().slice(0,120).toLowerCase();
  const rows=allRows.filter(row=>(gameId==='all'||row.gameId===gameId)

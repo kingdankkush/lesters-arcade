@@ -72,3 +72,6 @@ docs/2.0/receipts/world-w1b-w2a/** -text whitespace=cr-at-eol
 docs/2.0/receipts/world-kit-contract/** -text whitespace=cr-at-eol
 
 docs/2.0/receipts/achievement-collection-model/** -text
+
+docs/2.0/receipts/achievement-collection-profile/** -text
+docs/2.1/source-originals/** -text

@@ -4442,6 +4442,7 @@ const createOfficialLeaderboardRoute = (deps) => createLazyLeaderboardRoute(deps
 });
 
 const officialProfileRoute = createOfficialProfileRoute({
+  runtimeSearch: bootRuntimeSearch,
   ACHIEVEMENTS,
   ARCADE_GAMES,
   appendText,
