@@ -187,19 +187,37 @@ def _even_up(value: int) -> int:
     return value + (value % 2)
 
 
-def trimmed_rect(alpha_bounds: dict[str, int], frame_size: int) -> dict[str, int]:
-    """Even-aligned crop rectangle around the painted alpha bounds (plus margin) inside the render frame."""
-    x0 = _even_down(max(0, alpha_bounds["x"] - TRIM_MARGIN))
-    y0 = _even_down(max(0, alpha_bounds["y"] - TRIM_MARGIN))
-    x1 = _even_up(min(frame_size, alpha_bounds["x"] + alpha_bounds["w"] + TRIM_MARGIN))
-    y1 = _even_up(min(frame_size, alpha_bounds["y"] + alpha_bounds["h"] + TRIM_MARGIN))
+def trimmed_rect(alpha_bounds: dict[str, int], frame_size: int, include: Sequence[float] | None = None) -> dict[str, int]:
+    """Even-aligned crop rectangle around the painted alpha bounds (plus margin) inside the render frame.
+
+    ``include`` optionally names a pixel (the ground pivot) that must stay inside the rectangle.
+    """
+    left, top = alpha_bounds["x"], alpha_bounds["y"]
+    right, bottom = alpha_bounds["x"] + alpha_bounds["w"], alpha_bounds["y"] + alpha_bounds["h"]
+    if include is not None:
+        left, top = min(left, int(math.floor(include[0]))), min(top, int(math.floor(include[1])))
+        right, bottom = max(right, int(math.ceil(include[0])) + 1), max(bottom, int(math.ceil(include[1])) + 1)
+    x0 = _even_down(max(0, left - TRIM_MARGIN))
+    y0 = _even_down(max(0, top - TRIM_MARGIN))
+    x1 = _even_up(min(frame_size, right + TRIM_MARGIN))
+    y1 = _even_up(min(frame_size, bottom + TRIM_MARGIN))
     if x1 - x0 < 2 or y1 - y0 < 2 or x1 > frame_size or y1 > frame_size:
         raise ValueError("trimmed frame rectangle is degenerate or leaves the render frame")
     return {"x": x0, "y": y0, "w": x1 - x0, "h": y1 - y0}
 
 
-def load_frame(render_dir: Path, row: dict[str, Any], report_frame: dict[str, Any]) -> dict[str, Any]:
-    """Load one rendered PNG, verify it against its Blender report and trim it."""
+PIVOT_FIXES = ("painted-base",)
+
+
+def load_frame(render_dir: Path, row: dict[str, Any], report_frame: dict[str, Any], pivot_fix: str | None = None) -> dict[str, Any]:
+    """Load one rendered PNG, verify it against its Blender report and trim it.
+
+    ``pivot_fix="painted-base"`` (a reviewed decision recorded in review.json) moves the
+    ground pivot's y to the painted base for sources whose mesh bounds include invisible
+    geometry below the visible model; the model-derived pivot is kept in ``renderFrame``.
+    """
+    if pivot_fix is not None and pivot_fix not in PIVOT_FIXES:
+        raise ValueError(f"unknown pivot fix {pivot_fix!r}")
     asset_id = require_asset_id(row["assetId"])
     path = render_dir / f"{asset_id}.png"
     if not path.is_file():
@@ -217,17 +235,23 @@ def load_frame(render_dir: Path, row: dict[str, Any], report_frame: dict[str, An
     if left <= 0 or top <= 0 or right >= size or bottom >= size:
         raise ValueError(f"rendered frame {asset_id} touches the frame edge (clipped)")
     alpha = {"x": left, "y": top, "w": right - left, "h": bottom - top}
-    rect = trimmed_rect(alpha, size)
+    model_pivot = [float(report_frame["pivot"][0]), float(report_frame["pivot"][1])]
+    pivot = list(model_pivot)
+    method = "model-base-projection"
+    if pivot_fix == "painted-base":
+        pivot[1] = float(bottom - 1)
+        method = "painted-base-review-fix"
+    rect = trimmed_rect(alpha, size, include=pivot)
     crop = image.crop((rect["x"], rect["y"], rect["x"] + rect["w"], rect["y"] + rect["h"]))
-    pivot = report_frame["pivot"]
-    px, py = float(pivot[0]) - rect["x"], float(pivot[1]) - rect["y"]
+    px, py = pivot[0] - rect["x"], pivot[1] - rect["y"]
     if px < 0 or py < 0 or px > rect["w"] - 1 or py > rect["h"] - 1:
         raise ValueError(f"rendered frame {asset_id} ground pivot lies outside its trimmed frame")
     footprint = [[float(p[0]) - rect["x"], float(p[1]) - rect["y"]] for p in report_frame["groundFootprintPixels"]]
     return {
         **row,
         "image": crop,
-        "renderFrame": {"size": size, "trim": {"x": rect["x"], "y": rect["y"]}, "pivot": [float(pivot[0]), float(pivot[1])]},
+        "renderFrame": {"size": size, "trim": {"x": rect["x"], "y": rect["y"]}, "pivot": pivot, "modelPivot": model_pivot},
+        "groundAnchorMethod": method,
         "width": rect["w"],
         "height": rect["h"],
         "sourcePixelSha256": sha256_bytes(crop.tobytes()),
@@ -317,9 +341,12 @@ def write_contact_sheet(page: Image.Image, frames: Sequence[dict[str, Any]], pla
         draw.line((x0 + px, y0 + py - 10, x0 + px, y0 + py + 10), fill=(255, 64, 64, 255), width=2)
         polygon = [(x0 + p[0], y0 + p[1]) for p in frame["groundFootprintPixels"]]
         draw.polygon(polygon, outline=(64, 220, 255, 200))
-        label = f"{frame['assetId']} y{int(frame['cameraYawDegrees'])} {frame['name'].split(' - ', 1)[-1]}"[:34]
-        draw.rectangle((x0, y0, x0 + 8 + len(label) * 9, y0 + 22), fill=(0, 0, 0, 170))
-        draw.text((x0 + 4, y0 + 2), label, fill=(255, 240, 160, 255), font=label_font)
+        max_chars = max(4, (placement["w"] - 8) // 10)
+        lines = [f"{frame['assetId']} y{int(frame['cameraYawDegrees'])}"[:max_chars], frame["name"].split(" - ", 1)[-1][:max_chars]]
+        width = 8 + max(len(line) for line in lines) * 10
+        draw.rectangle((x0, y0, x0 + min(width, placement["w"]) - 1, y0 + 44), fill=(0, 0, 0, 170))
+        for line_index, line in enumerate(lines):
+            draw.text((x0 + 4, y0 + 2 + line_index * 21), line, fill=(255, 240, 160, 255), font=label_font)
     output.parent.mkdir(parents=True, exist_ok=True)
     sheet.convert("RGB").save(output, format="PNG", compress_level=9)
     return {"image": output.name, "sha256": sha256_file(output), "width": sheet.width, "height": sheet.height}
@@ -414,6 +441,7 @@ def pack_package(frames: Sequence[dict[str, Any]], package_dir: Path, receipts_d
                 "renderFrame": frame["renderFrame"],
                 "anchor": frame["anchor"],
                 "groundAnchorPixels": {"x": frame["pivot"][0], "y": frame["pivot"][1]},
+                "groundAnchorMethod": frame["groundAnchorMethod"],
                 "alphaBounds": frame["alphaBounds"],
                 "groundFootprintPixels": frame["groundFootprintPixels"],
                 "modelDimensions": frame["modelDimensions"],
