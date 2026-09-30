@@ -1,0 +1,1878 @@
+{
+  "schema": "blog-pages-h2c/v1",
+  "initialRed": 12,
+  "independentReviewXmlRed": 1,
+  "green": 37,
+  "identicalIsolated": 37,
+  "sourcePins": {
+    "scripts/lib/blog-pages.mjs": "52469aadfea1f1e2a864a571e932484ddc5d78e4196877c6fc8c89f80deff222",
+    "scripts/lib/blog-render.mjs": "a8b1d83db1c149e6d0affa4b3365d2737592814050d2e63e4d241b77e59f2710",
+    "scripts\\lib\\blog-content.mjs": "a2490f9e161b690850e98e6cac55a96aaab5a52a7211b873e9094d86c05a1231",
+    "scripts\\lib\\blog-pages.mjs": "52469aadfea1f1e2a864a571e932484ddc5d78e4196877c6fc8c89f80deff222",
+    "scripts\\lib\\blog-render.mjs": "a8b1d83db1c149e6d0affa4b3365d2737592814050d2e63e4d241b77e59f2710",
+    "tests/blog-content.test.mjs": "9095bc921ba33a645fd56967281d33796002c6dda0c0820f242f9c5ccac2aa01",
+    "tests/blog-pages.test.mjs": "0fbff75be7ff7deab9e14792ed212cd29c517785b2c43c38a12216d255d2a3c5",
+    "tests/blog-render.test.mjs": "f099e0d0067ad465464d379372cf7bd114d5d50858565006dd4bb4eef50c6cb9"
+  },
+  "entries": [
+    {
+      "file": "00-work-run-blog-pages-source.mjs.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\run-blog-pages-source.mjs",
+      "sha256": "a68e7bc9f1f262474239029286ccbe4b209c2d450d0ea1ff1854b1e2bd232e45",
+      "bytes": 3457,
+      "gzipBytes": 1510
+    },
+    {
+      "file": "01-work-run-blog-xml-red.mjs.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\run-blog-xml-red.mjs",
+      "sha256": "eafc2bdef1364f3c23002d450b2cb901f37a9950f9bbbf1a50815ea134b276b2",
+      "bytes": 3443,
+      "gzipBytes": 1533
+    },
+    {
+      "file": "02-work-run-blog-pages-green.mjs.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\run-blog-pages-green.mjs",
+      "sha256": "a60f6c01eb799f5a2d4d72a649bd1031bfcc93eda036452aa6c608c33fea9dd2",
+      "bytes": 3457,
+      "gzipBytes": 1511
+    },
+    {
+      "file": "03-blog-pages-source-red-01-report.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\blog-pages-source-red-01\\report.json",
+      "sha256": "c7bc1ca0c62e4fdca5d5c2efbaad1e81b50d573d06aadcd422ea923a95b62715",
+      "bytes": 24004,
+      "gzipBytes": 3304
+    },
+    {
+      "file": "04-blog-xml-source-red-01-report.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\blog-xml-source-red-01\\report.json",
+      "sha256": "358dc364ce9991a0a93a817083c515aed7561642bc4899ecaa8d4c31fcf91de6",
+      "bytes": 3714,
+      "gzipBytes": 1258
+    },
+    {
+      "file": "05-blog-pages-source-green-01-report.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\blog-pages-source-green-01\\report.json",
+      "sha256": "de05d1d300bfdb430679161139a4b7102a52fa7fbf7a9985c07a49d000d53cfb",
+      "bytes": 20990,
+      "gzipBytes": 3208
+    },
+    {
+      "file": "06-work-run-blog-pages-browser.mjs.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\run-blog-pages-browser.mjs",
+      "sha256": "f71d1bb4e97dc6772399ac6bab3c1556c834793ced4a029a94895a4d922a1cf1",
+      "bytes": 4201,
+      "gzipBytes": 1586
+    },
+    {
+      "file": "07-work-blog-pages-browser.mjs.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\blog-pages-browser.mjs",
+      "sha256": "54d671bd8a86d9bdddff438ad00c5b9c0819b1556fbc455615a7415e98a5b19c",
+      "bytes": 9964,
+      "gzipBytes": 3841
+    },
+    {
+      "file": "08-blog-pages-window-01-report.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\blog-pages-window-01\\report.json",
+      "sha256": "0eca2a19373326887edf7013edfd71b1b36498f5bdcd90b75940d09922d12a05",
+      "bytes": 55391,
+      "gzipBytes": 6569
+    },
+    {
+      "file": "09-blog-pages-browser-01-report.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\blog-pages-browser-01\\report.json",
+      "sha256": "ac3f77d3de646e6ad7a03e9bc021c31f12e3fa5da933719a5eda9f8223a6f5b7",
+      "bytes": 46710,
+      "gzipBytes": 4436
+    },
+    {
+      "file": "10-work-owned-windows-child.mjs.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\owned-windows-child.mjs",
+      "sha256": "a5177337fcf6ec41f285fc105b93d0b4b94ee1101cb14a653a91e9b8b075b0d9",
+      "bytes": 3475,
+      "gzipBytes": 1360
+    },
+    {
+      "file": "11-work-owned-windows-preview-child.mjs.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\owned-windows-preview-child.mjs",
+      "sha256": "6f4903a66d324a01a476eebefdfac68663dde2c573f62f637c4b7537ccb0d631",
+      "bytes": 3476,
+      "gzipBytes": 1360
+    },
+    {
+      "file": "12-blog-pages-browser-01-desktop-empty.png.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\blog-pages-browser-01\\desktop-empty.png",
+      "sha256": "b53bd94c8602e612c28a5e00f58999d3c537c793d86254aa3dfbbfcce470f4a5",
+      "bytes": 49551,
+      "gzipBytes": 43332
+    },
+    {
+      "file": "13-blog-pages-browser-01-desktop-index.png.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\blog-pages-browser-01\\desktop-index.png",
+      "sha256": "037a7541be181ef8d780bb0a5eb3da5dc6203cee7988baed10021554ba522585",
+      "bytes": 66692,
+      "gzipBytes": 59942
+    },
+    {
+      "file": "14-blog-pages-browser-01-desktop-news.png.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\blog-pages-browser-01\\desktop-news.png",
+      "sha256": "65ac6986f94541c0f6df6d848dde52a604fee577203961ef672895f391149755",
+      "bytes": 52383,
+      "gzipBytes": 46196
+    },
+    {
+      "file": "15-blog-pages-browser-01-desktop-related.png.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\blog-pages-browser-01\\desktop-related.png",
+      "sha256": "a18cd7245951a8418e5943a13a05a9d1adec852b86faca978e1b62ad02d19aa7",
+      "bytes": 62815,
+      "gzipBytes": 56998
+    },
+    {
+      "file": "16-blog-pages-browser-01-narrow-empty.png.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\blog-pages-browser-01\\narrow-empty.png",
+      "sha256": "8d423345e5e01a34335a4b1f62aa995fdefb8a7d4a3b0c4678c35a46e91611b2",
+      "bytes": 30232,
+      "gzipBytes": 28660
+    },
+    {
+      "file": "17-blog-pages-browser-01-narrow-index.png.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\blog-pages-browser-01\\narrow-index.png",
+      "sha256": "231c70076cd48bcdf2b56e11fe442ad8da398815e0e6cb792fff5a8b1d9856cb",
+      "bytes": 30101,
+      "gzipBytes": 28541
+    },
+    {
+      "file": "18-blog-pages-browser-01-narrow-news.png.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\blog-pages-browser-01\\narrow-news.png",
+      "sha256": "9f931396f6e7e0d62849f01188f5a34bc65332e1649d383e0dafc63501f54342",
+      "bytes": 30311,
+      "gzipBytes": 28674
+    },
+    {
+      "file": "19-blog-pages-browser-01-narrow-related.png.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\blog-pages-browser-01\\narrow-related.png",
+      "sha256": "99521f8baadf7af3b46476aa5e13c6b922dcd268af14ba97456128e67ec3ae58",
+      "bytes": 12797,
+      "gzipBytes": 11313
+    },
+    {
+      "file": "20-blog-pages-browser-01-phone-empty.png.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\blog-pages-browser-01\\phone-empty.png",
+      "sha256": "da6eb56c77328f3f93ec0ccc775803e1dc53d518710ecf619037103ac507dbdd",
+      "bytes": 202885,
+      "gzipBytes": 185517
+    },
+    {
+      "file": "21-blog-pages-browser-01-phone-index.png.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\blog-pages-browser-01\\phone-index.png",
+      "sha256": "97b6808f805b9a85998637743d982714b814766af339491e2ad35683822d090b",
+      "bytes": 237847,
+      "gzipBytes": 221266
+    },
+    {
+      "file": "22-blog-pages-browser-01-phone-news.png.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\blog-pages-browser-01\\phone-news.png",
+      "sha256": "6313f6fb981110372a8d3249a43671a6e75b9244e1202b3e847667cfe2966ca2",
+      "bytes": 221189,
+      "gzipBytes": 204850
+    },
+    {
+      "file": "23-blog-pages-browser-01-phone-related.png.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\blog-pages-browser-01\\phone-related.png",
+      "sha256": "21c1e961dfda840719007bd6bcc1f30b165ba64095f344ad7dc64301f8241a67",
+      "bytes": 145873,
+      "gzipBytes": 128746
+    }
+  ],
+  "browserCases": [
+    "native keyboard skip-link focus",
+    "desktop: native category/article/related/empty journeys, contained readable layout,44px links and reduced motion",
+    "desktop: Atom response and native XML parsing",
+    "phone: native category/article/related/empty journeys, contained readable layout,44px links and reduced motion",
+    "phone: Atom response and native XML parsing",
+    "narrow: native category/article/related/empty journeys, contained readable layout,44px links and reduced motion",
+    "narrow: Atom response and native XML parsing"
+  ],
+  "captures": [
+    {
+      "name": "desktop-index",
+      "file": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\blog-pages-browser-01\\desktop-index.png",
+      "sha256": "037a7541be181ef8d780bb0a5eb3da5dc6203cee7988baed10021554ba522585",
+      "metrics": {
+        "width": 1440,
+        "height": 1000,
+        "scrollWidth": 1440,
+        "url": "/blog",
+        "scripts": 0,
+        "h1": 1,
+        "logoReady": true,
+        "links": [
+          {
+            "text": "",
+            "box": {
+              "x": 240,
+              "y": 16,
+              "width": 150,
+              "height": 55.75,
+              "top": 16,
+              "right": 390,
+              "bottom": 71.75,
+              "left": 240
+            }
+          },
+          {
+            "text": "Play the games",
+            "box": {
+              "x": 962.5,
+              "y": 21.875,
+              "width": 96.15625,
+              "height": 44,
+              "top": 21.875,
+              "right": 1058.65625,
+              "bottom": 65.875,
+              "left": 962.5
+            }
+          },
+          {
+            "text": "How Ranked works",
+            "box": {
+              "x": 1078.65625,
+              "y": 21.875,
+              "width": 121.34375,
+              "height": 44,
+              "top": 21.875,
+              "right": 1200,
+              "bottom": 65.875,
+              "left": 1078.65625
+            }
+          },
+          {
+            "text": "All articles 3",
+            "box": {
+              "x": 240,
+              "y": 313.671875,
+              "width": 126.859375,
+              "height": 45.1875,
+              "top": 313.671875,
+              "right": 366.859375,
+              "bottom": 358.859375,
+              "left": 240
+            }
+          },
+          {
+            "text": "News 2",
+            "box": {
+              "x": 374.859375,
+              "y": 313.671875,
+              "width": 86.65625,
+              "height": 45.1875,
+              "top": 313.671875,
+              "right": 461.515625,
+              "bottom": 358.859375,
+              "left": 374.859375
+            }
+          },
+          {
+            "text": "Guides 1",
+            "box": {
+              "x": 469.515625,
+              "y": 313.671875,
+              "width": 96.453125,
+              "height": 45.1875,
+              "top": 313.671875,
+              "right": 565.96875,
+              "bottom": 358.859375,
+              "left": 469.515625
+            }
+          },
+          {
+            "text": "Behind the scenes 0",
+            "box": {
+              "x": 573.96875,
+              "y": 313.671875,
+              "width": 175.28125,
+              "height": 45.1875,
+              "top": 313.671875,
+              "right": 749.25,
+              "bottom": 358.859375,
+              "left": 573.96875
+            }
+          },
+          {
+            "text": "Three games. One arcade.",
+            "box": {
+              "x": 240,
+              "y": 463.609375,
+              "width": 371.921875,
+              "height": 44,
+              "top": 463.609375,
+              "right": 611.921875,
+              "bottom": 507.609375,
+              "left": 240
+            }
+          },
+          {
+            "text": "Reading the battlefield",
+            "box": {
+              "x": 736,
+              "y": 463.609375,
+              "width": 330.3125,
+              "height": 44,
+              "top": 463.609375,
+              "right": 1066.3125,
+              "bottom": 507.609375,
+              "left": 736
+            }
+          },
+          {
+            "text": "One more run",
+            "box": {
+              "x": 240,
+              "y": 726.84375,
+              "width": 201.265625,
+              "height": 44,
+              "top": 726.84375,
+              "right": 441.265625,
+              "bottom": 770.84375,
+              "left": 240
+            }
+          }
+        ],
+        "cards": [
+          {
+            "x": 240,
+            "y": 407.859375,
+            "width": 464,
+            "height": 231.234375,
+            "top": 407.859375,
+            "right": 704,
+            "bottom": 639.09375,
+            "left": 240
+          },
+          {
+            "x": 736,
+            "y": 407.859375,
+            "width": 464,
+            "height": 231.234375,
+            "top": 407.859375,
+            "right": 1200,
+            "bottom": 639.09375,
+            "left": 736
+          },
+          {
+            "x": 240,
+            "y": 671.09375,
+            "width": 464,
+            "height": 231.234375,
+            "top": 671.09375,
+            "right": 704,
+            "bottom": 902.328125,
+            "left": 240
+          }
+        ],
+        "textSize": "16px",
+        "current": [
+          "/blog"
+        ],
+        "canonical": "https://lestersarcade.io/blog"
+      }
+    },
+    {
+      "name": "desktop-news",
+      "file": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\blog-pages-browser-01\\desktop-news.png",
+      "sha256": "65ac6986f94541c0f6df6d848dde52a604fee577203961ef672895f391149755",
+      "metrics": {
+        "width": 1440,
+        "height": 1000,
+        "scrollWidth": 1440,
+        "url": "/blog/category/news",
+        "scripts": 0,
+        "h1": 1,
+        "logoReady": true,
+        "links": [
+          {
+            "text": "",
+            "box": {
+              "x": 240,
+              "y": 16,
+              "width": 150,
+              "height": 55.75,
+              "top": 16,
+              "right": 390,
+              "bottom": 71.75,
+              "left": 240
+            }
+          },
+          {
+            "text": "Play the games",
+            "box": {
+              "x": 962.5,
+              "y": 21.875,
+              "width": 96.15625,
+              "height": 44,
+              "top": 21.875,
+              "right": 1058.65625,
+              "bottom": 65.875,
+              "left": 962.5
+            }
+          },
+          {
+            "text": "How Ranked works",
+            "box": {
+              "x": 1078.65625,
+              "y": 21.875,
+              "width": 121.34375,
+              "height": 44,
+              "top": 21.875,
+              "right": 1200,
+              "bottom": 65.875,
+              "left": 1078.65625
+            }
+          },
+          {
+            "text": "All articles 3",
+            "box": {
+              "x": 240,
+              "y": 313.671875,
+              "width": 119.84375,
+              "height": 45.1875,
+              "top": 313.671875,
+              "right": 359.84375,
+              "bottom": 358.859375,
+              "left": 240
+            }
+          },
+          {
+            "text": "News 2",
+            "box": {
+              "x": 367.84375,
+              "y": 313.671875,
+              "width": 89.0625,
+              "height": 45.1875,
+              "top": 313.671875,
+              "right": 456.90625,
+              "bottom": 358.859375,
+              "left": 367.84375
+            }
+          },
+          {
+            "text": "Guides 1",
+            "box": {
+              "x": 464.90625,
+              "y": 313.671875,
+              "width": 96.453125,
+              "height": 45.1875,
+              "top": 313.671875,
+              "right": 561.359375,
+              "bottom": 358.859375,
+              "left": 464.90625
+            }
+          },
+          {
+            "text": "Behind the scenes 0",
+            "box": {
+              "x": 569.359375,
+              "y": 313.671875,
+              "width": 175.28125,
+              "height": 45.1875,
+              "top": 313.671875,
+              "right": 744.640625,
+              "bottom": 358.859375,
+              "left": 569.359375
+            }
+          },
+          {
+            "text": "Reading the battlefield",
+            "box": {
+              "x": 240,
+              "y": 463.609375,
+              "width": 330.3125,
+              "height": 44,
+              "top": 463.609375,
+              "right": 570.3125,
+              "bottom": 507.609375,
+              "left": 240
+            }
+          },
+          {
+            "text": "One more run",
+            "box": {
+              "x": 736,
+              "y": 463.609375,
+              "width": 201.265625,
+              "height": 44,
+              "top": 463.609375,
+              "right": 937.265625,
+              "bottom": 507.609375,
+              "left": 736
+            }
+          }
+        ],
+        "cards": [
+          {
+            "x": 240,
+            "y": 407.859375,
+            "width": 464,
+            "height": 231.234375,
+            "top": 407.859375,
+            "right": 704,
+            "bottom": 639.09375,
+            "left": 240
+          },
+          {
+            "x": 736,
+            "y": 407.859375,
+            "width": 464,
+            "height": 231.234375,
+            "top": 407.859375,
+            "right": 1200,
+            "bottom": 639.09375,
+            "left": 736
+          }
+        ],
+        "textSize": "16px",
+        "current": [
+          "/blog/category/news"
+        ],
+        "canonical": "https://lestersarcade.io/blog/category/news"
+      }
+    },
+    {
+      "name": "desktop-related",
+      "file": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\blog-pages-browser-01\\desktop-related.png",
+      "sha256": "a18cd7245951a8418e5943a13a05a9d1adec852b86faca978e1b62ad02d19aa7",
+      "metrics": {
+        "width": 1440,
+        "height": 1000,
+        "scrollWidth": 1440,
+        "url": "/blog/reading-the-battlefield",
+        "scripts": 0,
+        "h1": 1,
+        "logoReady": true,
+        "links": [
+          {
+            "text": "",
+            "box": {
+              "x": 240,
+              "y": -24,
+              "width": 150,
+              "height": 55.75,
+              "top": -24,
+              "right": 390,
+              "bottom": 31.75,
+              "left": 240
+            }
+          },
+          {
+            "text": "Arcade journal",
+            "box": {
+              "x": 850.21875,
+              "y": -18.125,
+              "width": 92.28125,
+              "height": 44,
+              "top": -18.125,
+              "right": 942.5,
+              "bottom": 25.875,
+              "left": 850.21875
+            }
+          },
+          {
+            "text": "Play the games",
+            "box": {
+              "x": 962.5,
+              "y": -18.125,
+              "width": 96.15625,
+              "height": 44,
+              "top": -18.125,
+              "right": 1058.65625,
+              "bottom": 25.875,
+              "left": 962.5
+            }
+          },
+          {
+            "text": "How Ranked works",
+            "box": {
+              "x": 1078.65625,
+              "y": -18.125,
+              "width": 121.34375,
+              "height": 44,
+              "top": -18.125,
+              "right": 1200,
+              "bottom": 25.875,
+              "left": 1078.65625
+            }
+          },
+          {
+            "text": "One more run",
+            "box": {
+              "x": 240,
+              "y": 869.453125,
+              "width": 104.46875,
+              "height": 44,
+              "top": 869.453125,
+              "right": 344.46875,
+              "bottom": 913.453125,
+              "left": 240
+            }
+          },
+          {
+            "text": "Three games. One arcade.",
+            "box": {
+              "x": 730,
+              "y": 869.453125,
+              "width": 193.640625,
+              "height": 44,
+              "top": 869.453125,
+              "right": 923.640625,
+              "bottom": 913.453125,
+              "left": 730
+            }
+          }
+        ],
+        "cards": [],
+        "textSize": "16px",
+        "current": [],
+        "canonical": "https://lestersarcade.io/blog/reading-the-battlefield"
+      }
+    },
+    {
+      "name": "desktop-empty",
+      "file": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\blog-pages-browser-01\\desktop-empty.png",
+      "sha256": "b53bd94c8602e612c28a5e00f58999d3c537c793d86254aa3dfbbfcce470f4a5",
+      "metrics": {
+        "width": 1440,
+        "height": 1000,
+        "scrollWidth": 1440,
+        "url": "/blog/category/dev-notes",
+        "scripts": 0,
+        "h1": 1,
+        "logoReady": true,
+        "links": [
+          {
+            "text": "",
+            "box": {
+              "x": 240,
+              "y": 16,
+              "width": 150,
+              "height": 55.75,
+              "top": 16,
+              "right": 390,
+              "bottom": 71.75,
+              "left": 240
+            }
+          },
+          {
+            "text": "Play the games",
+            "box": {
+              "x": 962.5,
+              "y": 21.875,
+              "width": 96.15625,
+              "height": 44,
+              "top": 21.875,
+              "right": 1058.65625,
+              "bottom": 65.875,
+              "left": 962.5
+            }
+          },
+          {
+            "text": "How Ranked works",
+            "box": {
+              "x": 1078.65625,
+              "y": 21.875,
+              "width": 121.34375,
+              "height": 44,
+              "top": 21.875,
+              "right": 1200,
+              "bottom": 65.875,
+              "left": 1078.65625
+            }
+          },
+          {
+            "text": "All articles 3",
+            "box": {
+              "x": 240,
+              "y": 313.671875,
+              "width": 119.84375,
+              "height": 45.1875,
+              "top": 313.671875,
+              "right": 359.84375,
+              "bottom": 358.859375,
+              "left": 240
+            }
+          },
+          {
+            "text": "News 2",
+            "box": {
+              "x": 367.84375,
+              "y": 313.671875,
+              "width": 86.65625,
+              "height": 45.1875,
+              "top": 313.671875,
+              "right": 454.5,
+              "bottom": 358.859375,
+              "left": 367.84375
+            }
+          },
+          {
+            "text": "Guides 1",
+            "box": {
+              "x": 462.5,
+              "y": 313.671875,
+              "width": 96.453125,
+              "height": 45.1875,
+              "top": 313.671875,
+              "right": 558.953125,
+              "bottom": 358.859375,
+              "left": 462.5
+            }
+          },
+          {
+            "text": "Behind the scenes 0",
+            "box": {
+              "x": 566.953125,
+              "y": 313.671875,
+              "width": 182.75,
+              "height": 45.1875,
+              "top": 313.671875,
+              "right": 749.703125,
+              "bottom": 358.859375,
+              "left": 566.953125
+            }
+          }
+        ],
+        "cards": [],
+        "textSize": "16px",
+        "current": [
+          "/blog/category/dev-notes"
+        ],
+        "canonical": "https://lestersarcade.io/blog/category/dev-notes"
+      }
+    },
+    {
+      "name": "phone-index",
+      "file": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\blog-pages-browser-01\\phone-index.png",
+      "sha256": "97b6808f805b9a85998637743d982714b814766af339491e2ad35683822d090b",
+      "metrics": {
+        "width": 414,
+        "height": 896,
+        "scrollWidth": 414,
+        "url": "/blog",
+        "scripts": 0,
+        "h1": 1,
+        "logoReady": true,
+        "links": [
+          {
+            "text": "",
+            "box": {
+              "x": 16,
+              "y": 16,
+              "width": 150,
+              "height": 55.75,
+              "top": 16,
+              "right": 166,
+              "bottom": 71.75,
+              "left": 16
+            }
+          },
+          {
+            "text": "Play the games",
+            "box": {
+              "x": 301.84375,
+              "y": 21.875,
+              "width": 96.15625,
+              "height": 44,
+              "top": 21.875,
+              "right": 398,
+              "bottom": 65.875,
+              "left": 301.84375
+            }
+          },
+          {
+            "text": "How Ranked works",
+            "box": {
+              "x": 16,
+              "y": 75.75,
+              "width": 121.34375,
+              "height": 44,
+              "top": 75.75,
+              "right": 137.34375,
+              "bottom": 119.75,
+              "left": 16
+            }
+          },
+          {
+            "text": "All articles 3",
+            "box": {
+              "x": 16,
+              "y": 332.296875,
+              "width": 126.859375,
+              "height": 45.1875,
+              "top": 332.296875,
+              "right": 142.859375,
+              "bottom": 377.484375,
+              "left": 16
+            }
+          },
+          {
+            "text": "News 2",
+            "box": {
+              "x": 150.859375,
+              "y": 332.296875,
+              "width": 86.65625,
+              "height": 45.1875,
+              "top": 332.296875,
+              "right": 237.515625,
+              "bottom": 377.484375,
+              "left": 150.859375
+            }
+          },
+          {
+            "text": "Guides 1",
+            "box": {
+              "x": 245.515625,
+              "y": 332.296875,
+              "width": 96.453125,
+              "height": 45.1875,
+              "top": 332.296875,
+              "right": 341.96875,
+              "bottom": 377.484375,
+              "left": 245.515625
+            }
+          },
+          {
+            "text": "Behind the scenes 0",
+            "box": {
+              "x": 16,
+              "y": 385.484375,
+              "width": 175.28125,
+              "height": 45.1875,
+              "top": 385.484375,
+              "right": 191.28125,
+              "bottom": 430.671875,
+              "left": 16
+            }
+          },
+          {
+            "text": "Three games. One arcade.",
+            "box": {
+              "x": 16,
+              "y": 535.421875,
+              "width": 278.953125,
+              "height": 44,
+              "top": 535.421875,
+              "right": 294.953125,
+              "bottom": 579.421875,
+              "left": 16
+            }
+          },
+          {
+            "text": "Reading the battlefield",
+            "box": {
+              "x": 16,
+              "y": 786.65625,
+              "width": 247.734375,
+              "height": 44,
+              "top": 786.65625,
+              "right": 263.734375,
+              "bottom": 830.65625,
+              "left": 16
+            }
+          },
+          {
+            "text": "One more run",
+            "box": {
+              "x": 16,
+              "y": 1037.890625,
+              "width": 150.953125,
+              "height": 44,
+              "top": 1037.890625,
+              "right": 166.953125,
+              "bottom": 1081.890625,
+              "left": 16
+            }
+          }
+        ],
+        "cards": [
+          {
+            "x": 16,
+            "y": 479.671875,
+            "width": 382,
+            "height": 231.234375,
+            "top": 479.671875,
+            "right": 398,
+            "bottom": 710.90625,
+            "left": 16
+          },
+          {
+            "x": 16,
+            "y": 730.90625,
+            "width": 382,
+            "height": 231.234375,
+            "top": 730.90625,
+            "right": 398,
+            "bottom": 962.140625,
+            "left": 16
+          },
+          {
+            "x": 16,
+            "y": 982.140625,
+            "width": 382,
+            "height": 231.234375,
+            "top": 982.140625,
+            "right": 398,
+            "bottom": 1213.375,
+            "left": 16
+          }
+        ],
+        "textSize": "16px",
+        "current": [
+          "/blog"
+        ],
+        "canonical": "https://lestersarcade.io/blog"
+      }
+    },
+    {
+      "name": "phone-news",
+      "file": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\blog-pages-browser-01\\phone-news.png",
+      "sha256": "6313f6fb981110372a8d3249a43671a6e75b9244e1202b3e847667cfe2966ca2",
+      "metrics": {
+        "width": 414,
+        "height": 896,
+        "scrollWidth": 414,
+        "url": "/blog/category/news",
+        "scripts": 0,
+        "h1": 1,
+        "logoReady": true,
+        "links": [
+          {
+            "text": "",
+            "box": {
+              "x": 16,
+              "y": 16,
+              "width": 150,
+              "height": 55.75,
+              "top": 16,
+              "right": 166,
+              "bottom": 71.75,
+              "left": 16
+            }
+          },
+          {
+            "text": "Play the games",
+            "box": {
+              "x": 301.84375,
+              "y": 21.875,
+              "width": 96.15625,
+              "height": 44,
+              "top": 21.875,
+              "right": 398,
+              "bottom": 65.875,
+              "left": 301.84375
+            }
+          },
+          {
+            "text": "How Ranked works",
+            "box": {
+              "x": 16,
+              "y": 75.75,
+              "width": 121.34375,
+              "height": 44,
+              "top": 75.75,
+              "right": 137.34375,
+              "bottom": 119.75,
+              "left": 16
+            }
+          },
+          {
+            "text": "All articles 3",
+            "box": {
+              "x": 16,
+              "y": 332.296875,
+              "width": 119.84375,
+              "height": 45.1875,
+              "top": 332.296875,
+              "right": 135.84375,
+              "bottom": 377.484375,
+              "left": 16
+            }
+          },
+          {
+            "text": "News 2",
+            "box": {
+              "x": 143.84375,
+              "y": 332.296875,
+              "width": 89.0625,
+              "height": 45.1875,
+              "top": 332.296875,
+              "right": 232.90625,
+              "bottom": 377.484375,
+              "left": 143.84375
+            }
+          },
+          {
+            "text": "Guides 1",
+            "box": {
+              "x": 240.90625,
+              "y": 332.296875,
+              "width": 96.453125,
+              "height": 45.1875,
+              "top": 332.296875,
+              "right": 337.359375,
+              "bottom": 377.484375,
+              "left": 240.90625
+            }
+          },
+          {
+            "text": "Behind the scenes 0",
+            "box": {
+              "x": 16,
+              "y": 385.484375,
+              "width": 175.28125,
+              "height": 45.1875,
+              "top": 385.484375,
+              "right": 191.28125,
+              "bottom": 430.671875,
+              "left": 16
+            }
+          },
+          {
+            "text": "Reading the battlefield",
+            "box": {
+              "x": 16,
+              "y": 535.421875,
+              "width": 247.734375,
+              "height": 44,
+              "top": 535.421875,
+              "right": 263.734375,
+              "bottom": 579.421875,
+              "left": 16
+            }
+          },
+          {
+            "text": "One more run",
+            "box": {
+              "x": 16,
+              "y": 786.65625,
+              "width": 150.953125,
+              "height": 44,
+              "top": 786.65625,
+              "right": 166.953125,
+              "bottom": 830.65625,
+              "left": 16
+            }
+          }
+        ],
+        "cards": [
+          {
+            "x": 16,
+            "y": 479.671875,
+            "width": 382,
+            "height": 231.234375,
+            "top": 479.671875,
+            "right": 398,
+            "bottom": 710.90625,
+            "left": 16
+          },
+          {
+            "x": 16,
+            "y": 730.90625,
+            "width": 382,
+            "height": 231.234375,
+            "top": 730.90625,
+            "right": 398,
+            "bottom": 962.140625,
+            "left": 16
+          }
+        ],
+        "textSize": "16px",
+        "current": [
+          "/blog/category/news"
+        ],
+        "canonical": "https://lestersarcade.io/blog/category/news"
+      }
+    },
+    {
+      "name": "phone-related",
+      "file": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\blog-pages-browser-01\\phone-related.png",
+      "sha256": "21c1e961dfda840719007bd6bcc1f30b165ba64095f344ad7dc64301f8241a67",
+      "metrics": {
+        "width": 414,
+        "height": 896,
+        "scrollWidth": 414,
+        "url": "/blog/reading-the-battlefield",
+        "scripts": 0,
+        "h1": 1,
+        "logoReady": true,
+        "links": [
+          {
+            "text": "",
+            "box": {
+              "x": 16,
+              "y": -340,
+              "width": 150,
+              "height": 55.75,
+              "top": -340,
+              "right": 166,
+              "bottom": -284.25,
+              "left": 16
+            }
+          },
+          {
+            "text": "Arcade journal",
+            "box": {
+              "x": 189.5625,
+              "y": -334.125,
+              "width": 92.28125,
+              "height": 44,
+              "top": -334.125,
+              "right": 281.84375,
+              "bottom": -290.125,
+              "left": 189.5625
+            }
+          },
+          {
+            "text": "Play the games",
+            "box": {
+              "x": 301.84375,
+              "y": -334.125,
+              "width": 96.15625,
+              "height": 44,
+              "top": -334.125,
+              "right": 398,
+              "bottom": -290.125,
+              "left": 301.84375
+            }
+          },
+          {
+            "text": "How Ranked works",
+            "box": {
+              "x": 16,
+              "y": -280.25,
+              "width": 121.34375,
+              "height": 44,
+              "top": -280.25,
+              "right": 137.34375,
+              "bottom": -236.25,
+              "left": 16
+            }
+          },
+          {
+            "text": "One more run",
+            "box": {
+              "x": 16,
+              "y": 601.734375,
+              "width": 104.46875,
+              "height": 44,
+              "top": 601.734375,
+              "right": 120.46875,
+              "bottom": 645.734375,
+              "left": 16
+            }
+          },
+          {
+            "text": "Three games. One arcade.",
+            "box": {
+              "x": 16,
+              "y": 766.109375,
+              "width": 193.640625,
+              "height": 44,
+              "top": 766.109375,
+              "right": 209.640625,
+              "bottom": 810.109375,
+              "left": 16
+            }
+          }
+        ],
+        "cards": [],
+        "textSize": "16px",
+        "current": [],
+        "canonical": "https://lestersarcade.io/blog/reading-the-battlefield"
+      }
+    },
+    {
+      "name": "phone-empty",
+      "file": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\blog-pages-browser-01\\phone-empty.png",
+      "sha256": "da6eb56c77328f3f93ec0ccc775803e1dc53d518710ecf619037103ac507dbdd",
+      "metrics": {
+        "width": 414,
+        "height": 896,
+        "scrollWidth": 414,
+        "url": "/blog/category/dev-notes",
+        "scripts": 0,
+        "h1": 1,
+        "logoReady": true,
+        "links": [
+          {
+            "text": "",
+            "box": {
+              "x": 16,
+              "y": 16,
+              "width": 150,
+              "height": 55.75,
+              "top": 16,
+              "right": 166,
+              "bottom": 71.75,
+              "left": 16
+            }
+          },
+          {
+            "text": "Play the games",
+            "box": {
+              "x": 301.84375,
+              "y": 21.875,
+              "width": 96.15625,
+              "height": 44,
+              "top": 21.875,
+              "right": 398,
+              "bottom": 65.875,
+              "left": 301.84375
+            }
+          },
+          {
+            "text": "How Ranked works",
+            "box": {
+              "x": 16,
+              "y": 75.75,
+              "width": 121.34375,
+              "height": 44,
+              "top": 75.75,
+              "right": 137.34375,
+              "bottom": 119.75,
+              "left": 16
+            }
+          },
+          {
+            "text": "All articles 3",
+            "box": {
+              "x": 16,
+              "y": 332.296875,
+              "width": 119.84375,
+              "height": 45.1875,
+              "top": 332.296875,
+              "right": 135.84375,
+              "bottom": 377.484375,
+              "left": 16
+            }
+          },
+          {
+            "text": "News 2",
+            "box": {
+              "x": 143.84375,
+              "y": 332.296875,
+              "width": 86.65625,
+              "height": 45.1875,
+              "top": 332.296875,
+              "right": 230.5,
+              "bottom": 377.484375,
+              "left": 143.84375
+            }
+          },
+          {
+            "text": "Guides 1",
+            "box": {
+              "x": 238.5,
+              "y": 332.296875,
+              "width": 96.453125,
+              "height": 45.1875,
+              "top": 332.296875,
+              "right": 334.953125,
+              "bottom": 377.484375,
+              "left": 238.5
+            }
+          },
+          {
+            "text": "Behind the scenes 0",
+            "box": {
+              "x": 16,
+              "y": 385.484375,
+              "width": 182.75,
+              "height": 45.1875,
+              "top": 385.484375,
+              "right": 198.75,
+              "bottom": 430.671875,
+              "left": 16
+            }
+          }
+        ],
+        "cards": [],
+        "textSize": "16px",
+        "current": [
+          "/blog/category/dev-notes"
+        ],
+        "canonical": "https://lestersarcade.io/blog/category/dev-notes"
+      }
+    },
+    {
+      "name": "narrow-index",
+      "file": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\blog-pages-browser-01\\narrow-index.png",
+      "sha256": "231c70076cd48bcdf2b56e11fe442ad8da398815e0e6cb792fff5a8b1d9856cb",
+      "metrics": {
+        "width": 320,
+        "height": 568,
+        "scrollWidth": 320,
+        "url": "/blog",
+        "scripts": 0,
+        "h1": 1,
+        "logoReady": true,
+        "links": [
+          {
+            "text": "",
+            "box": {
+              "x": 16,
+              "y": 16,
+              "width": 288,
+              "height": 55.75,
+              "top": 16,
+              "right": 304,
+              "bottom": 71.75,
+              "left": 16
+            }
+          },
+          {
+            "text": "Play the games",
+            "box": {
+              "x": 16,
+              "y": 71.75,
+              "width": 96.15625,
+              "height": 44,
+              "top": 71.75,
+              "right": 112.15625,
+              "bottom": 115.75,
+              "left": 16
+            }
+          },
+          {
+            "text": "How Ranked works",
+            "box": {
+              "x": 132.15625,
+              "y": 71.75,
+              "width": 121.34375,
+              "height": 44,
+              "top": 71.75,
+              "right": 253.5,
+              "bottom": 115.75,
+              "left": 132.15625
+            }
+          },
+          {
+            "text": "All articles 3",
+            "box": {
+              "x": 16,
+              "y": 357.671875,
+              "width": 126.859375,
+              "height": 45.1875,
+              "top": 357.671875,
+              "right": 142.859375,
+              "bottom": 402.859375,
+              "left": 16
+            }
+          },
+          {
+            "text": "News 2",
+            "box": {
+              "x": 150.859375,
+              "y": 357.671875,
+              "width": 86.65625,
+              "height": 45.1875,
+              "top": 357.671875,
+              "right": 237.515625,
+              "bottom": 402.859375,
+              "left": 150.859375
+            }
+          },
+          {
+            "text": "Guides 1",
+            "box": {
+              "x": 16,
+              "y": 410.859375,
+              "width": 96.453125,
+              "height": 45.1875,
+              "top": 410.859375,
+              "right": 112.453125,
+              "bottom": 456.046875,
+              "left": 16
+            }
+          },
+          {
+            "text": "Behind the scenes 0",
+            "box": {
+              "x": 120.453125,
+              "y": 410.859375,
+              "width": 175.28125,
+              "height": 45.1875,
+              "top": 410.859375,
+              "right": 295.734375,
+              "bottom": 456.046875,
+              "left": 120.453125
+            }
+          },
+          {
+            "text": "Three games. One arcade.",
+            "box": {
+              "x": 16,
+              "y": 560.796875,
+              "width": 278.953125,
+              "height": 44,
+              "top": 560.796875,
+              "right": 294.953125,
+              "bottom": 604.796875,
+              "left": 16
+            }
+          },
+          {
+            "text": "Reading the battlefield",
+            "box": {
+              "x": 16,
+              "y": 839.21875,
+              "width": 247.734375,
+              "height": 44,
+              "top": 839.21875,
+              "right": 263.734375,
+              "bottom": 883.21875,
+              "left": 16
+            }
+          },
+          {
+            "text": "One more run",
+            "box": {
+              "x": 16,
+              "y": 1117.640625,
+              "width": 150.953125,
+              "height": 44,
+              "top": 1117.640625,
+              "right": 166.953125,
+              "bottom": 1161.640625,
+              "left": 16
+            }
+          }
+        ],
+        "cards": [
+          {
+            "x": 16,
+            "y": 505.046875,
+            "width": 288,
+            "height": 258.421875,
+            "top": 505.046875,
+            "right": 304,
+            "bottom": 763.46875,
+            "left": 16
+          },
+          {
+            "x": 16,
+            "y": 783.46875,
+            "width": 288,
+            "height": 258.421875,
+            "top": 783.46875,
+            "right": 304,
+            "bottom": 1041.890625,
+            "left": 16
+          },
+          {
+            "x": 16,
+            "y": 1061.890625,
+            "width": 288,
+            "height": 258.421875,
+            "top": 1061.890625,
+            "right": 304,
+            "bottom": 1320.3125,
+            "left": 16
+          }
+        ],
+        "textSize": "16px",
+        "current": [
+          "/blog"
+        ],
+        "canonical": "https://lestersarcade.io/blog"
+      }
+    },
+    {
+      "name": "narrow-news",
+      "file": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\blog-pages-browser-01\\narrow-news.png",
+      "sha256": "9f931396f6e7e0d62849f01188f5a34bc65332e1649d383e0dafc63501f54342",
+      "metrics": {
+        "width": 320,
+        "height": 568,
+        "scrollWidth": 320,
+        "url": "/blog/category/news",
+        "scripts": 0,
+        "h1": 1,
+        "logoReady": true,
+        "links": [
+          {
+            "text": "",
+            "box": {
+              "x": 16,
+              "y": 16,
+              "width": 288,
+              "height": 55.75,
+              "top": 16,
+              "right": 304,
+              "bottom": 71.75,
+              "left": 16
+            }
+          },
+          {
+            "text": "Play the games",
+            "box": {
+              "x": 16,
+              "y": 71.75,
+              "width": 96.15625,
+              "height": 44,
+              "top": 71.75,
+              "right": 112.15625,
+              "bottom": 115.75,
+              "left": 16
+            }
+          },
+          {
+            "text": "How Ranked works",
+            "box": {
+              "x": 132.15625,
+              "y": 71.75,
+              "width": 121.34375,
+              "height": 44,
+              "top": 71.75,
+              "right": 253.5,
+              "bottom": 115.75,
+              "left": 132.15625
+            }
+          },
+          {
+            "text": "All articles 3",
+            "box": {
+              "x": 16,
+              "y": 328.296875,
+              "width": 119.84375,
+              "height": 45.1875,
+              "top": 328.296875,
+              "right": 135.84375,
+              "bottom": 373.484375,
+              "left": 16
+            }
+          },
+          {
+            "text": "News 2",
+            "box": {
+              "x": 143.84375,
+              "y": 328.296875,
+              "width": 89.0625,
+              "height": 45.1875,
+              "top": 328.296875,
+              "right": 232.90625,
+              "bottom": 373.484375,
+              "left": 143.84375
+            }
+          },
+          {
+            "text": "Guides 1",
+            "box": {
+              "x": 16,
+              "y": 381.484375,
+              "width": 96.453125,
+              "height": 45.1875,
+              "top": 381.484375,
+              "right": 112.453125,
+              "bottom": 426.671875,
+              "left": 16
+            }
+          },
+          {
+            "text": "Behind the scenes 0",
+            "box": {
+              "x": 120.453125,
+              "y": 381.484375,
+              "width": 175.28125,
+              "height": 45.1875,
+              "top": 381.484375,
+              "right": 295.734375,
+              "bottom": 426.671875,
+              "left": 120.453125
+            }
+          },
+          {
+            "text": "Reading the battlefield",
+            "box": {
+              "x": 16,
+              "y": 531.421875,
+              "width": 247.734375,
+              "height": 44,
+              "top": 531.421875,
+              "right": 263.734375,
+              "bottom": 575.421875,
+              "left": 16
+            }
+          },
+          {
+            "text": "One more run",
+            "box": {
+              "x": 16,
+              "y": 809.84375,
+              "width": 150.953125,
+              "height": 44,
+              "top": 809.84375,
+              "right": 166.953125,
+              "bottom": 853.84375,
+              "left": 16
+            }
+          }
+        ],
+        "cards": [
+          {
+            "x": 16,
+            "y": 475.671875,
+            "width": 288,
+            "height": 258.421875,
+            "top": 475.671875,
+            "right": 304,
+            "bottom": 734.09375,
+            "left": 16
+          },
+          {
+            "x": 16,
+            "y": 754.09375,
+            "width": 288,
+            "height": 258.421875,
+            "top": 754.09375,
+            "right": 304,
+            "bottom": 1012.515625,
+            "left": 16
+          }
+        ],
+        "textSize": "16px",
+        "current": [
+          "/blog/category/news"
+        ],
+        "canonical": "https://lestersarcade.io/blog/category/news"
+      }
+    },
+    {
+      "name": "narrow-related",
+      "file": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\blog-pages-browser-01\\narrow-related.png",
+      "sha256": "99521f8baadf7af3b46476aa5e13c6b922dcd268af14ba97456128e67ec3ae58",
+      "metrics": {
+        "width": 320,
+        "height": 568,
+        "scrollWidth": 320,
+        "url": "/blog/reading-the-battlefield",
+        "scripts": 0,
+        "h1": 1,
+        "logoReady": true,
+        "links": [
+          {
+            "text": "",
+            "box": {
+              "x": 16,
+              "y": -908,
+              "width": 288,
+              "height": 55.75,
+              "top": -908,
+              "right": 304,
+              "bottom": -852.25,
+              "left": 16
+            }
+          },
+          {
+            "text": "Arcade journal",
+            "box": {
+              "x": 16,
+              "y": -852.25,
+              "width": 92.28125,
+              "height": 44,
+              "top": -852.25,
+              "right": 108.28125,
+              "bottom": -808.25,
+              "left": 16
+            }
+          },
+          {
+            "text": "Play the games",
+            "box": {
+              "x": 128.28125,
+              "y": -852.25,
+              "width": 96.15625,
+              "height": 44,
+              "top": -852.25,
+              "right": 224.4375,
+              "bottom": -808.25,
+              "left": 128.28125
+            }
+          },
+          {
+            "text": "How Ranked works",
+            "box": {
+              "x": 16,
+              "y": -808.25,
+              "width": 121.34375,
+              "height": 44,
+              "top": -808.25,
+              "right": 137.34375,
+              "bottom": -764.25,
+              "left": 16
+            }
+          },
+          {
+            "text": "One more run",
+            "box": {
+              "x": 16,
+              "y": 169.46875,
+              "width": 104.46875,
+              "height": 44,
+              "top": 169.46875,
+              "right": 120.46875,
+              "bottom": 213.46875,
+              "left": 16
+            }
+          },
+          {
+            "text": "Three games. One arcade.",
+            "box": {
+              "x": 16,
+              "y": 361.03125,
+              "width": 193.640625,
+              "height": 44,
+              "top": 361.03125,
+              "right": 209.640625,
+              "bottom": 405.03125,
+              "left": 16
+            }
+          }
+        ],
+        "cards": [],
+        "textSize": "16px",
+        "current": [],
+        "canonical": "https://lestersarcade.io/blog/reading-the-battlefield"
+      }
+    },
+    {
+      "name": "narrow-empty",
+      "file": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\blog-pages-browser-01\\narrow-empty.png",
+      "sha256": "8d423345e5e01a34335a4b1f62aa995fdefb8a7d4a3b0c4678c35a46e91611b2",
+      "metrics": {
+        "width": 320,
+        "height": 568,
+        "scrollWidth": 320,
+        "url": "/blog/category/dev-notes",
+        "scripts": 0,
+        "h1": 1,
+        "logoReady": true,
+        "links": [
+          {
+            "text": "",
+            "box": {
+              "x": 16,
+              "y": 16,
+              "width": 288,
+              "height": 55.75,
+              "top": 16,
+              "right": 304,
+              "bottom": 71.75,
+              "left": 16
+            }
+          },
+          {
+            "text": "Play the games",
+            "box": {
+              "x": 16,
+              "y": 71.75,
+              "width": 96.15625,
+              "height": 44,
+              "top": 71.75,
+              "right": 112.15625,
+              "bottom": 115.75,
+              "left": 16
+            }
+          },
+          {
+            "text": "How Ranked works",
+            "box": {
+              "x": 132.15625,
+              "y": 71.75,
+              "width": 121.34375,
+              "height": 44,
+              "top": 71.75,
+              "right": 253.5,
+              "bottom": 115.75,
+              "left": 132.15625
+            }
+          },
+          {
+            "text": "All articles 3",
+            "box": {
+              "x": 16,
+              "y": 396.84375,
+              "width": 119.84375,
+              "height": 45.1875,
+              "top": 396.84375,
+              "right": 135.84375,
+              "bottom": 442.03125,
+              "left": 16
+            }
+          },
+          {
+            "text": "News 2",
+            "box": {
+              "x": 143.84375,
+              "y": 396.84375,
+              "width": 86.65625,
+              "height": 45.1875,
+              "top": 396.84375,
+              "right": 230.5,
+              "bottom": 442.03125,
+              "left": 143.84375
+            }
+          },
+          {
+            "text": "Guides 1",
+            "box": {
+              "x": 16,
+              "y": 450.03125,
+              "width": 96.453125,
+              "height": 45.1875,
+              "top": 450.03125,
+              "right": 112.453125,
+              "bottom": 495.21875,
+              "left": 16
+            }
+          },
+          {
+            "text": "Behind the scenes 0",
+            "box": {
+              "x": 120.453125,
+              "y": 450.03125,
+              "width": 182.75,
+              "height": 45.1875,
+              "top": 450.03125,
+              "right": 303.203125,
+              "bottom": 495.21875,
+              "left": 120.453125
+            }
+          }
+        ],
+        "cards": [],
+        "textSize": "16px",
+        "current": [
+          "/blog/category/dev-notes"
+        ],
+        "canonical": "https://lestersarcade.io/blog/category/dev-notes"
+      }
+    }
+  ],
+  "cleanup": {
+    "sourcePids": [
+      2648,
+      30196
+    ],
+    "browserPid": 45360,
+    "chromePid": 43700,
+    "allIndependentlyAbsent": true,
+    "httpClosed": true,
+    "markerReleased": true
+  },
+  "review": "World independently reviewed publication/route boundaries and identified XML scalar gap. Reproduced and fixed. Root inspected original browser captures and layout metrics.",
+  "publicRoutesActive": false,
+  "defaultBuildIntegrated": false,
+  "gameChanges": false,
+  "releaseGateRun": false,
+  "physicalPhoneTested": false,
+  "contentIsLayoutFixtures": true
+}

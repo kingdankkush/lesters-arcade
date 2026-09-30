@@ -137,3 +137,6 @@ docs/2.0/receipts/blog-content-h2a/*.gz -filter -diff -merge -text
 
 # Compact static editorial rendering evidence
 docs/2.0/receipts/blog-render-h2b/*.gz -filter -diff -merge -text
+
+# Compact static journal discovery evidence
+docs/2.0/receipts/blog-pages-h2c/*.gz -filter -diff -merge -text

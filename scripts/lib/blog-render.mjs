@@ -72,12 +72,12 @@ export function renderBlogArticle(post,{preview=false,index}={}){
 <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="theme-color" content="#05070f" /><title>${escape(title)}</title>
 <meta name="description" content="${escape(checked.summary)}" /><meta name="robots" content="${preview?'noindex, nofollow':'index, follow'}" />
-${preview?'':`<link rel="canonical" href="${canonical}" /><meta property="og:type" content="article" /><meta property="og:url" content="${canonical}" /><meta property="og:title" content="${escape(title)}" /><meta property="og:description" content="${escape(checked.summary)}" />`}
+${preview?'':`<link rel="canonical" href="${canonical}" /><link rel="alternate" type="application/atom+xml" title="Lester’s Arcade journal" href="/blog/feed.xml" /><meta property="og:type" content="article" /><meta property="og:url" content="${canonical}" /><meta property="og:title" content="${escape(title)}" /><meta property="og:description" content="${escape(checked.summary)}" />`}
 <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg" />
 <link rel="stylesheet" href="/src/design-tokens.css" /><link rel="stylesheet" href="/how-ranked-works.css" /><link rel="stylesheet" href="/blog/article.css" />
 </head><body>
 <a class="skip-link" href="#main">Skip to article</a>
-<header class="guide-header"><nav class="guide-topbar" aria-label="Main navigation"><a class="guide-brand" href="/"><img src="/assets/brand/lesters-arcade-logo-horizontal.png" alt="Lester’s Arcade home" width="600" height="223" /></a><a href="/games">Play the games</a><a href="/how-ranked-works">How Ranked works</a></nav>
+<header class="guide-header"><nav class="guide-topbar" aria-label="Main navigation"><a class="guide-brand" href="/"><img src="/assets/brand/lesters-arcade-logo-horizontal.png" alt="Lester’s Arcade home" width="600" height="223" /></a><a href="/blog">Arcade journal</a><a href="/games">Play the games</a><a href="/how-ranked-works">How Ranked works</a></nav>
 ${preview?'<p class="blog-preview">Editorial preview · Not published</p>':''}
 <p class="guide-kicker">Arcade journal / ${category}</p><h1>${escape(checked.title)}</h1><p class="guide-lead">${escape(checked.summary)}</p>
 <p class="blog-byline">${escape(checked.author)} <span aria-hidden="true">·</span> <time datetime="${checked.date}">${checked.date}</time></p>${toc}</header>

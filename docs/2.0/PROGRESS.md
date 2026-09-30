@@ -1010,3 +1010,20 @@ proof remain preserved alongside the successful browser attempt. No public blog
 route, builder, feed, sitemap, game bundle, version or deployment changed.
 The three-game introduction remains an editorial draft. See
 [H2b](slices/BLOG-RENDER-H2B.md) for scope, evidence and remaining publication work.
+
+
+## H2c journal discovery and feed — 2026-09-30
+
+The static index, category pages, Atom feed and article output manifest pass37
+source + identical isolated37 checks. Independent review found forbidden XML
+scalar handling; a real RED1 was corrected without admitting hidden drafts.
+Actual Chrome journeys cover category navigation, related reading, empty states,
+keyboard skip focus, XML parsing and contained desktop/phone/narrow layouts with
+JavaScript disabled. Original captures and metrics were reviewed. The content is
+labelled layout fixtures and no public route/default build is active. See
+[H2c](slices/BLOG-PAGES-H2C.md) for remaining publication work.
+
+Production rechecked September30 around14:59UTC: public health version1.9.4,
+service-worker `lesters-arcade-v64-share-warm`, fetched integration head
+`04366747f79d281af4fd18992f9ccfd857153b5c`. The pre-deployment chat is notLoaded,
+with its last recorded turn completed. No deployment or version change occurred.
