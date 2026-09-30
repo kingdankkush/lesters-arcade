@@ -77,8 +77,8 @@ export function actor3dPrimitiveVisible(name, clip) {
   return true;
 }
 
-export async function createActor3dPixiBackend({ renderer, signal, fetchAsset = fetch, decodeImage = createImageBitmap } = {}) {
-  const assets = new Map(), live = new Set(), order = createActor3dDepthRegistry(); let bands = new Map(), disposed = false;
+export async function createActor3dPixiBackend({ renderer, signal, maxActors = 24, fetchAsset = fetch, decodeImage = createImageBitmap } = {}) {
+  const assets = new Map(), live = new Set(), order = createActor3dDepthRegistry(maxActors); let bands = new Map(), disposed = false;
   let program = null, probeTarget = null;
   const state = new State(); state.depthTest = true; state.depthMask = true; state.cullMode = 'none';
   const disposeAsset = asset => {

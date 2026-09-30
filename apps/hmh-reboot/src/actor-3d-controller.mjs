@@ -1,22 +1,29 @@
-// Default-off two-instance proof. Owns presentation displays and visibility
+// Default-off quality-bounded actors. Owns presentation displays and visibility
 // only; its backend receives detached frozen projections, never simulation.
 import { createActor3dProjection, createActor3dPilotSession, createLiquidator3dEntries } from './actor-3d-projection.mjs';
 
-export function actor3dDepthBands(frame, creationOrder) {
-  if (frame.length > 2 || frame.some(p => !Number.isFinite(p.depth))) throw new TypeError('bounded finite actor depth required');
+export const ACTOR3D_QUALITY_LIMITS = Object.freeze({ low: 8, medium: 24, high: 64 });
+const actorLimit = value => {
+  if (!Number.isInteger(value) || value < 2 || value > ACTOR3D_QUALITY_LIMITS.high) throw new TypeError('bounded actor limit required');
+  return value;
+};
+
+export function actor3dDepthBands(frame, creationOrder, maxActors = ACTOR3D_QUALITY_LIMITS.medium) {
+  if (frame.length > actorLimit(maxActors) || frame.some(p => !Number.isFinite(p.depth))) throw new TypeError('bounded finite actor depth required');
   const ordered = [...frame].sort((a, b) => a.depth - b.depth || creationOrder.get(a.id) - creationOrder.get(b.id));
   const step = 1.6 / Math.max(1, ordered.length), bands = new Map();
   for (let rank = 0; rank < ordered.length; rank++) bands.set(ordered[rank].id, { center: .8 - step * (rank + .5), halfWidth: step * .35 });
   return bands;
 }
 
-export function createActor3dDepthRegistry() {
+export function createActor3dDepthRegistry(maxActors = ACTOR3D_QUALITY_LIMITS.medium) {
+  actorLimit(maxActors);
   const order = new Map(); let next = 0;
   return Object.freeze({
     get size() { return order.size; },
-    add(id) { if (order.size >= 2 || order.has(id)) throw new TypeError('bounded unique actor lifetime required'); order.set(id, next++); },
+    add(id) { if (order.size >= maxActors || order.has(id)) throw new TypeError('bounded unique actor lifetime required'); order.set(id, next++); },
     remove(id) { order.delete(id); },
-    frame(frame) { return actor3dDepthBands(frame, order); },
+    frame(frame) { return actor3dDepthBands(frame, order, maxActors); },
     clear() { order.clear(); },
   });
 }
@@ -39,7 +46,8 @@ function supported(renderer, canvas) {
   finally { if (previous) { try { renderer.renderTarget.bind(previous, false); } catch { return false; } } }
 }
 
-export function createActor3dPresentationEntries(hero, enemy, boss = null) {
+export function createActor3dPresentationEntries(hero, enemies, boss = null, maxActors = ACTOR3D_QUALITY_LIMITS.medium, focus = hero) {
+  actorLimit(maxActors);
   const entries = [], pixelsPerMetre = Number.isFinite(hero?.bodyHeight) && hero.bodyHeight > 0 ? hero.bodyHeight / 2.1 : 40;
   if (hero?.actorId === 'lit-commando' && hero.weaponId === 'coin-blaster' && hero.action !== 'interact') {
     const clip = hero.action === 'aim' && hero.moving ? 'run' : hero.action;
@@ -47,9 +55,16 @@ export function createActor3dPresentationEntries(hero, enemy, boss = null) {
     entries.push({ descriptor: { id: 'hero', actorId: hero.actorId, x: hero.x, y: hero.y, z: hero.z, heading: hero.heading,
       clip, clipTimeSeconds: loop ? Math.max(0, hero.actionTick % 60) / 60 : Math.min(1, Math.max(0, hero.actionTick) / duration), pixelsPerMetre }, originals: hero.originals });
   }
-  const bossEntries = createLiquidator3dEntries(boss);
-  if (bossEntries.length) return entries.concat(bossEntries);
-  if (enemy && ['idle', 'run', 'tell', 'attack', 'hit', 'death'].includes(enemy.pose?.state)) {
+  entries.push(...createLiquidator3dEntries(boss));
+  const originX = Number.isFinite(focus?.x) ? focus.x : 0, originY = Number.isFinite(focus?.y) ? focus.y : 0;
+  const candidates = (Array.isArray(enemies) ? enemies : enemies ? [enemies] : []).filter(enemy =>
+    enemy?.actorId === 'bagholder-rusher' && enemy.active === true && enemy.visible === true && enemy.alpha === 1
+    && ['idle', 'run', 'tell', 'attack', 'hit', 'death'].includes(enemy.pose?.state)
+    && [enemy.x, enemy.y, enemy.z ?? 0, enemy.pose.phaseTick ?? enemy.pose.tick ?? 0].every(Number.isFinite))
+    .map(enemy => ({ enemy, id: String(enemy.id), distance: (enemy.x - originX) ** 2 + (enemy.y - originY) ** 2 }))
+    .sort((a, b) => a.distance - b.distance || (a.id < b.id ? -1 : a.id > b.id ? 1 : 0));
+  for (const { enemy } of candidates) {
+    if (entries.length >= maxActors) break;
     const pose = enemy.pose, time = Math.max(0, pose.phaseTick ?? pose.tick ?? 0) / 60;
     entries.push({ descriptor: { id: `enemy:${enemy.id}`, actorId: 'bagholder-rusher', x: enemy.x, y: enemy.y, z: enemy.z,
       heading: (2 - (pose.direction ?? 0)) * Math.PI / 4, clip: pose.state,
@@ -58,12 +73,14 @@ export function createActor3dPresentationEntries(hero, enemy, boss = null) {
   return entries;
 }
 
-export function createActor3dPilotController({ renderer, canvas, attachDisplay = () => {}, onTelemetry = () => {},
+export function createActor3dPilotController({ renderer, canvas, qualityTier = 'medium', attachDisplay = () => {}, onTelemetry = () => {},
   backendFactory = options => import('./actor-3d-pixi.mjs').then(module => module.createActor3dPixiBackend({ renderer, ...options })) } = {}) {
+  const tier = Object.hasOwn(ACTOR3D_QUALITY_LIMITS, qualityTier) ? qualityTier : 'medium';
+  const maxActors = ACTOR3D_QUALITY_LIMITS[tier];
   const abort = new AbortController();
   const hidden = new Map(); let disposed = false;
   const restore = () => { for (const [display, record] of hidden) if (!display.destroyed) display.renderable = record.value; hidden.clear(); };
-  const session = createActor3dPilotSession({ enabled: true, supported: supported(renderer, canvas), createBackend: () => backendFactory({ signal: abort.signal }), attachDisplay,
+  const session = createActor3dPilotSession({ enabled: true, supported: supported(renderer, canvas), createBackend: () => backendFactory({ signal: abort.signal, maxActors }), attachDisplay,
     onFallback: reason => { abort.abort(); restore(); onTelemetry({ status: 'fallback', count: 0, reason }); } });
   const lost = () => session.handleContextLoss();
   canvas?.addEventListener('webglcontextlost', lost);
@@ -74,17 +91,20 @@ export function createActor3dPilotController({ renderer, canvas, attachDisplay =
     update(entries, camera, viewport) {
       restore(); if (disposed || session.status !== 'ready') return false;
       try {
-        if (!Array.isArray(entries) || entries.length > 2) throw new TypeError('two-instance pilot required');
+        if (!Array.isArray(entries) || entries.length > maxActors) throw new TypeError('quality-bounded actor frame required');
         const frame = entries.map(entry => createActor3dProjection(entry.descriptor, camera, viewport));
         if (!session.render(frame)) return false;
         for (const entry of entries) for (const display of entry.originals ?? []) {
           if (!hidden.has(display)) hidden.set(display, { value: display.renderable, id: entry.descriptor.id });
           display.renderable = false;
         }
-        onTelemetry({ status: session.status, count: frame.length }); return true;
+        onTelemetry({ status: session.status, count: frame.length, qualityTier: tier, maxActors }); return true;
       } catch { session.handleFailure(); return false; }
     },
-    updateGame(hero, enemy, camera, viewport, boss = null) { return controller.update(createActor3dPresentationEntries(hero, enemy, boss), camera, viewport); },
+    updateGame(hero, enemies, camera, viewport, boss = null) {
+      try { return controller.update(createActor3dPresentationEntries(hero, enemies, boss, maxActors, hero ?? camera), camera, viewport); }
+      catch { restore(); session.handleFailure(); return false; }
+    },
     dispose() {
       if (disposed) return; disposed = true; abort.abort(); restore(); session.dispose(); canvas?.removeEventListener('webglcontextlost', lost);
     },

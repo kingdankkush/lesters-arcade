@@ -69,9 +69,9 @@ test('disposed pending loads cannot attach displays or hide originals', async ()
   assert.equal(hero.originals[0].renderable, true); assert.equal(gpu.disposed, 1);
 });
 
-test('the opening proof admits two actor instances and rejects a larger frame without mutating inputs', async () => {
+test('the medium tier rejects an oversized direct frame without mutating its originals', async () => {
   const controller = module.createActor3dPilotController({ renderer: renderer(), canvas: canvas(), backendFactory: () => backend() }); await controller.start();
-  const actors = [entry('hero'), entry('enemy'), entry('other')]; assert.equal(controller.update(actors, camera, view), false);
+  const actors = Array.from({length:25},(_,i)=>entry('enemy-'+i)); assert.equal(controller.update(actors, camera, view), false);
   assert.equal(controller.status, 'fallback'); assert.ok(actors.every(a => a.originals[0].renderable));
 });
 
@@ -88,7 +88,7 @@ test('game presentation selects only the reviewed identity/weapon/clips and pres
   assert.equal(typeof module.createActor3dPresentationEntries, 'function');
   const hero = { actorId: 'lit-commando', weaponId: 'coin-blaster', x: 1, y: 2, z: 3, heading: 0,
     action: 'aim', actionTick: 120, moving: true, bodyHeight: 84, originals: [] };
-  const enemy = { id: 'bag-1', x: 4, y: 5, z: 6, pose: { state: 'tell', direction: 2, tick: 200, phaseTick: 10 }, originals: [] };
+  const enemy = { actorId:'bagholder-rusher',active:true,visible:true,alpha:1,id: 'bag-1', x: 4, y: 5, z: 6, pose: { state: 'tell', direction: 2, tick: 200, phaseTick: 10 }, originals: [] };
   const before = JSON.stringify([hero, enemy]); const frame = module.createActor3dPresentationEntries(hero, enemy);
   assert.equal(frame[0].descriptor.clip, 'run'); assert.equal(frame[0].descriptor.clipTimeSeconds, 0);
   assert.equal(frame[0].descriptor.pixelsPerMetre, 40); assert.equal(frame[1].descriptor.clip, 'tell');
@@ -119,21 +119,69 @@ test('pending load disposal aborts the backend resource request', async () => {
 });
 
 
-test('Liquidator takes the second pilot slot and restores sprites when its eligible pose ends', async () => {
+test('Liquidator keeps priority alongside eligible rushers and restores its fading sprite', async () => {
   const hero={actorId:'lit-commando',weaponId:'coin-blaster',x:0,y:0,z:0,heading:0,action:'idle',actionTick:0,bodyHeight:84,originals:[{renderable:true}]};
-  const enemy={id:'rusher',x:1,y:1,z:0,pose:{state:'run',direction:2,tick:4},originals:[{renderable:true}]};
+  const enemy={actorId:'bagholder-rusher',active:true,visible:true,alpha:1,id:'rusher',x:1,y:1,z:0,pose:{state:'run',direction:2,tick:4},originals:[{renderable:true}]};
   const boss={active:true,visible:true,alpha:1,x:2,y:3,z:0,bodyHeight:84,pose:{state:'hit',direction:4,phaseTick:4},original:{renderable:true}};
   const before=JSON.stringify([hero,enemy,boss]);
   const frame=module.createActor3dPresentationEntries(hero,enemy,boss);
-  assert.deepEqual(frame.map(e=>e.descriptor.actorId),['lit-commando','the-liquidator']);
+  assert.deepEqual(frame.map(e=>e.descriptor.actorId),['lit-commando','the-liquidator','bagholder-rusher']);
   assert.equal(frame[1].descriptor.heading,Math.PI);assert.equal(frame[1].descriptor.clipTimeSeconds,4/60);
   assert.equal(JSON.stringify([hero,enemy,boss]),before);
   const gpu=backend(),surface=canvas(),controller=module.createActor3dPilotController({renderer:renderer(),canvas:surface,backendFactory:()=>gpu});
   await controller.start();controller.updateGame(hero,enemy,camera,view,boss);
-  assert.equal(boss.original.renderable,false);assert.equal(enemy.originals[0].renderable,true);
+  assert.equal(boss.original.renderable,false);assert.equal(enemy.originals[0].renderable,false);
   controller.updateGame(hero,enemy,camera,view,{...boss,alpha:.5});
   assert.equal(boss.original.renderable,true);assert.equal(enemy.originals[0].renderable,false);
   assert.equal(controller.status,'ready');assert.equal(gpu.frames.at(-1).length,2);
   controller.updateGame(hero,enemy,camera,view,boss);surface.events.get('webglcontextlost')();
   assert.equal(boss.original.renderable,true);assert.equal(hero.originals[0].renderable,true);controller.dispose();
+});
+
+
+test('quality caps select the closest exact visible opaque rushers independent of input order', () => {
+  assert.deepEqual(module.ACTOR3D_QUALITY_LIMITS,{low:8,medium:24,high:64});
+  const hero={actorId:'lit-commando',weaponId:'coin-blaster',x:0,y:0,z:0,heading:0,action:'idle',actionTick:0,originals:[]};
+  const boss={active:true,visible:true,alpha:1,x:100,y:100,z:0,bodyHeight:84,pose:{state:'idle',direction:0,tick:0},original:{renderable:true}};
+  const enemies=Array.from({length:80},(_,i)=>({id:String(i).padStart(2,'0'),actorId:'bagholder-rusher',active:true,visible:true,alpha:1,x:Math.floor(i/2),y:0,z:0,pose:{state:'run',direction:2,tick:4},originals:[{renderable:true}]}));
+  const bad=[{...enemies[0],id:'wrong',actorId:'short-seller'},{...enemies[0],id:'hidden',visible:false},{...enemies[0],id:'faded',alpha:.5},{...enemies[0],id:'dead',active:false}];
+  const before=JSON.stringify([hero,boss,enemies,bad]);
+  for(const maxActors of [8,24,64]){
+    const selected=module.createActor3dPresentationEntries(hero,[...bad,...enemies],boss,maxActors);
+    assert.equal(selected.length,maxActors);assert.deepEqual(selected.slice(0,2).map(x=>x.descriptor.id),['hero','boss:liquidator']);
+    assert.deepEqual(selected.slice(2).map(x=>x.descriptor.id),enemies.slice(0,maxActors-2).map(x=>'enemy:'+x.id));
+    assert.deepEqual(module.createActor3dPresentationEntries(hero,[...enemies,...bad].reverse(),boss,maxActors),selected);
+  }
+  assert.equal(JSON.stringify([hero,boss,enemies,bad]),before);
+});
+
+test('changing crowded selections restores excess sprites and context loss releases every selected display', async () => {
+  let options;const gpu=backend(),surface=canvas(),controller=module.createActor3dPilotController({qualityTier:'low',renderer:renderer(),canvas:surface,backendFactory:o=>{options=o;return gpu;}});
+  const enemies=Array.from({length:20},(_,i)=>({id:'crowd-'+i,actorId:'bagholder-rusher',active:true,visible:true,alpha:1,x:i*10,y:0,z:0,pose:{state:'idle',direction:0,tick:0},originals:[{renderable:i!==19}]}));
+  await controller.start();assert.equal(options.maxActors,8);
+  controller.updateGame(null,enemies,camera,view);assert.equal(gpu.frames.at(-1).length,8);
+  assert.ok(enemies.slice(0,8).every(e=>!e.originals[0].renderable));assert.ok(enemies.slice(8,19).every(e=>e.originals[0].renderable));
+  controller.updateGame(null,enemies,{...camera,x:190},view);
+  assert.ok(enemies.slice(0,12).every(e=>e.originals[0].renderable));assert.ok(enemies.slice(12).every(e=>!e.originals[0].renderable));
+  assert.equal(gpu.removed.length,8);assert.equal(gpu.created.length-gpu.removed.length,8);
+  surface.events.get('webglcontextlost')();assert.ok(enemies.slice(0,19).every(e=>e.originals[0].renderable));assert.equal(enemies[19].originals[0].renderable,false);
+  assert.equal(gpu.created.length,gpu.removed.length);assert.equal(gpu.disposed,1);controller.dispose();assert.equal(gpu.disposed,1);
+});
+
+test('high-tier depth ownership remains bounded and nonoverlapping for sixty-four actors', () => {
+  const registry=module.createActor3dDepthRegistry(64),frame=Array.from({length:64},(_,i)=>({id:'actor-'+i,depth:10}));
+  for(const actor of frame)registry.add(actor.id);assert.equal(registry.size,64);assert.throws(()=>registry.add('overflow'));
+  const bands=registry.frame(frame);
+  for(let i=1;i<frame.length;i++)assert.ok(bands.get(frame[i].id).center+bands.get(frame[i].id).halfWidth<bands.get(frame[i-1].id).center-bands.get(frame[i-1].id).halfWidth);
+  registry.remove(frame[0].id);registry.add('replacement');assert.equal(registry.size,64);registry.clear();assert.equal(registry.size,0);
+});
+
+
+test('malformed crowd selection restores prior sprites before falling back', async () => {
+  const gpu=backend(),controller=module.createActor3dPilotController({renderer:renderer(),canvas:canvas(),backendFactory:()=>gpu});
+  const enemy={id:'rusher',actorId:'bagholder-rusher',active:true,visible:true,alpha:1,x:0,y:0,z:0,pose:{state:'idle',direction:0,tick:0},originals:[{renderable:true}]};
+  await controller.start();controller.updateGame(null,[enemy],camera,view);assert.equal(enemy.originals[0].renderable,false);
+  const badBoss={active:true,visible:true,alpha:1,x:0,y:0,z:0,bodyHeight:84,pose:{state:'idle',direction:9,tick:0},original:{renderable:true}};
+  assert.equal(controller.updateGame(null,[enemy],camera,view,badBoss),false);assert.equal(controller.status,'fallback');
+  assert.equal(enemy.originals[0].renderable,true);assert.equal(badBoss.original.renderable,true);assert.equal(gpu.disposed,1);controller.dispose();
 });

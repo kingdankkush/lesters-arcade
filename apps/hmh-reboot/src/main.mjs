@@ -937,8 +937,9 @@ async function boot() {
     import('./actor-3d-controller.mjs').then(({ createActor3dPilotController }) => {
       if (actor3dDisposed) return;
       actor3dPilot = createActor3dPilotController({ renderer: app.renderer, canvas: app.canvas,
+        qualityTier: runtimeParams.get('actor3dQuality') ?? (performanceProfile.id === 'desktop' ? 'medium' : 'low'),
         attachDisplay: display => { world.addChild(display); worldDepthLayer.attach(display); },
-        onTelemetry: report => { dataset.actor3dStatus = report.status; dataset.actor3dCount = String(report.count); dataset.actor3dReason = report.reason ?? ''; },
+        onTelemetry: report => { dataset.actor3dStatus = report.status; dataset.actor3dCount = String(report.count); dataset.actor3dReason = report.reason ?? ''; if (report.qualityTier) { dataset.actor3dQuality = report.qualityTier; dataset.actor3dLimit = String(report.maxActors); } },
       });
       return actor3dPilot.start();
     }).catch(() => { dataset.actor3dStatus = 'fallback'; dataset.actor3dReason = 'chunk-failed'; });
@@ -3027,15 +3028,17 @@ async function boot() {
       }
       // Screen-space overlays: enemy health pips, boss bar, damage flash, and
       // the low-health vignette. All projection-only.
-      if (actor3dPilot) {
-        let enemy3d = null;
+      if (actor3dPilot?.status === 'ready') {
+        const enemy3d = [];
         for (const enemy of grayboxEnemies) {
           const body = enemyMarkers.get(enemy.id);
-          if (enemy.archetypeId !== 'bagholder-rusher' || !enemy.active || !body?.visible || !body.worldDesignPoseInput) continue;
-          enemy3d = { id: enemy.id, x: body.renderPassWalkX, y: body.renderPassWalkY,
+          if (enemy.archetypeId !== 'bagholder-rusher' || !enemy.active || !body?.visible || body.alpha !== 1 || !body.worldDesignPoseInput) continue;
+          const bounds = body.getBounds();
+          if (bounds.x + bounds.width <= 0 || bounds.y + bounds.height <= 0 || bounds.x >= view.width || bounds.y >= view.height) continue;
+          enemy3d.push({ id: enemy.id, actorId: enemy.archetypeId, active: true, visible: true, alpha: body.alpha,
+            x: body.renderPassWalkX, y: body.renderPassWalkY,
             z: (Number.isFinite(enemy.previousGroundZ) ? enemy.previousGroundZ + ((enemy.groundZ ?? 0) - enemy.previousGroundZ) * renderAlpha : enemy.groundZ ?? 0) + (enemy.visualLiftZ ?? 0),
-            pose: body.worldDesignPoseInput, originals: [body] };
-          break;
+            pose: body.worldDesignPoseInput, originals: [body] });
         }
         const boss3d = liquidatorBoss ? {
           active: liquidatorBoss.active, visible: bossVisual.visible, alpha: bossVisual.alpha,
