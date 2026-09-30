@@ -1297,6 +1297,8 @@ const NODE_CHECK_FILES = [
   "tests/stacked-local-match.test.mjs",
   "tests/stacked-local-setup.test.mjs",
   "tests/stacked-ghost-readability.test.mjs",
+  "tests/stacked-local-audio.test.mjs",
+  "apps/stacked/src/local-audio.mjs",
   "tests/stacked-local-entry-lifecycle.test.mjs",
   "tests/stacked-daily-bridge.test.mjs",
   "apps/portal/src/stacked-evidence-transport.mjs",

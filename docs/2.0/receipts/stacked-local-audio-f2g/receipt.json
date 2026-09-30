@@ -1,0 +1,169 @@
+{
+  "files": [
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-local-audio-source-red-01\\report.json",
+      "archive": "stacked-local-audio-source-red-01__report.json.gz",
+      "rawSha256": "8282c3e36d644028573e770113516fb86fd79b16cb44d58aa88fd40a6f43b3cd",
+      "gzipBytes": 1765
+    },
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-local-audio-source-green-01\\report.json",
+      "archive": "stacked-local-audio-source-green-01__report.json.gz",
+      "rawSha256": "8f7f4aef5aa0c8a97352bcf1514e6e24bce85f8989d2a5ebe778c1ec84eb9443",
+      "gzipBytes": 1675
+    },
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\run-stacked-local-audio-source.mjs",
+      "archive": "run-stacked-local-audio-source.mjs.gz",
+      "rawSha256": "c5b37a3c6b28018be9a96718b6b159a9f9d5edb4a0033192abf17aaaf443b05e",
+      "gzipBytes": 1463
+    },
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\owned-windows-child.mjs",
+      "archive": "owned-windows-child.mjs.gz",
+      "rawSha256": "a5177337fcf6ec41f285fc105b93d0b4b94ee1101cb14a653a91e9b8b075b0d9",
+      "gzipBytes": 1360
+    },
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\owned-windows-preview-child.mjs",
+      "archive": "owned-windows-preview-child.mjs.gz",
+      "rawSha256": "6f4903a66d324a01a476eebefdfac68663dde2c573f62f637c4b7537ccb0d631",
+      "gzipBytes": 1360
+    },
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3a-root-gather.json",
+      "archive": "world-w3a-root-gather.json.gz",
+      "rawSha256": "704d2b7c8f30521e0b320d946c81f8a054b7dc27b0831c2c4a6f7ac8aa3ef56f",
+      "gzipBytes": 8572
+    },
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\verify-w3a-gather.py",
+      "archive": "verify-w3a-gather.py.gz",
+      "rawSha256": "32f5e3d6a2fc70ae892f350e776e276476a81ab40d16590073c25f0a6221fdd0",
+      "gzipBytes": 629
+    },
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-local-play-green-09\\report.json",
+      "archive": "stacked-local-play-green-09__report.json.gz",
+      "rawSha256": "b4784d8f97921bb0355b45bcd8fbc6e0b583be5fc36c8364ea50b9ed86f63ecf",
+      "gzipBytes": 15333
+    },
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-local-play-browser-green-09\\report.json",
+      "archive": "stacked-local-play-browser-green-09__report.json.gz",
+      "rawSha256": "fc6dfd03aeb4c991aa525c6fed2c3eab289ab8dd3be63758e53a05cb76a00396",
+      "gzipBytes": 3054
+    },
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\run-stacked-local-play-09.mjs",
+      "archive": "run-stacked-local-play-09.mjs.gz",
+      "rawSha256": "19a3f87d66cf1fb6008a6c6212defd06299cbb32ca936b95ff31b5cb6384a1be",
+      "gzipBytes": 1955
+    },
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-local-play-browser-09.mjs",
+      "archive": "stacked-local-play-browser-09.mjs.gz",
+      "rawSha256": "40524746d61f3b326f8bd4beb742eba7da1f752674931af739fc9e6456674f21",
+      "gzipBytes": 5554
+    },
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-local-play-green-10\\report.json",
+      "archive": "stacked-local-play-green-10__report.json.gz",
+      "rawSha256": "bd83b1a66e5169431b1a5158b629bb5cdfbe31aa14046186a7f75dd2f72e0266",
+      "gzipBytes": 25996
+    },
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-local-play-browser-green-10\\report.json",
+      "archive": "stacked-local-play-browser-green-10__report.json.gz",
+      "rawSha256": "4e58445cea850365f8f50f2b7294c7c69e0ba4e55b8f308245628ecd29be0540",
+      "gzipBytes": 3101
+    },
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\run-stacked-local-play-10.mjs",
+      "archive": "run-stacked-local-play-10.mjs.gz",
+      "rawSha256": "657619e1020c3c1f81d665d0e368900e2928ab0cfdc914ef0af810ed4c529155",
+      "gzipBytes": 1897
+    },
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-local-play-browser-10.mjs",
+      "archive": "stacked-local-play-browser-10.mjs.gz",
+      "rawSha256": "42fba96a4b3da6de46fce2952c54c68e593bfe98b444496177087e4a07db46bf",
+      "gzipBytes": 5721
+    },
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-local-play-green-11\\report.json",
+      "archive": "stacked-local-play-green-11__report.json.gz",
+      "rawSha256": "940f4802853859a5a4544baaf8d8724db759be78173931d50891769fded38747",
+      "gzipBytes": 47957
+    },
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-local-play-browser-green-11\\report.json",
+      "archive": "stacked-local-play-browser-green-11__report.json.gz",
+      "rawSha256": "d9b3a6d0bd873b965b303c0f9d380f478643aa7cf74ecaf4345ad7b396a62fb5",
+      "gzipBytes": 8709
+    },
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\run-stacked-local-play-11.mjs",
+      "archive": "run-stacked-local-play-11.mjs.gz",
+      "rawSha256": "8ee4691b30f6a9c837977eec443057e486dc0b0022cb7929529821edc8f39d38",
+      "gzipBytes": 1894
+    },
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-local-play-browser-11.mjs",
+      "archive": "stacked-local-play-browser-11.mjs.gz",
+      "rawSha256": "30acd3ee55652eb7f71e5afb95b86a56f7bbb8fdb46d7fec4ad7a01a4b3d8d11",
+      "gzipBytes": 5859
+    },
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-local-play-green-12\\report.json",
+      "archive": "stacked-local-play-green-12__report.json.gz",
+      "rawSha256": "ca7ba7c6bc37e2913f56af2b26f07ea9bd64d0531b1ef48070aa23de7bc61e10",
+      "gzipBytes": 15659
+    },
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-local-play-browser-green-12\\report.json",
+      "archive": "stacked-local-play-browser-green-12__report.json.gz",
+      "rawSha256": "cc05512aa4414b2dcd8ae203a2e21944b25313591fbcd08dc14132d889f434ab",
+      "gzipBytes": 3381
+    },
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\run-stacked-local-play-12.mjs",
+      "archive": "run-stacked-local-play-12.mjs.gz",
+      "rawSha256": "114c43bec84b2d3ea9ff9e21adb3234bba695b8ea6d31df7e814ec4325e03688",
+      "gzipBytes": 1955
+    },
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-local-play-browser-12.mjs",
+      "archive": "stacked-local-play-browser-12.mjs.gz",
+      "rawSha256": "b4b38d8aeee72e5467b6c304d41ebabe94195b3f4c71cdf0c7a506bf9d7d8361",
+      "gzipBytes": 6243
+    },
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-local-play-green-13\\report.json",
+      "archive": "stacked-local-play-green-13__report.json.gz",
+      "rawSha256": "9134bf40fdd3233e9bc346638d5e8f78457278657ff11f04d22c5028aff51140",
+      "gzipBytes": 48143
+    },
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-local-play-browser-green-13\\report.json",
+      "archive": "stacked-local-play-browser-green-13__report.json.gz",
+      "rawSha256": "1e9ea44caa1d3da8a92b9b193cc96d072bad2c5ee7aea866178751400b08ac34",
+      "gzipBytes": 8880
+    },
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\run-stacked-local-play-13.mjs",
+      "archive": "run-stacked-local-play-13.mjs.gz",
+      "rawSha256": "cc872eda12def64fa76a37d81d79738d45ec59da3aed8235f1bb82181e0855ac",
+      "gzipBytes": 1897
+    },
+    {
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\stacked-local-play-browser-13.mjs",
+      "archive": "stacked-local-play-browser-13.mjs.gz",
+      "rawSha256": "065774fac9575106bf36b320d02a910650f73f9bcde2a6902187eecf4b63053d",
+      "gzipBytes": 6251
+    }
+  ],
+  "gzipBytes": 236263,
+  "physicalPhoneTested": false,
+  "releaseGateRun": false
+}

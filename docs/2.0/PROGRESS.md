@@ -869,3 +869,14 @@ checks pass, including all 248 recorded child summaries and existing modeled
 corpus coverage. Independent review is clear, exact children/marker are closed,
 and legacy tables/evidence remain unchanged. No new map, gameplay, schema, seed,
 settlement or release is activated. See [W3a evidence and limits](slices/WORLD-W3A-LEGACY-CONTEXT.md).
+
+### STACKED F2g — local sound and accessible volume
+
+Optional local versus now reuses the bounded sound kit and one Game sounds slider
+through setup/pause/results. Meaningful RED8 then8+same8 isolated, focused178,
+fresh build and24 actual Chrome cases pass. Both observed playback contexts close
+with zero connected nodes. Visual review fixed focus spacing and proved narrow
+Start/volume reachability. All failed attempts remain in the compact archive.
+Current budgets remain HMH1,039,992B/STACKED580,861B. No physics/input/evidence,
+solo or Ranked change. Physical devices, listening review, soak and full release
+gate remain open. See slices/STACKED-F2G-LOCAL-AUDIO.md.

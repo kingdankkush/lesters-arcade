@@ -21,6 +21,7 @@
     <p id="setupError" class="error" role="alert"></p>
     <div class="actions"><button id="start" class="primary" type="submit">Start match <span aria-hidden="true">→</span></button><a href="/?stackedLocal=local-v1">Back to arcade</a></div>
   </form>
+  <div class="sound-setting"><label for="soundVolume">Game sounds <output id="soundValue" for="soundVolume">35%</output></label><input id="soundVolume" type="range" min="0" max="100" step="5" value="35" aria-valuetext="35%"></div>
   <div id="roundActions" hidden><div id="roundStats" class="round-stats"></div><div id="roundControls" hidden></div><div class="actions"><button id="resume" class="primary">Resume match</button><button id="rematch" class="primary" hidden>Play again</button><button id="changeControls">New match / controls</button></div><p class="hint">Changing controls starts a fresh match for both players.</p></div>
   <p class="local-note">Free, on this screen. No entry fee, saved score or Ranked rewards.</p>
 </dialog>

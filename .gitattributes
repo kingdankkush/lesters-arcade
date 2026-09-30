@@ -117,3 +117,6 @@ docs/2.0/receipts/world-bayou/** -text
 
 # Compact local ghost contrast and combined gather evidence
 docs/2.0/receipts/stacked-local-ghost-f2f/*.gz -filter -diff -merge -text
+
+# Compact local-versus sound, UI review and failed-attempt receipts
+docs/2.0/receipts/stacked-local-audio-f2g/*.gz -filter -diff -merge -text
