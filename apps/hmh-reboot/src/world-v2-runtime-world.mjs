@@ -58,6 +58,13 @@ export const WORLD_V2_POINT_OF_INTEREST_ASSETS = freezeDeep({
   'rugpull-woods': { hook: 'weapon', assetId: 'coin-blaster' },
 });
 
+// Lazy area-art plan loaders (projection-only chunks, never on the initial path).
+export const WORLD_V2_AREA_ART_HOOKS = Object.freeze({
+  'mweb-meadows': Object.freeze({ kind: 'area-art-plan', planId: 'mweb-meadows', load: () => import('./world-v2-area-plans/mweb-meadows.mjs').then((module) => module.createMwebMeadowsArtPlan) }),
+  'rugpull-woods': Object.freeze({ kind: 'area-art-plan', planId: 'rugpull-woods', load: () => import('./world-v2-area-plans/rugpull-woods.mjs').then((module) => module.createRugpullWoodsArtPlan) }),
+});
+export const WORLD_V2_ROAD_ART_HOOK = Object.freeze({ kind: 'area-art-plan', planId: 'world-roads', load: () => import('./world-v2-area-plans/world-roads.mjs').then((module) => module.createWorldRoadsArtPlan) });
+
 const PIECE_VISUAL_KIND = Object.freeze({ mass: 'building', cliff: 'cliff', 'cover-tall': 'containers', 'cover-short': 'fence' });
 const ROAD_ROUTE_KIND = Object.freeze({ paved: 'main', gravel: 'street', path: 'loop' });
 
@@ -210,12 +217,17 @@ export function createWorldV2RuntimeWorld({ authored = createGreyboxWorld() } = 
     { id: 'south-perimeter', length: width, physicalCause: 'closed-mass-and-guards', segments: continuousSegments(width, 'closed-mass-and-guards') },
     { id: 'west-perimeter', length: height, physicalCause: 'closed-mass-and-guards', segments: continuousSegments(height, 'closed-mass-and-guards') },
   ];
+  // Area-art hooks: a dressed district carries a lazy plan loader that the
+  // real game binds through world-v2-area-art-binding.mjs (unranked Free only).
+  // Undressed districts keep artTarget null and the borrowed greybox kit.
   const artPlans = {
     mode: 'greybox-fallback',
     districts: Object.fromEntries(districts.map((district) => {
       const presentation = WORLD_V2_AREA_PRESENTATION[district.id];
-      return [district.id, { materialId: presentation.materialId, palette: presentation.palette, board: presentation.board, artTarget: null }];
+      return [district.id, { materialId: presentation.materialId, palette: presentation.palette, board: presentation.board, artTarget: WORLD_V2_AREA_ART_HOOKS[district.id] ?? null }];
     })),
+    roads: WORLD_V2_ROAD_ART_HOOK,
+    authored,
   };
 
   return freezeDeep({

@@ -4,7 +4,9 @@
 // Projection only: it reads the authored world and never writes collision,
 // navigation, spawning, RNG, progression or results. Mountable from the
 // private scene and from the real game's area hook with the same factory.
-import { Container, Graphics, Sprite, Texture, Matrix, Rectangle } from 'pixi.js';
+// Only symbols the child's pixi vendor chunk re-exports may be imported here;
+// fill matrices are plain {a,b,c,d,tx,ty} objects for that reason.
+import { Container, Graphics, Sprite, Texture, Rectangle } from 'pixi.js';
 import { createGreyboxPropResidency } from './dev/greybox-prop-residency.mjs';
 import { AREA_ART_KIT_ROOT, AREA_ART_KIT_MANIFEST, AREA_ART_TILE_ROOT, AREA_ART_DETAIL_ROOT, AREA_ART_DETAIL_PAGE, AREA_ART_MATERIALS, ROAD_RECIPES, FOLIAGE_TINT_RULES, validateAreaArtPlan, resolveKitItem, ribbonPolygon, offsetPolygon, polygonBounds, rectVertices } from './world-v2-area-art-schema.mjs';
 export { validateAreaArtPlan, createPlacementGuard, AREA_ART_SCHEMA, AREA_ART_MATERIALS } from './world-v2-area-art-schema.mjs';
@@ -15,6 +17,8 @@ const SHADOW_TINT = 0x03070b;
 const SHADOW_LEAN = Object.freeze({ x: 0.1, y: 0.05 });
 const DETAIL_FRAMES = Object.freeze({ 'detail:grass': { x: 0, y: 0, w: 180, h: 122, anchor: { x: 0.53, y: 0.73 }, scale: 0.34 }, 'detail:aggregate': { x: 0, y: 160, w: 224, h: 96, anchor: { x: 0.5, y: 0.5 }, scale: 0.42 } });
 
+const scaleMatrix = s => ({ a: s, b: 0, c: 0, d: s, tx: 0, ty: 0 });
+
 export function multiplyTint(a, b) {
   const channel = shift => Math.round(((a >> shift & 255) * (b >> shift & 255)) / 255);
   return channel(16) << 16 | channel(8) << 8 | channel(0);
@@ -22,8 +26,9 @@ export function multiplyTint(a, b) {
 
 // Reference-counted texture ownership shared between several plans (Woods and
 // Meadows both read the plants page). Every acquired URL is released on dispose.
-export function createAreaArtTextureCache({ loadTexture } = {}) {
+export function createAreaArtTextureCache({ loadTexture, unloadTexture = null } = {}) {
   const load = typeof loadTexture === 'function' ? loadTexture : defaultLoadTexture;
+  const unload = typeof unloadTexture === 'function' ? unloadTexture : destroyTexture;
   const entries = new Map();
   let disposed = false;
   async function acquire(url) {
@@ -40,10 +45,10 @@ export function createAreaArtTextureCache({ loadTexture } = {}) {
     entry.count--;
     if (entry.count > 0) return;
     entries.delete(url);
-    entry.promise.then(texture => destroyTexture(texture), () => {});
+    entry.promise.then(() => unload(url, entry), () => {});
   }
   const decodedBytes = async () => { let total = 0; for (const entry of entries.values()) { try { const t = await entry.promise; total += t.source.pixelWidth * t.source.pixelHeight * 4; } catch {} } return total; };
-  return Object.freeze({ acquire, release, decodedBytes, snapshot: () => Object.freeze({ disposed, urls: Object.freeze([...entries.keys()].sort()), references: [...entries.values()].reduce((n, e) => n + e.count, 0) }), dispose() { disposed = true; for (const url of [...entries.keys()]) { const entry = entries.get(url); entries.delete(url); entry.promise.then(texture => destroyTexture(texture), () => {}); } } });
+  return Object.freeze({ acquire, release, decodedBytes, snapshot: () => Object.freeze({ disposed, urls: Object.freeze([...entries.keys()].sort()), references: [...entries.values()].reduce((n, e) => n + e.count, 0) }), dispose() { disposed = true; for (const url of [...entries.keys()]) { const entry = entries.get(url); entries.delete(url); entry.promise.then(() => unload(url, entry), () => {}); } } });
 }
 async function defaultLoadTexture(url) {
   const image = new Image();
@@ -53,11 +58,13 @@ async function defaultLoadTexture(url) {
   texture.areaArtImage = image;
   return texture;
 }
-function destroyTexture(texture) {
+function destroyTexture(url, entry) {
+  entry.promise.then(texture => {
   if (!texture || texture.destroyed) return;
   const image = texture.areaArtImage;
   texture.destroy(true);
   image?.removeAttribute?.('src');
+  }, () => {});
 }
 
 export function createAreaArt({ world, areaId, plan, kit = null, loadTexture, textureCache = null, container = null, signal, resolution = 'full', fetchImpl = typeof fetch === 'function' ? fetch : null } = {}) {
@@ -68,7 +75,8 @@ export function createAreaArt({ world, areaId, plan, kit = null, loadTexture, te
   const ownsCache = !textureCache;
   const ratio = resolution === 'half' ? 0.5 : 1;
   let disposed = false, mounted = false, summary = null, manifest = kit, residency = null, depthLayer = container, groundLayer = null, shadowLayer = null;
-  const owned = [], painted = [], frames = new Map(), tiles = new Map(), live = new Map();
+  const owned = [], painted = [], frames = new Map(), tiles = new Map(), live = new Map(), solidNodes = [];
+  let host = null, depthKey = y => y;
   let detailTexture = null, pageTextures = new Map();
   const acquire = async url => { const texture = await cache.acquire(url); owned.push(url); if (disposed) { cache.release(url); owned.pop(); return null; } return texture; };
 
@@ -144,7 +152,7 @@ export function createAreaArt({ world, areaId, plan, kit = null, loadTexture, te
     const m = AREA_ART_MATERIALS[materialId], texture = tiles.get(m.tile);
     const flat = vertices.flatMap(p => [p.x, p.y]);
     g.poly(flat).fill({ color: multiplyTint(m.base, tint), alpha });
-    if (texture) g.poly(flat).fill({ texture, textureSpace: 'global', matrix: new Matrix().scale(m.scale, m.scale), color: multiplyTint(m.tint, tint), alpha: m.alpha * alpha });
+    if (texture) g.poly(flat).fill({ texture, textureSpace: 'global', matrix: scaleMatrix(m.scale), color: multiplyTint(m.tint, tint), alpha: m.alpha * alpha });
   }
   // Fringe strips along every edge, outward by `feather`, using the tile's own
   // 512x128 gradient so the edge dissolves with the material's grain.
@@ -156,7 +164,7 @@ export function createAreaArt({ world, areaId, plan, kit = null, loadTexture, te
       const a = vertices[i], b = vertices[(i + 1) % n], oa = outer[i], ob = outer[(i + 1) % n];
       const dx = b.x - a.x, dy = b.y - a.y, len = Math.hypot(dx, dy) || 1, ux = dx / len, uy = dy / len;
       const nx = oa.x - a.x, ny = oa.y - a.y, nlen = Math.hypot(nx, ny) || 1;
-      const s = m.scale, matrix = new Matrix(ux * s, uy * s, nx / nlen * (feather / 128), ny / nlen * (feather / 128), a.x, a.y);
+      const s = m.scale, matrix = { a: ux * s, b: uy * s, c: nx / nlen * (feather / 128), d: ny / nlen * (feather / 128), tx: a.x, ty: a.y };
       g.poly([a.x, a.y, b.x, b.y, ob.x, ob.y, oa.x, oa.y]).fill({ color: multiplyTint(m.base, tint), alpha: alpha * 0.55, texture, matrix });
       g.poly([a.x, a.y, b.x, b.y, ob.x, ob.y, oa.x, oa.y]).fill({ texture, matrix, color: multiplyTint(m.tint, tint), alpha: m.alpha * alpha });
     }
@@ -182,7 +190,7 @@ export function createAreaArt({ world, areaId, plan, kit = null, loadTexture, te
     halo.mask = mask;
     for (const trail of trails) {
       materialFill(core, ribbonPolygon(trail.points, trail.width), trail.material);
-      for (const p of trail.points.slice(1, -1)) { const m = AREA_ART_MATERIALS[trail.material]; core.circle(p.x, p.y, trail.width / 2).fill({ texture: tiles.get(m.tile), textureSpace: 'global', matrix: new Matrix().scale(m.scale, m.scale), color: m.tint, alpha: 1 }); }
+      for (const p of trail.points.slice(1, -1)) { const m = AREA_ART_MATERIALS[trail.material]; core.circle(p.x, p.y, trail.width / 2).fill({ texture: tiles.get(m.tile), textureSpace: 'global', matrix: scaleMatrix(m.scale), color: m.tint, alpha: 1 }); }
     }
     target.addChild(halo, mask, core); painted.push(halo, mask, core);
   }
@@ -306,21 +314,39 @@ export function createAreaArt({ world, areaId, plan, kit = null, loadTexture, te
   }
 
   // ---- props via viewport residency ----
+  // A depth node either becomes a child of the depth container (private scene)
+  // or a child of `host` attached to a Pixi RenderLayer (real game).
+  const admit = (node, y) => { node.zIndex = depthKey(y); if (host) { host.addChild(node); depthLayer.attach(node); } else depthLayer.addChild(node); };
+  const evict = node => { if (host && !depthLayer.destroyed) depthLayer.detach(node); node.destroy({ children: true }); };
   function createProp(record) {
     const prop = summary.props[record.ordinal], node = new Container();
     const { node: sprite, width } = card(prop.source, prop);
     if (prop.shadow) contactShadow(node, { x: prop.x, y: prop.y - prop.groundZ, width: Math.min(width, prop.height * 1.6), alpha: prop.height > 150 ? 0.36 : 0.26, ao: prop.height > 150 });
-    node.addChild(sprite); node.label = record.id; node.zIndex = prop.y;
-    depthLayer.addChild(node); live.set(record.id, { node, prop, width });
+    node.addChild(sprite); node.label = record.id;
+    admit(node, prop.y); live.set(record.id, { node, prop, width });
     return node;
   }
-  function mount(layer = depthLayer, ground = groundLayer) {
+  // Real-game path: every decorated authored solid becomes one depth node. The
+  // returned collision blocker ids let the host skip its own drawing of them.
+  function mountSolids(pieces) {
+    if (disposed || !summary) return [];
+    const ids = [];
+    for (const solid of summary.solids) {
+      const piece = pieces.find(entry => entry.id === solid.pieceId);
+      if (!piece?.blocker) continue;
+      const node = createSolid(piece);
+      if (!node) continue;
+      node.label = `area-art-solid-${piece.id}`; admit(node, piece.visible.bounds.maxY); solidNodes.push(node); ids.push(piece.blocker.id);
+    }
+    return ids;
+  }
+  function mount(layer = depthLayer, ground = groundLayer, options = {}) {
     if (disposed || mounted || !summary) return;
     if (!layer) throw new TypeError('depth layer container required to mount area art');
-    mounted = true; depthLayer = layer; groundLayer = ground;
+    mounted = true; depthLayer = layer; groundLayer = ground; host = options.host ?? null; if (typeof options.depthKey === 'function') depthKey = options.depthKey;
     residency = createGreyboxPropResidency({
       catalog: summary.props.map(prop => { const entry = frameFor(prop.source), width = entry.alphaWidth * (prop.height / entry.alphaHeight); return { id: prop.id, areaId: summary.roadsPlan ? null : summary.areaId, bounds: { left: prop.x - width * 0.6, right: prop.x + width * 0.6, top: prop.y - prop.groundZ - prop.height * 1.1, bottom: prop.y - prop.groundZ + width * 0.3 } }; }),
-      create: createProp, setVisible: (node, value) => { node.visible = value; }, destroy: node => { live.delete(node.label); node.destroy({ children: true }); },
+      create: createProp, setVisible: (node, value) => { node.visible = value; }, destroy: node => { live.delete(node.label); evict(node); },
     });
   }
   function update(camera, view, actor = null) {
@@ -332,11 +358,12 @@ export function createAreaArt({ world, areaId, plan, kit = null, loadTexture, te
   function dispose() {
     if (disposed) return; disposed = true;
     try { residency?.dispose(); } catch {}
+    for (const node of solidNodes) { try { evict(node); } catch {} } solidNodes.length = 0;
     for (const node of painted) { try { node.removeFromParent?.(); node.destroy?.({ children: true }); } catch {} } painted.length = 0;
     for (const entry of frames.values()) entry.texture.destroy(false); frames.clear(); live.clear();
     for (const url of owned) cache.release(url); owned.length = 0; tiles.clear(); pageTextures.clear(); detailTexture = null;
     if (ownsCache) cache.dispose();
   }
   const snapshot = () => Object.freeze({ artId: AREA_ART_ID, areaId, resolution, disposed, mounted, pages: summary?.pages ?? null, tiles: summary?.tiles ?? null, counts: summary?.counts ?? null, budget: summary?.budget ?? null, ownedUrls: Object.freeze([...owned].sort()), painted: painted.length, residency: residency?.snapshot() ?? null, runtimeAuthority: 'projection-only' });
-  return Object.freeze({ artId: AREA_ART_ID, ready, plan, get summary() { return summary; }, claimsSurface, paintSurface, paintGround, createSolid, mount, update, dispose, snapshot, textureCache: cache });
+  return Object.freeze({ artId: AREA_ART_ID, ready, plan, get summary() { return summary; }, claimsSurface, paintSurface, paintGround, createSolid, mountSolids, mount, update, dispose, snapshot, textureCache: cache });
 }

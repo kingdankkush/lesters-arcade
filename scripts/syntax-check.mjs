@@ -132,6 +132,8 @@ const NODE_CHECK_FILES = [
   'tests/hmh-world-v2-area-art-schema.test.mjs',
   'tests/hmh-world-v2-area-plans.test.mjs',
   'tests/hmh-world-v2-area-art-renderer.test.mjs',
+  'apps/hmh-reboot/src/world-v2-area-art-binding.mjs',
+  'tests/hmh-world-v2-area-art-binding.test.mjs',
   'tests/hmh-greybox-prop-residency.test.mjs',
   'tests/hmh-greybox-ground-presentation.test.mjs',
   'tests/build-git-independence.test.mjs',
