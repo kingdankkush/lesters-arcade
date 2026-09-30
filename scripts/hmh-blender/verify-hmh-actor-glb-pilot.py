@@ -22,6 +22,12 @@ module_spec.loader.exec_module(exporter)
 def activate_clip(clip):
     ranges = []
     for obj in bpy.data.objects:
+        # glTF semantics: a joint without a channel in this clip sits at its rest
+        # transform. Blender would otherwise keep the previous clip's pose on bones
+        # the sparse library clips leave unkeyed, so reset every bone first.
+        if obj.type == "ARMATURE":
+            for bone in obj.pose.bones:
+                bone.matrix_basis.identity()
         adt = obj.animation_data
         if not adt:
             continue
@@ -116,12 +122,17 @@ def main():
     rigs = [obj for obj in bpy.data.objects if obj.type == "ARMATURE"]
     scene = bpy.context.scene
     clips = []
-    for clip in exporter.ACTORS[args.actor]["clips"]:
+    # Library clips appended by export-hmh-hero-clips.py are sampled at three
+    # normalised times (their baked keys always include 0, .5 and 1); the nine
+    # native clips keep the original five-pose check.
+    library_manifest = source.with_name(args.actor + "-clips.json")
+    library_clips = [clip["name"] for clip in json.loads(library_manifest.read_text(encoding="utf-8"))["libraryClips"]] if library_manifest.exists() else []
+    for clip in [*exporter.ACTORS[args.actor]["clips"], *library_clips]:
         start, end = activate_clip(clip)
         samples = []
         first_points = None
         max_shape_change = 0
-        for fraction in [0, .25, .5, .75, 1]:
+        for fraction in ([0, .5, 1] if clip in library_clips else [0, .25, .5, .75, 1]):
             frame = start + (end - start) * fraction
             scene.frame_set(int(frame), subframe=frame % 1)
             samples.append({"frame": frame, **exporter.evaluated_bounds(meshes)})
@@ -140,12 +151,15 @@ def main():
         if args.actor == "bagholder-rusher" and max(abs(value) for value in minimums) > .0002:
             raise RuntimeError("Re-imported native foot grounding failed: " + clip + " " + str(minimums))
         record = {"name": clip, "samples": samples, "minimumWorldZ": min(minimums), "maximumMinimumWorldZ": max(minimums)}
+        if clip in library_clips:
+            record["library"] = True
         if args.actor == "the-liquidator":
             record["maxShapeChangeAfterCentroidTranslationMetres"] = max_shape_change
         clips.append(record)
     receipt = {"schema": 1, "actorId": args.actor, "glbSha256": exporter.digest(source),
                "verification": "offline-Blender-reimport-not-runtime", "cameraDegreesFromVertical": 55,
-               "meshes": len(meshes), "bones": sum(len(rig.data.bones) for rig in rigs), "clips": clips}
+               "meshes": len(meshes), "bones": sum(len(rig.data.bones) for rig in rigs), "clips": clips,
+               "libraryClips": len(library_clips)}
     output.with_suffix(".json").write_text(json.dumps(receipt, indent=2) + "\n", encoding="utf-8")
     if args.preview:
         start, end = activate_clip("idle")

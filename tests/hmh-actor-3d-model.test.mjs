@@ -22,7 +22,7 @@ const changeJson = (bytes, change) => {
 
 test('the bounded runtime loader reads real weighted geometry and clips from the embedded heroes and enemy', () => {
   assert.equal(typeof model.decodeActor3dGlb, 'function');
-  for (const [id, joints, clips] of [['lit-commando', 22, 9], ['lilly', 24, 9], ['lit-valkyrie', 22, 9], ['lester-original', 22, 9], ['bagholder-rusher', 19, 6], ['forkrunner', 24, 6], ['liquidator-agent', 22, 6], ['whale-enforcer', 19, 6], ['gas-bomber', 19, 6], ['validator-cultist', 19, 6]]) {
+  for (const [id, joints, clips] of [['lit-commando', 22, 80], ['lilly', 24, 80], ['lit-valkyrie', 22, 80], ['lester-original', 22, 80], ['bagholder-rusher', 19, 6], ['forkrunner', 24, 6], ['liquidator-agent', 22, 6], ['whale-enforcer', 19, 6], ['gas-bomber', 19, 6], ['validator-cultist', 19, 6]]) {
     const bytes = bytesFor(id), before = hash(bytes);
     const asset = model.decodeActor3dGlb(bytes);
     assert.equal(asset.skins[0].joints.length, joints);

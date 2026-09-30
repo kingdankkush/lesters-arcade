@@ -8,7 +8,7 @@
   "actors": {
     "lilly": {
       "file": "lilly.glb",
-      "sha256": "5f9f4b42849455233a17b90b750c4c08125e4732dcf3acd7536a528abd42414f",
+      "sha256": "65f10bae22e2ff6fcca45c19ff68940302b57ea8fad370aaa4f0507ffad3056c",
       "sourceSha256": "5f9152e713f7c4f79e96d1f1a4415dd1fb96a2685d3d14f22a65e895c8e7d6b2",
       "sourceBytes": 59988395,
       "sourceTriangles": 2417405,
@@ -21,10 +21,81 @@
         "dash",
         "melee",
         "grenade",
-        "death"
+        "death",
+        "run-start",
+        "run-stop",
+        "strafe-l",
+        "strafe-r",
+        "back-pedal",
+        "turn-l",
+        "turn-r",
+        "pivot",
+        "dodge-roll",
+        "stumble",
+        "knockdown",
+        "get-up",
+        "stun",
+        "fall",
+        "land",
+        "cover-enter-tall",
+        "cover-enter-short",
+        "cover-idle-tall-l",
+        "cover-idle-tall-r",
+        "cover-idle-short",
+        "cover-shuffle-l",
+        "cover-shuffle-r",
+        "cover-peek-fire-l",
+        "cover-peek-fire-r",
+        "cover-popup-fire",
+        "cover-blind-fire",
+        "cover-reload",
+        "cover-hit",
+        "cover-leave-step",
+        "cover-leave-run",
+        "cover-leave-roll",
+        "mantle",
+        "vault",
+        "drop",
+        "fire-rifle",
+        "fire-shotgun",
+        "fire-heavy",
+        "fire-launcher",
+        "recoil-light",
+        "recoil-heavy",
+        "reload-pistol",
+        "reload-long",
+        "reload-heavy",
+        "weapon-swap",
+        "melee-1",
+        "melee-2",
+        "melee-finisher",
+        "throw-short",
+        "throw-long",
+        "hit-front",
+        "hit-back",
+        "hit-left",
+        "hit-right",
+        "death-front",
+        "death-back",
+        "death-explode",
+        "spawn",
+        "victory",
+        "level-up",
+        "multikill",
+        "interact-door",
+        "interact-lever",
+        "interact-valve",
+        "interact-button",
+        "pickup",
+        "water-wade",
+        "hazard-flinch",
+        "fidget-glasses-tablet",
+        "fidget-air-code",
+        "fidget-sip-coffee",
+        "fidget-coat-twirl"
       ],
       "inspection": {
-        "bytes": 7860780,
+        "bytes": 8415092,
         "vertices": 25645,
         "triangles": 27496,
         "skinnedMeshes": 6,
@@ -34,6 +105,91 @@
             "name": "aim",
             "durationSeconds": 1,
             "channels": 75
+          },
+          {
+            "name": "back-pedal",
+            "durationSeconds": 1,
+            "channels": 33
+          },
+          {
+            "name": "cover-blind-fire",
+            "durationSeconds": 1,
+            "channels": 31
+          },
+          {
+            "name": "cover-enter-short",
+            "durationSeconds": 1,
+            "channels": 33
+          },
+          {
+            "name": "cover-enter-tall",
+            "durationSeconds": 1,
+            "channels": 33
+          },
+          {
+            "name": "cover-hit",
+            "durationSeconds": 1,
+            "channels": 31
+          },
+          {
+            "name": "cover-idle-short",
+            "durationSeconds": 1,
+            "channels": 33
+          },
+          {
+            "name": "cover-idle-tall-l",
+            "durationSeconds": 1,
+            "channels": 31
+          },
+          {
+            "name": "cover-idle-tall-r",
+            "durationSeconds": 1,
+            "channels": 31
+          },
+          {
+            "name": "cover-leave-roll",
+            "durationSeconds": 1,
+            "channels": 34
+          },
+          {
+            "name": "cover-leave-run",
+            "durationSeconds": 1,
+            "channels": 32
+          },
+          {
+            "name": "cover-leave-step",
+            "durationSeconds": 1,
+            "channels": 33
+          },
+          {
+            "name": "cover-peek-fire-l",
+            "durationSeconds": 1,
+            "channels": 33
+          },
+          {
+            "name": "cover-peek-fire-r",
+            "durationSeconds": 1,
+            "channels": 33
+          },
+          {
+            "name": "cover-popup-fire",
+            "durationSeconds": 1,
+            "channels": 34
+          },
+          {
+            "name": "cover-reload",
+            "durationSeconds": 1,
+            "channels": 32
+          },
+          {
+            "name": "cover-shuffle-l",
+            "durationSeconds": 1,
+            "channels": 30
+          },
+          {
+            "name": "cover-shuffle-r",
+            "durationSeconds": 1,
+            "channels": 30
           },
           {
             "name": "dash",
@@ -46,9 +202,109 @@
             "channels": 75
           },
           {
+            "name": "death-back",
+            "durationSeconds": 1,
+            "channels": 33
+          },
+          {
+            "name": "death-explode",
+            "durationSeconds": 1,
+            "channels": 33
+          },
+          {
+            "name": "death-front",
+            "durationSeconds": 1,
+            "channels": 31
+          },
+          {
+            "name": "dodge-roll",
+            "durationSeconds": 1,
+            "channels": 33
+          },
+          {
+            "name": "drop",
+            "durationSeconds": 1,
+            "channels": 32
+          },
+          {
+            "name": "fall",
+            "durationSeconds": 1,
+            "channels": 32
+          },
+          {
+            "name": "fidget-air-code",
+            "durationSeconds": 1,
+            "channels": 31
+          },
+          {
+            "name": "fidget-coat-twirl",
+            "durationSeconds": 1,
+            "channels": 31
+          },
+          {
+            "name": "fidget-glasses-tablet",
+            "durationSeconds": 1,
+            "channels": 31
+          },
+          {
+            "name": "fidget-sip-coffee",
+            "durationSeconds": 1,
+            "channels": 30
+          },
+          {
+            "name": "fire-heavy",
+            "durationSeconds": 1,
+            "channels": 32
+          },
+          {
+            "name": "fire-launcher",
+            "durationSeconds": 1,
+            "channels": 32
+          },
+          {
+            "name": "fire-rifle",
+            "durationSeconds": 1,
+            "channels": 28
+          },
+          {
+            "name": "fire-shotgun",
+            "durationSeconds": 1,
+            "channels": 28
+          },
+          {
+            "name": "get-up",
+            "durationSeconds": 1,
+            "channels": 33
+          },
+          {
             "name": "grenade",
             "durationSeconds": 1,
             "channels": 75
+          },
+          {
+            "name": "hazard-flinch",
+            "durationSeconds": 1,
+            "channels": 30
+          },
+          {
+            "name": "hit-back",
+            "durationSeconds": 1,
+            "channels": 30
+          },
+          {
+            "name": "hit-front",
+            "durationSeconds": 1,
+            "channels": 30
+          },
+          {
+            "name": "hit-left",
+            "durationSeconds": 1,
+            "channels": 30
+          },
+          {
+            "name": "hit-right",
+            "durationSeconds": 1,
+            "channels": 30
           },
           {
             "name": "hurt",
@@ -61,9 +317,74 @@
             "channels": 75
           },
           {
+            "name": "interact-button",
+            "durationSeconds": 1,
+            "channels": 26
+          },
+          {
+            "name": "interact-door",
+            "durationSeconds": 1,
+            "channels": 33
+          },
+          {
+            "name": "interact-lever",
+            "durationSeconds": 1,
+            "channels": 33
+          },
+          {
+            "name": "interact-valve",
+            "durationSeconds": 1,
+            "channels": 32
+          },
+          {
+            "name": "knockdown",
+            "durationSeconds": 1,
+            "channels": 35
+          },
+          {
+            "name": "land",
+            "durationSeconds": 1,
+            "channels": 32
+          },
+          {
+            "name": "level-up",
+            "durationSeconds": 1,
+            "channels": 34
+          },
+          {
+            "name": "mantle",
+            "durationSeconds": 1,
+            "channels": 32
+          },
+          {
             "name": "melee",
             "durationSeconds": 1,
             "channels": 75
+          },
+          {
+            "name": "melee-1",
+            "durationSeconds": 1,
+            "channels": 29
+          },
+          {
+            "name": "melee-2",
+            "durationSeconds": 1,
+            "channels": 29
+          },
+          {
+            "name": "melee-finisher",
+            "durationSeconds": 1,
+            "channels": 31
+          },
+          {
+            "name": "multikill",
+            "durationSeconds": 1,
+            "channels": 34
+          },
+          {
+            "name": "pickup",
+            "durationSeconds": 1,
+            "channels": 33
           },
           {
             "name": "pistol-fire",
@@ -71,9 +392,114 @@
             "channels": 75
           },
           {
+            "name": "pivot",
+            "durationSeconds": 1,
+            "channels": 29
+          },
+          {
+            "name": "recoil-heavy",
+            "durationSeconds": 1,
+            "channels": 30
+          },
+          {
+            "name": "recoil-light",
+            "durationSeconds": 1,
+            "channels": 28
+          },
+          {
+            "name": "reload-heavy",
+            "durationSeconds": 1,
+            "channels": 34
+          },
+          {
+            "name": "reload-long",
+            "durationSeconds": 1,
+            "channels": 28
+          },
+          {
+            "name": "reload-pistol",
+            "durationSeconds": 1,
+            "channels": 28
+          },
+          {
             "name": "run",
             "durationSeconds": 1,
             "channels": 75
+          },
+          {
+            "name": "run-start",
+            "durationSeconds": 1,
+            "channels": 30
+          },
+          {
+            "name": "run-stop",
+            "durationSeconds": 1,
+            "channels": 31
+          },
+          {
+            "name": "spawn",
+            "durationSeconds": 1,
+            "channels": 32
+          },
+          {
+            "name": "strafe-l",
+            "durationSeconds": 1,
+            "channels": 30
+          },
+          {
+            "name": "strafe-r",
+            "durationSeconds": 1,
+            "channels": 30
+          },
+          {
+            "name": "stumble",
+            "durationSeconds": 1,
+            "channels": 30
+          },
+          {
+            "name": "stun",
+            "durationSeconds": 1,
+            "channels": 30
+          },
+          {
+            "name": "throw-long",
+            "durationSeconds": 1,
+            "channels": 31
+          },
+          {
+            "name": "throw-short",
+            "durationSeconds": 1,
+            "channels": 31
+          },
+          {
+            "name": "turn-l",
+            "durationSeconds": 1,
+            "channels": 28
+          },
+          {
+            "name": "turn-r",
+            "durationSeconds": 1,
+            "channels": 28
+          },
+          {
+            "name": "vault",
+            "durationSeconds": 1,
+            "channels": 32
+          },
+          {
+            "name": "victory",
+            "durationSeconds": 1,
+            "channels": 32
+          },
+          {
+            "name": "water-wade",
+            "durationSeconds": 1,
+            "channels": 32
+          },
+          {
+            "name": "weapon-swap",
+            "durationSeconds": 1,
+            "channels": 28
           }
         ],
         "bounds": {
@@ -177,6 +603,18 @@
         ],
         "textureBytesRgba8": 22020096,
         "textureBytesRgba8Mipmaps": 29360112
+      },
+      "clipLibrary": {
+        "manifest": "lilly-clips.json",
+        "nativeClips": 9,
+        "libraryClips": 71,
+        "fidgets": [
+          "fidget-glasses-tablet",
+          "fidget-air-code",
+          "fidget-sip-coffee",
+          "fidget-coat-twirl"
+        ],
+        "libraryBytes": 554312
       }
     }
   }

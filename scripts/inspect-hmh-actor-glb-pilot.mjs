@@ -20,15 +20,31 @@ const required = enemyId ? { [enemyId]: ['idle', 'run', 'tell', 'attack', 'hit',
   'bagholder-rusher': ['idle', 'run', 'tell', 'attack', 'hit', 'death'],
 };
 const actors = {};
-for (const [actorId, requiredClips] of Object.entries(required)) {
+const HERO_IDS = ['lit-commando', 'lilly', 'lit-valkyrie', 'lester-original'];
+const readJson = url => { try { return JSON.parse(readFileSync(url)); } catch { return null; } };
+for (const [actorId, baseClips] of Object.entries(required)) {
   const bytes = readFileSync(new URL(`${actorId}.glb`, directory));
   const sha256 = createHash('sha256').update(bytes).digest('hex');
-  const source = JSON.parse(readFileSync(new URL(`${actorId}-inspection.json`, scratch)));
-  const reimport = JSON.parse(readFileSync(new URL(`${actorId}-reimport.json`, scratch)));
+  // Heroes carry the authored clip library after their nine native clips; every
+  // library clip is required so a dropped animation fails the manifest gate.
+  const library = HERO_IDS.includes(actorId) ? readJson(new URL(`${actorId}-clips.json`, directory)) : null;
+  if (library && library.glbSha256 !== sha256) throw new Error(`${actorId}-clips.json does not describe the current GLB bytes`);
+  const requiredClips = library ? [...baseClips, ...library.libraryClips.map(clip => clip.name)] : baseClips;
+  // The immutable .blend inspection only changes when the source changes; when
+  // the scratch receipt is absent, carry the previously measured source identity.
+  const previousManifest = readJson(new URL(HERO_IDS.includes(actorId) && actorId !== 'lit-commando' ? `${actorId}-manifest.json` : 'manifest.json', directory))?.actors?.[actorId];
+  const source = readJson(new URL(`${actorId}-inspection.json`, scratch)) ?? (previousManifest && { sourceSha256: previousManifest.sourceSha256, sourceBytes: previousManifest.sourceBytes, meshes: [{ triangles: previousManifest.sourceTriangles }] });
+  if (!source) throw new Error(`no source inspection for ${actorId}`);
+  // A re-import receipt must describe these exact bytes; a scratch receipt wins,
+  // otherwise the committed receipt is accepted only when its digest still matches.
+  const committedReimport = readJson(new URL(`${actorId}-glb-reimport.json`, receiptDirectory));
+  const reimport = readJson(new URL(`${actorId}-reimport.json`, scratch)) ?? (committedReimport?.glbSha256 === sha256 ? committedReimport : null);
+  if (!reimport) throw new Error(`no re-import receipt for the current ${actorId}.glb bytes`);
   if (reimport.glbSha256 !== sha256 || reimport.verification !== 'offline-Blender-reimport-not-runtime') throw new Error('re-import receipt does not match runtime bytes');
   actors[actorId] = { file: `${actorId}.glb`, sha256, sourceSha256: source.sourceSha256,
     sourceBytes: source.sourceBytes, sourceTriangles: source.meshes.reduce((sum, mesh) => sum + mesh.triangles, 0),
-    requiredClips, inspection: inspectActorGlb(bytes, { requiredClips }) };
+    requiredClips, inspection: inspectActorGlb(bytes, { requiredClips }),
+    ...(library ? { clipLibrary: { manifest: `${actorId}-clips.json`, nativeClips: baseClips.length, libraryClips: library.libraryClips.length, fidgets: library.fidgets, libraryBytes: library.libraryBytes } } : {}) };
   if (bossOnly) {
     if (source.phase !== 'market-open' || source.sourceSha256 !== '56a9e240a8cc053f09e2ef95046bf84520ffa65ec561c5dec5e1f46c6ebed574'
       || createHash('sha256').update(readFileSync(new URL(source.source,root))).digest('hex') !== source.sourceSha256) throw new Error('real opening-phase boss source identity mismatch');
