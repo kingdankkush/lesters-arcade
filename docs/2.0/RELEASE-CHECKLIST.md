@@ -11,8 +11,8 @@ estimate was subjective and must not be treated as a measured audit.
 | HMH characters | Existing3D renderer and model work are reusable. Corrected Liquidator body has163 repaired skin vertices. Root-space conversion is corrected; the model passes saved-pose checks and renders in the desktop game. Integrated into the existing character switch, replacing the rusher slot when the boss is visible. | Improve its dark/narrow appearance; reuse the working conversion for the roster. |
 | HMH readability | Painted-bounds prop fading fixed and committed. Objective pointer/text overlap fixed and confirmed in actual phone-framed game. | Keep these fixes in the combined candidate. |
 | Chikun | Positive coin flight, chime and counter feedback enabled by default in the candidate. Existing parity checks are retained; final creature art and versioned additions remain unfinished. | Review what is already playable and finish one coherent visual package. |
-| STACKED | Solo results now show a clear score, practice best and eight stats; actual desktop/phone views fit. Prior versus/audio/tutorial/daily/visualizer work remains gathered. | Make the completed modes and visuals usable together in the candidate. |
-| Achievements and site | Collection/rarity and blog rendering infrastructure exist. Final rewards, earning/Locker integration and publication remain. | Finish the player-facing collection/rewards flow using existing infrastructure. |
+| STACKED | Solo results now show a clear score, practice best and eight stats; actual desktop/phone views fit. Tutorial, daily, local versus link and living visualizer are now enabled in normal play; fixed music-world settings remain usable. | Make the completed modes and visuals usable together in the candidate. |
+| Achievements and site | Collection/rarity and blog rendering infrastructure exist. The current-catalog Locker now has inspection/equip/default controls. Replacement rewards and publication remain. | Review the integrated Locker; finish the replacement rewards and earning flow without discarding legacy unlocks. |
 | Release | Production remains1.9.4 at last live verification; nothing from this checkpoint deployed. | Produce a concrete integrated candidate and an accurate list of shipped/deferred items. |
 
 ## Execution rules
@@ -38,3 +38,13 @@ owned lock released. No repeat was launched. Evidence remains in the local
 workspace at `outputs/hmh-a22-game-preview-01/`; no duplicate receipt archive.
 
 Owner clarification: parallel agents are authorized for bounded production art, modeling/rigging/animation, VFX and UI deliverables. Avoid open-ended harness/prototype work; root integrates the finished content.
+
+## Owner budget and release decision — September 30
+
+Owner reported about30% weekly allowance remaining and asked whether the entire
+original overhaul could ship today. Root did not promise this; the account tool
+reported38% remaining at that check (shared across the account, not a project
+budget). Owner explicitly chose **keep the full scope; release later**, declining
+a reduced release today. Do not publish a partial release under that conversation.
+Finish bounded production deliverables, preserve progress, avoid expanded test
+frameworks/prototype loops and paid generation. The full overhaul remains the goal.

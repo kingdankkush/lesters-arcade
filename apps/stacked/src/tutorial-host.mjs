@@ -1,5 +1,5 @@
 const KEY='lestersarcade:stacked:tutorial-v1';
-export function tutorialEnabled(search,mode){const values=new URLSearchParams(search).getAll('stackedTutorial');return mode==='free'&&values.length===1&&values[0]==='tutorial-v1';}
+export function tutorialEnabled(search,mode){const values=new URLSearchParams(search).getAll('stackedTutorial');return mode==='free'&&(values.length===0||(values.length===1&&values[0]==='tutorial-v1'));}
 export function createTutorialEntry({search,mode,button,overlay,canOpen=()=>true,onActive=()=>{},onStatus=()=>{},storage,load=()=>import('./tutorial-view.mjs'),timeoutMs=5000}){
  if(!tutorialEnabled(search,mode))return null;
  let disposed=false,active=false,view=null,timer=null,cancelLoad;

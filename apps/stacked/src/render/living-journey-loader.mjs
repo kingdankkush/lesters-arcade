@@ -1,8 +1,8 @@
-import {stackedJourneySuffix} from '../../../portal/src/stacked-presentation-switch.mjs';
+import {stackedJourneyEnabled} from '../../../portal/src/stacked-presentation-switch.mjs';
 // Optional visual download is awaited with boot; closure cannot create resources.
 export async function loadLivingJourneyFactory(search,{load=()=>import('./living-journey-view.mjs'),isDisposed=()=>false}={}) {
   if(isDisposed())return{factory:null,status:'disposed'};
-  if(!stackedJourneySuffix(search))return{factory:null,status:'off'};
+  if(!stackedJourneyEnabled(search))return{factory:null,status:'off'};
   try {
     const module=await load();
     if(isDisposed())return{factory:null,status:'disposed'};

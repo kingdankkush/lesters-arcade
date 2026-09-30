@@ -57,3 +57,13 @@ test('a later mask drawing failure destroys earlier unattached mask Graphics and
   assert.throws(()=>createLivingJourneyView({layer,Container:Node,Graphics:FailingMask,Text,createAtmosphere:()=>({audio(){},draw(){return{};},destroy(){}})}),/mask drawing failed/);
   assert.equal(layer.children.length,0);assert.ok(masks.every(mask=>mask.destroyed&&mask.context.destroyed));
 });
+
+
+test('fixed-world selection respects settings then returns to the automatic journey',()=>{
+  const {view,settings}=setup(false);
+  settings.video.visualizer='aurora';
+  const fixed=frame(view,settings,0);assert.equal(fixed.mode,'aurora');
+  assert.equal(view.resources.incoming.visible,false);assert.equal(view.resources.aperture.visible,false);
+  settings.video.visualizer='journey';
+  assert.equal(frame(view,settings,17).journeyVersion,'living-v1');view.destroy();
+});

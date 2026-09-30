@@ -73,9 +73,19 @@ export function createLivingJourneyView({layer,Container,Graphics,Text,mobile=fa
     state:journey.state,
     resources:{root,get incoming(){return slots[1-activeIndex].container;},aperture,points,glyphs:allGlyphs,pointCapacity:pointCapacity*2,nodeCount:actualNodeCount(),actualNodeCount},
     audio(frame,now){if(disposed)return;audioFrame=frame;audioAt=now;for(const slot of slots)slot.base.audio(frame,now);},
-    nextScene(){/* Scene choice is automatic; presentation controls cannot mutate rules. */},
+    nextScene(){for(const slot of slots)slot.base.nextScene?.();},
     draw(args){
       if(disposed)throw new Error('living journey disposed');
+      // Fixed-world preferences remain usable alongside the automatic journey.
+      if(args.settings.video.visualizer && args.settings.video.visualizer!=='journey') {
+        root.visible=args.settings.video.effectsIntensity>0;root.alpha=1;
+        previousPortal=false;activeIndex=0;
+        slots[0].container.visible=true;slots[0].container.mask=null;
+        slots[0].world.visible=slots[0].backdrop.visible=true;slots[0].rain.visible=false;
+        slots[1].container.visible=false;
+        for(const node of[disc,aperture,ring])node.visible=false;
+        return slots[0].base.draw(args);
+      }
       const available=args.settings.video.audioReactive&&audioFrame?.available&&args.now-audioAt<500;
       const state=journey.update({now:args.now,bpm:available?audioFrame.bpm/10:120,lines:args.lines,combo:args.feedback?.combo,danger:args.feedback?.danger,reducedMotion:args.settings.accessibility.reduceMotion});
       root.visible=args.settings.video.effectsIntensity>0;root.alpha=state.brightness/.18;

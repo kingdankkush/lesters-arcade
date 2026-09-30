@@ -12,8 +12,8 @@ function fixture(search,currentSearch){
   finally{host?.destroy();for(const[key,descriptor]of before)if(descriptor)Object.defineProperty(globalThis,key,descriptor);else delete globalThis[key];}
 }
 test('the explicit boot query survives arcade navigation clearing the visible URL',()=>{
-  assert.equal(fixture('?livingJourney=living-v1',''),'/stacked/index.html?livingJourney=living-v1');
+  assert.equal(fixture('?livingJourney=living-v1',''),'/stacked/index.html?livingJourney=living-v1&stackedTutorial=tutorial-v1');
 });
 test('an invalid or duplicate boot query cannot adopt a later valid visible URL',()=>{
-  for(const search of['?livingJourney=bad','?livingJourney=living-v1&livingJourney=living-v1'])assert.equal(fixture(search,'?livingJourney=living-v1'),'/stacked/index.html');
+  for(const search of['?livingJourney=bad','?livingJourney=living-v1&livingJourney=living-v1'])assert.equal(fixture(search,'?livingJourney=living-v1'),'/stacked/index.html?livingJourney=off&stackedTutorial=tutorial-v1');
 });

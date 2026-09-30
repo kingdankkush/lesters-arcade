@@ -1508,9 +1508,9 @@ function hasRememberedWalletConnector() {
 let currentSession = null;
 const bootRuntimeSearch = window.location.search;
 const stackedDailyChoices = new URLSearchParams(bootRuntimeSearch).getAll('stackedDaily');
-const stackedDailyPreview = stackedDailyChoices.length === 1 && stackedDailyChoices[0] === 'daily-v1';
+const stackedDailyEnabled = stackedDailyChoices.length === 0 || (stackedDailyChoices.length === 1 && stackedDailyChoices[0] === 'daily-v1');
 const stackedLocalChoices = new URLSearchParams(bootRuntimeSearch).getAll('stackedLocal');
-const stackedLocalPreview = stackedLocalChoices.length === 1 && stackedLocalChoices[0] === 'local-v1';
+const stackedLocalEnabled = stackedLocalChoices.length === 0 || (stackedLocalChoices.length === 1 && stackedLocalChoices[0] === 'local-v1');
 let hmhRebootHost = null;
 let hmhRebootLifecycle = null;
 let hmhRebootActive = false;
@@ -1527,7 +1527,7 @@ async function mountStackedSession() {
   if (!currentSession || currentSession.gameId !== 'stacked') return;
   destroyHmhRebootSession(); destroyChikunSession(); destroyStackedSession();
   const generation = stackedMountGeneration, pendingSession = currentSession;
-  const dailyRequested = stackedDailyPreview && document.querySelector('#stackedDailyChoice')?.checked === true;
+  const dailyRequested = stackedDailyEnabled && document.querySelector('#stackedDailyChoice')?.checked === true;
   const { createStackedHost, bindStackedDailyChallenge } = await import('./src/stacked-host.mjs');
   if (generation !== stackedMountGeneration || currentSession !== pendingSession) return;
   if (dailyRequested) currentSession = bindStackedDailyChallenge(pendingSession, {now: pendingSession.startedAt});
@@ -5022,7 +5022,7 @@ const renderOfficialModeSelect = () => {
     const select = document.createElement('select'); select.id = 'stackedStartLevel';
     for (let level = 1; level <= 15; level++) { const option = document.createElement('option'); option.value = String(level); option.textContent = 'Level ' + level; select.append(option); }
     label.append(select); options.append(label);
-    if (stackedDailyPreview) {
+    if (stackedDailyEnabled) {
       const dailyLabel = document.createElement('label'); dailyLabel.className = 'stacked-daily-choice';
       const daily = document.createElement('input'); daily.type = 'checkbox'; daily.id = 'stackedDailyChoice'; daily.setAttribute('aria-describedby', 'stackedDailyHint');
       dailyLabel.append(daily, ' Play today’s daily challenge');
@@ -5030,7 +5030,7 @@ const renderOfficialModeSelect = () => {
       daily.addEventListener('change', () => { select.disabled = daily.checked; });
       options.append(dailyLabel, hint);
     }
-    if (stackedLocalPreview) {
+    if (stackedLocalEnabled) {
       const local = document.createElement('a'); local.href = '/stacked/local.html?stackedLocal=local-v1&mode=free'; local.className = 'secondary'; local.textContent = 'Two players · Local Free';
       const row = document.createElement('p'); row.append(local); options.append(row);
     }

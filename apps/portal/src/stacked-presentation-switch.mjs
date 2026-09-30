@@ -1,14 +1,14 @@
-// One explicit preview choice; unrelated query parameters never reach the child.
-export function stackedJourneySuffix(search='') {
+// Completed presentation features are enabled by default. Explicit opt-outs stay
+// explicit across the iframe boundary; unrelated parameters never reach it.
+export function stackedJourneyEnabled(search='') {
   const values=new URLSearchParams(search).getAll('livingJourney');
-  return values.length===1&&values[0]==='living-v1'?'?livingJourney=living-v1':'';
+  return values.length===0||(values.length===1&&values[0]==='living-v1');
 }
-
-// Only these independently validated presentation choices reach the cabinet.
+export function stackedJourneySuffix(search='') {
+  return '?livingJourney='+(stackedJourneyEnabled(search)?'living-v1':'off');
+}
 export function stackedPresentationSuffix(search='') {
-  const parts=[],journey=stackedJourneySuffix(search);
-  if(journey)parts.push(journey.slice(1));
   const values=new URLSearchParams(search).getAll('stackedTutorial');
-  if(values.length===1&&values[0]==='tutorial-v1')parts.push('stackedTutorial=tutorial-v1');
-  return parts.length?'?'+parts.join('&'):'';
+  const tutorial=values.length===0||(values.length===1&&values[0]==='tutorial-v1');
+  return stackedJourneySuffix(search)+'&stackedTutorial='+(tutorial?'tutorial-v1':'off');
 }

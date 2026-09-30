@@ -37,7 +37,8 @@ test('reset restarts the lesson without retaining a held piece or cleared rows',
 });
 test('the tutorial switch is strict and combines with living journey without forwarding other input',async()=>{
  const {stackedPresentationSuffix}=await import('../apps/portal/src/stacked-presentation-switch.mjs');
- assert.equal(stackedPresentationSuffix('?stackedTutorial=tutorial-v1&junk=abc'),'?stackedTutorial=tutorial-v1');
+ assert.equal(stackedPresentationSuffix('?stackedTutorial=tutorial-v1&junk=abc'),'?livingJourney=living-v1&stackedTutorial=tutorial-v1');
  assert.equal(stackedPresentationSuffix('?livingJourney=living-v1&stackedTutorial=tutorial-v1'),'?livingJourney=living-v1&stackedTutorial=tutorial-v1');
- for(const s of ['', '?stackedTutorial=no','?stackedTutorial=tutorial-v1&stackedTutorial=tutorial-v1'])assert.equal(stackedPresentationSuffix(s),'');
+ assert.equal(stackedPresentationSuffix(''),'?livingJourney=living-v1&stackedTutorial=tutorial-v1');
+ for(const s of ['?stackedTutorial=no','?stackedTutorial=tutorial-v1&stackedTutorial=tutorial-v1'])assert.equal(stackedPresentationSuffix(s),'?livingJourney=living-v1&stackedTutorial=off');
 });

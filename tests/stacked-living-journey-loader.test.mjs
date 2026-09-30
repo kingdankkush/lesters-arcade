@@ -8,12 +8,13 @@ test('only one exact allowed journey switch crosses the cabinet boundary',()=>{
   assert.equal(suffix('?livingJourney=living-v1'),'?livingJourney=living-v1');
   assert.equal(suffix('?unrelated=1&livingJourney=living-v1'),'?livingJourney=living-v1');
 });
-test('absent, unsupported and duplicate journey switches preserve the ordinary cabinet URL',()=>{
-  for(const search of['','?livingJourney=on','?livingJourney=LIVING-V1','?livingJourney=living-v1&livingJourney=living-v1','?livingJourney=living-v1&livingJourney=bad'])assert.equal(suffix(search),'');
+test('default journey is enabled while unsupported and duplicate switches explicitly opt out',()=>{
+  assert.equal(suffix(''),'?livingJourney=living-v1');
+  for(const search of['?livingJourney=on','?livingJourney=LIVING-V1','?livingJourney=living-v1&livingJourney=living-v1','?livingJourney=living-v1&livingJourney=bad'])assert.equal(suffix(search),'?livingJourney=off');
 });
 test('unrequested journey loads no module and valid request yields only a presentation factory',async()=>{
   let calls=0;const factory=()=>{};const options={load:async()=>{calls++;return{createLivingJourneyView:factory};}};
-  assert.deepEqual(await load('',options),{factory:null,status:'off'});assert.equal(calls,0);
+  assert.deepEqual(await load('?livingJourney=off',options),{factory:null,status:'off'});assert.equal(calls,0);
   assert.deepEqual(await load('?livingJourney=living-v1',options),{factory,status:'ready'});assert.equal(calls,1);
 });
 test('a failed or invalid optional module preserves ordinary effects',async()=>{

@@ -1,5 +1,43 @@
 # Lester's Arcade 2.0 progress
 
+## September 30: normal STACKED access and Locker
+
+Owner chose to keep the full overhaul scope and release later, declining a
+smaller release today. Conserve the remaining weekly allowance; no partial deploy.
+
+- STACKED now exposes the existing daily challenge and local two-player link
+  through normal mode selection. First-use Free tutorial and the living visualizer
+  are enabled without preview links. Explicit opt-outs stay explicit across the
+  iframe boundary. Fixed music-world choices still work alongside automatic worlds.
+  Thirty-seven focused checks pass, including Free/Ranked daily boundaries.
+- Locker commit568946a96 adds per-game browsing, reward inspection, explicit equip
+  and default controls, and genuine unlock requirements/progress. It preserves the
+  existing catalog, save authority and legacy rewards; replacement rewards are not
+  silently activated. Eleven focused checks pass.
+- Character lighting commit1171a84fa adds sky/ground bounce and camera-side fill
+  while retaining original textures and directional shape. Fourteen existing model
+  checks pass; final appearance is evaluated in the combined game view.
+- Combined build passes: HMH initial/shared1,041,310B, STACKED581,014B, both below caps.
+- Actual review: normal STACKED portal shows Daily/Local Free, opens and dismisses
+  first-use tutorial, loads Living Journey and accepts Orbit selection. Actual guest
+  Locker desktop/phone inspection and cabinet switching work without horizontal
+  overflow; buttons meet44px. An initial viewer assertion mistakenly required an
+  empty child query; parent-added feature suffixes are intentional. The remaining
+  UI review completed without product changes. No browser errors.
+- Current 3D boss is visibly in-frame in actual desktop/phone-sized captures with
+  no page errors. Light improves arms/clothing edges; face and model detail still
+  need polish. This is Windows browser emulation, not physical-phone acceptance.
+  All browser/server processes closed and shared markers released. Originals:
+  workspace outputs/locker-stacked-normal-ui and hmh-liquidator-lighting-20260930.
+
+- Terrain A24 failed its existing post-render grass transform assertion after
+  producing images. No completed native receipt or atlas was produced; no rerender.
+  All386 original source-file pins are unchanged. Retain the working A23 runtime
+  atlas. Art source failure checkpointd5873060c remains in the separate art worktree.
+
+No paid generation, new test framework, version bump, push or deployment. Physical
+phone acceptance, full roster/world art and the complete release remain unfinished.
+
 ## September 30: bounded production integration
 
 Latest owner direction permits parallel art/model/animation/VFX/UI agents and

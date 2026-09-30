@@ -77,13 +77,13 @@ function syncPreferences() {
   $('flashToggle').checked = settings.accessibility.reduceFlash;
   $('leftHandToggle').checked = settings.controls.touchLeftHanded;
   $('touchControls').dataset.leftHanded=String(settings.controls.touchLeftHanded);
-  $('visualizerSelect').value = livingJourneyActive?'journey':settings.video.visualizer??'journey';
-  $('visualizerSelect').disabled=livingJourneyActive;
+  $('visualizerSelect').value = settings.video.visualizer??'journey';
+  $('visualizerSelect').disabled=false;
   if(livingJourneyActive)$('visualizerSelect').options[0].textContent='Living journey · automatic worlds';
   for (const tile of [$('freeModeTile'), $('rankedModeTile')]) tile.setAttribute('aria-current', String(tile.dataset.mode === init?.mode));
   $('volumeRange').value = String(Math.round((settings.audio.sfxVolume ?? 0) * 100));
   showVolume();
-  $('visualizerHint').textContent = preset === 'off' ? 'Effects are Off, so your music world is hidden. Choose Calm or higher to see it.' : livingJourneyActive?'Fly through worlds that morph with the music. Halvings open a portal to the next scene.':WORLD_HINTS[$('visualizerSelect').value];
+  $('visualizerHint').textContent = preset === 'off' ? 'Effects are Off, so your music world is hidden. Choose Calm or higher to see it.' : livingJourneyActive&&$('visualizerSelect').value==='journey'?'Fly through worlds that morph with the music. Halvings open a portal to the next scene.':WORLD_HINTS[$('visualizerSelect').value];
   if (!(settings.audio.sfxVolume > 0)) sfx.stop();
 }
 // One game-sounds slider: 0 reads (and is announced) as Off.
@@ -275,7 +275,7 @@ function updatePreferences() {
   Object.assign(settings.video, expandStackedEffectsPreset(effectRadios().find(radio => radio.checked)?.value));
   settings.accessibility.reduceMotion = $('motionToggle').checked;
   settings.video.ghostPiece = $('ghostToggle').checked; settings.video.gridLines = $('gridToggle').checked;
-  if(!livingJourneyActive)settings.video.visualizer = $('visualizerSelect').value;
+  settings.video.visualizer = $('visualizerSelect').value;
   settings.audio.sfxVolume = Number($('volumeRange').value) / 100; settings.audio.sfxEnabled = settings.audio.sfxVolume > 0;
   settings.accessibility.colorblindPieces = $('pieceMarksToggle').checked;
   settings.accessibility.reduceFlash=$('flashToggle').checked; settings.controls.touchLeftHanded=$('leftHandToggle').checked;

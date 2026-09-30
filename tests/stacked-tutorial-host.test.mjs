@@ -7,14 +7,14 @@ function fixture(options={}){
  const storage={getItem:()=> 'skipped',setItem:(...args)=>writes.push(args)};
  return{args:{search:'?stackedTutorial=tutorial-v1',mode:'free',button,overlay:{},storage,onActive:s=>states.push(s),onStatus:s=>messages.push(s),load:async()=>({mountTutorial(args){mountCount++;exit=args.onExit;return{destroy(){destroyCount++;}};}}),...options},button,writes,states,messages,listeners,get mounts(){return mountCount;},get destroys(){return destroyCount;},close(done){exit(done);}};
 }
-test('absent, duplicate, unknown and Ranked tutorial switches leave the entry untouched',async()=>{
+test('disabled, duplicate, unknown and Ranked tutorial switches leave the entry untouched',async()=>{
  const {createTutorialEntry}=await load();
- for(const options of[{search:''},{search:'?stackedTutorial=bad'},{search:'?stackedTutorial=tutorial-v1&stackedTutorial=tutorial-v1'},{mode:'ranked'}]){
+ for(const options of[{search:'?stackedTutorial=off'},{search:'?stackedTutorial=bad'},{search:'?stackedTutorial=tutorial-v1&stackedTutorial=tutorial-v1'},{mode:'ranked'}]){
   const f=fixture(options);assert.equal(createTutorialEntry(f.args),null);assert.equal(f.button.hidden,true);assert.equal(f.mounts,0);assert.equal(f.listeners.size,0);
  }
 });
 test('seen users load only on request, close writes only onboarding status and returns focus',async()=>{
- const {createTutorialEntry}=await load(),f=fixture(),c=createTutorialEntry(f.args);assert.equal(f.mounts,0);assert.equal(f.button.hidden,false);
+ const {createTutorialEntry}=await load(),f=fixture({search:''}),c=createTutorialEntry(f.args);assert.equal(f.mounts,0);assert.equal(f.button.hidden,false);
  await c.open();assert.equal(c.active,true);assert.equal(f.mounts,1);f.close(true);assert.deepEqual(f.writes,[['lestersarcade:stacked:tutorial-v1','completed']]);assert.equal(c.active,false);assert.equal(f.button.focused,true);assert.deepEqual(f.states,[true,false]);c.destroy();
 });
 test('first entry opens once; a skipped lesson is remembered separately from completion',async()=>{
