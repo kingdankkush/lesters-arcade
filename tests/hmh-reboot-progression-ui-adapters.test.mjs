@@ -154,7 +154,10 @@ test('cockpit markup exposes real run data, accessible controls, and distinct me
   assert.match(cockpit, /upgradeContent/);
   assert.match(cockpit, /className: 'hmh-build-rank'/);
   assert.match(cockpit, /onSettingToggle\(key, enabled\)/);
-  assert.doesNotMatch(html, /hmhSettingGore|hmhSettingColorblind/);
+  // 2.0 owner decision: the gore level (Off / Reduced / Full) lives in the
+  // pause menu as a radio group (tests/hmh-gore-level-setting.test.mjs);
+  // colourblind tags remain parent-owned.
+  assert.doesNotMatch(html, /hmhSettingColorblind/);
   assert.match(css, /\.hmh-upgrade-details summary[^}]*min-height:\s*44px/);
   assert.doesNotMatch(css, /\.hmh-upgrade-choice p\s*\{[^}]*display:\s*none/);
   assert.doesNotMatch(upgradePanel, /button\.append\([^)]*description/);
