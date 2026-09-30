@@ -13,6 +13,7 @@ import { decodePng } from './hmh-reboot-visual-regression.mjs';
 
 const root = fileURLToPath(new URL('..', import.meta.url)), portal = path.join(root, 'apps/portal');
 const phase = process.argv.includes('--red') ? 'red' : 'green';
+const areaStreamingEnabled = process.argv.includes('--area-streaming');
 const output = path.join(root, `.tmp/hmh-actor-3d-pilot/text-context/${phase}`), dist = path.join(output, 'dist');
 await mkdir(dist, { recursive: true });
 const entry = path.join(root, 'apps/hmh-reboot/src/main.mjs'), original = await readFile(entry, 'utf8');
@@ -50,7 +51,7 @@ for (const name of (await readdir(dist)).filter(name => name.endsWith('.js')).so
   const bytes = await readFile(path.join(dist, name)); diagnosticFiles.push({ name, bytes: bytes.length, sha256: hash(bytes) });
 }
 const shippedEntry = path.join(portal, 'dist/hmh-reboot/game.js'), shippedBefore = await readFile(shippedEntry);
-const receipt = { schema: 'hmh-text-context-browser-v1', phase, physicalPhone: false, performanceMeasured: false,
+const receipt = { schema: 'hmh-text-context-browser-v1', phase, areaStreamingEnabled, physicalPhone: false, performanceMeasured: false,
   originalSourceSha256: hash(original), injectedSourceSha256: hash(instrumented), diagnosticEntrySha256: hash(await readFile(path.join(dist, 'game.js'))),
   worldTextSourceSha256: hash(worldTextBefore), shippedVendorSha256: hash(await readFile(path.join(portal, 'dist/chunks/hmh-pixi.js'))), diagnosticFiles,
   shippedEntrySha256: hash(shippedBefore), scenes: [], witnessScope: 'Native tracker glyph pixels and four local world texts; no claim for all Pixi text or complete UI recovery.' };
@@ -96,7 +97,7 @@ try {
         const html = await readFile(path.join(portal, 'hmh-reboot/index.html'), 'utf8'); assert.equal(html.split('../dist/hmh-reboot/game.js').length, 2);
         await route.fulfill({ contentType: 'text/html', body: html.replace('../dist/hmh-reboot/game.js', '/_text-context-diagnostic/game.js') });
       });
-      await page.goto(`${origin}/hmh-reboot/index.html?evidenceSafe=1&telemetry=1${enabled ? '&actor3dPilot=1' : ''}`, { waitUntil: 'domcontentloaded' });
+      await page.goto(`${origin}/hmh-reboot/index.html?evidenceSafe=1&telemetry=1${enabled ? '&actor3dPilot=1' : ''}${areaStreamingEnabled ? '&areaStreaming=1' : ''}`, { waitUntil: 'domcontentloaded' });
       await page.waitForFunction(({ enabled }) => globalThis.__actor3dAuthority && document.querySelector('#hmhRebootStage')?.dataset.startupArt === 'ready'
         && (!enabled || document.querySelector('#hmhRebootStage').dataset.actor3dStatus === 'ready'), { enabled }, { timeout: 30000 });
       await page.evaluate(() => {
@@ -105,6 +106,10 @@ try {
         for (const node of document.querySelectorAll('.hmh-modal-layer')) node.style.display = 'none';
         globalThis.__actor3dAuthority.redrawPresentation();
       });
+      if (areaStreamingEnabled) {
+        const terrain = await page.locator('#hmhRebootStage').evaluate(stage => JSON.parse(stage.dataset.terrainStream));
+        assert.equal(terrain.ready, true); assert.ok(terrain.readyPages.length > 0); assert.equal(terrain.failedDisposals, 0);
+      }
       const before = await page.evaluate(() => ({ guidance: globalThis.__actor3dAuthority.guidance(), state: globalThis.__actor3dAuthority.read() }));
       assert.match(before.guidance.text, /Press the generator switch/); assert.equal(before.guidance.visible, true);
       const id = `${scene.id}-${enabled ? 'pilot' : 'native'}`;

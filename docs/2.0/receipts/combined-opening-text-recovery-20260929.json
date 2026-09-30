@@ -1,0 +1,694 @@
+{
+  "schema": "hmh-text-context-browser-v1",
+  "phase": "green",
+  "areaStreamingEnabled": true,
+  "physicalPhone": false,
+  "performanceMeasured": false,
+  "originalSourceSha256": "0389941a89251019d4a65b8fe60d3d69f8736aeddd1a10a0fd698266afacc671",
+  "injectedSourceSha256": "2e51c20e8b3921756ad87eff75632be3b25819d0aff7f5eba3db1fe3a3a529ab",
+  "diagnosticEntrySha256": "d64e0415ace1929159839735b61fd241ec999815d30945b2f7a1bec22459c01d",
+  "worldTextSourceSha256": "5b6f33c723ad135aa7f697bad26ae677a15d04d6907bfe4fb4cde783188e6228",
+  "shippedVendorSha256": "f2fb9550f7afe643b73cc4c21eb0063f8c8f8d239b411cf33e4353e5b4930c66",
+  "diagnosticFiles": [
+    {
+      "name": "actor-3d-controller-UFWSQHSZ.js",
+      "bytes": 261,
+      "sha256": "894326552183f506c172f75b8d2a7c3438b97176207788248ef001caf2111a87"
+    },
+    {
+      "name": "actor-3d-pixi-QBMIQFEG.js",
+      "bytes": 18178,
+      "sha256": "fd32877188ea29a30540b4378e3a106a912b93c24ee58a8f11e51616aac38336"
+    },
+    {
+      "name": "authored-prop-display-MOZUENDJ.js",
+      "bytes": 7749,
+      "sha256": "37b8e9b01775508aab124280f738a2f74eebdd349fb1c36007a5e0b23a9b2b66"
+    },
+    {
+      "name": "boss-arenas-BFPRMKMM.js",
+      "bytes": 448,
+      "sha256": "23e4daf1f935305c084cbddd58d4ba067b40fc4223281786e9c929afd1ff245e"
+    },
+    {
+      "name": "boss-drops-WOXANXTA.js",
+      "bytes": 533,
+      "sha256": "60960b546521d3eb036af8d28adf898e853bc2a22c79cf457cab2f25bc2dd480"
+    },
+    {
+      "name": "boss-geometry-XJRLQKHB.js",
+      "bytes": 314,
+      "sha256": "ce3724c6c6e86979c70b0f22b61c1ca60eee225084c50b80ebf41dcb16bafbf9"
+    },
+    {
+      "name": "boss-slots-HY3PFZ5Q.js",
+      "bytes": 831,
+      "sha256": "904aaca3a41d6a6106cbf4cc3cb64eabbbb83c2ecda6e03fd72cb21298f51238"
+    },
+    {
+      "name": "chunk-2SZVIFNQ.js",
+      "bytes": 2688,
+      "sha256": "a2bc715372d99f8b92fd063967ff8d0ebf76c3da10ccb3635f76c84afe1b49dc"
+    },
+    {
+      "name": "chunk-3J5NT2Z3.js",
+      "bytes": 3368,
+      "sha256": "9db85111ba86baf3c2c56720931ce6de6b09fdc11dfff016afa2da664970923c"
+    },
+    {
+      "name": "chunk-474Y7564.js",
+      "bytes": 8142,
+      "sha256": "2b21823faa3050d771bd88ba2cd7e3073d480930ef52537383a91e9c76379fe9"
+    },
+    {
+      "name": "chunk-4WRD4CQY.js",
+      "bytes": 1904,
+      "sha256": "b79d259e134876981541a2026907ae00fdcf6ae7c51d416b958f28e2d33511fa"
+    },
+    {
+      "name": "chunk-5G4LWU3H.js",
+      "bytes": 4238,
+      "sha256": "193dc5c6dfab42ec44f11ab2d303355b588072f080792ad2569a484cd54a1406"
+    },
+    {
+      "name": "chunk-7AYLZXBH.js",
+      "bytes": 1760,
+      "sha256": "fa64d4e6d53e8d7ec749b2ae90909922226c3f9d5ae3837d49e8a49a3bc00b94"
+    },
+    {
+      "name": "chunk-7EQ6TZFB.js",
+      "bytes": 8227,
+      "sha256": "4ad4f703e1b26ed702a97f353fdab1814c6d07a3998cead3a1d90abbcb3cff7f"
+    },
+    {
+      "name": "chunk-7PRDTMSC.js",
+      "bytes": 46709,
+      "sha256": "d68d9d1258237754ca70066ca5bd600b74807bd7d277a9cb9d5cf81bb6d6067f"
+    },
+    {
+      "name": "chunk-A4L3MVLX.js",
+      "bytes": 1590,
+      "sha256": "4024f32d830d0a10cab912a25fb48fc25e7e66cce3cb4e6bd4e11bd2047397ee"
+    },
+    {
+      "name": "chunk-A4TDWBCZ.js",
+      "bytes": 20505,
+      "sha256": "fdc25f68be439fc39fe4fadcf53f3e55bbea419d8ab3c3ddbe1da975af0b25d6"
+    },
+    {
+      "name": "chunk-AMMLWJU4.js",
+      "bytes": 8119,
+      "sha256": "7b9eb74c8a9b5c21343f559910514016c0e96e8b4a6b263bf842f8f1b67e71d3"
+    },
+    {
+      "name": "chunk-BCC6TBQT.js",
+      "bytes": 31279,
+      "sha256": "ab2b810e6e293360cdfee05b4424497e4af37e18226c8c026946eb6ed47e8bf8"
+    },
+    {
+      "name": "chunk-CPCFIJ4Y.js",
+      "bytes": 28251,
+      "sha256": "1f01d2954f0885c9a70d600d8a6f1a1c88c731dc94868c774840c71ba4fef69b"
+    },
+    {
+      "name": "chunk-CU2GY3KS.js",
+      "bytes": 5350,
+      "sha256": "d0bcb588f694ff027275eb51fcab0d58a3382bf08912322bd717d34ce38ef84c"
+    },
+    {
+      "name": "chunk-CY4OKJEH.js",
+      "bytes": 2567,
+      "sha256": "a4dd89c9d8f4bfdf048e5ef16b9dfb704b1c1cdbc7936c36cea707f75ce3c0af"
+    },
+    {
+      "name": "chunk-E5ALW7JT.js",
+      "bytes": 10801,
+      "sha256": "628c514e29dfeaf75b2d2139eca21c246025185d4bf3cb2222897eaf3a5a2770"
+    },
+    {
+      "name": "chunk-FGH3JLW5.js",
+      "bytes": 3470,
+      "sha256": "81e193bef7b6c2ae00f5568532fd06f022a2d3d9c27fcfe1b6f97d9c47623e64"
+    },
+    {
+      "name": "chunk-HPAIID55.js",
+      "bytes": 12061,
+      "sha256": "ba65a7065e3ab65e96a87521b2fd130aa12dff65652df69ca2a2b09fd6f8d0c8"
+    },
+    {
+      "name": "chunk-HY7ANXT6.js",
+      "bytes": 4219,
+      "sha256": "70a65bc4522fc364187cf2e23a1673dad5cc19d199e4c823fecd18f976813d9f"
+    },
+    {
+      "name": "chunk-I4EDBOPH.js",
+      "bytes": 6763,
+      "sha256": "3d3cd27f5a6be516a8b3a8faaa4c04fde302e0d83f37eb02496c2957f1d043aa"
+    },
+    {
+      "name": "chunk-JLVD6N3K.js",
+      "bytes": 1478,
+      "sha256": "bfc6080eb22c4a5131162470d97f155e4f80b7d2f385a3c531381c11fc751313"
+    },
+    {
+      "name": "chunk-LEQVR6RH.js",
+      "bytes": 12710,
+      "sha256": "013f5ce95e846863dedee6a2e8c04070b4d0f63a3e6667775b374b8082edce2c"
+    },
+    {
+      "name": "chunk-LJSF7URG.js",
+      "bytes": 4013,
+      "sha256": "b9788600cbf499c968a5c60ab1ba545fbd917d94b5a24c25801be8d60d329758"
+    },
+    {
+      "name": "chunk-MPWDXGRL.js",
+      "bytes": 1275,
+      "sha256": "0e58e1f13487f162562313478c6ebcfd099a69049a8bf6ade3ef5c654f757f58"
+    },
+    {
+      "name": "chunk-NFC2GZK2.js",
+      "bytes": 2367,
+      "sha256": "8238f5ac33b0d33713cf42dcf13a276eb55f413387ca976dfe4c2849ae418d22"
+    },
+    {
+      "name": "chunk-O5LK2S5Q.js",
+      "bytes": 5614,
+      "sha256": "0d1392bb4789e7b483fd0b6f46f654fc2f45d31dcdab7b9e36077441654b6d65"
+    },
+    {
+      "name": "chunk-OUAE567D.js",
+      "bytes": 4375,
+      "sha256": "9ff9c2601d5c0bd8279c1bce218638bff9e1c78be655cdb7b3650fef7fafc49f"
+    },
+    {
+      "name": "chunk-P64VLNRL.js",
+      "bytes": 5708,
+      "sha256": "df390728fe0b4aa7e93ae1f5770f67bed72c749dac5956fd43bdaf8427d39760"
+    },
+    {
+      "name": "chunk-PA6SEAOB.js",
+      "bytes": 2263,
+      "sha256": "f686d385e7342e3958c71abbea2074f3104a0984be3ecbe4ca177c89c1209611"
+    },
+    {
+      "name": "chunk-Q73FOBLW.js",
+      "bytes": 524,
+      "sha256": "d63df405a33525fdfc80c5840831f92e1a192e401fe482f6a13bb537fb270ee6"
+    },
+    {
+      "name": "chunk-RILZTDX6.js",
+      "bytes": 7524,
+      "sha256": "7160e65d6757c9ee58fe9732add7a07946e690776ee89ce2ec30f93d0852c450"
+    },
+    {
+      "name": "chunk-SX3V25PA.js",
+      "bytes": 235,
+      "sha256": "a40d7c3ec735b2c20abaa218335ad1b4dce39965152eb352d0a5136f324bd3b2"
+    },
+    {
+      "name": "chunk-SYHYJH6Y.js",
+      "bytes": 965,
+      "sha256": "b8b27a8e8a339ff957517d24f55d5e43e19257a3d84afa800dcb6a4a36335ae6"
+    },
+    {
+      "name": "chunk-TWNQSEZ3.js",
+      "bytes": 13104,
+      "sha256": "853c4a0be8da8b93781c6b05058761c57ffd0147f3db54fdd9e2f52ed9705535"
+    },
+    {
+      "name": "chunk-U6SFTSZX.js",
+      "bytes": 3416,
+      "sha256": "920fd7f8187e318bade939111e26dee3cbaa3afb8122b6a3942025e551943e1f"
+    },
+    {
+      "name": "chunk-U74SW5DL.js",
+      "bytes": 17271,
+      "sha256": "3efeb826d3f7e886d28c975aa4382c960fa082e4feec426432e88c665a2c95b8"
+    },
+    {
+      "name": "chunk-VW4HHTVF.js",
+      "bytes": 481,
+      "sha256": "7e826d2eb0f90e7b04ccf9f1fb788f8d78a2fb1775e12d5df0f10c8edb119c31"
+    },
+    {
+      "name": "chunk-WAKARWQE.js",
+      "bytes": 7813,
+      "sha256": "bd828df4400522f8e2cb5674ecf8d4319b42c6e4e0dbf2ee6f949d84dadc89a6"
+    },
+    {
+      "name": "chunk-ZCD4SWS4.js",
+      "bytes": 12403,
+      "sha256": "10ed3acfedfe5d93e64eaff748869b897de17c3031da5b1951ddcbb9b8363bbe"
+    },
+    {
+      "name": "combat-audio-AZTU5N22.js",
+      "bytes": 27116,
+      "sha256": "a96073d9d132e4d6bf9d834d8a261ae9aae8ca419debc97382e58bb97a74e77d"
+    },
+    {
+      "name": "creature-presentation-65W6FUJO.js",
+      "bytes": 1054,
+      "sha256": "38bc4506120c1a1173eab35f75e8e3dc17a498ac9a1b922ee12a313c1bddfc1b"
+    },
+    {
+      "name": "debug-grid-overlay-NBG4ZUFU.js",
+      "bytes": 1042,
+      "sha256": "0025ae92275c6ad12e8e5893a491a61bad1f51cd55d71847135496b60f00dffc"
+    },
+    {
+      "name": "encounter-endurance-pilot-6BAOOWXA.js",
+      "bytes": 2049,
+      "sha256": "85a5db4b2b72567d9017cff1b5bac6b543d1f41ddbf9a32ac29071a3e0aca007"
+    },
+    {
+      "name": "enemy-display-pool-AIEUVBSP.js",
+      "bytes": 1193,
+      "sha256": "03e9bac7971239807b73877e2d5c90349eaf3c46f7e99ed06478b98c413e51f5"
+    },
+    {
+      "name": "enemy-hit-feedback-I2IB4SXE.js",
+      "bytes": 1393,
+      "sha256": "5dde43540c3c5df8bddda4ea72138be422cea7829a5826826ce57458f7ff79e3"
+    },
+    {
+      "name": "enemy-render-pass-YTNBL7HO.js",
+      "bytes": 6917,
+      "sha256": "ca5e83b15c4c34ce15afa1934a2bfc25069e53d9aedeaec7629786c527225653"
+    },
+    {
+      "name": "evolution-effects-HYFFYKZA.js",
+      "bytes": 3209,
+      "sha256": "8809f04c919b4a126b0051673779d4607e968ed754bf8e976f639c04d48a1591"
+    },
+    {
+      "name": "game.js",
+      "bytes": 423999,
+      "sha256": "d64e0415ace1929159839735b61fd241ec999815d30945b2f7a1bec22459c01d"
+    },
+    {
+      "name": "gore-presentation-LFAM7FU5.js",
+      "bytes": 6043,
+      "sha256": "8effce9e9c40a8ac9338fba378d3553abee1053ea96c513d20d58fb227649a71"
+    },
+    {
+      "name": "held-weapon-atlas-MMWIGLQJ.js",
+      "bytes": 335,
+      "sha256": "7815ca7cf7d2aa7f8ac47a69d021a7aec5c3ed08ab6513fc2d24b8e2a72a41e5"
+    },
+    {
+      "name": "hero-motion-atlas-5QBIDL6N.js",
+      "bytes": 4252,
+      "sha256": "3ce646601d147f07e308beb22752a8d8ea457e77f9129f5bf164581b71333a04"
+    },
+    {
+      "name": "level-briefing-KHZDPMOJ.js",
+      "bytes": 4097,
+      "sha256": "2b4b1a1a0f40cf2055f8915f059b469c04383b1eaea79342d462eb3481d45ad2"
+    },
+    {
+      "name": "liquidator-boss-4UUIO7M5.js",
+      "bytes": 1741,
+      "sha256": "53d25f14ff4417af26624d24e0dc8dc70469247b5324d013d2cc032a407a7e59"
+    },
+    {
+      "name": "liquidator-telegraph-renderer-AM2W36FE.js",
+      "bytes": 2987,
+      "sha256": "20a7eca0aca3592d97ff897b3ece1417b20f223e2b73ce912e779daa3b557e6a"
+    },
+    {
+      "name": "mannequin-atlas-CBRHFEV4.js",
+      "bytes": 3481,
+      "sha256": "406848972763d152eeb7f48c4d9b29bd60508a6401a41883bece970e13d3fa49"
+    },
+    {
+      "name": "mission-objectives-MLFBELZR.js",
+      "bytes": 647,
+      "sha256": "d0e9956c3d00426b6be0f5d0bfe0bb60bfb7d90cdaa1a89be346c97677bb1454"
+    },
+    {
+      "name": "native-barriers-UJPOL4ZW.js",
+      "bytes": 3161,
+      "sha256": "00a162cdfde7c24e91ddb862dc37c865907accbc8abb240717cabd26909b94ee"
+    },
+    {
+      "name": "pickup-banner-SO2MOTT7.js",
+      "bytes": 4081,
+      "sha256": "a8fc73f5983075bb7104b5854d864a859a02bbabbc99b33295d5b70cf25d6a4a"
+    },
+    {
+      "name": "pickup-indicators-3KMZOVKT.js",
+      "bytes": 1312,
+      "sha256": "1a5e785ececd1e9412510f24ce266f76831b87ecd88d6d68842e05c4daae9a6d"
+    },
+    {
+      "name": "prisoners-YAMDTCBK.js",
+      "bytes": 387,
+      "sha256": "9afd262ed96d2cbf4dc411c22f4664d1047fd5605fd8495569d3d1829ac02a45"
+    },
+    {
+      "name": "production-hero-atlas-Z2U6ZG6A.js",
+      "bytes": 17276,
+      "sha256": "04f6ca8c7902a8c4b1cc9b37bbb9ce1245f91d539362aa836777e2e0273df244"
+    },
+    {
+      "name": "progression-content-JRD5VLIT.js",
+      "bytes": 173,
+      "sha256": "7c2bb6f15bb87e86f2ecdd1d033286a0dddd4165100a9c0b71f47d0c9e3276c4"
+    },
+    {
+      "name": "reload-presentation-KUSKTEWY.js",
+      "bytes": 740,
+      "sha256": "8d28e336116e4394d3e27edd44e061f9e4a38cb30c2e2b5f882da8635e412a49"
+    },
+    {
+      "name": "run-summary-v7-3LHQAEGV.js",
+      "bytes": 958,
+      "sha256": "4e5acd6c2f8377e2597cd9dd4d59509c697c872e84335fed0bdb22b5a1974323"
+    },
+    {
+      "name": "runtime-telemetry-writer-TAX5G6QE.js",
+      "bytes": 11747,
+      "sha256": "2aa21fadfd4023781892ba474a1474434ad3b232ce61c3cab451d605e9d55d7e"
+    },
+    {
+      "name": "silver-drop-presentation-QOG4LECU.js",
+      "bytes": 1145,
+      "sha256": "5602467f3b72cebc902a6bbd758dd08e95a1d00ce654f6888fb071c9b0bcb203"
+    },
+    {
+      "name": "terrain-area-streaming-T5Y3AMCZ.js",
+      "bytes": 10009,
+      "sha256": "56d27f3040e6816ef1ad2888799717b1c90d32887f75f043345e11db9bebd5e7"
+    },
+    {
+      "name": "upgrade-panel-NDWZI2WG.js",
+      "bytes": 7417,
+      "sha256": "4ac7cf181eccf32968781ad4f719b6b5a4290718c133fdf481936c22c9739a47"
+    },
+    {
+      "name": "weapon-wheel-WSIGPDJZ.js",
+      "bytes": 4423,
+      "sha256": "9c6d88d11f477a466bd8fc1706ab31770e303ee46ec06927ee9b68e8b5536549"
+    },
+    {
+      "name": "world-design-field-map-D6WLEOJB.js",
+      "bytes": 4175,
+      "sha256": "ec8ee97ed41c0e6a2f306345514253cd1c3355e6a9184c571647b198bd9a0a54"
+    },
+    {
+      "name": "world-design-interactions-LON5I4FE.js",
+      "bytes": 286,
+      "sha256": "86e9071e69d077e47f6eee5b3dab431c16490c13d0f6acb5f38d114a7aa73dde"
+    },
+    {
+      "name": "world-design-life-FFJQZ7B5.js",
+      "bytes": 774,
+      "sha256": "67c9c612792c56fb1b3547f33488248637128725c4ce55eaab007a0031f9b5f4"
+    },
+    {
+      "name": "world-design-native-assets-DHLG5WM3.js",
+      "bytes": 175,
+      "sha256": "4b91ab8be050f5fd4b8876a0ec0f510541e5c087d68b6008691a1bfad87ca5e0"
+    },
+    {
+      "name": "world-design-pacing-YGX263WH.js",
+      "bytes": 907,
+      "sha256": "745f825e7beb405e802550cb7e55551349744d1c20f37797bb5474bdf52f5f6d"
+    },
+    {
+      "name": "world-ground-fallback-2KJQHGON.js",
+      "bytes": 3895,
+      "sha256": "41777c16c45875e343dc2ca52a73bb2e6497d85bf81a095f5f12965269806d7e"
+    },
+    {
+      "name": "world-static-bake-A3W2Y2SK.js",
+      "bytes": 2590,
+      "sha256": "20e946140281e1ba5401dd0e24a829f5810dff7a8ec57eb99a2d4198491e2937"
+    },
+    {
+      "name": "world-tour-spawns-I2RXMNXV.js",
+      "bytes": 2341,
+      "sha256": "e70c36ed06e4a8b0ad39374292d327d09370e797cbe96a1693c37840d501409b"
+    }
+  ],
+  "shippedEntrySha256": "a6708a1a38ea5d20f8b432aa7c50fdcd753047398504a180d4e3b92e0f6c9a73",
+  "scenes": [
+    {
+      "id": "desktop-native",
+      "before": {
+        "text": "Press the generator switch · 35 m ↓",
+        "visible": true,
+        "styleKey": "Press the generator switch · 35 m ↓:1-0:1",
+        "bounds": {
+          "x": 620.870361328125,
+          "y": 781,
+          "width": 212.25927734375,
+          "height": 16
+        },
+        "resourceType": "HTMLCanvasElement",
+        "resourceWidth": 256,
+        "resourceHeight": 16,
+        "textureKey": "Press the generator switch · 35 m ↓:1-0:1",
+        "resourceAlphaPixels": 0
+      },
+      "after": {
+        "text": "Press the generator switch · 35 m ↓",
+        "visible": true,
+        "styleKey": "Press the generator switch · 35 m ↓:1-0:1",
+        "bounds": {
+          "x": 620.870361328125,
+          "y": 781,
+          "width": 212.25927734375,
+          "height": 16
+        },
+        "resourceType": "HTMLCanvasElement",
+        "resourceWidth": 256,
+        "resourceHeight": 16,
+        "textureKey": "Press the generator switch · 35 m ↓:1-0:1",
+        "resourceAlphaPixels": 0
+      },
+      "beforeGlyphs": 873,
+      "afterGlyphs": 873,
+      "glyphOverlap": 1,
+      "preservedStateHash": "70104a8b2e35c55e6cd7d4705eaa8cc070f6a75dc34167d455736fe1fffd2a3e",
+      "stateUnchanged": true,
+      "presentation": {
+        "status": "disabled",
+        "heroRenderable": true,
+        "weaponRenderable": true,
+        "enemyOriginals": [
+          {
+            "id": "prototype-01-bagholder-rusher",
+            "renderable": true,
+            "visible": true
+          },
+          {
+            "id": "prototype-02-forkrunner",
+            "renderable": true,
+            "visible": true
+          }
+        ],
+        "actorDisplays": 0,
+        "depthActors": 0,
+        "shaderCacheEntries": 2
+      },
+      "gpuError": 0,
+      "errors": [],
+      "glyphRecovery": true
+    },
+    {
+      "id": "desktop-pilot",
+      "before": {
+        "text": "Press the generator switch · 35 m ↓",
+        "visible": true,
+        "styleKey": "Press the generator switch · 35 m ↓:1-0:1",
+        "bounds": {
+          "x": 620.870361328125,
+          "y": 781,
+          "width": 212.25927734375,
+          "height": 16
+        },
+        "resourceType": "HTMLCanvasElement",
+        "resourceWidth": 256,
+        "resourceHeight": 16,
+        "textureKey": "Press the generator switch · 35 m ↓:1-0:1",
+        "resourceAlphaPixels": 0
+      },
+      "after": {
+        "text": "Press the generator switch · 35 m ↓",
+        "visible": true,
+        "styleKey": "Press the generator switch · 35 m ↓:1-0:1",
+        "bounds": {
+          "x": 620.870361328125,
+          "y": 781,
+          "width": 212.25927734375,
+          "height": 16
+        },
+        "resourceType": "HTMLCanvasElement",
+        "resourceWidth": 256,
+        "resourceHeight": 16,
+        "textureKey": "Press the generator switch · 35 m ↓:1-0:1",
+        "resourceAlphaPixels": 0
+      },
+      "beforeGlyphs": 873,
+      "afterGlyphs": 873,
+      "glyphOverlap": 1,
+      "preservedStateHash": "70104a8b2e35c55e6cd7d4705eaa8cc070f6a75dc34167d455736fe1fffd2a3e",
+      "stateUnchanged": true,
+      "presentation": {
+        "status": "fallback",
+        "heroRenderable": true,
+        "weaponRenderable": true,
+        "enemyOriginals": [
+          {
+            "id": "prototype-01-bagholder-rusher",
+            "renderable": true,
+            "visible": true
+          },
+          {
+            "id": "prototype-02-forkrunner",
+            "renderable": true,
+            "visible": true
+          }
+        ],
+        "actorDisplays": 0,
+        "depthActors": 0,
+        "shaderCacheEntries": 2
+      },
+      "gpuError": 0,
+      "errors": [],
+      "glyphRecovery": true
+    },
+    {
+      "id": "mobile-native",
+      "before": {
+        "text": "Press the generator switch · 35 m ↓",
+        "visible": true,
+        "styleKey": "Press the generator switch · 35 m ↓:1-1:1",
+        "bounds": {
+          "x": 112.197998046875,
+          "y": 581.5,
+          "width": 179.60400390625,
+          "height": 13
+        },
+        "resourceType": "HTMLCanvasElement",
+        "resourceWidth": 256,
+        "resourceHeight": 16,
+        "textureKey": "Press the generator switch · 35 m ↓:1-1:1",
+        "resourceAlphaPixels": 0
+      },
+      "after": {
+        "text": "Press the generator switch · 35 m ↓",
+        "visible": true,
+        "styleKey": "Press the generator switch · 35 m ↓:1-1:1",
+        "bounds": {
+          "x": 112.197998046875,
+          "y": 581.5,
+          "width": 179.60400390625,
+          "height": 13
+        },
+        "resourceType": "HTMLCanvasElement",
+        "resourceWidth": 256,
+        "resourceHeight": 16,
+        "textureKey": "Press the generator switch · 35 m ↓:1-1:1",
+        "resourceAlphaPixels": 0
+      },
+      "beforeGlyphs": 474,
+      "afterGlyphs": 474,
+      "glyphOverlap": 1,
+      "preservedStateHash": "766333c83c591225466df45a9371d554ec374970432107e69f041d1ee4b0d1e5",
+      "stateUnchanged": true,
+      "presentation": {
+        "status": "disabled",
+        "heroRenderable": true,
+        "weaponRenderable": true,
+        "enemyOriginals": [
+          {
+            "id": "prototype-01-bagholder-rusher",
+            "renderable": true,
+            "visible": true
+          },
+          {
+            "id": "prototype-02-forkrunner",
+            "renderable": true,
+            "visible": true
+          }
+        ],
+        "actorDisplays": 0,
+        "depthActors": 0,
+        "shaderCacheEntries": 2
+      },
+      "gpuError": 0,
+      "errors": [],
+      "glyphRecovery": true
+    },
+    {
+      "id": "mobile-pilot",
+      "before": {
+        "text": "Press the generator switch · 35 m ↓",
+        "visible": true,
+        "styleKey": "Press the generator switch · 35 m ↓:1-1:1",
+        "bounds": {
+          "x": 112.197998046875,
+          "y": 581.5,
+          "width": 179.60400390625,
+          "height": 13
+        },
+        "resourceType": "HTMLCanvasElement",
+        "resourceWidth": 256,
+        "resourceHeight": 16,
+        "textureKey": "Press the generator switch · 35 m ↓:1-1:1",
+        "resourceAlphaPixels": 0
+      },
+      "after": {
+        "text": "Press the generator switch · 35 m ↓",
+        "visible": true,
+        "styleKey": "Press the generator switch · 35 m ↓:1-1:1",
+        "bounds": {
+          "x": 112.197998046875,
+          "y": 581.5,
+          "width": 179.60400390625,
+          "height": 13
+        },
+        "resourceType": "HTMLCanvasElement",
+        "resourceWidth": 256,
+        "resourceHeight": 16,
+        "textureKey": "Press the generator switch · 35 m ↓:1-1:1",
+        "resourceAlphaPixels": 0
+      },
+      "beforeGlyphs": 474,
+      "afterGlyphs": 474,
+      "glyphOverlap": 1,
+      "preservedStateHash": "766333c83c591225466df45a9371d554ec374970432107e69f041d1ee4b0d1e5",
+      "stateUnchanged": true,
+      "presentation": {
+        "status": "fallback",
+        "heroRenderable": true,
+        "weaponRenderable": true,
+        "enemyOriginals": [
+          {
+            "id": "prototype-01-bagholder-rusher",
+            "renderable": true,
+            "visible": true
+          },
+          {
+            "id": "prototype-02-forkrunner",
+            "renderable": true,
+            "visible": true
+          }
+        ],
+        "actorDisplays": 0,
+        "depthActors": 0,
+        "shaderCacheEntries": 2
+      },
+      "gpuError": 0,
+      "errors": [],
+      "glyphRecovery": true
+    }
+  ],
+  "witnessScope": "Native tracker glyph pixels and four local world texts; no claim for all Pixi text or complete UI recovery.",
+  "originalSourceAfterSha256": "0389941a89251019d4a65b8fe60d3d69f8736aeddd1a10a0fd698266afacc671",
+  "worldTextSourceAfterSha256": "5b6f33c723ad135aa7f697bad26ae677a15d04d6907bfe4fb4cde783188e6228",
+  "shippedEntryAfterSha256": "a6708a1a38ea5d20f8b432aa7c50fdcd753047398504a180d4e3b92e0f6c9a73",
+  "sourceAndShippedUnchanged": true
+}

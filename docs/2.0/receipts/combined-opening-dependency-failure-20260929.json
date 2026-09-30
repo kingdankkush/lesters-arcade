@@ -1,0 +1,73 @@
+{
+  "receipt": {
+    "schema": "arcade-2.0-combined-opening-v1",
+    "token": "root-combined-opening-07a305971cf64b74993a9fae38e4fab7",
+    "scope": "Local gathered technical prototypes; no release, real-phone or full-world acceptance.",
+    "phases": [
+      {
+        "name": "focused",
+        "exitCode": 0,
+        "log": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\root-combined-opening-07a305971cf64b74993a9fae38e4fab7\\focused.log",
+        "tests": 159,
+        "pass": 159,
+        "fail": 0,
+        "skipped": 0,
+        "todo": 0
+      },
+      {
+        "name": "build",
+        "exitCode": 0,
+        "log": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\root-combined-opening-07a305971cf64b74993a9fae38e4fab7\\build.log"
+      },
+      {
+        "name": "terrain-browser",
+        "exitCode": 0,
+        "log": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\root-combined-opening-07a305971cf64b74993a9fae38e4fab7\\terrain-browser.log"
+      },
+      {
+        "name": "text-recovery",
+        "exitCode": 1,
+        "log": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\root-combined-opening-07a305971cf64b74993a9fae38e4fab7\\text-recovery.log"
+      }
+    ],
+    "sourceSha256": {
+      "apps/hmh-reboot/src/main.mjs": "0389941a89251019d4a65b8fe60d3d69f8736aeddd1a10a0fd698266afacc671",
+      "apps/hmh-reboot/src/world-design-life.mjs": "5b6f33c723ad135aa7f697bad26ae677a15d04d6907bfe4fb4cde783188e6228",
+      "apps/hmh-reboot/src/area-texture-leases.mjs": "c516cf152aebd869a785b8143f07f69d6d8762c6bcb868f06b4bd5db38036df2",
+      "apps/hmh-reboot/src/terrain-area-streaming.mjs": "24bcaeb9f6d259f2033c3a7269b16b58c75e942a40e399989d049479d84b1975",
+      "apps/hmh-reboot/src/terrain-tile-atlas.mjs": "397103f2fca680f38e80a2852ebfcde550a3e126fce3abff4d6063061fdc36c5",
+      "apps/hmh-reboot/src/world-static-bake.mjs": "a4dd6eafcdbb6336a50b70c195911991887be6a0420b82c0242b23797c69998c",
+      "scripts/lib/hmh-greybox-layout-check.mjs": "7296aaf2767d5d77d759c7b7a3c9757dc931ba98e1db126436e11525533fb55e",
+      "tests/hmh-greybox-layout-check.test.mjs": "b2d85719e6f924e7970114dbfe3f5c605aea6aab3038a3e3238279f8cacefeeb",
+      "scripts/lib/hmh-actor-authority-injection.mjs": "5c3636f9665cd9f0a501740629ecceca7fc887206c577c91c5f3d0c212626d28",
+      "scripts/hmh-text-context-browser.mjs": "eb06ceb63d693142a48cc3f599c4277a3af1a734b089c2139aaab6a407d5ec4b",
+      "apps/chikun/src/main.mjs": "fa98b3268e6d3234c53d1e3cdfe850e45cf5e367ab7f616028ee0f1ff6961f36",
+      "apps/chikun/src/coin-feedback.mjs": "99783372fa2273cb14ca3400e872a5b753555f8da15b78ced1ec30122d37ff80",
+      "apps/chikun/src/coin-feedback-dom.mjs": "3cf4a6138eae14719f028b0a833eafd9c6f54119e90ca199462ea363b727f745"
+    },
+    "hmhInitialJs": {
+      "bytes": 1047444,
+      "cap": 1048576,
+      "headroom": 1132
+    },
+    "offlineCheckerAbsentFromBuildInputs": true,
+    "failure": "text-recovery failed; original observations preserved",
+    "sourceAfterSha256": {
+      "apps/hmh-reboot/src/main.mjs": "0389941a89251019d4a65b8fe60d3d69f8736aeddd1a10a0fd698266afacc671",
+      "apps/hmh-reboot/src/world-design-life.mjs": "5b6f33c723ad135aa7f697bad26ae677a15d04d6907bfe4fb4cde783188e6228",
+      "apps/hmh-reboot/src/area-texture-leases.mjs": "c516cf152aebd869a785b8143f07f69d6d8762c6bcb868f06b4bd5db38036df2",
+      "apps/hmh-reboot/src/terrain-area-streaming.mjs": "24bcaeb9f6d259f2033c3a7269b16b58c75e942a40e399989d049479d84b1975",
+      "apps/hmh-reboot/src/terrain-tile-atlas.mjs": "397103f2fca680f38e80a2852ebfcde550a3e126fce3abff4d6063061fdc36c5",
+      "apps/hmh-reboot/src/world-static-bake.mjs": "a4dd6eafcdbb6336a50b70c195911991887be6a0420b82c0242b23797c69998c",
+      "scripts/lib/hmh-greybox-layout-check.mjs": "7296aaf2767d5d77d759c7b7a3c9757dc931ba98e1db126436e11525533fb55e",
+      "tests/hmh-greybox-layout-check.test.mjs": "b2d85719e6f924e7970114dbfe3f5c605aea6aab3038a3e3238279f8cacefeeb",
+      "scripts/lib/hmh-actor-authority-injection.mjs": "5c3636f9665cd9f0a501740629ecceca7fc887206c577c91c5f3d0c212626d28",
+      "scripts/hmh-text-context-browser.mjs": "eb06ceb63d693142a48cc3f599c4277a3af1a734b089c2139aaab6a407d5ec4b",
+      "apps/chikun/src/main.mjs": "fa98b3268e6d3234c53d1e3cdfe850e45cf5e367ab7f616028ee0f1ff6961f36",
+      "apps/chikun/src/coin-feedback.mjs": "99783372fa2273cb14ca3400e872a5b753555f8da15b78ced1ec30122d37ff80",
+      "apps/chikun/src/coin-feedback-dom.mjs": "3cf4a6138eae14719f028b0a833eafd9c6f54119e90ca199462ea363b727f745"
+    },
+    "sourceUnchanged": true
+  },
+  "actualLog": "node:internal/modules/esm/resolve:271\n    throw new ERR_MODULE_NOT_FOUND(\n          ^\n\nError [ERR_MODULE_NOT_FOUND]: Cannot find module 'C:\\Users\\just_\\lesters-arcade-wt\\visual-overhaul-200\\benchmarks\\hmh-engine-bakeoff\\node_modules\\playwright\\index.mjs' imported from C:\\Users\\just_\\lesters-arcade-wt\\visual-overhaul-200\\scripts\\hmh-text-context-browser.mjs\n    at finalizeResolution (node:internal/modules/esm/resolve:271:11)\n    at moduleResolve (node:internal/modules/esm/resolve:865:10)\n    at defaultResolve (node:internal/modules/esm/resolve:992:11)\n    at #cachedDefaultResolve (node:internal/modules/esm/loader:701:20)\n    at #resolveAndMaybeBlockOnLoaderThread (node:internal/modules/esm/loader:721:38)\n    at ModuleLoader.resolveSync (node:internal/modules/esm/loader:759:56)\n    at #resolve (node:internal/modules/esm/loader:683:17)\n    at ModuleLoader.getOrCreateModuleJob (node:internal/modules/esm/loader:603:35)\n    at node:internal/modules/esm/loader:632:32\n    at TracingChannel.tracePromise (node:diagnostics_channel:362:14) {\n  code: 'ERR_MODULE_NOT_FOUND',\n  url: 'file:///C:/Users/just_/lesters-arcade-wt/visual-overhaul-200/benchmarks/hmh-engine-bakeoff/node_modules/playwright/index.mjs'\n}\n\nNode.js v24.19.0\n"
+}

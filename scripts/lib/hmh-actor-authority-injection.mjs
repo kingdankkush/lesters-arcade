@@ -30,6 +30,7 @@ omit(`inputController touchController previousActor renderActor renderAlpha boss
   lastLevelUpBeat lightningLedgerEventPlacement bearMarketBurnerEventPlacement forkedStandardEventPlacement
   authoredPropPlacements productionHeroSelection loadedProductionHeroId`, 'presentation interpolation/pose, asset selection or input event bindings; InputState and camera are captured');
 omit('summaryV7 queryGround', 'immutable imported code/catalogues or ground-query callback; live summary catalogue and nav/ground data are captured');
+omit('terrainAreaStreaming terrainPinnedPropTextures terrainStreamingBootController', 'presentation texture resource ownership and cancellation; no simulation/input/evidence data');
 
 function names(pattern) {
   if (pattern.type === 'Identifier') return [pattern.name];

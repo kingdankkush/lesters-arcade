@@ -68,3 +68,15 @@ test('inventory refuses an entry missing a core state binding and captures an un
     assert.throws(() => injection.injectAuthorityProbe(complete.replace(`let ${name}=null;`, '')), new RegExp(name));
   }
 });
+
+test('streamed terrain omits only owned presentation resources and retains the enable flag and new data', () => {
+  const source = `async function boot(){let simulation=null,input=null,enemyPopulation=null,runSummaryAccumulator=null;
+    let terrainAreaStreaming=null,terrainPinnedPropTextures=[];const terrainStreamingBootController=new AbortController();
+    const terrainAreaStreamingEnabled=true;let futureTerrainState={counter:9};}`;
+  const inventory = injection.inventoryAuthorityBindings(source);
+  for (const name of ['terrainAreaStreaming','terrainPinnedPropTextures','terrainStreamingBootController']) {
+    assert.equal(inventory.captured.includes(name), false, name);
+    assert.ok(inventory.omitted.some(row => row.name===name && row.reason==='presentation texture resource ownership and cancellation; no simulation/input/evidence data'), name);
+  }
+  for (const name of ['terrainAreaStreamingEnabled','futureTerrainState']) assert.ok(inventory.captured.includes(name), name);
+});

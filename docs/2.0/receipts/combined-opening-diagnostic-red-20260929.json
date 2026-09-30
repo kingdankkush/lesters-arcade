@@ -1,0 +1,77 @@
+{
+  "receipt": {
+    "schema": "arcade-2.0-combined-opening-v1",
+    "token": "root-combined-opening-d54e528ed2074c1fbc4637f42a7aa1fe",
+    "scope": "Local gathered technical prototypes; no release, real-phone or full-world acceptance.",
+    "phases": [
+      {
+        "name": "text-recovery",
+        "exitCode": 1,
+        "log": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\root-combined-opening-d54e528ed2074c1fbc4637f42a7aa1fe\\text-recovery.log"
+      }
+    ],
+    "sourceSha256": {
+      "apps/hmh-reboot/src/main.mjs": "0389941a89251019d4a65b8fe60d3d69f8736aeddd1a10a0fd698266afacc671",
+      "apps/hmh-reboot/src/world-design-life.mjs": "5b6f33c723ad135aa7f697bad26ae677a15d04d6907bfe4fb4cde783188e6228",
+      "apps/hmh-reboot/src/area-texture-leases.mjs": "c516cf152aebd869a785b8143f07f69d6d8762c6bcb868f06b4bd5db38036df2",
+      "apps/hmh-reboot/src/terrain-area-streaming.mjs": "24bcaeb9f6d259f2033c3a7269b16b58c75e942a40e399989d049479d84b1975",
+      "apps/hmh-reboot/src/terrain-tile-atlas.mjs": "397103f2fca680f38e80a2852ebfcde550a3e126fce3abff4d6063061fdc36c5",
+      "apps/hmh-reboot/src/world-static-bake.mjs": "a4dd6eafcdbb6336a50b70c195911991887be6a0420b82c0242b23797c69998c",
+      "scripts/lib/hmh-greybox-layout-check.mjs": "7296aaf2767d5d77d759c7b7a3c9757dc931ba98e1db126436e11525533fb55e",
+      "tests/hmh-greybox-layout-check.test.mjs": "b2d85719e6f924e7970114dbfe3f5c605aea6aab3038a3e3238279f8cacefeeb",
+      "scripts/lib/hmh-actor-authority-injection.mjs": "5c3636f9665cd9f0a501740629ecceca7fc887206c577c91c5f3d0c212626d28",
+      "scripts/hmh-text-context-browser.mjs": "eb06ceb63d693142a48cc3f599c4277a3af1a734b089c2139aaab6a407d5ec4b",
+      "apps/chikun/src/main.mjs": "fa98b3268e6d3234c53d1e3cdfe850e45cf5e367ab7f616028ee0f1ff6961f36",
+      "apps/chikun/src/coin-feedback.mjs": "99783372fa2273cb14ca3400e872a5b753555f8da15b78ced1ec30122d37ff80",
+      "apps/chikun/src/coin-feedback-dom.mjs": "3cf4a6138eae14719f028b0a833eafd9c6f54119e90ca199462ea363b727f745"
+    },
+    "priorProof": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\root-combined-opening-07a305971cf64b74993a9fae38e4fab7\\receipt.json",
+    "priorPassedPhases": [
+      {
+        "name": "focused",
+        "exitCode": 0,
+        "log": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\root-combined-opening-07a305971cf64b74993a9fae38e4fab7\\focused.log",
+        "tests": 159,
+        "pass": 159,
+        "fail": 0,
+        "skipped": 0,
+        "todo": 0
+      },
+      {
+        "name": "build",
+        "exitCode": 0,
+        "log": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\root-combined-opening-07a305971cf64b74993a9fae38e4fab7\\build.log"
+      },
+      {
+        "name": "terrain-browser",
+        "exitCode": 0,
+        "log": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\root-combined-opening-07a305971cf64b74993a9fae38e4fab7\\terrain-browser.log"
+      }
+    ],
+    "hmhInitialJs": {
+      "bytes": 1047444,
+      "cap": 1048576,
+      "headroom": 1132
+    },
+    "offlineCheckerAbsentFromBuildInputs": true,
+    "failure": "text-recovery failed; original observations preserved",
+    "sourceAfterSha256": {
+      "apps/hmh-reboot/src/main.mjs": "0389941a89251019d4a65b8fe60d3d69f8736aeddd1a10a0fd698266afacc671",
+      "apps/hmh-reboot/src/world-design-life.mjs": "5b6f33c723ad135aa7f697bad26ae677a15d04d6907bfe4fb4cde783188e6228",
+      "apps/hmh-reboot/src/area-texture-leases.mjs": "c516cf152aebd869a785b8143f07f69d6d8762c6bcb868f06b4bd5db38036df2",
+      "apps/hmh-reboot/src/terrain-area-streaming.mjs": "24bcaeb9f6d259f2033c3a7269b16b58c75e942a40e399989d049479d84b1975",
+      "apps/hmh-reboot/src/terrain-tile-atlas.mjs": "397103f2fca680f38e80a2852ebfcde550a3e126fce3abff4d6063061fdc36c5",
+      "apps/hmh-reboot/src/world-static-bake.mjs": "a4dd6eafcdbb6336a50b70c195911991887be6a0420b82c0242b23797c69998c",
+      "scripts/lib/hmh-greybox-layout-check.mjs": "7296aaf2767d5d77d759c7b7a3c9757dc931ba98e1db126436e11525533fb55e",
+      "tests/hmh-greybox-layout-check.test.mjs": "b2d85719e6f924e7970114dbfe3f5c605aea6aab3038a3e3238279f8cacefeeb",
+      "scripts/lib/hmh-actor-authority-injection.mjs": "5c3636f9665cd9f0a501740629ecceca7fc887206c577c91c5f3d0c212626d28",
+      "scripts/hmh-text-context-browser.mjs": "eb06ceb63d693142a48cc3f599c4277a3af1a734b089c2139aaab6a407d5ec4b",
+      "apps/chikun/src/main.mjs": "fa98b3268e6d3234c53d1e3cdfe850e45cf5e367ab7f616028ee0f1ff6961f36",
+      "apps/chikun/src/coin-feedback.mjs": "99783372fa2273cb14ca3400e872a5b753555f8da15b78ced1ec30122d37ff80",
+      "apps/chikun/src/coin-feedback-dom.mjs": "3cf4a6138eae14719f028b0a833eafd9c6f54119e90ca199462ea363b727f745"
+    },
+    "sourceUnchanged": true
+  },
+  "actualLog": "node:internal/modules/run_main:107\n    triggerUncaughtException(\n    ^\n\npage.evaluate: TypeError: unclassified callback authority.terrainPinnedPropTextures.0._events.destroy.fn\n    at l (http://127.0.0.1:60076/_text-context-diagnostic/game.js:1:2658)\n    at l (http://127.0.0.1:60076/_text-context-diagnostic/game.js:1:3497)\n    ... collapsed 4 duplicate lines matching above 1 lines 4 times...\n    at cb (http://127.0.0.1:60076/_text-context-diagnostic/game.js:1:3611)\n    at lm (http://127.0.0.1:60076/_text-context-diagnostic/game.js:1:4165)\n    at Object.read (http://127.0.0.1:60076/_text-context-diagnostic/game.js:9:95168)\n    at eval (eval at evaluate (:303:30), <anonymous>:1:99)\n    at C:\\Users\\just_\\lesters-arcade-wt\\visual-overhaul-200\\scripts\\hmh-text-context-browser.mjs:108:33 {\n  log: []\n}\n\nNode.js v24.19.0\n",
+  "scopeUnitRed": "TAP version 13\n# Subtest: the detached witness preserves Map/Set contents, order, aliases and exact float bits\nok 1 - the detached witness preserves Map/Set contents, order, aliases and exact float bits\n  ---\n  duration_ms: 1.2339\n  type: 'test'\n  ...\n# Subtest: an independent structural witness changes for Map values, Set membership and numeric bit changes\nok 2 - an independent structural witness changes for Map values, Set membership and numeric bit changes\n  ---\n  duration_ms: 0.3236\n  type: 'test'\n  ...\n# Subtest: required authority coverage rejects absent fields and unclassified callable state\nok 3 - required authority coverage rejects absent fields and unclassified callable state\n  ---\n  duration_ms: 0.4001\n  type: 'test'\n  ...\n# Subtest: AST inventory automatically captures newly added boot/module data and exposes scoped omissions\nok 4 - AST inventory automatically captures newly added boot/module data and exposes scoped omissions\n  ---\n  duration_ms: 3.1309\n  type: 'test'\n  ...\n# Subtest: test-only injection registers detached read/evidence accessors without altering any existing statement\nok 5 - test-only injection registers detached read/evidence accessors without altering any existing statement\n  ---\n  duration_ms: 0.545\n  type: 'test'\n  ...\n# Subtest: inventory refuses an entry missing a core state binding and captures an uninitialized new field\nok 6 - inventory refuses an entry missing a core state binding and captures an uninitialized new field\n  ---\n  duration_ms: 0.5648\n  type: 'test'\n  ...\n# Subtest: streamed terrain omits only owned presentation resources and retains the enable flag and new data\nnot ok 7 - streamed terrain omits only owned presentation resources and retains the enable flag and new data\n  ---\n  duration_ms: 1.0054\n  type: 'test'\n  location: 'C:\\\\Users\\\\just_\\\\lesters-arcade-wt\\\\visual-overhaul-200\\\\tests\\\\hmh-actor-3d-authority-witness.test.mjs:72:1'\n  failureType: 'testCodeFailure'\n  error: |-\n    terrainAreaStreaming\n    \n    true !== false\n    \n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected: false\n  actual: true\n  operator: 'strictEqual'\n  stack: |-\n    TestContext.<anonymous> (file:///C:/Users/just_/lesters-arcade-wt/visual-overhaul-200/tests/hmh-actor-3d-authority-witness.test.mjs:78:12)\n    Test.runInAsyncScope (node:async_hooks:227:14)\n    Test.run (node:internal/test_runner/test:1382:25)\n    Test.processPendingSubtests (node:internal/test_runner/test:960:18)\n    Test.postRun (node:internal/test_runner/test:1522:19)\n    Test.run (node:internal/test_runner/test:1447:12)\n    async Test.processPendingSubtests (node:internal/test_runner/test:960:7)\n  ...\n1..7\n# tests 7\n# suites 0\n# pass 6\n# fail 1\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 150.5645\n"
+}

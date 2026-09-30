@@ -1,0 +1,84 @@
+{
+  "schema": "hmh-greybox-w1a-source-bound-v1",
+  "scope": "offline authoring prerequisite only; unchanged actual conservative enemy nav grid; no runtime/map/rules/verifier edit",
+  "archive": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\greybox-w1a-no-git-39eaf6a89c8b4e739f31c88bd9aa445a",
+  "files": [
+    {
+      "file": "tests/hmh-greybox-layout-check.test.mjs",
+      "bytes": 6166,
+      "sha256": "b2d85719e6f924e7970114dbfe3f5c605aea6aab3038a3e3238279f8cacefeeb"
+    },
+    {
+      "file": "scripts/lib/hmh-greybox-layout-check.mjs",
+      "bytes": 5996,
+      "sha256": "7296aaf2767d5d77d759c7b7a3c9757dc931ba98e1db126436e11525533fb55e"
+    },
+    {
+      "file": "apps/hmh-reboot/src/enemy-navgrid.mjs",
+      "bytes": 30791,
+      "sha256": "da338be023aeeaadf0d5eb00a7ceef0adbd82e3ab7eb1b833fe7171445f595c3"
+    },
+    {
+      "file": "apps/hmh-reboot/src/elevation.mjs",
+      "bytes": 19061,
+      "sha256": "afab7fb53ba657f13f1646d533909ae68544754c1de24ccef786ee156a57c4ea"
+    },
+    {
+      "file": "apps/hmh-reboot/src/value-guards.mjs",
+      "bytes": 2596,
+      "sha256": "8576f65fd1f8a4680578580a150bd3acdec43f555e6c8f1181e54ae92771cb94"
+    },
+    {
+      "file": "apps/hmh-reboot/src/blocker-bounds.mjs",
+      "bytes": 4684,
+      "sha256": "7f94d7f336a697e806ce92d1f5eedf9674d9d948f6366a958ba27e7124d2bf8a"
+    },
+    {
+      "file": "package.json",
+      "bytes": 14071,
+      "sha256": "3559b1afe529f6b873c5ed0fd6dd3efa0103a55fa99373d75112b36d68ab5518"
+    }
+  ],
+  "gitMetadataAbsent": true,
+  "nodeModulesAbsent": true,
+  "focused": {
+    "tests": 10,
+    "pass": 10,
+    "fail": 0,
+    "skip": 0,
+    "durationMs": 144.985
+  },
+  "standalone": {
+    "tests": 10,
+    "pass": 10,
+    "fail": 0,
+    "skip": 0,
+    "durationMs": 145.0507,
+    "gitExecutableAbsentFromPath": true
+  },
+  "initialMissingHelperRed": {
+    "tests": 7,
+    "fail": 7,
+    "durationMs": 124.8725
+  },
+  "independentReviewRed": {
+    "tests": 2,
+    "fail": 2,
+    "durationMs": 124.8227
+  },
+  "independentReview": "world_w0_audit read-only source and seven exact source/archive bindings PASS",
+  "physicalPhoneTested": false,
+  "completeW1Accepted": false,
+  "freshCombinedBrowserPending": false,
+  "combinedGate": {
+    "receipt": "combined-opening-gate-20260929.json",
+    "focusedIncludesChecker": true,
+    "checkerCases": 10,
+    "freshBuildPassed": true,
+    "offlineCheckerAbsentFromBuildInputs": true,
+    "terrainBrowserCases": 5,
+    "combinedRecoveryCases": 4,
+    "defaultVisualScenes": 12,
+    "scope": "Browser checks cover the unchanged game with gathered prototypes; the authoring helper itself executes only in Node."
+  }
+}

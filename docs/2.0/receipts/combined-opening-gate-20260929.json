@@ -1,0 +1,1517 @@
+{
+  "schema": "arcade-2.0-combined-opening-source-bound-v1",
+  "scope": "Gathered local R1/recovery/W0b/Chikun prototypes plus offline W1a; not full world, polished art, complete authority/replay, Ranked, hardware or release acceptance.",
+  "candidateBase": "18b219d1",
+  "gatheredRecovery": "0eec1e5d",
+  "gatheredTerrain": "18b219d1",
+  "sourceSha256": {
+    "apps/hmh-reboot/src/main.mjs": "0389941a89251019d4a65b8fe60d3d69f8736aeddd1a10a0fd698266afacc671",
+    "apps/hmh-reboot/src/world-design-life.mjs": "5b6f33c723ad135aa7f697bad26ae677a15d04d6907bfe4fb4cde783188e6228",
+    "apps/hmh-reboot/src/area-texture-leases.mjs": "c516cf152aebd869a785b8143f07f69d6d8762c6bcb868f06b4bd5db38036df2",
+    "apps/hmh-reboot/src/terrain-area-streaming.mjs": "24bcaeb9f6d259f2033c3a7269b16b58c75e942a40e399989d049479d84b1975",
+    "apps/hmh-reboot/src/terrain-tile-atlas.mjs": "397103f2fca680f38e80a2852ebfcde550a3e126fce3abff4d6063061fdc36c5",
+    "apps/hmh-reboot/src/world-static-bake.mjs": "a4dd6eafcdbb6336a50b70c195911991887be6a0420b82c0242b23797c69998c",
+    "scripts/lib/hmh-greybox-layout-check.mjs": "7296aaf2767d5d77d759c7b7a3c9757dc931ba98e1db126436e11525533fb55e",
+    "tests/hmh-greybox-layout-check.test.mjs": "b2d85719e6f924e7970114dbfe3f5c605aea6aab3038a3e3238279f8cacefeeb",
+    "scripts/lib/hmh-actor-authority-injection.mjs": "4d00482d03f4bcf54f5f878b21d0512dc319555710e601d4f55afdf331c5121f",
+    "scripts/hmh-text-context-browser.mjs": "90973fdbf706ceddfced8681d8187695a2464a38062d9fac5c9d149e215d4060",
+    "tests/hmh-actor-3d-authority-witness.test.mjs": "4559cdb19200f157a60d5a717661167a158b252e92fad27c776f9ab7963fb4b7",
+    "apps/chikun/src/main.mjs": "fa98b3268e6d3234c53d1e3cdfe850e45cf5e367ab7f616028ee0f1ff6961f36",
+    "apps/chikun/src/coin-feedback.mjs": "99783372fa2273cb14ca3400e872a5b753555f8da15b78ced1ec30122d37ff80",
+    "apps/chikun/src/coin-feedback-dom.mjs": "3cf4a6138eae14719f028b0a833eafd9c6f54119e90ca199462ea363b727f745"
+  },
+  "frozenWorldSourceSha256": {
+    "apps/hmh-reboot/src/enemy-navgrid.mjs": "da338be023aeeaadf0d5eb00a7ceef0adbd82e3ab7eb1b833fe7171445f595c3",
+    "apps/hmh-reboot/src/elevation.mjs": "afab7fb53ba657f13f1646d533909ae68544754c1de24ccef786ee156a57c4ea",
+    "apps/hmh-reboot/src/level-one-world.mjs": "173d43a2718919dc93a5c9e2c5b061a1cb1821fc6969d9f9bd7c4f5d435c69a1",
+    "apps/hmh-reboot/src/world-design-interactions.mjs": "88eacdd0afcb5143d3f6a997a846139dd48de458004af4c490afd38b54946220"
+  },
+  "build": {
+    "bytes": 1047444,
+    "cap": 1048576,
+    "headroom": 1132,
+    "stackedInitialBytes": 576056,
+    "offlineCheckerAbsentFromBuildInputs": true,
+    "metafileSha256": "1864f47f99e2d7fdf089e376333f84b26f97c234b6a3a77ed51f64f3a5d6764e",
+    "hmhEntrySha256": "a6708a1a38ea5d20f8b432aa7c50fdcd753047398504a180d4e3b92e0f6c9a73",
+    "hmhVendorSha256": "f2fb9550f7afe643b73cc4c21eb0063f8c8f8d239b411cf33e4353e5b4930c66"
+  },
+  "focused": {
+    "name": "focused",
+    "exitCode": 0,
+    "log": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\root-combined-opening-07a305971cf64b74993a9fae38e4fab7\\focused.log",
+    "tests": 159,
+    "pass": 159,
+    "fail": 0,
+    "skipped": 0,
+    "todo": 0
+  },
+  "diagnosticScopeFocused": {
+    "name": "diagnostic-scope-focused",
+    "exitCode": 0,
+    "log": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\root-combined-opening-0c50a65187064322bd355f19849e4130\\diagnostic-scope-focused.log",
+    "tests": 7,
+    "pass": 7,
+    "fail": 0,
+    "skipped": 0,
+    "todo": 0
+  },
+  "diagnosticTestsOverlap": "Six prior witness tests are repeated in the seven-test boundary phase; counts must not be added as unique cases.",
+  "terrain": {
+    "nativeCases": 2,
+    "componentCases": 2,
+    "staleCases": 1,
+    "errors": 0,
+    "physicalPhoneTested": false
+  },
+  "graphicsRecovery": {
+    "cases": 4,
+    "glyphCounts": [
+      {
+        "id": "desktop-native",
+        "beforeGlyphs": 873,
+        "afterGlyphs": 873,
+        "glyphOverlap": 1,
+        "stateUnchanged": true,
+        "gpuError": 0
+      },
+      {
+        "id": "desktop-pilot",
+        "beforeGlyphs": 873,
+        "afterGlyphs": 873,
+        "glyphOverlap": 1,
+        "stateUnchanged": true,
+        "gpuError": 0
+      },
+      {
+        "id": "mobile-native",
+        "beforeGlyphs": 474,
+        "afterGlyphs": 474,
+        "glyphOverlap": 1,
+        "stateUnchanged": true,
+        "gpuError": 0
+      },
+      {
+        "id": "mobile-pilot",
+        "beforeGlyphs": 474,
+        "afterGlyphs": 474,
+        "glyphOverlap": 1,
+        "stateUnchanged": true,
+        "gpuError": 0
+      }
+    ],
+    "areaStreamingEnabled": true,
+    "sourceAndShippedUnchanged": true,
+    "scope": "Native guidance glyph recovery and startup terrain page ownership; complete post-restoration GPU terrain/sprite/UI recovery remains open. Paused redraw still clips an enemy at the origin."
+  },
+  "authorityInventory": {
+    "captured": [
+      "RUNTIME_VERSION",
+      "MAX_ACTIVE_PROJECTILES",
+      "LIQUIDATOR_THREAT_COST",
+      "YARD_GRID_HAZARD_ID",
+      "PACIFIED_HAZARDS",
+      "PROJECTILE_FLIGHT_HEIGHT",
+      "PLAYER_HURT_POSE_TICKS",
+      "PLAYER_DAMAGE_FLASH_TICKS",
+      "LOW_HEALTH_VIGNETTE_THRESHOLD",
+      "SHAKE_DECAY_TICKS",
+      "MAX_ACTIVE_GRENADES",
+      "MAX_COMBAT_VISUAL_EVENTS",
+      "PROJECTILE_GRID_THRESHOLD",
+      "HIT_FEEDBACK_TICKS",
+      "CRITICAL_CHANCE_CAP",
+      "BASE_CRITICAL_CHANCE",
+      "BASE_CRITICAL_MULTIPLIER",
+      "NO_CRITICAL",
+      "V6_UPGRADE_IDS",
+      "WEAPON_KNOCKBACK",
+      "WEAPON_COLORS",
+      "WORLD_BOUNDS",
+      "WORLD_BLOCKERS",
+      "BLOCKER_VISUAL_KIND",
+      "ENEMY_NAV_GRID",
+      "navGridAuthority",
+      "ENEMY_FLOW_REFRESH_TICKS",
+      "enemyFlowField",
+      "enemyFlowFieldTick",
+      "FUEL_DRUM_IDS",
+      "blockersWithoutCache",
+      "enemyFlowReplanRequestedTick",
+      "activeBurnerHazards",
+      "minimapDiscovery",
+      "enemyNavigation",
+      "coarsePointer",
+      "performanceProfile",
+      "touchUiEnabled",
+      "userZoom",
+      "WEAPON_TITLE_BY_ID",
+      "TIMED_EFFECT_TITLE_BY_ID",
+      "DISMEMBER_POLICY_TYPES",
+      "pipelinePilotEnabled",
+      "grayboxRequested",
+      "enemyRosterEnabled",
+      "terrainTilesEnabled",
+      "terrainAreaStreamingEnabled",
+      "productionPilotEnabled",
+      "requestedProductionHeroId",
+      "productionHeroId",
+      "authoredPointOfInterestPlacements",
+      "ELITE_RING_COLOR",
+      "debugGridEnabled",
+      "debugHudEnabled",
+      "directorDebugEnabled",
+      "bossDebugEnabled",
+      "evidenceSafeEnabled",
+      "endurancePressurePilotEnabled",
+      "rosterPreviewEnabled",
+      "rosterCombatEnabled",
+      "progressionPilotEnabled",
+      "terminalPilotEnabled",
+      "releaseAnchorEnabled",
+      "releaseTelemetryEnabled",
+      "collectibleHealthPilotEnabled",
+      "collectibleAmmoPilotEnabled",
+      "collectibleRefreshPilotEnabled",
+      "lightningLedgerPilotEnabled",
+      "bearMarketBurnerPilotEnabled",
+      "forkedStandardPilotEnabled",
+      "lightningEventPilot",
+      "burnerEventPilot",
+      "standardEventPilot",
+      "weaponPilotEnabled",
+      "worldTourId",
+      "worldTourSpawns",
+      "evidencePlayerSpawn",
+      "runtimePlayerSpawn",
+      "evidenceGameplayEnabled",
+      "authoredSpawnPoints",
+      "settings",
+      "elapsedMs",
+      "sessionPayload",
+      "simulation",
+      "runProgression",
+      "PAUSE_SETTING_KEYS",
+      "maxPlayerHealth",
+      "heroModifiers",
+      "upgradePending",
+      "pendingUpgradeOfferPaint",
+      "evolutionPending",
+      "bossDrops",
+      "bombletPool",
+      "actor",
+      "motion",
+      "aimState",
+      "aimIntent",
+      "grayboxEnemies",
+      "enemyPopulation",
+      "encounterDirector",
+      "lastDirectorStep",
+      "liquidatorBoss",
+      "bossSummaryDamage",
+      "bossSlots",
+      "lastBossStep",
+      "lastEnemyStep",
+      "catchUpSaturationFrames",
+      "lastBossRoleCheck",
+      "lastBossResolvedAttack",
+      "lastBossPunishWindow",
+      "lastEnemyAttack",
+      "lastEnemyStrike",
+      "playerBody",
+      "lastCollision",
+      "lastTraversal",
+      "lastGround",
+      "zeroDisplacementFrames",
+      "previousGrenade",
+      "previousDash",
+      "previousWeaponNext",
+      "lastInputWeaponSlot",
+      "camera",
+      "input",
+      "gamepadWasActive",
+      "activeProjectiles",
+      "weaponLoadout",
+      "meleeState",
+      "grenadeSystem",
+      "dashState",
+      "lastDashReady",
+      "droppedProjectiles",
+      "lastProjectileResolution",
+      "lastProjectileHit",
+      "lastCombatResolution",
+      "lastWeaponFire",
+      "lastLightningLedgerPulse",
+      "lastBearMarketBurnerPulse",
+      "lastForkedStandardStrike",
+      "lastPlayerHit",
+      "lowHealthWarned",
+      "lastDashDirection",
+      "lastMoveDirection",
+      "lastTickManualDodge",
+      "framingState",
+      "particleScale",
+      "lastMeleeAttack",
+      "lastGrenadeThrow",
+      "lastGrenadeDetonation",
+      "playerDefeatController",
+      "playerHealth",
+      "silverDropState",
+      "collectibleState",
+      "missionState",
+      "BOSS_LOCK_WORLD",
+      "worldDestructibleState",
+      "worldPacingState",
+      "collectibleSnapshot",
+      "lastCollectibleEvent",
+      "runKills",
+      "runCombo",
+      "maxRunCombo",
+      "runSummaryAccumulator",
+      "runEventSequence",
+      "revealState",
+      "revealSnapshot"
+    ],
+    "omitted": [
+      {
+        "name": "applyLiquidatorDamage",
+        "reason": "immutable lazy-imported code/catalogue binding"
+      },
+      {
+        "name": "createLiquidatorBoss",
+        "reason": "immutable lazy-imported code/catalogue binding"
+      },
+      {
+        "name": "getLiquidatorVulnerability",
+        "reason": "immutable lazy-imported code/catalogue binding"
+      },
+      {
+        "name": "getLiquidatorRoleCheck",
+        "reason": "immutable lazy-imported code/catalogue binding"
+      },
+      {
+        "name": "resolveLiquidatorAttack",
+        "reason": "immutable lazy-imported code/catalogue binding"
+      },
+      {
+        "name": "stepLiquidatorBoss",
+        "reason": "immutable lazy-imported code/catalogue binding"
+      },
+      {
+        "name": "isLiquidatorTargetable",
+        "reason": "immutable lazy-imported code/catalogue binding"
+      },
+      {
+        "name": "liquidatorOpenArena",
+        "reason": "immutable lazy-imported code/catalogue binding"
+      },
+      {
+        "name": "createBossSlots",
+        "reason": "immutable lazy-imported code/catalogue binding"
+      },
+      {
+        "name": "stepBossSlots",
+        "reason": "immutable lazy-imported code/catalogue binding"
+      },
+      {
+        "name": "bossZoneArming",
+        "reason": "immutable lazy-imported code/catalogue binding"
+      },
+      {
+        "name": "bossDirectorOverlay",
+        "reason": "immutable lazy-imported code/catalogue binding"
+      },
+      {
+        "name": "directorBankFull",
+        "reason": "immutable lazy-imported code/catalogue binding"
+      },
+      {
+        "name": "insertBossAdds",
+        "reason": "immutable lazy-imported code/catalogue binding"
+      },
+      {
+        "name": "defeatBossSlot",
+        "reason": "immutable lazy-imported code/catalogue binding"
+      },
+      {
+        "name": "consumeGoldenParachute",
+        "reason": "immutable lazy-imported code/catalogue binding"
+      },
+      {
+        "name": "bossHudState",
+        "reason": "immutable lazy-imported code/catalogue binding"
+      },
+      {
+        "name": "forceBossStart",
+        "reason": "immutable lazy-imported code/catalogue binding"
+      },
+      {
+        "name": "BOSS_LOCK_BLOCKERS",
+        "reason": "immutable lazy-imported code/catalogue binding"
+      },
+      {
+        "name": "insideBossArena",
+        "reason": "immutable lazy-imported code/catalogue binding"
+      },
+      {
+        "name": "bossShapeDodgeDanger",
+        "reason": "immutable lazy-imported code/catalogue binding"
+      },
+      {
+        "name": "creatureAnimationTick",
+        "reason": "immutable lazy-imported code/catalogue binding"
+      },
+      {
+        "name": "creatureIdPhase",
+        "reason": "immutable lazy-imported code/catalogue binding"
+      },
+      {
+        "name": "liquidatorPose",
+        "reason": "immutable lazy-imported code/catalogue binding"
+      },
+      {
+        "name": "renderLiquidatorTelegraph",
+        "reason": "immutable lazy-imported code/catalogue binding"
+      },
+      {
+        "name": "refreshWorldDesignGateNavigation",
+        "reason": "immutable lazy-imported code/catalogue binding"
+      },
+      {
+        "name": "buildWorldDesignHazardHits",
+        "reason": "immutable lazy-imported code/catalogue binding"
+      },
+      {
+        "name": "createMissionState",
+        "reason": "immutable lazy-imported code/catalogue binding"
+      },
+      {
+        "name": "stepMissionObjectives",
+        "reason": "immutable lazy-imported code/catalogue binding"
+      },
+      {
+        "name": "settleMissionObjective",
+        "reason": "immutable lazy-imported code/catalogue binding"
+      },
+      {
+        "name": "missionDockStep",
+        "reason": "immutable lazy-imported code/catalogue binding"
+      },
+      {
+        "name": "missionActiveBlockers",
+        "reason": "immutable lazy-imported code/catalogue binding"
+      },
+      {
+        "name": "missionSealTargets",
+        "reason": "immutable lazy-imported code/catalogue binding"
+      },
+      {
+        "name": "applyMissionSealDamage",
+        "reason": "immutable lazy-imported code/catalogue binding"
+      },
+      {
+        "name": "missionHiddenSecretProps",
+        "reason": "immutable lazy-imported code/catalogue binding"
+      },
+      {
+        "name": "createWorldDesignLife",
+        "reason": "immutable lazy-imported code/catalogue binding"
+      },
+      {
+        "name": "prepareWorldDesignEnemyPose",
+        "reason": "immutable lazy-imported code/catalogue binding"
+      },
+      {
+        "name": "createWorldDesignPacing",
+        "reason": "immutable lazy-imported code/catalogue binding"
+      },
+      {
+        "name": "stepWorldDesignPacing",
+        "reason": "immutable lazy-imported code/catalogue binding"
+      },
+      {
+        "name": "loadWorldDesignAppearance",
+        "reason": "immutable lazy-imported code/catalogue binding"
+      },
+      {
+        "name": "resolveLevelBriefing",
+        "reason": "immutable lazy-imported code/catalogue binding"
+      },
+      {
+        "name": "applyLevelBriefing",
+        "reason": "immutable lazy-imported code/catalogue binding"
+      },
+      {
+        "name": "createUpgradePanel",
+        "reason": "immutable lazy-imported code/catalogue binding"
+      },
+      {
+        "name": "RUN_UPGRADE_CONTENT",
+        "reason": "immutable lazy-imported code/catalogue binding"
+      },
+      {
+        "name": "runUpgradeContent",
+        "reason": "immutable lazy-imported code/catalogue binding"
+      },
+      {
+        "name": "createBossDrops",
+        "reason": "immutable lazy-imported code/catalogue binding"
+      },
+      {
+        "name": "dropGenesisSeal",
+        "reason": "immutable lazy-imported code/catalogue binding"
+      },
+      {
+        "name": "collectGenesisSeals",
+        "reason": "immutable lazy-imported code/catalogue binding"
+      },
+      {
+        "name": "resolveGenesisSeal",
+        "reason": "immutable lazy-imported code/catalogue binding"
+      },
+      {
+        "name": "openRunEvolutionOffer",
+        "reason": "immutable lazy-imported code/catalogue binding"
+      },
+      {
+        "name": "rerollRunEvolutionSlot",
+        "reason": "immutable lazy-imported code/catalogue binding"
+      },
+      {
+        "name": "selectRunEvolution",
+        "reason": "immutable lazy-imported code/catalogue binding"
+      },
+      {
+        "name": "evolveBankedSealOnMastery",
+        "reason": "immutable lazy-imported code/catalogue binding"
+      },
+      {
+        "name": "PRISONERS_LIVE_DEFAULT",
+        "reason": "immutable lazy-imported code/catalogue binding"
+      },
+      {
+        "name": "PRISONER_TITLES",
+        "reason": "immutable lazy-imported code/catalogue binding"
+      },
+      {
+        "name": "OG_MINER_XP_PER_LEVEL",
+        "reason": "immutable lazy-imported code/catalogue binding"
+      },
+      {
+        "name": "prisonerMissionRows",
+        "reason": "immutable lazy-imported code/catalogue binding"
+      },
+      {
+        "name": "rescuePrisoner",
+        "reason": "immutable lazy-imported code/catalogue binding"
+      },
+      {
+        "name": "stepPrisonerStations",
+        "reason": "immutable lazy-imported code/catalogue binding"
+      },
+      {
+        "name": "startPrisonerTimedEffect",
+        "reason": "immutable lazy-imported code/catalogue binding"
+      },
+      {
+        "name": "summaryV7",
+        "reason": "immutable imported code/catalogues or ground-query callback; live summary catalogue and nav/ground data are captured"
+      },
+      {
+        "name": "createBombletPool",
+        "reason": "immutable lazy-imported code/catalogue binding"
+      },
+      {
+        "name": "spawnBomblets",
+        "reason": "immutable lazy-imported code/catalogue binding"
+      },
+      {
+        "name": "stepBomblets",
+        "reason": "immutable lazy-imported code/catalogue binding"
+      },
+      {
+        "name": "bombletPosition",
+        "reason": "immutable lazy-imported code/catalogue binding"
+      },
+      {
+        "name": "ventRingHits",
+        "reason": "immutable lazy-imported code/catalogue binding"
+      },
+      {
+        "name": "critCandleHitChance",
+        "reason": "immutable lazy-imported code/catalogue binding"
+      },
+      {
+        "name": "createBombletFeedbackBudget",
+        "reason": "immutable lazy-imported code/catalogue binding"
+      },
+      {
+        "name": "takeBombletFeedback",
+        "reason": "immutable lazy-imported code/catalogue binding"
+      },
+      {
+        "name": "lazyRuntimeModulesLoad",
+        "reason": "presentation startup, asset loading, telemetry or transport; authority is captured from live state"
+      },
+      {
+        "name": "isBossTargetId",
+        "reason": "callback code; surrounding mutable data remains captured"
+      },
+      {
+        "name": "queryGround",
+        "reason": "immutable imported code/catalogues or ground-query callback; live summary catalogue and nav/ground data are captured"
+      },
+      {
+        "name": "bossFloorCircle",
+        "reason": "callback code; surrounding mutable data remains captured"
+      },
+      {
+        "name": "isBreakableTargetId",
+        "reason": "callback code; surrounding mutable data remains captured"
+      },
+      {
+        "name": "stageElement",
+        "reason": "presentation startup, asset loading, telemetry or transport; authority is captured from live state"
+      },
+      {
+        "name": "statusElement",
+        "reason": "presentation startup, asset loading, telemetry or transport; authority is captured from live state"
+      },
+      {
+        "name": "sessionElement",
+        "reason": "presentation startup, asset loading, telemetry or transport; authority is captured from live state"
+      },
+      {
+        "name": "combatStatusElement",
+        "reason": "presentation startup, asset loading, telemetry or transport; authority is captured from live state"
+      },
+      {
+        "name": "dashStatusElement",
+        "reason": "presentation startup, asset loading, telemetry or transport; authority is captured from live state"
+      },
+      {
+        "name": "lazyRuntimeModules",
+        "reason": "presentation startup, asset loading, telemetry or transport; authority is captured from live state"
+      },
+      {
+        "name": "dataset",
+        "reason": "presentation startup, asset loading, telemetry or transport; authority is captured from live state"
+      },
+      {
+        "name": "startupPanel",
+        "reason": "presentation startup, asset loading, telemetry or transport; authority is captured from live state"
+      },
+      {
+        "name": "startupCopy",
+        "reason": "presentation startup, asset loading, telemetry or transport; authority is captured from live state"
+      },
+      {
+        "name": "startupContinue",
+        "reason": "presentation startup, asset loading, telemetry or transport; authority is captured from live state"
+      },
+      {
+        "name": "startupGate",
+        "reason": "presentation startup, asset loading, telemetry or transport; authority is captured from live state"
+      },
+      {
+        "name": "textureAssets",
+        "reason": "presentation startup, asset loading, telemetry or transport; authority is captured from live state"
+      },
+      {
+        "name": "terrainAreaStreaming",
+        "reason": "presentation texture resource ownership and cancellation; no simulation/input/evidence data"
+      },
+      {
+        "name": "terrainPinnedPropTextures",
+        "reason": "presentation texture resource ownership and cancellation; no simulation/input/evidence data"
+      },
+      {
+        "name": "terrainStreamingBootController",
+        "reason": "presentation texture resource ownership and cancellation; no simulation/input/evidence data"
+      },
+      {
+        "name": "pickupBanner",
+        "reason": "presentation displays, effects, resource caches or UI only"
+      },
+      {
+        "name": "pickupBannerModule",
+        "reason": "presentation startup, asset loading, telemetry or transport; authority is captured from live state"
+      },
+      {
+        "name": "pickupBannerRequested",
+        "reason": "presentation startup, asset loading, telemetry or transport; authority is captured from live state"
+      },
+      {
+        "name": "pendingPickupAnnouncements",
+        "reason": "presentation displays, effects, resource caches or UI only"
+      },
+      {
+        "name": "humanizeEffectId",
+        "reason": "callback code; surrounding mutable data remains captured"
+      },
+      {
+        "name": "announcePickupEvent",
+        "reason": "callback code; surrounding mutable data remains captured"
+      },
+      {
+        "name": "killDismembers",
+        "reason": "callback code; surrounding mutable data remains captured"
+      },
+      {
+        "name": "claimTouchOnboarding",
+        "reason": "presentation startup, asset loading, telemetry or transport; authority is captured from live state"
+      },
+      {
+        "name": "enemyDisplayPoolModule",
+        "reason": "presentation startup, asset loading, telemetry or transport; authority is captured from live state"
+      },
+      {
+        "name": "staticWorldBakeModule",
+        "reason": "presentation startup, asset loading, telemetry or transport; authority is captured from live state"
+      },
+      {
+        "name": "enemyRenderPassModule",
+        "reason": "presentation startup, asset loading, telemetry or transport; authority is captured from live state"
+      },
+      {
+        "name": "app",
+        "reason": "presentation displays, effects, resource caches or UI only"
+      },
+      {
+        "name": "actor3dPilot",
+        "reason": "presentation displays, effects, resource caches or UI only"
+      },
+      {
+        "name": "actor3dDisposed",
+        "reason": "presentation displays, effects, resource caches or UI only"
+      },
+      {
+        "name": "actor3dHeroAction",
+        "reason": "presentation displays, effects, resource caches or UI only"
+      },
+      {
+        "name": "actor3dHeroTick",
+        "reason": "presentation displays, effects, resource caches or UI only"
+      },
+      {
+        "name": "handleBridgeProtocolError",
+        "reason": "callback code; surrounding mutable data remains captured"
+      },
+      {
+        "name": "bridge",
+        "reason": "presentation startup, asset loading, telemetry or transport; authority is captured from live state"
+      },
+      {
+        "name": "adaptiveResolution",
+        "reason": "presentation startup, asset loading, telemetry or transport; authority is captured from live state"
+      },
+      {
+        "name": "runtimeParams",
+        "reason": "presentation startup, asset loading, telemetry or transport; authority is captured from live state"
+      },
+      {
+        "name": "productionHeroSelection",
+        "reason": "presentation interpolation/pose, asset selection or input event bindings; InputState and camera are captured"
+      },
+      {
+        "name": "world",
+        "reason": "presentation displays, effects, resource caches or UI only"
+      },
+      {
+        "name": "backdrop",
+        "reason": "presentation displays, effects, resource caches or UI only"
+      },
+      {
+        "name": "worldDepthLayer",
+        "reason": "presentation displays, effects, resource caches or UI only"
+      },
+      {
+        "name": "worldProduction",
+        "reason": "presentation displays, effects, resource caches or UI only"
+      },
+      {
+        "name": "groundFallbackLoad",
+        "reason": "presentation startup, asset loading, telemetry or transport; authority is captured from live state"
+      },
+      {
+        "name": "loadGroundFallback",
+        "reason": "callback code; surrounding mutable data remains captured"
+      },
+      {
+        "name": "worldLife",
+        "reason": "presentation displays, effects, resource caches or UI only"
+      },
+      {
+        "name": "worldDecalLayer",
+        "reason": "presentation displays, effects, resource caches or UI only"
+      },
+      {
+        "name": "contactShadowPool",
+        "reason": "presentation displays, effects, resource caches or UI only"
+      },
+      {
+        "name": "groundShadowLayer",
+        "reason": "presentation displays, effects, resource caches or UI only"
+      },
+      {
+        "name": "weaponVfxPool",
+        "reason": "presentation displays, effects, resource caches or UI only"
+      },
+      {
+        "name": "weaponVfxLayer",
+        "reason": "presentation displays, effects, resource caches or UI only"
+      },
+      {
+        "name": "atmospherePool",
+        "reason": "presentation displays, effects, resource caches or UI only"
+      },
+      {
+        "name": "atmosphereLayer",
+        "reason": "presentation displays, effects, resource caches or UI only"
+      },
+      {
+        "name": "atmosphereBudget",
+        "reason": "presentation displays, effects, resource caches or UI only"
+      },
+      {
+        "name": "atmosphereTint",
+        "reason": "presentation displays, effects, resource caches or UI only"
+      },
+      {
+        "name": "authoredPropLayer",
+        "reason": "presentation displays, effects, resource caches or UI only"
+      },
+      {
+        "name": "heldWeaponLayer",
+        "reason": "presentation displays, effects, resource caches or UI only"
+      },
+      {
+        "name": "grid",
+        "reason": "presentation displays, effects, resource caches or UI only"
+      },
+      {
+        "name": "collisionDebug",
+        "reason": "presentation displays, effects, resource caches or UI only"
+      },
+      {
+        "name": "debugLabels",
+        "reason": "presentation displays, effects, resource caches or UI only"
+      },
+      {
+        "name": "shadow",
+        "reason": "presentation displays, effects, resource caches or UI only"
+      },
+      {
+        "name": "aimLine",
+        "reason": "presentation displays, effects, resource caches or UI only"
+      },
+      {
+        "name": "projectileTrails",
+        "reason": "presentation displays, effects, resource caches or UI only"
+      },
+      {
+        "name": "projectileImpacts",
+        "reason": "presentation displays, effects, resource caches or UI only"
+      },
+      {
+        "name": "grenadeVisuals",
+        "reason": "presentation displays, effects, resource caches or UI only"
+      },
+      {
+        "name": "combatVisuals",
+        "reason": "presentation displays, effects, resource caches or UI only"
+      },
+      {
+        "name": "pickupSignals",
+        "reason": "presentation displays, effects, resource caches or UI only"
+      },
+      {
+        "name": "pickupPresentation",
+        "reason": "presentation displays, effects, resource caches or UI only"
+      },
+      {
+        "name": "pickupPresentationRequested",
+        "reason": "presentation startup, asset loading, telemetry or transport; authority is captured from live state"
+      },
+      {
+        "name": "placeWeaponGlow",
+        "reason": "callback code; surrounding mutable data remains captured"
+      },
+      {
+        "name": "placeWeaponPuff",
+        "reason": "callback code; surrounding mutable data remains captured"
+      },
+      {
+        "name": "placeWeaponGhost",
+        "reason": "callback code; surrounding mutable data remains captured"
+      },
+      {
+        "name": "overlayVisuals",
+        "reason": "presentation displays, effects, resource caches or UI only"
+      },
+      {
+        "name": "enemyVisuals",
+        "reason": "presentation displays, effects, resource caches or UI only"
+      },
+      {
+        "name": "enemyDeathVisuals",
+        "reason": "presentation displays, effects, resource caches or UI only"
+      },
+      {
+        "name": "enemyTelegraphs",
+        "reason": "presentation displays, effects, resource caches or UI only"
+      },
+      {
+        "name": "enemyMarkers",
+        "reason": "presentation displays, effects, resource caches or UI only"
+      },
+      {
+        "name": "enemyVisualFacing",
+        "reason": "presentation displays, effects, resource caches or UI only"
+      },
+      {
+        "name": "enemyDeathMarkers",
+        "reason": "presentation displays, effects, resource caches or UI only"
+      },
+      {
+        "name": "bossTelegraphs",
+        "reason": "presentation displays, effects, resource caches or UI only"
+      },
+      {
+        "name": "eliteGroundLayer",
+        "reason": "presentation displays, effects, resource caches or UI only"
+      },
+      {
+        "name": "bossVisual",
+        "reason": "presentation displays, effects, resource caches or UI only"
+      },
+      {
+        "name": "prototypeDescriptor",
+        "reason": "presentation displays, effects, resource caches or UI only"
+      },
+      {
+        "name": "marker",
+        "reason": "presentation displays, effects, resource caches or UI only"
+      },
+      {
+        "name": "prototypeMinimumBodyHeight",
+        "reason": "presentation displays, effects, resource caches or UI only"
+      },
+      {
+        "name": "prototypePoseScale",
+        "reason": "presentation displays, effects, resource caches or UI only"
+      },
+      {
+        "name": "productionHeroDisplay",
+        "reason": "presentation displays, effects, resource caches or UI only"
+      },
+      {
+        "name": "productionHeroLoadError",
+        "reason": "presentation startup, asset loading, telemetry or transport; authority is captured from live state"
+      },
+      {
+        "name": "loadSelectedHeroRenderer",
+        "reason": "presentation startup, asset loading, telemetry or transport; authority is captured from live state"
+      },
+      {
+        "name": "loadProductionHeroAtlas",
+        "reason": "callback code; surrounding mutable data remains captured"
+      },
+      {
+        "name": "mannequinDisplay",
+        "reason": "presentation displays, effects, resource caches or UI only"
+      },
+      {
+        "name": "mannequinRuntimeScale",
+        "reason": "presentation displays, effects, resource caches or UI only"
+      },
+      {
+        "name": "actorVisual",
+        "reason": "presentation displays, effects, resource caches or UI only"
+      },
+      {
+        "name": "atlasActorEnabled",
+        "reason": "presentation displays, effects, resource caches or UI only"
+      },
+      {
+        "name": "label",
+        "reason": "presentation displays, effects, resource caches or UI only"
+      },
+      {
+        "name": "bossLabel",
+        "reason": "presentation displays, effects, resource caches or UI only"
+      },
+      {
+        "name": "goreGround",
+        "reason": "presentation displays, effects, resource caches or UI only"
+      },
+      {
+        "name": "goreAir",
+        "reason": "presentation displays, effects, resource caches or UI only"
+      },
+      {
+        "name": "gorePresentation",
+        "reason": "presentation displays, effects, resource caches or UI only"
+      },
+      {
+        "name": "goreRequested",
+        "reason": "presentation startup, asset loading, telemetry or transport; authority is captured from live state"
+      },
+      {
+        "name": "enemyHitFeedback",
+        "reason": "presentation displays, effects, resource caches or UI only"
+      },
+      {
+        "name": "enemyHitFeedbackRequested",
+        "reason": "presentation startup, asset loading, telemetry or transport; authority is captured from live state"
+      },
+      {
+        "name": "enemyHitFeedbackById",
+        "reason": "presentation displays, effects, resource caches or UI only"
+      },
+      {
+        "name": "worldBake",
+        "reason": "presentation displays, effects, resource caches or UI only"
+      },
+      {
+        "name": "worldDecals",
+        "reason": "presentation displays, effects, resource caches or UI only"
+      },
+      {
+        "name": "authoredPropPlacements",
+        "reason": "presentation interpolation/pose, asset selection or input event bindings; InputState and camera are captured"
+      },
+      {
+        "name": "authoredPropDisplay",
+        "reason": "presentation displays, effects, resource caches or UI only"
+      },
+      {
+        "name": "tripoPropAppearance",
+        "reason": "presentation displays, effects, resource caches or UI only"
+      },
+      {
+        "name": "worldDesignBlockerIds",
+        "reason": "presentation displays, effects, resource caches or UI only"
+      },
+      {
+        "name": "nativeBarrierPlacements",
+        "reason": "presentation displays, effects, resource caches or UI only"
+      },
+      {
+        "name": "nativeBarrierModule",
+        "reason": "presentation startup, asset loading, telemetry or transport; authority is captured from live state"
+      },
+      {
+        "name": "authoredHeldWeaponDisplay",
+        "reason": "presentation displays, effects, resource caches or UI only"
+      },
+      {
+        "name": "lightningLedgerEventPlacement",
+        "reason": "presentation interpolation/pose, asset selection or input event bindings; InputState and camera are captured"
+      },
+      {
+        "name": "bearMarketBurnerEventPlacement",
+        "reason": "presentation interpolation/pose, asset selection or input event bindings; InputState and camera are captured"
+      },
+      {
+        "name": "forkedStandardEventPlacement",
+        "reason": "presentation interpolation/pose, asset selection or input event bindings; InputState and camera are captured"
+      },
+      {
+        "name": "authoredPropLoadError",
+        "reason": "presentation startup, asset loading, telemetry or transport; authority is captured from live state"
+      },
+      {
+        "name": "loadedProductionHeroId",
+        "reason": "presentation interpolation/pose, asset selection or input event bindings; InputState and camera are captured"
+      },
+      {
+        "name": "requestedProductionHeroActorId",
+        "reason": "presentation startup, asset loading, telemetry or transport; authority is captured from live state"
+      },
+      {
+        "name": "productionHeroLoadToken",
+        "reason": "presentation startup, asset loading, telemetry or transport; authority is captured from live state"
+      },
+      {
+        "name": "ensureProductionHeroAtlas",
+        "reason": "callback code; surrounding mutable data remains captured"
+      },
+      {
+        "name": "terrainTiles",
+        "reason": "presentation displays, effects, resource caches or UI only"
+      },
+      {
+        "name": "terrainTileLoadError",
+        "reason": "presentation startup, asset loading, telemetry or transport; authority is captured from live state"
+      },
+      {
+        "name": "loadTerrainTiles",
+        "reason": "callback code; surrounding mutable data remains captured"
+      },
+      {
+        "name": "enemyRosterIndexes",
+        "reason": "presentation displays, effects, resource caches or UI only"
+      },
+      {
+        "name": "enemyRosterTextures",
+        "reason": "presentation displays, effects, resource caches or UI only"
+      },
+      {
+        "name": "enemyRosterRequested",
+        "reason": "presentation startup, asset loading, telemetry or transport; authority is captured from live state"
+      },
+      {
+        "name": "enemyRosterFailed",
+        "reason": "presentation startup, asset loading, telemetry or transport; authority is captured from live state"
+      },
+      {
+        "name": "enemyRosterLoadError",
+        "reason": "presentation startup, asset loading, telemetry or transport; authority is captured from live state"
+      },
+      {
+        "name": "requestEnemyRosterAtlas",
+        "reason": "callback code; surrounding mutable data remains captured"
+      },
+      {
+        "name": "createRosterOrVectorDisplay",
+        "reason": "callback code; surrounding mutable data remains captured"
+      },
+      {
+        "name": "contactShadowFootY",
+        "reason": "callback code; surrounding mutable data remains captured"
+      },
+      {
+        "name": "drawEliteGroundRing",
+        "reason": "callback code; surrounding mutable data remains captured"
+      },
+      {
+        "name": "projectEnemyScreenRects",
+        "reason": "callback code; surrounding mutable data remains captured"
+      },
+      {
+        "name": "createEnemyDisplayPool",
+        "reason": "presentation startup, asset loading, telemetry or transport; authority is captured from live state"
+      },
+      {
+        "name": "enemyDisplayPool",
+        "reason": "presentation displays, effects, resource caches or UI only"
+      },
+      {
+        "name": "enemyRenderPass",
+        "reason": "presentation displays, effects, resource caches or UI only"
+      },
+      {
+        "name": "syncEnemyMarkers",
+        "reason": "callback code; surrounding mutable data remains captured"
+      },
+      {
+        "name": "clearEnemyDeathMarkers",
+        "reason": "callback code; surrounding mutable data remains captured"
+      },
+      {
+        "name": "queueEnemyDeathVisual",
+        "reason": "callback code; surrounding mutable data remains captured"
+      },
+      {
+        "name": "buildEnduranceEncounterCandidates",
+        "reason": "presentation startup, asset loading, telemetry or transport; authority is captured from live state"
+      },
+      {
+        "name": "telemetryWriter",
+        "reason": "presentation startup, asset loading, telemetry or transport; authority is captured from live state"
+      },
+      {
+        "name": "runtimeEncounterSnapshot",
+        "reason": "callback code; surrounding mutable data remains captured"
+      },
+      {
+        "name": "tourModule",
+        "reason": "presentation startup, asset loading, telemetry or transport; authority is captured from live state"
+      },
+      {
+        "name": "spawnPointBlocked",
+        "reason": "callback code; surrounding mutable data remains captured"
+      },
+      {
+        "name": "debugOverlay",
+        "reason": "presentation displays, effects, resource caches or UI only"
+      },
+      {
+        "name": "createCombatAudio",
+        "reason": "presentation startup, asset loading, telemetry or transport; authority is captured from live state"
+      },
+      {
+        "name": "combatAudio",
+        "reason": "presentation displays, effects, resource caches or UI only"
+      },
+      {
+        "name": "cockpit",
+        "reason": "presentation displays, effects, resource caches or UI only"
+      },
+      {
+        "name": "upgradePanel",
+        "reason": "presentation displays, effects, resource caches or UI only"
+      },
+      {
+        "name": "hud",
+        "reason": "presentation displays, effects, resource caches or UI only"
+      },
+      {
+        "name": "syncRuntimeSettings",
+        "reason": "callback code; surrounding mutable data remains captured"
+      },
+      {
+        "name": "applyPauseSetting",
+        "reason": "callback code; surrounding mutable data remains captured"
+      },
+      {
+        "name": "applyPauseLevel",
+        "reason": "callback code; surrounding mutable data remains captured"
+      },
+      {
+        "name": "bombletFeedback",
+        "reason": "presentation displays, effects, resource caches or UI only"
+      },
+      {
+        "name": "recordV6UpgradeOffer",
+        "reason": "callback code; surrounding mutable data remains captured"
+      },
+      {
+        "name": "openLevelOffer",
+        "reason": "callback code; surrounding mutable data remains captured"
+      },
+      {
+        "name": "openEvolutionPanel",
+        "reason": "callback code; surrounding mutable data remains captured"
+      },
+      {
+        "name": "openPendingUpgradeOffer",
+        "reason": "callback code; surrounding mutable data remains captured"
+      },
+      {
+        "name": "announceEvolution",
+        "reason": "callback code; surrounding mutable data remains captured"
+      },
+      {
+        "name": "recordWeaponInterruption",
+        "reason": "callback code; surrounding mutable data remains captured"
+      },
+      {
+        "name": "prisonerNeeds",
+        "reason": "callback code; surrounding mutable data remains captured"
+      },
+      {
+        "name": "applyPrisonerGrants",
+        "reason": "callback code; surrounding mutable data remains captured"
+      },
+      {
+        "name": "applyGenesisSealPickup",
+        "reason": "callback code; surrounding mutable data remains captured"
+      },
+      {
+        "name": "presentUpgradeOffer",
+        "reason": "callback code; surrounding mutable data remains captured"
+      },
+      {
+        "name": "lastReloadComplete",
+        "reason": "presentation interpolation/pose, asset selection or input event bindings; InputState and camera are captured"
+      },
+      {
+        "name": "reloadPresentation",
+        "reason": "presentation interpolation/pose, asset selection or input event bindings; InputState and camera are captured"
+      },
+      {
+        "name": "pointerReticleScreen",
+        "reason": "presentation interpolation/pose, asset selection or input event bindings; InputState and camera are captured"
+      },
+      {
+        "name": "bossHitVisualUntilTick",
+        "reason": "presentation interpolation/pose, asset selection or input event bindings; InputState and camera are captured"
+      },
+      {
+        "name": "bossDeathVisualUntilTick",
+        "reason": "presentation interpolation/pose, asset selection or input event bindings; InputState and camera are captured"
+      },
+      {
+        "name": "previousActor",
+        "reason": "presentation interpolation/pose, asset selection or input event bindings; InputState and camera are captured"
+      },
+      {
+        "name": "renderActor",
+        "reason": "presentation interpolation/pose, asset selection or input event bindings; InputState and camera are captured"
+      },
+      {
+        "name": "renderAlpha",
+        "reason": "presentation interpolation/pose, asset selection or input event bindings; InputState and camera are captured"
+      },
+      {
+        "name": "bossPreviousX",
+        "reason": "presentation interpolation/pose, asset selection or input event bindings; InputState and camera are captured"
+      },
+      {
+        "name": "bossPreviousY",
+        "reason": "presentation interpolation/pose, asset selection or input event bindings; InputState and camera are captured"
+      },
+      {
+        "name": "inputController",
+        "reason": "presentation interpolation/pose, asset selection or input event bindings; InputState and camera are captured"
+      },
+      {
+        "name": "touchController",
+        "reason": "presentation interpolation/pose, asset selection or input event bindings; InputState and camera are captured"
+      },
+      {
+        "name": "lastLevelUpBeat",
+        "reason": "presentation interpolation/pose, asset selection or input event bindings; InputState and camera are captured"
+      },
+      {
+        "name": "shakeStartTick",
+        "reason": "presentation displays, effects, resource caches or UI only"
+      },
+      {
+        "name": "shakeMagnitude",
+        "reason": "presentation displays, effects, resource caches or UI only"
+      },
+      {
+        "name": "triggerCameraShake",
+        "reason": "callback code; surrounding mutable data remains captured"
+      },
+      {
+        "name": "grenadeFxEvents",
+        "reason": "presentation displays, effects, resource caches or UI only"
+      },
+      {
+        "name": "silverPresentation",
+        "reason": "presentation displays, effects, resource caches or UI only"
+      },
+      {
+        "name": "silverRequested",
+        "reason": "presentation startup, asset loading, telemetry or transport; authority is captured from live state"
+      },
+      {
+        "name": "breakableAimTargets",
+        "reason": "callback code; surrounding mutable data remains captured"
+      },
+      {
+        "name": "bossLockBlockers",
+        "reason": "callback code; surrounding mutable data remains captured"
+      },
+      {
+        "name": "rebuildWorldBlockers",
+        "reason": "callback code; surrounding mutable data remains captured"
+      },
+      {
+        "name": "openWorldBlocker",
+        "reason": "callback code; surrounding mutable data remains captured"
+      },
+      {
+        "name": "refreshBossLockNavigation",
+        "reason": "callback code; surrounding mutable data remains captured"
+      },
+      {
+        "name": "activeWorldHazards",
+        "reason": "callback code; surrounding mutable data remains captured"
+      },
+      {
+        "name": "lastAccessibleCombatStatus",
+        "reason": "presentation displays, effects, resource caches or UI only"
+      },
+      {
+        "name": "setAccessibleCombatStatus",
+        "reason": "callback code; surrounding mutable data remains captured"
+      },
+      {
+        "name": "combatVisualEvents",
+        "reason": "presentation displays, effects, resource caches or UI only"
+      },
+      {
+        "name": "lastImpactSurface",
+        "reason": "presentation displays, effects, resource caches or UI only"
+      },
+      {
+        "name": "suppressedGroundImpacts",
+        "reason": "presentation displays, effects, resource caches or UI only"
+      },
+      {
+        "name": "pushCombatVisualEvent",
+        "reason": "callback code; surrounding mutable data remains captured"
+      },
+      {
+        "name": "pushImpactVisual",
+        "reason": "callback code; surrounding mutable data remains captured"
+      },
+      {
+        "name": "updateRunCombo",
+        "reason": "callback code; surrounding mutable data remains captured"
+      },
+      {
+        "name": "awardComboXp",
+        "reason": "callback code; surrounding mutable data remains captured"
+      },
+      {
+        "name": "viewport",
+        "reason": "callback code; surrounding mutable data remains captured"
+      },
+      {
+        "name": "worldArtReport",
+        "reason": "presentation displays, effects, resource caches or UI only"
+      },
+      {
+        "name": "drawBakedDecals",
+        "reason": "callback code; surrounding mutable data remains captured"
+      },
+      {
+        "name": "nativeBlockers",
+        "reason": "presentation displays, effects, resource caches or UI only"
+      },
+      {
+        "name": "renderAuthoredTerrain",
+        "reason": "callback code; surrounding mutable data remains captured"
+      },
+      {
+        "name": "renderAuthoredCollision",
+        "reason": "callback code; surrounding mutable data remains captured"
+      },
+      {
+        "name": "focusPoints",
+        "reason": "presentation displays, effects, resource caches or UI only"
+      },
+      {
+        "name": "focusPool",
+        "reason": "presentation displays, effects, resource caches or UI only"
+      },
+      {
+        "name": "focusWorld",
+        "reason": "presentation displays, effects, resource caches or UI only"
+      },
+      {
+        "name": "collectFocusPoints",
+        "reason": "callback code; surrounding mutable data remains captured"
+      },
+      {
+        "name": "wipe",
+        "reason": "callback code; surrounding mutable data remains captured"
+      },
+      {
+        "name": "renderWorld",
+        "reason": "callback code; surrounding mutable data remains captured"
+      },
+      {
+        "name": "deathCamera",
+        "reason": "presentation displays, effects, resource caches or UI only"
+      },
+      {
+        "name": "stopCurrentSession",
+        "reason": "callback code; surrounding mutable data remains captured"
+      },
+      {
+        "name": "initializeSession",
+        "reason": "callback code; surrounding mutable data remains captured"
+      },
+      {
+        "name": "runtimeStatus",
+        "reason": "callback code; surrounding mutable data remains captured"
+      },
+      {
+        "name": "statePayload",
+        "reason": "callback code; surrounding mutable data remains captured"
+      },
+      {
+        "name": "weaponWheel",
+        "reason": "presentation displays, effects, resource caches or UI only"
+      },
+      {
+        "name": "weaponWheelLoading",
+        "reason": "presentation displays, effects, resource caches or UI only"
+      },
+      {
+        "name": "weaponWheelViews",
+        "reason": "callback code; surrounding mutable data remains captured"
+      },
+      {
+        "name": "closeWeaponWheel",
+        "reason": "callback code; surrounding mutable data remains captured"
+      },
+      {
+        "name": "openWeaponWheel",
+        "reason": "callback code; surrounding mutable data remains captured"
+      },
+      {
+        "name": "toggleWeaponWheel",
+        "reason": "callback code; surrounding mutable data remains captured"
+      },
+      {
+        "name": "hudWeaponCard",
+        "reason": "presentation displays, effects, resource caches or UI only"
+      },
+      {
+        "name": "pauseRuntime",
+        "reason": "callback code; surrounding mutable data remains captured"
+      },
+      {
+        "name": "resumeRuntime",
+        "reason": "callback code; surrounding mutable data remains captured"
+      },
+      {
+        "name": "applySelectedEvolution",
+        "reason": "callback code; surrounding mutable data remains captured"
+      },
+      {
+        "name": "applySelectedUpgrade",
+        "reason": "callback code; surrounding mutable data remains captured"
+      },
+      {
+        "name": "closeUpgradeShell",
+        "reason": "callback code; surrounding mutable data remains captured"
+      },
+      {
+        "name": "applyUpgradeReroll",
+        "reason": "callback code; surrounding mutable data remains captured"
+      },
+      {
+        "name": "handleVisibilityChange",
+        "reason": "callback code; surrounding mutable data remains captured"
+      },
+      {
+        "name": "handleResize",
+        "reason": "callback code; surrounding mutable data remains captured"
+      },
+      {
+        "name": "handleWheelZoom",
+        "reason": "callback code; surrounding mutable data remains captured"
+      },
+      {
+        "name": "pressureArtRequested",
+        "reason": "presentation startup, asset loading, telemetry or transport; authority is captured from live state"
+      },
+      {
+        "name": "handleExitKey",
+        "reason": "callback code; surrounding mutable data remains captured"
+      },
+      {
+        "name": "navGridStartedAt",
+        "reason": "presentation startup, asset loading, telemetry or transport; authority is captured from live state"
+      }
+    ],
+    "bootEnd": 325258
+  },
+  "visual": {
+    "scenes": 12,
+    "errors": 0,
+    "status": "unchanged",
+    "maxMeanDelta": 0.019,
+    "maxCellDelta": 4,
+    "maxChangedCells": 3
+  },
+  "retainedFailures": [
+    "Initial missing browser-test junction stopped recovery before browser launch; completed focused/build/terrain phases were reused only after unchanged runtime/checker hashes.",
+    "Strict real-page capture rejected terrainPinnedPropTextures.0._events.destroy.fn. Only three independently reviewed presentation resource bindings were then explicitly omitted; scalar enable flag and future arbitrary data remain captured.",
+    "One new scope unit failed before that exact diagnostic correction."
+  ],
+  "heavyLock": "Each batch held its own exclusive shared marker and explicitly released it; no job/server remains.",
+  "physicalPhoneTested": false,
+  "fullReleaseGateRun": false,
+  "deployed": false,
+  "sourceAndRuntimeUnchangedDuringPassedPhases": true
+}

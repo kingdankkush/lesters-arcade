@@ -20,6 +20,8 @@ const root = fileURLToPath(new URL('..', import.meta.url));
 
 // Every .mjs / .js module that must parse cleanly (node --check).
 const NODE_CHECK_FILES = [
+  'scripts/lib/hmh-greybox-layout-check.mjs',
+  'tests/hmh-greybox-layout-check.test.mjs',
   'tests/build-git-independence.test.mjs',
   'apps/chikun/src/coin-feedback.mjs',
   'apps/chikun/src/coin-feedback-dom.mjs',
