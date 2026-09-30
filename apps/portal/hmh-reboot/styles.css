@@ -456,6 +456,22 @@ html[data-debug-hud="1"] .hmh-controls-hint { display: none !important; }
 .hmh-setting-toggle span { display: grid; gap: 2px; min-width: 0; }
 .hmh-setting-toggle strong { font-size: 0.72rem; }
 .hmh-setting-toggle small { color: var(--ink-muted); font-size: 0.62rem; line-height: 1.25; }
+/* 2.0 gore setting: a three-option radio group styled like the toggles. Its
+   own class keeps the `.hmh-setting-toggle === 4` pins true; it spans the
+   settings grid like the slider. Each option is a 44px target; the checked
+   option reads as a filled segment and the native radio stays for keyboard
+   and screen-reader semantics. */
+.hmh-setting-choice { grid-column: 1 / -1; display: grid; gap: 6px; min-height: 52px; margin: 0; padding: 8px 10px; border: 1px solid rgba(143,243,255,0.15); border-radius: 12px; color: #effbff; background: rgba(10,39,56,0.58); }
+.hmh-setting-choice:focus-within { border-color: var(--cyan); outline: 2px solid rgba(73,221,255,0.28); outline-offset: 1px; }
+.hmh-setting-choice legend { display: grid; gap: 2px; min-width: 0; padding: 0; float: left; width: 100%; }
+.hmh-setting-choice legend strong { font-size: 0.72rem; }
+.hmh-setting-choice legend small { color: var(--ink-muted); font-size: 0.62rem; line-height: 1.25; }
+.hmh-setting-choice__options { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; clear: both; }
+.hmh-setting-choice__option { position: relative; display: block; min-width: 0; cursor: pointer; }
+.hmh-setting-choice__option input { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: pointer; }
+.hmh-setting-choice__option span { display: flex; align-items: center; justify-content: center; min-height: 44px; border: 1px solid rgba(143,243,255,0.3); border-radius: 999px; color: var(--cyan-strong); background: rgba(4,13,21,0.6); font-size: 0.68rem; font-weight: 900; }
+.hmh-setting-choice__option input:checked + span { color: #041322; background: var(--cyan); border-color: var(--cyan); }
+.hmh-setting-choice__option input:focus-visible + span { outline: 2px solid rgba(73,221,255,0.75); outline-offset: 2px; }
 /* Cycle 073 (U-5): child-owned SFX slider. A different class from the four
    toggles keeps the `.hmh-setting-toggle input === 4` pins true; it spans the
    settings grid so the two-column desktop layout has no orphan cell. */
@@ -728,6 +744,7 @@ html[data-debug-hud="1"] .hmh-controls-hint { display: none !important; }
   /* Slider row keeps a 44px touch target: the row and the range track itself. */
   .hmh-setting-range { min-height: 44px; padding: 7px 10px 6px; }
   .hmh-setting-range input { height: 44px; }
+  .hmh-setting-choice { min-height: 44px; padding: 7px 10px 6px; }
 }
 
 @media (max-width: 900px) and (max-height: 520px) and (orientation: landscape) {
@@ -750,6 +767,7 @@ html[data-debug-hud="1"] .hmh-controls-hint { display: none !important; }
   .hmh-setting-toggle { min-height: 44px; padding: 5px 8px; }
   .hmh-setting-range { min-height: 44px; padding: 5px 8px 4px; gap: 2px 10px; }
   .hmh-setting-range input { height: 44px; }
+  .hmh-setting-choice { min-height: 44px; padding: 5px 8px 4px; gap: 3px; }
   .hmh-build-summary { max-height: 94px; }
   .hmh-menu-actions { gap: 6px; }
   .hmh-reboot-status-card {

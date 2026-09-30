@@ -200,6 +200,19 @@
                   <input id="hmhSettingReduceFlash" type="checkbox">
                   <span><strong>Reduced flash</strong><small>Steady combat warnings</small></span>
                 </label>
+                <!-- 2.0 gore setting (owner decision): Off / Reduced / Full,
+                     default Full. A native radio group: arrow keys move the
+                     choice, Tab enters and leaves it. Projection-only; it
+                     rides game:settings as goreLevel and the portal persists
+                     it in 'hmh-settings'. Share cards never show gore. -->
+                <fieldset class="hmh-setting-choice" id="hmhSettingGoreLevel">
+                  <legend><strong>Gore</strong><small>Blood and dismemberment. Reduced keeps light blood without limbs.</small></legend>
+                  <div class="hmh-setting-choice__options">
+                    <label class="hmh-setting-choice__option"><input id="hmhSettingGoreOff" type="radio" name="hmhSettingGoreLevel" value="off"><span>Off</span></label>
+                    <label class="hmh-setting-choice__option"><input id="hmhSettingGoreReduced" type="radio" name="hmhSettingGoreLevel" value="reduced"><span>Reduced</span></label>
+                    <label class="hmh-setting-choice__option"><input id="hmhSettingGoreFull" type="radio" name="hmhSettingGoreLevel" value="full" checked><span>Full</span></label>
+                  </div>
+                </fieldset>
                 <!-- Cycle 073 (U-5): the child owns its SFX bus, so this slider is
                      child-owned. It rides the existing game:settings channel
                      (sfxVolume is already an allowed numeric) and the portal

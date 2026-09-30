@@ -45,6 +45,14 @@ const PAUSE_SETTING_KEYS = Object.freeze({
   reduceMotion: 'hmhSettingReduceMotion',
   reduceFlash: 'hmhSettingReduceFlash',
 });
+// 2.0 gore setting: one radio group, three levels, owner default full. Each
+// option is its own id so the group works against any document that can
+// resolve ids; the elements are optional so an older shell without the
+// fieldset still boots.
+const PAUSE_CHOICE_KEYS = Object.freeze({
+  goreLevel: Object.freeze({ off: 'hmhSettingGoreOff', reduced: 'hmhSettingGoreReduced', full: 'hmhSettingGoreFull' }),
+});
+const PAUSE_CHOICE_DEFAULTS = Object.freeze({ goreLevel: 'full' });
 
 // Shared with the lazy upgrade panel, so every dynamic cockpit node goes
 // through one tag allowlist and textContent, never markup.
@@ -63,6 +71,7 @@ export function createCockpitUi({
   onMusicToggle = () => {},
   onSettingToggle = () => {},
   onSettingLevel = () => {},
+  onSettingChoice = () => {},
   onBindingChange = () => {},
   onResume = () => {},
   onRestart = () => {},
@@ -99,6 +108,8 @@ export function createCockpitUi({
     settings: Object.fromEntries(Object.entries(PAUSE_SETTING_KEYS).map(([key, id]) => [key, required(documentRef, id)])),
     sfxVolume: required(documentRef, 'hmhSettingSfxVolume'),
     sfxVolumeValue: required(documentRef, 'hmhSettingSfxVolumeValue'),
+    choices: Object.fromEntries(Object.entries(PAUSE_CHOICE_KEYS).map(([key, options]) => [key,
+      Object.entries(options).map(([value, id]) => [value, documentRef.getElementById(id)]).filter(([, input]) => input)])),
     buildEmpty: required(documentRef, 'hmhBuildEmpty'),
     buildSummary: required(documentRef, 'hmhBuildSummary'),
     controlsCard: required(documentRef, 'hmhControlsCard'),
@@ -163,6 +174,18 @@ export function createCockpitUi({
     showLevel(level);
     onSettingLevel('sfxVolume', level);
   });
+
+  // Radio choices: the checked option's value is the option's own key, never
+  // read back from markup. A host without the key shows the default.
+  const showChoice = (key, value) => {
+    const chosen = Object.hasOwn(PAUSE_CHOICE_KEYS[key], value) ? value : PAUSE_CHOICE_DEFAULTS[key];
+    for (const [option, input] of elements.choices[key]) input.checked = option === chosen;
+  };
+  for (const [key, options] of Object.entries(elements.choices)) {
+    for (const [value, input] of options) {
+      listen(input, 'change', () => { if (input.checked) onSettingChoice(key, value); });
+    }
+  }
 
   const keyboardLabel = (code) => String(code ?? '')
     .replace(/^Key/, '')
@@ -283,6 +306,7 @@ export function createCockpitUi({
       for (const [key, input] of Object.entries(elements.settings)) input.checked = Boolean(nextSettings[key]);
       // combat-audio's sfx bus defaults to 1 when the host never sent a level.
       showLevel(nextSettings.sfxVolume ?? 1);
+      for (const key of Object.keys(elements.choices)) showChoice(key, nextSettings[key]);
       musicEnabled = Boolean(nextSettings.musicEnabled);
       elements.music.textContent = musicEnabled ? 'Music on' : 'Music off';
       elements.music.setAttribute('aria-pressed', String(musicEnabled));

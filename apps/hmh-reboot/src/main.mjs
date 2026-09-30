@@ -1528,10 +1528,16 @@ async function boot() {
   let simulation = null;
   let runProgression = null;
   const PAUSE_SETTING_KEYS = new Set(['musicEnabled', 'screenShake', 'reduceMotion', 'reduceFlash']);
+  // 2.0 gore setting: off / reduced / full, owner default full. Mirrors
+  // GORE_LEVELS in gore-presentation.mjs without importing it eagerly. A parent
+  // without the level (older portal) is read through its required boolean.
+  const GORE_LEVELS = new Set(['off', 'reduced', 'full']);
+  const normalizeGoreLevel = (value, fallback) => GORE_LEVELS.has(value) ? value : fallback;
   const syncRuntimeSettings = (nextSettings, { notify = false } = {}) => {
     const rankedActive = Boolean(sessionPayload?.mode === 'ranked' && simulation);
     const keyboardBindings = rankedActive ? sessionPayload.settings.keyboardBindings : nextSettings.keyboardBindings;
-    settings = { ...settings, ...nextSettings, keyboardBindings };
+    const goreLevel = normalizeGoreLevel(nextSettings.goreLevel, nextSettings.gore === false ? 'off' : 'full');
+    settings = { ...settings, ...nextSettings, keyboardBindings, goreLevel, gore: goreLevel !== 'off' };
     const briefingBindings = normalizeKeyboardBindings(keyboardBindings);
     const keyName = code => code.replace(/^Key|^Digit/, '').replace('Arrow', '');
     const moveCopy = startupPanel?.querySelector?.('[data-briefing-move]');
@@ -1540,9 +1546,10 @@ async function boot() {
     if (grenadeCopy) grenadeCopy.textContent = keyName(briefingBindings.grenade);
     if (settings.gore && !goreRequested) {
       goreRequested = true;
-      void import('./gore-presentation.mjs').then(module => { gorePresentation = module.createGorePresentation(); })
+      void import('./gore-presentation.mjs').then(module => { gorePresentation = module.createGorePresentation({ level: settings.goreLevel }); })
         .catch(() => { dataset.goreStatus = 'unavailable'; });
     }
+    gorePresentation?.setLevel(settings.goreLevel);
     if (!settings.gore) { gorePresentation?.clear(); goreGround.clear(); goreAir.clear(); }
     // Not gated on a setting: every run shows hits. A chunk that fails to
     // load is left to surface as a page error rather than a silent status.
@@ -1561,6 +1568,7 @@ async function boot() {
     dataset.settingScreenShake = String(settings.screenShake);
     dataset.settingReduceMotion = String(settings.reduceMotion);
     dataset.settingReduceFlash = String(settings.reduceFlash);
+    dataset.settingGoreLevel = settings.goreLevel;
     if (notify && bridge?.initialized) {
       bridge.send('game:settings', { settings: { ...settings } });
       bridge.send('game:state', statePayload());
@@ -1580,6 +1588,16 @@ async function boot() {
     const level = Math.min(1, Math.max(0, Number(value) || 0));
     syncRuntimeSettings({ ...settings, sfxVolume: level }, { notify: true });
     combatAudio.play('pickup', { volume: 0.12 });
+  };
+  // 2.0 gore setting: the pause menu's three-way choice takes its own path,
+  // like the numeric one, so the pinned boolean path stays byte-identical.
+  // Projection-only: the sync above derives the legacy boolean from the level
+  // and re-levels the presentation pools; nothing in the simulation reads it.
+  const applyPauseChoice = (key, value) => {
+    if (key !== 'goreLevel') throw new TypeError(`unsupported pause choice ${String(key)}`);
+    const level = normalizeGoreLevel(value, settings.goreLevel);
+    syncRuntimeSettings({ ...settings, goreLevel: level }, { notify: true });
+    combatAudio.play('menu-click', { volume: 0.08 });
   };
   let maxPlayerHealth = 100;
   // The session hero's starting stats and perk (hero-loadout.mjs).
@@ -5615,6 +5633,7 @@ async function boot() {
     onMusicToggle: (enabled) => applyPauseSetting('musicEnabled', enabled),
     onSettingToggle: (key, enabled) => applyPauseSetting(key, enabled),
     onSettingLevel: applyPauseLevel,
+    onSettingChoice: applyPauseChoice,
     onBindingChange: (actionId, code) => {
       const keyboardBindings = rebindKeyboardAction(settings.keyboardBindings, actionId, code, {
         rankedActive: sessionPayload?.mode === 'ranked',

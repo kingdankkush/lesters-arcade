@@ -29,7 +29,9 @@ export function createStandaloneInitPayload({ heroId = 'lit-commando' } = {}) {
     settings: {
       musicEnabled: true,
       screenShake: false,
-      gore: false,
+      // 2.0 gore setting: the owner default is Full; the boolean mirrors it.
+      gore: true,
+      goreLevel: 'full',
       reduceMotion: false,
       reduceFlash: false,
       colorblindTags: false,

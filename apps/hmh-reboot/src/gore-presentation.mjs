@@ -12,6 +12,23 @@ import { feedbackUnit } from './deterministic-hash.mjs';
 export const GORE_LIMITS = Object.freeze({ marks: 48, droplets: 24, limbs: 8, fragments: 12, markLifeTicks: 480, limbLifeTicks: 480, dropletsPerImpact: 3, dropletsPerKill: 5 });
 const GRAVITY = 0.32;
 
+// 2.0 gore setting (owner decision): Off / Reduced / Full, default Full. The
+// level is a property of this presentation instance and of nothing else: the
+// events it consumes are the same frozen combat visual stream at every level,
+// and no simulation, evidence or result module reads it
+// (tests/hmh-gore-level-setting.test.mjs). Full is the pre-setting pool.
+// Reduced halves the pools, sprays one droplet per hit and two per kill, and
+// never throws limb chunks, so a dismembering kill crumples instead. Off draws
+// nothing and ignores every event; the clean corpse crumple keeps kills
+// readable at every level (corpse-presentation.mjs takes no gore input).
+export const GORE_LEVELS = Object.freeze(['off', 'reduced', 'full']);
+export const DEFAULT_GORE_LEVEL = 'full';
+export const GORE_REDUCED_LIMITS = Object.freeze({ ...GORE_LIMITS, marks: 24, droplets: 12, limbs: 0, fragments: 6, dropletsPerImpact: 1, dropletsPerKill: 2 });
+const LIMITS_BY_LEVEL = Object.freeze({ off: GORE_REDUCED_LIMITS, reduced: GORE_REDUCED_LIMITS, full: GORE_LIMITS });
+export function normalizeGoreLevel(value, fallback = DEFAULT_GORE_LEVEL) {
+  return GORE_LEVELS.includes(value) ? value : fallback;
+}
+
 // Weapons that dismember on a kill regardless of projectile policy.
 export const DISMEMBER_WEAPON_IDS = Object.freeze(new Set(['nuke-liquidation', 'hand-grenade']));
 
@@ -36,10 +53,24 @@ function landingTicks(vz, h) {
   return Math.max(1, Math.ceil((vz + Math.sqrt(vz * vz + 2 * GRAVITY * Math.max(0, h))) / GRAVITY));
 }
 
-export function createGorePresentation() {
+export function createGorePresentation({ level = DEFAULT_GORE_LEVEL } = {}) {
   let marks=[], droplets=[], limbs=[];
+  let goreLevel=normalizeGoreLevel(level), limits=LIMITS_BY_LEVEL[goreLevel];
   const clear=()=>{marks=[];droplets=[];limbs=[];};
-  const pushMark=(mark)=>{marks.push(mark);if(marks.length>GORE_LIMITS.marks)marks.shift();};
+  // Mid-run level change from the pause menu. Stepping down trims the pools
+  // to the new caps (oldest first, the same order prune() keeps) and drops
+  // every limb; off clears; stepping up simply lets the pools grow again.
+  const setLevel=(next)=>{
+    const resolved=normalizeGoreLevel(next,goreLevel);
+    if(resolved===goreLevel)return goreLevel;
+    goreLevel=resolved;limits=LIMITS_BY_LEVEL[goreLevel];
+    if(goreLevel==='off'){clear();return goreLevel;}
+    if(marks.length>limits.marks)marks.splice(0,marks.length-limits.marks);
+    if(droplets.length>limits.droplets)droplets.splice(0,droplets.length-limits.droplets);
+    if(limbs.length>limits.limbs)limbs.splice(0,limbs.length-limits.limbs);
+    return goreLevel;
+  };
+  const pushMark=(mark)=>{marks.push(mark);if(marks.length>limits.marks)marks.shift();};
 
   const spray=(event,groundZ,seed,count,facing,spread)=>{
     const height=Math.max(0,(event.point.z??groundZ)-groundZ);
@@ -50,7 +81,7 @@ export function createGorePresentation() {
       const landTick=event.tick+landingTicks(vz,height);
       const droplet={x:event.point.x,y:event.point.y,z:event.point.z??groundZ,groundZ,
         vx:Math.cos(angle)*speed,vy:Math.sin(angle)*speed,vz,tick:event.tick,landTick,radius:1.4+unit*1.4,seed:`${seed}:d${i}`};
-      droplets.push(droplet);if(droplets.length>GORE_LIMITS.droplets)droplets.shift();
+      droplets.push(droplet);if(droplets.length>limits.droplets)droplets.shift();
       // The splat is registered up front at its landing point and tick; the
       // frame filter keeps it invisible until the droplet has landed.
       pushMark({x:droplet.x+droplet.vx*(landTick-event.tick),y:droplet.y+droplet.vy*(landTick-event.tick),z:groundZ,
@@ -59,6 +90,7 @@ export function createGorePresentation() {
   };
 
   const add=(event,groundZ)=>{
+    if(goreLevel==='off')return;
     if(event.type!=='kill' && !(event.type==='impact' && event.surface==='flesh' && !event.shielded))return;
     if(!event.point || !Number.isFinite(groundZ))return;
     const seed=`${event.tick}:${event.point.x}:${event.point.y}`;
@@ -66,9 +98,9 @@ export function createGorePresentation() {
     pushMark({x:event.point.x,y:event.point.y,z:groundZ,tick:event.tick,
       radius:(event.type==='kill'?13:5)+feedbackUnit(seed)*4,kill:event.type==='kill',seed});
     if(facing || (event.type==='kill' && event.dismember===true)){
-      spray(event,groundZ,seed,event.type==='kill'?GORE_LIMITS.dropletsPerKill:GORE_LIMITS.dropletsPerImpact,facing,facing?.9:Math.PI*2);
+      spray(event,groundZ,seed,event.type==='kill'?limits.dropletsPerKill:limits.dropletsPerImpact,facing,facing?.9:Math.PI*2);
     }
-    if(event.type==='kill' && event.dismember===true){
+    if(event.type==='kill' && event.dismember===true && limits.limbs>0){
       const count=2+Math.floor(feedbackUnit(`${seed}:limbs`)*3);
       const height=Math.max(0,(event.point.z??groundZ)-groundZ);
       for(let i=0;i<count;i++){
@@ -78,7 +110,7 @@ export function createGorePresentation() {
         const flight=landingTicks(vz,height);
         limbs.push({x:event.point.x,y:event.point.y,z:event.point.z??groundZ,groundZ,vx:Math.cos(angle)*speed,vy:Math.sin(angle)*speed,vz,
           tick:event.tick,landTick:event.tick+flight,spin:(unit2-.5)*.6,length:7+unit*7,width:3+unit2*2.5,seed:`${seed}:l${i}`});
-        if(limbs.length>GORE_LIMITS.limbs)limbs.shift();
+        if(limbs.length>limits.limbs)limbs.shift();
         pushMark({x:event.point.x+Math.cos(angle)*speed*flight,y:event.point.y+Math.sin(angle)*speed*flight,z:groundZ,
           tick:event.tick+flight,radius:5+unit*4,kill:false,seed:`${seed}:ls${i}`});
       }
@@ -99,9 +131,9 @@ export function createGorePresentation() {
     for(const limb of limbs)if(tick-limb.landTick<GORE_LIMITS.limbLifeTicks)limbs[kept++]=limb;
     limbs.length=kept;
   };
-  const fragmentCap=(reduceMotion,particleScale)=>reduceMotion?0:Math.max(0,Math.min(GORE_LIMITS.fragments,Math.floor(GORE_LIMITS.fragments*particleScale/10)));
+  const fragmentCap=(reduceMotion,particleScale)=>reduceMotion?0:Math.max(0,Math.min(limits.fragments,Math.floor(limits.fragments*particleScale/10)));
   const frame=(tick,{enabled=false,reduceMotion=false,particleScale=10}={})=>{
-    if(!enabled){clear();return {marks:[],fragments:[],droplets:[],limbs:[]};}
+    if(!enabled || goreLevel==='off'){clear();return {marks:[],fragments:[],droplets:[],limbs:[]};}
     prune(tick);
     const fragments=[];
     const cap=fragmentCap(reduceMotion,particleScale);
@@ -141,7 +173,7 @@ export function createGorePresentation() {
     // Clearing an empty layer still forces a GPU rebuild for nothing.
     wipe(ground);wipe(air);
     drawn.marks=drawn.fragments=0;
-    if(!settings.gore){clear();return drawn;}
+    if(!settings.gore || goreLevel==='off'){clear();return drawn;}
     prune(tick);
     const reduceMotion=settings.reduceMotion;
     const at=(x,y,z)=>{point.x=x;point.y=y;point.z=z;return projectInto?projectInto(screen,point,camera,view):project(point,camera,view);};
@@ -200,7 +232,7 @@ export function createGorePresentation() {
     }
     return drawn;
   };
-  return {add,frame,render,clear};
+  return {add,frame,render,clear,setLevel,get level(){return goreLevel;}};
 }
 
 // A limb corner rotated about the limb centre (kept as one expression shape

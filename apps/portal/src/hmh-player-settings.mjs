@@ -3,6 +3,10 @@ import { normalizeKeyboardBindings, rebindKeyboardAction } from '../../hmh-reboo
 export const HMH_PLAYER_SETTINGS_VERSION = 1;
 const clamp = (value, min, max, fallback) => Number.isFinite(Number(value)) ? Math.min(max, Math.max(min, Number(value))) : fallback;
 const bool = (value, fallback) => typeof value === 'boolean' ? value : fallback;
+// 2.0 gore setting: three levels, owner default Full. Mirrors GORE_LEVELS in
+// apps/hmh-reboot/src/gore-presentation.mjs without importing that chunk.
+export const HMH_GORE_LEVELS = Object.freeze(['off', 'reduced', 'full']);
+const goreLevel = (value, fallback) => HMH_GORE_LEVELS.includes(value) ? value : fallback;
 const freeze = (value) => {
   if (value && typeof value === 'object' && !Object.isFrozen(value)) {
     for (const child of Object.values(value)) freeze(child);
@@ -30,6 +34,7 @@ export const HMH_PLAYER_SETTINGS_DEFAULTS = freeze({
   gameplay: {
     screenShake: true,
     gore: true,
+    goreLevel: 'full',
     autoEnterFullscreen: true,
     autoAimAssist: true,
   },
@@ -73,6 +78,7 @@ export function normalizeHmhPlayerSettings(input = {}) {
     gameplay: {
       screenShake: bool(gameplay.screenShake, true),
       gore: bool(gameplay.gore, true),
+      goreLevel: goreLevel(gameplay.goreLevel, 'full'),
       autoEnterFullscreen: bool(gameplay.autoEnterFullscreen, true),
       autoAimAssist: bool(gameplay.autoAimAssist, true),
     },
@@ -124,7 +130,10 @@ export function mergeHmhRuntimeSettings(settings, runtime, { rankedActive = fals
     gameplay: {
       ...current.gameplay,
       screenShake: value.screenShake ?? current.gameplay.screenShake,
+      // The child sends the level with its derived boolean on game:settings;
+      // both are stored so the legacy toggle view stays coherent.
       gore: value.gore ?? current.gameplay.gore,
+      goreLevel: value.goreLevel ?? current.gameplay.goreLevel,
       autoAimAssist: value.autoAimAssist ?? current.gameplay.autoAimAssist,
     },
     audio: {
@@ -151,7 +160,13 @@ export function projectHmhRuntimeSettings(settings) {
   return freeze({
     musicEnabled: value.audio.musicEnabled,
     screenShake: value.gameplay.screenShake,
+    // The legacy boolean is the master switch: off projects as level off with
+    // the stored level remembered for when it comes back on. The child sends
+    // the boolean derived from its level, so (on, off) only arises when the
+    // legacy toggle was flipped on after the pause menu chose Off; the later
+    // action wins and the run gets Full.
     gore: value.gameplay.gore,
+    goreLevel: !value.gameplay.gore ? 'off' : value.gameplay.goreLevel === 'off' ? 'full' : value.gameplay.goreLevel,
     reduceMotion: value.accessibility.reduceMotion,
     reduceFlash: value.accessibility.reduceFlash,
     colorblindTags: value.accessibility.colorblindTags,

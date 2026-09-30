@@ -231,6 +231,7 @@ const COCKPIT_IDS = [
   'hmhProfileSeason', 'hmhAdapterStatus', 'hmhPausePanel', 'hmhResumeButton', 'hmhRestartButton', 'hmhExitButton',
   'hmhSettingMusic', 'hmhSettingScreenShake', 'hmhSettingReduceMotion', 'hmhSettingReduceFlash',
   'hmhSettingSfxVolume', 'hmhSettingSfxVolumeValue',
+  'hmhSettingGoreOff', 'hmhSettingGoreReduced', 'hmhSettingGoreFull',
   'hmhBuildEmpty', 'hmhBuildSummary', 'hmhControlsCard', 'hmhUpgradePanel', 'hmhUpgradeQueue', 'hmhUpgradeChoices',
 ];
 
@@ -667,6 +668,69 @@ test('the SFX slider updates its readout on input and notifies the host only on 
   assert.equal(slider.value, '1', 'a host without sfxVolume means the bus is at full level');
   assert.equal(readout.textContent, '100%');
   ui.destroy();
+});
+
+// ---------------------------------------------------------------------------
+// 2.0 gore setting: a three-way radio choice, child-owned, on the same channel.
+// ---------------------------------------------------------------------------
+
+test('the gore radio group reflects the host level, defaults to full, and notifies the host with the chosen level', () => {
+  const { documentRef, elements } = fakeCockpitDocument();
+  const choices = [];
+  const toggles = [];
+  const ui = createCockpitUi({ documentRef, onSettingChoice: (key, value) => choices.push([key, value]), onSettingToggle: (key, value) => toggles.push([key, value]) });
+  const off = elements.get('hmhSettingGoreOff');
+  const reduced = elements.get('hmhSettingGoreReduced');
+  const full = elements.get('hmhSettingGoreFull');
+  ui.setSettings({ musicEnabled: true, goreLevel: 'reduced' });
+  assert.deepEqual([off.checked, reduced.checked, full.checked], [false, true, false]);
+  ui.setSettings({ musicEnabled: true });
+  assert.deepEqual([off.checked, reduced.checked, full.checked], [false, false, true], 'a host without the level shows the owner default');
+  ui.setSettings({ musicEnabled: true, goreLevel: 'extreme' });
+  assert.deepEqual([off.checked, reduced.checked, full.checked], [false, false, true], 'an unknown level shows the default');
+  off.checked = true; reduced.checked = false; full.checked = false;
+  off.dispatch('change');
+  assert.deepEqual(choices, [['goreLevel', 'off']]);
+  full.dispatch('change');
+  assert.deepEqual(choices, [['goreLevel', 'off']], 'an unchecked radio firing change (the one being left) sends nothing');
+  full.checked = true; off.checked = false;
+  full.dispatch('change');
+  assert.deepEqual(choices, [['goreLevel', 'off'], ['goreLevel', 'full']]);
+  assert.deepEqual(toggles, [], 'the choice never rides the boolean toggle path');
+  ui.destroy();
+  off.checked = false; off.checked = true; off.dispatch('change');
+  assert.equal(choices.length, 2, 'destroy() removes the listeners');
+});
+
+test('the gore radio group is optional markup: a shell without it still boots and setSettings ignores it', () => {
+  const { documentRef, elements } = fakeCockpitDocument();
+  for (const id of ['hmhSettingGoreOff', 'hmhSettingGoreReduced', 'hmhSettingGoreFull']) elements.delete(id);
+  const ui = createCockpitUi({ documentRef });
+  assert.doesNotThrow(() => ui.setSettings({ musicEnabled: true, goreLevel: 'off' }));
+  ui.destroy();
+});
+
+test('pause settings markup: the gore fieldset is a labelled three-radio group inside the pause panel, defaulting to full', () => {
+  const pauseStart = html.indexOf('id="hmhPausePanel"');
+  const pauseEnd = html.indexOf('hmh-menu-actions', pauseStart);
+  const pause = html.slice(pauseStart, pauseEnd);
+  assert.match(pause, /<fieldset class="hmh-setting-choice" id="hmhSettingGoreLevel">\s*<legend><strong>Gore<\/strong>/);
+  for (const [id, value] of [['hmhSettingGoreOff', 'off'], ['hmhSettingGoreReduced', 'reduced'], ['hmhSettingGoreFull', 'full']]) {
+    assert.match(pause, new RegExp(`<label class="hmh-setting-choice__option"><input id="${id}" type="radio" name="hmhSettingGoreLevel" value="${value}"`), id);
+  }
+  assert.match(pause, /value="full" checked>/);
+  assert.equal((pause.match(/name="hmhSettingGoreLevel"/g) ?? []).length, 3);
+  assert.doesNotMatch(pause, /hmh-setting-toggle"[^>]*>\s*<input id="hmhSettingGore/, 'the choice is not one of the four toggles');
+  assert.match(css, /\.hmh-setting-choice \{[^}]*grid-column:\s*1 \/ -1/);
+  assert.match(css, /\.hmh-setting-choice__option span \{[^}]*min-height:\s*44px/);
+  assert.match(css, /\.hmh-setting-choice__option input:checked \+ span/);
+  assert.match(css, /\.hmh-setting-choice__option input:focus-visible \+ span/);
+  const compact = css.slice(css.indexOf('@media (max-width: 600px) {'));
+  assert.match(compact, /\.hmh-setting-choice[^}]*min-height:\s*44px/);
+  const landscape = css.slice(css.indexOf('@media (max-width: 900px) and (max-height: 520px) and (orientation: landscape)'));
+  assert.match(landscape, /\.hmh-setting-choice[^}]*min-height:\s*44px/);
+  assert.match(main, /onSettingChoice: applyPauseChoice/);
+  assert.match(main, /syncRuntimeSettings\(\{ \.\.\.settings, goreLevel: level \}, \{ notify: true \}\)/);
 });
 
 test('pause settings markup: range slider with output, exactly four toggles, no new button or details inside the choices list', () => {
