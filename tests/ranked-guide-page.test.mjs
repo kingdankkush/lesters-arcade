@@ -106,7 +106,7 @@ test('where a score shows up: results, boards with their resets, profile, achiev
   const where = text(section(committed, 'where'));
   for (const lead of ['Results screen', 'Leaderboards', 'Your profile', 'Achievements', 'Share card']) assert.ok(where.includes(lead), lead);
   assert.match(where, /Weekly boards reset every Monday 00:00 UTC/);
-  assert.match(where, /124 in all: 44 in Hard Money Heroes, 40 in Chikun's Escape and 40 in STACKED/);
+  assert.match(where, /127 in all: 46 in Hard Money Heroes, 40 in Chikun's Escape and 41 in STACKED/);
   assert.match(where, /Each score shows the game version it was played on\./);
   assert.match(section(committed, 'where'), /href="\/scores"/);
   assert.match(section(committed, 'where'), /href="\/profile"/);
@@ -118,7 +118,7 @@ test('the FAQ answers every question the brief lists', () => {
     [/real money/i, /no monetary value/], [/wallet/i, /identity/], [/two numbers/i, /0\.01 entry .* 0\.002/],
     [/how long .*publishing/i, /about a minute/], [/payment or a run fails/i, /not refunded/], [/phone/i, /WalletConnect/],
     [/which wallets/i, /MetaMask/], [/my fee/i, /85% to the game's developer and 15% to the arcade/],
-    [/leaderboards reset/i, /Monday 00:00 UTC/], [/achievements/i, /124 achievements: 44 .* 40 .* 40/], [/game version/i, /version it was played on/],
+    [/leaderboards reset/i, /Monday 00:00 UTC/], [/achievements/i, /127 achievements: 46 .* 40 .* 41/], [/game version/i, /version it was played on/],
   ];
   for (const [question, answer] of required) {
     const match = live.questions.find(([name]) => question.test(name));

@@ -21,15 +21,15 @@ test('collection renders available locked and verified owned badges without clai
  const {createAchievementCollectionView}=await load();
  const view=createAchievementCollectionView({...deps,fetchImpl:null});
  const card=view.render({unlocks:owned});
- assert.equal(byClass(card,'collection-badge').length,124);assert.equal(byClass(card,'collection-badge-owned').length,1);
- assert.equal(byClass(card,'collection-tier').length,124);
- assert.equal(byClass(card,'collection-game-remaining').length,3);
+ assert.equal(byClass(card,'collection-badge').length,128);assert.equal(byClass(card,'collection-badge-owned').length,1);
+ assert.equal(byClass(card,'collection-tier').length,128);
+ assert.equal(byClass(card,'collection-game-remaining').length,4);
  const earnedBadge=byClass(card,'collection-badge-owned')[0];
  assert.equal(earnedBadge.children[0].className,'collection-badge-heading');
  assert.match(text(earnedBadge.children[0]),/Earned/);
- assert.equal(byClass(card,'collection-game-completion').length,3);assert.match(text(card),/1 \/ 124/);
- assert.match(text(card),/13 trophy achievements/);assert.doesNotMatch(text(card),/NFT minted|on-chain token|100% progress/);
- assert.equal(all(card).filter(item=>item.tag==='progress').length,3,'only measured collection completion, no guessed condition progress');
+ assert.equal(byClass(card,'collection-game-completion').length,4);assert.match(text(card),/1 \/ 128/);
+ assert.match(text(card),/16 trophy achievements/);assert.doesNotMatch(text(card),/NFT minted|on-chain token|100% progress/);
+ assert.equal(all(card).filter(item=>item.tag==='progress').length,4,'only measured collection completion, no guessed condition progress');
  view.dispose();
 });
 
@@ -42,7 +42,7 @@ test('native filter and search events update only results while retaining the co
  assert.equal(byClass(card,'collection-badge').length,39);
  search.value='FIRST FLIGHT';search.listeners.input();assert.equal(byClass(card,'collection-badge').length,0);assert.match(text(card),/No matching achievements/);
  filter.value='all';filter.listeners.change();assert.equal(byClass(card,'collection-badge').length,1);
- assert.equal(control('search'),search);assert.equal(control('game'),game);assert.match(text(card),/1 \/ 124/);
+ assert.equal(control('search'),search);assert.equal(control('game'),game);assert.match(text(card),/1 \/ 128/);
  view.dispose();
 });
 
@@ -51,11 +51,11 @@ test('population requests are cabinet-bound, coalesced, cached and anonymous',as
  const fetchImpl=async(url,options)=>{calls.push({url,options});return answer(body(new URL(url,'http://localhost').searchParams.get('game')));};
  const view=createAchievementCollectionView({...deps,fetchImpl,now:()=>now});
  const card=view.render({unlocks:owned});view.render({unlocks:owned});await view.whenStatsReady();
- assert.deepEqual(calls.map(call=>call.url),['/api/achievements/stats?game=lester-blaster','/api/achievements/stats?game=chikun','/api/achievements/stats?game=stacked']);
+ assert.deepEqual(calls.map(call=>call.url),['/api/achievements/stats?game=lester-blaster','/api/achievements/stats?game=chikun','/api/achievements/stats?game=stacked','/api/achievements/stats?game=arcade']);
  for(const call of calls){assert.equal(call.options.method,'GET');assert.equal(call.options.credentials,'omit');assert.deepEqual(call.options.headers,{Accept:'application/json'});assert.ok(call.options.signal);}
  assert.match(text(card),/Early/);assert.doesNotMatch(text(card),/rarest.*First Flight/i);
- view.render({unlocks:owned});await view.whenStatsReady();assert.equal(calls.length,3);
- now+=300001;view.render({unlocks:owned});await view.whenStatsReady();assert.equal(calls.length,6);
+ view.render({unlocks:owned});await view.whenStatsReady();assert.equal(calls.length,4);
+ now+=300001;view.render({unlocks:owned});await view.whenStatsReady();assert.equal(calls.length,8);
  view.dispose();
 });
 
@@ -64,7 +64,7 @@ test('disposal aborts pending reads and prevents late response from painting or 
  const fetchImpl=(url,options)=>{calls.push(options);return new Promise(resolve=>pending.push(()=>resolve(answer(body(new URL(url,'http://localhost').searchParams.get('game'))))));};
  const view=createAchievementCollectionView({...deps,fetchImpl});const card=view.render({unlocks:owned}),before=text(card);
  const ready=view.whenStatsReady();view.dispose();assert.ok(calls.every(options=>options.signal.aborted));
- pending.forEach(resolve=>resolve());await ready;assert.equal(text(card),before);assert.throws(()=>view.render({unlocks:owned}),/disposed/);assert.equal(calls.length,3);
+ pending.forEach(resolve=>resolve());await ready;assert.equal(text(card),before);assert.throws(()=>view.render({unlocks:owned}),/disposed/);assert.equal(calls.length,4);
 });
 
 test('malformed successful responses show unavailable rarity without losing earned badges',async()=>{
@@ -79,9 +79,9 @@ test('stalled population reads time out, abort and do not spin into immediate re
  const {createAchievementCollectionView}=await load();const calls=[],timers=[],cleared=[];
  const view=createAchievementCollectionView({...deps,fetchImpl:(_url,options)=>{calls.push(options);return new Promise(()=>{});},
   setTimeoutImpl:(callback,ms)=>{timers.push({callback,ms});return timers.length;},clearTimeoutImpl:id=>cleared.push(id)});
- const card=view.render({unlocks:owned}),ready=view.whenStatsReady();assert.equal(timers.length,3);assert.ok(timers.every(timer=>timer.ms===5000));
- timers.forEach(timer=>timer.callback());await ready;assert.ok(calls.every(call=>call.signal.aborted));assert.equal(cleared.length,3);assert.match(text(card),/Some population rarity is unavailable/);
- view.render({unlocks:owned});await view.whenStatsReady();assert.equal(calls.length,3);view.dispose();
+ const card=view.render({unlocks:owned}),ready=view.whenStatsReady();assert.equal(timers.length,4);assert.ok(timers.every(timer=>timer.ms===5000));
+ timers.forEach(timer=>timer.callback());await ready;assert.ok(calls.every(call=>call.signal.aborted));assert.equal(cleared.length,4);assert.match(text(card),/Some population rarity is unavailable/);
+ view.render({unlocks:owned});await view.whenStatsReady();assert.equal(calls.length,4);view.dispose();
 });
 
 
@@ -149,5 +149,5 @@ test('pending badge import cannot open after collection disposal or profile repl
 test('optional badge viewer failure retains requirements and communicates the fallback',async()=>{
  const {createAchievementCollectionView}=await load();const view=createAchievementCollectionView({...deps,fetchImpl:null,loadDetail:async()=>{throw Error('offline');}});
  const card=view.render({unlocks:owned}),button=byClass(card,'collection-detail-button')[0];assert.ok(button);await button.listeners.click();
- assert.match(text(card),/Preview unavailable/);assert.match(text(card),/Rarity unavailable/);assert.equal(byClass(card,'collection-badge').length,124);view.dispose();
+ assert.match(text(card),/Preview unavailable/);assert.match(text(card),/Rarity unavailable/);assert.equal(byClass(card,'collection-badge').length,128);view.dispose();
 });

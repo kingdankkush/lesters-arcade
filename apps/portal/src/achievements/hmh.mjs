@@ -1,8 +1,10 @@
 // Hard Money Heroes achievement catalog (gameId 'lester-blaster', contract §6.1).
-// The 57 ids, titles and tiers mirror ACHIEVEMENT_DEFINITIONS in arcade-core.mjs
-// (a test pins that). Criteria read statsFromHmhRunSummary (§6.3) plus verified
-// history (§6.5). Design notes, including every unavailable id and its reason:
-// docs/game-design/achievement-catalogs-20260923.md.
+// The first 57 ids, titles and tiers mirror ACHIEVEMENT_DEFINITIONS in
+// arcade-core.mjs (a test pins that); the three 2.0 trophy entries after them
+// (HMH_2_0_TROPHY_IDS) are catalog-only and server-derived: the device-local
+// resolver has no definition for them. Criteria read statsFromHmhRunSummary
+// (§6.3) plus verified history (§6.5). Design notes, including every
+// unavailable id and its reason: docs/game-design/achievement-catalogs-20260923.md.
 import { best, defineCatalog, runs, total, when } from './entry.mjs';
 
 // Reboot enemy roles (sdk/hmh-run-summary-schema.mjs enemyRoles) grouped into
@@ -31,6 +33,19 @@ export const HMH_DAMAGE_CHAIN_DAMAGE = 20_000;
 // and the parity tests gain per-boss inputs (run summary v7 contract §10).
 const bossDown = (s) => s.bossKills >= 1;
 const soon = null; // unavailable: the reason is recorded in the catalog design doc
+
+// The four bosses of run summary schema 7 (HMH_RUN_SUMMARY_CATALOGS_V7.bosses;
+// a test pins the list), each also an enemy role, so a schema-7 summary's
+// killsByRole carries one row per boss (rule S5: exactly one kill per defeat).
+// A schema-6 summary has no district-boss rows, so it can never earn the roster.
+export const HMH_BOSS_ROLE_IDS = Object.freeze(['rug-pull-baron', 'lockkeeper', 'fifty-one-percent-foreman', 'liquidator']);
+const bossRoleKills = (s, role) => (typeof s.killsByRole?.[role] === 'number' && Number.isFinite(s.killsByRole[role]) ? s.killsByRole[role] : 0);
+// 2.0 trophy entries: catalog-only, server-derived (no ACHIEVEMENT_DEFINITIONS
+// row, no device-local unlock). world-escape stays unavailable: every verified
+// HMH run must end `defeated` (server/verify/hmh.mjs run-summary-not-terminal)
+// and the ten-area world has no exit yet, so no stat records an escape.
+export const HMH_2_0_TROPHY_IDS = Object.freeze(['full-roster-run', 'boss-rush-fifty', 'world-escape']);
+export const HMH_BOSS_RUSH_FIFTY_TARGET = 50;
 
 const specs = [
   { id: 'cabinet-pioneer', title: 'Cabinet Pioneer', tier: 'bronze', category: 'login', description: 'Signed in with a wallet and finished a verified Ranked run.', rule: runs(1) },
@@ -96,11 +111,19 @@ const specs = [
   { id: 'l2-51-percent', title: 'Consensus Breaker', tier: 'platinum', category: 'boss', description: 'Defeat the 51% Boss in Hashrate District. Coming with Level 2.', rule: soon },
   { id: 'l2-ngmi', title: 'Not Gonna Make It... Did', tier: 'diamond', category: 'level-clear', description: 'Defeat Mr. NGMI and clear Level 2: Litecoin City. Coming with Level 2.', rule: soon },
   { id: 'l2-no-damage-ngmi', title: 'Influencer Immune', tier: 'mythic', category: 'skill', description: 'Defeat Mr. NGMI without taking damage during the boss phase. Coming with Level 2.', rule: soon },
+
+  // 2.0 trophies (owner-approved package): two HMH trophies and the completion trophy.
+  { id: 'full-roster-run', title: 'Full Roster Run', tier: 'mythic', category: 'boss', description: 'Defeated the Rug-Pull Baron, the Lockkeeper, the 51% Foreman and the Liquidator in one Ranked run.', nft: true, rule: when((s) => HMH_BOSS_ROLE_IDS.every((role) => bossRoleKills(s, role) >= 1)) },
+  { id: 'boss-rush-fifty', title: 'Boss Rush Fifty', tier: 'mythic', category: 'boss', description: 'Defeated 50 Liquidators across Ranked runs.', nft: true, rule: total('bossKills', HMH_BOSS_RUSH_FIFTY_TARGET) },
+  { id: 'world-escape', title: 'World Escape', tier: 'mythic', category: 'level-clear', description: 'Escaped the ten-area world in one Ranked run. Coming with the 2.0 world exit.', rule: soon },
 ];
 
+// PLACEHOLDER ART for the 2.0 trophy entries: an existing badge stands in until
+// the trophy posters and models land (plan track G3).
+const PLACEHOLDER_BADGES = Object.freeze({ 'full-roster-run': 'boss-breaker', 'boss-rush-fifty': 'boss-rush-ten', 'world-escape': 'getaway-clear' });
 const imagesFor = ({ id }) => (id.startsWith('l2-')
   ? { image: `/assets/generated/hmh-achievement-atlas/achievement-${id}.png`, lockedImage: `/assets/generated/hmh-achievement-atlas/locked-achievement-${id}.png` }
-  : { image: `/assets/generated/achievement-badges/${id}.png`, lockedImage: `/assets/generated/achievement-badges/locked-${id}.png` });
+  : { image: `/assets/generated/achievement-badges/${PLACEHOLDER_BADGES[id] ?? id}.png`, lockedImage: `/assets/generated/achievement-badges/locked-${PLACEHOLDER_BADGES[id] ?? id}.png` });
 
 const catalog = defineCatalog('lester-blaster', specs, imagesFor);
 export const HMH_ACHIEVEMENTS = catalog.entries;

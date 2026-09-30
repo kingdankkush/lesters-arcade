@@ -102,9 +102,12 @@ export const RANKED_FACTS = Object.freeze({
   // The settle-retry cron runs every minute (vercel.json).
   publishRetryMinutes: 1,
   // Achievements a verified Ranked run can earn (catalog entries not marked
-  // available: false), per game and in all.
-  achievements: Object.freeze({ 'lester-blaster': 44, chikun: 40, stacked: 40 }),
-  achievementTotal: 124,
+  // available: false), per game and in all. The 2.0 trophies added two HMH
+  // entries and one STACKED entry (achievements/hmh.mjs, stacked.mjs); the
+  // parent-owned Early Supporter badge (achievements/arcade.mjs) is not a
+  // cabinet entry and is not counted here.
+  achievements: Object.freeze({ 'lester-blaster': 46, chikun: 40, stacked: 41 }),
+  achievementTotal: 127,
   // The public player guide (apps/portal/how-ranked-works.html, served at
   // this clean path by a vercel.json rewrite; the in-game menus link it too).
   guidePath: '/how-ranked-works',

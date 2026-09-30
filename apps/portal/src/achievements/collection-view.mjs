@@ -18,7 +18,7 @@ export function createAchievementCollectionView({el,appendText,renderAchievement
 
  function ensureStyle(){
   if(!documentRef?.head||!documentRef.createElement||documentRef.getElementById?.('achievement-collection-css'))return;
-  const link=documentRef.createElement('link');link.id='achievement-collection-css';link.rel='stylesheet';link.href='/src/styles/achievement-collection.css?v=collection-detail-v2';documentRef.head.append(link);
+  const link=documentRef.createElement('link');link.id='achievement-collection-css';link.rel='stylesheet';link.href='/src/styles/achievement-collection.css?v=collection-detail-v3';documentRef.head.append(link);
  }
  function field(label,name,options){
   const wrapper=el('label',{className:'collection-control'});appendText(wrapper,'span',label);
@@ -93,7 +93,7 @@ export function createAchievementCollectionView({el,appendText,renderAchievement
   if(!badges.length)badges.push(el('p',{className:'collection-empty',textContent:'No matching achievements. Try a different filter or search.'}));
   results.replaceChildren(...badges);resultCount.textContent=`${model.rows.length} matching achievements`;
   const available=COLLECTION_GAMES.filter(game=>Object.hasOwn(statsByGame,game.gameId)).length;
-  populationNote.textContent=inFlight?'Population rarity loading…':available===3?'Population snapshot · cached for five minutes':'Some population rarity is unavailable. Earned achievements remain visible.';
+  populationNote.textContent=inFlight?'Population rarity loading…':available===COLLECTION_GAMES.length?'Population snapshot · cached for five minutes':'Some population rarity is unavailable. Earned achievements remain visible.';
  }
  async function readPopulation(gameId){
   const controller=new AbortController();let timer,rejectCancel;

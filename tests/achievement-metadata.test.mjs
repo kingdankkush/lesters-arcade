@@ -25,7 +25,7 @@ test('generator output is deterministic and matches committed files', () => {
   assert.deepEqual([...first.entries()], [...second.entries()]);
   const available = ACHIEVEMENT_GAME_IDS.flatMap((gameId) => catalogFor(gameId).filter((entry) => entry.available));
   assert.equal(first.size, available.length);
-  assert.equal(first.size, 44 + 40 + 40);
+  assert.equal(first.size, 46 + 40 + 41);
   assert.deepEqual([...first.keys()].sort(), available.map((entry) => `apps/portal/achievements/${entry.gameId}/${entry.id}.json`).sort());
   // Committed files equal the generator output, with nothing extra.
   assert.deepEqual(committedAchievementMetadataFiles(), [...first.keys()].sort());

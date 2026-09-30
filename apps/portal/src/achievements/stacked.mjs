@@ -1,5 +1,7 @@
-// STACKED achievement catalog (gameId 'stacked', contract §6.1): 40 entries,
-// 14 bronze, 12 silver, 9 gold, 5 platinum. Criteria read only the replayed
+// STACKED achievement catalog (gameId 'stacked', contract §6.1): 41 entries,
+// 14 bronze, 12 silver, 9 gold, 5 platinum, 1 mythic (the 2.0 completion trophy
+// stacked-final-zone: the last zone of the replayed tuple, stacked-sim.mjs
+// zoneForTick index 5, which begins at tick 90,000, 25 minutes in). Criteria read only the replayed
 // result tuple through statsFromStackedTuple (§6.3) plus verified history (§6.5):
 // no singles/doubles/triples, spin clears, stack height or zone snapshots.
 // Line, level, survival, score, piece and garbage thresholds come from the
@@ -10,6 +12,8 @@
 import { best, defineCatalog, runs, total } from './entry.mjs';
 
 const minutes = (n) => best('survivalSeconds', n * 60);
+// The last zone index of stacked-sim.mjs ZONE_START_TICKS (a test pins it).
+export const STACKED_FINAL_ZONE = 5;
 
 const specs = [
   { id: 'stacked-first-line', title: 'Genesis Row', tier: 'bronze', category: 'lines', description: 'Cleared your first row in a Ranked run.', rule: best('lines', 1) },
@@ -55,11 +59,20 @@ const specs = [
   { id: 'stacked-score-4250k', title: 'Whale Stack', tier: 'platinum', category: 'score', nft: true, description: 'Scored 4,250,000 points in one Ranked run.', rule: best('score', 4_250_000) },
   { id: 'stacked-garbage-100', title: 'Garbage Collector', tier: 'platinum', category: 'garbage', nft: true, description: 'Took 100 garbage rows in one Ranked run and kept stacking.', rule: best('garbageRowsReceived', 100) },
   { id: 'stacked-b2b-streak-10', title: 'Unbroken Chain', tier: 'platinum', category: 'back-to-back', nft: true, description: 'Made 10 difficult clears (Halvings or spin clears) back to back.', rule: best('maxBackToBack', 10) },
-];
 
+  // 2.0 completion trophy: STACKED is endless, so completion is the last zone of
+  // the journey. `zone` is zoneForTick(ticks) of the replayed tuple (0-5); the
+  // Free medal `stacked-zone-6` "Full Chain" names the same zone one-based.
+  { id: 'stacked-final-zone', title: 'End of the Chain', tier: 'mythic', category: 'zone', nft: true, description: 'Reached the final zone, 25 minutes into one Ranked run.', rule: best('zone', STACKED_FINAL_ZONE) },
+];
+export const STACKED_2_0_TROPHY_IDS = Object.freeze(['stacked-final-zone']);
+
+// The generated STACKED tier badges stop at platinum; the mythic completion
+// trophy borrows the platinum badge as a PLACEHOLDER until its poster lands.
+const badgeTier = (tier) => (tier === 'mythic' ? 'platinum' : tier);
 const catalog = defineCatalog('stacked', specs, ({ tier }) => ({
-  image: `/assets/generated/achievement-badges/stacked/${tier}.png`,
-  lockedImage: `/assets/generated/achievement-badges/stacked/locked-${tier}.png`,
+  image: `/assets/generated/achievement-badges/stacked/${badgeTier(tier)}.png`,
+  lockedImage: `/assets/generated/achievement-badges/stacked/locked-${badgeTier(tier)}.png`,
 }));
 export const STACKED_ACHIEVEMENTS = catalog.entries;
 export const STACKED_HISTORY_FIELDS = catalog.historyFields;

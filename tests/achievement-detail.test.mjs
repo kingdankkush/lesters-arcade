@@ -100,3 +100,95 @@ test('close touch ignores cancellation, movement, other fingers and release outs
   assert.equal(env.find('achievement-detail').open,true,kind);view.dispose();
  }
 });
+
+// --- Optional device tilt (off by default) ---------------------------------
+// The fake window gains a DeviceOrientationEvent constructor (with an optional
+// iOS-style requestPermission) and a Map-backed localStorage.
+function gyroSetup({reduced=false,permission=null,stored=null,storageThrows=false}={}){
+ const env=setup(reduced),store=new Map();if(stored!==null)store.set('lesters-arcade:achievement-detail:gyro',stored);
+ env.permissionCalls=0;
+ env.windowRef.DeviceOrientationEvent=permission===null?function DeviceOrientationEvent(){}:Object.assign(function DeviceOrientationEvent(){},{requestPermission:async()=>{env.permissionCalls++;if(permission instanceof Error)throw permission;return permission;}});
+ env.windowRef.localStorage=storageThrows?{getItem(){throw new Error('blocked');},setItem(){throw new Error('blocked');},removeItem(){throw new Error('blocked');}}:{getItem:key=>store.has(key)?store.get(key):null,setItem:(key,value)=>store.set(key,String(value)),removeItem:key=>store.delete(key)};
+ env.store=store;env.tilt=sample=>env.listeners.get('window:deviceorientation')?.(sample);return env;
+}
+const settle=()=>new Promise(resolve=>setTimeout(resolve,0));
+
+test('gyroTilt maps orientation deltas from the neutral pose into the same 35-degree bounds as a drag',async()=>{
+ const {gyroTilt,ACHIEVEMENT_DETAIL_TILT_LIMIT}=await load();assert.equal(ACHIEVEMENT_DETAIL_TILT_LIMIT,35);
+ const neutral={beta:45,gamma:0};
+ assert.deepEqual(gyroTilt({beta:45,gamma:0},neutral),{x:0,y:0});
+ assert.deepEqual(gyroTilt({beta:25,gamma:20},neutral),{x:10,y:10});
+ assert.deepEqual(gyroTilt({beta:-180,gamma:90},neutral),{x:35,y:35});
+ assert.deepEqual(gyroTilt({beta:180,gamma:-90},neutral),{x:-35,y:-35});
+ assert.deepEqual(gyroTilt({beta:44,gamma:1},neutral,{gain:1}),{x:1,y:1});
+ for(const bad of[{beta:NaN,gamma:0},{beta:1},{gamma:1},null,undefined,{beta:Infinity,gamma:0}])assert.equal(gyroTilt(bad,neutral),null,JSON.stringify(bad));
+ assert.equal(gyroTilt({beta:1,gamma:1},null),null);assert.equal(gyroTilt({beta:1,gamma:1},{beta:'45',gamma:0}),null);
+});
+test('device tilt is off by default, offered only where the sensor API exists, and never reads the sensor until enabled',async()=>{
+ const {createAchievementDetail}=await load();
+ const plain=setup(),silent=createAchievementDetail(plain);silent.open(row);
+ assert.equal(plain.find('achievement-detail-gyro'),undefined,'no control without DeviceOrientationEvent');
+ assert.equal(plain.listeners.has('window:deviceorientation'),false);silent.dispose();
+ const env=gyroSetup(),view=createAchievementDetail(env);view.open(row);
+ const button=env.find('achievement-detail-gyro'),art=env.find('achievement-detail-art');
+ assert.equal(button.tag,'button');assert.equal(button.attributes['aria-pressed'],'false');assert.equal(button.textContent,'Device tilt: off');
+ assert.equal(env.listeners.has('window:deviceorientation'),false,'off by default: no listener');
+ assert.equal(env.store.size,0,'nothing is written until the player opts in');
+ env.tilt({beta:0,gamma:60});assert.match(art.style.transform,/rotateX\(0deg\).*rotateY\(0deg\)/);
+ view.dispose();assert.equal(env.listeners.size,0);
+});
+test('enabling from the button asks iOS once, persists locally, baselines on the first sample and maps within bounds',async()=>{
+ const {createAchievementDetail}=await load(),env=gyroSetup({permission:'granted'}),view=createAchievementDetail(env);view.open(row);
+ const button=env.find('achievement-detail-gyro'),art=env.find('achievement-detail-art'),stage=env.find('achievement-detail-stage');
+ button.fire('click');await settle();
+ assert.equal(env.permissionCalls,1);assert.equal(button.attributes['aria-pressed'],'true');assert.equal(button.textContent,'Device tilt: on');
+ assert.equal(env.store.get('lesters-arcade:achievement-detail:gyro'),'1');assert.ok(env.listeners.has('window:deviceorientation'));
+ env.tilt({beta:40,gamma:10});assert.match(art.style.transform,/rotateX\(0deg\).*rotateY\(0deg\)/,'the first sample is the neutral pose');
+ env.tilt({beta:20,gamma:30});assert.match(art.style.transform,/rotateX\(10deg\).*rotateY\(10deg\)/);
+ env.tilt({beta:-300,gamma:300});assert.match(art.style.transform,/rotateX\(35deg\).*rotateY\(35deg\)/,'bounded like a drag');
+ env.tilt({beta:'20',gamma:30});assert.match(art.style.transform,/rotateX\(35deg\).*rotateY\(35deg\)/,'a malformed sample is ignored');
+ // A drag in progress owns the tilt (continuing from the current pose); the sensor resumes after release.
+ env.tilt({beta:40,gamma:10});assert.match(art.style.transform,/rotateX\(0deg\).*rotateY\(0deg\)/);
+ stage.fire('pointerdown',{pointerId:2,isPrimary:true,button:0,clientX:0,clientY:0});stage.fire('pointermove',{pointerId:2,clientX:20,clientY:0});
+ env.tilt({beta:40,gamma:10});assert.match(art.style.transform,/rotateY\(5deg\)/);stage.fire('pointerup',{pointerId:2});
+ env.tilt({beta:20,gamma:30});assert.match(art.style.transform,/rotateX\(10deg\).*rotateY\(10deg\)/);
+ // Closed dialogs ignore the sensor; toggling off resets, forgets the preference and detaches.
+ env.find('achievement-detail').open=false;env.tilt({beta:-300,gamma:300});assert.match(art.style.transform,/rotateX\(10deg\)/);env.find('achievement-detail').open=true;
+ button.fire('click');await settle();
+ assert.equal(button.attributes['aria-pressed'],'false');assert.equal(env.store.has('lesters-arcade:achievement-detail:gyro'),false);
+ assert.equal(env.listeners.has('window:deviceorientation'),false);assert.match(art.style.transform,/rotateX\(0deg\).*rotateY\(0deg\)/);
+ assert.equal(env.permissionCalls,1,'turning off asks nothing');view.dispose();
+});
+test('a denied, failed or missing iOS permission and a blocked storage leave device tilt off silently',async()=>{
+ const {createAchievementDetail}=await load();
+ for(const permission of['denied','prompt',new Error('not allowed')]){
+  const env=gyroSetup({permission}),view=createAchievementDetail(env);view.open(row);
+  env.find('achievement-detail-gyro').fire('click');await settle();
+  assert.equal(env.find('achievement-detail-gyro').attributes['aria-pressed'],'false',String(permission));
+  assert.equal(env.store.size,0);assert.equal(env.listeners.has('window:deviceorientation'),false);view.dispose();
+ }
+ // No requestPermission (Android, desktop Chrome): the click alone enables.
+ const android=gyroSetup(),view=createAchievementDetail(android);view.open(row);
+ android.find('achievement-detail-gyro').fire('click');await settle();assert.equal(android.find('achievement-detail-gyro').attributes['aria-pressed'],'true');view.dispose();
+ const blocked=gyroSetup({storageThrows:true}),blockedView=createAchievementDetail(blocked);blockedView.open(row);
+ assert.equal(blocked.find('achievement-detail-gyro').attributes['aria-pressed'],'false');
+ blocked.find('achievement-detail-gyro').fire('click');await settle();
+ assert.equal(blocked.find('achievement-detail-gyro').attributes['aria-pressed'],'true','the session still works without persistence');blockedView.dispose();
+});
+test('a persisted preference attaches on open without a permission prompt; reduced motion disables and ignores the sensor',async()=>{
+ const {createAchievementDetail}=await load(),env=gyroSetup({permission:'granted',stored:'1'}),view=createAchievementDetail(env);view.open(row);
+ const button=env.find('achievement-detail-gyro'),art=env.find('achievement-detail-art');
+ assert.equal(env.permissionCalls,0,'no prompt outside a user gesture');assert.equal(button.attributes['aria-pressed'],'true');assert.ok(env.listeners.has('window:deviceorientation'));
+ assert.match(env.find('achievement-detail-hint').textContent,/Tilt the phone/);
+ env.tilt({beta:40,gamma:0});env.tilt({beta:20,gamma:20});assert.match(art.style.transform,/rotateX\(10deg\).*rotateY\(10deg\)/);
+ env.media.matches=true;env.listeners.get('media:change')();
+ assert.equal(button.disabled,true);assert.match(art.style.transform,/rotateX\(0deg\).*rotateY\(0deg\)/);
+ env.tilt({beta:-300,gamma:300});assert.match(art.style.transform,/rotateX\(0deg\).*rotateY\(0deg\)/,'ignored under reduced motion');
+ button.fire('click');await settle();assert.equal(button.attributes['aria-pressed'],'true','a reduced-motion click changes nothing');assert.equal(env.store.get('lesters-arcade:achievement-detail:gyro'),'1');
+ env.media.matches=false;env.listeners.get('media:change')();assert.equal(button.disabled,false);
+ env.tilt({beta:40,gamma:0});env.tilt({beta:20,gamma:20});assert.match(art.style.transform,/rotateX\(10deg\)/,'re-baselined after the reset');
+ view.dispose();assert.equal(env.listeners.size,0,'disposal detaches the sensor');
+ const reducedFromStart=gyroSetup({stored:'1',reduced:true}),staticView=createAchievementDetail(reducedFromStart);staticView.open(row);
+ assert.equal(reducedFromStart.find('achievement-detail-gyro').disabled,true);
+ reducedFromStart.tilt({beta:0,gamma:0});reducedFromStart.tilt({beta:60,gamma:60});assert.match(reducedFromStart.find('achievement-detail-art').style.transform,/rotateX\(0deg\).*rotateY\(0deg\)/);staticView.dispose();
+});

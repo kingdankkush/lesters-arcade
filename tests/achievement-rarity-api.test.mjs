@@ -14,7 +14,7 @@ test('the real public stats adapter initializes an empty index and caches only a
   assert.equal(empty.body.achievements.length,40);assert.ok(empty.body.achievements.every(row=>row.unlockedPlayers===0&&row.rarity==='early'&&row.percentage===null));
   const run=await seedVerifiedSession(db,{status:'pending'});await seedAchievementUnlock(db,{sessionId32:run.sessionId32});
   const response=await invoke(handler,{url:'/api/achievements/stats?game=chikun'});assert.equal(response.body.rankedPlayers,1);assert.equal(response.body.achievements.find(row=>row.id==='chikun-first-flight').unlockedPlayers,1);
-  const alias=await invoke(handler,{url:'/api/achievements/stats?game=hard-money-heroes'});assert.equal(alias.status,200);assert.equal(alias.body.gameId,'lester-blaster');assert.equal(alias.body.achievements.length,44);
+  const alias=await invoke(handler,{url:'/api/achievements/stats?game=hard-money-heroes'});assert.equal(alias.status,200);assert.equal(alias.body.gameId,'lester-blaster');assert.equal(alias.body.achievements.length,46);
  }finally{await db.close();}
 });
 test('bad methods, games, undeclared and conflicting query parameters never read the index',async()=>{

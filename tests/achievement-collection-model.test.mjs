@@ -12,9 +12,9 @@ function population(gameId,rankedPlayers,counts={}) {
 test('collection measures the available catalog per cabinet without awarding progress',async()=>{
  const {buildAchievementCollection}=await load();
  const model=buildAchievementCollection();
- assert.equal(model.rows.length,124);assert.equal(model.unlocked,0);assert.equal(model.total,124);assert.equal(model.rarest,null);
- assert.deepEqual(model.games.map(game=>[game.gameId,game.total,game.unlocked]),[['lester-blaster',44,0],['chikun',40,0],['stacked',40,0]]);
- assert.equal(model.trophies.total,13);assert.equal(model.trophies.unlocked,0);
+ assert.equal(model.rows.length,128);assert.equal(model.unlocked,0);assert.equal(model.total,128);assert.equal(model.rarest,null);
+ assert.deepEqual(model.games.map(game=>[game.gameId,game.total,game.unlocked]),[['lester-blaster',46,0],['chikun',40,0],['stacked',41,0],['arcade',1,0]]);
+ assert.equal(model.trophies.total,16);assert.equal(model.trophies.unlocked,0);
  assert.ok(model.rows.every(row=>!row.unlocked&&row.rarity===null&&row.unlockedAt===null));
 });
 
@@ -53,9 +53,9 @@ test('small cohorts show Early and count with no rate or invented rarest badge',
 
 test('game, ownership, trophy and text filters do not change completion totals',async()=>{
  const {buildAchievementCollection}=await load(),unlocks=[unlock('chikun'),unlock('stacked')];
- const owned=buildAchievementCollection({unlocks,gameId:'chikun',filter:'unlocked'});assert.equal(owned.rows.length,1);assert.equal(owned.total,124);assert.equal(owned.unlocked,2);
+ const owned=buildAchievementCollection({unlocks,gameId:'chikun',filter:'unlocked'});assert.equal(owned.rows.length,1);assert.equal(owned.total,128);assert.equal(owned.unlocked,2);
  assert.equal(buildAchievementCollection({unlocks,gameId:'chikun',filter:'locked'}).rows.length,39);
- assert.equal(buildAchievementCollection({unlocks,filter:'trophies'}).rows.length,13);
+ assert.equal(buildAchievementCollection({unlocks,filter:'trophies'}).rows.length,16);
  assert.equal(buildAchievementCollection({unlocks,query:'  FIRST FLIGHT  '}).rows.length,1);
  assert.equal(buildAchievementCollection({unlocks,query:'<script>'}).rows.length,0);
  for(const options of [{gameId:'unknown'},{filter:'owned-ish'},{sort:'random'}])assert.throws(()=>buildAchievementCollection(options),/collection/);

@@ -70,6 +70,22 @@ export function when(test, { max = [], progress = null } = {}) {
   return Object.freeze({ criteria: (run, history) => test(run?.stats ?? {}, history ?? {}) === true, progress, sum: [], max });
 }
 
+// A server stamp before `cutoffIso`. The settle server stamps verifiedAt with
+// new Date(nowMs).toISOString() (server/verify/verified-run.mjs), so two
+// well-formed UTC stamps of that exact shape order as strings, and the catalog
+// needs no clock. Anything else (a missing stamp, a client-shaped run, another
+// format) reads as "not verified before the cutoff" and cannot earn.
+const ISO_UTC_MS = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/;
+const ISO_UTC = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{3})?Z$/;
+export function isoStampBefore(value, cutoffIso) {
+  return typeof value === 'string' && ISO_UTC_MS.test(value) && ISO_UTC_MS.test(cutoffIso) && value < cutoffIso;
+}
+export function verifiedBefore(cutoffIso) {
+  if (typeof cutoffIso !== 'string' || !ISO_UTC.test(cutoffIso)) throw new Error(`invalid verification cutoff ${String(cutoffIso)}`);
+  const cutoff = cutoffIso.length === 20 ? `${cutoffIso.slice(0, 19)}.000Z` : cutoffIso;
+  return Object.freeze({ criteria: (run) => isoStampBefore(run?.verifiedAt, cutoff), progress: null, sum: [], max: [] });
+}
+
 const UNAVAILABLE = Object.freeze({ criteria: () => false, progress: null, sum: [], max: [] });
 
 // Builds one frozen catalog. `images(spec)` returns { image, lockedImage }.

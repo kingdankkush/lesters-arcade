@@ -3,12 +3,14 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 
 import {
+  UNLOCKABLES_EQUIP_LABELS,
   UNLOCKABLES_PANEL_ID,
   UNLOCKABLES_PANEL_STYLESHEET,
   buildUnlockablesPanelModel,
   canvasFilterSupported,
   isOwnUnlockablesView,
   renderUnlockablesPanel,
+  unlockablesLabelMatches,
   unlockablesNotice,
 } from '../apps/portal/src/routes/unlockables-panel.mjs';
 import { COSMETIC_SLOTS, UNLOCKABLES, emptyUnlocks, unlocksFromProfileResponse } from '../apps/portal/src/unlockables.mjs';
@@ -490,9 +492,36 @@ test('retired classics remain earned and inspectable but cannot trigger equip', 
  documentRef.getElementById('locker-game-chikun').dispatch('click');
  documentRef.getElementById('unlockables-chikun-coat-chikun-coat-glacier-inspect').dispatch('click');
  assert.match(host.textContent,/Classic archive · Unlocked/);
- const equip=documentRef.getElementById('locker-equip');assert.equal(equip.disabled,true);assert.equal(equip.textContent,'Archived look');equip.dispatch('click');
+ const equip=documentRef.getElementById('locker-equip');assert.equal(equip.disabled,true);
+ // The DOM carries the source string; the rendered text is upper-cased by CSS (next test).
+ assert.equal(equip.textContent,UNLOCKABLES_EQUIP_LABELS.archived);assert.ok(unlockablesLabelMatches(equip.textContent,UNLOCKABLES_EQUIP_LABELS.archived));equip.dispatch('click');
  const radio=documentRef.getElementById('unlockables-chikun-coat-chikun-coat-glacier');assert.equal(radio.disabled,true);radio.checked=true;radio.dispatch('change');
  assert.deepEqual(store.selects,[]);
+});
+
+test('the archive label is compared against its source string, not the CSS upper-case rendering', () => {
+ // The portal's global button rule upper-cases every button label, so a browser
+ // review that reads innerText sees "ARCHIVED LOOK". The retained browser-review
+ // failure compared that rendering with the source string; the matcher below is
+ // what such a check must use (or read textContent).
+ const global=read('apps/portal/styles.css');
+ const buttonRule=/\nbutton \{[^}]*text-transform: uppercase;[^}]*\}/.exec(global);
+ assert.ok(buttonRule,'the global button rule upper-cases labels');
+ assert.equal(UNLOCKABLES_EQUIP_LABELS.archived,'Archived look');
+ assert.ok(unlockablesLabelMatches('ARCHIVED LOOK',UNLOCKABLES_EQUIP_LABELS.archived));
+ assert.ok(unlockablesLabelMatches('  Archived\n look ',UNLOCKABLES_EQUIP_LABELS.archived));
+ assert.ok(unlockablesLabelMatches('archived look','Archived look'));
+ for(const other of['Equipped','EQUIP LOOK','Locked','Archived','Archived looks','',null,undefined])assert.equal(unlockablesLabelMatches(other,UNLOCKABLES_EQUIP_LABELS.archived),false,String(other));
+ assert.equal(unlockablesLabelMatches('','' ),false,'an empty expectation never matches');
+ // Every equip state renders exactly one of the source labels.
+ const {documentRef,app,grid}=fakeDocument(),store=fakeStore(hostedSnapshot({}));
+ renderUnlockablesPanel({store,documentRef,after:grid,app});
+ documentRef.getElementById('locker-game-chikun').dispatch('click');
+ for(const [id,label] of [['unlockables-chikun-coat-chikun-coat-glacier-inspect',UNLOCKABLES_EQUIP_LABELS.archived]]){
+  documentRef.getElementById(id).dispatch('click');
+  assert.equal(documentRef.getElementById('locker-equip').textContent,label);
+ }
+ assert.deepEqual(Object.values(UNLOCKABLES_EQUIP_LABELS),['Archived look','Equipped','Equip look','Locked']);
 });
 
 test('scene inspection uses the same grade value as the actual visualizer renderer', async () => {

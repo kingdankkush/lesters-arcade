@@ -148,7 +148,9 @@ test('phase 2 on the local stack: define the approved subset, setMinter(relayer)
   assert.equal(report.player, player);
 
   // 2-3. The approved subset is defined on every collection and the relayer may mint.
-  assert.deepEqual(steps['define-approved-subset'].definedPerGame, { 'lester-blaster': 3, chikun: 5, stacked: 5 });
+  // Phase-1 candidates per game (3 HMH run totals + the two 2.0 HMH trophies, 5 Chikun,
+  // 5 STACKED + the 2.0 completion trophy), with the HMH test setup adding one and dropping one.
+  assert.deepEqual(steps['define-approved-subset'].definedPerGame, { 'lester-blaster': 5, chikun: 5, stacked: 6 });
   // 3. Only the approved id mints: the stored flag of the dropped one said true, the added one said false.
   assert.deepEqual(steps['backfill-plan'].planned, 1);
   assert.ok(steps['backfill-plan'].storedNftTrueRows.includes(dropped));

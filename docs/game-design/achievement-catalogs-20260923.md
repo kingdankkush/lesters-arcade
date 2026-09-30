@@ -2,7 +2,7 @@
 
 **Status:** proposed, for owner checkpoint **O1** (contract §10.1). It lands with the achievements slice and must be reviewed before the first production deploy (§13 step 3). From the first verified Ranked run on, every threshold is baked into `achievement_unlocks`, so changes after launch are hard to undo.
 
-**Scope:** all 137 achievements: 57 for Hard Money Heroes (`lester-blaster`), 40 for Chikun's Escape (`chikun`), 40 for STACKED (`stacked`). The code is in `apps/portal/src/achievements/`. This document is the only place the calibration source for each threshold and the reason for each unavailable id are recorded.
+**Scope:** all 143 achievements: 60 for Hard Money Heroes (`lester-blaster`), 41 for Chikun's Escape (`chikun`), 41 for STACKED (`stacked`) and 1 parent-owned (`arcade`). The 2.0 additions (September 30) are the last rows of each table. The code is in `apps/portal/src/achievements/`. This document is the only place the calibration source for each threshold and the reason for each unavailable id are recorded.
 
 ## What to review
 
@@ -121,9 +121,9 @@ The three hunt achievements count families of reboot enemy roles (`HMH_ROLE_FAMI
 
   The same file parses the Chikun and STACKED tables below and checks every criterion against the code. It also checks each available HMH criterion against its `ACHIEVEMENT_DEFINITIONS` requirement, with the remaps shown in the HMH table.
 
-## Hard Money Heroes (57)
+## Hard Money Heroes (60)
 
-The ids, titles and tiers are unchanged from `ACHIEVEMENT_DEFINITIONS` (a test pins them). Σ means the verified history sum plus this run.
+The first 57 ids, titles and tiers are unchanged from `ACHIEVEMENT_DEFINITIONS` (a test pins them); rows 58-60 are the 2.0 trophy entries, catalog-only and server-derived (the device-local resolver has no definition for them, and the parity tests exempt them). Σ means the verified history sum plus this run.
 
 | # | Id | Title | Tier | Category | Criterion | Available | NFT proposal | Calibration / source |
 | ---: | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -184,10 +184,21 @@ The ids, titles and tiers are unchanged from `ACHIEVEMENT_DEFINITIONS` (a test p
 | 55 | `l2-51-percent` | Consensus Breaker | platinum | boss | Intended: Defeat the 51% Boss in Hashrate District. | **no**: Coming with Level 2 (the reboot has no Level 2). | no | Coming with Level 2 |
 | 56 | `l2-ngmi` | Not Gonna Make It... Did | diamond | level-clear | Intended: Defeat Mr. NGMI and clear Level 2: Litecoin City. | **no**: Coming with Level 2 (the reboot has no Level 2). | no | Coming with Level 2 |
 | 57 | `l2-no-damage-ngmi` | Influencer Immune | mythic | skill | Intended: Defeat Mr. NGMI without taking damage during the boss phase. | **no**: Coming with Level 2 (the reboot has no Level 2). | no | Coming with Level 2 |
+| 58 | `full-roster-run` | Full Roster Run | mythic | boss | `killsByRole` ≥ 1 for each of `rug-pull-baron`, `lockkeeper`, `fifty-one-percent-foreman` and `liquidator` in one run | yes | **yes** (2.0 trophy) | Owner-approved 2.0 HMH trophy. Schema 7 only: rule S5 pins each boss row to exactly one kill per recorded defeat and the plausibility validator bounds boss timing; a schema-6 summary has no district-boss rows and never earns it. Plausibility-checked, not replayed (A9). Placeholder art: the `boss-breaker` badge |
+| 59 | `boss-rush-fifty` | Boss Rush Fifty | mythic | boss | Σ `bossKills ≥ 50` | yes | **yes** (2.0 trophy) | Owner-approved 2.0 HMH trophy. `kills.boss` is the Liquidator, at most one per run (plausibility `kills-above-capacity`), so this is fifty Liquidator runs. Plausibility-checked, not replayed (A9). Placeholder art: the `boss-rush-ten` badge |
+| 60 | `world-escape` | World Escape | mythic | level-clear | Intended: Escaped the ten-area world in one Ranked run. | **no**: every verified HMH run must end `defeated` (`server/verify/hmh.mjs` `run-summary-not-terminal`) and the ten-area world has no exit; no stat records an escape. Needs a run-summary end state (`escaped`) and world/exit fields in a later schema. | no | 2.0 completion trophy, unavailable. Placeholder art: the `getaway-clear` badge |
 
-## Chikun's Escape (40)
+## Lester's Arcade, parent-owned (1)
 
-The tiers are 14 bronze, 12 silver, 9 gold and 5 platinum. "Harness" is the harness JSON and "skim" is the near-miss-chasing sample. Region `i` counts as reached when the run passes an obstacle in it, or finishes a loop.
+Parent-owned entries live in `achievements/arcade.mjs` under the id `arcade`, which is not a cabinet. Any cabinet's server-verified Ranked run can earn them: `deriveEarnedAchievements` evaluates them after the cabinet's own entries, the settle server records the unlock under the cabinet of that run (`achievement_unlocks.game_id` allows only the three games), and the §6.5 history lists their unlocks from every cabinet (`historyFieldsFor(gameId).shared`), so each is earned once per wallet. Their ids are reserved across the game catalogs (the registry refuses a reuse). Rarity comes from `GET /api/achievements/stats?game=arcade`: the cohort is every cabinet's eligible verified Ranked players and a wallet counts once whichever cabinet recorded the unlock; fewer than twenty players shows `Early`.
+
+| # | Id | Title | Tier | Category | Criterion | Available | NFT proposal | Calibration / source |
+| ---: | --- | --- | --- | --- | --- | --- | --- | --- |
+| 1 | `early-supporter` | Early Supporter | gold | founder | The run's server `verifiedAt` stamp (`new Date(nowMs).toISOString()` in `server/verify/verified-run.mjs`) is before `EARLY_SUPPORTER_CUTOFF_ISO`; any cabinet | yes | no | Owner-approved recognition (2.0 plan). The cutoff `2026-10-31T00:00:00Z` is a **placeholder**: the 2.0 release commit fixes the real date. Badge art is a labelled placeholder (the Cabinet Pioneer badge). |
+
+## Chikun's Escape (41)
+
+The tiers are 14 bronze, 11 silver, 9 gold and 7 platinum (row 41, the 2.0 completion trophy, is unavailable). "Harness" is the harness JSON and "skim" is the near-miss-chasing sample. Region `i` counts as reached when the run passes an obstacle in it, or finishes a loop.
 
 | # | Id | Title | Tier | Category | Criterion | Available | NFT proposal | Calibration / source |
 | ---: | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -231,10 +242,11 @@ The tiers are 14 bronze, 12 silver, 9 gold and 5 platinum. "Harness" is the harn
 | 38 | `chikun-coins-375` | Golden Hoard | platinum | coins | `coinsCollected ≥ 375` | yes | **yes** (phase 2) | Harness exceptional p90 367 (p99 418) |
 | 39 | `chikun-flawless-20` | Flawless Flyer | platinum | flawless | `flawlessRegions ≥ 20` | yes | **yes** (phase 2) | Harness exceptional p90 19 (p99 22) |
 | 40 | `chikun-combo-40` | Combo Legend | platinum | combo | `bestCombo ≥ 40` | yes | **yes** (phase 2) | Skim exceptional p90 39.1 (harness exceptional p90 17) |
+| 41 | `chikun-escape-complete` | Escape Complete | platinum | escape | Intended: Escaped for good: reached the end of the course in one Ranked run. | **no**: `statsFromChikunResult` records no course finish; the course loops, its terminal reasons are crashes or the flap limit, and a finished loop (`laps ≥ 1`) is already `chikun-loop-1`. Needs an `escaped` terminal state in the replayed result. | no | 2.0 completion trophy, unavailable. The owner may instead designate a loop count; that would duplicate `chikun-loop-1`/`chikun-loop-2` |
 
-## STACKED (40)
+## STACKED (41)
 
-The tiers are 14 bronze, 12 silver, 9 gold and 5 platinum. "Soak" is the throttled soak-pilot sample and "medal" is the Free medal order. The criteria read only the result tuple.
+The tiers are 14 bronze, 12 silver, 9 gold, 5 platinum and 1 mythic (row 41, the 2.0 completion trophy). "Soak" is the throttled soak-pilot sample and "medal" is the Free medal order. The criteria read only the result tuple.
 
 | # | Id | Title | Tier | Category | Criterion | Available | NFT proposal | Calibration / source |
 | ---: | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -278,6 +290,7 @@ The tiers are 14 bronze, 12 silver, 9 gold and 5 platinum. "Soak" is the throttl
 | 38 | `stacked-score-4250k` | Whale Stack | platinum | score | `score ≥ 4,250,000` | yes | **yes** (phase 2) | Soak exceptional p90 4.11M (p99 4.33M) |
 | 39 | `stacked-garbage-100` | Garbage Collector | platinum | garbage | `garbageRowsReceived ≥ 100` | yes | **yes** (phase 2) | Soak exceptional p90 92.3 (p99 115) |
 | 40 | `stacked-b2b-streak-10` | Unbroken Chain | platinum | back-to-back | `maxBackToBack ≥ 10` | yes | **yes** (phase 2) | Medal `b2b-10` "Difficulty Adjustment" (15th of 16, the hardest skill medal); soak max 2 |
+| 41 | `stacked-final-zone` | End of the Chain | mythic | zone | `zone ≥ 5` in one run | yes | **yes** (2.0 trophy) | 2.0 completion trophy: STACKED is endless, so completion is the last zone the simulation defines (`zoneForTick` index 5 from tick 90,000, 25 minutes; the Free medal `zone-6` "Full Chain" names it one-based). The soak pilot never reaches it (exceptional p99 17.03 min, zone 3): the owner may lower it to zone 4 (18 min) |
 
 ## NFT proposal (phase 2, not defined on chain)
 
@@ -288,6 +301,7 @@ The tiers are 14 bronze, 12 silver, 9 gold and 5 platinum. "Soak" is the throttl
 | Chikun's Escape | `chikun-survive-15m`, `chikun-forks-150`, `chikun-coins-375`, `chikun-flawless-20`, `chikun-combo-40` | Platinum; single-run stats of a server-replayed v6 run, each at or above the exceptional p90 |
 | STACKED | `stacked-lines-1000`, `stacked-survive-17m`, `stacked-score-4250k`, `stacked-garbage-100`, `stacked-b2b-streak-10` | Platinum; the stats come from the server-replayed result tuple |
 | Hard Money Heroes | `two-hundred-ranked-runs`, `two-fifty-ranked-runs`, `arcade-legend-500` | Mythic; they depend only on verified runs the server counts itself, not on anything the client reports |
+| 2.0 trophies (September 30) | `full-roster-run`, `boss-rush-fifty` (HMH, mythic); `stacked-final-zone` (STACKED, mythic) | Owner-approved package. The HMH pair rest on plausibility-checked boss facts (schema-7 boss rows, one Liquidator per run), a departure from the run-total rule above that the integration owner should confirm. `world-escape` and `chikun-escape-complete` are the unavailable completion trophies |
 
 ## Metadata and badges
 

@@ -377,7 +377,8 @@ export function createCatalogDouble({ extraNft = 0 } = {}) {
     historyFieldsFor: (gameId) => {
       calls.historyFieldsFor += 1;
       catalogFor(gameId);
-      return gameId === 'chikun' ? { sum: ['forksPassed'], max: ['score'] } : { sum: [], max: ['score'] };
+      // `shared`: the parent-owned ids the real registry lists (achievements/arcade.mjs); this double owns none.
+      return gameId === 'chikun' ? { sum: ['forksPassed'], max: ['score'], shared: [] } : { sum: [], max: ['score'], shared: [] };
     },
     deriveEarnedAchievements: (gameId, verifiedRun, history) => {
       calls.deriveEarnedAchievements += 1;

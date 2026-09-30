@@ -172,7 +172,7 @@ test('llms.txt carries a Ranked summary and the guide URL', () => {
   assert.ok(section, 'a How Ranked works section');
   for (const line of [RANKED_WORDING.price, RANKED_WORDING.faucet, RANKED_WORDING.free, RANKED_WORDING.proof, RANKED_WORDING.value]) assert.ok(section.includes(line), line);
   assert.match(section, /split 85% to the game's developer and 15% to the arcade/);
-  assert.match(section, /124 achievements \(Hard Money Heroes 44, Chikun's Escape 40, STACKED 40\)/);
+  assert.match(section, /127 achievements \(Hard Money Heroes 46, Chikun's Escape 40, STACKED 41\)/);
   assert.doesNotMatch(llms, /jackpot/i);
   assert.doesNotMatch(previewPages['llms.txt'], /## How Ranked works|0\.012/);
 });

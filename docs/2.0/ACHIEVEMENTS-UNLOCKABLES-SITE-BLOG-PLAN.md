@@ -61,6 +61,80 @@ work; the two-day goal is not evidence of completion. Progress is tracked by
 checked slices, not a percentage.
 
 
+## Rewards lane status (September 30, `claude/200-rewards`)
+
+Source-checked only: no build, browser run, deployment or physical-device
+check is claimed for these items, and no real wallet has earned anything.
+
+- **Early Supporter badge — implemented, source-checked.** `early-supporter`
+  (gold, category `founder`) is a parent-owned entry in the new
+  `apps/portal/src/achievements/arcade.mjs` catalog (`gameId` `arcade`, not a
+  cabinet). Criterion: the run's server `verifiedAt` stamp is before
+  `EARLY_SUPPORTER_CUTOFF_ISO`, in any cabinet. **The cutoff
+  `2026-10-31T00:00:00Z` is a placeholder; the 2.0 release commit must fix the
+  real date.** Earning goes only through the existing server derivation
+  (`deriveEarnedAchievements`, after the cabinet's own entries); the unlock is
+  recorded under the cabinet of the qualifying run, the §6.5 history carries
+  parent-owned unlocks from every cabinet, so it is earned once per wallet.
+  Rarity: `GET /api/achievements/stats?game=arcade` counts every cabinet's
+  eligible players and each wallet once; below twenty players it stays
+  `Early`. The profile collection gains a "Lester's Arcade" section. Badge art
+  is a labelled placeholder (the Cabinet Pioneer badge). Tier `gold` is a
+  lane judgment pending the badge theme.
+- **Optional gyro tilt, off by default — implemented, source-checked.** The
+  focused badge (`achievements/detail-view.mjs`) offers a "Device tilt" button
+  only where `DeviceOrientationEvent` exists. Off unless the player opts in; the
+  preference is local (`lesters-arcade:achievement-detail:gyro`, guarded reads
+  and writes). Enabling from the button calls
+  `DeviceOrientationEvent.requestPermission()` where it exists (iOS), and
+  anything but `granted` leaves it off silently; a persisted preference
+  attaches on open without a prompt. Orientation maps through `gyroTilt` to the
+  same bounded 35-degree tilt as a drag, baselined on the first sample; input
+  is ignored under reduced motion, during a drag and while the dialog is
+  closed. Five source tests cover the mapping, bounds, default-off, permission
+  outcomes and reduced motion. No browser or physical-phone run is claimed.
+- **Retained archive-label assertion — root cause fixed at the source.** The
+  portal's global `button { text-transform: uppercase }` (`apps/portal/styles.css`)
+  renders the Locker's `Archived look` control as `ARCHIVED LOOK`, so a browser
+  check reading `innerText` compared the CSS rendering with the source string.
+  `routes/unlockables-panel.mjs` now exports the source labels
+  (`UNLOCKABLES_EQUIP_LABELS`) and `unlockablesLabelMatches(rendered, label)`,
+  a case- and whitespace-insensitive comparison; the source test compares the
+  DOM `textContent` against the exported string and proves the matcher accepts
+  the upper-case rendering. The browser-review harness itself lives outside
+  this repository (the shared Codex workspace `outputs/replacement-rewards-review/`);
+  its archive check must read `textContent` or use the matcher. That browser
+  run has not been repeated here; no other assertion changed.
+- **Trophy criteria audit and catalog entries — implemented, source-checked.**
+  Re-audit: the 13 existing `nft: true` candidates are unchanged (3 HMH run
+  totals, 5 Chikun platinum, 5 STACKED platinum). Added, all with stable ids
+  and criteria from existing server-verified stats:
+  - HMH `full-roster-run` (mythic, boss, trophy): one kill of each schema-7
+    boss row (`killsByRole` for `rug-pull-baron`, `lockkeeper`,
+    `fifty-one-percent-foreman`, `liquidator`) in one run; a schema-6 summary
+    can never earn it.
+  - HMH `boss-rush-fifty` (mythic, boss, trophy): Σ `bossKills ≥ 50`, i.e.
+    fifty Liquidator runs (plausibility caps a run at one).
+  - STACKED `stacked-final-zone` (mythic, zone, trophy): `zone ≥ 5` in one
+    run, the last simulation zone (25 minutes). The soak pilot never reaches
+    it (p99 17.03 min); the owner may lower it to zone 4.
+  - HMH `world-escape` (mythic, level-clear) `available: false`: every verified
+    HMH run must end `defeated` and the ten-area world has no exit; needs an
+    `escaped` end state and world/exit fields in a later run-summary schema.
+  - Chikun `chikun-escape-complete` (platinum, escape) `available: false`:
+    the replayed result records no course finish (the course loops; `laps ≥ 1`
+    is already `chikun-loop-1`); needs an `escaped` terminal state.
+
+  The three available trophies are catalog-only and server-derived (no
+  device-local definition; parity tests exempt them). ERC-721 metadata files
+  were regenerated for them; posters reuse existing badge art as labelled
+  placeholders. No minting, contract or 3D work. Decision for the integration
+  owner: the two HMH trophies rest on plausibility-checked boss facts, unlike
+  the three run-total HMH candidates. The public Ranked facts
+  (`ranked-facts.mjs`: 46 / 40 / 41, 127 in all) and the generated guide,
+  discover pages and `llms.txt` were regenerated to match; the parent-owned
+  Early Supporter badge is not a cabinet entry and is not counted there.
+
 ## G4 replacement package — implementation recommendation (September 30)
 
 The original downloaded reward-definition guide is no longer present. Under the

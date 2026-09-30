@@ -10,15 +10,18 @@ import { CHIKUN_VERTICAL_SLICE_CONFIG } from '../apps/portal/src/chikun-cabinet.
 import { CHIKUN_REGIONS } from '../apps/portal/src/chikun-course-regions.mjs';
 import { FREE_MEDALS } from '../apps/stacked/src/free-medals.mjs';
 import { HMH_RUN_SUMMARY_CATALOGS } from '../sdk/hmh-run-summary-schema.mjs';
+import { HMH_RUN_SUMMARY_CATALOGS_V7 } from '../sdk/hmh-run-summary-schema-v7.mjs';
+import { zoneForTick } from '../apps/portal/src/stacked-sim.mjs';
 import {
-  ACHIEVEMENT_GAME_IDS, achievementById, catalogFor, nftAchievementIds,
+  ACHIEVEMENT_GAME_IDS, ACHIEVEMENT_PARENT_ID, achievementById, catalogFor, nftAchievementIds, parentCatalog,
 } from '../apps/portal/src/achievements/index.mjs';
-import { HMH_FAMILY_IDS, HMH_ROLE_FAMILIES } from '../apps/portal/src/achievements/hmh.mjs';
-import { CHIKUN_REGION_IDS } from '../apps/portal/src/achievements/chikun.mjs';
+import { HMH_2_0_TROPHY_IDS, HMH_BOSS_ROLE_IDS, HMH_FAMILY_IDS, HMH_ROLE_FAMILIES } from '../apps/portal/src/achievements/hmh.mjs';
+import { CHIKUN_2_0_TROPHY_IDS, CHIKUN_REGION_IDS } from '../apps/portal/src/achievements/chikun.mjs';
+import { STACKED_2_0_TROPHY_IDS, STACKED_FINAL_ZONE } from '../apps/portal/src/achievements/stacked.mjs';
 
 const repoRoot = fileURLToPath(new URL('..', import.meta.url));
 const moduleDir = join(repoRoot, 'apps/portal/src/achievements');
-const MODULES = ['index', 'hmh', 'chikun', 'stacked', 'stats', 'metadata', 'entry'].map((name) => join(moduleDir, `${name}.mjs`));
+const MODULES = ['index', 'hmh', 'chikun', 'stacked', 'arcade', 'stats', 'metadata', 'entry'].map((name) => join(moduleDir, `${name}.mjs`));
 const ENTRY_KEYS = ['available', 'category', 'criteria', 'description', 'gameId', 'id', 'image', 'lockedImage', 'nft', 'order', 'progress', 'tier', 'title'];
 const tiersOf = (entries) => entries.reduce((out, entry) => ({ ...out, [entry.tier]: (out[entry.tier] ?? 0) + 1 }), {});
 
@@ -26,21 +29,26 @@ test('catalog sizes, tiers and NFT picks match the owner decisions', () => {
   assert.deepEqual(ACHIEVEMENT_GAME_IDS, ['lester-blaster', 'chikun', 'stacked']);
   assert.ok(Object.isFrozen(ACHIEVEMENT_GAME_IDS));
   const hmh = catalogFor('lester-blaster');
-  assert.equal(hmh.length, 57);
+  assert.equal(hmh.length, 60, '57 legacy ids plus the three 2.0 trophy entries');
   for (const gameId of ['chikun', 'stacked']) {
     const entries = catalogFor(gameId);
-    assert.equal(entries.length, 40, gameId);
+    assert.equal(entries.length, 41, gameId);
     // Owner checkpoint O1 (2026-09-23) re-tiered two Chikun survival entries to match the harness.
-    const spread = gameId === 'chikun' ? { bronze: 14, silver: 11, gold: 9, platinum: 6 } : { bronze: 14, silver: 12, gold: 9, platinum: 5 };
+    // The 2.0 completion trophies add one platinum (Chikun, unavailable) and one mythic (STACKED).
+    const spread = gameId === 'chikun' ? { bronze: 14, silver: 11, gold: 9, platinum: 7 } : { bronze: 14, silver: 12, gold: 9, platinum: 5, mythic: 1 };
     assert.deepEqual(tiersOf(entries), spread, gameId);
-    assert.ok(entries.every((entry) => entry.available), `${gameId} entries are all earnable`);
+    assert.deepEqual(entries.filter((entry) => !entry.available).map((entry) => entry.id), gameId === 'chikun' ? ['chikun-escape-complete'] : [], `${gameId}: only the Chikun completion trophy waits for a stat`);
     const nft = nftAchievementIds(gameId);
-    assert.equal(nft.length, 5, gameId);
+    assert.equal(nft.length, gameId === 'chikun' ? 5 : 6, gameId);
     const platinum = entries.filter((entry) => entry.tier === 'platinum').map((entry) => entry.id);
-    assert.deepEqual(nft, platinum.filter((id) => nft.includes(id)), `${gameId} NFT picks are platinum entries, in catalog order`);
-    assert.deepEqual(platinum.filter((id) => !nft.includes(id)), gameId === 'chikun' ? ['chikun-survive-12m'] : [], `${gameId} platinum entries outside the NFT picks`);
+    assert.deepEqual(nft.filter((id) => platinum.includes(id)), platinum.filter((id) => nft.includes(id)), `${gameId} platinum NFT picks come in catalog order`);
+    assert.deepEqual(nft.filter((id) => !platinum.includes(id)), gameId === 'stacked' ? ['stacked-final-zone'] : [], `${gameId}: the only non-platinum trophy is the STACKED completion trophy (mythic)`);
+    assert.deepEqual(platinum.filter((id) => !nft.includes(id)), gameId === 'chikun' ? ['chikun-survive-12m', 'chikun-escape-complete'] : [], `${gameId} platinum entries outside the NFT picks`);
   }
-  assert.deepEqual(nftAchievementIds('lester-blaster'), ['two-hundred-ranked-runs', 'two-fifty-ranked-runs', 'arcade-legend-500']);
+  assert.deepEqual(CHIKUN_2_0_TROPHY_IDS, ['chikun-escape-complete']);
+  assert.deepEqual(STACKED_2_0_TROPHY_IDS, ['stacked-final-zone']);
+  assert.deepEqual(HMH_2_0_TROPHY_IDS, ['full-roster-run', 'boss-rush-fifty', 'world-escape']);
+  assert.deepEqual(nftAchievementIds('lester-blaster'), ['two-hundred-ranked-runs', 'two-fifty-ranked-runs', 'arcade-legend-500', 'full-roster-run', 'boss-rush-fifty']);
   assert.equal(achievementById('lester-blaster', 'marathon-wallet').nft, false);
   assert.equal(achievementById('lester-blaster', 'perfect-boss-gauntlet').nft, false);
   // Level 2 is not in the reboot: those seven stay unavailable, and at least 44 of the other 50 are earnable.
@@ -50,7 +58,7 @@ test('catalog sizes, tiers and NFT picks match the owner decisions', () => {
   const rest = hmh.filter((entry) => !entry.id.startsWith('l2-'));
   assert.ok(rest.filter((entry) => entry.available).length >= 44, 'at least 44 of the 50 non-Level-2 ids are available');
   assert.deepEqual(rest.filter((entry) => !entry.available).map((entry) => entry.id).sort(), [
-    'all-bosses-scouted', 'lucky-survivor', 'no-damage-10-minutes', 'no-damage-boss', 'perfect-boss-gauntlet', 'speed-clear',
+    'all-bosses-scouted', 'lucky-survivor', 'no-damage-10-minutes', 'no-damage-boss', 'perfect-boss-gauntlet', 'speed-clear', 'world-escape',
   ]);
   // nftAchievementIds hands out a copy; the catalog stays the only source (A20).
   const copy = nftAchievementIds('chikun');
@@ -61,13 +69,17 @@ test('catalog sizes, tiers and NFT picks match the owner decisions', () => {
   assert.equal(achievementById('chikun', 'not-an-id'), null);
 });
 
-test('HMH catalog mirrors ACHIEVEMENT_DEFINITIONS ids, titles and tiers', () => {
+test('HMH catalog mirrors ACHIEVEMENT_DEFINITIONS ids, titles and tiers, then adds the 2.0 trophies', () => {
   const catalog = catalogFor('lester-blaster');
   assert.equal(ACHIEVEMENT_LIST.length, 57);
   assert.deepEqual(
-    catalog.map(({ id, title, tier }) => ({ id, title, tier })),
+    catalog.slice(0, ACHIEVEMENT_LIST.length).map(({ id, title, tier }) => ({ id, title, tier })),
     ACHIEVEMENT_LIST.map(({ id, title, tier }) => ({ id, title, tier })),
   );
+  // The 2.0 trophies are catalog-only and server-derived: no device-local definition.
+  assert.deepEqual(catalog.slice(ACHIEVEMENT_LIST.length).map((entry) => entry.id), [...HMH_2_0_TROPHY_IDS]);
+  for (const id of HMH_2_0_TROPHY_IDS) assert.ok(!ACHIEVEMENT_LIST.some((definition) => definition.id === id), `${id} has no legacy definition`);
+  assert.deepEqual(catalog.slice(ACHIEVEMENT_LIST.length).map((entry) => [entry.tier, entry.nft, entry.available]), [['mythic', true, true], ['mythic', true, true], ['mythic', false, false]]);
   // getaway-clear stays: it is the Lester legacy-migration key in hmh-character-config.mjs.
   assert.match(readFileSync(join(repoRoot, 'apps/portal/src/hmh-character-config.mjs'), 'utf8'), /getaway-clear/);
   assert.ok(achievementById('lester-blaster', 'getaway-clear').available);
@@ -75,7 +87,11 @@ test('HMH catalog mirrors ACHIEVEMENT_DEFINITIONS ids, titles and tiers', () => 
 
 test('every entry is frozen, uniquely identified and image-backed', () => {
   const ids = new Set();
-  for (const gameId of ACHIEVEMENT_GAME_IDS) {
+  // The parent-owned catalog shares the id space: its ids are reserved in every game.
+  assert.equal(ACHIEVEMENT_PARENT_ID, 'arcade');
+  assert.ok(!ACHIEVEMENT_GAME_IDS.includes(ACHIEVEMENT_PARENT_ID), 'the parent catalog is not a cabinet');
+  assert.equal(catalogFor(ACHIEVEMENT_PARENT_ID), parentCatalog());
+  for (const gameId of [...ACHIEVEMENT_GAME_IDS, ACHIEVEMENT_PARENT_ID]) {
     const entries = catalogFor(gameId);
     assert.ok(Object.isFrozen(entries), `${gameId} catalog array is frozen`);
     entries.forEach((entry, index) => {
@@ -106,7 +122,7 @@ test('every entry is frozen, uniquely identified and image-backed', () => {
       assert.doesNotMatch(`${entry.title} ${entry.description}`, /\bnft|soulbound|mint/i, entry.id);
     });
   }
-  assert.equal(ids.size, 137);
+  assert.equal(ids.size, 143);
 
   // Other achievement-like ids players see: STACKED Free medals never share an
   // id with a Ranked entry (a merged profile view would show one as the other).
@@ -128,6 +144,13 @@ test('catalog tables follow the game sources they name', () => {
   assert.deepEqual([...new Set(Object.values(HMH_ROLE_FAMILIES))].sort(), [...HMH_FAMILY_IDS].sort());
   // Weapon ids the HMH criteria name exist in the reboot catalog.
   for (const weaponId of ['hash-rail', 'scatter-shotgun', 'litecoin-knife', 'forked-standard']) assert.ok(HMH_RUN_SUMMARY_CATALOGS.weapons.includes(weaponId), weaponId);
+  // The full-roster trophy names exactly the schema-7 bosses, each an enemy role of that schema.
+  assert.deepEqual([...HMH_BOSS_ROLE_IDS], [...HMH_RUN_SUMMARY_CATALOGS_V7.bosses]);
+  for (const role of HMH_BOSS_ROLE_IDS) assert.ok(HMH_RUN_SUMMARY_CATALOGS_V7.enemyRoles.includes(role), role);
+  // The STACKED completion trophy is the last zone the simulation defines.
+  assert.equal(zoneForTick(90_000), STACKED_FINAL_ZONE);
+  assert.equal(zoneForTick(89_999), STACKED_FINAL_ZONE - 1);
+  assert.equal(zoneForTick(10_000_000), STACKED_FINAL_ZONE, 'no later zone exists');
 });
 
 // Static import graph from every achievements module (acorn), resolved on disk.
@@ -182,7 +205,7 @@ test('catalog modules import without arcade-core or DOM', () => {
   assert.ok(!files.some((file) => file.startsWith('apps/hmh-reboot/')), 'no child runtime modules');
   // The catalog registry itself stays small: index + catalogs + builder only.
   const registry = importGraph([join(moduleDir, 'index.mjs')]);
-  assert.deepEqual([...registry.keys()].map((file) => relative(moduleDir, file).split('\\').join('/')).sort(), ['chikun.mjs', 'entry.mjs', 'hmh.mjs', 'index.mjs', 'stacked.mjs']);
+  assert.deepEqual([...registry.keys()].map((file) => relative(moduleDir, file).split('\\').join('/')).sort(), ['arcade.mjs', 'chikun.mjs', 'entry.mjs', 'hmh.mjs', 'index.mjs', 'stacked.mjs']);
   // The achievements modules themselves: no DOM, clock, randomness, environment or eval.
   for (const file of MODULES) assert.deepEqual(forbiddenGlobals(graph.get(file).ast), [], relative(repoRoot, file));
 });
@@ -227,5 +250,5 @@ test('catalog modules load in plain Node with no flags', () => {
   ].join('\n');
   const result = spawnSync(process.execPath, ['--input-type=module', '-e', script], { cwd: repoRoot, encoding: 'utf8', env: { PATH: process.env.PATH ?? '', SystemRoot: process.env.SystemRoot ?? '' } });
   assert.equal(result.status, 0, result.stderr);
-  assert.deepEqual(JSON.parse(result.stdout), { games: ['lester-blaster', 'chikun', 'stacked'], sizes: [57, 40, 40], stats: 'function', metadata: 'function' });
+  assert.deepEqual(JSON.parse(result.stdout), { games: ['lester-blaster', 'chikun', 'stacked'], sizes: [60, 41, 41], stats: 'function', metadata: 'function' });
 });
