@@ -1,17 +1,25 @@
 # Lester's Arcade 2.0 progress
 
-Updated: 2026-09-30. Current combined checkpoint: eight distinct local HMH area
-layouts are gathered through Woods; optional STACKED tutorial and daily challenge
-are browser-checked; local two-player input is checked in a private two-board
-probe. Final art, roster/animation, remaining game content and device/release
-checks remain open. No 2.0 release is deployed. The earlier kickoff sections below
-are historical observations; later slice entries record subsequent work.
+Updated: 2026-09-30. All ten distinct local HMH greybox layouts are gathered,
+including Bayou and River. Optional STACKED tutorial, daily challenge and playable
+local versus are browser-checked. Versus now includes results/rematch, lifecycle
+cleanup, readable control guides and hollow landing guides. Final art, roster,
+animation, content and device/release checks remain open. No 2.0 release deployed.
+Earlier entries below are historical observations, not current completion claims.
 
-Latest gathered commits: daily `36a775b83`, Fortress `72c789ac0`, Woods `0ef54cdfa`,
-local input `982343e92`. Character's costume shading repair and Bayou water/bridge
-work remain in their owned lanes. Art native A12 completes technically but its
-flat ground and continuous gravel stripe are rejected visually. Do not gather
-those lane ancestors wholesale or describe their private assets as accepted.
+Latest gathered milestones: local versus `3e3d57eb0`, Bayou `ba3428bf8`, River
+`32102bf96`, area-status correction `e74f81245`, ghost polish `dfd3d2b9b`.
+Combined world/versus checks passed260; later ghost polish passed163 focused,
+3 exact isolated, fresh build and17 actual Chrome cases. Initial/shared budgets
+remain HMH1,039,992B and STACKED580,861B. Full release gate remains open.
+
+Character's private tangent repair `7b431ee56` passes custody/30-pose checks.
+Private boss desktop correctness now passes animation/state/evidence/context
+recovery; phone framing is still under correction. Current rear-facing narrow
+boss art is unaccepted. Art A13 completes technically but mottled ground remains
+rejected; A14 farmhouse context is being corrected against actual saved object
+identity. These private lane assets are not admitted to runtime; do not gather
+lane histories wholesale. W3a legacy map-context compatibility is in progress.
 
 ## Authority and continuation
 
