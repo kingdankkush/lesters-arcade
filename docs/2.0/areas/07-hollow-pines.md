@@ -6,7 +6,7 @@ Status: local Pines W2g geometry/nav/native-browser checkpoint passes; owner pla
 
 **Landmark.** One giant dead tree above clustered cemetery stones, with restrained lanterns marking paths.
 
-**Routes in and out.** Darker trail from Hashwood River plus a second forest route to Rugpull Woods. This corrects the handoff sketch’s single connection and satisfies the two-entrance rule. Both routes need real nav validation; this document is topology intent only.
+**Routes in and out.** Darker trail from Hashwood River plus a second forest route to Rugpull Woods. This corrects the handoff sketch’s single connection and satisfies the two-entrance rule. Both connections pass the local greybox nav checks; official-map integration and whole-world owner playtest remain open.
 
 **Objective staging.** Stage a cemetery objective at a recognisable maintenance or burial structure with a clear approach. Fog and lanterns reinforce the destination without introducing a gameplay visibility radius change.
 

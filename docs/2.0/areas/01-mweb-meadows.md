@@ -1,6 +1,6 @@
 # MWEB Meadows — area brief draft
 
-Status: preparatory layout intent; no geometry/nav/playtest/art acceptance yet. Part of the continuous 20,000 × 14,000 world. See [brief index](INDEX.md) for shared scales, authorisation and gates.
+Status: local Meadows W2b geometry/nav/native-browser checkpoint passes; owner playtest, full area design and final art acceptance remain open. Part of the continuous 20,000 × 14,000 world. See [brief index](INDEX.md) for shared scales, authorisation and gates.
 
 **Story and flow.** The welcoming edge of a suburb where a maintained road gives way to neglected gardens. The first route should look safe and understandable before enemies establish the threat.
 

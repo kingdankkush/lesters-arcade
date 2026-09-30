@@ -1,6 +1,6 @@
 # HMH 2.0 — preparatory area briefs
 
-Draft September 29, 2026. These are level-design intentions for the owner's ten-area brief, not a built map, layout-check pass or playable-greybox approval. W0 browser/phone streaming evidence and W1’s actual nav checker remain dependencies. W2 must add concrete geometry, measured routes, objective/arena identifiers and playable links, then the owner plays the complete greybox before area art.
+Briefs drafted September 29 and reconciled September 30, 2026. All ten areas now have distinct authored geometry, measured routes, staged objective/arena identifiers and playable links in the private local greybox; the checkpoint below records its layout and browser evidence. The owner still needs to play and approve the complete greybox before production area art. Official gameplay/verifier integration, whole-world streaming and physical-phone performance remain open.
 
 Design scales from the brief: areas about 4,000–5,000 units across; open arenas 1,800–2,400; passages 300–600; roads 10–25 seconds at the handoff’s nominal 240 units/second. These are targets, not measured current-hero timings. W1/W2 report actual nav path lengths, spawn distances, sightlines, 45–55% walkability, every area/secret reachable, exact perimeter protection, and border gate/full-rebuild parity. Typical 4–6 area routes are a playtest/pacing objective, not a rule imposed by these pages.
 

@@ -50,6 +50,6 @@ Future terrain and prop placement should reinforce those purposes:
 Local source and browser checks pass; placeholder art remains. Camps do not yet clear, spawn
 patrols, grant rewards or trigger ambushes. The footprint and global walkability
 limits remain unchanged. Owner playtest, full area design and final art remain
-open; Bayou and River still use template geometry.
+open. Bayou and River now have their own authored local checkpoints, W2j and W2k; their final art and official gameplay remain open.
 
 See [W2i evidence and limits](../slices/WORLD-W2I-WOODS.md) for the actual checks.

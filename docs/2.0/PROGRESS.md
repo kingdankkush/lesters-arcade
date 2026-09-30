@@ -832,3 +832,12 @@ bundle contains all ten areas. See [W2k evidence](slices/WORLD-W2K-RIVER.md)
 and [River brief](areas/06-hashwood-river.md). Next world gates are owner
 greybox playtest, preview readability polish, approved production art and
 separately reviewed/versioned official-map integration.
+
+## World brief status reconciliation
+
+Updated the area index and Meadows, Pines and Woods status sentences to match
+the completed all-ten local greybox checkpoint. Removed stale claims that
+Meadows had no geometry, Pines connections were unvalidated and Bayou/River
+still used templates. This is a documentation correction against existing
+source/evidence; no new test, whole-map approval, final-art or phone claim.
+The shared ten-area playtest sheet points to the final River review bundle.
