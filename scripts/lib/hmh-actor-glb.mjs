@@ -6,7 +6,7 @@ const components = { SCALAR: 1, VEC2: 2, VEC3: 3, VEC4: 4, MAT4: 16 };
 const fail = message => { throw new Error(message); };
 const integer = (value, minimum = 0) => Number.isSafeInteger(value) && value >= minimum;
 
-export function inspectActorGlb(bytes, { requiredClips = [] } = {}) {
+export function inspectActorGlb(bytes, { requiredClips = [], includeDrawInventory = false } = {}) {
   if (!Buffer.isBuffer(bytes) || bytes.length < 20) fail('truncated GLB');
   if (bytes.readUInt32LE(0) !== 0x46546c67 || bytes.readUInt32LE(4) !== 2) fail('GLB v2 required');
   if (bytes.readUInt32LE(8) !== bytes.length) fail('GLB length mismatch');
@@ -51,6 +51,8 @@ export function inspectActorGlb(bytes, { requiredClips = [] } = {}) {
   // Validate even unused accessors so a corrupt exporter cannot hide bad ranges.
   for (let i = 0; i < (json.accessors?.length ?? 0); i++) accessor(i);
   let vertices = 0, triangles = 0, skinnedMeshes = 0;
+  const primitiveInventory = [], usedMaterials = new Set();
+  let weightedVertices = 0, blendedVertices = 0, maximumNonzeroInfluences = 0;
   const min = [Infinity, Infinity, Infinity], max = [-Infinity, -Infinity, -Infinity];
   for (const node of json.nodes ?? []) {
     if (node.mesh === undefined) continue;
@@ -61,6 +63,10 @@ export function inspectActorGlb(bytes, { requiredClips = [] } = {}) {
     if (!json.meshes?.[node.mesh]?.primitives?.length) fail('actor mesh primitives missing');
     for (const p of json.meshes?.[node.mesh]?.primitives ?? []) {
       if ((p.mode ?? 4) !== 4) fail('triangle geometry required');
+      if (includeDrawInventory) {
+        if (!integer(p.material) || !json.materials?.[p.material]) fail('primitive material binding missing');
+        usedMaterials.add(p.material);
+      }
       const position = accessor(p.attributes?.POSITION), weights = accessor(p.attributes?.WEIGHTS_0);
       const joints = accessor(p.attributes?.JOINTS_0);
       if (position.width !== 3 || weights.width !== 4 || joints.width !== 4 || weights.count !== position.count || joints.count !== position.count) fail('skin attribute count');
@@ -74,14 +80,17 @@ export function inspectActorGlb(bytes, { requiredClips = [] } = {}) {
         if (!Number.isInteger(index) || index < 0 || index >= position.count) fail('geometry index out of range');
       }
       if (count % 3) fail('triangle index count'); triangles += count / 3;
+      if (includeDrawInventory) primitiveInventory.push({ nodeName: node.name ?? '', material: p.material,
+        vertices: position.count, triangles: count / 3, indexCount: count, joints: skin.joints.length });
       for (let row = 0; row < position.count; row++) {
-        let sum = 0;
+        let sum = 0, nonzero = 0;
         for (let c = 0; c < 4; c++) {
           const w = weights.value(row, c), joint = joints.value(row, c);
           if (!Number.isInteger(joint) || joint >= skin.joints.length) fail('joint out of range');
-          if (!Number.isFinite(w) || w < 0 || w > 1) fail('invalid weights'); sum += w;
+          if (!Number.isFinite(w) || w < 0 || w > 1) fail('invalid weights'); sum += w; if (w > 0) nonzero++;
         }
         if (Math.abs(sum - 1) > 0.002) fail('weights must be normalized');
+        if (includeDrawInventory) { weightedVertices++; if (nonzero > 1) blendedVertices++; maximumNonzeroInfluences = Math.max(maximumNonzeroInfluences, nonzero); }
         for (let c = 0; c < 3; c++) { const v = position.value(row, c); if (!Number.isFinite(v)) fail('non-finite geometry'); min[c] = Math.min(min[c], v); max[c] = Math.max(max[c], v); }
       }
     }
@@ -125,9 +134,24 @@ export function inspectActorGlb(bytes, { requiredClips = [] } = {}) {
     if (!dimensions?.width || !dimensions.height) fail('embedded image dimensions');
     return { name: image.name ?? '', ...dimensions, bytes: view.byteLength };
   });
-  return { bytes: bytes.length, vertices, triangles, skinnedMeshes,
+  const receipt = { bytes: bytes.length, vertices, triangles, skinnedMeshes,
     joints: new Set((json.skins ?? []).flatMap(skin => skin.joints)).size,
     clips, bounds: { min, max }, embeddedImages: images.length, images,
     textureBytesRgba8: images.reduce((sum, image) => sum + estimateTextureBytes(image), 0),
     textureBytesRgba8Mipmaps: images.reduce((sum, image) => sum + estimateTextureBytes({ ...image, mipmaps: true }), 0) };
+  if (includeDrawInventory) {
+    for (const texture of json.textures ?? []) if (!integer(texture.source) || !images[texture.source]) fail('texture image binding missing');
+    for (const material of json.materials ?? []) for (const info of [material.pbrMetallicRoughness?.baseColorTexture,
+      material.pbrMetallicRoughness?.metallicRoughnessTexture, material.normalTexture, material.emissiveTexture, material.occlusionTexture]) {
+      if (info !== undefined && (!integer(info.index) || !json.textures?.[info.index])) fail('material texture binding missing');
+    }
+    receipt.drawInventory = { nodes: json.nodes.length, skins: json.skins.length, materials: json.materials?.length ?? 0,
+      usedMaterials: [...usedMaterials].sort((a,b) => a-b).map(index => ({ index, name: json.materials[index].name ?? '' })),
+      primitives: primitiveInventory, textures: json.textures?.length ?? 0, images: images.length,
+      weightedVertices, blendedVertices, maximumNonzeroInfluences, indexCount: primitiveInventory.reduce((sum,p) => sum+p.indexCount,0),
+      jointMatrixFloatsPerPose: (json.skins ?? []).reduce((sum,skin) => sum+skin.joints.length*16,0),
+      observedGpuDrawCalls: null, observedPoseUpdates: null,
+      scope: 'offline asset counts; actual visible draws, GPU invocations and update cadence require runtime instrumentation' };
+  }
+  return receipt;
 }

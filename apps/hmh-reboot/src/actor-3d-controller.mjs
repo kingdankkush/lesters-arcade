@@ -1,6 +1,7 @@
 // Default-off quality-bounded actors. Owns presentation displays and visibility
 // only; its backend receives detached frozen projections, never simulation.
 import { createActor3dProjection, createActor3dPilotSession, createLiquidator3dEntries } from './actor-3d-projection.mjs';
+import { HERO_ACTOR_IDS, createIdleFidgetPicker, heroClipTime, heroHasClip } from './actor-3d-clips.mjs';
 
 export const ACTOR3D_ENEMY_IDS = Object.freeze(['bagholder-rusher', 'forkrunner', 'liquidator-agent', 'whale-enforcer', 'gas-bomber', 'validator-cultist']);
 
@@ -51,12 +52,14 @@ function supported(renderer, canvas) {
 export function createActor3dPresentationEntries(hero, enemies, boss = null, maxActors = ACTOR3D_QUALITY_LIMITS.medium, focus = hero) {
   actorLimit(maxActors);
   const entries = [], pixelsPerMetre = Number.isFinite(hero?.bodyHeight) && hero.bodyHeight > 0 ? hero.bodyHeight / 2.1 : 40;
-  if (['lit-commando', 'lilly', 'lit-valkyrie', 'lester-original'].includes(hero?.actorId) && hero.weaponId === 'coin-blaster' && hero.action !== 'interact') {
-    const clip = hero.action === 'aim' && hero.moving ? 'run' : hero.action;
-    const loop = ['idle', 'run', 'aim'].includes(clip), duration = { 'pistol-fire': 12, hurt: 12, melee: 20, grenade: 24, dash: 18, death: 60 }[clip] ?? 60;
+  if (HERO_ACTOR_IDS.includes(hero?.actorId) && hero.weaponId === 'coin-blaster' && hero.action !== 'interact') {
+    // Existing states map exactly as before; a named library clip (cover, traversal,
+    // fidget...) is selected only when it exists for this hero and carries its own tick.
+    let clip = hero.action === 'aim' && hero.moving ? 'run' : hero.action, tick = hero.actionTick;
+    if (heroHasClip(hero.actorId, hero.clip) && Number.isFinite(hero.clipTick)) { clip = hero.clip; tick = hero.clipTick; }
     entries.push({ descriptor: { id: 'hero', actorId: hero.actorId, x: hero.x, y: hero.y, z: hero.z, heading: hero.heading,
       bodyTint: hero.bodyTint, weaponTint: hero.weaponTint,
-      clip, clipTimeSeconds: loop ? Math.max(0, hero.actionTick % 60) / 60 : Math.min(1, Math.max(0, hero.actionTick) / duration), pixelsPerMetre }, originals: hero.originals });
+      clip, clipTimeSeconds: heroClipTime(clip, tick), pixelsPerMetre }, originals: hero.originals });
   }
   entries.push(...createLiquidator3dEntries(boss));
   const originX = Number.isFinite(focus?.x) ? focus.x : 0, originY = Number.isFinite(focus?.y) ? focus.y : 0;
@@ -77,10 +80,14 @@ export function createActor3dPresentationEntries(hero, enemies, boss = null, max
 }
 
 export function createActor3dPilotController({ renderer, canvas, qualityTier = 'medium', heroActorId = 'lit-commando', attachDisplay = () => {}, onTelemetry = () => {},
+  fidgetPicker = null, presentationRandom = undefined,
   backendFactory = options => import('./actor-3d-pixi.mjs').then(module => module.createActor3dPixiBackend({ renderer, ...options })) } = {}) {
   const tier = Object.hasOwn(ACTOR3D_QUALITY_LIMITS, qualityTier) ? qualityTier : 'medium';
   const maxActors = ACTOR3D_QUALITY_LIMITS[tier];
-  const selectedHero = ['lit-commando', 'lilly', 'lit-valkyrie', 'lester-original'].includes(heroActorId) ? heroActorId : null;
+  const selectedHero = HERO_ACTOR_IDS.includes(heroActorId) ? heroActorId : null;
+  // Idle fidgets are chosen by a presentation hash after 4 s of standing still and
+  // cancelled the instant the hero does anything else. Never simulation RNG.
+  const fidgets = fidgetPicker ?? createIdleFidgetPicker({ actorId: selectedHero, ...(presentationRandom ? { random: presentationRandom } : {}) });
   const abort = new AbortController();
   const hidden = new Map(); let disposed = false, backend = null;
   const restore = () => { for (const [display, record] of hidden) if (!display.destroyed) display.renderable = record.value; hidden.clear(); };
@@ -107,8 +114,11 @@ export function createActor3dPilotController({ renderer, canvas, qualityTier = '
       } catch { session.handleFailure(); return false; }
     },
     updateGame(hero, enemies, camera, viewport, boss = null) {
-      try { return controller.update(createActor3dPresentationEntries(hero, enemies, boss, maxActors, hero ?? camera).filter(entry => entry.descriptor.id !== 'hero' || entry.descriptor.actorId === selectedHero), camera, viewport); }
-      catch { restore(); session.handleFailure(); return false; }
+      try {
+        const fidget = fidgets.observe({ tick: hero?.actionTick, idle: hero?.actorId === selectedHero && hero.action === 'idle' && !hero.moving && hero.clip === undefined });
+        const presented = fidget ? { ...hero, clip: fidget.clip, clipTick: fidget.tick } : hero;
+        return controller.update(createActor3dPresentationEntries(presented, enemies, boss, maxActors, hero ?? camera).filter(entry => entry.descriptor.id !== 'hero' || entry.descriptor.actorId === selectedHero), camera, viewport);
+      } catch { restore(); session.handleFailure(); return false; }
     },
     dispose() {
       if (disposed) return; disposed = true; abort.abort(); restore(); session.dispose(); canvas?.removeEventListener('webglcontextlost', lost);

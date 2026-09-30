@@ -1,7 +1,7 @@
-"""Pure, source-safe output ownership for the two-actor GLB pilot."""
+"""Pure, source-safe output ownership for the pilot and offline boss export."""
 from pathlib import Path
 
-ACTOR_IDS = ("lit-commando", "bagholder-rusher")
+ACTOR_IDS = ("lit-commando", "bagholder-rusher", "the-liquidator", "lilly", "lit-valkyrie", "lester-original", "forkrunner", "liquidator-agent", "whale-enforcer", "gas-bomber", "validator-cultist")
 
 
 def validate_pilot_output(root, actor_id, mode, output):

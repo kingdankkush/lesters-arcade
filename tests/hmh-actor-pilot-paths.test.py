@@ -18,7 +18,7 @@ class PilotPathTests(unittest.TestCase):
         self.assertIsNotNone(paths)
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp).resolve()
-            for actor in ["lit-commando", "bagholder-rusher"]:
+            for actor in ["lit-commando", "bagholder-rusher", "lilly", "lit-valkyrie", "lester-original", "forkrunner", "liquidator-agent", "whale-enforcer", "gas-bomber", "validator-cultist"]:
                 for mode, rel in [("inspect", f".tmp/hmh-actor-3d-pilot/{actor}-inspection.json"),
                                   ("verify", f".tmp/hmh-actor-3d-pilot/{actor}-reimport"),
                                   ("export", f"apps/portal/assets/generated/hmh-actor-3d-pilot/{actor}.glb")]:

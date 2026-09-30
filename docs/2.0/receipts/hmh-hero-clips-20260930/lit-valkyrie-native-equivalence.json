@@ -1,0 +1,103 @@
+{
+  "schema": 1,
+  "actorId": "lit-valkyrie",
+  "glbSha256": "f083aad5501e18a85b7e5dd6b8407aa35da4d9954dedf66af4bffab0f1c27548",
+  "sourceSha256": "f090f2e2a387f8ee3c2666bed1af22344f6ec82b1695bc62f1d18f1cfb8268ec",
+  "method": "native per-frame pose basis re-expressed as library keys, baked as rest\u2218basis, compared with the committed samplers",
+  "tolerance": 1e-05,
+  "maxAbsErrorOverall": 7.785752474953611e-07,
+  "passed": true,
+  "clips": [
+    {
+      "clip": "idle",
+      "frames": 25,
+      "maxAbsError": {
+        "translation": 3.8743019104003906e-07,
+        "rotation": 5.039306738563454e-08,
+        "scale": 2.980232238769531e-07
+      },
+      "withinTolerance": true
+    },
+    {
+      "clip": "run",
+      "frames": 25,
+      "maxAbsError": {
+        "translation": 4.172325134277344e-07,
+        "rotation": 1.3009917487760703e-07,
+        "scale": 2.980232238769531e-07
+      },
+      "withinTolerance": true
+    },
+    {
+      "clip": "aim",
+      "frames": 25,
+      "maxAbsError": {
+        "translation": 4.023313522338867e-07,
+        "rotation": 2.0396805361366788e-07,
+        "scale": 2.980232238769531e-07
+      },
+      "withinTolerance": true
+    },
+    {
+      "clip": "pistol-fire",
+      "frames": 25,
+      "maxAbsError": {
+        "translation": 4.3213367462158203e-07,
+        "rotation": 1.4423541122576822e-07,
+        "scale": 3.5762786865234375e-07
+      },
+      "withinTolerance": true
+    },
+    {
+      "clip": "hurt",
+      "frames": 25,
+      "maxAbsError": {
+        "translation": 3.8743019104003906e-07,
+        "rotation": 1.2956009790010548e-07,
+        "scale": 3.5762786865234375e-07
+      },
+      "withinTolerance": true
+    },
+    {
+      "clip": "dash",
+      "frames": 25,
+      "maxAbsError": {
+        "translation": 3.8743019104003906e-07,
+        "rotation": 1.8898476961126676e-07,
+        "scale": 2.980232238769531e-07
+      },
+      "withinTolerance": true
+    },
+    {
+      "clip": "melee",
+      "frames": 25,
+      "maxAbsError": {
+        "translation": 4.3222408052656647e-07,
+        "rotation": 7.785752474953611e-07,
+        "scale": 2.980232238769531e-07
+      },
+      "withinTolerance": true
+    },
+    {
+      "clip": "grenade",
+      "frames": 25,
+      "maxAbsError": {
+        "translation": 5.364418029785156e-07,
+        "rotation": 5.032986277742069e-07,
+        "scale": 3.5762786865234375e-07
+      },
+      "withinTolerance": true
+    },
+    {
+      "clip": "death",
+      "frames": 25,
+      "maxAbsError": {
+        "translation": 4.470348358154297e-07,
+        "rotation": 1.6380807798394015e-07,
+        "scale": 4.172325134277344e-07
+      },
+      "withinTolerance": true
+    }
+  ],
+  "scope": "proves the library export math equals Blender's export; the shipped native nine clips remain Blender's bytes"
+}

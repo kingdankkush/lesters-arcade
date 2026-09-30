@@ -115,7 +115,7 @@ export function decodeActor3dGlb(bytes) {
     });
     requireValue(duration > 0, 'clip duration'); clips.set(animation.name, { duration, tracks });
   }
-  requireValue(clips.size > 0 && clips.size <= 16, 'bounded clip count');
+  requireValue(clips.size > 0 && clips.size <= 128, 'bounded clip count');
   let pixels = 0;
   requireValue(json.images?.length > 0 && json.images.length <= 12, 'bounded pilot texture count');
   const images = json.images.map(image => {

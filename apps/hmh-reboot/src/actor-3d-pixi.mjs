@@ -4,6 +4,7 @@ import { Bounds, Container, Geometry, GlProgram, Mesh, RenderTexture, Shader, St
 import { decodeActor3dGlb, createActor3dPoseWorkspace, evaluateActor3dPose,
   createActor3dJointBounds, projectActor3dBounds } from './actor-3d-model.mjs';
 import { createActor3dDepthRegistry, ACTOR3D_ENEMY_IDS } from './actor-3d-controller.mjs';
+import { heroClipProp } from './actor-3d-clips.mjs';
 
 const vertex = `#version 300 es
 precision highp float;
@@ -76,9 +77,12 @@ class ActorPrimitive extends Mesh {
 }
 
 export function actor3dPrimitiveVisible(name, clip) {
-  if ((name.includes('Coin Blaster') || /^(Lilly|Lit Valkyrie|Lester Original) \| coin-blaster$/.test(name))) return !['melee', 'grenade', 'death'].includes(clip);
-  if ((name.includes('Litecoin Knife') || /^(Lilly|Lit Valkyrie|Lester Original) \| litecoin-knife$/.test(name))) return clip === 'melee';
-  if (name.includes('Satoshi Frag') || name.includes('Throw Release Palm') || /^(Lilly|Lit Valkyrie|Lester Original) \| satoshi-frag-(held|released)$/.test(name)) return clip === 'grenade';
+  // Which held prop a clip shows comes from the generated clip table; the nine
+  // native clips resolve exactly as before (melee: knife, grenade: frag, death: none).
+  const prop = heroClipProp(clip);
+  if ((name.includes('Coin Blaster') || /^(Lilly|Lit Valkyrie|Lester Original) \| coin-blaster$/.test(name))) return prop === 'blaster';
+  if ((name.includes('Litecoin Knife') || /^(Lilly|Lit Valkyrie|Lester Original) \| litecoin-knife$/.test(name))) return prop === 'knife';
+  if (name.includes('Satoshi Frag') || name.includes('Throw Release Palm') || /^(Lilly|Lit Valkyrie|Lester Original) \| satoshi-frag-(held|released)$/.test(name)) return prop === 'frag';
   return true;
 }
 
