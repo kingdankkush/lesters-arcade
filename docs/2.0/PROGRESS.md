@@ -1062,3 +1062,24 @@ triangle cap. A19 grass-form source checks pass24 plus identical isolated24; nat
 visual review is next. These agent-local studies are not accepted runtime art.
 See [source review and limits](slices/TERRAIN-HOUSE-SOURCE-REVIEW.md). Full completed
 combined release remains authorized only after its required work and checks pass.
+
+## Terrain detail and rejected geometry checkpoint — September 30
+
+Road47 localized bake 01 passed construction but was rejected visually for retained
+slab-rim fragments. Corrected 02 removes that rim, stripe and pothole while retaining
+cracks/aggregate at 128 texels/metre: 224 by 96 RGBA, 42,289 encoded bytes. Original
+source remains exact; both owned native children closed and locks were released.
+Sparse composed placement is next; this is not final art or a runtime texture.
+
+A19 grass is archived by Art as 6e4f1dfdb and remains ARTFAIL despite passing source,
+native and pixel checks. The blades read as paper shards. A20 will change their
+aspect/taper/lean, restore the complete owner farmhouse and try the road detail.
+Character body02 is archived by Character as 2c9d440a5: incomplete numeric evidence,
+real torso regressions and unchanged precision rejection remain recorded. A neutral
+six-image comparison is next. Neither experiment was admitted to the game.
+
+World W3e display-object residency passes 41 source plus identical isolated 41
+checks. Actual walking, display counts and disposal still require its pending
+private browser window and standard visual gate. These changes do not constitute
+texture streaming or physical-phone acceptance. See the updated terrain source
+review for evidence and limits; completed combined release authority is unchanged.

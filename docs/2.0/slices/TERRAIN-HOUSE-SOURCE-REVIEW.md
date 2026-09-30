@@ -18,11 +18,27 @@ Road47 native top views now show the real UV-mapped geometry and surface charact
 One PBR view and one copied-material emission/albedo view were reviewed at their
 original 768-square size. They intentionally use different shading; neither is a
 runtime tile. A source-space patch above the painted stripe and left of the hole
-is a useful candidate: after four-metre horizontal normalization, approximately
-centre (-0.55, 0.7), footprint 1.75 by 1 metres. A 224 by 128 bake would provide the
-draft 128 texels/metre. This crop has not yet been baked or placed. Its edge mask,
-sampling and composed appearance still need review. Preserve quiet path centres;
-do not imply a new step or hazard from the source slab or pothole.
+was baked from its original UV-mapped geometry with copied albedo materials.
+The first 224 by 128 study, centre (-0.55, 0.7), footprint 1.75 by 1 metres,
+passed its technical checks but failed visual review: raised slab-edge fragments
+survived at the top. That rejected result is retained, not overwritten.
+
+The corrected 224 by 96 study moves the centre to (-0.55, 0.55), footprint 1.75
+by 0.75 metres, retaining 128 texels/metre. Original-size inspection confirms
+cracks and aggregate without the source stripe, pothole or raised rim. Encoded
+size is 42,289 bytes; a simple RGBA8 decode is 86,016 bytes before mipmaps, not a
+measured GPU allocation. SHA-256 is
+`c3d8db9ff3047971881bf4eb09aff8663ed71ffbf054a440ac2d5f08d4c76f73`.
+
+This is a private localized detail candidate, not a tile or admitted runtime
+asset. Its smooth elliptical alpha may look stamped when repeated: composition
+and blend remain unapproved. The next study uses sparse placement on the existing
+road only, preserves quiet path centres and introduces no apparent step or hazard.
+The exact source GLB and its geometry remain unchanged. Both native bake children
+closed normally and were independently absent before releasing their owned lock:
+PID13276, 1.644 seconds; PID5940, 1.535 seconds. Producers, receipts, failed visual
+attempt and corrected pixel accounting are archived under
+`docs/2.0/receipts/terrain-road-detail`; original images remain in workspace outputs.
 
 ## Farmhouse findings and correction
 
@@ -70,3 +86,19 @@ A18's calm ground and smoother boundaries are useful but the composed patch stil
 fails art review. Grass geometry, original-house reuse, local road detail and
 readable contacts are active work. Native stills do not certify gameplay framing,
 actor/doorway scale, depth sorting, final art, physical-phone performance, or release.
+
+
+## Grass and character review update
+
+A19 grass passed 24 source checks, the identical isolated 24, native construction
+and pixel checks. It still fails art review: widened, strongly leaning short
+blades read as angular paper shards. No runtime art was admitted. The next study
+uses taller-looking upright tapered blades and radial tufts within the existing
+0.42-metre presentation limit, alongside the complete owner house and road detail.
+
+The character's regional body experiment also remains unaccepted. It improves
+some limb-distance percentiles but worsens torso/body-control shape; its final
+correspondence group failed the unchanged precision check. Complete originals
+were restored. A matched neutral source/baseline/candidate comparison is being
+prepared to assess actual silhouette and shading before choosing another method.
+No numeric failure was waived and no character runtime asset changed.

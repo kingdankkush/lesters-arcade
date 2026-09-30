@@ -1,0 +1,79 @@
+[
+  {
+    "source": "bake-road47-detail.py",
+    "archive": "00-bake-road47-detail.py.gz",
+    "bytes": 6171,
+    "sha256": "52e2b61dcfe8bca52af0a0d1511d35fc16a33e0b84a0ce9b262c7b6c169b3279",
+    "packedBytes": 2531
+  },
+  {
+    "source": "run-road47-detail.mjs",
+    "archive": "01-run-road47-detail.mjs.gz",
+    "bytes": 2936,
+    "sha256": "555ed29d476902bfb4365ee21fa13ec2e76433119cbfc3f86a20d97ea9994f20",
+    "packedBytes": 1351
+  },
+  {
+    "source": "road47-detail-window/report.json",
+    "archive": "02-report.json.gz",
+    "bytes": 4537,
+    "sha256": "008408ebedde9356d37595ff1aa835853a356b75ea7fdccdab02c8d45440f227",
+    "packedBytes": 1485
+  },
+  {
+    "source": "../outputs/hmh-road47-detail-study/report.json",
+    "archive": "03-report.json.gz",
+    "bytes": 899,
+    "sha256": "0633d34c75d406aee327848d0810afd3b7de0c85b54cea20a80ff319c96b22d8",
+    "packedBytes": 553
+  },
+  {
+    "source": "bake-road47-detail-02.py",
+    "archive": "04-bake-road47-detail-02.py.gz",
+    "bytes": 6180,
+    "sha256": "d0d57f74e525a34b37e94c1ac26d115ddbf728f4844ab7fa55e2c28d9bd14851",
+    "packedBytes": 2533
+  },
+  {
+    "source": "run-road47-detail-02.mjs",
+    "archive": "05-run-road47-detail-02.mjs.gz",
+    "bytes": 2945,
+    "sha256": "895645cb009008bc8c7c2cb437503427a40b6d59e8a11d21b4e9c97c41eccfe2",
+    "packedBytes": 1356
+  },
+  {
+    "source": "road47-detail-window-02/report.json",
+    "archive": "06-report.json.gz",
+    "bytes": 4566,
+    "sha256": "8d24be087a0624c891e716db68979eac3fca46794bb625cb9a14aee14592df38",
+    "packedBytes": 1493
+  },
+  {
+    "source": "../outputs/hmh-road47-detail-study-02/report.json",
+    "archive": "07-report.json.gz",
+    "bytes": 905,
+    "sha256": "1b47328711147483490add8712ce64cea5b05405bd07da6dd0a6a05e43c129f6",
+    "packedBytes": 557
+  },
+  {
+    "source": "../outputs/hmh-road47-detail-study-02/pixel-accounting.json",
+    "archive": "08-pixel-accounting.json.gz",
+    "bytes": 476,
+    "sha256": "cbf02345d115a2709eeccf7f2ef20e4afd30460138af1a5861edde3022f2a32b",
+    "packedBytes": 300
+  },
+  {
+    "source": "../outputs/hmh-road47-detail-study-02/README.md",
+    "archive": "09-README.md.gz",
+    "bytes": 1015,
+    "sha256": "164220833effdd734d1823a6bb003110b46074cb77a8416f5335ebb0090033fc",
+    "packedBytes": 655
+  },
+  {
+    "source": "art-a6-owned-native-child.mjs",
+    "archive": "10-art-a6-owned-native-child.mjs.gz",
+    "bytes": 3476,
+    "sha256": "13ca87aa10b07bdbf54ba4dbd41b9ca7fc035c6792d4a7775d946df1c8b34fec",
+    "packedBytes": 1360
+  }
+]
