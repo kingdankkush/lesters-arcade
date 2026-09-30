@@ -16,6 +16,7 @@ const entryUrl = new URL('../apps/hmh-reboot/src/dev/world-v2-local-entry.mjs', 
 const read = file => fs.existsSync(file) ? fs.readFileSync(file, 'utf8') : '';
 const deferred = () => { let resolve, reject; const promise = new Promise((a,b) => { resolve=a; reject=b; }); return { promise, resolve, reject }; };
 const flush = async () => { for (let i=0;i<24;i++) await Promise.resolve(); };
+const residencyModule=await import('../apps/hmh-reboot/src/dev/greybox-prop-residency.mjs').catch(error=>{if(error.code==='ERR_MODULE_NOT_FOUND')return {};throw error;});
 const active = new Set();
 afterEach(() => { for (const f of active) f.close(); active.clear(); });
 
@@ -37,6 +38,8 @@ const vector = () => ({x:0,y:0,set(x,y=x){this.x=x;this.y=y;}});
 class Display extends Element {
   constructor() { super(); this.position=vector(); this.scale=vector(); this.destroyed=false; this.visible=true; this.sortableChildren=false; }
   addChild(...items) { this.append(...items); return items[0]; }
+  getChildIndex(item){return this.children.indexOf(item);}
+  addChildAt(item,index){item.remove();item.parentNode=this;this.children.splice(index,0,item);return item;}
   destroy(options) { this.destroyed=true; if(options?.children)for(const child of this.children)child.destroy?.(options); this.remove(); }
   clear(){return this;} poly(){return this;} fill(){return this;} stroke(){return this;} moveTo(){return this;} lineTo(){return this;} closePath(){return this;}
 }
@@ -49,7 +52,7 @@ function worldFixture() {
       {id:'silver-coast',name:'Silver Coast',center:{x:1500,y:500},bounds:{minX:1000,minY:0,maxX:2000,maxY:1000}},
     ]};
 }
-function fixture({appGate,decodeGate,navGates=[],metadataFailure=null,partialInit=false}={}) {
+function fixture({appGate,decodeGate,navGates=[],metadataFailure=null,partialInit=false,testWorld=worldFixture()}={}) {
   const source=read(sceneUrl); assert.ok(source.includes('export function mountGreyboxPlaytest'), 'actual private Pixi scene required');
   const root=new Element(), stage=new Element(), start=new Element('BUTTON'), pause=new Element('BUTTON'), close=new Element('BUTTON'), inspect=new Element('BUTTON'), select=new Element('SELECT');
   const nodes={'[data-stage]':stage,'[data-start]':start,'[data-pause]':pause,'[data-close]':close,'[data-inspect]':inspect,'[data-area-select]':select,
@@ -60,7 +63,8 @@ function fixture({appGate,decodeGate,navGates=[],metadataFailure=null,partialIni
   root.ownerDocument=document;
   for(const node of Object.values(nodes))node.ownerDocument=document;
   let now=0,nextFrame=0,appDestroys=0,textureCreates=0,textureDestroys=0,draws=0,initDone=false;
-  const frames=new Map(), runtimes=[], images=[];
+  const frames=new Map(), runtimes=[], images=[], graphics=[];
+  class Graphic extends Display { constructor(){super();graphics.push(this);} }
   class Application {
     constructor(){this.stage=new Display();this.canvas=new Element('CANVAS');this.canvas.ownerDocument=document;this.ticker={stop(){}};this.screen={width:1000,height:700};}
     async init(){if(partialInit){initDone=true;this.renderer={type:1,resize(){},render(){draws++;}};}await(appGate?.promise??Promise.resolve()); initDone=true;this.renderer={type:1,resize(){},render(){draws++;}};}
@@ -87,13 +91,14 @@ function fixture({appGate,decodeGate,navGates=[],metadataFailure=null,partialIni
       navigationAt(){return Object.freeze({returnDistance:0});}};
     runtimes.push(runtime);return runtime;
   }
-  const imports={Application,Container:Display,Graphics:Display,Sprite:Display,Texture,Rectangle:class{},
-    createGreyboxWorld:worldFixture,createGreyboxGroundPaint,createWorldV2Geometry,createWorldV2LocalRuntime:createRuntime,
+  const imports={Application,Container:Display,Graphics:Graphic,Sprite:Display,Texture,Rectangle:class{},
+    createGreyboxWorld:()=>testWorld,createGreyboxGroundPaint,createWorldV2Geometry,createWorldV2LocalRuntime:createRuntime,
+    createGreyboxPropResidency:residencyModule.createGreyboxPropResidency,
     InputState,createBrowserInputController,TouchControlState,...projection,createAuthoredGroundQuery,
     PRODUCTION_HERO_ASSETS:{'lit-commando':{actorId:'lit-commando',metadataUrl:'/human.json',imageUrl:'/human.webp'}},PRODUCTION_HERO_RUNTIME_SCALE:.58,
     createProductionHeroAtlasIndex:()=>({}),createProductionHeroDisplay:()=>({container:new Display(),artSource:'packed-textured-blend',applyPose(){}})};
   const allowed=new Set(['pixi.js','./greybox-world-v1.mjs','./greybox-ground-presentation.mjs','../world-v2-geometry.mjs','./world-v2-local-runtime.mjs',
-    '../input.mjs','../touch-controls.mjs','../world-space.mjs','../elevation.mjs','../production-hero-atlas.mjs','../production-hero-assets.mjs']);
+    '../input.mjs','../touch-controls.mjs','../world-space.mjs','../elevation.mjs','../production-hero-atlas.mjs','../production-hero-assets.mjs','./greybox-prop-residency.mjs']);
   const executable=source.replace(/^import\s*\{([^}]+)\}\s*from\s*['"]([^'"]+)['"];?\s*$/gm,(_line,names,specifier)=>{
     assert.ok(allowed.has(specifier),specifier);for(const name of names.split(',').map(x=>x.trim()).filter(Boolean))assert.ok(Object.hasOwn(imports,name),name);return '';
   }).replace('export function mountGreyboxPlaytest','function mountGreyboxPlaytest');
@@ -102,7 +107,7 @@ function fixture({appGate,decodeGate,navGates=[],metadataFailure=null,partialIni
     fetch:async()=>{if(metadataFailure)throw Error(metadataFailure);return {ok:true,json:async()=>({})};},
     requestAnimationFrame:callback=>{const id=++nextFrame;frames.set(id,callback);return id;},cancelAnimationFrame:id=>frames.delete(id),console};
   vm.createContext(context);vm.runInContext(executable,context);const handle=context.mountGreyboxPlaytest(root);
-  const result={root,nodes,window,document,runtimes,images,handle,frames,
+  const result={root,nodes,window,document,runtimes,images,graphics,handle,frames,
     focusToolbar(selector){const node=nodes[selector];node.focus();root.emit('focusin',{target:node});},
     key(code){let stopped=false;const target=document.activeElement??root;root.emit('keydown',{target,code,stopPropagation(){stopped=true;}});if(!stopped)window.emit('keydown',{target,code});},
     async frame(delta=16){now+=delta;const pending=[...frames.values()];frames.clear();for(const callback of pending)callback(now);await flush();},
@@ -168,6 +173,42 @@ test('authored inspection replacement discards a stale pending runtime and rejec
   f.nodes['[data-area-select]'].value='mweb-meadows';f.nodes['[data-inspect]'].emit('click');await flush();stale.resolve();await flush();
   assert.equal(f.runtimes[1].disposed,1);assert.equal(f.handle.snapshot().runtime.actor.x,500);assert.equal(f.handle.snapshot().inspectionJumps,2);
   f.nodes['[data-area-select]'].value='external-position';f.nodes['[data-inspect]'].emit('click');await flush();assert.equal(f.runtimes.length,3);assert.equal(f.handle.snapshot().runtime.actor.x,500);
+});
+
+function residencyWorld(){
+  const base=worldFixture(),bounds={minX:0,minY:0,maxX:12000,maxY:1000};
+  return {...base,bounds,baseSurface:createElevationSurface({id:'floor',area:{type:'rect',...bounds},visibleTerrainId:'floor'}),
+    areas:[base.areas[0],{...base.areas[1],center:{x:10500,y:500},bounds:{minX:10000,minY:0,maxX:12000,maxY:1000}}],
+    pieces:[500,10500].map((x,i)=>({id:`test-prop-${i}`,areaId:base.areas[i].id,kind:'mass',blocker:{},visible:{bounds:{minX:x-20,maxX:x+20,minY:350,maxY:400},height:80}}))};
+}
+test('actual private scene owns only nearby props and releases and recreates exact Graphics on return',async()=>{
+  const f=fixture({testWorld:residencyWorld()});await f.handle.ready;
+  let state=f.handle.snapshot().propResidency;assert.ok(state,'actual scene prop residency observation required');
+  assert.deepEqual(Array.from(state.residentIds),['test-prop-0']);assert.equal(state.liveCount,1);
+  const initial=f.graphics.find(g=>g.label==='local-prop-test-prop-0');assert.ok(initial);
+  f.nodes['[data-area-select]'].value='silver-coast';f.nodes['[data-inspect]'].emit('click');await flush();
+  state=f.handle.snapshot().propResidency;assert.deepEqual(Array.from(state.residentIds),['test-prop-1']);assert.equal(initial.destroyed,true);
+  f.nodes['[data-area-select]'].value='mweb-meadows';f.nodes['[data-inspect]'].emit('click');await flush();
+  state=f.handle.snapshot().propResidency;assert.equal(state.createdCount,3);assert.equal(state.destroyedCount,2);assert.equal(state.peakCount,1);
+  assert.equal(f.graphics.filter(g=>g.label==='local-prop-test-prop-0'&&!g.destroyed).length,1);
+  f.close();state=f.handle.snapshot().propResidency;assert.equal(state.liveCount,0);assert.equal(state.createdCount,state.destroyedCount);
+});
+test('late Pixi readiness after disposal cannot allocate a single prop display',async()=>{
+  const gate=deferred(),f=fixture({appGate:gate,testWorld:residencyWorld()});f.close();gate.resolve();await f.handle.ready;
+  const state=f.handle.snapshot().propResidency;assert.ok(state,'actual scene prop residency observation required');
+  assert.equal(state.disposed,true);assert.equal(state.createdCount,0);assert.equal(state.liveCount,0);
+  assert.equal(f.graphics.filter(g=>String(g.label).startsWith('local-prop-')).length,0);
+});
+test('revisited same-depth props keep authored paint order across a retained long solid',async()=>{
+  const world=residencyWorld();world.pieces.splice(1,0,{id:'retained-solid',areaId:null,kind:'mass',blocker:{},visible:{bounds:{minX:800,maxX:10800,minY:350,maxY:400},height:80}});
+  const f=fixture({testWorld:world});await f.handle.ready;
+  assert.ok(f.handle.snapshot().propResidency,'actual scene prop residency observation required');
+  const retained=f.graphics.find(g=>g.label==='local-prop-retained-solid');assert.ok(retained);
+  f.nodes['[data-area-select]'].value='silver-coast';f.nodes['[data-inspect]'].emit('click');await flush();
+  assert.equal(retained.destroyed,false);f.nodes['[data-area-select]'].value='mweb-meadows';f.nodes['[data-inspect]'].emit('click');await flush();
+  const newNear=f.graphics.filter(g=>g.label==='local-prop-test-prop-0'&&!g.destroyed);assert.equal(newNear.length,1);
+  assert.equal(newNear[0].zIndex,retained.zIndex,'keep exact same ground-depth key');
+  const children=retained.parentNode.children;assert.ok(children.indexOf(newNear[0])<children.indexOf(retained),'authored tie order survives eviction and return');f.close();
 });
 
 function entryFixture({url='http://127.0.0.1:8793/dist/hmh-world-v2-local/index.html?mode=free&world=world-v2-local',embedded=false,load}={}){

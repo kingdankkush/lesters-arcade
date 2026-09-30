@@ -1,6 +1,7 @@
 import { Application, Container, Graphics, Sprite, Texture, Rectangle } from 'pixi.js';
 import { createGreyboxWorld } from './greybox-world-v1.mjs';
 import { createGreyboxGroundPaint } from './greybox-ground-presentation.mjs';
+import { createGreyboxPropResidency } from './greybox-prop-residency.mjs';
 import { createWorldV2Geometry } from '../world-v2-geometry.mjs';
 import { createWorldV2LocalRuntime } from './world-v2-local-runtime.mjs';
 import { InputState, createBrowserInputController } from '../input.mjs';
@@ -21,7 +22,11 @@ export function mountGreyboxPlaytest(root){
   let disposed=false,failure=null,initialized=false,initSettled=false,appDestroyed=false,atlasTexture=null,image=null,hero=null,inputController=null;
   let frameId=null,lastTime=null,generation=0,inspectionJumps=0,renderFrames=0,nativeEvents=0,navWaitMs=null,width=1,height=1,shown=false;
   let camera=null,worldLayer=null,depthLayer=null,visiblePieces=0;
-  const cleanupErrors=[],props=[],app=new Application();
+  const cleanupErrors=[],propOrder=new WeakMap(),app=new Application();
+  const solidPieces=authored.pieces.filter(piece=>piece.blocker),piecesById=new Map(solidPieces.map(piece=>[piece.id,piece]));
+  const propResidency=createGreyboxPropResidency({catalog:solidPieces.map(piece=>({id:piece.id,areaId:piece.areaId??null,
+    bounds:{left:piece.visible.bounds.minX,right:piece.visible.bounds.maxX,top:piece.visible.bounds.minY-piece.visible.height,bottom:piece.visible.bounds.maxY}})),
+    create:drawSolid,setVisible:(graphic,visible)=>{graphic.visible=visible;},destroy:graphic=>{if(!graphic.destroyed)graphic.destroy();}});
   const startedAt=performance.now();
   root.innerHTML='<header class="world-header"><div class="world-title"><strong>HMH · LOCAL FREE WORLD TEST</strong><span>Greybox geometry · No score or rewards</span></div><div class="world-tools"><label>Inspection jump<select data-area-select aria-label="Inspection jump"></select></label><button data-inspect>Inspect</button><button data-start>Begin</button><button data-pause>Pause</button><button data-close>Close</button></div></header><section class="world-stage" data-stage aria-label="Local world"><div class="world-badge"><span data-area-name></span><output data-position></output></div><p class="world-status" data-status role="status" aria-live="polite">Preparing human art and navigation…</p></section><footer class="world-footer"><div class="world-instructions"><b>Walk with WASD / arrows or the movement stick.</b><span>Combat, missions and climbing are staged.</span><small>Inspection jumps are separate from walking. Water and solid walls block movement.</small><output data-nav>Building static return-to-inspection navigation…</output></div><button class="world-stick" data-stick aria-label="Movement stick"><span data-stick-knob></span></button></footer>';
   const stage=root.querySelector('[data-stage]'),start=root.querySelector('[data-start]'),pauseButton=root.querySelector('[data-pause]'),closeButton=root.querySelector('[data-close]');
@@ -51,8 +56,8 @@ export function mountGreyboxPlaytest(root){
     }else if(app.stage&&!app.stage.destroyed)safe(()=>app.stage.destroy({children:true}));
   }
   function dispose(){
-    if(disposed)return;disposed=true;generation++;stopFrame();abort.abort();clearInput('local-world-disposed');
-    safe(()=>inputController?.destroy());inputController=null;runtime.dispose();destroyApp();
+    if(disposed){safe(()=>propResidency.dispose());return;}disposed=true;generation++;stopFrame();abort.abort();clearInput('local-world-disposed');
+    safe(()=>inputController?.destroy());inputController=null;runtime.dispose();safe(()=>propResidency.dispose());destroyApp();
     if(atlasTexture){safe(()=>atlasTexture.destroy(true));atlasTexture=null;}
     if(image){image.removeAttribute('src');image=null;}hero=null;
     for(const button of root.querySelectorAll('button'))button.disabled=true;
@@ -97,6 +102,19 @@ export function mountGreyboxPlaytest(root){
   }
   on(window,'resize',resize);if(window.visualViewport)on(window.visualViewport,'resize',resize);
   const polygon=(graphic,vertices,color,stroke=null)=>{graphic.poly(vertices.flatMap(point=>[point.x,point.y])).fill(color);if(stroke)graphic.stroke({color:stroke,width:2});};
+  function drawSolid(record){
+    const piece=piecesById.get(record.id),b=piece.visible.bounds,vertices=piece.visible.vertices??points({type:'rect',...b}),height=piece.visible.height;
+    const graphic=new Graphics(),roof=vertices.map(point=>({x:point.x,y:point.y-height}));
+    try{
+      for(let i=0;i<vertices.length;i++){const j=(i+1)%vertices.length;polygon(graphic,[vertices[i],vertices[j],roof[j],roof[i]],'#43565a');}
+      polygon(graphic,roof,piece.kind==='cover-short'?'#a0aaa0':'#718582','#b8c8bf');graphic.zIndex=b.maxY;graphic.label=`local-prop-${piece.id}`;propOrder.set(graphic,record.ordinal);
+      // Pixi's stable numeric depth sort otherwise makes eviction/re-entry alter
+      // equal-depth authored overlap. Restore the original tie order on insert.
+      const next=depthLayer.children.find(child=>child.zIndex===b.maxY&&(propOrder.get(child)??Infinity)>record.ordinal);
+      if(next)depthLayer.addChildAt(graphic,depthLayer.getChildIndex(next));else depthLayer.addChild(graphic);
+      return graphic;
+    }catch(error){graphic.destroy();throw error;}
+  }
   function createWorldGraphics(){
     worldLayer=new Container();depthLayer=new Container();depthLayer.sortableChildren=true;app.stage.addChild(worldLayer);
     const ground=new Container();worldLayer.addChild(ground);worldLayer.addChild(depthLayer);
@@ -105,12 +123,6 @@ export function mountGreyboxPlaytest(root){
       const surface=byId.get(command.surfaceId);if(!surface.walkable&&surface.kind!=='water')continue;
       const query=createAuthoredGroundQuery({baseSurface:surface});const graphic=new Graphics();
       polygon(graphic,command.vertices.map(point=>({x:point.x,y:point.y-query(point.x,point.y).groundZ})),command.fill,command.stroke);ground.addChild(graphic);
-    }
-    for(const piece of authored.pieces){
-      if(!piece.blocker)continue;const b=piece.visible.bounds,vertices=piece.visible.vertices??points({type:'rect',...b}),height=piece.visible.height;
-      const graphic=new Graphics(),roof=vertices.map(point=>({x:point.x,y:point.y-height}));
-      for(let i=0;i<vertices.length;i++){const j=(i+1)%vertices.length;polygon(graphic,[vertices[i],vertices[j],roof[j],roof[i]],'#43565a');}
-      polygon(graphic,roof,piece.kind==='cover-short'?'#a0aaa0':'#718582','#b8c8bf');graphic.zIndex=b.maxY;depthLayer.addChild(graphic);props.push({graphic,bounds:b,height});
     }
     depthLayer.addChild(hero.container);
   }
@@ -123,8 +135,7 @@ export function mountGreyboxPlaytest(root){
     const origin=worldToScreen({x:0,y:0,z:0},camera,view);worldLayer.position.set(origin.x,origin.y);worldLayer.scale.set(camera.zoom);
     hero.container.position.set(render.x,render.y-render.groundZ);hero.container.zIndex=render.y;
     hero.applyPose({simulationTick:window.matchMedia('(prefers-reduced-motion: reduce)').matches?0:state.tick,action:'aim',locomotion:actor.locomotion,legDirection:actor.legDirection,torsoDirection:actor.torsoDirection});
-    const halfX=width/(2*camera.zoom),halfY=height/(2*camera.zoom);visiblePieces=0;
-    for(const prop of props){const b=prop.bounds;prop.graphic.visible=b.maxX>=camera.x-halfX&&b.minX<=camera.x+halfX&&b.maxY>=camera.y-halfY&&b.minY-prop.height<=camera.y+halfY;if(prop.graphic.visible)visiblePieces++;}
+    visiblePieces=propResidency.update({camera,view});
     areaName.textContent=geometry.getAreaAt(actor.x,actor.y)?.name??'Connecting road';position.textContent=`${Math.round(actor.x)}, ${Math.round(actor.y)} · height ${Math.round(actor.groundZ)}`;
     app.render();renderFrames++;
   }
@@ -185,5 +196,5 @@ export function mountGreyboxPlaytest(root){
   return Object.freeze({ready,dispose,snapshot:()=>Object.freeze({disposed,failure,cleanupErrors:Object.freeze([...cleanupErrors]),inspectionJumps,renderFrames,nativeEvents,navWaitMs,
     frameScheduled:frameId!==null,width,height,visiblePieces,assetsReady:Boolean(hero&&atlasTexture),rendererType:appDestroyed?null:app.renderer?.type??null,
     heroArtSource:hero?.artSource??null,heroFrameIds:hero?.container.frameIds??'',bodyScale:PRODUCTION_HERO_RUNTIME_SCALE,cameraZoom:camera?.zoom??null,
-    heldKeys:input.keys.size,heldPointers:touch.pointers.size,runtime:runtime.snapshot()})});
+    heldKeys:input.keys.size,heldPointers:touch.pointers.size,propResidency:propResidency.snapshot(),runtime:runtime.snapshot()})});
 }

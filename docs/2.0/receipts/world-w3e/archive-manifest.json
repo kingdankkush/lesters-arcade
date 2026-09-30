@@ -1,0 +1,393 @@
+{
+  "schema": "world-w3e-compact-archive-v1",
+  "scope": "Lossless RED, retained GREEN01 fixture failure, GREEN02/copy, actual private browser, normal/default12 visual, custody/closure and image identities. Display ownership only; no texture streaming, physical phone, final art or combined-root release certification.",
+  "entries": [
+    {
+      "archive": "red/bindings.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3e-prop-red-20260930-01\\bindings.json",
+      "bytes": 9462,
+      "sha256": "5d0d5285c7636d73ed3e3df5181f9d076ed1e031b7549d12fcec6c94a835f140",
+      "storedBytes": 3218,
+      "storedSha256": "b49123d5ab45add0a38ead549785f8708a825026a51c3473e36b81124ae7b451",
+      "compression": "gzip"
+    },
+    {
+      "archive": "red/hmh-greybox-prop-residency.test.mjs.txt.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3e-prop-red-20260930-01\\hmh-greybox-prop-residency.test.mjs.txt",
+      "bytes": 9121,
+      "sha256": "d5d0107b8b60753332cb74aea14d054237e1f6fb9f2643da893f4acdf7956993",
+      "storedBytes": 2774,
+      "storedSha256": "a0aba3b67d21eb1569b231745183bb97b3d52a8882c4f08b50dc4dc0cb4c835b",
+      "compression": "gzip"
+    },
+    {
+      "archive": "red/hmh-world-v2-local-scene.test.mjs.txt.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3e-prop-red-20260930-01\\hmh-world-v2-local-scene.test.mjs.txt",
+      "bytes": 24251,
+      "sha256": "8ef4f8cd04f911221adcd9447e4c7a04d2884dd78b2ac3a8b1767cddaf08645d",
+      "storedBytes": 7294,
+      "storedSha256": "393bdcbc496a0fa1537d29405c5313a92d36f81ee4573ed4d21b1e7739a38bae",
+      "compression": "gzip"
+    },
+    {
+      "archive": "red/red-report.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3e-prop-red-20260930-01\\red-report.json",
+      "bytes": 33932,
+      "sha256": "60b83d04dfb3ae4835167fb87f934c170c41c50758ad32948e42995c539d7cb4",
+      "storedBytes": 5930,
+      "storedSha256": "42082f9849c7c50ef7a45176c173c4944c4048647547fcd6ccb38b8c146c8978",
+      "compression": "gzip"
+    },
+    {
+      "archive": "red/runner.mjs.txt.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3e-prop-red-20260930-01\\runner.mjs.txt",
+      "bytes": 4637,
+      "sha256": "10b9df40d81036ce5f13feeb5e3cea8ce58a7fa4c39f5ab14d5f120a323bb4a5",
+      "storedBytes": 1822,
+      "storedSha256": "f91ab51953200b3c1a27d82b4ef217659a5cefc637b286e2b41367a8db405720",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green01/bindings.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3e-prop-green-20260930-01\\bindings.json",
+      "bytes": 10010,
+      "sha256": "4f4e8d487fb56e142aa4c9529aa811e18817ea020f697bc5cf7af8ca762972df",
+      "storedBytes": 3354,
+      "storedSha256": "9b64e4033194906c57226193c216ff13be1138cfc7a8b53d7afad00aa2772158",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green01/gate-report.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3e-prop-green-20260930-01\\gate-report.json",
+      "bytes": 12144,
+      "sha256": "3b1ef5e98f5624457bf95da305b3977b021ebbaafb0c0105cac49df7b4f35234",
+      "storedBytes": 4863,
+      "storedSha256": "b0baec53da5eee633f7c25743d7d8900ea64232efb0d1cca98c2f695df3ed154",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green01/runner.mjs.txt.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3e-prop-green-20260930-01\\runner.mjs.txt",
+      "bytes": 5800,
+      "sha256": "130d888183eb68ad99130dac4186fcd52a12b5ba32d3e8fa37bb44264c6d50c1",
+      "storedBytes": 2177,
+      "storedSha256": "553a61da8848db89dbc3bd764f78a58bd6538b2bac95638684c8501d28306314",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green02/bindings.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3e-prop-green-20260930-02\\bindings.json",
+      "bytes": 10010,
+      "sha256": "796895e4801de5da543fa0e7c207628022fd864cb7ea5d8b2af01661a017fbdb",
+      "storedBytes": 3353,
+      "storedSha256": "f843eb424db14a4633aa1bc7fc47e2a8e43a45093d695299ff8e06f45a4cb01f",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green02/gate-report.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3e-prop-green-20260930-02\\gate-report.json",
+      "bytes": 42758,
+      "sha256": "dbd2b3fbbadc46cebc6952390855f5881a2bbff61d75371106aa443471c965bb",
+      "storedBytes": 9725,
+      "storedSha256": "64ad60c0e5b1e42216bd1eecc28046c8065186fe145d5ed1ec52feaf04625fe8",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green02/runner.mjs.txt.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3e-prop-green-20260930-02\\runner.mjs.txt",
+      "bytes": 5802,
+      "sha256": "27cfe9365f7721bec394128abdc59cc61a343327d770679fa7030a329107e834",
+      "storedBytes": 2181,
+      "storedSha256": "a9944ebafa37e2ebcae562a244c610f2f15c6453955bbd7c0675bf940ce65928",
+      "compression": "gzip"
+    },
+    {
+      "archive": "browser/bindings.json.br",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3e-prop-browser-20260930-01\\bindings.json",
+      "bytes": 2542911,
+      "sha256": "203c62b80884418e37a4f555047dfd25d3151c040f91d870e093108cb992d96a",
+      "storedBytes": 246651,
+      "storedSha256": "de4d0295c1ce3a0679b966a1a6db305d9a9363252540814e46b216f35e8bf986",
+      "compression": "brotli"
+    },
+    {
+      "archive": "browser/gate-report.json.br",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3e-prop-browser-20260930-01\\gate-report.json",
+      "bytes": 5667481,
+      "sha256": "947a4348dba29bb9936c3f7ac3984cbc66115b1c0185ce524e2457cd961496c7",
+      "storedBytes": 262567,
+      "storedSha256": "54dc57ea68f332cf210a4f401b7711e325a62f8653cdd81f414ed2ce2178dd39",
+      "compression": "brotli"
+    },
+    {
+      "archive": "browser/hmh-world-v2-prop-browser-smoke-01.mjs.txt.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3e-prop-browser-20260930-01\\hmh-world-v2-prop-browser-smoke-01.mjs.txt",
+      "bytes": 25141,
+      "sha256": "0e6bcb876b87c7576329f130b104fd0b90a18ab5be7c84a0144ef99e00429844",
+      "storedBytes": 7387,
+      "storedSha256": "0fef870c302707ca14141a393ef08cbd83b2775508458948edb9860006d71e50",
+      "compression": "gzip"
+    },
+    {
+      "archive": "browser/owned-windows-preview-child.mjs.txt.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3e-prop-browser-20260930-01\\owned-windows-preview-child.mjs.txt",
+      "bytes": 3476,
+      "sha256": "6f4903a66d324a01a476eebefdfac68663dde2c573f62f637c4b7537ccb0d631",
+      "storedBytes": 1353,
+      "storedSha256": "3a52066105816c5196105f7c235421892a329352fdc5fc31ab595d36048daad0",
+      "compression": "gzip"
+    },
+    {
+      "archive": "browser/runner.mjs.txt.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3e-prop-browser-20260930-01\\runner.mjs.txt",
+      "bytes": 11732,
+      "sha256": "8b9ff2a987a3fbb8836ee2c87ee1be6150f405ef346405283306ee3305341af9",
+      "storedBytes": 3868,
+      "storedSha256": "1d7f280dfecfcfc51fb37b4af7d0fe3976b80c1ba0b0c3ece954c2653c0cf437",
+      "compression": "gzip"
+    },
+    {
+      "archive": "default/bindings.json.br",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3e-default-visual-20260930-01\\bindings.json",
+      "bytes": 3789119,
+      "sha256": "6fb65291ddd7f514960a15d4f0ce2896c31dc4ae3c93fecc7279fc26d756bf68",
+      "storedBytes": 451841,
+      "storedSha256": "99adae15b364fc29423f3f1aabcde1f4ef503da7d405404739103db07f21e66b",
+      "compression": "brotli"
+    },
+    {
+      "archive": "default/gate-report.json.br",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3e-default-visual-20260930-01\\gate-report.json",
+      "bytes": 3955689,
+      "sha256": "e8efe80a4424840b958ee4eee78feba397b53aee2c2685296680ce4e0f4c2970",
+      "storedBytes": 386534,
+      "storedSha256": "04d0138e8d25322b22c16298ae45f1671462d2f675c409ef594e33a34d8d78fb",
+      "compression": "brotli"
+    },
+    {
+      "archive": "default/process-lifecycle.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3e-default-visual-20260930-01\\process-lifecycle.json",
+      "bytes": 1112,
+      "sha256": "efc131dda3d6fbe037267a4bb52c5af05cdb86a116ff2037388ddb6e8e3d0cef",
+      "storedBytes": 524,
+      "storedSha256": "6b61ba098dbc42b4499b68ddf16ff5b9cfbad8de9e40f2bd0e92c319223c57ff",
+      "compression": "gzip"
+    },
+    {
+      "archive": "default/runner.mjs.txt.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3e-default-visual-20260930-01\\runner.mjs.txt",
+      "bytes": 12599,
+      "sha256": "26535881708fb179eac2338f99f0207b22dd5aa535a2105efea29add1350c5d6",
+      "storedBytes": 4228,
+      "storedSha256": "28ac9aff7a1bf825e2a20fd8066d6d3a31dcb4f4ea3d1168e4674d46a9b298e7",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green01/failed-fixture.mjs.txt.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3e-prop-green-20260930-01\\source-copy\\tests\\hmh-greybox-prop-residency.test.mjs",
+      "bytes": 9121,
+      "sha256": "d5d0107b8b60753332cb74aea14d054237e1f6fb9f2643da893f4acdf7956993",
+      "storedBytes": 2774,
+      "storedSha256": "a0aba3b67d21eb1569b231745183bb97b3d52a8882c4f08b50dc4dc0cb4c835b",
+      "compression": "gzip"
+    },
+    {
+      "archive": "browser/browser-report.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3e-prop-browser-20260930-01\\browser\\browser-report.json",
+      "bytes": 276163,
+      "sha256": "10ce55a0803f2d367697603722217be67f3a55de6c760fce88c47dc70d481d8e",
+      "storedBytes": 13583,
+      "storedSha256": "c2a1cb9bbf94e71bf6da0ab95473c112e062afb2507eae99536decbddd0beeb3",
+      "compression": "gzip"
+    },
+    {
+      "archive": "review/world-w3e-browser01-closure.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3e-browser01-closure.json",
+      "bytes": 272,
+      "sha256": "a251b21be456b68159e625cfde15336daabbe594af54e6f5648b6164683aacf7",
+      "storedBytes": 151,
+      "storedSha256": "2c64972448902cbd1dda9065102da89ae003a249ebb387ac502ad709b39fba50",
+      "compression": "gzip"
+    },
+    {
+      "archive": "review/world-w3e-default-visual-closure.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3e-default-visual-closure.json",
+      "bytes": 271,
+      "sha256": "8128e367ed88cf88de253107b9777d2ae36ebc831ed15d7ec42bbf6126fe91a5",
+      "storedBytes": 150,
+      "storedSha256": "8d04575648da1b74193ca526efac756e25d7e2d85a9d785aa08031d0489742cc",
+      "compression": "gzip"
+    },
+    {
+      "archive": "review/world-w3e-browser01-summary.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3e-browser01-summary.json",
+      "bytes": 4430,
+      "sha256": "69d4d2d0780199e11097ddb3f06042e520dfb6e28a646c549cd3e087f9c24fe1",
+      "storedBytes": 752,
+      "storedSha256": "47030e26dc67122ba2c9b334b17d995e21fef805d28dba19a9ca68adefd57256",
+      "compression": "gzip"
+    },
+    {
+      "archive": "review/world-w3e-review.md.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3e-review.md",
+      "bytes": 1879,
+      "sha256": "8edcd6a82fb27f4af0e01cff5b69814522cf8b2fab48499e0bc3224d6d7a5bc3",
+      "storedBytes": 1007,
+      "storedSha256": "4384ed1f9c117ee7c3d3056ba8e602059eb5f289806436e4efd588a9b9102f81",
+      "compression": "gzip"
+    },
+    {
+      "archive": "review/WORLD-W3E-PROP-RESIDENCY-PLAN.md.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\WORLD-W3E-PROP-RESIDENCY-PLAN.md",
+      "bytes": 4689,
+      "sha256": "cd37dee84bba8a16f4317f85e55597facf5f5f9064b82c114ec02e5af04593a0",
+      "storedBytes": 2258,
+      "storedSha256": "a2e5a64493d2c19e375b06e2d7f3c5d595a1b1fde33b2ee1b263cd294dcf4048",
+      "compression": "gzip"
+    },
+    {
+      "archive": "private-artifact-manifest.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3e-private-artifact\\manifest.json",
+      "bytes": 11274,
+      "sha256": "746ab429ecab2c265d7928859525a21ffa15f65a337c559e9a487a6c0791006d",
+      "storedBytes": 2078,
+      "storedSha256": "6ec42eeaa0e50cc67a39396f8d8a1e6fe031ab41957b86f98e23b7ce162e91c3",
+      "compression": "gzip"
+    },
+    {
+      "archive": "default/visual/combat-engaged-desktop.enemy-crops.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3e-default-visual-20260930-01\\visual\\combat-engaged-desktop.enemy-crops.json",
+      "bytes": 821,
+      "sha256": "54ae16b4bc03976221acb6597b6b577f4b02a755e8415d64b3006eac30af1eb1",
+      "storedBytes": 270,
+      "storedSha256": "ec4a9b024b1b3d05b3d5dcac6d57d821ab4047f3d7dbdba9da545c9096384172",
+      "compression": "gzip"
+    },
+    {
+      "archive": "default/visual/combat-engaged-desktop.runtime.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3e-default-visual-20260930-01\\visual\\combat-engaged-desktop.runtime.json",
+      "bytes": 8994,
+      "sha256": "179fb03862e52aa8867d8642f0674b4670662a005380aa98d36b19267ce8b208",
+      "storedBytes": 2922,
+      "storedSha256": "d0ef94c8e5a6de92a764023bc9b6ae3aed17b8924ac360af39db540c337afc40",
+      "compression": "gzip"
+    },
+    {
+      "archive": "default/visual/crossing-water-desktop.runtime.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3e-default-visual-20260930-01\\visual\\crossing-water-desktop.runtime.json",
+      "bytes": 8758,
+      "sha256": "def1ccc26315126fb48d63eb35f1ed17d0df417016f86b28d6da2d3db628e257",
+      "storedBytes": 2827,
+      "storedSha256": "b7fb16f383d0f9585d42dcd25fec3b2bdf6569f22d64bf761c44ad1185e3521d",
+      "compression": "gzip"
+    },
+    {
+      "archive": "default/visual/frontier-relay-desktop.enemy-crops.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3e-default-visual-20260930-01\\visual\\frontier-relay-desktop.enemy-crops.json",
+      "bytes": 848,
+      "sha256": "0077140cdc4caf321eaada558b92522febdc89b3292bfb24bc65c102682f59f9",
+      "storedBytes": 276,
+      "storedSha256": "a80897e0671080d1807f90aaff2218f606dca34c108aabc77af28f9d4941d717",
+      "compression": "gzip"
+    },
+    {
+      "archive": "default/visual/frontier-relay-desktop.runtime.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3e-default-visual-20260930-01\\visual\\frontier-relay-desktop.runtime.json",
+      "bytes": 8934,
+      "sha256": "732620d6354bba17d1510dc33fa574f11f42c02317511323a4d572f1c5f7694a",
+      "storedBytes": 2869,
+      "storedSha256": "72a52c2bbfb6ddf304a0becf5b2e6d22f6fffad6eecc8421ecc54962be7211d3",
+      "compression": "gzip"
+    },
+    {
+      "archive": "default/visual/frontier-relay-mobile.enemy-crops.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3e-default-visual-20260930-01\\visual\\frontier-relay-mobile.enemy-crops.json",
+      "bytes": 1631,
+      "sha256": "35e499ea50f266058d1b71c9f91b5fdb97bb29fa5367828093302ef03a05f6ba",
+      "storedBytes": 392,
+      "storedSha256": "3e2ef161195257b3d443759f9ab8a4c8052ce2574cc2c562900bda80d8ad78b1",
+      "compression": "gzip"
+    },
+    {
+      "archive": "default/visual/frontier-relay-mobile.runtime.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3e-default-visual-20260930-01\\visual\\frontier-relay-mobile.runtime.json",
+      "bytes": 8910,
+      "sha256": "a6e02dee34964c6ac3fb66b666686c3d0d8f18d95bd025d81d6c126efa36284b",
+      "storedBytes": 2873,
+      "storedSha256": "2eeb355c2a5d8e19f533a65f16e178f511260202173a874354296c0f1b341a75",
+      "compression": "gzip"
+    },
+    {
+      "archive": "default/visual/hashwood-camp-desktop.runtime.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3e-default-visual-20260930-01\\visual\\hashwood-camp-desktop.runtime.json",
+      "bytes": 8715,
+      "sha256": "77cd7544f596ad2e8222febca9eb907ae1eaeeadc223acc85d517de79c6bfc1a",
+      "storedBytes": 2808,
+      "storedSha256": "d35db1290e58ec4e29b237549fda0699f26277d9120e0d2e4d373ab32b2e0feb",
+      "compression": "gzip"
+    },
+    {
+      "archive": "default/visual/hashwood-foliage-desktop.runtime.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3e-default-visual-20260930-01\\visual\\hashwood-foliage-desktop.runtime.json",
+      "bytes": 8862,
+      "sha256": "f53a7d34025e14de34642c629a6d611604e216157c5caa7ab5e84d89e4ea34c4",
+      "storedBytes": 2858,
+      "storedSha256": "7ee527181a498127ecebde1f5d375a2cd7381bafc6b12e3367e433df41089b2c",
+      "compression": "gzip"
+    },
+    {
+      "archive": "default/visual/liquidation-market-desktop.runtime.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3e-default-visual-20260930-01\\visual\\liquidation-market-desktop.runtime.json",
+      "bytes": 8979,
+      "sha256": "9435240606833fc6c00f1a368e2ceb03a231775029d348970dd77c51f9f290f4",
+      "storedBytes": 2932,
+      "storedSha256": "6a2bef5fb4cbeff4d820ffd4c5436977c71377dcb05c6ea3fccba7c025ed8089",
+      "compression": "gzip"
+    },
+    {
+      "archive": "default/visual/liquidation-residential-desktop.runtime.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3e-default-visual-20260930-01\\visual\\liquidation-residential-desktop.runtime.json",
+      "bytes": 8686,
+      "sha256": "4b1791d9c31a97da441eca8e4ecb1dc07bc18aa66c9b7c9c1cbba2c726993349",
+      "storedBytes": 2783,
+      "storedSha256": "911a4c99b217b4fd4a326ef1e808ed6139d5a2710e8b9b39e705ff3479f71031",
+      "compression": "gzip"
+    },
+    {
+      "archive": "default/visual/liquidation-yard-desktop.runtime.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3e-default-visual-20260930-01\\visual\\liquidation-yard-desktop.runtime.json",
+      "bytes": 8724,
+      "sha256": "1b8dbd56f8cd7a6bb778092c701edb4be03ee1db4d66c76aa04325149625d8e8",
+      "storedBytes": 2782,
+      "storedSha256": "23d1e31dbe682934ddaf5aa61bfc536aa72b5e4b50314d472d8ce1bae42cfe0d",
+      "compression": "gzip"
+    },
+    {
+      "archive": "default/visual/liquidity-bridge-desktop.runtime.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3e-default-visual-20260930-01\\visual\\liquidity-bridge-desktop.runtime.json",
+      "bytes": 8761,
+      "sha256": "10b8bc01f96d0a102626dd005bb0430efc741d9a8bed7d929d043d32732ecfa8",
+      "storedBytes": 2834,
+      "storedSha256": "b543db1d1c81df5b3fe1d4901cdc9ff6a4958acd5d1ba8e38b6303a029d517ed",
+      "compression": "gzip"
+    },
+    {
+      "archive": "default/visual/mining-camp-desktop.runtime.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3e-default-visual-20260930-01\\visual\\mining-camp-desktop.runtime.json",
+      "bytes": 8708,
+      "sha256": "9375a5c2092bd8dbbb2aa41fc5832a1dba33cecd61b0226f132bfea525ade3e2",
+      "storedBytes": 2802,
+      "storedSha256": "d8ca58dd14ad001974547bd5871fe00f990783d469eef76a8d3c5c4a40f90513",
+      "compression": "gzip"
+    },
+    {
+      "archive": "default/visual/ravine-overlook-desktop.runtime.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3e-default-visual-20260930-01\\visual\\ravine-overlook-desktop.runtime.json",
+      "bytes": 8770,
+      "sha256": "d6d98c1cf0802f8bd713b471cf4d3fef8eb5d71fec594ce9b7ee940389089989",
+      "storedBytes": 2842,
+      "storedSha256": "bd53f2a22130f3f3098fc9758e2935745392ec56d0c987f8d9f0bcc8ac595bcd",
+      "compression": "gzip"
+    }
+  ]
+}

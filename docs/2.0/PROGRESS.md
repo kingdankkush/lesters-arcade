@@ -1083,3 +1083,15 @@ checks. Actual walking, display counts and disposal still require its pending
 private browser window and standard visual gate. These changes do not constitute
 texture streaming or physical-phone acceptance. See the updated terrain source
 review for evidence and limits; completed combined release authority is unchanged.
+
+## W3e — private prop display residency
+
+The private Pixi world now allocates and retires nearby prop drawings, preserves
+authored depth order on return, and disposes all owned drawings on close/pagehide.
+Genuine RED and the corrected empty-camera fixture failure are retained; 41 source
+and identical 41 isolated checks pass. Actual keyboard/touch road-return proof
+passes with desktop/phone Graphics peaks 53/21 out of 581; twelve originals were
+reviewed. Fresh World-worktree normal build and all twelve standard visual scenes
+pass unchanged without baseline edits. This bounds display objects, not textures
+or physical-phone memory; no official world/Ranked activation. See
+[W3e checks and limits](slices/WORLD-W3E-PROP-RESIDENCY.md).
