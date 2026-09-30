@@ -322,6 +322,8 @@ test('crons and function limits are declared', () => {
     // show a stale cron instead of an error. The re-replay needs the obstacle shapes (else verify-unavailable).
     'api/cron/weekly-jackpot.mjs': { maxDuration: 300, memory: 1024, includeFiles: chikunShapes },
     'api/settle-status.mjs': { maxDuration: 15 },
+    // achievement rarity (2.0): one public read-only Neon snapshot, no wallet or write path.
+    'api/achievements/stats.mjs': { maxDuration: 10 },
     'api/leaderboard.mjs': { maxDuration: 10 },
     'api/profile.mjs': { maxDuration: 10 },
     'api/profile-refresh.mjs': { maxDuration: 15 },
