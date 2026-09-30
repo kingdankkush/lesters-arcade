@@ -37,7 +37,12 @@ export function createWorldV2LocalRuntime(options = {}) {
   const simulation = new DeterministicSimulation({ seed: 0 });
   let phase = 'preparing', failure = null, authority = createNavGridAuthority(), flow = null, nav = null;
   let zeroDisplacementFrames = 0, lastStep = Object.freeze({ contacts: 0, traversalAllowed: true });
+  const actorView = () => Object.freeze({ x: motion.x, y: motion.y, vx: motion.vx, vy: motion.vy, groundZ: ground.groundZ,
+    legDirection: motion.legDirection, torsoDirection: motion.torsoDirection, locomotion: motion.locomotion,
+    heading: Math.atan2(motion.aimDirection.y, motion.aimDirection.x) });
+  let previousActor = actorView();
   const unsubscribe = simulation.onStep(({ dtSeconds, input }) => {
+    previousActor = actorView(); // Presentation-only last admitted tick, including catch-up.
     const start = { x: motion.x, y: motion.y, z: ground.groundZ };
     const magnitude = Math.hypot(input.move.x, input.move.y);
     let speedMultiplier = 1;
@@ -108,9 +113,7 @@ export function createWorldV2LocalRuntime(options = {}) {
     },
     snapshot() {
       return Object.freeze({ phase, mode: 'local-free-test', officialRun: false, rankedEligible: false, tick: simulation.tick, fixedStepMs: FIXED_STEP_MS,
-        actor: Object.freeze({ x: motion.x, y: motion.y, vx: motion.vx, vy: motion.vy, groundZ: ground.groundZ,
-          legDirection: motion.legDirection, torsoDirection: motion.torsoDirection, locomotion: motion.locomotion,
-          heading: Math.atan2(motion.aimDirection.y, motion.aimDirection.x) }), nav, lastStep, failure });
+        actor: actorView(), previousActor, nav, lastStep, failure });
     },
     navigationAt(x, y) {
       finite(x, 'navigation x'); finite(y, 'navigation y');

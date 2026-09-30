@@ -1027,3 +1027,16 @@ Production rechecked September30 around14:59UTC: public health version1.9.4,
 service-worker `lesters-arcade-v64-share-warm`, fetched integration head
 `04366747f79d281af4fd18992f9ccfd857153b5c`. The pre-deployment chat is notLoaded,
 with its last recorded turn completed. No deployment or version change occurred.
+
+## W3d — private Pixi world movement
+
+The ten-area geometry now supports actual human-atlas keyboard/touch movement in
+a loopback-only Pixi scene, with navigation readiness, walls/water/ramps, input
+recovery and complete disposal. Genuine RED12 plus focus RED1 are retained;
+28/28 source and identical28 isolated pass. Actual desktop/touch browser06 passes
+all journeys and denial paths after preserving three earlier harness failures.
+Eight originals were reviewed. A fresh World-worktree normal build and standard
+12-scene visual gate pass with unchanged classifications and no baseline edit;
+these are not combined-root release results. Final terrain/art, streaming,
+complete gameplay and physical-device acceptance remain open. See
+[W3d evidence and limits](slices/WORLD-W3D-PRIVATE-PIXI-SCENE.md).

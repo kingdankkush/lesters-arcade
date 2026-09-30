@@ -1,0 +1,641 @@
+{
+  "schema": "world-w3d-compact-archive-v1",
+  "scope": "Lossless actual source RED/focus RED/GREEN, all executed browser failures and final success, unchanged standard visual report, exact custody/process closure and peer review. Images and preserved compiled artifact remain shared locally; no duplicate source tree in Git. WorldWT candidate only, not combined integration release certification.",
+  "entries": [
+    {
+      "archive": "red/bindings.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3d-pixi-scene-red-20260930-01\\bindings.json",
+      "bytes": 21466,
+      "sha256": "908fe05cffb01cc1d9cff9f52fa787e421991035b7141e3357ca4ea203cb37a4",
+      "storedBytes": 3558,
+      "storedSha256": "512165728d41efecd7221f4516fdbf9a976ba37cfd04cddbd35a09da75a7e405",
+      "compression": "gzip"
+    },
+    {
+      "archive": "red/red-report.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3d-pixi-scene-red-20260930-01\\red-report.json",
+      "bytes": 27063,
+      "sha256": "dd6e4ecee74129c68574880b598adada860e0cef1fe90c78e123fe72f00fb877",
+      "storedBytes": 4631,
+      "storedSha256": "4943c0e00a569d7897b76eb475ca268ce63d1d77abf9bb041782787c591ed583",
+      "compression": "gzip"
+    },
+    {
+      "archive": "red/runner.mjs.txt.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3d-pixi-scene-red-20260930-01\\runner.mjs.txt",
+      "bytes": 4645,
+      "sha256": "352ed57a9e2a1212c07b0414dfeda6a850753d2badd0e29f7a8755370634d27b",
+      "storedBytes": 1832,
+      "storedSha256": "66f90cae80e742507a32d33ec9d1d0bdaab92d932ccb826edadbdcd234c2444a",
+      "compression": "gzip"
+    },
+    {
+      "archive": "red/test.mjs.txt.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3d-pixi-scene-red-20260930-01\\test.mjs.txt",
+      "bytes": 18959,
+      "sha256": "63c3f5f4f76bd3290c5d2f40a9278dac3b32d92bcc3fee232c6ef21a658ea94a",
+      "storedBytes": 6031,
+      "storedSha256": "742319ae0369e45421e08e57806bd230ebd3bda87c75d2f3e253bbfda1a42ace",
+      "compression": "gzip"
+    },
+    {
+      "archive": "focus/bindings.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3d-pixi-focus-red-20260930-01\\bindings.json",
+      "bytes": 26017,
+      "sha256": "b35c63d60b95a3d2a2ac3b97e35c8fcaabb60bb2c613ab31a010a0c5a05fc7dc",
+      "storedBytes": 4132,
+      "storedSha256": "eae163621f9c2ed7083b6fbcfe96dbbdaaddd6f2e26c9beda12ef3a74d30a99f",
+      "compression": "gzip"
+    },
+    {
+      "archive": "focus/red-report.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3d-pixi-focus-red-20260930-01\\red-report.json",
+      "bytes": 15102,
+      "sha256": "aac9840ca047b4de8cc00e50f1946fe3495736d5e375323d6e52434d1a30c504",
+      "storedBytes": 3958,
+      "storedSha256": "b1ee49a4106d3c350097d0e9040021e0060ea34db00716565b295ce83b0f1367",
+      "compression": "gzip"
+    },
+    {
+      "archive": "focus/runner.mjs.txt.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3d-pixi-focus-red-20260930-01\\runner.mjs.txt",
+      "bytes": 4637,
+      "sha256": "2f0eb27fe73d421ed70d9b052f0b188050434e8bc68d1256e47e48ecd19b59c5",
+      "storedBytes": 1806,
+      "storedSha256": "1012de6cf01831051f6a71e3c5efd20419a9406742dbbb7b2fadce33e3041a50",
+      "compression": "gzip"
+    },
+    {
+      "archive": "focus/test.mjs.txt.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3d-pixi-focus-red-20260930-01\\test.mjs.txt",
+      "bytes": 20215,
+      "sha256": "d7c295d07ace54ba19ed152fbafcd7baf8f41e2fb987a3bd9643b9e413cf0bb6",
+      "storedBytes": 6333,
+      "storedSha256": "ae204e41666a1673edea91008b460303ae0c46f807fd032b852d13bc0936a1bb",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green/bindings.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3d-pixi-scene-green-20260930-02\\bindings.json",
+      "bytes": 26017,
+      "sha256": "de091703c6db12feb426f9d3067a38359c8cdea36c5e28ae5e557783c1460e14",
+      "storedBytes": 4134,
+      "storedSha256": "3ad14bbf2573b01f9ca82ee1263bbed56d8565386bd7b800fc7f7a2f45c2c3f3",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green/gate-report.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3d-pixi-scene-green-20260930-02\\gate-report.json",
+      "bytes": 32206,
+      "sha256": "28852fd5cd8a3fec35d0d19fb71986c5ffbb151a72ff3d521424f7740ecfd07f",
+      "storedBytes": 5846,
+      "storedSha256": "3863dc711086adddc9f840317f3cb1047cf29acf1802a0084cea48c1ade0d25e",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green/runner.mjs.txt.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3d-pixi-scene-green-20260930-02\\runner.mjs.txt",
+      "bytes": 6198,
+      "sha256": "1e304d15072ed9926a56c7642298a9d5b032f068e6edc5beb02307d753b212e5",
+      "storedBytes": 2249,
+      "storedSha256": "8e688995ee8570048958361c7b8de05cb5a8277a605774e54d7052a2e072d7cf",
+      "compression": "gzip"
+    },
+    {
+      "archive": "browser02/bindings.json.br",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3d-private-pixi-browser-20260930-02\\bindings.json",
+      "bytes": 1017077,
+      "sha256": "9ba078a0060d622aad2343924849dd67c525c47513db1d6cfb367ea5100f0b59",
+      "storedBytes": 195870,
+      "storedSha256": "6badb5d8c419892ce58edc8f8446384d3e5a37fe7c27b9e468e0e33838244673",
+      "compression": "brotli"
+    },
+    {
+      "archive": "browser02/gate-report.json.br",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3d-private-pixi-browser-20260930-02\\gate-report.json",
+      "bytes": 2076189,
+      "sha256": "bbd114661d4b99e361bf9b97cad41b90932b7065b64ed2f7ac447d5c0581c257",
+      "storedBytes": 188630,
+      "storedSha256": "8005a3b0f5b14c1c6d3044a2eaaa9162b9960ba40604fac93e49ce3703ba3e07",
+      "compression": "brotli"
+    },
+    {
+      "archive": "browser02/hmh-world-v2-pixi-browser-smoke-02.mjs.txt.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3d-private-pixi-browser-20260930-02\\hmh-world-v2-pixi-browser-smoke-02.mjs.txt",
+      "bytes": 21725,
+      "sha256": "8400262bd6b245b1e648708f7aebd0673f7eebdb04d7a51543995abd6d42c647",
+      "storedBytes": 6442,
+      "storedSha256": "5d8181961ab2e795ef0794705734b2286addbb70277bc99331715d2430ed8290",
+      "compression": "gzip"
+    },
+    {
+      "archive": "browser02/owned-windows-preview-child.mjs.txt.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3d-private-pixi-browser-20260930-02\\owned-windows-preview-child.mjs.txt",
+      "bytes": 3476,
+      "sha256": "6f4903a66d324a01a476eebefdfac68663dde2c573f62f637c4b7537ccb0d631",
+      "storedBytes": 1353,
+      "storedSha256": "5da9f25f74ec3ab62b845c6554a3aebfb0adb76a155a6a5c642f20c62856729f",
+      "compression": "gzip"
+    },
+    {
+      "archive": "browser02/runner.mjs.txt.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3d-private-pixi-browser-20260930-02\\runner.mjs.txt",
+      "bytes": 9691,
+      "sha256": "09201cb746c03f8f2fc0ee54aba2f14cf594776cfaee6ac0cdbb02348e5ee30c",
+      "storedBytes": 3276,
+      "storedSha256": "9a1ae6c35e637d01c3028434a5ef8c94707c18609dd366eb047b4044fd6576da",
+      "compression": "gzip"
+    },
+    {
+      "archive": "browser04/bindings.json.br",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3d-private-pixi-browser-20260930-04\\bindings.json",
+      "bytes": 2541988,
+      "sha256": "bedc4490f9991e7348de1e78b423e3556a3171abef56ab515f8654de29546464",
+      "storedBytes": 246271,
+      "storedSha256": "39c2581db34fe8986b9b9074d18a06b20b08bb6e19978d4e7d60048b22f11d22",
+      "compression": "brotli"
+    },
+    {
+      "archive": "browser04/gate-report.json.br",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3d-private-pixi-browser-20260930-04\\gate-report.json",
+      "bytes": 5523495,
+      "sha256": "fb6d9d3232d73debc49d433be077988022d23b2be07bd458f7996772c6362d7a",
+      "storedBytes": 259590,
+      "storedSha256": "ff02b2787addb39990f47d3c74763123f9415f3bb8e5e59a94f425b96763eead",
+      "compression": "brotli"
+    },
+    {
+      "archive": "browser04/hmh-world-v2-pixi-browser-smoke-03.mjs.txt.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3d-private-pixi-browser-20260930-04\\hmh-world-v2-pixi-browser-smoke-03.mjs.txt",
+      "bytes": 21905,
+      "sha256": "cbb36b62ed38c6ec6950988fbaa30ed87e7a717df0f2a726672ee648706e5f2f",
+      "storedBytes": 6493,
+      "storedSha256": "2136a37791e6c9a1d3473ef6cad29677403ab0854db192aeb264a3d3d5ffa003",
+      "compression": "gzip"
+    },
+    {
+      "archive": "browser04/owned-windows-preview-child.mjs.txt.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3d-private-pixi-browser-20260930-04\\owned-windows-preview-child.mjs.txt",
+      "bytes": 3476,
+      "sha256": "6f4903a66d324a01a476eebefdfac68663dde2c573f62f637c4b7537ccb0d631",
+      "storedBytes": 1353,
+      "storedSha256": "5da9f25f74ec3ab62b845c6554a3aebfb0adb76a155a6a5c642f20c62856729f",
+      "compression": "gzip"
+    },
+    {
+      "archive": "browser04/runner.mjs.txt.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3d-private-pixi-browser-20260930-04\\runner.mjs.txt",
+      "bytes": 10281,
+      "sha256": "d5b7b71a5b1b933581a7eed8fbaf50e08899d12ce23f5180d10a57064e7f3844",
+      "storedBytes": 3425,
+      "storedSha256": "ffdf27c0a676b240bd424d63fdd8ce9f2c6e7b8a8d533b1204dec7dee3816e91",
+      "compression": "gzip"
+    },
+    {
+      "archive": "browser05/bindings.json.br",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3d-private-pixi-browser-20260930-05\\bindings.json",
+      "bytes": 2542844,
+      "sha256": "e23777c22bad0042ff00524029af6e1896c0c95caec917aaef3acdefb4206977",
+      "storedBytes": 246660,
+      "storedSha256": "4aae3d509746765b9df189ea7917fbf4f3a7cbecf15d8e3e13ce002633b76d21",
+      "compression": "brotli"
+    },
+    {
+      "archive": "browser05/gate-report.json.br",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3d-private-pixi-browser-20260930-05\\gate-report.json",
+      "bytes": 5439495,
+      "sha256": "50141e0810a5c9fe3821b25b2d2b656e421c7712b007d3758d2cc57296664b4e",
+      "storedBytes": 257815,
+      "storedSha256": "9d9d955a634d49705a22ef8d510c1ca627b91e10b85eab276a7e8b8dc3d966e2",
+      "compression": "brotli"
+    },
+    {
+      "archive": "browser05/hmh-world-v2-pixi-browser-smoke-05.mjs.txt.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3d-private-pixi-browser-20260930-05\\hmh-world-v2-pixi-browser-smoke-05.mjs.txt",
+      "bytes": 22458,
+      "sha256": "36e806637777fbd254752122d4fcdeb4153a3d827bbdfbb70ab0269501ac9083",
+      "storedBytes": 6656,
+      "storedSha256": "d0c34ecb4130081b1e726a60d71b41f617ad46f253dd8331c69d67c9a6eb60c9",
+      "compression": "gzip"
+    },
+    {
+      "archive": "browser05/owned-windows-preview-child.mjs.txt.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3d-private-pixi-browser-20260930-05\\owned-windows-preview-child.mjs.txt",
+      "bytes": 3476,
+      "sha256": "6f4903a66d324a01a476eebefdfac68663dde2c573f62f637c4b7537ccb0d631",
+      "storedBytes": 1353,
+      "storedSha256": "5da9f25f74ec3ab62b845c6554a3aebfb0adb76a155a6a5c642f20c62856729f",
+      "compression": "gzip"
+    },
+    {
+      "archive": "browser05/runner.mjs.txt.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3d-private-pixi-browser-20260930-05\\runner.mjs.txt",
+      "bytes": 11391,
+      "sha256": "07726e16c591d34474a93b1f3f948024ff0c7083312d18cf07ca80fc0c9a3cc1",
+      "storedBytes": 3778,
+      "storedSha256": "cbfb0fd089716f0e4fc89eda5f1b172d5bb874197fe32099d404736570ee2749",
+      "compression": "gzip"
+    },
+    {
+      "archive": "browser06/bindings.json.br",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3d-private-pixi-browser-20260930-06\\bindings.json",
+      "bytes": 2542844,
+      "sha256": "066d2f8c6a919ca29e1eacd694d33e33ebfbb139d8fced7484793162c6fd563b",
+      "storedBytes": 246657,
+      "storedSha256": "694461d691614db7696410dd76659bdc57831bce7b86c290356a9a630f19de3b",
+      "compression": "brotli"
+    },
+    {
+      "archive": "browser06/gate-report.json.br",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3d-private-pixi-browser-20260930-06\\gate-report.json",
+      "bytes": 5530603,
+      "sha256": "d8e538c556cb6c8acab8ef450e736ab3671c0cebbb5e75eaa00e8a22c6687963",
+      "storedBytes": 259653,
+      "storedSha256": "efc4321d06be5746c545f72468484a3f0a9ce0fe4591f43fb9ca761c6517f8b6",
+      "compression": "brotli"
+    },
+    {
+      "archive": "browser06/hmh-world-v2-pixi-browser-smoke-06.mjs.txt.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3d-private-pixi-browser-20260930-06\\hmh-world-v2-pixi-browser-smoke-06.mjs.txt",
+      "bytes": 22458,
+      "sha256": "a3ec73fde5521ba9d83d6252e3b4aa7823341f8a924dce0779f41c73fc2be1ea",
+      "storedBytes": 6653,
+      "storedSha256": "bfb1f18fa09b1a9fafbefda23c6639226d3ecf1290fbac1f1b6f3e99e29ee9b3",
+      "compression": "gzip"
+    },
+    {
+      "archive": "browser06/owned-windows-preview-child.mjs.txt.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3d-private-pixi-browser-20260930-06\\owned-windows-preview-child.mjs.txt",
+      "bytes": 3476,
+      "sha256": "6f4903a66d324a01a476eebefdfac68663dde2c573f62f637c4b7537ccb0d631",
+      "storedBytes": 1353,
+      "storedSha256": "5da9f25f74ec3ab62b845c6554a3aebfb0adb76a155a6a5c642f20c62856729f",
+      "compression": "gzip"
+    },
+    {
+      "archive": "browser06/runner.mjs.txt.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3d-private-pixi-browser-20260930-06\\runner.mjs.txt",
+      "bytes": 11391,
+      "sha256": "fb71241acc813c01a47683f02bd2153f9abbb82234cb4da2b3b13d2b80ff558a",
+      "storedBytes": 3780,
+      "storedSha256": "0c87cda6c525aa831ac0c721c8c20afce8d54bf94b7225f50fe4ff1a407d2e47",
+      "compression": "gzip"
+    },
+    {
+      "archive": "normal/bindings.json.br",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3d-default-visual-20260930-01\\bindings.json",
+      "bytes": 3788696,
+      "sha256": "afb4bfec92c9fab1c9a82888b19186ca55da909ab596ecd471a4cb49258d99aa",
+      "storedBytes": 451821,
+      "storedSha256": "ac58b7bdea69161f6158b7cd50c939bee31ff921c3c34d8cffcb32981e05337a",
+      "compression": "brotli"
+    },
+    {
+      "archive": "normal/gate-report.json.br",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3d-default-visual-20260930-01\\gate-report.json",
+      "bytes": 3954742,
+      "sha256": "b4367492f1b536eb98d31204b79b4fc3bf9e7c1c5c819b2cc4c0a3b36043e2ed",
+      "storedBytes": 386397,
+      "storedSha256": "671cba8f68b0293c5b1aa07f5a748be35174c478cd1a4c952b395930fcb65696",
+      "compression": "brotli"
+    },
+    {
+      "archive": "normal/process-lifecycle.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3d-default-visual-20260930-01\\process-lifecycle.json",
+      "bytes": 1113,
+      "sha256": "ae5a8970492231e9ec39e75528fd862d722dfa9fe4c437cec717dcde0147da54",
+      "storedBytes": 526,
+      "storedSha256": "d0172febf4f9347e235233c4f97673377c27bd4b64f22d2332d97b8a881a3c3b",
+      "compression": "gzip"
+    },
+    {
+      "archive": "normal/runner.mjs.txt.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3d-default-visual-20260930-01\\runner.mjs.txt",
+      "bytes": 12588,
+      "sha256": "4ec376a92528c06be79f0a08121cd81703f334f409d5bed4dc2358ded274f050",
+      "storedBytes": 4215,
+      "storedSha256": "04b44045786db6a22ce6945b869a5d29bcfdcb3b962714613e5bbbc380fba0ae",
+      "compression": "gzip"
+    },
+    {
+      "archive": "browser04/browser-report.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3d-private-pixi-browser-20260930-04\\browser\\browser-report.json",
+      "bytes": 140461,
+      "sha256": "f2be6e67a4d55234c0bd52fd63f5dec5fb9bb8ab38ff2e766f30e56341409940",
+      "storedBytes": 9026,
+      "storedSha256": "02daf15760015e49f788d51707f03cf9b37593e2c4b96c3b0c0fb5ccc0812c5e",
+      "compression": "gzip"
+    },
+    {
+      "archive": "browser05/browser-report.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3d-private-pixi-browser-20260930-05\\browser\\browser-report.json",
+      "bytes": 61121,
+      "sha256": "76825688004fdb8b5647464ff4b66eab7724b563087f7603a751264ce0a1ec83",
+      "storedBytes": 5775,
+      "storedSha256": "0b6669a011f9550ebd514eb3956cacfb13b7af95f56fd2fda0ade60a05db534b",
+      "compression": "gzip"
+    },
+    {
+      "archive": "browser06/browser-report.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3d-private-pixi-browser-20260930-06\\browser\\browser-report.json",
+      "bytes": 147606,
+      "sha256": "20b1823aaf19397a7e5079159ebdfb70280231d4895fd748043e1851295af198",
+      "storedBytes": 9323,
+      "storedSha256": "ff167d8b1c4cbbc3f95f90be926c7bebd70690ffc6b88e9f6e72696a4b376389",
+      "compression": "gzip"
+    },
+    {
+      "archive": "world-w3d-red-closure.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3d-red-closure.json",
+      "bytes": 351,
+      "sha256": "277a89c458c415f3504b89db0aca8e331c1348b02fc3a2f7bcd0e46adfbf2cde",
+      "storedBytes": 227,
+      "storedSha256": "8ae92d18efde3ee5e1d23a2fb1812587850e25b25172bdedc6b23e46a011b33b",
+      "compression": "gzip"
+    },
+    {
+      "archive": "world-w3d-focus-red-closure.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3d-focus-red-closure.json",
+      "bytes": 184,
+      "sha256": "8896a0416957206a1388a45930feff155ce94844154083ea261612cf199c41e0",
+      "storedBytes": 154,
+      "storedSha256": "3db29f995f26f5424b25d8db3869f47b1fb663bb48e7a319131ba467fab38811",
+      "compression": "gzip"
+    },
+    {
+      "archive": "world-w3d-green02-closure.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3d-green02-closure.json",
+      "bytes": 605,
+      "sha256": "1c9137f3cea097dd903fbadf6dac1249ff73ee60a17b5b7eaa6536f5d607f8d3",
+      "storedBytes": 194,
+      "storedSha256": "afaabcb834bbb75be812a14141b6982577c0ac390db8a07faca3268de0d0c733",
+      "compression": "gzip"
+    },
+    {
+      "archive": "world-w3d-browser02-closure.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3d-browser02-closure.json",
+      "bytes": 379,
+      "sha256": "8e455b904025116d6bc15119cb053e9e227d9f6ee924bf9e437647b0eb351dd3",
+      "storedBytes": 266,
+      "storedSha256": "e11c5fcf802999a35fedc5e064526643af8a7f165884fa231f443723ec256a34",
+      "compression": "gzip"
+    },
+    {
+      "archive": "world-w3d-browser04-closure.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3d-browser04-closure.json",
+      "bytes": 551,
+      "sha256": "fff691e9a39fe028213294168278b04b2096c3fed27af1d09dcd1d962e98c131",
+      "storedBytes": 243,
+      "storedSha256": "cced14208736712cb7aa95f278be4d293e82f71ed7e1c2e8e4e6639b0c5d9cde",
+      "compression": "gzip"
+    },
+    {
+      "archive": "world-w3d-browser05-closure.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3d-browser05-closure.json",
+      "bytes": 552,
+      "sha256": "69f046da0cb881b4db0101608d9951203c20dfbeddb58a4c7c94caf8306686df",
+      "storedBytes": 247,
+      "storedSha256": "822b1e70aa36bad877028a417eb27a1a7a961e9384df93bf1e30c06a4faa5fcd",
+      "compression": "gzip"
+    },
+    {
+      "archive": "world-w3d-browser06-closure.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3d-browser06-closure.json",
+      "bytes": 271,
+      "sha256": "1a99fff99191bd288baf9816cbbd5cccf4a61ba770fcf079b98c96f201448696",
+      "storedBytes": 148,
+      "storedSha256": "1bfe2a5ac5cb31ecd370e91c7d530bb262fa304190ae91eeaa585f07dfb31755",
+      "compression": "gzip"
+    },
+    {
+      "archive": "world-w3d-default-visual-closure.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3d-default-visual-closure.json",
+      "bytes": 270,
+      "sha256": "34a604a9f5df18f2a42dae207191f2e1a3c75eb413dff442ab23e6cc6ec379c5",
+      "storedBytes": 145,
+      "storedSha256": "0bc0603ea92cc3f8af5801c56978364619ebc8e3bad691104f70ee4c3a7f811d",
+      "compression": "gzip"
+    },
+    {
+      "archive": "world-w3d-review.md.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3d-review.md",
+      "bytes": 2838,
+      "sha256": "542bfb99d2ddc5ac2a8e7b439caf6a2a63f21897e4c1c09518475dea0ae3554b",
+      "storedBytes": 1499,
+      "storedSha256": "4fe396e527ae601bb3fd787c2966439f0fdf1dd37de0c4cfaaefd0a5c7c14110",
+      "compression": "gzip"
+    },
+    {
+      "archive": "owned-windows-child.mjs.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\owned-windows-child.mjs",
+      "bytes": 3475,
+      "sha256": "a5177337fcf6ec41f285fc105b93d0b4b94ee1101cb14a653a91e9b8b075b0d9",
+      "storedBytes": 1353,
+      "storedSha256": "02e4475db1d22cb3a147a2e8df889e12f6857d38c4c60a8b4be99e5a04b4e2e7",
+      "compression": "gzip"
+    },
+    {
+      "archive": "owned-windows-preview-child.mjs.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\owned-windows-preview-child.mjs",
+      "bytes": 3476,
+      "sha256": "6f4903a66d324a01a476eebefdfac68663dde2c573f62f637c4b7537ccb0d631",
+      "storedBytes": 1353,
+      "storedSha256": "5da9f25f74ec3ab62b845c6554a3aebfb0adb76a155a6a5c642f20c62856729f",
+      "compression": "gzip"
+    },
+    {
+      "archive": "owned-windows-world-visual-child.mjs.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\owned-windows-world-visual-child.mjs",
+      "bytes": 3476,
+      "sha256": "495930361edcac710033be5d2fe3d6b47879c823e6babbbe4ef5adb266b78fc2",
+      "storedBytes": 1354,
+      "storedSha256": "68f1480ca8cb065bc7ef393c9ac7481be7f0959539096b3016d621f1fd7cc018",
+      "compression": "gzip"
+    },
+    {
+      "archive": "world-default-visual-process-observer.mjs.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-default-visual-process-observer.mjs",
+      "bytes": 2707,
+      "sha256": "f7da458e82522d6d045bdd399e57e6eb5481fb160f01134477edb40bd581a55e",
+      "storedBytes": 1121,
+      "storedSha256": "15d51f7600872d02faec36c2c0c9ad70382aaa459b6b53022a635c4fa5a7536d",
+      "compression": "gzip"
+    },
+    {
+      "archive": "private-artifact-manifest.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3d-private-artifact\\manifest.json",
+      "bytes": 11272,
+      "sha256": "06d7b74a0ff4facd92d35de2fe1bd9a4c605bcb4dfcdf35d2120fdbc29c1f1b0",
+      "storedBytes": 2115,
+      "storedSha256": "84d95927923bda098bf717dac6ea8154ef397a5b33704a9321459921808a2780",
+      "compression": "gzip"
+    }
+  ],
+  "images": {
+    "private": [
+      {
+        "path": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3d-private-pixi-browser-20260930-06\\browser\\desktop-ready.png",
+        "bytes": 34805,
+        "sha256": "b1155e1e1de2be53d789f0b7e0f525641f6844fc506955dd0ef239ca3de99da1"
+      },
+      {
+        "path": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3d-private-pixi-browser-20260930-06\\browser\\desktop-wall.png",
+        "bytes": 31566,
+        "sha256": "ec239c86f0794ba7510b7742862a0317d842ae103c50c00796504fbcb79d8d5e"
+      },
+      {
+        "path": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3d-private-pixi-browser-20260930-06\\browser\\desktop-bridge.png",
+        "bytes": 31315,
+        "sha256": "5971290aa9eb8d62baed6210ab84ce3ecbb9b7ecca78c819698b75cebc8a8680"
+      },
+      {
+        "path": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3d-private-pixi-browser-20260930-06\\browser\\desktop-upper-bank.png",
+        "bytes": 31064,
+        "sha256": "eea188287a7156bb6e556a36f7783f8d0989fe96ea9ab1aad71066267310b2be"
+      },
+      {
+        "path": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3d-private-pixi-browser-20260930-06\\browser\\desktop-paused.png",
+        "bytes": 34604,
+        "sha256": "6582f2ebf11132c66b416eb65ebf33f445ade750e4117e557b7a6767303197db"
+      },
+      {
+        "path": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3d-private-pixi-browser-20260930-06\\browser\\phone-proxy-ready.png",
+        "bytes": 173615,
+        "sha256": "5cfb3158d4e0b60ffa0197d7403c569cb8675b072b89f2aa1e521f2508f4139d"
+      },
+      {
+        "path": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3d-private-pixi-browser-20260930-06\\browser\\phone-proxy-bridge.png",
+        "bytes": 156331,
+        "sha256": "b5ab3f854ee0bf350e44a9cf18e400ae1c4be083ed86532e56581987a42731a4"
+      },
+      {
+        "path": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-w3d-private-pixi-browser-20260930-06\\browser\\phone-proxy-paused.png",
+        "bytes": 174472,
+        "sha256": "79cd0935a42848af122975f8467e98a197582b0bfa07e6d9652b9d3eab6e4165"
+      }
+    ],
+    "normal": {
+      "combat-engaged-desktop.enemy-crops.json": {
+        "bytes": 821,
+        "sha256": "54ae16b4bc03976221acb6597b6b577f4b02a755e8415d64b3006eac30af1eb1"
+      },
+      "combat-engaged-desktop.enemy-crops.png": {
+        "bytes": 1252437,
+        "sha256": "da9e7e3b28143cd06c67acd6dbc00efd43a69b25b6ccda60ad010dd49c4ac01c"
+      },
+      "combat-engaged-desktop.png": {
+        "bytes": 1197441,
+        "sha256": "b51e1e53cd8b08ee0869b3a8f7d7c4312726d187befe8e1e32442bfb3994e082"
+      },
+      "combat-engaged-desktop.runtime.json": {
+        "bytes": 8994,
+        "sha256": "179fb03862e52aa8867d8642f0674b4670662a005380aa98d36b19267ce8b208"
+      },
+      "crossing-water-desktop.png": {
+        "bytes": 921356,
+        "sha256": "520f7c7ecb9fe968e1d25b1a8045d0c0dc5fff95f19db4535901d9fc50b0b55e"
+      },
+      "crossing-water-desktop.runtime.json": {
+        "bytes": 8758,
+        "sha256": "535d17f2f5658b09663d385797e0b06278b1072fafd8522fdd37ca1adb6646e2"
+      },
+      "frontier-relay-desktop.enemy-crops.json": {
+        "bytes": 848,
+        "sha256": "0077140cdc4caf321eaada558b92522febdc89b3292bfb24bc65c102682f59f9"
+      },
+      "frontier-relay-desktop.enemy-crops.png": {
+        "bytes": 1252312,
+        "sha256": "5592c5a8628df140ce5d8fdf2bc0528304fe45bca0f66d599891baa90a72c005"
+      },
+      "frontier-relay-desktop.png": {
+        "bytes": 1220181,
+        "sha256": "15401517fe787433f1dadfe221c3fb025682da93cadcad147f7e5715fba22bea"
+      },
+      "frontier-relay-desktop.runtime.json": {
+        "bytes": 8934,
+        "sha256": "732620d6354bba17d1510dc33fa574f11f42c02317511323a4d572f1c5f7694a"
+      },
+      "frontier-relay-mobile.enemy-crops.json": {
+        "bytes": 1631,
+        "sha256": "35e499ea50f266058d1b71c9f91b5fdb97bb29fa5367828093302ef03a05f6ba"
+      },
+      "frontier-relay-mobile.enemy-crops.png": {
+        "bytes": 297907,
+        "sha256": "0f812e6dc3a1675b548fda1f4473d438204de60cee7fc4d2c6286da87a40b10b"
+      },
+      "frontier-relay-mobile.png": {
+        "bytes": 305440,
+        "sha256": "2fd22138a4fdcb95f5732e45b94abc7801d98899b900ab280e4ebfe9503439f0"
+      },
+      "frontier-relay-mobile.runtime.json": {
+        "bytes": 8910,
+        "sha256": "a6e02dee34964c6ac3fb66b666686c3d0d8f18d95bd025d81d6c126efa36284b"
+      },
+      "hashwood-camp-desktop.png": {
+        "bytes": 1293406,
+        "sha256": "94ea99f6f81d48646cf5a49a0f803a14e59f47aeceb356b67e049cee61fb8df1"
+      },
+      "hashwood-camp-desktop.runtime.json": {
+        "bytes": 8715,
+        "sha256": "77cd7544f596ad2e8222febca9eb907ae1eaeeadc223acc85d517de79c6bfc1a"
+      },
+      "hashwood-foliage-desktop.png": {
+        "bytes": 1504297,
+        "sha256": "2c19d27e698182f7581508af878a77860b5fce225713de5c6692edb3d12108fa"
+      },
+      "hashwood-foliage-desktop.runtime.json": {
+        "bytes": 8862,
+        "sha256": "5d91e2e0b8341576bf30533b4df59c489e19683eeb0f79ff933917d7a5ae1b50"
+      },
+      "liquidation-market-desktop.png": {
+        "bytes": 964235,
+        "sha256": "5b1bb73963d2deccb3babeacc30b57d356735af3d824b5133a1228dc9bd97e18"
+      },
+      "liquidation-market-desktop.runtime.json": {
+        "bytes": 8979,
+        "sha256": "68f9c43c553a10aacfc169827941b53489a97ba65bd55da7da0fddbac5d6607e"
+      },
+      "liquidation-residential-desktop.png": {
+        "bytes": 1053551,
+        "sha256": "40bddff17a19cef61b38282e6e602f5ebc0fed8036b4c69c0f94ca18e7fa0862"
+      },
+      "liquidation-residential-desktop.runtime.json": {
+        "bytes": 8686,
+        "sha256": "4b1791d9c31a97da441eca8e4ecb1dc07bc18aa66c9b7c9c1cbba2c726993349"
+      },
+      "liquidation-yard-desktop.png": {
+        "bytes": 1047724,
+        "sha256": "a7ba097185a3f7ea35d013c5b87344e04c64427bcf3c642f11a9857a4c56e13c"
+      },
+      "liquidation-yard-desktop.runtime.json": {
+        "bytes": 8724,
+        "sha256": "bc4a648eb3c5967698f1f884d2f1f97e2945d17a0f5ddbad32ef24dfc9bffdf1"
+      },
+      "liquidity-bridge-desktop.png": {
+        "bytes": 1308539,
+        "sha256": "79910ef29fed5b4858de44eb9e7b5af7866195f765023bbea71e22e9322a5e7e"
+      },
+      "liquidity-bridge-desktop.runtime.json": {
+        "bytes": 8761,
+        "sha256": "b575bbecb659b9f45e4fce5c158de014b87e1f541d2a790a7f4858280f397e98"
+      },
+      "mining-camp-desktop.png": {
+        "bytes": 1422361,
+        "sha256": "03a89f5b74e1722a3a26b292d69a8246fa53cfd5c572fe935dd4238be0e83728"
+      },
+      "mining-camp-desktop.runtime.json": {
+        "bytes": 8708,
+        "sha256": "c0009053ae70ba1d3f28f71c8efc7f8dd8fe9a99aada7e3ea3c2f3ca4636125d"
+      },
+      "ravine-overlook-desktop.png": {
+        "bytes": 1391698,
+        "sha256": "a93a1342a4af1dce38eeb93a2b471837d97084d772acb6ece48bb191dfa1d728"
+      },
+      "ravine-overlook-desktop.runtime.json": {
+        "bytes": 8770,
+        "sha256": "412d6e5ad5c3312ffe5199e16ce6ea2bf99c553e89a0b634906b786c489d1f0e"
+      }
+    }
+  },
+  "storageNote": "Large textual receipts use standard Brotli compression with exact decompression/hash round-trip to avoid repeating multi-megabyte custody maps in Git. Smaller entries retain gzip. Original reports are unchanged in shared work."
+}
