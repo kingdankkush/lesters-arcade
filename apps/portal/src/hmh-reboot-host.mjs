@@ -1,5 +1,10 @@
 import { createHmhParentBridge } from './hmh-reboot-bridge.mjs';
 
+// The only world the host can request for the child, and the child's query
+// key for it (world-context.mjs HMH_WORLD_PARAM / TEN_AREA_WORLD_VALUE).
+export const HMH_FRONTIER_PREVIEW_WORLD = 'ten-area';
+const HMH_FRONTIER_PREVIEW_WORLD_PARAM = 'world';
+
 function normalizeOrigin(value) {
   const origin = new URL(value).origin;
   if (origin === 'null') throw new Error('expectedOrigin must be an absolute network origin');
@@ -32,7 +37,20 @@ export function createHmhRebootHost({
   const runtimeParams = new URLSearchParams();
   if (requestedRuntimeParams.get('evidenceSafe') === '1') runtimeParams.set('evidenceSafe', '1');
   if (runtimeParams.has('evidenceSafe') && requestedRuntimeParams.get('terminalPilot') === '1') runtimeParams.set('terminalPilot', '1');
-  const runtimeSuffix = runtimeParams.size > 0 ? `?${runtimeParams}` : '';
+  // The New Frontier preview (W4a ten-area world) is an explicit Free-only
+  // request from the portal's mode select, never a portal URL. The child
+  // selects it only from exactly one `mode=free` plus one `world=ten-area`
+  // (apps/hmh-reboot/src/world-context.mjs), and this host adds that pair
+  // only for a Free session whose payload is already unranked. A Ranked or
+  // rankedEligible session gets the legacy world whatever was requested.
+  const childUrl = (session, world) => {
+    const params = new URLSearchParams(runtimeParams);
+    if (world === HMH_FRONTIER_PREVIEW_WORLD && session.mode === 'free' && session.session?.rankedEligible === false) {
+      params.set('mode', 'free');
+      params.set(HMH_FRONTIER_PREVIEW_WORLD_PARAM, HMH_FRONTIER_PREVIEW_WORLD);
+    }
+    return `${origin}/hmh-reboot/index.html${params.size > 0 ? `?${params}` : ''}`;
+  };
   let activeBridge = null;
   let activeFrame = null;
   let activeSession = null;
@@ -109,13 +127,14 @@ export function createHmhRebootHost({
     return null;
   };
 
-  const mountSession = (session) => {
+  const mountSession = (session, { world = null } = {}) => {
     if (activeBridge) destroy();
     activeSession = session;
     const iframe = documentRef.createElement('iframe');
     iframe.className = 'hmh-reboot-frame';
     iframe.title = 'Hard Money Heroes reboot runtime';
-    iframe.src = `${origin}/hmh-reboot/index.html${runtimeSuffix}`;
+    iframe.src = childUrl(session, world);
+    if (new URL(iframe.src).searchParams.get(HMH_FRONTIER_PREVIEW_WORLD_PARAM) === HMH_FRONTIER_PREVIEW_WORLD) iframe.dataset.world = HMH_FRONTIER_PREVIEW_WORLD;
     iframe.loading = 'eager';
     iframe.referrerPolicy = 'same-origin';
     iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-pointer-lock');

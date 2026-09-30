@@ -68,6 +68,7 @@ import { createOfficialAppRoutes } from './src/routes/official-app-routes.mjs';
 import { createLazyLeaderboardRoute, createLazyProfileRoute } from './src/routes/lazy-routes.mjs';
 import { buildHmhRunDetailsModel, buildHmhRunHistoryModel } from './src/hmh-run-history.mjs';
 import { wireHmhFreeQuickplay } from './src/hmh-free-quickplay.mjs';
+import { HMH_FRONTIER_PREVIEW_COPY, mountHmhFrontierPreviewOption } from './src/hmh-frontier-preview.mjs';
 import { createOfficialPlayRoutes } from './src/routes/official-play-routes.mjs';
 import {
   districtTemplateContextForCell,
@@ -1514,6 +1515,11 @@ const stackedLocalEnabled = stackedLocalChoices.length === 0 || (stackedLocalCho
 let hmhRebootHost = null;
 let hmhRebootLifecycle = null;
 let hmhRebootActive = false;
+// New Frontier (preview): requested by its mode-select button for the next
+// Free session only; active once the host actually forwarded the world.
+let hmhFrontierPreviewRequested = false;
+let hmhFrontierPreviewActive = false;
+let hmhFrontierPreviewOption = null;
 // The canonical summary the lifecycle finalized for the run on screen. Cleared
 // on restart and teardown so a Free recap can never surface on a Ranked screen.
 let lastHmhRunSummary = null;
@@ -2249,7 +2255,7 @@ function currentPlayerBestScoreForMode(mode = currentSession?.mode ?? officialSe
 }
 
 function gameplaySyncCopy() {
-  const modeCopy = officialSelectedMode === 'ranked'
+  const modeCopy = hmhFrontierPreviewActive ? HMH_FRONTIER_PREVIEW_COPY.gameplay : officialSelectedMode === 'ranked'
     ? SETTLEMENT_LIVE
       ? 'Ranked testnet: verified score sync is held until game-over submission; restart creates a new verified session.'
       : 'Ranked preview: canonical evidence is saved locally; no transaction or on-chain leaderboard write occurs.'
@@ -2479,7 +2485,10 @@ function renderGameOverSummary() {
   // own click. Free runs only: a Ranked run is shared from the Ranked results
   // screen once it is published on LitVM (contract §7.4). The link is the
   // run's /f/ page, whose card the token fully determines (free-share plan).
-  if (!win && (currentSession?.mode ?? officialSelectedMode ?? 'free') === 'free') {
+  // A New Frontier preview run has no result (the child records none), so it
+  // gets a label and no share card.
+  if (hmhFrontierPreviewActive) appendText(dom.combatGameOverSummary, 'p', HMH_FRONTIER_PREVIEW_COPY.result, 'game-over-summary-copy hmh-frontier-preview-label');
+  else if (!win && (currentSession?.mode ?? officialSelectedMode ?? 'free') === 'free') {
     // The hero the child actually played (the run summary), else the pick.
     const heroPick = lastHmhRunSummary?.identity?.heroId ?? combat.characterId;
     const shareValues = {
@@ -4661,6 +4670,7 @@ function destroyHmhRebootSession() {
   gameAdapter?.teardown?.();
   gameAdapter = null;
   hmhRebootActive = false;
+  hmhFrontierPreviewActive = false;
 }
 
 function finalizeHmhRebootFreeGameOver(runSummary) {
@@ -4718,7 +4728,7 @@ function mountHmhRebootSession() {
         hmhRebootActive = true;
         combat.active = true;
         combat.paused = false;
-        if (dom.officialGameStateCopy) dom.officialGameStateCopy.textContent = 'Top-down reboot runtime connected. Portal session authority remains active.';
+        if (dom.officialGameStateCopy) dom.officialGameStateCopy.textContent = hmhFrontierPreviewActive ? HMH_FRONTIER_PREVIEW_COPY.gameplay : 'Top-down reboot runtime connected. Portal session authority remains active.';
       },
       onState: (message) => hmhRebootLifecycle?.handleState(message),
       onRunSummary: (message) => hmhRebootLifecycle?.handleRunSummary(message),
@@ -4769,7 +4779,10 @@ function mountHmhRebootSession() {
     reducedMotion: Boolean(gameSettings.reduceMotion),
   });
   hmhRebootActive = true;
-  return hmhRebootHost.mountSession({
+  // The host forwards the preview world only for an unranked Free payload;
+  // a Ranked session never asks. What the frame reports is what runs.
+  const frontierWorld = hmhFrontierPreviewRequested && !currentSession.isPaid && initContext.mode === 'free' && initContext.rankedEligible === false ? 'ten-area' : null;
+  const frame = hmhRebootHost.mountSession({
     sessionId: currentSession.urlSessionId ?? currentSession.sessionId,
     gameId: currentSession.gameId,
     mode: initContext.mode,
@@ -4785,7 +4798,10 @@ function mountHmhRebootSession() {
       rankedEligible: initContext.rankedEligible,
     },
     settings: { ...hmhRebootSettings(), ...childCosmetics('lester-blaster') },
-  });
+  }, { world: frontierWorld });
+  hmhFrontierPreviewActive = frame?.dataset?.world === 'ten-area';
+  labelHmhFrontierPreviewTitle();
+  return frame;
 }
 
 function destroyChikunSession() {
@@ -5010,11 +5026,27 @@ const renderOfficialCharacterSelect = officialPlayRoutes.renderCharacterSelect;
 const renderOfficialGameplay = () => {
   officialPlayRoutes.renderGameplay();
   if (currentSession?.hmhChallenge) dom.officialGameModeTitle.textContent += ` // ${currentSession.hmhChallenge.label}`;
+  labelHmhFrontierPreviewTitle();
 };
+// The gameplay title names a preview run; the view renders before the mount
+// decides, so the mount labels it too, and a re-render never doubles it.
+function labelHmhFrontierPreviewTitle() {
+  if (!hmhFrontierPreviewActive || !dom.officialGameModeTitle) return;
+  const suffix = ` // ${HMH_FRONTIER_PREVIEW_COPY.title}`;
+  if (!dom.officialGameModeTitle.textContent.endsWith(suffix)) dom.officialGameModeTitle.textContent += suffix;
+}
 const renderOfficialModeSelect = () => {
   officialPlayRoutes.renderModeSelect();
   hmhChallengeUi.render(selectedGameId);
   startRankedPreflightInBackground();
+  if (!hmhFrontierPreviewOption && dom.officialModeSelect) {
+    hmhFrontierPreviewOption = mountHmhFrontierPreviewOption({
+      container: dom.officialModeSelect,
+      before: dom.officialModeSelect.querySelector('.mode-guide-note'),
+      onStart: () => startOfficialMode('free', { frontierPreview: true }),
+    });
+  }
+  hmhFrontierPreviewOption?.render(selectedGameId);
   let options = document.querySelector('#stackedStartOptions');
   if (!options) {
     options = document.createElement('div'); options.id = 'stackedStartOptions'; options.className = 'stacked-start-options';
@@ -5129,8 +5161,10 @@ function showRankedTooltip(title, detail) {
   appendText(dom.officialRankedTooltip, 'span', detail);
 }
 
-async function startOfficialMode(mode) {
+async function startOfficialMode(mode, { frontierPreview = false } = {}) {
   playSfxCue('menu-click');
+  // Only the preview button asks for the ten-area world, and only for Free.
+  hmhFrontierPreviewRequested = mode === 'free' && frontierPreview === true && selectedGameId === 'lester-blaster';
   try { hmhChallengeUi.requestFor(selectedGameId, mode); }
   catch { setOfficialView('mode-select'); return; }
   // STACKED music starts in the player's click turn, before any await (the
