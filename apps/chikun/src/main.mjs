@@ -6,6 +6,8 @@ import { createChikunCharacter, chikunCoatFilter, chikunTrailParticles, CHIKUN_F
 import { createChikunWorld, drawChikunObstacle } from './world.mjs';
 import { createChikunAudio } from './audio.mjs';
 import { isChikunCoinFeedbackEnabled } from './coin-feedback.mjs';
+import { startChikunObstaclePresentation } from './obstacle-loop-bootstrap.mjs';
+import { chikunObstaclePresentationOptions } from '../../portal/src/chikun-presentation-switch.mjs';
 import { buildChikunViewport, chikunForkInView, upcomingChikunObstacle } from './viewport.mjs';
 import { createGuardedFrameLoop, finishRunSafely } from './frame-guard.mjs';
 import {
@@ -166,6 +168,11 @@ let ghostTrack = null;
 let replayPlayback = null;
 let replayPlaying = false;
 let positiveCoinFeedback = null;
+const obstacleOptions = chikunObstaclePresentationOptions(window.location.search, window.devicePixelRatio || 1);
+shell.dataset.obstacleLoops = 'disabled';
+const obstaclePresentation = startChikunObstaclePresentation({
+  ...obstacleOptions, onStatus: status => { if (!disposed) shell.dataset.obstacleLoops = status; },
+});
 shell.dataset.coinFeedback = 'disabled';
 if (isChikunCoinFeedbackEnabled(new URLSearchParams(window.location.search))) {
   shell.dataset.coinFeedback = 'loading';
@@ -624,7 +631,7 @@ function drawSky(snapshot) {
 }
 
 function drawFork(fork) {
-  if(fork.family)drawGroundObstacle(ctx, fork, latestSnapshot?.tick ?? 0, reduceMotion());
+  if(fork.family)drawGroundObstacle(ctx, fork, latestSnapshot?.tick ?? 0, reduceMotion(), obstaclePresentation);
   else drawChikunObstacle(ctx, fork, latestSnapshot?.tick ?? 0, reduceMotion());
 }
 
@@ -859,6 +866,7 @@ function handleParentMessage(event) {
     flightResizeObserver.disconnect();
     window.removeEventListener('resize', resizeFlightViewport);
     positiveCoinFeedback?.overlay.dispose();
+    obstaclePresentation.dispose();
     flightAudio.dispose();
     audioContext?.close?.();
     audioContext = null;

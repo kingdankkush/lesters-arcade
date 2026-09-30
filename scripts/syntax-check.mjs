@@ -20,6 +20,13 @@ const root = fileURLToPath(new URL('..', import.meta.url));
 
 // Every .mjs / .js module that must parse cleanly (node --check).
 const NODE_CHECK_FILES = [
+  'apps/portal/src/chikun-presentation-switch.mjs',
+  'apps/chikun/src/obstacle-loop.mjs',
+  'apps/chikun/src/obstacle-loop-view.mjs',
+  'apps/chikun/src/obstacle-loop-bootstrap.mjs',
+  'tests/chikun-obstacle-loop.test.mjs',
+  'tests/chikun-obstacle-view.test.mjs',
+  'tests/chikun-obstacle-host-draw.test.mjs',
   'apps/portal/src/stacked-presentation-switch.mjs',
   'apps/stacked/src/render/living-journey-loader.mjs',
   'apps/stacked/src/render/living-journey-view.mjs',
@@ -1267,6 +1274,12 @@ const NODE_CHECK_FILES = [
 
 // Every Python script that must compile (python -m py_compile).
 const PY_COMPILE_FILES = [
+  'scripts/chikun-blender/render-chikun-eagle-loop.py',
+  'scripts/lib/chikun_native_transforms.py',
+  'scripts/lib/chikun_obstacle_loop_pack.py',
+  'tests/chikun-native-transforms.test.py',
+  'tests/chikun-native-render-cleanup.test.py',
+  'tests/chikun-obstacle-loop-pack.test.py',
   'scripts/lib/source_art_paths.py',
   'tests/test_source_art_paths.py',
   'scripts/hmh-blender/export-hmh-actor-glb-pilot.py',

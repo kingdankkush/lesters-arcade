@@ -1,0 +1,677 @@
+{
+  "scope": "E1 Eagle animation pipeline technical pilot; default off; art rejected; no runtime sheet admission",
+  "passed": true,
+  "artAccepted": false,
+  "runtimeArtAdmission": false,
+  "physicalPhone": false,
+  "performanceMeasured": false,
+  "relatedJavaScriptTests": 72,
+  "pythonPackTransformCleanupTests": 9,
+  "actualBrowserCases": [
+    {
+      "name": "default-desktop",
+      "tier": null,
+      "reduced": false,
+      "phoneProxy": false,
+      "fixtureSeed": 2416520887,
+      "animated": false,
+      "sheet": {
+        "count": 0,
+        "crops": [],
+        "visible": 0,
+        "firstVisible": null
+      },
+      "layout": {
+        "status": "disabled",
+        "overflow": false,
+        "canvas": {
+          "x": 0,
+          "y": 45,
+          "width": 1440,
+          "height": 810,
+          "top": 45,
+          "right": 1440,
+          "bottom": 855,
+          "left": 0
+        },
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        }
+      },
+      "requests": [],
+      "evidenceSha256": "9ca864cfcbc78439259c7b7182056ed8fd6c4720ae52032c7b72d76bfc8b862a",
+      "score": 13971,
+      "finalState": {
+        "step": 12122,
+        "y": 660,
+        "velocity": 0,
+        "score": 13971,
+        "coinsCollected": 60,
+        "forksPassed": 35,
+        "nearMisses": 0,
+        "bestCombo": 7,
+        "survivalTicks": 12122,
+        "survivalTime": 202.033333,
+        "crashed": true,
+        "terminalReason": "hurdle"
+      },
+      "exactReplay": true,
+      "disposed": true
+    },
+    {
+      "name": "low-desktop",
+      "tier": "low",
+      "reduced": false,
+      "phoneProxy": false,
+      "fixtureSeed": 2416520887,
+      "animated": true,
+      "sheet": {
+        "count": 253,
+        "crops": [
+          "384,0,128,64",
+          "0,64,128,64",
+          "128,64,128,64",
+          "256,64,128,64",
+          "384,64,128,64",
+          "0,0,128,64",
+          "128,0,128,64",
+          "256,0,128,64"
+        ],
+        "visible": 41,
+        "firstVisible": {
+          "source": "http://127.0.0.1:59086/assets/generated/chikun-obstacle-loop-v1/eagle-low.webp",
+          "args": [
+            128,
+            64,
+            128,
+            64,
+            643.8232421875,
+            412.22361737082525,
+            110,
+            70
+          ]
+        }
+      },
+      "layout": {
+        "status": "ready",
+        "overflow": false,
+        "canvas": {
+          "x": 0,
+          "y": 45,
+          "width": 1440,
+          "height": 810,
+          "top": 45,
+          "right": 1440,
+          "bottom": 855,
+          "left": 0
+        },
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        }
+      },
+      "requests": [
+        "/dist/chunks/obstacle-loop-view-VSQCSPI6.js",
+        "/assets/generated/chikun-obstacle-loop-v1/manifest.json",
+        "/assets/generated/chikun-obstacle-loop-v1/eagle-low.webp"
+      ],
+      "evidenceSha256": "9ca864cfcbc78439259c7b7182056ed8fd6c4720ae52032c7b72d76bfc8b862a",
+      "score": 13971,
+      "finalState": {
+        "step": 12122,
+        "y": 660,
+        "velocity": 0,
+        "score": 13971,
+        "coinsCollected": 60,
+        "forksPassed": 35,
+        "nearMisses": 0,
+        "bestCombo": 7,
+        "survivalTicks": 12122,
+        "survivalTime": 202.033333,
+        "crashed": true,
+        "terminalReason": "hurdle"
+      },
+      "exactReplay": true,
+      "disposed": true
+    },
+    {
+      "name": "medium-desktop",
+      "tier": "medium",
+      "reduced": false,
+      "phoneProxy": false,
+      "fixtureSeed": 2416520887,
+      "animated": true,
+      "sheet": {
+        "count": 253,
+        "crops": [
+          "576,0,192,96",
+          "0,96,192,96",
+          "192,96,192,96",
+          "384,96,192,96",
+          "576,96,192,96",
+          "0,0,192,96",
+          "192,0,192,96",
+          "384,0,192,96"
+        ],
+        "visible": 41,
+        "firstVisible": {
+          "source": "http://127.0.0.1:59086/assets/generated/chikun-obstacle-loop-v1/eagle-medium.webp",
+          "args": [
+            192,
+            96,
+            192,
+            96,
+            643.8232421875,
+            412.22361737082525,
+            110,
+            70
+          ]
+        }
+      },
+      "layout": {
+        "status": "ready",
+        "overflow": false,
+        "canvas": {
+          "x": 0,
+          "y": 45,
+          "width": 1440,
+          "height": 810,
+          "top": 45,
+          "right": 1440,
+          "bottom": 855,
+          "left": 0
+        },
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        }
+      },
+      "requests": [
+        "/dist/chunks/obstacle-loop-view-VSQCSPI6.js",
+        "/assets/generated/chikun-obstacle-loop-v1/manifest.json",
+        "/assets/generated/chikun-obstacle-loop-v1/eagle-medium.webp"
+      ],
+      "evidenceSha256": "9ca864cfcbc78439259c7b7182056ed8fd6c4720ae52032c7b72d76bfc8b862a",
+      "score": 13971,
+      "finalState": {
+        "step": 12122,
+        "y": 660,
+        "velocity": 0,
+        "score": 13971,
+        "coinsCollected": 60,
+        "forksPassed": 35,
+        "nearMisses": 0,
+        "bestCombo": 7,
+        "survivalTicks": 12122,
+        "survivalTime": 202.033333,
+        "crashed": true,
+        "terminalReason": "hurdle"
+      },
+      "exactReplay": true,
+      "disposed": true
+    },
+    {
+      "name": "high-phone-proxy",
+      "tier": "high",
+      "reduced": false,
+      "phoneProxy": true,
+      "fixtureSeed": 2416520887,
+      "animated": true,
+      "sheet": {
+        "count": 41,
+        "crops": [
+          "768,128,256,128",
+          "0,0,256,128",
+          "256,0,256,128",
+          "512,0,256,128",
+          "768,0,256,128",
+          "0,128,256,128",
+          "256,128,256,128",
+          "512,128,256,128"
+        ],
+        "visible": 41,
+        "firstVisible": {
+          "source": "http://127.0.0.1:59086/assets/generated/chikun-obstacle-loop-v1/eagle-high.webp",
+          "args": [
+            768,
+            128,
+            256,
+            128,
+            614.9828125000004,
+            409.90836737082526,
+            110,
+            70
+          ]
+        }
+      },
+      "layout": {
+        "status": "ready",
+        "overflow": false,
+        "canvas": {
+          "x": 0,
+          "y": 80,
+          "width": 414,
+          "height": 736,
+          "top": 80,
+          "right": 414,
+          "bottom": 816,
+          "left": 0
+        },
+        "viewport": {
+          "width": 414,
+          "height": 896
+        }
+      },
+      "requests": [
+        "/dist/chunks/obstacle-loop-view-VSQCSPI6.js",
+        "/assets/generated/chikun-obstacle-loop-v1/manifest.json",
+        "/assets/generated/chikun-obstacle-loop-v1/eagle-high.webp"
+      ],
+      "evidenceSha256": "9ca864cfcbc78439259c7b7182056ed8fd6c4720ae52032c7b72d76bfc8b862a",
+      "score": 13971,
+      "finalState": {
+        "step": 12122,
+        "y": 660,
+        "velocity": 0,
+        "score": 13971,
+        "coinsCollected": 60,
+        "forksPassed": 35,
+        "nearMisses": 0,
+        "bestCombo": 7,
+        "survivalTicks": 12122,
+        "survivalTime": 202.033333,
+        "crashed": true,
+        "terminalReason": "hurdle"
+      },
+      "exactReplay": true,
+      "disposed": true
+    },
+    {
+      "name": "reduced-phone-proxy",
+      "tier": "high",
+      "reduced": true,
+      "phoneProxy": true,
+      "fixtureSeed": 2416520887,
+      "animated": true,
+      "sheet": {
+        "count": 41,
+        "crops": [
+          "0,0,256,128"
+        ],
+        "visible": 41,
+        "firstVisible": {
+          "source": "http://127.0.0.1:59086/assets/generated/chikun-obstacle-loop-v1/eagle-high.webp",
+          "args": [
+            0,
+            0,
+            256,
+            128,
+            614.9828125000004,
+            409.90836737082526,
+            110,
+            70
+          ]
+        }
+      },
+      "layout": {
+        "status": "ready",
+        "overflow": false,
+        "canvas": {
+          "x": 0,
+          "y": 80,
+          "width": 414,
+          "height": 736,
+          "top": 80,
+          "right": 414,
+          "bottom": 816,
+          "left": 0
+        },
+        "viewport": {
+          "width": 414,
+          "height": 896
+        }
+      },
+      "requests": [
+        "/dist/chunks/obstacle-loop-view-VSQCSPI6.js",
+        "/assets/generated/chikun-obstacle-loop-v1/manifest.json",
+        "/assets/generated/chikun-obstacle-loop-v1/eagle-high.webp"
+      ],
+      "evidenceSha256": "9ca864cfcbc78439259c7b7182056ed8fd6c4720ae52032c7b72d76bfc8b862a",
+      "score": 13971,
+      "finalState": {
+        "step": 12122,
+        "y": 660,
+        "velocity": 0,
+        "score": 13971,
+        "coinsCollected": 60,
+        "forksPassed": 35,
+        "nearMisses": 0,
+        "bestCombo": 7,
+        "survivalTicks": 12122,
+        "survivalTime": 202.033333,
+        "crashed": true,
+        "terminalReason": "hurdle"
+      },
+      "exactReplay": true,
+      "disposed": true
+    },
+    {
+      "name": "metadata-fallback",
+      "tier": "high",
+      "reduced": false,
+      "phoneProxy": false,
+      "fixtureSeed": 2416520887,
+      "animated": false,
+      "sheet": {
+        "count": 0,
+        "crops": [],
+        "visible": 0,
+        "firstVisible": null
+      },
+      "layout": {
+        "status": "fallback",
+        "overflow": false,
+        "canvas": {
+          "x": 0,
+          "y": 45,
+          "width": 1440,
+          "height": 810,
+          "top": 45,
+          "right": 1440,
+          "bottom": 855,
+          "left": 0
+        },
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        }
+      },
+      "requests": [
+        "/dist/chunks/obstacle-loop-view-VSQCSPI6.js",
+        "/assets/generated/chikun-obstacle-loop-v1/manifest.json"
+      ],
+      "evidenceSha256": "9ca864cfcbc78439259c7b7182056ed8fd6c4720ae52032c7b72d76bfc8b862a",
+      "score": 13971,
+      "finalState": {
+        "step": 12122,
+        "y": 660,
+        "velocity": 0,
+        "score": 13971,
+        "coinsCollected": 60,
+        "forksPassed": 35,
+        "nearMisses": 0,
+        "bestCombo": 7,
+        "survivalTicks": 12122,
+        "survivalTime": 202.033333,
+        "crashed": true,
+        "terminalReason": "hurdle"
+      },
+      "exactReplay": true,
+      "disposed": true
+    }
+  ],
+  "delayedDispose": [
+    {
+      "name": "delayed-import-dispose",
+      "observation": {
+        "status": "loading",
+        "pendingFrames": 0,
+        "sheetCount": 0
+      },
+      "intercepted": 1
+    }
+  ],
+  "actualPortal": {
+    "guestFree": true,
+    "nativeStartJumpExit": true,
+    "nativePause": true,
+    "visiblePauseExit": true,
+    "strictQueryForwarded": true,
+    "phoneProxy": true,
+    "physicalPhone": false,
+    "errors": []
+  },
+  "budgets": {
+    "hmh-reboot": {
+      "bytes": 1039992,
+      "cap": 1048576,
+      "headroom": 8584
+    },
+    "stacked": {
+      "bytes": 577431,
+      "cap": 607000,
+      "headroom": 29569
+    }
+  },
+  "sourceReview": "Independent character agent source review PASS; execution evidence is the archived actual root receipts",
+  "archives": [
+    {
+      "original": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\chikun-eagle-render-01\\report.json",
+      "archive": "00-chikun-eagle-render-01--report.json.gz",
+      "bytes": 12350,
+      "sha256": "cdde84225bb567ef788e051a3c16c53bb04d849cf840d3d4da4bfa4170848761",
+      "archiveBytes": 2657,
+      "archiveSha256": "f7de3ebe65e53da2aa023dfa98497e8559c0a143eaa5f8b089c60a87bfc7c547"
+    },
+    {
+      "original": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\chikun-eagle-render-01\\producer.py.txt",
+      "archive": "01-chikun-eagle-render-01--producer.py.txt.gz",
+      "bytes": 3598,
+      "sha256": "74740f19f0557d96fe928b3fa0ec1b725de4e7cb0a855364fb557c4f5749569a",
+      "archiveBytes": 1686,
+      "archiveSha256": "17fc675143317a62c78997632f0427bbd4d44b55f65dfbba6b32eed3318a1c77"
+    },
+    {
+      "original": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\chikun-eagle-render-02\\report.json",
+      "archive": "02-chikun-eagle-render-02--report.json.gz",
+      "bytes": 27280,
+      "sha256": "4e96cde40ebdef3b5f0d74d38d372d32b9a910fa2362892c9fd0776145615567",
+      "archiveBytes": 4718,
+      "archiveSha256": "9720a58cb16fe1b8c9a7f5e090044b75cc4d01f83b0b95787a1fc7ec4ab9bcbf"
+    },
+    {
+      "original": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\chikun-eagle-render-02\\inputs.json",
+      "archive": "03-chikun-eagle-render-02--inputs.json.gz",
+      "bytes": 11206,
+      "sha256": "3300999bbd53b0fb2033dcea3722652fcbb2121b7a4e290809a579ed29d1bfb5",
+      "archiveBytes": 3061,
+      "archiveSha256": "98bdd54869765eb53d3176d7838ec31316541226554c52aca536e9bd39cd404f"
+    },
+    {
+      "original": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\chikun-eagle-render-02\\runner.mjs.txt",
+      "archive": "04-chikun-eagle-render-02--runner.mjs.txt.gz",
+      "bytes": 4449,
+      "sha256": "ebbf632cc1885aef1e7ba507c193efc71ab3c9fa09f7bb7f7ecc11aad3591b5b",
+      "archiveBytes": 1744,
+      "archiveSha256": "1c290f91b577818d1614aadd6716aedf4a8f16aec4905aecd094fd0e123edf23"
+    },
+    {
+      "original": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\chikun-obstacle-game-gate-01\\report.json",
+      "archive": "05-chikun-obstacle-game-gate-01--report.json.gz",
+      "bytes": 35394,
+      "sha256": "58a09a68d7654d07762c2c913ed7928dfb4149afbdae12b0a4e4bb48d86cdfc5",
+      "archiveBytes": 8084,
+      "archiveSha256": "de49735bcb10e78556a1220b5563d6550e1d6cfc9f4953da3d98da6f6ac475c4"
+    },
+    {
+      "original": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\chikun-obstacle-game-gate-01\\prelaunch-lock-followup.json",
+      "archive": "06-chikun-obstacle-game-gate-01--prelaunch-lock-followup.json.gz",
+      "bytes": 359,
+      "sha256": "7365b24f785b0819fc0b6f81c14e375c644be50a5b300e4f96bf674988017ddb",
+      "archiveBytes": 269,
+      "archiveSha256": "4917670e378a3de408a2794a9bdfb7e70c68828ff1bed55ce7c531c134188afa"
+    },
+    {
+      "original": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\chikun-obstacle-game-gate-02\\report.json",
+      "archive": "07-chikun-obstacle-game-gate-02--report.json.gz",
+      "bytes": 156181,
+      "sha256": "da8ccb0fbcfcb5ccbcb8a75a0a288d4504a8c2a92d7eb69655b48929fb9e0b14",
+      "archiveBytes": 38153,
+      "archiveSha256": "49d07f7bb1806f30fd84a18adaf22d67c27b4d770947368f9a252e1814303a5d"
+    },
+    {
+      "original": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\chikun-obstacle-game-gate-03\\report.json",
+      "archive": "08-chikun-obstacle-game-gate-03--report.json.gz",
+      "bytes": 266396,
+      "sha256": "f90a9605bf767025f16673ced20555e6fa32df51e4f796bf01257aa01f2bbd4a",
+      "archiveBytes": 63293,
+      "archiveSha256": "7f8faceaf9aa92ba208d5b7ec489e2fbcfa2069a6d875e1aafd53e617572da02"
+    },
+    {
+      "original": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\chikun-obstacle-game-gate-04\\report.json",
+      "archive": "09-chikun-obstacle-game-gate-04--report.json.gz",
+      "bytes": 254482,
+      "sha256": "5f1d6b9166e69f5da835b8e66a9eb5ed6b5fd5d492e438212f86cd036c664786",
+      "archiveBytes": 61166,
+      "archiveSha256": "12cc6a9c77bcd5adb4328cc1a599b649a02a72b497a1bf7daf805408afedb98a"
+    },
+    {
+      "original": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\chikun-obstacle-game-gate-05\\report.json",
+      "archive": "10-chikun-obstacle-game-gate-05--report.json.gz",
+      "bytes": 253783,
+      "sha256": "6cece43f68da0e1a0bb75a6bee4aa99646f79a32ca49e73a47cedd971b314517",
+      "archiveBytes": 60671,
+      "archiveSha256": "12b499160a40e5218ddc64ecfe25a11b8d8fd00138c1499c72c6d0281338aff6"
+    },
+    {
+      "original": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\chikun-obstacle-browser-01\\report.json",
+      "archive": "11-chikun-obstacle-browser-01--report.json.gz",
+      "bytes": 34661,
+      "sha256": "16e1ba6af24676da0651ca6fbd2b0ea5b8d7b9968f6d8a42ed9a6f82682bdd61",
+      "archiveBytes": 8298,
+      "archiveSha256": "f7746facc3074782e3b256e4929c4269eba3cbd1c9d119a342f02a001182d79f"
+    },
+    {
+      "original": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\chikun-obstacle-browser-02\\report.json",
+      "archive": "12-chikun-obstacle-browser-02--report.json.gz",
+      "bytes": 71565,
+      "sha256": "9d2c7108d8062cd843e0634c7326200a13c7c099e1cd7445c3a1e0771280b332",
+      "archiveBytes": 15635,
+      "archiveSha256": "3e83c05f2b64532d1f9dce3c88b405fb7cfbb77364e0b63bcadf188a3f53bdee"
+    },
+    {
+      "original": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\chikun-obstacle-portal-01\\report.json",
+      "archive": "13-chikun-obstacle-portal-01--report.json.gz",
+      "bytes": 47976,
+      "sha256": "8695eccf354c8bda55de558f7c465e1185bea7f97ae74577da204ba758e033a5",
+      "archiveBytes": 11851,
+      "archiveSha256": "bbf32c641d6c36af6f3b3d30ccf8a8bc38e24b3223688c41fe4fbb2b088f7db4"
+    },
+    {
+      "original": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\chikun-obstacle-portal-02\\report.json",
+      "archive": "14-chikun-obstacle-portal-02--report.json.gz",
+      "bytes": 46710,
+      "sha256": "b1b7f34108adf1361a09b7450f34991d16ed8b0f936dd3ffbf517d3a024efb20",
+      "archiveBytes": 11417,
+      "archiveSha256": "47757677ece3cb1feae8616f8ec880650bbce6bd567c5add597c7999c6f1d9ed"
+    },
+    {
+      "original": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\chikun-obstacle-browser.mjs",
+      "archive": "15-chikun-obstacle-browser.mjs.gz",
+      "bytes": 16935,
+      "sha256": "b13b71928d6ef74fd5331c120f92b0941e3230787049cfe53bdf1c5cd6ef5b95",
+      "archiveBytes": 5869,
+      "archiveSha256": "d925ee5037bde80538c4f2f4f66b935f647de446c2823e767188548e6f8f24fb"
+    },
+    {
+      "original": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\chikun-obstacle-browser-02.mjs",
+      "archive": "16-chikun-obstacle-browser-02.mjs.gz",
+      "bytes": 17139,
+      "sha256": "0ae4362007e659f3647214d1adb447e1daa00c11a4ce0ebc22d0d0baaed20f89",
+      "archiveBytes": 5925,
+      "archiveSha256": "0a604281698d504c2d74469e3ffb125f6e60676ce9da880cb3466df52b60d2f6"
+    },
+    {
+      "original": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\chikun-obstacle-portal-01.mjs",
+      "archive": "17-chikun-obstacle-portal-01.mjs.gz",
+      "bytes": 10780,
+      "sha256": "22de474efc1590efe693449c60fa5c158ff7e37073b9623ecd2db9398c72d9cf",
+      "archiveBytes": 4345,
+      "archiveSha256": "172fde438b277141bd26034d470b9d30bb2cbed48e8a6824bff89a5ddf66e211"
+    },
+    {
+      "original": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\chikun-obstacle-portal-02.mjs",
+      "archive": "18-chikun-obstacle-portal-02.mjs.gz",
+      "bytes": 11062,
+      "sha256": "8fd99f4fb234f092f377bf758ea92944c24f302b2acba412c5c6fca6fcc210a4",
+      "archiveBytes": 4399,
+      "archiveSha256": "2a3a169ae39b10b9f6e8a660f7c7408d7c5eeaae0a3c13b16d7b03a501bee8a8"
+    },
+    {
+      "original": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\run-chikun-obstacle-game-gate.mjs",
+      "archive": "19-run-chikun-obstacle-game-gate.mjs.gz",
+      "bytes": 8610,
+      "sha256": "f98caa2d485e79f1a4b841a7d387184202337b77417b80f4bf904b921c6240b1",
+      "archiveBytes": 3124,
+      "archiveSha256": "1f996531e6f1d6e47dbedb0356193de048df2f267e963eed3e59b837c97c037a"
+    },
+    {
+      "original": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\run-chikun-obstacle-game-continuation.mjs",
+      "archive": "20-run-chikun-obstacle-game-continuation.mjs.gz",
+      "bytes": 8715,
+      "sha256": "14248350dde8703fcf1c998ddaa7050eedee4b867d7b1cdb3017da89fd282109",
+      "archiveBytes": 3014,
+      "archiveSha256": "264622620915351ef0afe2365ddd1716c14a9ce68b8610f66128dafff9d8e5a7"
+    },
+    {
+      "original": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\run-chikun-obstacle-browser-02.mjs",
+      "archive": "21-run-chikun-obstacle-browser-02.mjs.gz",
+      "bytes": 5668,
+      "sha256": "2bbd724f415170bee93337f58e387af68a97bfd125bf264006c82fca6cb8a93c",
+      "archiveBytes": 1956,
+      "archiveSha256": "cb2a1434e92f3cc890e750953d3ab42ceae9226b7e7e20cbf52e03eaded841a0"
+    },
+    {
+      "original": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\run-chikun-obstacle-portal-01.mjs",
+      "archive": "22-run-chikun-obstacle-portal-01.mjs.gz",
+      "bytes": 5922,
+      "sha256": "b990235be799b5ea13bbcb64d190d5eb44379e10282bbf56064935bd87548da6",
+      "archiveBytes": 2044,
+      "archiveSha256": "696f7810348c80b3db5348fa0e41e2c5a0f2a7083439b88c5b6b48e3edac9e84"
+    },
+    {
+      "original": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\run-chikun-obstacle-portal-02.mjs",
+      "archive": "23-run-chikun-obstacle-portal-02.mjs.gz",
+      "bytes": 6148,
+      "sha256": "0d2c040f71cdc678f15d40d61c62e82630885bb026acb00ac88c584873ad364b",
+      "archiveBytes": 2095,
+      "archiveSha256": "4b62628db67ded48deefb378929fd71c20e4adf969db43096cfa23764ebd39d5"
+    },
+    {
+      "original": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\owned-windows-child.mjs",
+      "archive": "24-owned-windows-child.mjs.gz",
+      "bytes": 3475,
+      "sha256": "a5177337fcf6ec41f285fc105b93d0b4b94ee1101cb14a653a91e9b8b075b0d9",
+      "archiveBytes": 1360,
+      "archiveSha256": "ade927025e2afbae667182802dfce78d9ddd6b3afea7cfd48a5b40eac5e8ea4b"
+    },
+    {
+      "original": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\owned-windows-preview-child.mjs",
+      "archive": "25-owned-windows-preview-child.mjs.gz",
+      "bytes": 3476,
+      "sha256": "6f4903a66d324a01a476eebefdfac68663dde2c573f62f637c4b7537ccb0d631",
+      "archiveBytes": 1360,
+      "archiveSha256": "18c5cfc758da42cddbb922c7989a0204d20eb87c1d5d359985932ef89f92c162"
+    },
+    {
+      "original": "C:\\Users\\just_\\lesters-arcade-wt\\visual-overhaul-200\\.tmp\\chikun-obstacle-loop\\eagle-render-v2\\native-receipt.json",
+      "archive": "eagle-render-v2-native-receipt.json.gz",
+      "bytes": 2680,
+      "sha256": "fcb5984f5e937ad63eb18f309b6183c543a50e2c174fb61c5f4ff2b2919c5635",
+      "archiveBytes": 1008,
+      "archiveSha256": "772b554c912e3f658f66981a98fd2e97f06ff2c6c5a58dc008e563e5ae1be5b0"
+    },
+    {
+      "original": "C:\\Users\\just_\\lesters-arcade-wt\\visual-overhaul-200\\.tmp\\chikun-obstacle-loop\\eagle-packed-v1\\manifest.json",
+      "archive": "eagle-packed-v1-manifest.json.gz",
+      "bytes": 2732,
+      "sha256": "92fce9996cbd594c044f8cc8ee0f476cbc0a301c22ffefc642b5a937f57f0c96",
+      "archiveBytes": 966,
+      "archiveSha256": "1d9020827694e3aa01f228ce65ffe82da7e23bcccc18f953ae1f2f731e0bc727"
+    }
+  ],
+  "retainedPrivateNativeFrames": "C:\\Users\\just_\\lesters-arcade-wt\\visual-overhaul-200\\.tmp\\chikun-obstacle-loop\\eagle-render-v2",
+  "retainedPrivateSheets": "C:\\Users\\just_\\lesters-arcade-wt\\visual-overhaul-200\\.tmp\\chikun-obstacle-loop\\eagle-packed-v1",
+  "failedAttempts": "Original native matrix restoration, prelaunch watchdog wrapper, wrong course seed, portal load wait and hidden mobile exit selector remain raw archived failures. The hidden-exit attempt also requested an unmounted local Free-card API; final native pause/exit smoke produced no server errors."
+}

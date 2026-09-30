@@ -4862,6 +4862,7 @@ function mountChikunSession() {
   });
   chikunRunMusic = createChikunRunMusic(startArcadeMusicForGame);
   chikunHost = createChikunHost({
+    search: bootRuntimeSearch,
     mount: dom.officialCombatMount,
     expectedOrigin: window.location.origin,
     onReady: () => {

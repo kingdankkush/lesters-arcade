@@ -125,7 +125,7 @@ function shapeFallback(ctx,o){
  ctx.fillStyle=o.family==='tree'?'#507642':'#a59572';ctx.strokeStyle=ctx.fillStyle;
  for(const s of o.shapes){if(s.type==='rect')ctx.fillRect(s.x,s.y,s.width,s.height);else if(s.type==='circle'){ctx.beginPath();ctx.arc(s.x,s.y,s.radius,0,TAU);ctx.fill();}else{ctx.lineWidth=s.radius*2;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(s.ax,s.ay);ctx.lineTo(s.bx,s.by);ctx.stroke();}}ctx.lineCap='butt';
 }
-export function drawGroundObstacle(ctx,o,tick=0,reduced=false){
+export function drawGroundObstacle(ctx,o,tick=0,reduced=false,obstaclePresentation=null){
  const img=art.get(o.variant),x=o.x,w=o.width;
  if(o.family==='forest'){
   const varieties=['oak','maple','willow','cherry'];
@@ -193,7 +193,7 @@ export function drawGroundObstacle(ctx,o,tick=0,reduced=false){
   if(o.family==='sky'){h=o.kind==='plane'?72:70;y=o.y-h*.60;}
   // Grounded art is anchored at the same floor as the canonical geometry.
   const bounce=!reduced&&o.kind==='shiba'?Math.abs(Math.sin(tick*.19))*3:0;
-  ctx.drawImage(img,x,y-bounce,w,h);
+  if(!obstaclePresentation?.draw(ctx,o,tick,reduced,x,y-bounce,w,h))ctx.drawImage(img,x,y-bounce,w,h);
   if(o.kind==='shiba'){ctx.fillStyle='#edd7a3';ctx.font='700 10px system-ui';ctx.textAlign='center';ctx.fillText('SHIBA!',x+w/2,y-11);}
  }else shapeFallback(ctx,o);
  if(!o.coin.collected)drawGroundCoin(ctx,o.coin,tick,reduced);

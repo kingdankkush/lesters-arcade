@@ -393,3 +393,17 @@ SHA375640a1..., and closes its owned native child/marker. Previous failure and
 corrected proposal/receipts are preserved separately. No source model was saved.
 This simple existing bird remains placeholder art below the final target; actual
 three-tier packing/game replay checks and production art admission remain open.
+
+
+The owner answered the new reward-package question: use the lead's recommended
+choices to make achievements/trophies/stats/functionality visually compelling.
+The recommended two HMH trophy achievements, three completion trophies, per-game
+Ranked rarity,12reward families,EarlySupporter and optional/off-by-default gyro
+are approved for implementation. Exact catalog IDs/thresholds/server provenance
+remain tested slices, not rules enabled by this approval record. No social posts,
+early blog publication, minting, contract action or release is inferred.
+
+
+## Chikun E1 checkpoint: technical animation pilot
+
+Optional eight-frame Eagle pipeline, three texture tiers, strict lazy loading, static fallback and disposal completed. See slices/CHIKUN-E1.md and receipts/chikun-e1/receipt.json:72 related Node checks,9 Python checks,six actual replay-identical game cases,delayed disposal and native phone-viewport portal pause/exit passed. Placeholder Eagle art remains rejected/private; physical device and final art gates are open. Original failures are retained. Initial budgets HMH1,039,992B/STACKED577,431B. No deployment or release version change.

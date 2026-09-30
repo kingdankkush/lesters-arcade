@@ -1,4 +1,5 @@
 import { createChikunParentBridge } from './chikun-bridge.mjs';
+import { chikunPresentationSuffix } from './chikun-presentation-switch.mjs';
 
 function normalizeOrigin(value) {
   const origin = new URL(value).origin;
@@ -9,6 +10,7 @@ function normalizeOrigin(value) {
 export function createChikunHost({
   mount,
   expectedOrigin,
+  search = globalThis.location?.search ?? '',
   documentRef = document,
   bridgeFactory = createChikunParentBridge,
   onReady = () => {},
@@ -89,7 +91,7 @@ export function createChikunHost({
     const iframe = documentRef.createElement('iframe');
     iframe.className = 'chikun-game-frame';
     iframe.title = "Chikun's Escape runtime";
-    iframe.src = `${origin}/chikun/index.html`;
+    iframe.src = `${origin}/chikun/index.html${chikunPresentationSuffix(search)}`;
     iframe.loading = 'eager';
     iframe.referrerPolicy = 'same-origin';
     // allow-popups(-to-escape-sandbox): the results share row opens x.com and
