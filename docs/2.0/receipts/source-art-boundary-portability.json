@@ -1,0 +1,15 @@
+{
+  "scope": "Two-file source-copy fixture tests with empty PATH, no .git or node_modules; no real asset/native/browser gate",
+  "filesSha256": {
+    "scripts/lib/source_art_paths.py": "59f153a5e6b574fe222024a78be727a6315eccaeaa20fc827b3b3824a78a7ab9",
+    "tests/test_source_art_paths.py": "74b1a11db2057f954aeb9f112c3e073dcb626e2384826b60c87b3be71cb2170c"
+  },
+  "sourceUnchanged": true,
+  "exitCode": 0,
+  "stdout": "",
+  "stderr": "test_byte_mismatch_fails (__main__.SourceArtPathsTests.test_byte_mismatch_fails) ... ok\ntest_changed_input_detected_on_success (__main__.SourceArtPathsTests.test_changed_input_detected_on_success) ... ok\ntest_changed_source_checked_even_when_operation_fails (__main__.SourceArtPathsTests.test_changed_source_checked_even_when_operation_fails) ... ok\ntest_deleted_input_detected_on_success (__main__.SourceArtPathsTests.test_deleted_input_detected_on_success) ... ok\ntest_directory_is_not_source_file (__main__.SourceArtPathsTests.test_directory_is_not_source_file) ... ok\ntest_even_in_root_junction_rejected (__main__.SourceArtPathsTests.test_even_in_root_junction_rejected) ... ok\ntest_exact_identity_and_read_only_context (__main__.SourceArtPathsTests.test_exact_identity_and_read_only_context) ... ok\ntest_explicit_existing_absolute_root_required (__main__.SourceArtPathsTests.test_explicit_existing_absolute_root_required) ... ok\ntest_hash_mismatch_fails (__main__.SourceArtPathsTests.test_hash_mismatch_fails) ... ok\ntest_identity_metadata_is_required_and_strict (__main__.SourceArtPathsTests.test_identity_metadata_is_required_and_strict) ... ok\ntest_junction_escape_rejected_without_reading_target (__main__.SourceArtPathsTests.test_junction_escape_rejected_without_reading_target) ... ok\ntest_missing_source_fails (__main__.SourceArtPathsTests.test_missing_source_fails) ... ok\ntest_no_relative_path_aliases_or_escape (__main__.SourceArtPathsTests.test_no_relative_path_aliases_or_escape) ... ok\ntest_original_operation_error_preserved_if_source_unchanged (__main__.SourceArtPathsTests.test_original_operation_error_preserved_if_source_unchanged) ... ok\ntest_root_file_rejected (__main__.SourceArtPathsTests.test_root_file_rejected) ... ok\ntest_root_junction_rejected (__main__.SourceArtPathsTests.test_root_junction_rejected) ... ok\ntest_source_directory_replaced_by_junction_is_detected (__main__.SourceArtPathsTests.test_source_directory_replaced_by_junction_is_detected) ... ok\n\n----------------------------------------------------------------------\nRan 17 tests in 0.063s\n\nOK\n",
+  "python": "3.12.14 (main, Aug 25 2026, 14:01:42) [MSC v.1944 64 bit (AMD64)]",
+  "pathEmpty": true,
+  "tests": 17,
+  "passed": true
+}

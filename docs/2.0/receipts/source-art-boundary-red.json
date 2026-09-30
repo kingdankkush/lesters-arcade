@@ -1,0 +1,6 @@
+{
+  "scope": "Initial missing-helper RED, before implementation; no behavioral cases executed",
+  "exitCode": 1,
+  "testCasesExecuted": 0,
+  "stderr": "Traceback (most recent call last):\n  File \"C:\\Users\\just_\\lesters-arcade-wt\\visual-overhaul-200\\tests\\test_source_art_paths.py\", line 14, in <module>\n    spec.loader.exec_module(module)\n  File \"<frozen importlib._bootstrap_external>\", line 995, in exec_module\n  File \"<frozen importlib._bootstrap_external>\", line 1132, in get_code\n  File \"<frozen importlib._bootstrap_external>\", line 1190, in get_data\nFileNotFoundError: [Errno 2] No such file or directory: 'C:\\\\Users\\\\just_\\\\lesters-arcade-wt\\\\visual-overhaul-200\\\\scripts\\\\lib\\\\source_art_paths.py'\n"
+}

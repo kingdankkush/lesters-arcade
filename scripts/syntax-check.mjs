@@ -20,6 +20,7 @@ const root = fileURLToPath(new URL('..', import.meta.url));
 
 // Every .mjs / .js module that must parse cleanly (node --check).
 const NODE_CHECK_FILES = [
+  'tests/source-art-paths.test.mjs',
   'tests/hmh-cockpit-lazy-startup.test.mjs',
   'scripts/lib/hmh-greybox-layout-check.mjs',
   'tests/hmh-greybox-layout-check.test.mjs',
@@ -1249,6 +1250,8 @@ const NODE_CHECK_FILES = [
 
 // Every Python script that must compile (python -m py_compile).
 const PY_COMPILE_FILES = [
+  'scripts/lib/source_art_paths.py',
+  'tests/test_source_art_paths.py',
   'scripts/hmh-blender/export-hmh-actor-glb-pilot.py',
   'scripts/hmh-blender/verify-hmh-actor-glb-pilot.py',
   'scripts/lib/hmh_actor_pilot_paths.py',
