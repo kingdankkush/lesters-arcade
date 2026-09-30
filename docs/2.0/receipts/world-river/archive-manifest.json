@@ -1,0 +1,204 @@
+{
+  "schema": "world-river-raw-archive-v1",
+  "scope": "Exact River RED, retained first GREEN endpoint failure, final100-case source/copy/diagnostic, one native browser window and original-image review. Compact lossless records and input hashes; source copies/images remain in task workspace. No physical-phone, performance, official-map or owner/final-art acceptance.",
+  "entries": [
+    {
+      "archive": "red-01/red-report.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-river-flow-red-20260930-01\\red-report.json",
+      "bytes": 21236,
+      "sha256": "7f8d8456f96df481230b71c879c1d33f868c6d3230ac4835ff4fd149d93a4938",
+      "storedBytes": 4218,
+      "storedSha256": "aa0ab56f7424e5d142f9b71e063309e7bc63b5841c31f5d3dfb5736594a8413e",
+      "compression": "gzip"
+    },
+    {
+      "archive": "red-01/runner.mjs.txt.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-river-flow-red-20260930-01\\runner.mjs.txt",
+      "bytes": 8992,
+      "sha256": "286cf2380bd6c8f84b87783ac0ea890ef0d11abe61acff60040627b2c2f4cc0a",
+      "storedBytes": 3888,
+      "storedSha256": "8b13e3d8586e746409324e6213e32019925a0ca7a1d2fe30b2b928ded612a223",
+      "compression": "gzip"
+    },
+    {
+      "archive": "red-01/river-test.mjs.txt.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-river-flow-red-20260930-01\\river-test.mjs.txt",
+      "bytes": 10145,
+      "sha256": "e8384b15d6b2fbb2dcf54db4359e6c05cc2dc56d3b23516074de82054c0f82f6",
+      "storedBytes": 3317,
+      "storedSha256": "03fe7bbaf52b40302f3c4c024a58093b8e316f6da6d842ddf6d307fc9d4b3bf6",
+      "compression": "gzip"
+    },
+    {
+      "archive": "red-01/helper.mjs.txt.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-river-flow-red-20260930-01\\helper.mjs.txt",
+      "bytes": 3475,
+      "sha256": "a5177337fcf6ec41f285fc105b93d0b4b94ee1101cb14a653a91e9b8b075b0d9",
+      "storedBytes": 1360,
+      "storedSha256": "ade927025e2afbae667182802dfce78d9ddd6b3afea7cfd48a5b40eac5e8ea4b",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-failed-01/gate-report.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-river-green-20260930-01\\gate-report.json",
+      "bytes": 39568,
+      "sha256": "f74d210e37366ad9d07af7c67a9463524b32ea1fe5c2326f2c74cafe90c69849",
+      "storedBytes": 8943,
+      "storedSha256": "06786ddf9f1437b192bf580f44d28d104c0d0808f96194ee7dc3cf48da5dcd69",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-failed-01/bindings.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-river-green-20260930-01\\bindings.json",
+      "bytes": 31592,
+      "sha256": "44f9092265c4a2becad5598db4f7f57a6f52b24a3bdeeea27187c38c45ac249e",
+      "storedBytes": 3907,
+      "storedSha256": "d9673bba7a40d07913314637dd833563ac0d89c49a61056bc6e5e8da2043047f",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-failed-01/runner.mjs.txt.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-river-green-20260930-01\\runner.mjs.txt",
+      "bytes": 4970,
+      "sha256": "cf1390673b2da9a6d64e3ad6db9b3d80d0934cac75323a025754ddaeec626f16",
+      "storedBytes": 1926,
+      "storedSha256": "72a9fca03ff9c28e56e5d43cc5118faf3aba8aab86888cc263dba2140b5ba292",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-02/gate-report.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-river-green-20260930-02\\gate-report.json",
+      "bytes": 67416,
+      "sha256": "f87b70abc669424233332cf8a1e07e6b5236f03aca71ba98566fd1746ec95a0c",
+      "storedBytes": 10026,
+      "storedSha256": "5d0ac97906f39611a268104773b586ff87292dd9c6d2c81dd9030d193062425e",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-02/bindings.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-river-green-20260930-02\\bindings.json",
+      "bytes": 31592,
+      "sha256": "1318cf47741c36a376decbb0b258dcbae2e5dec182f09a652aed1fc57599496c",
+      "storedBytes": 3905,
+      "storedSha256": "751e9df207192db30c745fffd436bbcc1a95c6a9968aaa040ff1b09439daf9b4",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-02/runner.mjs.txt.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-river-green-20260930-02\\runner.mjs.txt",
+      "bytes": 4973,
+      "sha256": "27df5939edd5e5c033b9f9140e96a13563c56ea093bac9cc7dfecbbf514a56bf",
+      "storedBytes": 1928,
+      "storedSha256": "d73e6f4f241375bac799b2d224cdccfd67f99928f73fe0eb2f1c1d64e12c519f",
+      "compression": "gzip"
+    },
+    {
+      "archive": "green-02/layout-report.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-river-green-20260930-02\\layout-report.json",
+      "bytes": 76028,
+      "sha256": "6d4eac52e027a6256dcd1813da7492adf458893dda88cbf8072afa0dcf30ef1c",
+      "storedBytes": 6360,
+      "storedSha256": "01f8197ae26ca685d54939cfd07e0351a707acfb54458146f9da52b1b7239f35",
+      "compression": "gzip"
+    },
+    {
+      "archive": "browser-01/gate-report.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-river-preview-browser-20260930-01\\gate-report.json",
+      "bytes": 284885,
+      "sha256": "b8ec6090f8c7315857aba4e4d7aca0f4dc77bfad8f7bc2faa13d2708e1d56fda",
+      "storedBytes": 35891,
+      "storedSha256": "7fd05102b92f04d9d663151c901c9c758bd275c4a3b85ab6736dd6d64b9647e2",
+      "compression": "gzip"
+    },
+    {
+      "archive": "browser-01/bindings.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-river-preview-browser-20260930-01\\bindings.json",
+      "bytes": 83526,
+      "sha256": "ca5738bd72f6d98dbb979efb0ff7590348cb231795bd2c93ac8843ab23a29d6f",
+      "storedBytes": 15310,
+      "storedSha256": "13ba70d7250dfc6b9aea2f334d07b7d6450e0d8319cbf0ba146f872d1367931a",
+      "compression": "gzip"
+    },
+    {
+      "archive": "browser-01/runner.mjs.txt.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-river-preview-browser-20260930-01\\runner.mjs.txt",
+      "bytes": 10408,
+      "sha256": "c2a8d37a9f7a49713b53abb383894d7096de17b657420754927f709743d8e950",
+      "storedBytes": 3476,
+      "storedSha256": "328537b79d0e56cca690c305ea8628ee3ff028af3d38551cf6d558fc584d5d13",
+      "compression": "gzip"
+    },
+    {
+      "archive": "browser-01/browser/browser-report.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-river-preview-browser-20260930-01\\browser\\browser-report.json",
+      "bytes": 145712,
+      "sha256": "8aef022079c5dc05002a54f90f157fd551c0974f77bd68361a825bac5f4203ef",
+      "storedBytes": 7339,
+      "storedSha256": "2bc9d05198e35549d7c6aabc6daa08a5e6ab9bf7df4054fd30dfc0ee7dd7c206",
+      "compression": "gzip"
+    },
+    {
+      "archive": "browser-01/harness/hmh-greybox-river-browser-smoke.mjs.txt.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\hmh-greybox-river-browser-smoke.mjs",
+      "bytes": 19466,
+      "sha256": "b80c9d7cecf9fa7e94c2226b0ea9c184c6f526260fbe801fbf04a5faffa0c551",
+      "storedBytes": 6304,
+      "storedSha256": "248ba443c9ffc693455aca73c68df88f1a5c5636e19bf65154c4d6e80dfd9da6",
+      "compression": "gzip"
+    },
+    {
+      "archive": "browser-01/harness/prepare-world-river-browser.mjs.txt.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\prepare-world-river-browser.mjs",
+      "bytes": 5840,
+      "sha256": "6e5eebc3642d6efcdf599eaa8644d97632cec500d26190dcf53ae928c66ade9e",
+      "storedBytes": 2360,
+      "storedSha256": "0ee4a1c628d498d390a08cb2db585a3c8593f0bed380528cc09204254481b005",
+      "compression": "gzip"
+    },
+    {
+      "archive": "browser-01/harness/owned-windows-preview-child.mjs.txt.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\owned-windows-preview-child.mjs",
+      "bytes": 3476,
+      "sha256": "6f4903a66d324a01a476eebefdfac68663dde2c573f62f637c4b7537ccb0d631",
+      "storedBytes": 1360,
+      "storedSha256": "18c5cfc758da42cddbb922c7989a0204d20eb87c1d5d359985932ef89f92c162",
+      "compression": "gzip"
+    },
+    {
+      "archive": "world-river-source-closure.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-river-source-closure.json",
+      "bytes": 397,
+      "sha256": "31d5c70bdc642188871cbeb41ba14d3fa4d4b372d6cdb9e6e50db82b31a68aed",
+      "storedBytes": 168,
+      "storedSha256": "9ac6a68b0b470642b1704460bf740ac403ab3f03c1ddee87ff1c42dda3f59d01",
+      "compression": "gzip"
+    },
+    {
+      "archive": "world-river-preview-closure.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-river-preview-closure.json",
+      "bytes": 281,
+      "sha256": "6ebbae91429f22b197abfd7d704db77de8f601284667dd4ebea78accd1b46222",
+      "storedBytes": 155,
+      "storedSha256": "6912a9481cb58f1398c78899a35f048af81fec9cbac9327e85960d2529888a1c",
+      "compression": "gzip"
+    },
+    {
+      "archive": "world-river-author-image-review.json.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\world-river-author-image-review.json",
+      "bytes": 9085,
+      "sha256": "3dd386bafa0d90582d9031f07e7dadcff8d9f1a01724dfe26b2d009345e9cdd2",
+      "storedBytes": 2617,
+      "storedSha256": "8fe6994d2ad55871aaa913b53f9e1dcfec4490c639fca8f76cf513dd0b3bc7ed",
+      "compression": "gzip"
+    },
+    {
+      "archive": "WORLD-W2K-RIVER-SOURCE-NOTES.md.gz",
+      "source": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\WORLD-W2K-RIVER-SOURCE-NOTES.md",
+      "bytes": 2228,
+      "sha256": "9cb6eb2cc02b54846d1c4ad4868d3a7908c1371cc0b6d665a2d1109b3f2f27ac",
+      "storedBytes": 1320,
+      "storedSha256": "722e4ea85dcef924fbe298e07ce39a417c76de40aeaf54965053a55fccea1762",
+      "compression": "gzip"
+    }
+  ]
+}

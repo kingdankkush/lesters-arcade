@@ -12,6 +12,7 @@ import { authorPinesKit } from './greybox-pines.mjs';
 import { authorFortressKit } from './greybox-fortress.mjs';
 import { authorWoodsKit } from './greybox-woods.mjs';
 import { authorBayouKit } from './greybox-bayou.mjs';
+import { authorRiverKit } from './greybox-river.mjs';
 const bounds = { minX: 0, minY: 0, maxX: 20000, maxY: 14000 };
 const areaSpecs = [
   ['mweb-meadows', 'MWEB Meadows', 12500, 6700, 1, 'relay-neighbourhood'],
@@ -63,6 +64,7 @@ export function createGreyboxWorld() {
     if(area.id==='fork-fortress'){authorFortressKit(area,{pieces,sites,arenas},roads);continue;}
     if(area.id==='rugpull-woods'){authorWoodsKit(area,{pieces,sites,arenas},roads);continue;}
     if(area.id==='scrypt-bayou'){authorBayouKit(area,{pieces,sites,arenas},roads);continue;}
+    if(area.id==='hashwood-river'){authorRiverKit(area,{pieces,sites,arenas},roads);continue;}
     // Four corner masses retain a broad readable court. Their different later
     // area kits/art must follow the brief; these are intentionally bare volumes.
     for (const [i,[x,y]] of [[-1550,-1550],[1550,-1550],[-1550,1550],[1550,1550]].entries()) pieces.push(createGreyboxPiece({id:`${area.id}-mass-${i}`,kind:area.tier>=4?'cliff':'mass',bounds:localRect(area,x,y,700,700),height:area.tier>=4?180:260,areaId:area.id}));

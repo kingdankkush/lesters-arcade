@@ -811,3 +811,24 @@ entry/court views, tiny overview labels and marker overlap retained honestly.
 No production art, physical-device, encounter or whole-map approval is claimed.
 River is the last template area. Details and compact receipts:
 [W2j Bayou](slices/WORLD-W2J-BAYOU.md). No versions, credits, push or deployment.
+
+## W2k — final generic area replaced: Hashwood River
+
+The private local world now has ten distinct authored greybox areas. River's
+transverse channel, two y-axis bridge crossings, independent bank trail,
+optional Baron clearing, practical equipment apron and returning shelf nook
+passed genuine RED and final 100/100 plus identical 100 isolated source cases.
+The first 99/100 endpoint assertion and installer encoding failure are retained
+with their narrow corrections. Global walkability is 47.3637%; all 98 sites,
+14 roads and 57 local paths pass unchanged authority/checker contracts.
+
+One actual Chrome walkthrough passed 29 desktop/four touch legs plus water
+refusal, four denial paths and two cleanups. All 14 originals were reviewed;
+the preview remains sparse with small/overlapping labels. All owned processes
+and HTTP closed, exact marker released/absent. No renderer/default-build
+expansion, baseline acceptance, official gameplay, owner whole-map/final-art
+approval, physical phone result or deployment. The compiled River review
+bundle contains all ten areas. See [W2k evidence](slices/WORLD-W2K-RIVER.md)
+and [River brief](areas/06-hashwood-river.md). Next world gates are owner
+greybox playtest, preview readability polish, approved production art and
+separately reviewed/versioned official-map integration.

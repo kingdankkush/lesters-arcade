@@ -20,3 +20,15 @@ Palettes/board anchors follow the draft art bible and still await the bible+actu
 - [Ledger Ridge](08-ledger-ridge.md)
 - [Fork Fortress](09-fork-fortress.md)
 - [Rugpull Woods](10-rugpull-woods.md)
+
+## Local authored checkpoint — September 30
+
+All ten areas now have distinct authored geometry in the private local Free
+preview. Each area has source layout tests and a recorded desktop/touch
+walkthrough; the final [River checkpoint](../slices/WORLD-W2K-RIVER.md) includes
+a compiled review bundle containing all ten. The unchanged world checker
+passes 98 reachable/returnable sites, 14 roads, 57 local paths and 47.3637%
+walkable lattice centres. These are local greybox checks, not whole-map owner
+acceptance, final terrain/asset art, gameplay/verifier integration or measured
+phone performance. The owner still needs to play and approve the complete
+greybox before production area art.
