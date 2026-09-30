@@ -37,6 +37,28 @@ def activate_clip(clip):
     return min(start for start, end in ranges), max(end for start, end in ranges)
 
 
+def geometry_points(meshes):
+    points = []
+    depsgraph = bpy.context.evaluated_depsgraph_get()
+    for obj in meshes:
+        evaluated = obj.evaluated_get(depsgraph)
+        mesh = evaluated.to_mesh()
+        try:
+            points.extend(tuple(evaluated.matrix_world @ vertex.co) for vertex in mesh.vertices)
+        finally:
+            evaluated.to_mesh_clear()
+    return points
+
+
+def shape_change(first, current):
+    if not first or len(first) != len(current):
+        raise RuntimeError("Reimported animated geometry vertex correspondence changed")
+    centre_first = [sum(point[axis] for point in first) / len(first) for axis in range(3)]
+    centre_current = [sum(point[axis] for point in current) / len(current) for axis in range(3)]
+    return max(math.sqrt(sum(((point[axis] - centre_current[axis]) - (base[axis] - centre_first[axis])) ** 2
+                             for axis in range(3))) for base, point in zip(first, current))
+
+
 def render_preview(output, actor_id):
     scene = bpy.context.scene
     scene.render.engine = "BLENDER_EEVEE"
@@ -54,8 +76,8 @@ def render_preview(output, actor_id):
     bpy.ops.object.camera_add()
     camera = bpy.context.object
     camera.data.type = "ORTHO"
-    camera.data.ortho_scale = 2.75 if actor_id == "lit-commando" else 2.35
-    target = Vector((0, 0, 1 if actor_id == "lit-commando" else .86))
+    camera.data.ortho_scale = 2.75 if actor_id in {"lit-commando", "lilly", "lit-valkyrie", "lester-original"} else 2.35
+    target = Vector((0, 0, 1 if actor_id in {"lit-commando", "lilly", "lit-valkyrie", "lester-original"} else .86))
     camera.location = Vector((2.828427, -2.828427, target.z + 4 / math.tan(math.radians(55))))
     camera.rotation_euler = (target - camera.location).to_track_quat("-Z", "Y").to_euler()
     scene.camera = camera
@@ -97,14 +119,30 @@ def main():
     for clip in exporter.ACTORS[args.actor]["clips"]:
         start, end = activate_clip(clip)
         samples = []
+        first_points = None
+        max_shape_change = 0
         for fraction in [0, .25, .5, .75, 1]:
             frame = start + (end - start) * fraction
             scene.frame_set(int(frame), subframe=frame % 1)
             samples.append({"frame": frame, **exporter.evaluated_bounds(meshes)})
+            if args.actor == "the-liquidator":
+                points = geometry_points(meshes)
+                if first_points is None:
+                    first_points = points
+                max_shape_change = max(max_shape_change, shape_change(first_points, points))
+                body = [obj for obj in meshes if obj.get("hmh_native_body")]
+                if not body:
+                    raise RuntimeError("Reimported native boss body identity missing")
+                samples[-1]["nativeBodyMinimumZ"] = exporter.evaluated_bounds(body)["min"][2]
+                if abs(samples[-1]["nativeBodyMinimumZ"]) > .0002:
+                    raise RuntimeError("Reimported native boss foot grounding failed: " + clip)
         minimums = [sample["min"][2] for sample in samples]
         if args.actor == "bagholder-rusher" and max(abs(value) for value in minimums) > .0002:
             raise RuntimeError("Re-imported native foot grounding failed: " + clip + " " + str(minimums))
-        clips.append({"name": clip, "samples": samples, "minimumWorldZ": min(minimums), "maximumMinimumWorldZ": max(minimums)})
+        record = {"name": clip, "samples": samples, "minimumWorldZ": min(minimums), "maximumMinimumWorldZ": max(minimums)}
+        if args.actor == "the-liquidator":
+            record["maxShapeChangeAfterCentroidTranslationMetres"] = max_shape_change
+        clips.append(record)
     receipt = {"schema": 1, "actorId": args.actor, "glbSha256": exporter.digest(source),
                "verification": "offline-Blender-reimport-not-runtime", "cameraDegreesFromVertical": 55,
                "meshes": len(meshes), "bones": sum(len(rig.data.bones) for rig in rigs), "clips": clips}
