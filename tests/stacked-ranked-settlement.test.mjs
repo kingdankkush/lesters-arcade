@@ -192,7 +192,7 @@ test('a finished Ranked STACKED run restarts through a paid entry', () => {
 
 test('child Ranked copy is true with settlement off and on', () => {
   const stacked = read('../apps/stacked/src/main.mjs');
-  assert.match(stacked, /init\.mode === 'ranked' \? 'RANKED' : 'FREE MODE'/);
+  assert.match(stacked, /init\.mode === 'ranked' \? 'RANKED' : init\.dailyChallenge \? 'FREE DAILY' : 'FREE MODE'/);
   assert.match(stacked, /'Ranked is active for this run\.'/);
   assert.match(stacked, /Ranked has a shared 15-minute pause allowance/, 'the pause allowance copy stays');
   assert.doesNotMatch(stacked, /RANKED PREVIEW|Ranked preview is active on this device/);
