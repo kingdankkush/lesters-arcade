@@ -86,3 +86,6 @@ docs/2.0/receipts/world-city/** -text
 
 # Exact compressed G1a observations stay ordinary small Git blobs.
 docs/2.0/receipts/achievement-detail-g1a/*.gz -filter -diff -merge -text
+
+# Exact compressed Coast authoring evidence
+docs/2.0/receipts/world-coast/** -text

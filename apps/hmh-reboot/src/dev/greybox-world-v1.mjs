@@ -6,6 +6,7 @@ import { createClosedMassPolygons } from './greybox-closed-masses.mjs';
 import { authorMeadowsKit } from './greybox-meadows.mjs';
 import { authorFarmsKit } from './greybox-farms.mjs';
 import { authorCityKit } from './greybox-city.mjs';
+import { authorCoastKit } from './greybox-coast.mjs';
 const bounds = { minX: 0, minY: 0, maxX: 20000, maxY: 14000 };
 const areaSpecs = [
   ['mweb-meadows', 'MWEB Meadows', 12500, 6700, 1, 'relay-neighbourhood'],
@@ -51,6 +52,7 @@ export function createGreyboxWorld() {
     if(area.id==='mweb-meadows'){authorMeadowsKit(area,{pieces,sites,arenas},roads);continue;}
     if(area.id==='halving-farms'){authorFarmsKit(area,{pieces,sites,arenas},roads);continue;}
     if(area.id==='litecoin-city'){authorCityKit(area,{pieces,sites,arenas},roads);continue;}
+    if(area.id==='silver-coast'){authorCoastKit(area,{pieces,sites,arenas},roads);continue;}
     // Four corner masses retain a broad readable court. Their different later
     // area kits/art must follow the brief; these are intentionally bare volumes.
     for (const [i,[x,y]] of [[-1550,-1550],[1550,-1550],[-1550,1550],[1550,1550]].entries()) pieces.push(createGreyboxPiece({id:`${area.id}-mass-${i}`,kind:area.tier>=4?'cliff':'mass',bounds:localRect(area,x,y,700,700),height:area.tier>=4?180:260,areaId:area.id}));

@@ -585,3 +585,27 @@ Fresh build HMH1,039,992B/STACKED577,431B. Existing low-resolution art remains p
 no physical phone, final art, full release or deployment acceptance. See
 slices/ACHIEVEMENT-DETAIL-G1A.md. City W2d gathered at4be0d105 after lead image review;
 world/terrain variation remains a priority. Other seven area art passes remain open.
+
+### W2e Silver Coast local-flow checkpoint
+
+Coast now has oblique rock masses, distinct landward/scenic routes, a two-door
+mansion interior, utility frontage, a faceted lighthouse and a returnable dry
+overlook. Sixteen pieces replace its generic layout; terrain and asset intent
+follows exposure, building use and routes. Genuine RED 5 FAIL / 1 PASS preceded
+42/42 focused and the same 42/42 exact 21-file no-Git/no-modules/empty-PATH copy.
+Blocking the scenic route leaves the landward path usable. Actual nav is
+36,842/77,589 (47.4835%), outside 0; all 98 sites, 14 roads and six Coast routes
+pass. The prior River-Woods pacing warning remains.
+
+One preview build and 72.334-second Chrome check passed 26 desktop plus four
+touch legs after exactly one visible inspection jump per viewport. It is local
+Coast coverage, not a continuous Meadows-to-Coast journey. Twelve captures,
+overlook groundZ 24 and return, utility contact x3226, four denied entries and
+pagehide cleanup pass. Exact children 22912/19252/24908 and HTTP close were
+observed before marker release; source/built/served pins match. All 12 originals
+were inspected: plan geometry is distinct, actor and controls contained; phone
+walks still show broad flat ground with landmarks off screen, and tiny/clipped
+labels, boundary stripes and plain masses remain. Final area/art, owner playtest,
+physical-phone performance, official map/verifier and release gates stay open.
+See slices/WORLD-W2E-COAST.md and receipts/world-coast. Manual bundle is separate
+at outputs/hmh-coast-authored-flow-preview.zip. No credits/push/deploy/version.
