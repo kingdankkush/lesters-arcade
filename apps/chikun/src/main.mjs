@@ -397,7 +397,7 @@ function setModePresentation() {
       ? `The ${dailyChallenge.dayKey} course resets at 00:00 UTC. Collect Litecoin and beat your best on this device. This flight keeps its course through reset.`
       : 'Collect Litecoin and skim the edges for bonuses. Practice scores stay separate from your Ranked profile.';
   loadGhostForSeed(initPayload?.session?.seed);
-  if(courseTwoActive()){modeLabel.textContent='COURSE TWO PREVIEW';modeCopy.textContent='Shield: survive one hit. Magnet: collect nearby coins for eight seconds. Feather: hold jump over one gap to glide. Take the upper coin route or the clear lower path. Local testing only; no Ranked or daily records.';}
+  if(courseTwoActive()){modeLabel.textContent='COURSE TWO PREVIEW';modeCopy.textContent='Shield: survive one hit. Magnet: collect nearby coins for eight seconds. Feather: hold jump over one gap to glide. Take the upper coin route or the clear lower path. Preview course: Free Mode only, no Ranked or daily records.';}
   renderModeTease();
 }
 
