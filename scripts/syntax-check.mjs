@@ -140,6 +140,8 @@ const NODE_CHECK_FILES = [
   'scripts/hmh-ten-area-collision-walk.mjs',
   'apps/hmh-reboot/src/dev/greybox-edge-guards.mjs',
   'tests/hmh-ten-area-crossings.test.mjs',
+  'apps/hmh-reboot/src/traversal-slide.mjs',
+  'tests/hmh-ten-area-traversal-slide.test.mjs',
   'apps/hmh-reboot/src/world-v2-area-plans/rugpull-woods.mjs',
   'apps/hmh-reboot/src/world-v2-area-plans/mweb-meadows.mjs',
   'apps/hmh-reboot/src/world-v2-area-plans/world-roads.mjs',

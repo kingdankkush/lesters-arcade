@@ -1,6 +1,7 @@
 import { freezeDeep, nonNegativeInteger, positiveInteger } from './value-guards.mjs';
 import { createCollisionBody, resolveSweptCircleMotion } from './collision.mjs';
 import { resolveSweptTraversalPath } from './elevation.mjs';
+import { slideRefusedTraversal } from './traversal-slide.mjs';
 import { getEnemyArchetype } from './enemy-archetypes.mjs';
 
 const EPSILON = 1e-9;
@@ -657,8 +658,12 @@ export function stepEnemyPopulation({
   // Optional (x, y, ground) => {speed, drift:{x,y}} movement field from the
   // authored hazards; null leaves every existing position bit-identical.
   fieldAt = null,
+  // Ten-area only: a refused ground step slides along the ledge or bank
+  // (traversal-slide.mjs). False keeps every legacy position bit-identical.
+  traversalSlide = false,
 } = {}) {
   if (!population || !Array.isArray(population.active)) throw new TypeError('population is required');
+  if (typeof traversalSlide !== 'boolean') throw new TypeError('traversalSlide must be boolean');
   nonNegativeInteger(tick, 'tick');
   finite(dtSeconds, 'dtSeconds');
   if (dtSeconds <= 0 || dtSeconds > 1 / 15) throw new TypeError('dtSeconds must be in (0, 1/15]');
@@ -758,18 +763,26 @@ export function stepEnemyPopulation({
     });
     safetySteps += 1;
     collisionContacts += collision.contacts.length;
-    const traversal = resolveSweptTraversalPath({
+    const transitionOptions = {
+      maxCurbHeight: archetype.movement.maxCurbHeight,
+      maxDropHeight: archetype.movement.maxDropHeight,
+      maxAuthoredAscent: archetype.movement.maxAuthoredAscent,
+    };
+    let traversal = resolveSweptTraversalPath({
       start: { x: enemy.x, y: enemy.y },
       end: collision.position,
       queryGround,
       maxSampleDistance: Math.max(4, enemy.radius * 0.5),
-      transitionOptions: {
-        maxCurbHeight: archetype.movement.maxCurbHeight,
-        maxDropHeight: archetype.movement.maxDropHeight,
-        maxAuthoredAscent: archetype.movement.maxAuthoredAscent,
-      },
+      transitionOptions,
     });
     if (!traversal.allowed) traversalBlocks += 1;
+    if (!traversal.allowed && traversalSlide) {
+      const slide = slideRefusedTraversal({
+        attempt: traversal, end: collision.position, queryGround, maxSampleDistance: Math.max(4, enemy.radius * 0.5), transitionOptions,
+        sweep: (point, delta) => resolveSweptCircleMotion({ body: enemy.collisionBody, start: { x: point.x, y: point.y, z: queryGround(point.x, point.y).groundZ }, delta, blockers, bounds }).position,
+      });
+      if (slide.moved) traversal = { ...traversal, position: slide.position, ground: slide.ground };
+    }
     enemy.x = traversal.position.x;
     enemy.y = traversal.position.y;
     enemy.groundZ = traversal.ground.groundZ;
