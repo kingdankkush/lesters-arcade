@@ -1,0 +1,145 @@
+{
+  "token": "claude-gameplay-43252-2026-10-01T04:46:45.891Z",
+  "scenarios": [
+    {
+      "name": "court-rug-pull-baron-3d",
+      "query": "mode=free&world=ten-area&evidenceSafe=1&tenAreaEvidence=court:rug-pull-baron&actor3dPilot=1",
+      "key": "KeyS",
+      "holdMs": 15000,
+      "shots": [
+        {
+          "file": "court-rug-pull-baron-3d-fight.jpg",
+          "bossBar": true,
+          "bossName": "Rug Pull Baron",
+          "worldId": "ten-area-frontier",
+          "actor3d": "ready",
+          "actor3dCount": "2",
+          "cover": "none",
+          "hero": "6614,12803",
+          "traversal": "none",
+          "prompts": ""
+        },
+        {
+          "file": "court-rug-pull-baron-3d-fight-later.jpg",
+          "bossBar": true,
+          "bossName": "Rug Pull Baron",
+          "worldId": "ten-area-frontier",
+          "actor3d": "ready",
+          "actor3dCount": "2",
+          "cover": "none",
+          "hero": "6615,12789",
+          "traversal": "none",
+          "prompts": ""
+        }
+      ],
+      "approachTrace": [
+        "0:7192,12095",
+        "1000:7125,12167",
+        "2000:7027,12265",
+        "3000:6940,12352",
+        "4000:6833,12458",
+        "5000:6736,12554",
+        "6000:6660,12630",
+        "7000:6613,12718"
+      ],
+      "errors": []
+    },
+    {
+      "name": "court-rug-pull-baron-sprite",
+      "query": "mode=free&world=ten-area&evidenceSafe=1&tenAreaEvidence=court:rug-pull-baron",
+      "key": "KeyS",
+      "holdMs": 15000,
+      "shots": [
+        {
+          "file": "court-rug-pull-baron-sprite-fight.jpg",
+          "bossBar": true,
+          "bossName": "Rug Pull Baron",
+          "worldId": "ten-area-frontier",
+          "actor3d": "disabled",
+          "actor3dCount": null,
+          "cover": "none",
+          "hero": "6614,12833",
+          "traversal": "none",
+          "prompts": ""
+        }
+      ],
+      "approachTrace": [
+        "0:7192,12095",
+        "1000:7103,12189",
+        "2000:7006,12287",
+        "3000:6908,12385",
+        "4000:6822,12469",
+        "5000:6736,12554",
+        "6000:6660,12630",
+        "7000:6613,12732"
+      ],
+      "errors": []
+    },
+    {
+      "name": "court-51-foreman-sprite",
+      "query": "mode=free&world=ten-area&evidenceSafe=1&tenAreaEvidence=court:fifty-one-percent-foreman",
+      "key": "KeyD",
+      "holdMs": 15000,
+      "shots": [
+        {
+          "file": "court-51-foreman-sprite-fight.jpg",
+          "bossBar": true,
+          "bossName": "The 51% Foreman",
+          "worldId": "ten-area-frontier",
+          "actor3d": "disabled",
+          "actor3dCount": null,
+          "cover": "none",
+          "hero": "12462,1398",
+          "traversal": "none",
+          "prompts": ""
+        }
+      ],
+      "approachTrace": [],
+      "errors": []
+    },
+    {
+      "name": "cover-tall",
+      "query": "mode=free&world=ten-area&evidenceSafe=1&tenAreaEvidence=cover&actor3dPilot=1",
+      "key": null,
+      "holdMs": 0,
+      "shots": [
+        {
+          "file": "cover-tall-prompt-ring.jpg",
+          "bossBar": false,
+          "bossName": null,
+          "worldId": "ten-area-frontier",
+          "actor3d": "ready",
+          "actor3dCount": "1",
+          "cover": "none",
+          "hero": "13431,6244",
+          "traversal": "none",
+          "prompts": "cover-tall"
+        }
+      ],
+      "approachTrace": [],
+      "errors": []
+    },
+    {
+      "name": "cover-tall-entered",
+      "query": "mode=free&world=ten-area&evidenceSafe=1&tenAreaEvidence=cover&actor3dPilot=1",
+      "key": "KeyW",
+      "holdMs": 6000,
+      "shots": [
+        {
+          "file": "cover-tall-entered-in-cover.jpg",
+          "bossBar": false,
+          "bossName": null,
+          "worldId": "ten-area-frontier",
+          "actor3d": "ready",
+          "actor3dCount": "1",
+          "cover": "cover-idle-r",
+          "hero": "13439,6205",
+          "traversal": "none",
+          "prompts": ""
+        }
+      ],
+      "approachTrace": [],
+      "errors": []
+    }
+  ]
+}
