@@ -156,9 +156,10 @@ Receipts: `docs/2.0/receipts/terrain-roads-20260930/` (`pass-1/` before,
 - City junction corners round off where two asphalt zones meet (the field
   ramp makes a soft outside corner); a kerb line would read better.
 - The rock-face strip is a 512×128 bake: it repeats every 260 units and is
-  soft on the phone tier.
+  soft on the phone tier. (Repeat broken by three blended samplings in the
+  2.1 world visuals pass below; still soft on the phone tier.)
 - Cliff tops of the big closed masses are uniform rock with moss patches; no
-  vegetation clusters.
+  vegetation clusters. (2.1: fissures and ledges; still no vegetation.)
 - Phone frame cost of the 10-sampler terrain quad plus road strips is not
   measured.
 
@@ -200,3 +201,136 @@ merely `visible = false`. Fixes, all in the lazy chunk:
 Visuals are unchanged: re-captured City highway, Woods camp and Ledger Ridge
 (desktop and phone) match the `final/` receipts apart from props added by
 the newer integration plans.
+
+## World visuals pass: water, elevation, cliffs (2.1, 2026-10-01)
+
+Lane WORLD-VISUALS, branch `claude/201-world-visuals` on live 2.0.0
+(`f044868ff`). Owner playtest: "Some of the level assets looked incomplete
+or elevation and cliffsides sometimes looking wonky", plus better water.
+Projection only, all in the lazy area-art chunk. On the 2.0.0 base
+`node build.mjs` reported `HMH initial JS + shared: 996,019 B` before and
+after these changes; after merging integration `aed85e132` it reports
+998,820 B, the integration's own growth (none of this lane's symbols are in
+`game.js` or its static chunks). The `world-v2-area-art-binding` lazy
+chunk grows from 42,417 B to 70,307 B (merged build).
+
+### Survey
+
+Real child (`?mode=free&world=ten-area&evidenceSafe=1`), headless Chrome
+under the heavy lock, desktop 1280×800 @1x and phone 414×896 @3x, one page
+load per waypoint through the evidence-only spawn `tenAreaEvidence=at:x,y`
+(`world-v2-combat.mjs`, clear points only, never Ranked). 83 waypoints come
+from the authored geometry: 10 area centres, 28 road mid-points and mouths,
+11 water views (every bridge, three bank views per channel, the waterfall
+shelf), 8 decks + the City gantry ramp, 14 named cliffs (standing below the
+camera-facing foot) and 10 frontier seams. Receipts:
+`docs/2.0/receipts/world-visuals-20261001/` (`before/`, `after/` contact
+sheets and full-resolution shots, JPEG, `survey-*.json`).
+
+| # | Class | Sev | Finding (before) | Status |
+| --- | --- | --- | --- | --- |
+| F1 | Water | H | Both authored water bodies (`scrypt-bayou-channel`, `hashwood-river-channel`) were invisible: the opaque area splat quad painted marsh/forest over the channels; river bridges stood on grass, reeds lined a dry "bank". | Fixed |
+| F2 | Elevation | H | No deck, ramp or bridge was drawn (8 decks, 20 ramps, 4 bridges): the hero floated 24 units above flat ground on every deck and crossing; ramps had no slope or edge. | Fixed |
+| F3 | Cliff | H | Rock slivers: 316 of the 483 closed-mass strips are under 60 units wide; every downward jog of their ragged long sides drew a full 180-unit face, so rows of brown spikes stood along every frontier and road corridor. | Fixed |
+| F4 | Cliff / seam | H | Shared edges between abutting strips were ragged, faced and lipped on both sides (overlaps, gaps, lips across one mass); a footprint contact-shadow ellipse per strip drew dark hairlines over the neighbouring roofs. | Fixed |
+| F5 | Cliff / elevation | H | The 180-unit masses on every area's south frontier drew their roof over the last ~180 units of walkable ground: the hero vanished behind rock at the south edge of an area. | Fixed |
+| F6 | Cliff | M | Rock-face strip stretched once over the whole face (128 texels over 180–420 units, up to 6.5× anisotropic) and repeating every 260 units. | Fixed |
+| F7 | Incomplete asset | M | Card buildings stood in front of a translucent lifted "mass" box (massAlpha 0.2–0.6) that read as a leftover greybox volume. | Fixed |
+| F8 | Incomplete asset | M | The river crossings were a 430-unit stone-arch card (`b2-41`) standing alone on grass. | Fixed (card removed; the bridge is drawn) |
+| F9 | Incomplete asset | M | Hollow Pines cemetery walls and the stone monument read as flat grey boxes. | Improved |
+| F10 | Ground | M | Bayou plank walks were rasterised as meandering mud-coloured bands. | Fixed |
+| F11 | Seam | M | The 1,000-unit gaps between areas (road corridors) showed bare production ground in a hard rectangle around the road. | Fixed |
+| F12 | Cliff | L | Broad rock tops are one uniform slab. | Improved (fissures, ledges); no vegetation clusters |
+| F13 | Water | M | Silver Coast has no authored water: the coast reads as a sand plain under cliffs. | Open: needs an authored sea/shallows piece (collision decision) |
+| F14 | Seam | L | Dirt road ruts ran ruler-straight. | Improved (ruts wander) |
+| F15 | Ground | L | Fortress/City paving tile grid repeats visibly. | Open |
+
+### What changed
+
+| Piece | File |
+| --- | --- |
+| Water shader, shore field, deck/ramp/bridge builder, rock-face variant weights, solid occlusion index | new `apps/hmh-reboot/src/world-v2-area-surfaces.mjs` |
+| `paintSurfaces` (water, shadows, raised meshes, rails), combined rock mesh, exposed-edge rag/face/lip rules, foreground height, readability fade, card footing, wall courses, feathered terrain reach, wandering ruts | `world-v2-area-art.mjs` |
+| Surfaces painted after every area's ground and road | `world-v2-area-art-binding.mjs` |
+| Built trails (planks, paving) stay straight | `world-v2-terrain-field.mjs` |
+| Stone-arch cards removed | `world-v2-area-plans/hashwood-river.mjs` |
+
+- **Water.** One quad per water body (`area-water-<id>`) through
+  `WATER_FRAGMENT`: a deterministic shore field (signed distance to the
+  waterline from 56 units on the bank to 199 into the water; 8 units per
+  texel, 16 on the phone tier, one grey canvas) drives a shallow-to-deep tint
+  from the area palette (bayou olive-green, river grey-teal, off the cyan
+  pickup band — test-enforced), wavelets in flow-aligned coordinates drifting
+  with the current (two quintic value-noise octaves, a third on the full
+  tier), lit from the shared upper-left key, a bent sky gradient, bank
+  occlusion, a broken foam line and a wet dark band on the land. Only the shore
+  texture is sampled. The drift is frozen on the phone tier and under reduced
+  motion (`settingReduceMotion` or the media query).
+- **Decks, ramps, bridges.** `buildRaisedSurfaces` turns every deck, ramp
+  and bridge piece into a top quad lifted by the authored height at each
+  corner, the district kit (timber planks turned across the travel
+  direction; stone or concrete slabs with staggered joints), a worn rim, a
+  low-to-high gradient and cleats on ramps, the camera-facing face down to the
+  ground or the water (skipped where a ramp continues at the same height), a
+  down-right cast shadow and rails on both long sides of every bridge. They
+  paint in the ground layer above water and roads, below every actor.
+- **Cliffs.** Each authored edge is exposed unless another solid at least
+  60 % as tall (or the world edge) covers its outside. Shared edges stay
+  straight (corners only slide along them) and get no face or lip; faces
+  stand only on exposed edges that face the camera. Roof and faces are one
+  mesh per solid (`SOLID_FRAGMENT`, one draw call as before). The face samples
+  the strip three ways (periods 260/337/211) blended by `rockFaceVariant`
+  (deterministic hash noise, test-enforced), mirrors it vertically every 110
+  units and carries the lit lip and dark foot. A rock mass with walkable
+  ground directly behind it draws lower (closed masses as a 56-unit
+  foreground rim, area cliffs at no less than 55 %); any solid that still
+  covers an actor's chest fades to 50 %. Rock solids no longer draw a
+  footprint ellipse (their AO is in the terrain field).
+- **Cost control.** Water and raised-surface nodes leave the ground pass
+  while off view (one custom-shader draw each); the first three frames after
+  bind draw them all plus one degenerate rock mesh so the water, raised and
+  rock programs compile during load (the first desktop runs showed a
+  ~180 ms frame on first sight). District control fields are built in
+  24-row slices between frames with per-row feature bands (same bytes).
+- **Integration (`aed85e132`).** Bridge decks now span exactly the
+  channels; the collision lane's bank guards (8 units, inside every
+  deep-water edge) and rail guards (40 units, ramp foot to ramp foot) are
+  claimed by the area art: the water edge draws the bank, and rails now run
+  along the crossing ramps as well as the decks. Guards and prop-card
+  colliders never count as rock when cliff edges are classified.
+- **Assets and seams.** Card buildings mark their footprint with a grounded
+  footing; built walls get block courses (masonry) or boards (timber) and a
+  coping lip; plank and paved trails stay straight; each district's splat
+  quad (and its control field) reaches 560 units past the area and feathers
+  over the last 120 with noise, so neighbouring areas blend across the
+  corridors.
+
+### Performance (same session, heavy lock, `perf-probe.mjs`)
+
+| Build | desktop ten-area fps | phone-4x ten-area fps (two runs) |
+| --- | ---: | ---: |
+Alternating base/new builds in one lock session (`perf-probe.mjs` as
+given, which measures from 1.5 s after the run starts, and a "steady"
+variant that waits for `areaArtStatus === 'ready'` first). Base is
+`d4df715e4` (live 2.0.0 visuals); new is `7d37d5bfe` (all fixes, before
+the integration merge).
+
+| Probe, run | base phone-4x fps | new phone-4x fps | base desktop max frame | new desktop max frame |
+| --- | ---: | ---: | ---: | ---: |
+| steady 1 | 54.1 | 68.4 | 69.5 ms | 13.9 ms |
+| steady 2 | 68.1 | 62.1 | 69.4 ms | 14.6 ms |
+| given probe 1 | 53.8 | 65.1 | 69.6 ms | 13.7 ms |
+| given probe 2 | 69.8 | — (timeout; legacy fell to 33 fps under outside load in the same run) | 69.6 ms | 20.9 ms |
+
+Desktop ten-area holds ~143–144 fps on both. The earlier runs without the
+culling and warm-up measured 46–60 fps on phone-4x and a 170–740 ms
+desktop frame; those causes are fixed above. Machine load from other lanes
+moves single runs by ±10 fps, so only same-session alternating rows are
+compared.
+
+### Not done
+
+- Silver Coast still has no water (F13); a sea or shallows needs an authored
+  water piece and a collision decision.
+- Fortress/City paving grid repeat (F15); vegetation clusters on rock tops.
+- Owner art acceptance is not claimed.
