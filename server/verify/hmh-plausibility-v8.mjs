@@ -39,6 +39,10 @@
 //                                    away, and of any two areas the one
 //                                    reached second is at least the distance
 //                                    between them beyond the first
+//           enemy-role-not-in-visited-areas  kills of an ordinary role that
+//                                    no visited area's director pool, the
+//                                    opening enemies or an initiated boss's
+//                                    adds can spawn (value: those kills)
 //           node-in-unvisited-district  a boss initiation or objective
 //                                    completion in an area the run never
 //                                    visited (the four courts and the two
@@ -64,6 +68,9 @@
 import { HMH_RUN_SUMMARY_CATALOGS_V8 as C8 } from '../../sdk/hmh-run-summary-schema-v8.mjs';
 import {
   HMH_RUN_SUMMARY_V8_MIN_GAME_VERSION,
+  HMH_V8_AREA_SPAWN_ROLES,
+  HMH_V8_BOSS_ADD_ROLES,
+  HMH_V8_OPENING_ROLES,
   HMH_V8_BOSS_RULES as BOSS,
   HMH_V8_BOSSES,
   HMH_V8_CONSISTENCY_RULES as C8R,
@@ -146,6 +153,21 @@ export function hmhV8DistrictTravel(visitedDistrictMask) {
     }
   }
   return { pathValid: true, entryBit, travelPx };
+}
+
+// The ordinary roles a run could have met: the opening enemies, every
+// visited area's director pool and the adds of every boss it started.
+export function hmhV8SpawnableRoles(summary) {
+  const roles = new Set(HMH_V8_OPENING_ROLES);
+  C8.districts.forEach((id, index) => { if (bitSet(summary.exploration.visitedDistrictMask, index)) for (const role of HMH_V8_AREA_SPAWN_ROLES[id]) roles.add(role); });
+  for (const row of summary.bosses) if (row.initiations > 0) for (const role of HMH_V8_BOSS_ADD_ROLES[row.bossId] ?? []) roles.add(role);
+  return roles;
+}
+
+// Kills of ordinary roles no source the run reached could have spawned.
+export function hmhV8UnspawnableKills(summary) {
+  const roles = hmhV8SpawnableRoles(summary);
+  return summary.kills.byEnemyRole.reduce((total, row) => total + (row.count > 0 && !C8.bosses.includes(row.enemyRoleId) && !roles.has(row.enemyRoleId) ? row.count : 0), 0);
 }
 
 export function hmhV8MinTicksForTravel(travelPx) {
@@ -414,6 +436,7 @@ export const HMH_V8_REJECTS = Object.freeze([
   'collectibles-above-capacity',
   'node-xp-above-level',
   'node-in-unvisited-district',
+  'enemy-role-not-in-visited-areas',
   'movement-rules-mismatch',
   'cover-enters-above-cadence',
   'cover-without-cover-ticks',
@@ -492,6 +515,11 @@ export function validateV8RunPlausibility(runSummary) {
   const unvisited = objectives.filter((row) => row.completed === 1 && !visited(HMH_V8_OBJECTIVES[row.objectiveId]?.district)).length
     + bosses.filter((row) => row.initiations > 0 && !visited(HMH_V8_BOSSES[row.bossId]?.district)).length;
   if (unvisited) reject('node-in-unvisited-district', unvisited, 0);
+
+  // An ordinary enemy is spawned for the area the hero stands in (or is a
+  // boss's add), so its role must be in a visited area's pool.
+  const unspawnable = hmhV8UnspawnableKills(runSummary);
+  if (unspawnable) reject('enemy-role-not-in-visited-areas', unspawnable, 0);
 
   checkV8Movement(runSummary, runTicks, reject);
 

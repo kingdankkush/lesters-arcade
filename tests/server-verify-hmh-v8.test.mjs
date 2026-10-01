@@ -91,6 +91,33 @@ test('impossible travel: more areas than the run had ticks to reach is refused',
   assert.ok(mostAreas.runSummary.totals.survivalTicks > 10 * hmhV8MinTicksForTravel(honest.travelPx));
 });
 
+test('kills of a role no visited area, opening enemy or started boss can spawn are refused', () => {
+  // The forge: relabel a Meadows-only run's Bagholder kills as Tollkeepers
+  // (threat 6 for 2), which spawn only in the River and the Fortress.
+  const meadowsOnly = corpus.runs.find((run) => run.runSummary.exploration.visitedDistrictMask === bit('mweb-meadows') && run.runSummary.kills.total > 20);
+  assert.ok(meadowsOnly);
+  assert.notEqual(validateV8RunPlausibility(meadowsOnly.runSummary).verdict, 'rejected');
+  const forged = clone(meadowsOnly.runSummary);
+  const rushers = row(forged.kills.byEnemyRole, 'enemyRoleId', 'bagholder-rusher');
+  row(forged.kills.byEnemyRole, 'enemyRoleId', 'tollkeeper').count += rushers.count;
+  const moved = rushers.count;
+  rushers.count = 0;
+  assert.equal(validateRunSummaryPayload(forged), '');
+  assert.deepEqual(validateV8RunPlausibility(forged).flags.find((flag) => flag.id === 'enemy-role-not-in-visited-areas'), { id: 'enemy-role-not-in-visited-areas', severity: 'reject', value: moved, limit: 0 });
+  // Claiming the River makes Tollkeepers possible (that forgery then needs
+  // the River's travel, which this run's ticks easily cover).
+  const river = clone(forged);
+  river.exploration.visitedDistrictMask += bit('hashwood-river');
+  assert.ok(!ids(validateV8RunPlausibility(river)).includes('enemy-role-not-in-visited-areas'));
+  // Liquidator Agents in a Meadows-only run need the Liquidator's adds.
+  const agents = clone(meadowsOnly.runSummary);
+  row(agents.kills.byEnemyRole, 'enemyRoleId', 'bagholder-rusher').count -= 1;
+  row(agents.kills.byEnemyRole, 'enemyRoleId', 'liquidator-agent').count += 1;
+  assert.ok(ids(validateV8RunPlausibility(agents)).includes('enemy-role-not-in-visited-areas'));
+  // Every honest run passes it.
+  for (const run of corpus.runs) assert.ok(!ids(validateV8RunPlausibility(run.runSummary)).includes('enemy-role-not-in-visited-areas'), run.label);
+});
+
 test('a boss killed without visiting its court’s area is refused', () => {
   assert.ok(baronRun, 'the corpus holds an honest Rug Pull Baron defeat');
   const summary = clone(baronRun.runSummary);

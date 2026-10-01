@@ -378,6 +378,7 @@ const NODE_CHECK_FILES = [
   'tests/server-verify-hmh-v8.test.mjs',
   'tests/server-verify-hmh-v8-corpus.test.mjs',
   'tests/server-verify-hmh-v8-legacy-identity.test.mjs',
+  'tests/achievement-review-hold.test.mjs',
   'tests/server-verify-identity.test.mjs',
   'apps/portal/src/server-session.mjs',
   'apps/portal/src/server-neon.mjs',

@@ -107,6 +107,37 @@ export const HMH_V8_BOSSES = covering({
 }, C8.bosses, 'HMH_V8_BOSSES');
 
 // ---------------------------------------------------------------------------
+// Spawn sources. On this map an ordinary enemy enters the run only as one of
+// the two opening enemies, as a director insertion, or as a live boss's add.
+// The director picks from the area the hero stands in (the Meadows when the
+// hero is on a road between areas), through that area's role gate and role
+// pools (world-v2-gameplay.mjs roleGates, world-v2-combat.mjs
+// WORLD_V2_DISTRICT_ARCHETYPES, the director's ROLE_ARCHETYPES), so every
+// director spawn's area is a visited area. Only the Liquidator brings adds
+// (his Enforcement Orders); the district bosses bring none. The test
+// enumerates the child's own selector over every band, ordinal and requested
+// role and pins these sets.
+export const HMH_V8_OPENING_ROLES = Object.freeze(['bagholder-rusher', 'forkrunner']);
+export const HMH_V8_AREA_SPAWN_ROLES = covering({
+  'fork-fortress': ['bagholder-rusher', 'forkrunner', 'gas-bomber', 'liquidator-agent', 'tollkeeper', 'validator-cultist', 'whale-enforcer'],
+  'halving-farms': ['bagholder-rusher', 'forkrunner', 'liquidator-agent', 'pump-and-dump-bloater'],
+  'hashwood-river': ['bagholder-rusher', 'forkrunner', 'gas-bomber', 'liquidator-agent', 'tollkeeper'],
+  'hollow-pines': ['bagholder-rusher', 'forkrunner', 'gas-bomber', 'hodl-revenant', 'liquidator-agent', 'whale-enforcer'],
+  'ledger-ridge': ['bagholder-rusher', 'forkrunner', 'gas-bomber', 'liquidator-agent', 'oracle-marksman', 'whale-enforcer'],
+  'litecoin-city': ['bagholder-rusher', 'forkrunner', 'gas-bomber', 'liquidator-agent', 'money-printer', 'rug-puller'],
+  'mweb-meadows': ['bagholder-rusher', 'forkrunner'],
+  'rugpull-woods': ['bagholder-rusher', 'forkrunner', 'gas-bomber', 'liquidator-agent', 'rug-puller'],
+  'scrypt-bayou': ['bagholder-rusher', 'forkrunner', 'gas-bomber', 'liquidator-agent', 'pump-and-dump-bloater', 'whale-enforcer'],
+  'silver-coast': ['bagholder-rusher', 'forkrunner', 'liquidator-agent'],
+}, C8.districts, 'HMH_V8_AREA_SPAWN_ROLES');
+export const HMH_V8_BOSS_ADD_ROLES = covering({
+  'rug-pull-baron': [],
+  lockkeeper: [],
+  'fifty-one-percent-foreman': [],
+  liquidator: ['gas-bomber', 'liquidator-agent'],
+}, C8.bosses, 'HMH_V8_BOSS_ADD_ROLES');
+
+// ---------------------------------------------------------------------------
 // Objectives: the two ten-area machines (world-v2-gameplay.mjs), switch class.
 export const HMH_V8_OBJECTIVES = covering({
   'ten-area-meadows-relay': { class: 'switch', district: 'mweb-meadows', requires: null },

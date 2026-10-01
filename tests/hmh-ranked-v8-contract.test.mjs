@@ -10,8 +10,11 @@ import { HMH_RUN_SUMMARY_CATALOGS_V7 } from '../sdk/hmh-run-summary-schema-v7.mj
 import { HMH_RUN_SUMMARY_CATALOGS_V8 as C8, HMH_V8_MOVEMENT_FIELDS, hmhRunSummaryCatalogs, hmhV8DistrictIndexAt } from '../sdk/hmh-run-summary-schema-v8.mjs';
 import {
   HMH_RUN_SUMMARY_V8_MIN_GAME_VERSION,
+  HMH_V8_AREA_SPAWN_ROLES,
+  HMH_V8_BOSS_ADD_ROLES,
   HMH_V8_BOSSES,
   HMH_V8_BOSS_RULES,
+  HMH_V8_OPENING_ROLES,
   HMH_V8_COLLECTIBLE_RULES,
   HMH_V8_CONSISTENCY_RULES,
   HMH_V8_MAP,
@@ -44,6 +47,10 @@ import { BEAR_MARKET_BURNER_EVENT_BOUNDS } from '../apps/hmh-reboot/src/bear-mar
 import { FORKED_STANDARD_CONFIG } from '../apps/hmh-reboot/src/forked-standard.mjs';
 import { HMH_TEN_AREA_LEVEL_ONE } from '../apps/hmh-reboot/src/world-context.mjs';
 import { deriveTenAreaTravelEdges } from '../scripts/hmh-ranked-v8/derive-travel-graph.mjs';
+import { ENCOUNTER_BANDS, selectEncounterArchetype } from '../apps/hmh-reboot/src/encounter-director.mjs';
+import { registerEnemyArchetypes } from '../apps/hmh-reboot/src/enemy-archetypes.mjs';
+import { WORLD_V2_NEW_ENEMY_RUNTIME } from '../apps/hmh-reboot/src/world-v2-combat.mjs';
+import { HMH_OPENING_ENEMY_ARCHETYPE_IDS } from '../apps/hmh-reboot/src/opening-balance.mjs';
 
 const MAIN = readFileSync(new URL('../apps/hmh-reboot/src/main.mjs', import.meta.url), 'utf8');
 const world = createWorldV2RuntimeWorld({ official: true });
@@ -103,6 +110,25 @@ test('every role the ten-area map spawns is a catalogue role at the threat the c
   assert.match(MAIN, /recordRunKill\(runSummaryAccumulator, \{ enemyRoleId: 'liquidator', weaponId: damageEvent\.weaponId, boss: true \}\);/);
   assert.match(MAIN, /threatCost: ENEMY_ARCHETYPES\[defeatedEnemy\.archetypeId\]\.costs\.threat,/);
   assert.match(MAIN, /ENEMY_ARCHETYPES = TEN_AREA_COMBAT\?\.archetypes \?\? LEGACY_ENEMY_ARCHETYPES;/);
+});
+
+test('the spawn sources: each area’s director pool, the opening enemies and the Liquidator’s adds are the child’s', () => {
+  registerEnemyArchetypes(WORLD_V2_NEW_ENEMY_RUNTIME);
+  const requested = ['rusher', 'flanker', 'suppressor', 'bruiser', 'demolition', 'support', null];
+  for (const areaId of C8.districts) {
+    const seen = new Set();
+    for (const band of ENCOUNTER_BANDS) for (let ordinal = 0; ordinal < 240; ordinal += 1) for (const seed of [0, 1, 7, 12_345]) for (const role of requested) {
+      seen.add(selectEncounterArchetype({ districtId: areaId, bandId: band.id, spawnOrdinal: ordinal, seed, requestedRole: role, leanRole: role, roleGates: gameplay.roleGates, districtArchetypes: gameplay.districtArchetypes }).archetypeId);
+    }
+    assert.deepEqual([...seen].sort(), HMH_V8_AREA_SPAWN_ROLES[areaId], areaId);
+  }
+  assert.deepEqual(HMH_V8_OPENING_ROLES, HMH_OPENING_ENEMY_ARCHETYPE_IDS);
+  const troops = /const ENFORCEMENT_TROOPS = freezeDeep\((\[[^;]+\])\);/.exec(readFileSync(new URL('../apps/hmh-reboot/src/liquidator-boss.mjs', import.meta.url), 'utf8'))[1];
+  assert.deepEqual([...new Set(JSON.parse(troops.replaceAll("'", '"')).flat())].sort(), HMH_V8_BOSS_ADD_ROLES.liquidator);
+  for (const bossId of ['rug-pull-baron', 'lockkeeper', 'fifty-one-percent-foreman']) assert.deepEqual(HMH_V8_BOSS_ADD_ROLES[bossId], [], `${bossId} brings no adds`);
+  // The director picks from the hero's area, or the Meadows on a road (always visited).
+  assert.match(MAIN, /const directorDistrictId = HMH_WORLD_CONTEXT\.getDistrictAt\(actor\.x, actor\.y\)\?\.id \?\? HMH_WORLD_CONTEXT\.defaultDistrictId;/);
+  assert.equal(gameplay.defaultDistrictId, HMH_V8_TRAVEL.entry.district);
 });
 
 test('the bosses: courts inside their areas, the contract ready ticks and bursts, and a 300-tick minimum fight for every start', () => {
