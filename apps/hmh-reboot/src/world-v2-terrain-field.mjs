@@ -7,6 +7,7 @@
 import { pointInPolygon, distanceToSegment, distanceToPolyline, polygonBounds, rectVertices } from './world-v2-area-art-schema.mjs';
 
 export const TERRAIN_FIELD_ID = 'world-v2-terrain-field/v1';
+const HARD_MATERIALS = new Set(['asphalt', 'paving', 'masonry', 'boardwalk']);
 export const TERRAIN_LIGHT_RANGE = Object.freeze({ low: 0.55, high: 1.2 });
 const LIGHT_NEUTRAL = (1 - TERRAIN_LIGHT_RANGE.low) / (TERRAIN_LIGHT_RANGE.high - TERRAIN_LIGHT_RANGE.low);
 
@@ -67,7 +68,8 @@ export function buildTerrainField({ summary, world, size = 512 } = {}) {
       let value = (fbm(x, y, 1500, 2, seed + 3) - 0.5) * 2 * terrain.value, ao = 0, dust = 0;
       for (const zone of zones) {
         if (!contains(zone.box, x, y)) continue;
-        const sd = signedDistance(x, y, zone.vertices), wz = smooth(zone.feather, -zone.feather * 0.4, sd + wobble * zone.feather * 1.6) * zone.alpha;
+        // Built surfaces keep a near-straight kerb; natural ground wanders.
+        const sd = signedDistance(x, y, zone.vertices), wz = smooth(zone.feather, -zone.feather * 0.4, sd + wobble * zone.feather * (HARD_MATERIALS.has(zone.material) ? 0.25 : 1.6)) * zone.alpha;
         if (wz <= 0) continue;
         if (zone.slot === 0) { for (let k = 1; k < 5; k++) w[k] *= 1 - wz; } else { w[zone.slot] += (1 - w[zone.slot]) * wz; for (let k = zone.slot + 1; k < 5; k++) w[k] *= 1 - wz; }
       }

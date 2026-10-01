@@ -89,19 +89,68 @@ in one frame; the phone tier is a quarter of the work.
 Chrome under the heavy lock, desktop 1280×800 @1x and phone 414×896 @3x,
 walked with WASD at 240 units/s. `review.md` holds the per-shot inspection.
 
+## Roads, banks, signs and fog (second window, 2026-10-01)
+
+Merged integration `7d26c1880` and then `31022b045` (Farms, River, City,
+Coast and Bayou plans attach `ground.terrain`). Commits `bdde94cf1` (roads +
+banks), `e13117d0c` (splat slots, coherent rock edges, signs, fog) and the
+receipts/doc commit. Still lazy-chunk only: every new symbol lands in
+`chunks/world-v2-area-art-binding-*.js`; `node build.mjs` reports
+`HMH initial JS + shared: 993,366 B` (the integration candidate number; the
+grep of `hmh-reboot/game.js` and its static chunks finds none of the new
+code).
+
+- **Road meshes** (`paintRoadMesh`, GLSL `ROAD_FRAGMENT`): one mitered strip
+  per authored road with `(lateral, along)` attributes. Opaque core
+  (`coreFraction` of the authored width: paved 0.78 asphalt, gravel 0.62,
+  dirt 0.5 of a new dusty `track` material) with an edge eroded by two noise
+  octaves; shoulder (gravel or earth) fading `shoulderOut` beyond the authored
+  half width into the splat ground; tyre ruts at `rutOffset`; a worn,
+  dashed chalk centre line on paved roads; faded ends where a road enters an
+  area. Drawn dirt → gravel → paved (`rank`), then every `b2-47` crack card
+  on top. The Graphics recipe remains the fallback when no GL program can be
+  built (headless tests).
+- **Banks and bare masses**: outlines get a ragged edge from world-space
+  noise (−8…+26 units, mostly outward), so the hundreds of thin closed-mass
+  strips that share one straight run break it continuously. Roofs are a
+  triangulated mesh through the grain shader (`SURFACE_FRAGMENT`, moss
+  patches on rock); faces only on edges whose outward normal points down the
+  screen, shaded from the authored edge, mapped world-continuously in u, with
+  a two-step dark foot and a lit lip. Back edges get a thin shadow lip only.
+  Every `closed-mass-*` and `world-guard-*` blocker id is in the binding's
+  `blockerIds`, which the production renderer skips (test-enforced), so no
+  old flat slab draws under a bank.
+- **Splat slots for every zone**: zones and trails whose material is not one
+  of the area's three now take one of two extra slots (largest painted area
+  first, weights in the light canvas G/B) or fold onto the nearest colour, so
+  no straight-edged Graphics zone fill remains under the splat. Built
+  materials (asphalt, paving, masonry, boardwalk) keep a near-straight kerb;
+  natural ones wander. Trails meander (±55 units at a 460-unit scale) and
+  wear patchily. Control canvases are 384² on desktop (256² phone).
+- **City signs**: plans may carry `signs` (validated 1–28 plain characters,
+  cue-safe panel/ink). The Litecoin City plan letters every placed carrier
+  and both facades from `city-branding.mjs` (`signForProp`/`signForPiece`);
+  the renderer bakes each name once on a canvas (condensed capitals, chalk on
+  slate) and stands it on the carrier.
+- **Bayou fog**: `ground.fog` cards (≤ 0.4 alpha) in the ground layer under
+  every actor; the Scrypt Bayou plan lays 17 along the channel and banks;
+  slow drift, still under reduced motion (`settingReduceMotion` dataset or
+  the media query).
+
+Decoded ground pages per area (tiles + fringes + rock face + 2 × 384²
+control): 6.4–7.9 MB, gate ≤ 8 MB in tests; the world-roads plan loads
+crushed-ore, packed-earth, road and the earth/track grains (≈ 5 MB, shared).
+
+Receipts: `docs/2.0/receipts/terrain-roads-20260930/` (pass-1 to pass-5,
+`review.md`).
+
 ## Not done (next window)
 
-- Road ribbon meshes (opaque cores, eroded edges, shoulders, ruts, chalk
-  centre line). Roads still paint through the previous `Graphics` recipe and
-  read flat; the field only adds verge wear and dust beside them.
-- Visual verification of the `world-masses` rock faces at a closed-mass edge
-  in the real child, and whether the production renderer skip covers the
-  `closed-mass-*` ids (the roads capture shows a rock-face strip at the left
-  edge, the Meadows–Woods capture shows a flat brown band beyond the area
-  border that was not resolved in the window).
-- Phone-tier frame cost measurement (six samplers per fragment, full screen).
-- Integration note: `61fad9308` on integration adds an authored Halving Farms
-  plan; the binding prefers an authored `artTarget` over the generic terrain
-  plan, but `tests/hmh-world-v2-area-art-binding.test.mjs` asserts
-  `halving-farms-barn` among the blocker ids and will need that expectation
-  moved to the authored plan.
+- City junction corners round off where two asphalt zones meet (the field
+  ramp makes a soft outside corner); a kerb line would read better.
+- The rock-face strip is a 512×128 bake: it repeats every 260 units and is
+  soft on the phone tier.
+- Cliff tops of the big closed masses are uniform rock with moss patches; no
+  vegetation clusters.
+- Phone frame cost of the 10-sampler terrain quad plus road strips is not
+  measured.

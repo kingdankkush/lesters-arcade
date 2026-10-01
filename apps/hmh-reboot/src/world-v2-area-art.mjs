@@ -646,10 +646,19 @@ export function createAreaArt({ world, areaId, plan, kit = null, loadTexture, te
         if (ny <= 0.12) { if (ny < -0.3) lips.moveTo(ra.x, ra.y).lineTo(rc.x, rc.y).stroke({ color: SHADOW_TINT, width: 3, alpha: 0.3 }); continue; }
         const quad = [a, c, rc, ra], flat = quad.flatMap(p => [p.x, p.y]);
         // Upper-left key: faces turned toward the left catch more light.
-        const lit = Math.min(1, 0.78 + 0.22 * Math.max(0, -nx) + 0.1 * ny), shade = Math.round(lit * 255) * 0x010101;
+        // Shade from the authored edge, not the ragged segment, so a run of
+        // jogs never reads as vertical stripes.
+        const edgeIndex = vertices.starts ? Math.max(0, vertices.starts.findLastIndex(start => start <= i)) : i;
+        const oa = outline[edgeIndex], oc = outline[(edgeIndex + 1) % outline.length], ol = Math.hypot(oc.x - oa.x, oc.y - oa.y) || 1;
+        let enx = (oc.y - oa.y) / ol, eny = -(oc.x - oa.x) / ol; if (enx * nx + eny * ny < 0) { enx = -enx; eny = -eny; }
+        const lit = Math.min(1, 0.78 + 0.22 * Math.max(0, -enx) + 0.1 * Math.max(0, eny)), shade = Math.round(lit * 255) * 0x010101;
         if (rocky && rockFace) {
           const s = 260 / (rockFace.source.pixelWidth || 512), fh = rockFace.source.pixelHeight || 128;
-          faces.poly(flat).fill({ texture: rockFace, textureSpace: 'global', matrix: { a: ux * s, b: uy * s, c: 0, d: h / fh, tx: a.x, ty: a.y - h }, color: multiplyTint(solid.tint, shade) });
+          // World-continuous u along x (the strip never restarts per segment);
+          // v runs from the lip to the foot along this segment's slope.
+          const slope = Math.abs(dx) > len * 0.3 ? dy / dx : null;
+          const matrix = slope === null ? { a: ux * s, b: uy * s, c: 0, d: h / fh, tx: a.x, ty: a.y - h } : { a: s, b: slope * s, c: 0, d: h / fh, tx: 0, ty: a.y - h - slope * a.x };
+          faces.poly(flat).fill({ texture: rockFace, textureSpace: 'global', matrix, color: multiplyTint(solid.tint, shade) });
         } else materialFill(faces, quad, wallMaterial ?? 'dirt', { tint: multiplyTint(solid.tint, shade) });
         // Dark foot where the face meets the ground, lit lip along the top.
         const foot = Math.min(h * 0.22, 40);

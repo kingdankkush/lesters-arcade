@@ -81,11 +81,11 @@ export function createScryptBayouArtPlan(world) {
   const fogTint = 0xc9d2cc;
   for (let n = 0, y = area.bounds.minY + 220; y < area.bounds.maxY - 150; y += 340, n++) {
     const u = stableUnit('bayou-fog', n);
-    plan.ground.fog.push({ id: `fog-channel-${n}`, x: cx + 450 + (u - 0.5) * 220, y, rx: 300 + u * 160, ry: 90 + u * 40, alpha: 0.12 + u * 0.1, tint: fogTint });
+    plan.ground.fog.push({ id: `fog-channel-${n}`, x: cx + 450 + (u - 0.5) * 220, y, rx: 300 + u * 160, ry: 90 + u * 40, alpha: 0.16 + u * 0.08, tint: fogTint });
   }
   for (const [n, [x, y]] of [[-1500, -1500], [-1600, 200], [-1450, 1500], [1500, -1450], [1600, 400], [1350, 1600]].entries()) {
     const u = stableUnit('bayou-bank-fog', n);
-    plan.ground.fog.push({ id: `fog-bank-${n}`, x: cx + x, y: cy + y, rx: 380 + u * 200, ry: 120 + u * 60, alpha: 0.1 + u * 0.08, tint: fogTint });
+    plan.ground.fog.push({ id: `fog-bank-${n}`, x: cx + x, y: cy + y, rx: 380 + u * 200, ry: 120 + u * 60, alpha: 0.14 + u * 0.08, tint: fogTint });
   }
   return freezeDeep(plan);
 }
