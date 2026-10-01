@@ -62,6 +62,7 @@ export const WORLD_V2_POINT_OF_INTEREST_ASSETS = freezeDeep({
 export const WORLD_V2_AREA_ART_HOOKS = Object.freeze({
   'mweb-meadows': Object.freeze({ kind: 'area-art-plan', planId: 'mweb-meadows', load: () => import('./world-v2-area-plans/mweb-meadows.mjs').then((module) => module.createMwebMeadowsArtPlan) }),
   'rugpull-woods': Object.freeze({ kind: 'area-art-plan', planId: 'rugpull-woods', load: () => import('./world-v2-area-plans/rugpull-woods.mjs').then((module) => module.createRugpullWoodsArtPlan) }),
+  'halving-farms': Object.freeze({ kind: 'area-art-plan', planId: 'halving-farms', load: () => import('./world-v2-area-plans/halving-farms.mjs').then((module) => module.createHalvingFarmsArtPlan) }),
 });
 export const WORLD_V2_ROAD_ART_HOOK = Object.freeze({ kind: 'area-art-plan', planId: 'world-roads', load: () => import('./world-v2-area-plans/world-roads.mjs').then((module) => module.createWorldRoadsArtPlan) });
 

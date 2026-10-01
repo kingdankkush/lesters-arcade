@@ -6,6 +6,7 @@ import { validateAreaArtPlan, pointInPolygon, distanceToPolyline, distanceToSegm
 import { createRugpullWoodsArtPlan, RUGPULL_WOODS_PAGES } from '../apps/hmh-reboot/src/world-v2-area-plans/rugpull-woods.mjs';
 import { createMwebMeadowsArtPlan, MWEB_MEADOWS_PAGES } from '../apps/hmh-reboot/src/world-v2-area-plans/mweb-meadows.mjs';
 import { createWorldRoadsArtPlan, ROAD_CLEARANCE_FRACTION } from '../apps/hmh-reboot/src/world-v2-area-plans/world-roads.mjs';
+import { createHalvingFarmsArtPlan, HALVING_FARMS_PAGES } from '../apps/hmh-reboot/src/world-v2-area-plans/halving-farms.mjs';
 
 const kit = JSON.parse(fs.readFileSync(new URL('../apps/portal/assets/generated/hmh-reboot-tripo-props-hd/hmh-tripo-props-hd.json', import.meta.url), 'utf8'));
 const world = createGreyboxWorld(), worldBefore = JSON.stringify(world);
@@ -16,7 +17,7 @@ const routeSegments = areaId => world.areas.find(a => a.id === areaId).inspectio
 const sites = areaId => world.sites.filter(s => s.areaId === areaId && ['objective', 'arena-exit', 'secret', 'height-option', 'area'].includes(s.kind));
 
 test('every authored plan validates against the HD kit, is deterministic and leaves the world untouched', () => {
-  for (const [make, expected] of [[createRugpullWoodsArtPlan, 'rugpull-woods'], [createMwebMeadowsArtPlan, 'mweb-meadows'], [createWorldRoadsArtPlan, 'world-roads']]) {
+  for (const [make, expected] of [[createRugpullWoodsArtPlan, 'rugpull-woods'], [createMwebMeadowsArtPlan, 'mweb-meadows'], [createHalvingFarmsArtPlan, 'halving-farms'], [createWorldRoadsArtPlan, 'world-roads']]) {
     const plan = make(world), again = make(createGreyboxWorld());
     assert.equal(plan.areaId, expected);
     assert.ok(Object.isFrozen(plan) && Object.isFrozen(plan.props));
@@ -29,6 +30,7 @@ test('every authored plan validates against the HD kit, is deterministic and lea
   assert.equal(JSON.stringify(world), worldBefore);
   assert.equal(createRugpullWoodsArtPlan({ ...world, areas: [] }), null);
   assert.equal(createMwebMeadowsArtPlan({ ...world, areas: [] }), null);
+  assert.equal(createHalvingFarmsArtPlan({ ...world, areas: [] }), null);
 });
 
 test('Rugpull Woods roots trees on matching-height banks, keeps understory off trails and dresses every camp solid with HD cards', () => {
@@ -82,6 +84,59 @@ test('MWEB Meadows follows brief 01 with homes, hedgerows, pickets, the old oak,
   for (const zone of summary.zones) for (const v of zone.vertices) assert.ok(v.x >= meadows.bounds.minX && v.x <= meadows.bounds.maxX && v.y >= meadows.bounds.minY && v.y <= meadows.bounds.maxY);
 });
 
+test('Halving Farms follows brief 03: furrowed crop fields, hedgerow and picket boundaries, barn cards, the watermill landmark, a rutted barn track and woodland rooted beyond the field edges', () => {
+  const plan = createHalvingFarmsArtPlan(world), summary = validateAreaArtPlan(plan, kit), farms = world.areas.find(a => a.id === 'halving-farms');
+  assert.deepEqual(plan.pages, HALVING_FARMS_PAGES);
+  assert.equal(summary.budget.exclusiveKitPages, 2);
+  assert.equal(summary.budget.decodedBytes, 3 * 16777216);
+  const byPiece = Object.fromEntries(summary.solids.map(s => [s.pieceId.slice('halving-farms-'.length), s]));
+  assert.equal(byPiece.barn.card.source, 'b2-63'); assert.equal(byPiece.barn.card.fit, 'width');
+  assert.equal(byPiece['windmill-base'].card.source, 'b2-69', 'the stone watermill stands in for the windmill landmark');
+  assert.equal(byPiece['windmill-base'].card.fit, 'height', 'the landmark card rises with the 400-unit base, not the 220-unit footprint');
+  assert.equal(byPiece.silo.card.source, 'b2-67');
+  assert.equal(byPiece['west-storage'].card.source, 'b2-68'); assert.equal(byPiece['east-storage'].card.source, 'b2-63');
+  for (const name of ['north-hedge', 'east-field-edge']) { assert.equal(byPiece[name].style, 'hedge'); assert.equal(byPiece[name].card.source, 'b2-75'); }
+  for (const name of ['west-field-row', 'east-field-row']) assert.equal(byPiece[name].style, 'pickets');
+  assert.equal(byPiece['yard-timber'].card.source, 'b2-79'); assert.equal(byPiece['yard-wall'].style, 'stakes');
+  assert.equal(byPiece['loading-deck'], undefined, 'elevated surfaces keep their greybox paint');
+  // Furrows: four fields, parallel dirt lines spaced 115 apart, never touching a route.
+  const furrows = summary.trails.filter(t => t.id.startsWith('furrow-'));
+  assert.ok(furrows.length >= 14 && furrows.every(t => t.material === 'dirt' && t.width === 34), `${furrows.length} furrows`);
+  for (const field of ['east', 'north', 'southeast', 'southwest']) assert.ok(furrows.filter(t => t.id.startsWith(`furrow-${field}-`)).length >= 2, field);
+  const segments = routeSegments('halving-farms');
+  for (const furrow of furrows) for (const p of furrow.points) for (const { a, b } of segments) assert.ok(distanceToSegment(p.x, p.y, a, b) >= 64, `${furrow.id} clears the routes`);
+  // The barn track is a rutted dirt lane ending at the barn door; the farm road continues as gravel into the yard.
+  const tracks = summary.trails.filter(t => t.id.startsWith('track-'));
+  assert.ok(tracks.some(t => t.material === 'gravel' && t.width === 150));
+  const objective = world.sites.find(s => s.id === 'halving-farms-objective');
+  assert.ok(tracks.some(t => t.material === 'dirt' && t.width === 120 && t.points.some(p => p.x === objective.x && p.y === objective.y)), 'the rutted track reaches the barn threshold');
+  // Crops, hedgerows, fallow flowers, clutter and woodland.
+  const crops = summary.props.filter(p => ['b1-09', 'b1-07', 'b1-06'].includes(p.source)), low = summary.props.filter(p => p.height < 150 && p.groundZ === 0);
+  assert.ok(crops.length >= 120 && crops.length <= 220, `${crops.length} crop plants`);
+  assert.ok(low.length >= 220, `${low.length} low plants and clutter`);
+  assert.ok(summary.props.filter(p => p.source === 'b2-75').length >= 8, 'free hedgerow boundaries');
+  for (const source of ['b2-80', 'b2-79', 'b2-71', 'b1-03', 'b2-54', 'b1-10']) assert.ok(summary.props.some(p => p.source === source), source);
+  assert.ok(summary.decals.length >= 50 && summary.decals.every(d => d.source === 'detail:grass'));
+  const woodland = summary.props.filter(p => p.groundZ > 0);
+  assert.ok(woodland.length >= 60, `${woodland.length} edge trees`);
+  for (const tree of woodland) {
+    const mass = inSolid(tree.x, tree.y);
+    assert.ok(mass && mass.visible.height === tree.groundZ && !mass.visible.areaId, `${tree.id} roots on a closed world mass`);
+    assert.ok(tree.x < farms.bounds.minX || tree.x > farms.bounds.maxX || tree.y < farms.bounds.minY || tree.y > farms.bounds.maxY, `${tree.id} stands beyond the field edge`);
+  }
+  const roads = world.roads.filter(r => r.fromAreaId === 'halving-farms' || r.toAreaId === 'halving-farms');
+  for (const prop of summary.props.filter(p => p.groundZ === 0)) {
+    assert.ok(prop.x >= farms.bounds.minX && prop.x <= farms.bounds.maxX && prop.y >= farms.bounds.minY && prop.y <= farms.bounds.maxY, `${prop.id} inside the area`);
+    assert.equal(inSolid(prop.x, prop.y), null, `${prop.id} outside blockers`);
+    for (const { a, b } of segments) assert.ok(distanceToSegment(prop.x, prop.y, a, b) >= 64, `${prop.id} clears inspection routes`);
+    for (const road of roads) assert.ok(distanceToPolyline(prop.x, prop.y, road.points) >= road.width / 2, `${prop.id} clears the road`);
+    for (const site of sites('halving-farms')) assert.ok(Math.hypot(site.x - prop.x, site.y - prop.y) >= 140, `${prop.id} clears ${site.id}`);
+  }
+  for (const decal of summary.decals) { assert.equal(inSolid(decal.x, decal.y), null); for (const { a, b } of segments) assert.ok(distanceToSegment(decal.x, decal.y, a, b) >= 64); }
+  for (const zone of summary.zones) for (const v of zone.vertices) assert.ok(v.x >= farms.bounds.minX && v.x <= farms.bounds.maxX && v.y >= farms.bounds.minY && v.y <= farms.bounds.maxY, zone.id);
+  assert.ok(summary.zones.filter(z => z.id.startsWith('field-')).length === 4 && summary.zones.some(z => z.id === 'working-yard' && z.material === 'earth'));
+});
+
 test('the world roads plan ribbons all fourteen authored roads by kind and keeps road-side props on the shoulders', () => {
   const plan = createWorldRoadsArtPlan(world), summary = validateAreaArtPlan(plan, kit);
   assert.equal(summary.roads.length, 14);
@@ -115,7 +170,7 @@ test('the world roads plan ribbons all fourteen authored roads by kind and keeps
 });
 
 test('page budgets stay within two exclusive kit pages plus the shared road page and the ground tiles', () => {
-  const rows = [createRugpullWoodsArtPlan, createMwebMeadowsArtPlan, createWorldRoadsArtPlan].map(make => validateAreaArtPlan(make(world), kit));
+  const rows = [createRugpullWoodsArtPlan, createMwebMeadowsArtPlan, createHalvingFarmsArtPlan, createWorldRoadsArtPlan].map(make => validateAreaArtPlan(make(world), kit));
   for (const summary of rows) {
     assert.ok(summary.budget.exclusiveKitPages <= 2, summary.areaId);
     assert.ok(summary.budget.kitPages <= 3, summary.areaId);
@@ -124,5 +179,5 @@ test('page budgets stay within two exclusive kit pages plus the shared road page
     assert.ok(summary.tiles.length <= 4, `${summary.areaId} tiles ${summary.tiles.join(',')}`);
   }
   const resident = new Set(rows.flatMap(s => s.pages));
-  assert.ok(resident.size <= 4, 'Meadows + Woods + roads together never exceed four distinct kit pages');
+  assert.ok(resident.size <= 4, 'Meadows + Woods + Farms + roads together never exceed four distinct kit pages');
 });

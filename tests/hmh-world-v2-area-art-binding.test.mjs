@@ -26,7 +26,8 @@ test('the binding reads the world hooks, loads every plan lazily, paints below t
   assert.equal(binding.id, AREA_ART_BINDING_ID);
   assert.equal(f.host.getChildIndex(binding.root), f.host.getChildIndex(f.before) - 1, 'area art root sits directly below the decal layer');
   const snapshot = binding.snapshot();
-  assert.deepEqual(snapshot.plans.map(p => p.areaId).sort(), ['mweb-meadows', 'rugpull-woods', 'world-roads']);
+  assert.deepEqual(snapshot.plans.map(p => p.areaId).sort(), ['halving-farms', 'mweb-meadows', 'rugpull-woods', 'world-roads']);
+  assert.ok(snapshot.blockerIds.includes('halving-farms-barn'), 'the Farms plan decorates the barn through the same hook path');
   assert.ok(snapshot.blockerIds.includes('mweb-meadows-garden-home') && snapshot.blockerIds.includes('rugpull-woods-supply-tent'), 'decorated solids report their collision blocker ids');
   assert.ok(!snapshot.blockerIds.includes('mweb-meadows-relay-equipment'), 'the relay keeps its production drawing');
   const pages = [...new Set(f.loaded.filter(u => u.includes('tripo-props-hd-')))];
