@@ -62,6 +62,8 @@ export const WORLD_V2_POINT_OF_INTEREST_ASSETS = freezeDeep({
 export const WORLD_V2_AREA_ART_HOOKS = Object.freeze({
   'mweb-meadows': Object.freeze({ kind: 'area-art-plan', planId: 'mweb-meadows', load: () => import('./world-v2-area-plans/mweb-meadows.mjs').then((module) => module.createMwebMeadowsArtPlan) }),
   'rugpull-woods': Object.freeze({ kind: 'area-art-plan', planId: 'rugpull-woods', load: () => import('./world-v2-area-plans/rugpull-woods.mjs').then((module) => module.createRugpullWoodsArtPlan) }),
+  // Lane B (areas 06-09): River is live; Pines, Ridge and Fortress follow on the same hook path.
+  'hashwood-river': Object.freeze({ kind: 'area-art-plan', planId: 'hashwood-river', load: () => import('./world-v2-area-plans/hashwood-river.mjs').then((module) => module.createHashwoodRiverArtPlan) }),
 });
 export const WORLD_V2_ROAD_ART_HOOK = Object.freeze({ kind: 'area-art-plan', planId: 'world-roads', load: () => import('./world-v2-area-plans/world-roads.mjs').then((module) => module.createWorldRoadsArtPlan) });
 
