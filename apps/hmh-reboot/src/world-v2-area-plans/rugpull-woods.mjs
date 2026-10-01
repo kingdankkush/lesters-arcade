@@ -2,7 +2,7 @@
 // pockets off the trails, HD camp cards on the existing solids. Frozen data
 // only; the plan never adds a blocker, surface, objective or rule.
 import { freezeDeep } from '../value-guards.mjs';
-import { pointInPolygon, stableUnit } from '../world-v2-area-art-schema.mjs';
+import { pointInPolygon, stableUnit, DISTRICT_TERRAIN } from '../world-v2-area-art-schema.mjs';
 import { createAreaPlanContext, CANOPY_HEIGHTS } from './plan-support.mjs';
 
 export const RUGPULL_WOODS_PAGES = Object.freeze(['tripo-props-hd-plants-00.webp', 'tripo-props-hd-structures-01.webp', 'tripo-props-hd-props-00.webp']);
@@ -19,17 +19,18 @@ export function createRugpullWoodsArtPlan(world) {
   if (!context) return null;
   const { area, plan, point, prop, solid, scatter, guard, supportAt, insideWorld, routeSegments } = context;
   plan.ground.base = { surfaceId: `${area.id}-floor`, material: 'forest' };
+  plan.ground.terrain = { ...DISTRICT_TERRAIN[area.id] };
   // Camp ground reads as trodden earth; the abandoned stores are overgrown.
   plan.ground.zones.push(
-    { id: 'camp-court', material: 'earth', feather: 90, alpha: 0.55, vertices: [point(380, -720), point(1180, -700), point(1420, -300), point(1360, 520), point(760, 640), point(300, 400), point(240, -300)] },
+    { id: 'camp-court', material: 'campearth', feather: 120, alpha: 0.8, vertices: [point(380, -720), point(1180, -700), point(1420, -300), point(1360, 520), point(760, 640), point(300, 400), point(240, -300)] },
     { id: 'lookout-bank-top', material: 'dirt', feather: 60, alpha: 0.6, vertices: [point(430, -1420), point(870, -1420), point(870, -1100), point(430, -1100)] },
-    { id: 'stores-yard', material: 'marsh', feather: 110, alpha: 0.55, vertices: [point(-1180, 1300), point(-280, 1330), point(-260, 1780), point(-1200, 1760)] },
+    { id: 'stores-yard', material: 'dirt', feather: 130, alpha: 0.6, vertices: [point(-1180, 1300), point(-280, 1330), point(-260, 1780), point(-1200, 1760)] },
   );
   const seen = new Set();
   for (const segment of routeSegments) {
     const key = `${segment.a.x},${segment.a.y}|${segment.b.x},${segment.b.y}`;
     if (seen.has(key)) continue; seen.add(key);
-    plan.ground.trails.push({ id: `trail-${plan.ground.trails.length}`, material: 'earth', points: [segment.a, segment.b], width: segment.kind === 'main' ? 52 : 42, halo: 16 });
+    plan.ground.trails.push({ id: `trail-${plan.ground.trails.length}`, material: 'campearth', points: [segment.a, segment.b], width: segment.kind === 'main' ? 52 : 42, halo: 24 });
   }
   // Camp structures on the authored solids (HD cards replace the soft 256 px ones).
   solid('supply-tent', 'card', { source: 'b1-13', fit: 'width', tint: 0xe6dcc8 });

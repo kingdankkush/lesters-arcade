@@ -3,7 +3,7 @@
 // oak on the relay green, wildflower beds and meadow grass detail. Frozen data
 // only; no blocker, surface, objective or rule is added.
 import { freezeDeep } from '../value-guards.mjs';
-import { stableUnit } from '../world-v2-area-art-schema.mjs';
+import { stableUnit, DISTRICT_TERRAIN } from '../world-v2-area-art-schema.mjs';
 import { createAreaPlanContext, CANOPY_HEIGHTS } from './plan-support.mjs';
 
 export const MWEB_MEADOWS_PAGES = Object.freeze(['tripo-props-hd-plants-00.webp', 'tripo-props-hd-structures-00.webp', 'tripo-props-hd-props-00.webp']);
@@ -15,6 +15,7 @@ export function createMwebMeadowsArtPlan(world) {
   const { area, plan, point, prop, solid, scatter, guard, routeSegments } = context;
   const { x: cx, y: cy } = area.center;
   plan.ground.base = { surfaceId: `${area.id}-floor`, material: 'meadow' };
+  plan.ground.terrain = { ...DISTRICT_TERRAIN[area.id] };
   // Garden beds and the worn relay court; a gravel apron carries the paved road
   // into the green and out toward the farm road.
   plan.ground.zones.push(
@@ -23,7 +24,7 @@ export function createMwebMeadowsArtPlan(world) {
     { id: 'relay-court', material: 'earth', feather: 80, alpha: 0.7, vertices: [point(260, -760), point(880, -780), point(920, -420), point(700, -180), point(300, -220)] },
     { id: 'garden-bed-west', material: 'earth', feather: 60, alpha: 0.6, vertices: [point(-1480, -1180), point(-1000, -1200), point(-960, -900), point(-1460, -880)] },
     { id: 'garden-bed-south', material: 'earth', feather: 60, alpha: 0.55, vertices: [point(-1360, 760), point(-860, 740), point(-820, 900), point(-1340, 920)] },
-    { id: 'east-lawn', material: 'grass', feather: 90, alpha: 0.5, vertices: [point(1100, -1050), point(1800, -1080), point(1820, -500), point(1120, -480)] },
+    { id: 'east-lawn', material: 'meadow', feather: 120, alpha: 0.6, vertices: [point(1100, -1050), point(1800, -1080), point(1820, -500), point(1120, -480)] },
     { id: 'porch-yard', material: 'earth', feather: 50, alpha: 0.5, vertices: [point(-1400, 40), point(-560, 40), point(-560, 400), point(-1400, 400)] },
   );
   for (const segment of routeSegments) {
