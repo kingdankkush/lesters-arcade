@@ -490,6 +490,18 @@ svg.arcade-icon {
   16.667%, 100% { opacity: 0; }
 }
 
+/* 2.0 Blender cabinets: 16-frame turntables on true alpha, one atlas per
+   cabinet. Each frame owns 1/16 of the loop; the rest frame (the poster angle)
+   is the one reduced motion keeps. */
+.arcade-cabinet-3d-rotator {
+  --cabinet-frame-animation: arcadeCabinet3dFrame;
+}
+
+@keyframes arcadeCabinet3dFrame {
+  0%, 6.2% { opacity: 1; }
+  6.25%, 100% { opacity: 0; }
+}
+
 .cabinet-motion-toolbar {
   display: flex;
   justify-content: flex-end;

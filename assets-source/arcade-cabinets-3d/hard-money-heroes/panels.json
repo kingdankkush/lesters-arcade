@@ -1,0 +1,237 @@
+{
+  "game": "hard-money-heroes",
+  "panels": {
+    "marquee": {
+      "texture": "assets-source/arcade-cabinets-3d/hard-money-heroes/panel-marquee.webp",
+      "size": [
+        1024,
+        272
+      ],
+      "sha256": "fd5ecd5248828f44b0b99809e1bd24658e0d63cde02dfd28d3070bc7d1e70726",
+      "extractedFrom": "LestersArcade-Assets/Cabinet-Panels/hard-money-heroes/hmh-cabinet-reference-turnaround.webp",
+      "sourceSha256": "38f390e807b14458e117cf7afa8c1b655d4e576688f1df0fd03faf37de3cc130",
+      "quad": [
+        [
+          98,
+          22
+        ],
+        [
+          456,
+          22
+        ],
+        [
+          456,
+          117
+        ],
+        [
+          98,
+          117
+        ]
+      ],
+      "mirror": false
+    },
+    "screen": {
+      "texture": "assets-source/arcade-cabinets-3d/hard-money-heroes/panel-screen.webp",
+      "size": [
+        1024,
+        532
+      ],
+      "sha256": "c633911e0ece8a024f46e4f40fd8797274e314710bc9ae8aabe1c7e3635163bf",
+      "extractedFrom": "LestersArcade-Assets/Cabinet-Panels/hard-money-heroes/hmh-cabinet-reference-turnaround.webp",
+      "sourceSha256": "38f390e807b14458e117cf7afa8c1b655d4e576688f1df0fd03faf37de3cc130",
+      "quad": [
+        [
+          98,
+          117
+        ],
+        [
+          456,
+          117
+        ],
+        [
+          456,
+          303
+        ],
+        [
+          98,
+          303
+        ]
+      ],
+      "mirror": false
+    },
+    "deck": {
+      "texture": "assets-source/arcade-cabinets-3d/hard-money-heroes/panel-deck.webp",
+      "size": [
+        1024,
+        140
+      ],
+      "sha256": "d37c6071d1bb41289e3c7e6573bdf93cc644a10ca510bbf98e4b5581bebbfd86",
+      "extractedFrom": "LestersArcade-Assets/Cabinet-Panels/hard-money-heroes/hmh-cabinet-reference-turnaround.webp",
+      "sourceSha256": "38f390e807b14458e117cf7afa8c1b655d4e576688f1df0fd03faf37de3cc130",
+      "quad": [
+        [
+          98,
+          303
+        ],
+        [
+          456,
+          303
+        ],
+        [
+          456,
+          352
+        ],
+        [
+          98,
+          352
+        ]
+      ],
+      "mirror": false
+    },
+    "control-front": {
+      "texture": "assets-source/arcade-cabinets-3d/hard-money-heroes/panel-control-front.webp",
+      "size": [
+        1024,
+        149
+      ],
+      "sha256": "71964a44b84c04105cf711402044581850bb45295857cbb5f8c8c0145185a9a4",
+      "extractedFrom": "LestersArcade-Assets/Cabinet-Panels/hard-money-heroes/hmh-cabinet-reference-turnaround.webp",
+      "sourceSha256": "38f390e807b14458e117cf7afa8c1b655d4e576688f1df0fd03faf37de3cc130",
+      "quad": [
+        [
+          98,
+          352
+        ],
+        [
+          456,
+          352
+        ],
+        [
+          456,
+          404
+        ],
+        [
+          98,
+          404
+        ]
+      ],
+      "mirror": false
+    },
+    "kick": {
+      "texture": "assets-source/arcade-cabinets-3d/hard-money-heroes/panel-kick.webp",
+      "size": [
+        1024,
+        418
+      ],
+      "sha256": "267eb6625813e985f82f28701e3b3b1c352e1c6325a58f7b80c026ae3c6d5c0b",
+      "extractedFrom": "LestersArcade-Assets/Cabinet-Panels/hard-money-heroes/hmh-cabinet-reference-turnaround.webp",
+      "sourceSha256": "38f390e807b14458e117cf7afa8c1b655d4e576688f1df0fd03faf37de3cc130",
+      "quad": [
+        [
+          98,
+          404
+        ],
+        [
+          456,
+          404
+        ],
+        [
+          456,
+          550
+        ],
+        [
+          98,
+          550
+        ]
+      ],
+      "mirror": false
+    },
+    "side-left": {
+      "texture": "assets-source/arcade-cabinets-3d/hard-money-heroes/panel-side-left.webp",
+      "size": [
+        639,
+        1024
+      ],
+      "sha256": "4674456165a6d362489903f59205cb62a4db9d52dc9b86a32666542c07f9b1b2",
+      "extractedFrom": "LestersArcade-Assets/Cabinet-Panels/hard-money-heroes/hmh-cabinet-reference-turnaround.webp",
+      "sourceSha256": "38f390e807b14458e117cf7afa8c1b655d4e576688f1df0fd03faf37de3cc130",
+      "quad": [
+        [
+          569,
+          568
+        ],
+        [
+          869,
+          568
+        ],
+        [
+          869,
+          1049
+        ],
+        [
+          569,
+          1049
+        ]
+      ],
+      "mirror": false
+    },
+    "side-right": {
+      "texture": "assets-source/arcade-cabinets-3d/hard-money-heroes/panel-side-right.webp",
+      "size": [
+        565,
+        1024
+      ],
+      "sha256": "67e325df23dbbc4d35023ece2c6775c1bacb26c3d4fb73fe4a0c90e2f5c6d84d",
+      "extractedFrom": "LestersArcade-Assets/Cabinet-Panels/hard-money-heroes/hmh-cabinet-reference-turnaround.webp",
+      "sourceSha256": "38f390e807b14458e117cf7afa8c1b655d4e576688f1df0fd03faf37de3cc130",
+      "quad": [
+        [
+          1078,
+          9
+        ],
+        [
+          1385,
+          9
+        ],
+        [
+          1385,
+          565
+        ],
+        [
+          1078,
+          565
+        ]
+      ],
+      "mirror": false
+    },
+    "back": {
+      "texture": "assets-source/arcade-cabinets-3d/hard-money-heroes/panel-back.webp",
+      "size": [
+        721,
+        1024
+      ],
+      "sha256": "f3de3a2c05cb27e3b24df9b8a62a33cee687b6de85027a6939a397446a71e81d",
+      "extractedFrom": "LestersArcade-Assets/Cabinet-Panels/hard-money-heroes/hmh-cabinet-reference-turnaround.webp",
+      "sourceSha256": "38f390e807b14458e117cf7afa8c1b655d4e576688f1df0fd03faf37de3cc130",
+      "quad": [
+        [
+          108,
+          572
+        ],
+        [
+          444,
+          572
+        ],
+        [
+          444,
+          1049
+        ],
+        [
+          108,
+          1049
+        ]
+      ],
+      "mirror": false
+    }
+  }
+}

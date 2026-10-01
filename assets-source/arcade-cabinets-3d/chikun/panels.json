@@ -1,0 +1,237 @@
+{
+  "game": "chikun",
+  "panels": {
+    "marquee": {
+      "texture": "assets-source/arcade-cabinets-3d/chikun/panel-marquee.webp",
+      "size": [
+        1024,
+        258
+      ],
+      "sha256": "bd9711beced5432f4959068bd1a4b68bf540583ab3f61e3be6c46afd326e6a17",
+      "extractedFrom": "apps/portal/assets/generated/chikun-cabinet/chikun-cabinet-front.png",
+      "sourceSha256": "51867a5e8fd664217045ee470c3a2011557e3682ee3f04c4ae289c155fbe5c9b",
+      "quad": [
+        [
+          78,
+          62
+        ],
+        [
+          316,
+          62
+        ],
+        [
+          316,
+          122
+        ],
+        [
+          78,
+          122
+        ]
+      ],
+      "mirror": false
+    },
+    "screen": {
+      "texture": "assets-source/arcade-cabinets-3d/chikun/panel-screen.webp",
+      "size": [
+        1024,
+        602
+      ],
+      "sha256": "ada79090b88d3cdc0ae7e8e92d7c1aa10f7d80781c36cbd3f16830e4f6bd81e5",
+      "extractedFrom": "apps/portal/assets/generated/chikun-cabinet/chikun-cabinet-front.png",
+      "sourceSha256": "51867a5e8fd664217045ee470c3a2011557e3682ee3f04c4ae289c155fbe5c9b",
+      "quad": [
+        [
+          78,
+          122
+        ],
+        [
+          316,
+          122
+        ],
+        [
+          316,
+          262
+        ],
+        [
+          78,
+          262
+        ]
+      ],
+      "mirror": false
+    },
+    "deck": {
+      "texture": "assets-source/arcade-cabinets-3d/chikun/panel-deck.webp",
+      "size": [
+        1024,
+        155
+      ],
+      "sha256": "78c3e195c4d2809f94f1ebee2c1e75f615139fe3a69db665e245868d0086b35a",
+      "extractedFrom": "apps/portal/assets/generated/chikun-cabinet/chikun-cabinet-front.png",
+      "sourceSha256": "51867a5e8fd664217045ee470c3a2011557e3682ee3f04c4ae289c155fbe5c9b",
+      "quad": [
+        [
+          78,
+          262
+        ],
+        [
+          316,
+          262
+        ],
+        [
+          316,
+          298
+        ],
+        [
+          78,
+          298
+        ]
+      ],
+      "mirror": false
+    },
+    "control-front": {
+      "texture": "assets-source/arcade-cabinets-3d/chikun/panel-control-front.webp",
+      "size": [
+        1024,
+        172
+      ],
+      "sha256": "770bc13339c520ee0b7b8b880257664f40232881beddd5d7cb9fedd199f933be",
+      "extractedFrom": "apps/portal/assets/generated/chikun-cabinet/chikun-cabinet-front.png",
+      "sourceSha256": "51867a5e8fd664217045ee470c3a2011557e3682ee3f04c4ae289c155fbe5c9b",
+      "quad": [
+        [
+          78,
+          298
+        ],
+        [
+          316,
+          298
+        ],
+        [
+          316,
+          338
+        ],
+        [
+          78,
+          338
+        ]
+      ],
+      "mirror": false
+    },
+    "kick": {
+      "texture": "assets-source/arcade-cabinets-3d/chikun/panel-kick.webp",
+      "size": [
+        1024,
+        422
+      ],
+      "sha256": "b1ca540182061c6abc55fcbf070ce7f0b5ab49672a138a77cd4e71ceaa1d1a0a",
+      "extractedFrom": "apps/portal/assets/generated/chikun-cabinet/chikun-cabinet-front.png",
+      "sourceSha256": "51867a5e8fd664217045ee470c3a2011557e3682ee3f04c4ae289c155fbe5c9b",
+      "quad": [
+        [
+          78,
+          338
+        ],
+        [
+          316,
+          338
+        ],
+        [
+          316,
+          436
+        ],
+        [
+          78,
+          436
+        ]
+      ],
+      "mirror": false
+    },
+    "side-left": {
+      "texture": "assets-source/arcade-cabinets-3d/chikun/panel-side-left.webp",
+      "size": [
+        643,
+        1024
+      ],
+      "sha256": "71a8151c9d00e01bd0d48ec544fdf9d5d977b1a49970b1ab43881a207141cbc2",
+      "extractedFrom": "apps/portal/assets/generated/chikun-cabinet/chikun-cabinet-left.png",
+      "sourceSha256": "85249555a5ffa79da7907173da3fba0a6692dee55d9691a4d2a15bd91e4e56c8",
+      "quad": [
+        [
+          105,
+          92
+        ],
+        [
+          318,
+          92
+        ],
+        [
+          318,
+          431
+        ],
+        [
+          105,
+          431
+        ]
+      ],
+      "mirror": false
+    },
+    "side-right": {
+      "texture": "assets-source/arcade-cabinets-3d/chikun/panel-side-right.webp",
+      "size": [
+        604,
+        1024
+      ],
+      "sha256": "2fd39175367cd71690f2028e3b2f7943f41affe066f6640f8af5f455cb963de5",
+      "extractedFrom": "apps/portal/assets/generated/chikun-cabinet/chikun-cabinet-right.png",
+      "sourceSha256": "4354827c7fbac94ab5dedf373c9711da1fcee66ba0029af8ac59a04e2f728443",
+      "quad": [
+        [
+          55,
+          57
+        ],
+        [
+          281,
+          57
+        ],
+        [
+          281,
+          440
+        ],
+        [
+          55,
+          440
+        ]
+      ],
+      "mirror": false
+    },
+    "back": {
+      "texture": "assets-source/arcade-cabinets-3d/chikun/panel-back.webp",
+      "size": [
+        686,
+        1024
+      ],
+      "sha256": "9bdf74c34f2af737695e5dde920f3697cd82670c4ed9da10605ec986a9623a42",
+      "extractedFrom": "apps/portal/assets/generated/chikun-cabinet/chikun-cabinet-back.png",
+      "sourceSha256": "971d674a7970db184a955d5ae20d4ee6e86b2fa37bb67637fc990f361c93852a",
+      "quad": [
+        [
+          80,
+          104
+        ],
+        [
+          305,
+          104
+        ],
+        [
+          305,
+          440
+        ],
+        [
+          80,
+          440
+        ]
+      ],
+      "mirror": false
+    }
+  }
+}
