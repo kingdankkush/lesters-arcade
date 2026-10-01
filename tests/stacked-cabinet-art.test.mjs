@@ -4,25 +4,24 @@ import { readFileSync } from 'node:fs';
 import { ARCADE_GAMES, LESTERS_ARCADE_V2_APP_SHELL } from '../apps/portal/src/arcade-core.mjs';
 import { parseAtlasFrameRef } from '../apps/portal/src/atlas-frame-ref.mjs';
 
-test('STACKED registers the same six-view cabinet in both game catalogs', () => {
+test('STACKED registers the same 3D turntable cabinet in both game catalogs', () => {
   const cabinet = LESTERS_ARCADE_V2_APP_SHELL.cabinets.find(item => item.id === 'stacked');
   const game = ARCADE_GAMES.find(item => item.id === 'stacked');
   assert.ok(cabinet.desktopCabinetSprite, 'STACKED needs rotating cabinet art, not only a banner');
   assert.equal(game.desktopCabinetSprite, cabinet.desktopCabinetSprite);
   const sprite = cabinet.desktopCabinetSprite;
-  assert.equal(sprite.id, 'stacked-cabinet');
-  assert.equal(sprite.frames.length, 6);
+  assert.equal(sprite.id, 'stacked-cabinet-3d');
+  assert.equal(sprite.frames.length, 16);
   assert.equal(sprite.frames.filter(frame => frame.rest).length, 1);
-  assert.equal(sprite.frames[0].rest, true);
   assert.ok(Object.isFrozen(sprite) && Object.isFrozen(sprite.frames));
   const regions = sprite.frames.map(frame => parseAtlasFrameRef(frame.src));
   assert.ok(regions.every(Boolean));
   assert.equal(new Set(regions.map(region => region.src)).size, 1, 'one image request for the full turntable');
-  assert.equal(new Set(sprite.frames.map(frame => frame.src)).size, 6);
-  const png = readFileSync(new URL('../apps/portal/' + regions[0].src, import.meta.url));
-  assert.equal(png.readUInt32BE(16), regions[0].atlasWidth);
-  assert.equal(png.readUInt32BE(20), regions[0].atlasHeight);
-  assert.ok(png.length < 1_500_000, 'keep the cabinet atlas below 1.5 MB');
+  assert.equal(new Set(sprite.frames.map(frame => frame.src)).size, 16);
+  const webp = readFileSync(new URL('../apps/portal/' + regions[0].src.split('?')[0], import.meta.url));
+  assert.equal(webp.toString('ascii', 0, 4), 'RIFF');
+  assert.equal(webp.toString('ascii', 8, 12), 'WEBP');
+  assert.ok(webp.length <= 350_000, 'keep the cabinet turntable within its 350 KB budget');
   assert.equal(cabinet.playable, true);
   assert.equal(game.entryFeeMicroUsdc, 0);
 });

@@ -2083,14 +2083,12 @@ test('V2 app shell hides prototype chrome behind full-screen wallet profile, cab
   assert.equal(LESTERS_ARCADE_V2_APP_SHELL.gameIntro.targetStep, 'mode-select');
   const hardMoneyHeroesCabinet = LESTERS_ARCADE_V2_APP_SHELL.cabinets.find((cabinet) => cabinet.id === 'hard-money-heroes');
   assert.equal(hardMoneyHeroesCabinet.playable, true);
-  assert.equal(hardMoneyHeroesCabinet.desktopCabinetSprite.id, 'hard-money-heroes-arcade-cabinet-rotation');
-  assert.equal(hardMoneyHeroesCabinet.desktopCabinetSprite.generatedFrom, 'Hard-Money-Heroes-ArcadeCabinet-white-bg.png');
-  assert.equal(hardMoneyHeroesCabinet.desktopCabinetSprite.generatedFrom.includes('C:'), false);
-  assert.deepEqual(hardMoneyHeroesCabinet.desktopCabinetSprite.frames.map((frame) => frame.id), ['front', 'front-right', 'right-side', 'back', 'left-side', 'front-left']);
-  assert.equal(hardMoneyHeroesCabinet.desktopCabinetSprite.frames.length, 6);
-  assert.equal(hardMoneyHeroesCabinet.desktopCabinetSprite.frames.every((frame) => frame.src.includes('.png?v=hmh-cabinet-white-bg-v1') && frame.width > 0 && frame.height > 0), true);
+  // 2.0: the Blender cabinet turntable built from the owner's reference panels.
+  assert.equal(hardMoneyHeroesCabinet.desktopCabinetSprite.id, 'hard-money-heroes-cabinet-3d');
+  assert.equal(hardMoneyHeroesCabinet.desktopCabinetSprite.frames.length, 16);
+  assert.equal(hardMoneyHeroesCabinet.desktopCabinetSprite.frames.every((frame) => frame.src.includes('hard-money-heroes-cabinet-turntable.webp?v=') && frame.src.includes('#frame=')), true);
   for (const frame of hardMoneyHeroesCabinet.desktopCabinetSprite.frames) {
-    const cleanSrc = frame.src.split('?')[0];
+    const cleanSrc = frame.src.split(/[?#]/)[0];
     const framePath = fileURLToPath(new URL(`../apps/portal/${cleanSrc.replace('./', '')}`, import.meta.url));
     assert.equal(existsSync(framePath) && statSync(framePath).size > 0, true, `${frame.src} exists`);
   }
@@ -2100,7 +2098,7 @@ test('V2 app shell hides prototype chrome behind full-screen wallet profile, cab
   assert.equal(chikunCabinet.devPlayable, true);
   assert.equal(chikunCabinet.leaderboardEligible, true);
   assert.match(chikunCabinet.description, /replay-verified Ranked scores/i);
-  assert.equal(chikunCabinet.desktopCabinetSprite.id, 'chikun-cabinet');
+  assert.equal(chikunCabinet.desktopCabinetSprite.id, 'chikun-cabinet-3d');
   assert.deepEqual(LESTERS_ARCADE_V2_APP_SHELL.cabinets.filter((cabinet) => cabinet.playable).map(cabinet => cabinet.id), ['hard-money-heroes', 'chikun', 'stacked']);
   assert.equal(LESTERS_ARCADE_V2_APP_SHELL.modeSelect.ranked.requiresZkLtc, true);
   assert.equal(LESTERS_ARCADE_V2_APP_SHELL.modeSelect.ranked.faucetUrl, LITVM_LITEFORGE_NETWORK.faucetUrl);

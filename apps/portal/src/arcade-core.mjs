@@ -2,8 +2,8 @@ import { HMH_HD_SPRITE_ATLAS_MANIFEST } from '../assets/generated/hmh-hd-sprite-
 import { HMH_EXPANDED_PIXEL_PACK_MANIFEST } from '../assets/generated/hmh-expanded-pixel-pack.mjs';
 import { HMH_ACHIEVEMENT_ATLAS } from '../assets/generated/hmh-achievement-atlas/hmh-achievement-atlas-manifest.mjs';
 import { HMH_ENVIRONMENT_ASSET_MANIFEST } from '../assets/hard-money-heroes/environment/hmh-environment-manifest.mjs';
-import { HMH_CABINET_SPRITE_MANIFEST } from '../assets/hard-money-heroes/cabinet/hmh-cabinet-sprite-manifest.mjs';
-import { STACKED_CABINET_SPRITE } from '../assets/stacked-cabinet/stacked-cabinet-manifest.mjs';
+// 2.0 cabinets: one Blender kit, 16-frame turntables (scripts/run-arcade-cabinets.py).
+import { ARCADE_CABINETS_3D } from '../assets/generated/arcade-cabinets-3d/arcade-cabinets-3d-manifest.mjs';
 import { LESTER_ARCADE_PLAYLIST_MANIFEST } from './arcade-playlist-manifest.mjs';
 import { SITE_VERSION, GAME_VERSION } from './version-tracking.mjs';
 import { buildAchievementProgress, normalizeAchievementUnlockDate } from './achievement-progress.mjs';
@@ -664,7 +664,7 @@ export const LESTERS_ARCADE_V2_APP_SHELL = Object.freeze({
       status: 'playable',
       playable: true,
       description: 'The first playable Lester arcade cabinet: a deterministic top-down 2.5D roguelike run-and-gun on LitVM LiteForge.',
-      desktopCabinetSprite: HMH_CABINET_SPRITE_MANIFEST,
+      desktopCabinetSprite: ARCADE_CABINETS_3D['hard-money-heroes'],
     }),
     Object.freeze({
       id: 'chikun',
@@ -675,25 +675,14 @@ export const LESTERS_ARCADE_V2_APP_SHELL = Object.freeze({
       devPlayable: true,
       leaderboardEligible: true,
       description: "Tap, click, or press Space to flap through Big Corp’s fork gauntlet. Free runs stay local; replay-verified Ranked scores update Lester’s Arcade profiles and score boards.",
-      desktopCabinetSprite: Object.freeze({
-        id: 'chikun-cabinet',
-        frameDurationMs: 600,
-        frames: Object.freeze([
-          Object.freeze({ src: './assets/generated/chikun-cabinet/chikun-cabinet-front.png?v=transparent-v2', durationMs: 600 }),
-          Object.freeze({ src: './assets/generated/chikun-cabinet/chikun-cabinet-front-right.png?v=transparent-v2', durationMs: 600 }),
-          Object.freeze({ src: './assets/generated/chikun-cabinet/chikun-cabinet-right.png?v=transparent-v2', durationMs: 600 }),
-          Object.freeze({ src: './assets/generated/chikun-cabinet/chikun-cabinet-back.png?v=transparent-v2', durationMs: 600 }),
-          Object.freeze({ src: './assets/generated/chikun-cabinet/chikun-cabinet-left.png?v=transparent-v2', durationMs: 600 }),
-          Object.freeze({ src: './assets/generated/chikun-cabinet/chikun-cabinet-front-right-low.png?v=transparent-v2', durationMs: 600 }),
-        ]),
-      }),
+      desktopCabinetSprite: ARCADE_CABINETS_3D.chikun,
     }),
     Object.freeze({
       id: 'stacked', gameId: 'stacked', title: 'STACKED', status: 'playable',
       playable: true, devPlayable: true, leaderboardEligible: true,
       description: 'Public beta: stack, spin, and seal falling ledger blocks to arcade music. Free practice stays in this browser; Ranked runs count only once their recorded inputs pass replay verification.',
       bannerArt: './assets/cabinet-stacked.svg',
-      desktopCabinetSprite: STACKED_CABINET_SPRITE,
+      desktopCabinetSprite: ARCADE_CABINETS_3D.stacked,
     }),
     Object.freeze({ id: 'mweb-invaders', gameId: 'mweb-invaders', title: 'MWEB Invaders', status: 'coming-soon', playable: false, description: 'Descending rows of privacy-shattering aliens — shield your Lit wallet!', bannerArt: './assets/generated/hmh-banners/mweb-invaders-keyart.jpg' }),
     Object.freeze({ id: 'litvm-legends', gameId: 'litvm-legends', title: 'LitVM Legends', status: 'coming-soon', playable: false, description: 'Co-op dungeon crawl through endless LitVM realms (but its actually LTC).', bannerArt: './assets/generated/hmh-banners/litvm-legends-keyart.jpg' }),
@@ -2322,18 +2311,7 @@ export const ARCADE_GAMES = Object.freeze([
       cartridgeAsset: './assets/cartridge-chikun.svg',
       marquee: 'CHIKUN',
     }),
-    desktopCabinetSprite: Object.freeze({
-      id: 'chikun-cabinet',
-      frameDurationMs: 600,
-      frames: Object.freeze([
-        Object.freeze({ src: './assets/generated/chikun-cabinet/chikun-cabinet-front.png?v=transparent-v2', durationMs: 600 }),
-        Object.freeze({ src: './assets/generated/chikun-cabinet/chikun-cabinet-front-right.png?v=transparent-v2', durationMs: 600 }),
-        Object.freeze({ src: './assets/generated/chikun-cabinet/chikun-cabinet-right.png?v=transparent-v2', durationMs: 600 }),
-        Object.freeze({ src: './assets/generated/chikun-cabinet/chikun-cabinet-back.png?v=transparent-v2', durationMs: 600 }),
-        Object.freeze({ src: './assets/generated/chikun-cabinet/chikun-cabinet-left.png?v=transparent-v2', durationMs: 600 }),
-        Object.freeze({ src: './assets/generated/chikun-cabinet/chikun-cabinet-front-right-low.png?v=transparent-v2', durationMs: 600 }),
-      ]),
-    }),
+    desktopCabinetSprite: ARCADE_CABINETS_3D.chikun,
   },
   {
     id: 'stacked', title: 'STACKED', cabinet: 'BLOCK CABINET 05',
@@ -2343,7 +2321,7 @@ export const ARCADE_GAMES = Object.freeze([
     tagline: 'Seal the blocks. Clear the ledger. Do not let the chain reorg.',
     systemRole: 'child-dapp-cartridge', rankedSeasonId: 'stacked-season-preview-1',
     cabinetVersion: STACKED_CABINET_VERSION, parentSystem: "Lester's Arcade",
-    desktopCabinetSprite: STACKED_CABINET_SPRITE,
+    desktopCabinetSprite: ARCADE_CABINETS_3D.stacked,
     presentation: Object.freeze({
       medium: 'upright-cabinet', colorway: 'silver-neon-cyan',
       cabinetAsset: './assets/cabinet-stacked.svg', cartridgeAsset: './assets/cartridge-stacked.svg',

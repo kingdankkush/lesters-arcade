@@ -32,7 +32,7 @@ test('structured discovery reuses a single brand identity and makes no prize or 
 
 test('every cabinet view has the same visible height and ground line without stretching', () => {
   for (const [id, frames] of Object.entries(CABINET_FRAMING)) {
-    assert.equal(frames.length, 6);
+    assert.equal(frames.length, 16, 'a 16-frame 360-degree turntable');
     for (let index=0; index<frames.length; index++) {
       const [w,h,x,y,right,bottom]=frames[index];
       const style=cabinetFramePresentation(id,index);
