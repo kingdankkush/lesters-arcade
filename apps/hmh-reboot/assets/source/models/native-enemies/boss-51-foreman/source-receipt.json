@@ -1,0 +1,143 @@
+{
+  "schema": 1,
+  "status": "editable-native-boss-candidate",
+  "actorId": "boss-51-foreman",
+  "name": "The 51% Foreman",
+  "identityForm": "human",
+  "boss": true,
+  "ownerSource": "armored soldier 3d model.glb",
+  "ownerSourceSha256": "10c589cbc64d8ad295c214054298e072e59ad7f00dd59b651e689ddc6f35509c",
+  "ownerSourceUnchanged": true,
+  "ownerProp": {
+    "source": "military minigun 3d model.glb",
+    "sha256": "a9b386542d97b2d7a4cdec2ee8ae9596ff4bae273a68c093cd47fad97fb25188",
+    "triangles": 1600
+  },
+  "figureSelection": {
+    "strayVertices": 0,
+    "sourceFaces": 480424,
+    "keptFaces": 155166,
+    "region": {
+      "maxX": -0.12,
+      "minZ": -1
+    }
+  },
+  "sourceTriangles": 155166,
+  "bodyTriangles": 15000,
+  "normalisationScale": 3.726849845985347,
+  "height": 2.5,
+  "heroHeightRatio": 1.19,
+  "landmarks": {
+    "L": {
+      "shoulderWidth": 0.4056948125362396,
+      "armTip": [
+        0.6339366436004639,
+        0.08928430825471878,
+        1.2625000476837158
+      ],
+      "legX": 0.30870306491851807
+    },
+    "R": {
+      "shoulderWidth": 0.47715502977371216,
+      "armTip": [
+        -0.6339366436004639,
+        -0.10898200422525406,
+        1.5625
+      ],
+      "legX": -0.3342289328575134
+    }
+  },
+  "skinning": {
+    "method": "voxel-proxy-bone-heat-transfer",
+    "proxyVertices": 11184,
+    "proxyTriangles": 22364,
+    "nearestBoneFilled": 0,
+    "blended": 10114,
+    "vertices": 10820
+  },
+  "restCorrectionDegrees": {
+    "upper_arm.L": 48,
+    "forearm.L": 67.5,
+    "hand.L": 42.45,
+    "upper_arm.R": 33.05,
+    "forearm.R": 49.77,
+    "hand.R": 28.54,
+    "thigh.L": 1.95,
+    "shin.L": 7.01,
+    "thigh.R": 2.35,
+    "shin.R": 6.98
+  },
+  "source": "boss-51-foreman.blend",
+  "sourceSha256": "50b81baddb755b931cd0a2c72644c1eb5b38bfdf466629f7059762cb5b0360b0",
+  "sourceBytes": 4572212,
+  "armature": "boss-51-foreman Native Rig",
+  "bones": 19,
+  "nativeBodyVertices": 10820,
+  "costumeMeshes": 0,
+  "gearMeshes": 29,
+  "gearTriangles": 4879,
+  "prop": "military minigun 3d model.glb",
+  "propTriangles": 1599,
+  "textures": [
+    {
+      "image": "armored+soldier+3d+model_basecolor.jpg",
+      "sourceSize": [
+        4096,
+        4096
+      ],
+      "size": [
+        1024,
+        1024
+      ]
+    },
+    {
+      "image": "armored+soldier+3d+model_normal.jpg",
+      "sourceSize": [
+        4096,
+        4096
+      ],
+      "size": [
+        1024,
+        1024
+      ]
+    },
+    {
+      "image": "armored+soldier+3d+model_rm.jpg",
+      "sourceSize": [
+        4096,
+        4096
+      ],
+      "size": [
+        1024,
+        1024
+      ]
+    }
+  ],
+  "clipActions": {
+    "idle": "HMH_boss-51-foreman_idle",
+    "run": "HMH_boss-51-foreman_run",
+    "tell": "HMH_boss-51-foreman_tell",
+    "attack": "HMH_boss-51-foreman_attack",
+    "attack-2": "HMH_boss-51-foreman_attack-2",
+    "super-tell": "HMH_boss-51-foreman_super-tell",
+    "super": "HMH_boss-51-foreman_super",
+    "hit": "HMH_boss-51-foreman_hit",
+    "stagger": "HMH_boss-51-foreman_stagger",
+    "death": "HMH_boss-51-foreman_death"
+  },
+  "clipFrames": {
+    "idle": 2,
+    "run": 24,
+    "tell": 2,
+    "attack": 3,
+    "attack-2": 3,
+    "super-tell": 3,
+    "super": 4,
+    "hit": 2,
+    "stagger": 3,
+    "death": 4
+  },
+  "runtimeAuthority": "projection-only",
+  "builderSha256": "58502d26ecd42f5c63900aff44e5942b09979f7fd17054321e6a83468e28bbb6",
+  "poseAuthorSha256": "128097aa2019f002086100671339742dcc349fbc3754738b226102c4a73271d1"
+}

@@ -1,0 +1,153 @@
+{
+  "schema": 1,
+  "classification": "unapproved-runtime-boss-export",
+  "activeRuntimeIntegration": false,
+  "cameraDegreesFromVertical": 55,
+  "groundPivot": "existing-world-foot-position",
+  "simulationAuthority": "none",
+  "actors": {
+    "boss-lockkeeper": {
+      "file": "boss-lockkeeper.glb",
+      "sha256": "b15e542d89b927f4736ea5257c3d7ec1098d3a519ba172b5cddf494a904fb964",
+      "sourceSha256": "3197722d04ae0cd2ba933e5d213e7f278a6541576d4acca607fc0f4a8e36dd28",
+      "sourceBytes": 4580894,
+      "sourceTriangles": 102116,
+      "ownerSource": "armored soldier 3d model (1).glb",
+      "ownerSourceSha256": "2aa5a15c66588dcdfc4e98863a9497e1cf7ef86209a94e6a3c25e9c6b299ef47",
+      "height": 2.3,
+      "heroHeightRatio": 1.095,
+      "identityForm": "zombie",
+      "requiredClips": [
+        "idle",
+        "run",
+        "tell",
+        "attack",
+        "attack-2",
+        "super-tell",
+        "super",
+        "hit",
+        "stagger",
+        "death"
+      ],
+      "inspection": {
+        "bytes": 5378604,
+        "vertices": 20322,
+        "triangles": 20157,
+        "skinnedMeshes": 2,
+        "joints": 19,
+        "clips": [
+          {
+            "name": "attack",
+            "durationSeconds": 1,
+            "channels": 63
+          },
+          {
+            "name": "attack-2",
+            "durationSeconds": 1,
+            "channels": 63
+          },
+          {
+            "name": "death",
+            "durationSeconds": 1,
+            "channels": 63
+          },
+          {
+            "name": "hit",
+            "durationSeconds": 1,
+            "channels": 63
+          },
+          {
+            "name": "idle",
+            "durationSeconds": 1,
+            "channels": 63
+          },
+          {
+            "name": "run",
+            "durationSeconds": 1,
+            "channels": 63
+          },
+          {
+            "name": "stagger",
+            "durationSeconds": 1,
+            "channels": 63
+          },
+          {
+            "name": "super",
+            "durationSeconds": 1,
+            "channels": 63
+          },
+          {
+            "name": "super-tell",
+            "durationSeconds": 1,
+            "channels": 63
+          },
+          {
+            "name": "tell",
+            "durationSeconds": 1,
+            "channels": 63
+          }
+        ],
+        "bounds": {
+          "min": [
+            -1.0410170555114746,
+            -0.015684084966778755,
+            -0.3330419361591339
+          ],
+          "max": [
+            0.9307274222373962,
+            2.485642910003662,
+            0.45378148555755615
+          ]
+        },
+        "embeddedImages": 6,
+        "images": [
+          {
+            "name": "armored+soldier+3d+model_normal",
+            "format": "png",
+            "width": 1024,
+            "height": 1024,
+            "bytes": 1027499
+          },
+          {
+            "name": "armored+soldier+3d+model_basecolor",
+            "format": "png",
+            "width": 1024,
+            "height": 1024,
+            "bytes": 1553236
+          },
+          {
+            "name": "armored+soldier+3d+model_rm",
+            "format": "png",
+            "width": 1024,
+            "height": 1024,
+            "bytes": 1000135
+          },
+          {
+            "name": "boss-lockkeeper-palette-emission",
+            "format": "png",
+            "width": 64,
+            "height": 64,
+            "bytes": 381
+          },
+          {
+            "name": "boss-lockkeeper-palette-baseColor",
+            "format": "png",
+            "width": 64,
+            "height": 64,
+            "bytes": 405
+          },
+          {
+            "name": "boss-lockkeeper-palette-metallicRoughness",
+            "format": "png",
+            "width": 64,
+            "height": 64,
+            "bytes": 388
+          }
+        ],
+        "textureBytesRgba8": 12632064,
+        "textureBytesRgba8Mipmaps": 16842744
+      },
+      "maximumNativeFootResidualMetres": 4.0978193283081055e-7
+    }
+  }
+}

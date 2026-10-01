@@ -242,7 +242,7 @@ test('actual optional backend serializes archetype loads, isolates failure and c
   const source=readFileSync(new URL('../apps/hmh-reboot/src/actor-3d-pixi.mjs',import.meta.url),'utf8');
   const code=source.slice(source.indexOf('export async function createActor3dPixiBackend')).replace('export ','');
   const urls=[],closed=[],textures=[];let waitingResolve,hold=false;
-  const context=vm.createContext({Blob,Promise,vertex:'',fragment:'',ACTOR3D_ENEMY_IDS:module.ACTOR3D_ENEMY_IDS,
+  const context=vm.createContext({Blob,Promise,vertex:'',fragment:'',ACTOR3D_ENEMY_IDS:module.ACTOR3D_ENEMY_IDS,ACTOR3D_BOSS_IDS:module.ACTOR3D_BOSS_IDS,
     createActor3dDepthRegistry:module.createActor3dDepthRegistry,State:class{},
     GlProgram:{from:()=>({destroy(){}})},RenderTexture:{create:()=>({destroy(){}})},
     Texture:{from:bitmap=>{const t={source:{},destroy(){textures.push(bitmap.id);}};return t;}},
