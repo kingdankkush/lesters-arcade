@@ -1,0 +1,135 @@
+{
+ "schema": "chikun-course-two-art-v1",
+ "projectionOnly": true,
+ "assets": [
+  {
+   "name": "tractor",
+   "file": "tractor.webp",
+   "width": 1104,
+   "height": 376,
+   "frames": 8,
+   "columns": 4,
+   "scale": 2,
+   "logical": [
+    138,
+    94
+   ],
+   "bytes": 98764,
+   "decodedBytes": 1660416,
+   "sha256": "4dc4d93b8b0d2f013f889407471138054a6f25bb8eecd447ea94a98af952b44b",
+   "half": {
+    "file": "tractor@0.5x.webp",
+    "width": 552,
+    "height": 188,
+    "scale": 1,
+    "bytes": 42800,
+    "decodedBytes": 415104,
+    "sha256": "91b4017fa2b60c1fbe073c2c7fa50317f5b066bf33180a689af6b46bda04c354"
+   }
+  },
+  {
+   "name": "trellis",
+   "file": "trellis.webp",
+   "width": 600,
+   "height": 300,
+   "frames": 1,
+   "columns": 1,
+   "scale": 2,
+   "logical": [
+    300,
+    150
+   ],
+   "bytes": 75626,
+   "decodedBytes": 720000,
+   "sha256": "9e14af2b228540c4ebb4e9dc5fbccf5ce17387b9083915adb9253a13b3c8880c",
+   "half": {
+    "file": "trellis@0.5x.webp",
+    "width": 300,
+    "height": 150,
+    "scale": 1,
+    "bytes": 28508,
+    "decodedBytes": 180000,
+    "sha256": "397bb62cde377b04f6ed58c6482a807309e213fa4b82050122fef9f86fe4757d"
+   }
+  },
+  {
+   "name": "pickups",
+   "file": "pickups.webp",
+   "width": 288,
+   "height": 96,
+   "frames": 3,
+   "columns": 3,
+   "scale": 2,
+   "logical": [
+    48,
+    48
+   ],
+   "bytes": 7650,
+   "decodedBytes": 110592,
+   "sha256": "708751418c1c4d2c6643fbef891252f7fe611adfb7337c7b48a1d0052f635f7a",
+   "half": {
+    "file": "pickups@0.5x.webp",
+    "width": 144,
+    "height": 48,
+    "scale": 1,
+    "bytes": 4494,
+    "decodedBytes": 27648,
+    "sha256": "f645b5939b853807f3ea2faeefa71c7d3ad7933a3ac096f883c36cea6c24edc4"
+   }
+  }
+ ],
+ "hawk": {
+  "reuses": "chikun-obstacle-loop-v1",
+  "tiers": {
+   "low": {
+    "file": "eagle-low.webp",
+    "sha256": "bdcf946c928440db4b733e5fc202510728646fe000e231f6968fa45168600b92",
+    "bytes": 26730
+   },
+   "medium": {
+    "file": "eagle-medium.webp",
+    "sha256": "3631c02e6695e804fc87d17b672a1bde3af12f0d2eb9752b5fa25bf191a74db4",
+    "bytes": 51100
+   },
+   "high": {
+    "file": "eagle-high.webp",
+    "sha256": "47d06763aceb87274e6fb6e28151b25c43931e4d37b73cf5c0c9470438231df7",
+    "bytes": 81564
+   }
+  },
+  "addedBytes": 0
+ },
+ "sources": {
+  "b2-54": {
+   "name": "B2-54 - Rusted Pickup Truck",
+   "pageImage": "tripo-props-hd-props-00.webp",
+   "sourcePixelSha256": "1dca50377fe0fd647450ff47150b3a55db5f6b846f793429275e2860b1fb671d"
+  },
+  "b2-75": {
+   "name": "B2-75 - Hedgerow Section",
+   "pageImage": "tripo-props-hd-plants-00.webp",
+   "sourcePixelSha256": "804d7d3c9eb32511468b9c02113c02d68952f2a61c0677f282e8700e6ed0768a"
+  },
+  "b1-04": {
+   "name": "04 - Fern Cluster",
+   "pageImage": "tripo-props-hd-plants-00.webp",
+   "sourcePixelSha256": "cd2c468ed39885cb565ade59688f12450d3676a57a53616e69d693b6ad2584e6"
+  },
+  "b1-29": {
+   "name": "29 - Layer Two",
+   "pageImage": "tripo-props-hd-pickups-00.webp",
+   "sourcePixelSha256": "12992eb9c01a974b2cfe07710c0d4fe7d4bedc7a35fe21bf59d9b7fe2157b607"
+  },
+  "b1-26": {
+   "name": "26 - Hard Fork Rounds",
+   "pageImage": "tripo-props-hd-pickups-00.webp",
+   "sourcePixelSha256": "b8d171d51fdbb02a567fef7b8accbd58705e9b686e58844c5d9de449510c01bc"
+  }
+ },
+ "totals": {
+  "encodedBytes": 182040,
+  "halfEncodedBytes": 75802,
+  "decodedBytes": 2491008,
+  "halfDecodedBytes": 622752
+ }
+}
