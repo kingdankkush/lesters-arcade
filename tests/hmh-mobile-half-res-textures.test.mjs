@@ -208,7 +208,10 @@ test('the child loads every scalable page through the profile texture loader', (
   // (validateMeadowsArtMetadata picks 'mobile' or 'desktop' itself), the
   // mannequin, native barriers and the world design pages.
   const direct = [...main.matchAll(/\bAssets\.load\(([^)]*)\)/gu)].map((match) => match[1]);
-  assert.deepEqual(direct, ['url', 'MANNEQUIN_ATLAS_IMAGE_URL', 'url', 'url']);
+  assert.deepEqual(direct, ['url', 'MANNEQUIN_ATLAS_IMAGE_URL', 'url', 'url', 'url']);
+  // The ten-area area-art binding receives the profile tier as resolution and loads its own @0.5x pages.
+  assert.match(main, /bindWorldV2AreaArt\(\{[^}]*loadTexture: url => Assets\.load\(url\), unloadTexture: url => Assets\.unload\(url\), resolution: performanceProfile\.id !== 'desktop' \? 'half' : 'full'/u,
+    'the area-art loader receives the profile tier and picks its own page set');
   assert.match(main, /loadMeadowsArtTarget\(\{ enabled: true, world: LEVEL_ONE_WORLD, mobile: performanceProfile\.id !== 'desktop', loadTexture: url => Assets\.load\(url\)/u,
     'the Meadows loader receives the profile tier and picks its own page set');
 });
