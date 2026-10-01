@@ -4682,9 +4682,9 @@ function destroyHmhRebootSession() {
   lastHmhRunSummary = null;
   gameAdapter?.teardown?.();
   gameAdapter = null;
+  setArcadeMusicDuck(false);
   hmhRebootActive = false;
   hmhFrontierPreviewActive = false;
-  setArcadeMusicDuck(false);
 }
 
 function finalizeHmhRebootFreeGameOver(runSummary) {

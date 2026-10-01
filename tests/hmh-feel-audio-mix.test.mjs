@@ -182,7 +182,7 @@ test('embedded: game:state carries an optional musicDuck the parent applies to t
   assert.match(portal, /onMusicDuck: \(active\) => setArcadeMusicDuck\(active\)/);
   assert.match(portal, /arcadeMusic\.duck && reason === 'gameplay' \? ARCADE_MUSIC_BOSS_DUCK_GAIN : 1/);
   // Only the gameplay context ducks; leaving the cabinet clears it.
-  assert.match(portal, /hmhFrontierPreviewActive = false;\n  setArcadeMusicDuck\(false\);/);
+  assert.match(portal, /setArcadeMusicDuck\(false\);\n  hmhRebootActive = false;\n  hmhFrontierPreviewActive = false;/);
   // The shared jukebox is never re-sourced by HMH (STACKED already owns its
   // one createMediaElementSource): the portal duck is a volume multiplier.
   assert.doesNotMatch(portal, /createMediaElementSource/);
