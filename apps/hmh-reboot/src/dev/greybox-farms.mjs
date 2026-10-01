@@ -9,15 +9,15 @@ export function authorFarmsKit(area,{pieces,sites,arenas},roads){
   // The barn faces the open working yard; the southern track remains independent
   // of the staged door. Long field edges are solid, never tiny crop collision.
   add('barn','mass',350,-1300,1100,600,300);
-  add('windmill-base','mass',-1400,-1350,220,220,400);
-  add('silo','mass',1350,-1300,220,220,330);
+  add('windmill-base','mass',-1407.5,-1372.5,515,265,400);
+  add('silo','mass',1347.5,-1352.5,285,325,330);
   add('west-storage','mass',-1450,1450,400,300,210);
   add('east-storage','mass',1450,1450,450,400,220);
   add('north-hedge','mass',-800,-1800,700,100,110);
   add('east-field-edge','mass',1750,200,100,1600,110);
   add('west-field-row','mass',-700,950,500,80,72);
   add('east-field-row','mass',950,950,500,80,72);
-  add('yard-timber','cover-short',-650,300,180,70,48);
+  add('yard-timber','cover-short',-650,280,180,110,48);
   add('yard-wall','cover-tall',1000,350,80,260,128);
   add('loading-ramp','ramp',-875,-550,350,300,0,{fromZ:0,toZ:24,priority:40});
   add('loading-deck','deck',-500,-550,400,300,24,{visibleStepId:true,priority:41});

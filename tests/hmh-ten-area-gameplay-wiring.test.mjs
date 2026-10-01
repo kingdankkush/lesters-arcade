@@ -313,8 +313,14 @@ test('only one boss lives at a time: a second court refuses while the first figh
 
 test('cover faces come from the ten-area cover-tall / cover-short blockers; markers from the greybox', () => {
   const coverBlockers = world.collisionBlockers.filter((blocker) => blocker.coverKind === 'tall' || blocker.coverKind === 'short');
-  assert.equal(coverBlockers.length, 31);
-  assert.equal(combat.coverFaces.length, 124);
+  const authoredCover = coverBlockers.filter((blocker) => !blocker.id.startsWith('prop-'));
+  assert.equal(authoredCover.length, 31);
+  assert.equal(combat.coverFaces.filter((face) => authoredCover.some((blocker) => blocker.id === face.blockerId)).length, 124);
+  // 2.1 collision-art: the vehicles, containers and hard barriers the area
+  // plans draw stand on prop colliders (dev/greybox-prop-blockers.mjs), and
+  // those are cover too.
+  assert.equal(coverBlockers.length - authoredCover.length, 113);
+  assert.equal(combat.coverFaces.length, 434);
   assert.ok(combat.coverFaces.every((face) => coverBlockers.some((blocker) => blocker.id === face.blockerId)));
   assert.deepEqual([...new Set(combat.coverFaces.map((face) => face.kind))].sort(), ['short', 'tall']);
   const markers = combat.traversalMarkers;
@@ -483,4 +489,25 @@ test('a district boss never stays out of the hero\'s reach: a stationary hero an
       assert.ok(reachable / total >= 0.5, `${bossId} from ${spot.x},${spot.y}: reachable ${reachable}/${total}`);
     }
   }
+});
+
+// QA sweep 2026-10-01: a district boss's tells and halts reached the
+// critical-audio caption as "Liquidator: ...". The caption names the boss on
+// the court; the Liquidator keeps his own line.
+test('critical-audio captions name the district boss, never "Liquidator" for another boss', () => {
+  for (const bossId of Object.keys(DISTRICT_BOSS_KITS)) assert.equal(combat.bossCaptionName(bossId), gameplay.bossDefinitions[bossId].name);
+  assert.equal(combat.bossCaptionName('liquidator'), null);
+  assert.equal(combat.bossCaptionName(undefined), null);
+  const source = readFileSync(new URL('../apps/hmh-reboot/src/main.mjs', import.meta.url), 'utf8');
+  assert.match(source, /setAccessibleCombatStatus\(`\$\{TEN_AREA_COMBAT\?\.bossCaptionName\(event\.bossId\) \?\? 'Liquidator'\}: \$\{warning\}\.`\);/);
+  assert.doesNotMatch(source, /setAccessibleCombatStatus\(`Liquidator: \$\{warning\}\.`\)/);
+});
+
+// QA sweep 2026-10-01: the ten-area Liquidator's defeat line promised "His
+// vault is open", but this world places no Arc Rifle vault.
+test('the ten-area Liquidator defeat line names the Genesis Seal, not a vault', () => {
+  const line = combat.bossText({ type: 'boss-defeated', bossId: 'liquidator' });
+  assert.match(line, /Genesis Seal/);
+  assert.doesNotMatch(line, /vault/i);
+  assert.equal(combat.bossText({ type: 'boss-initiated', bossId: 'liquidator' }), null, "the bell line stays the Liquidator's own");
 });

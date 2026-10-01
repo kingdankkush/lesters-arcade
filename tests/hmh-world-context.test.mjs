@@ -1,5 +1,8 @@
-// W4a: one world per page. The legacy world is the default; the ten-area
-// world needs an explicit unranked Free selection and never becomes official.
+// W4a: one world per page. Before game 2.1.0 the legacy world is the
+// default; the ten-area world needs an explicit unranked Free selection and
+// never becomes official. These cases pin that 2.0.x rule with the version
+// gate off (tenAreaLevelOne: false); the 2.1.0 rule is in
+// tests/hmh-ranked-v8-child.test.mjs.
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { readFileSync } from 'node:fs';
@@ -38,21 +41,21 @@ test('the ten-area world is selected only by exactly one world=ten-area with an 
     ['evidenceSafe=1&world=ten-area&mode=free&debugHud=1', TEN_AREA_WORLD_ID, 'explicit-unranked-free-ten-area'],
   ];
   for (const [search, worldId, reason] of cases) {
-    const selection = resolveHmhWorldSelection({ params: new URLSearchParams(search) });
+    const selection = resolveHmhWorldSelection({ params: new URLSearchParams(search), tenAreaLevelOne: false });
     assert.equal(selection.worldId, worldId, search);
     assert.equal(selection.reason, reason, search);
     assert.equal(selection.official, worldId === 'forked-frontier', search);
     assert.equal(selection.rankedEligible, worldId === 'forked-frontier', search);
     assert.equal(selection.legacy, worldId === 'forked-frontier', search);
     assert.equal(Object.isFrozen(selection), true);
-    assert.deepEqual(resolveHmhWorldSelection({ params: search }), selection, 'string search resolves identically');
+    assert.deepEqual(resolveHmhWorldSelection({ params: search, tenAreaLevelOne: false }), selection, 'string search resolves identically');
   }
-  assert.equal(resolveHmhWorldSelection().worldId, 'forked-frontier');
+  assert.equal(resolveHmhWorldSelection({ tenAreaLevelOne: false }).worldId, 'forked-frontier');
 });
 
 test('the legacy context hands main.mjs the legacy modules themselves', async () => {
   let loads = 0;
-  const context = await resolveHmhWorldContext({ params: new URLSearchParams('mode=ranked&evidenceSafe=1'), loadTenArea: () => { loads += 1; throw new Error('must not load'); } });
+  const context = await resolveHmhWorldContext({ params: new URLSearchParams('mode=ranked&evidenceSafe=1'), tenAreaLevelOne: false, loadTenArea: () => { loads += 1; throw new Error('must not load'); } });
   assert.equal(loads, 0);
   assert.equal(context.world, LEVEL_ONE_WORLD);
   assert.equal(context.official, true);
@@ -73,7 +76,7 @@ test('the legacy context hands main.mjs the legacy modules themselves', async ()
 
 test('the ten-area context loads on demand, is unofficial and refuses any non-Free or rankedEligible session', async () => {
   let loads = 0;
-  const context = await resolveHmhWorldContext({ params: new URLSearchParams('mode=free&world=ten-area'), loadTenArea: async () => { loads += 1; return import('../apps/hmh-reboot/src/world-v2-runtime-context.mjs'); } });
+  const context = await resolveHmhWorldContext({ params: new URLSearchParams('mode=free&world=ten-area'), tenAreaLevelOne: false, loadTenArea: async () => { loads += 1; return import('../apps/hmh-reboot/src/world-v2-runtime-context.mjs'); } });
   assert.equal(loads, 1);
   assert.equal(context.world.id, TEN_AREA_WORLD_ID);
   assert.equal(context.official, false);
@@ -94,7 +97,7 @@ test('the ten-area context loads on demand, is unofficial and refuses any non-Fr
   assert.equal(sessionAllowedForWorld(context, { ...standalone, session: { seed: 1 } }), false, 'a missing rankedEligible is not an unranked promise');
   const legacy = createLegacyWorldContext();
   assert.equal(sessionAllowedForWorld(legacy, { ...standalone, mode: 'ranked', session: { ...standalone.session, rankedEligible: true } }), true);
-  await assert.rejects(resolveHmhWorldContext({ params: 'mode=free&world=ten-area', loadTenArea: async () => ({ createWorldV2RuntimeContext: () => ({ official: true, rankedEligible: false, world: { id: TEN_AREA_WORLD_ID } }) }) }), /unofficial and unranked/);
+  await assert.rejects(resolveHmhWorldContext({ params: 'mode=free&world=ten-area', tenAreaLevelOne: false, loadTenArea: async () => ({ createWorldV2RuntimeContext: () => ({ official: true, rankedEligible: false, world: { id: TEN_AREA_WORLD_ID } }) }) }), /unofficial and unranked/);
 });
 
 test('main.mjs adopts one world before the bridge and gates every submission path on the official flag', () => {

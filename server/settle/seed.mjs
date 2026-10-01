@@ -30,6 +30,8 @@ import { logSeedTicketInBackground } from '../jackpot/ticket-log.mjs';
 import { logSafeError } from './errors.mjs';
 import { heroPolicyFrom, moduleGate, optionalImport, settlementGate } from './settle-core.mjs';
 import { HMH_RUN_SUMMARY_V7_MIN_GAME_VERSION, HMH_RUN_SUMMARY_V7_SCHEMA_VERSION, hmhGameVersionOfBuild } from '../../sdk/hmh-run-contract-v7.mjs';
+import { HMH_RUN_SUMMARY_V8_MIN_GAME_VERSION, HMH_RUN_SUMMARY_V8_SCHEMA_VERSION, isHmhV8GameVersion } from '../../sdk/hmh-run-v8-build.mjs';
+import { GAME_VERSION } from '../../apps/portal/src/version-tracking.mjs';
 
 export const SEED_BODY_MAX_BYTES = 2048;
 export const SEED_LIMITS = Object.freeze({ wallet: 60, ip: 600, windowSeconds: 3600 });
@@ -42,15 +44,17 @@ export const SESSION_HANDLE_PATTERN = RANKED_SESSION_HANDLE_PATTERN;
 export const BUILD_HASH_PATTERNS = Object.freeze(Object.fromEntries(Object.entries(RANKED_GAMES).map(([gameId, game]) => [gameId, game.buildHashPattern])));
 const BODY_KEYS = ['buildHash', 'gameId', 'seasonId', 'sessionId'];
 
-// The run summary schema the deployed HMH child emits. It is the child's
-// RUN_SUMMARY_SCHEMA_VERSION (apps/hmh-reboot/src/run-summary-v7.mjs; a test
-// pins the two together), so a child that moves to a new schema moves the
-// minimum below with it.
-export const HMH_DEPLOYED_CHILD_SCHEMA_VERSION = 7;
+// The run summary schema the deployed HMH child emits in a Ranked session.
+// From game 2.1.0 its Ranked Level 1 is the ten-area world, which emits
+// schema 8 (run-summary-v8.mjs) and refuses a Ranked session whose build is
+// older than 2.1.0 (world-context.mjs sessionAllowedForWorld); before it the
+// child emits schema 7 (run-summary-v7.mjs). A test pins this to the child.
+export const HMH_DEPLOYED_CHILD_SCHEMA_VERSION = isHmhV8GameVersion(GAME_VERSION) ? HMH_RUN_SUMMARY_V8_SCHEMA_VERSION : HMH_RUN_SUMMARY_V7_SCHEMA_VERSION;
 // The oldest portal game version that can carry a summary of `schemaVersion`
-// through its bridge and verify it: 1.9.0 for schema 7 (the first v7 portal),
-// none before.
+// through its bridge and verify it: 2.1.0 for schema 8, 1.9.0 for schema 7
+// (the first v7 portal), none before.
 export function hmhRankedSeedMinGameVersion(schemaVersion) {
+  if (schemaVersion >= HMH_RUN_SUMMARY_V8_SCHEMA_VERSION) return HMH_RUN_SUMMARY_V8_MIN_GAME_VERSION;
   return schemaVersion >= HMH_RUN_SUMMARY_V7_SCHEMA_VERSION ? HMH_RUN_SUMMARY_V7_MIN_GAME_VERSION : null;
 }
 export const HMH_RANKED_SEED_MIN_GAME_VERSION = hmhRankedSeedMinGameVersion(HMH_DEPLOYED_CHILD_SCHEMA_VERSION);
@@ -120,8 +124,10 @@ export async function seedRequest({ headers = {}, body = null, ip = 'unknown' } 
   const { issueSeedTicket } = deps;
   if (!validateSeedBody(body)) return fail(400, 'invalid-body');
   // Before the rate limits and any ticket: a stale HMH tab reloads instead of paying.
-  if (body.gameId === 'lester-blaster' && hmhSeedClientOutdated(body.buildHash)) {
-    return fail(409, 'client-outdated', { minGameVersion: HMH_RANKED_SEED_MIN_GAME_VERSION, reload: true, hint: CLIENT_OUTDATED_HINT });
+  // deps.hmhSeedMinGameVersion lets a test stand in for another deployed child.
+  const minGameVersion = deps.hmhSeedMinGameVersion ?? HMH_RANKED_SEED_MIN_GAME_VERSION;
+  if (body.gameId === 'lester-blaster' && hmhSeedClientOutdated(body.buildHash, minGameVersion)) {
+    return fail(409, 'client-outdated', { minGameVersion, reload: true, hint: CLIENT_OUTDATED_HINT });
   }
   if (body.gameId === 'lester-blaster' && !(await heroGatesReady(deps))) return fail(503, 'settlement-not-configured', { detail: 'hero-gates-unavailable' });
   const { db, config } = deps;

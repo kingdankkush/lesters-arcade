@@ -21,7 +21,11 @@ import { CITY_BRAND_SLOTS, CITY_BRANDS, CITY_SIGN_PREFIX, CITY_SIGN_STYLE, signF
 
 const kit = JSON.parse(fs.readFileSync(new URL('../apps/portal/assets/generated/hmh-reboot-tripo-props-hd/hmh-tripo-props-hd.json', import.meta.url), 'utf8'));
 const world = createGreyboxWorld(), worldBefore = JSON.stringify(world);
-const solids = world.pieces.filter(p => p.blocker);
+// Layout solids only: a prop blocker (dev/greybox-prop-blockers.mjs) stands
+// under its own plan card by design (tests/hmh-ten-area-collision-art.test.mjs
+// proves every one matches its card), and an edge guard
+// (dev/greybox-edge-guards.mjs) is a low collider on a water or deck edge.
+const solids = world.pieces.filter(p => p.blocker && !p.visible.artPlanId && !p.visible.guardOf);
 const inSolid = (x, y) => solids.find(p => pointInPolygon(x, y, p.blocker.shape.vertices)) ?? null;
 const areaPieceIds = areaId => world.pieces.filter(p => p.visible.areaId === areaId && p.blocker).map(p => p.id);
 const routeSegments = areaId => world.areas.find(a => a.id === areaId).inspectionRoutes.flatMap(route => route.points.slice(1).map((b, i) => ({ a: route.points[i], b })));
@@ -153,7 +157,8 @@ test('Halving Farms follows brief 03: furrowed crop fields, hedgerow and picket 
   const crops = summary.props.filter(p => ['b1-09', 'b1-07', 'b1-06'].includes(p.source)), low = summary.props.filter(p => p.height < 150 && p.groundZ === 0);
   assert.ok(crops.length >= 120 && crops.length <= 220, `${crops.length} crop plants`);
   assert.ok(low.length >= 220, `${low.length} low plants and clutter`);
-  assert.ok(summary.props.filter(p => p.source === 'b2-75').length >= 8, 'free hedgerow boundaries');
+  // Hedgerow cards run east-west (each on its own collider); the north-south west margin is a walk-through shrub line.
+  assert.ok(summary.props.filter(p => p.source === 'b2-75').length >= 5, 'free hedgerow boundaries');
   for (const source of ['b2-80', 'b2-79', 'b2-71', 'b1-03', 'b2-54', 'b1-10']) assert.ok(summary.props.some(p => p.source === source), source);
   assert.ok(summary.decals.length >= 50 && summary.decals.every(d => d.source === 'detail:grass'));
   const woodland = summary.props.filter(p => p.groundZ > 0);
@@ -295,7 +300,13 @@ test('the world roads plan ribbons all fourteen authored roads by kind and keeps
     if (['b2-48', 'b2-51', 'b2-52'].includes(prop.source)) assert.ok(paved.some(r => r.id === road.r.id), `${prop.source} only on the paved spine`);
   }
   const guardrails = summary.props.filter(p => p.source === 'b2-48');
-  assert.ok(guardrails.length >= 30 && guardrails.every(p => p.height === 40 && p.shadow === false));
+  // 2.1 QA: a verge rail stands only where the corridor's closed land is right
+  // behind it (that land holds a body, so the rail needs no collider).
+  assert.ok(guardrails.length >= 16 && guardrails.every(p => p.height === 40 && p.shadow === false));
+  for (const rail of guardrails) {
+    const road = world.roads.reduce((best, r) => (distanceToPolyline(rail.x, rail.y, r.points) < distanceToPolyline(rail.x, rail.y, best.points) ? r : best));
+    assert.ok([0, 1, 2, 3].some(k => { const a = k * Math.PI / 2, x = rail.x + Math.cos(a) * 24, y = rail.y + Math.sin(a) * 24; return distanceToPolyline(x, y, road.points) > distanceToPolyline(rail.x, rail.y, road.points) && !world.queryGround(x, y).walkable; }), `${rail.id} is backed by closed land`);
+  }
 });
 
 test('page budgets stay within two exclusive kit pages plus the shared road page and the ground tiles', () => {

@@ -972,6 +972,7 @@ html[data-debug-hud="1"] .hmh-controls-hint { display: none !important; }
 
 .hmh-field-map-section { grid-column: 1 / -1; min-width: 0; }
 #hmhFieldMap svg { display: block; width: 100%; height: auto; max-height: 250px; }
+#hmhFieldMap svg.hmh-field-map-tall { max-height: min(380px, 48vh); }
 .hmh-field-map-key { font-size: 12px; line-height: 1.5; color: #d1e1d7; }
 
 @media(max-width:600px) { .hmh-startup { padding:24px 20px; align-items:start; } .hmh-startup-brief { grid-template-columns:1fr; gap:6px; margin-top:10px; font-size:12px; } .hmh-startup-brief div { display:block; } .hmh-startup-brief dt { display:inline; margin-right:8px; } .hmh-startup-brief dd { display:inline; } .hmh-startup-tips { grid-template-columns:1fr; gap:12px; margin:18px 0; } .hmh-startup-tips article p { margin:5px 0; } .hmh-startup-tips h2 { display:inline; margin-left:12px; font-size:16px; } .hmh-startup-route { gap:6px; font-size:8px; } }

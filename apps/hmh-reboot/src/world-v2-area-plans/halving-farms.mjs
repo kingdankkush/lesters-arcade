@@ -86,9 +86,13 @@ export function createHalvingFarmsArtPlan(world) {
       place: (x, y, n, v) => { const source = (n + l) % 7 === 6 ? 'b1-07' : (n + l) % 11 === 5 ? 'b1-06' : 'b1-09'; prop(source, x, y, source === 'b1-09' ? 52 + n % 3 * 5 : 46 + n % 2 * 6, { flip: v > 0.5, tint: source === 'b1-09' ? 0xe4dcb0 : 0xe0dcc8, shadow: n % 2 === 0 }); } }));
   }
   // Hedgerow boundaries along the field margins that have no authored solid.
-  for (const [key, from, to] of [['hedge-east-south', [1200, 930], [1650, 930]], ['hedge-west', [-1420, 160], [-1420, 990]], ['hedge-north-south', [-1150, -720], [-350, -720]], ['hedge-northwest', [-1900, -140], [-1420, -140]]]) {
+  // A hedgerow card is a horizontal run, so only east-west margins take one
+  // (each stands on its own collider); the north-south west margin is a low,
+  // walk-through shrub line instead of a column of sideways hedge segments.
+  for (const [key, from, to] of [['hedge-east-south', [1200, 930], [1650, 930]], ['hedge-north-south', [-1150, -720], [-350, -720]], ['hedge-northwest', [-1900, -140], [-1420, -140]]]) {
     placeLine(context, { key, from: point(...from), to: point(...to), spacing: 150, radius: 70, place: (x, y, n) => prop('b2-75', x, y, 66, { flip: n % 2 === 1, tint: 0xd2d6b0 }) });
   }
+  placeLine(context, { key: 'shrub-west', from: point(-1420, 160), to: point(-1420, 990), spacing: 110, radius: 40, place: (x, y, n) => prop('b1-01', x, y, 44 + n % 3 * 4, { flip: n % 2 === 1, tint: 0xd2d6b0 }) });
   // Fallow meadows: straw flowers and a few shrubs.
   for (const [p, x, y, rx, ry] of [[0, -1660, 575, 200, 380], [1, -1650, -525, 220, 330], [2, 1400, 1700, 320, 180], [3, -1500, 1700, 300, 180]]) scatter({ key: `fallow-${p}`, x: cx + x, y: cy + y, rx, ry, count: 26, radius: 14, place: (px, py, n, v) => {
     const source = FALLOW[(n + p) % FALLOW.length];
@@ -99,7 +103,7 @@ export function createHalvingFarmsArtPlan(world) {
     if (guard.clear(cx + x, cy + y, 40)) prop(source, cx + x, cy + y, CANOPY_HEIGHTS[source] * (0.84 + 0.22 * stableUnit('farm-tree', x, y)), { flip, tint: source === 'b2-70' ? 0xcfc9bb : 0xe2e0cc });
   }
   // Yard clutter: the well, log piles at the sheds, a farm pickup and trailer.
-  for (const [x, y, source, height, flip] of [[-100, -300, 'b2-80', 92, false], [-1150, 1560, 'b2-79', 62, false], [1150, 1700, 'b2-79', 60, true], [700, -1700, 'b2-79', 58, false], [-520, 1520, 'b2-79', 56, true], [-250, 420, 'b2-54', 74, true], [1250, -1680, 'b2-57', 60, false], [600, -300, 'b2-61', 46, false], [-900, -1700, 'b1-18', 60, false]]) {
+  for (const [x, y, source, height, flip] of [[-100, -300, 'b2-80', 92, false], [-1150, 1560, 'b2-79', 62, false], [1150, 1700, 'b2-79', 60, true], [700, -1700, 'b2-79', 58, false], [-520, 1520, 'b2-79', 56, true], [-250, 560, 'b2-54', 74, true], [1250, -1680, 'b2-57', 60, false], [600, -300, 'b2-61', 46, false], [-900, -1700, 'b1-18', 60, false]]) {
     if (guard.clear(cx + x, cy + y, 30)) prop(source, cx + x, cy + y, height, { flip, tint: 0xd9d2c2 });
   }
   // Woodland beyond the field edges roots on the closed world masses only.

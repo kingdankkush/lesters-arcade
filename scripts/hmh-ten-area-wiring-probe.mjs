@@ -13,6 +13,9 @@ import { registerHooks } from 'node:module';
 import { pathToFileURL, fileURLToPath } from 'node:url';
 import path from 'node:path';
 import { runChild } from './hmh-honest-corpus/child-driver.mjs';
+// This checkout's build hash: from 2.1.0 the ten-area child refuses a session
+// from an older portal build (world-context.mjs sessionClientOutdated).
+import { HARNESS_BUILD_HASH } from './hmh-honest-corpus/identity.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const SRC = path.join(HERE, '..', 'apps', 'hmh-reboot', 'src');
@@ -146,7 +149,7 @@ function nearestTallFace(faces, me) {
   return best;
 }
 
-const result = await runChild({ seed: 20_260_930, buildHash: 'site-2.0.0:game-2.0.0:cabinet-0.6.0', seasonId: 'hmh-season-1-2026', pilot, maxFrames, search, mode: 'free' });
+const result = await runChild({ seed: 20_260_930, buildHash: HARNESS_BUILD_HASH, seasonId: 'hmh-season-1-2026', pilot, maxFrames, search, mode: 'free' });
 const run = probe.runs.at(-1);
 const summary = {
   scenario,

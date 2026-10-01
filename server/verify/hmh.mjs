@@ -4,8 +4,10 @@
 // schema, bind to the session identity and the session envelope, and pass the
 // reboot-calibrated validator of hmh-plausibility.mjs. This module never
 // imports arcade-core.mjs or hmh-run-integrity.mjs.
-import { validateRunSummaryPayload } from '../../sdk/hmh-run-summary-schema-v7.mjs';
+// Schema 1-8: the v8 module answers schema 1-7 exactly as the v7 module.
+import { validateRunSummaryPayload } from '../../sdk/hmh-run-summary-schema-v8.mjs';
 import { isHmhV7Build } from '../../sdk/hmh-run-contract-v7.mjs';
+import { isHmhV8Build } from '../../sdk/hmh-run-v8-build.mjs';
 import { canonicalSessionJson, sha256Hex } from '../../apps/portal/src/session-integrity.mjs';
 import { HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG } from '../../apps/portal/src/hmh-character-config.mjs';
 import { resolveHmhMapContext } from './hmh-map-context.mjs';
@@ -15,20 +17,36 @@ export const HMH_GAME_ID = 'lester-blaster';
 export const HMH_EVIDENCE_ENCODING = 'hmh-run-summary-v6+json';
 export const HMH_RUN_SUMMARY_SCHEMA_VERSION = 6;
 // Ranked accepts schema 6 (the 1.8.x child, including one cached by the service
-// worker) and schema 7, the latter only from a build whose game version is
-// 1.9.0 or later (numeric compare, contract §2 and §15.1). The evidence
-// encoding keeps its v6 label (the Neon constraint); the payload's
-// schemaVersion selects the rules.
-export const HMH_RANKED_SCHEMA_VERSIONS = Object.freeze([6, 7]);
+// worker), schema 7, only from a build whose game version is 1.9.0 or later
+// (numeric compare, contract §2 and §15.1), and schema 8 (the 2.1.0 Level 1 map),
+// only from a build of game 2.1.0 or later. The evidence encoding keeps its v6
+// label (the Neon constraint); the payload's schemaVersion selects the rules.
+export const HMH_RANKED_SCHEMA_VERSIONS = Object.freeze([6, 7, 8]);
 export function hmhRankedSchemaError(runSummary) {
-  if (!HMH_RANKED_SCHEMA_VERSIONS.includes(runSummary.schemaVersion)) return 'Ranked requires run summary schema 6 or 7';
+  if (!HMH_RANKED_SCHEMA_VERSIONS.includes(runSummary.schemaVersion)) return 'Ranked requires run summary schema 6, 7 or 8';
   if (runSummary.schemaVersion === 7 && !isHmhV7Build(runSummary.identity.buildHash)) return 'run summary schema 7 requires game 1.9.0 or later';
+  if (runSummary.schemaVersion === 8 && !isHmhV8Build(runSummary.identity.buildHash)) return 'run summary schema 8 requires game 2.1.0 or later';
   return '';
 }
 export const HMH_RUN_SUMMARY_MAX_JSON = 262_144;
 export const HMH_SESSION_ENVELOPE_MAX_JSON = 8_192;
 export const HMH_SESSION_ENVELOPE_VERSION = 'lesters-session-envelope-v1';
 export const HMH_BOSS_ID = 'boss-liquidator';
+
+// The boss result of a verified HMH run, for every schema. `bossId` is the
+// on-chain boss id of the attestation and verified_sessions.boss_id: the
+// Liquidator's (HMH_BOSS_ID) when kills.boss counts him, else null. It stays
+// the Liquidator's on schema 8, where kills.boss still counts him only (schema
+// rule S6), because he is the only HMH boss id the score registry and the
+// indexer know (server/neon/rows.mjs BOSS_IDS). `bossesDefeated` names every
+// boss the run defeated, in catalogue order: the bosses rows of schema 7 and 8
+// (the district bosses included), the Liquidator alone on schema 6.
+export function hmhBossResult(runSummary) {
+  const bossesDefeated = Array.isArray(runSummary?.bosses)
+    ? runSummary.bosses.filter((row) => row.defeatedTick > 0).map((row) => row.bossId)
+    : (runSummary?.kills?.boss > 0 ? ['liquidator'] : []);
+  return Object.freeze({ bossId: runSummary?.kills?.boss > 0 ? HMH_BOSS_ID : null, bossesDefeated: Object.freeze(bossesDefeated) });
+}
 const ENVELOPE_KEYS = Object.freeze(['envelopeHash', 'eventHash', 'finalStateHash', 'gameplayEvents', 'identity', 'inputHash', 'inputTransitions', 'sessionKey', 'version']);
 const HASH_PATTERN = /^0x[0-9a-f]{64}$/;
 
@@ -103,7 +121,7 @@ export async function verifyHmhRun({ identity, evidence, nowMs }) {
       kills: runSummary.kills.total,
       maxCombo: runSummary.totals.maxCombo,
       survivalSeconds: Math.floor(runSummary.totals.elapsedMs / 1000),
-      bossId: runSummary.kills.boss > 0 ? HMH_BOSS_ID : null,
+      bossId: hmhBossResult(runSummary).bossId,
     },
     evidence: {
       encoding: HMH_EVIDENCE_ENCODING,

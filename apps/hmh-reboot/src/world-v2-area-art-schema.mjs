@@ -144,6 +144,30 @@ export function resolveKitItem(kit, assetId) {
   return item;
 }
 
+// The painted ground footprint of a kit card in manifest frame pixels,
+// relative to the card anchor (the projected model-base centre): the model's
+// `groundFootprintPixels` clipped to its painted (alpha) bounds, since ground
+// the card never paints cannot read as the object. `front` is the edge nearest
+// the camera (largest screen y). Multiply by world units per frame pixel
+// (painted height / alphaBounds.h) to place it in the world.
+export function cardGroundPixels(item) {
+  const ax = item.anchor.x * item.frame.w, ay = item.anchor.y * item.frame.h, xs = item.groundFootprintPixels.map(p => p[0]), ys = item.groundFootprintPixels.map(p => p[1]), a = item.alphaBounds;
+  return { left: Math.max(Math.min(...xs), a.x) - ax, right: Math.min(Math.max(...xs), a.x + a.w) - ax, back: Math.max(Math.min(...ys), a.y) - ay, front: Math.min(Math.max(...ys), a.y + a.h) - ay };
+}
+// Collision-to-art seat for a card drawn on an authored solid: the anchor y
+// that puts the card's painted footprint front on the collider's front edge
+// (`frontY`), so the model stands inside its blocker instead of straddling
+// it. `unitsPerPixel` is the card's world units per frame pixel (vertical).
+export function seatCardAnchorY(item, frontY, unitsPerPixel) {
+  return frontY - cardGroundPixels(item).front * unitsPerPixel;
+}
+// The seat for a decorated solid's card: a structure's painted footprint
+// front sits on the collider's front edge; a tree (plants class) blocks at its
+// trunk, so its anchor (the trunk base) sits at the collider's centre.
+export function seatSolidCardY(item, bounds, unitsPerPixel) {
+  return item.class === 'plants' ? (bounds.minY + bounds.maxY) / 2 : seatCardAnchorY(item, bounds.maxY, unitsPerPixel);
+}
+
 function assertKit(kit) {
   if (kit?.pipelineId !== AREA_ART_KIT_PIPELINE || kit.runtimeAuthority !== 'projection-only' || !Array.isArray(kit.pages) || !Array.isArray(kit.items)) fail('HD prop kit manifest required');
   if (kit.artAccepted !== false || kit.canonicalAdoption !== false) fail('kit must remain an unaccepted projection-only candidate');
@@ -380,7 +404,9 @@ export function stableUnit(...keys) {
 // objective / arena-exit clearance. Returns `clear(x, y, radius)`.
 export function createPlacementGuard({ world, areaId = null, roadClearance = 1, routeClearance = 64, siteClearance = 140, spawnClearance = null } = {}) {
   if (!world?.pieces || !world.roads || !world.sites) throw new TypeError('authored world required');
-  const blockers = world.pieces.filter(piece => piece.blocker).map(piece => ({ vertices: piece.blocker.shape.vertices, bounds: piece.visible.bounds }));
+  // Prop blockers stand under the plan's own cards, and edge guards follow
+  // water and deck edges, so neither pushes a card away.
+  const blockers = world.pieces.filter(piece => piece.blocker && !piece.visible.artPlanId && !piece.visible.guardOf).map(piece => ({ vertices: piece.blocker.shape.vertices, bounds: piece.visible.bounds }));
   const water = world.pieces.filter(piece => piece.kind === 'water').map(piece => piece.visible.vertices ?? rectVertices(piece.visible.bounds));
   const roads = world.roads.map(road => ({ points: road.points, half: road.width / 2 }));
   const routes = world.areas.filter(area => !areaId || area.id === areaId).flatMap(area => area.inspectionRoutes ?? []).map(route => route.points);

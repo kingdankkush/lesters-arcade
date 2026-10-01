@@ -5,11 +5,16 @@
 import { writeFileSync } from 'node:fs';
 import { runChild } from './child-driver.mjs';
 import { createPilot } from './pilot.mjs';
+import { createTenAreaPilot } from './pilot-ten-area.mjs';
 import { selectLevelEntry } from '../../apps/hmh-reboot/src/level-entry.mjs';
 
 const spec = JSON.parse(process.argv[2]);
-const entry = selectLevelEntry(spec.seed);
-const pilot = createPilot({ style: spec.style, seed: spec.seed, tickCap: spec.tickCap, entry });
+// A ten-area row (plan-ten-area.mjs) runs the 2.1.0 child's Level 1, which
+// has one entry; a legacy row keeps the seeded legacy entry and pilot.
+const entry = spec.world === 'ten-area' ? { id: 'meadows', x: 12_500, y: 6_700 } : selectLevelEntry(spec.seed);
+const pilot = spec.world === 'ten-area'
+  ? createTenAreaPilot({ style: spec.style, seed: spec.seed, tickCap: spec.tickCap })
+  : createPilot({ style: spec.style, seed: spec.seed, tickCap: spec.tickCap, entry });
 const started = Date.now();
 const hardFrames = spec.tickCap + (spec.surrenderFrames ?? 30_000);
 let result;

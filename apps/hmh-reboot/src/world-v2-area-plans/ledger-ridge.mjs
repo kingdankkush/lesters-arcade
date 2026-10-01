@@ -34,7 +34,7 @@ export function createLedgerRidgeArtPlan(world) {
     { id: 'cut-scree', material: 'scree', feather: 80, alpha: 0.55, vertices: [point(-650, 650), point(550, 650), point(550, 760), point(-650, 760)] },
   );
   for (const segment of routeSegments) plan.ground.trails.push({ id: `trail-${plan.ground.trails.length}`, material: segment.kind === 'main' ? 'gravel' : 'dirt', points: [segment.a, segment.b], width: segment.kind === 'main' ? 56 : 40, halo: 18 });
-  for (const name of RIDGE_CLIFFS) solid(name, 'bank', { roof: 'rock', tint: 0xd0d2cc });
+  for (const name of [...RIDGE_CLIFFS, 'cap-foot']) solid(name, 'bank', { roof: 'rock', tint: 0xd0d2cc });
   solid('headframe', 'card', { source: 'b1-11', fit: 'height', tint: 0xc8c8c4 });
   solid('quarry-store', 'card', { source: 'b2-68', fit: 'width', tint: 0xc8c6be });
   solid('landing-barrier', 'hedge', { source: 'b2-49', spacing: 120, tint: 0xc8cac6 });
@@ -49,7 +49,8 @@ export function createLedgerRidgeArtPlan(world) {
   prop('b2-76', cx + 900, cy - 1420, 320, { groundZ: cap.visible.height, tint: RIDGE_STONE_TINT, flip: true });
   placeEdgeWoodland(context, { key: 'ridge-edge', sources: ['b2-72', 'b1-42', 'b2-72', 'b1-50', 'b1-42'], perSide: 18, height: (source, side, n, v) => source === 'b1-42' ? 120 + 60 * v : 300 * (0.85 + 0.25 * v), tint: RIDGE_PINE_TINT });
   // Collapsed mine entrance under the north cap with its rail spur and carts.
-  for (const [x, y, flip] of [[-380, -1050, false], [700, -1050, true]]) if (guard.clear(cx + x, cy + y, 24)) prop('b2-77', cx + x, cy + y, 230, { flip, tint: 0xc4c4be });
+  // Set back into the cap foot so the switchback keeps its 300-unit moving band past their colliders.
+  for (const [x, y, flip] of [[-380, -1060, false], [700, -1060, true]]) if (guard.clear(cx + x, cy + y, 24)) prop('b2-77', cx + x, cy + y, 230, { flip, tint: 0xc4c4be });
   placeLine(context, { key: 'rail-spur', from: point(-840, -1040), to: point(-470, -1040), spacing: 80, radius: 10, place: (px, py) => prop('b2-78', px, py, 34, { tint: 0xc8c4bc, shadow: false, fade: false }) });
   placeLine(context, { key: 'rail-east', from: point(560, -1040), to: point(1150, -1040), spacing: 80, radius: 10, place: (px, py) => prop('b2-78', px, py, 34, { tint: 0xc8c4bc, shadow: false, fade: false }) });
   for (const [x, y, flip] of [[-640, -1060, false], [880, -1050, true], [1080, -1060, false]]) if (guard.clear(cx + x, cy + y, 18)) prop('b1-16', cx + x, cy + y, 56, { flip, tint: 0xc4beb4 });
@@ -62,12 +63,14 @@ export function createLedgerRidgeArtPlan(world) {
     placeAlongPolygonEdges(context, context.piece(name).blocker.shape.vertices, { key: `${name}-foot`, spacing: 150, offset: 40, radius: 16, jitter: 12, place: (px, py, n, v) => {
       // Small sandstone cards read as rusty barrels at gameplay zoom (pass-1), so
       // spoil is timber, stumps and dry scrub, with full-height strata only.
+      // Timber and stumps stay walk-over height (<= 48); the strata block.
       const source = n % 5 === 4 ? 'b2-79' : n % 5 === 2 ? 'b1-49' : n % 3 === 0 ? 'b1-42' : 'b1-05';
-      prop(source, px, py, source === 'b2-79' ? 50 : source === 'b1-49' ? 70 : source === 'b1-05' ? 40 : 96 + n % 3 * 12, { flip: v > 0.5, tint: source === 'b1-42' ? RIDGE_STONE_TINT : 0xc8c2b4, shadow: source !== 'b1-05' });
+      prop(source, px, py, source === 'b2-79' ? 46 : source === 'b1-49' ? 46 : source === 'b1-05' ? 40 : 96 + n % 3 * 12, { flip: v > 0.5, tint: source === 'b1-42' ? RIDGE_STONE_TINT : 0xc8c2b4, shadow: source !== 'b1-05' });
     } });
   }
   for (const [x, y] of [[-1080, 900], [-830, 900], [-1080, 250], [-830, 300], [-1080, -400], [-830, -500], [-450, -700], [500, -700], [-150, 1000], [600, 1000]]) {
-    scatter({ key: `switchback-${x}-${y}`, x: cx + x, y: cy + y, rx: 70, ry: 90, count: 5, radius: 12, place: (px, py, n, v) => prop(n % 2 ? 'b1-05' : 'b2-74', px, py, n % 2 ? 38 : 60 + n * 4, { flip: v > 0.5, tint: n % 2 ? 0xc6c0b0 : 0xc4bcb0, shadow: false }) });
+    // Root clumps stay knee-to-waist high (at most 48): walk-over rubble beside the switchback, not walls in its band.
+    scatter({ key: `switchback-${x}-${y}`, x: cx + x, y: cy + y, rx: 70, ry: 90, count: 5, radius: 12, place: (px, py, n, v) => prop(n % 2 ? 'b1-05' : 'b2-74', px, py, n % 2 ? 38 : 40 + n * 2, { flip: v > 0.5, tint: n % 2 ? 0xc6c0b0 : 0xc4bcb0, shadow: false }) });
   }
   // Store stock along its back and side walls, leaving the loading face open.
   for (const [x, y, source, height, flip] of [[-1730, -1080, 'b2-79', 54, false], [-1290, -1080, 'b1-16', 52, true], [-1760, -900, 'b2-79', 50, true]]) {

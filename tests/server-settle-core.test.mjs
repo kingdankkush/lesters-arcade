@@ -16,7 +16,12 @@ import * as settleApi from '../api/settle.mjs';
 import * as statusApi from '../api/settle-status.mjs';
 import * as seedApi from '../api/ranked-seed.mjs';
 import { CLIENT_OUTDATED_HINT, HMH_DEPLOYED_CHILD_SCHEMA_VERSION, HMH_RANKED_SEED_MIN_GAME_VERSION, hmhRankedSeedMinGameVersion, hmhSeedClientOutdated } from '../server/settle/seed.mjs';
-import { RUN_SUMMARY_SCHEMA_VERSION } from '../apps/hmh-reboot/src/run-summary-v7.mjs';
+import { RUN_SUMMARY_SCHEMA_VERSION as V7_CHILD_SCHEMA_VERSION } from '../apps/hmh-reboot/src/run-summary-v7.mjs';
+import { RUN_SUMMARY_SCHEMA_VERSION as V8_CHILD_SCHEMA_VERSION } from '../apps/hmh-reboot/src/run-summary-v8.mjs';
+import { HMH_TEN_AREA_LEVEL_ONE } from '../apps/hmh-reboot/src/world-context.mjs';
+// The schema the child emits in a Ranked session: schema 8 on the ten-area
+// Level 1 from game 2.1.0, schema 7 before (HMH-RANKED-V8-TEN-AREA).
+const RUN_SUMMARY_SCHEMA_VERSION = HMH_TEN_AREA_LEVEL_ONE ? V8_CHILD_SCHEMA_VERSION : V7_CHILD_SCHEMA_VERSION;
 import { HMH_RUN_SUMMARY_V7_MIN_GAME_VERSION } from '../sdk/hmh-run-contract-v7.mjs';
 import * as attestApi from '../api/attest.mjs';
 import * as nonceApi from '../api/session-nonce.mjs';
@@ -818,14 +823,17 @@ test('the seed endpoint refuses an HMH ticket to a portal older than the deploye
   // The minimum is the deployed child's schema's: schema 7 needs game 1.9.0.
   assert.equal(HMH_DEPLOYED_CHILD_SCHEMA_VERSION, RUN_SUMMARY_SCHEMA_VERSION, 'the child emits the schema E15 guards');
   assert.equal(HMH_RANKED_SEED_MIN_GAME_VERSION, hmhRankedSeedMinGameVersion(RUN_SUMMARY_SCHEMA_VERSION));
-  assert.equal(HMH_RANKED_SEED_MIN_GAME_VERSION, HMH_RUN_SUMMARY_V7_MIN_GAME_VERSION);
+  assert.equal(HMH_RANKED_SEED_MIN_GAME_VERSION, HMH_TEN_AREA_LEVEL_ONE ? '2.1.0' : HMH_RUN_SUMMARY_V7_MIN_GAME_VERSION);
+  assert.equal(hmhRankedSeedMinGameVersion(7), HMH_RUN_SUMMARY_V7_MIN_GAME_VERSION);
+  assert.equal(hmhRankedSeedMinGameVersion(8), '2.1.0', 'the ten-area child needs a 2.1.0 portal');
   assert.equal(hmhRankedSeedMinGameVersion(6), null, 'a schema-6 child needs no minimum');
   // Numeric compare, on the game segment.
   for (const [buildHash, outdated] of [['site-1.8.6:game-1.8.6', true], ['site-1.8.9:game-1.8.9:cabinet-0.5.0', true], ['site-1.9.0:game-1.8.6', true],
     ['site-1.9.0:game-1.9.0', false], ['site-1.9.0:game-1.9.0:cabinet-0.6.0', false], ['site-1.9.1:game-1.9.1', false], ['site-1.10.0:game-1.10.0', false]]) {
-    assert.equal(hmhSeedClientOutdated(buildHash), outdated, buildHash);
+    assert.equal(hmhSeedClientOutdated(buildHash, HMH_RUN_SUMMARY_V7_MIN_GAME_VERSION), outdated, buildHash);
   }
-  const handler = seedHandler(ctx);
+  // Pinned to the schema-7 child; the 2.1.0 server is the next test.
+  const handler = seedHandler(ctx, { wrap: (deps) => ({ ...deps, hmhSeedMinGameVersion: HMH_RUN_SUMMARY_V7_MIN_GAME_VERSION }) });
   const player = local.chain.wallets.player1;
   const uuid = '44444444-4444-4444-8444-444444444444';
   const call = (body) => invoke(handler, { method: 'POST', url: '/api/ranked-seed', headers: { authorization: bearer(player.address), 'x-forwarded-for': IP }, body });
@@ -846,6 +854,25 @@ test('the seed endpoint refuses an HMH ticket to a portal older than the deploye
   assert.equal(chikun.status, 200, JSON.stringify(chikun.body));
   const stacked = await call({ gameId: 'stacked', sessionId: `game-session-${uuid}`, seasonId: 'stacked-season-preview-1', buildHash: 'site-1.8.6:game-1.8.6:cabinet-0.2.0' });
   assert.equal(stacked.status, 200, JSON.stringify(stacked.body));
+}));
+
+// HMH-RANKED-V8-TEN-AREA review: under a 2.1.0 server the child's Ranked
+// Level 1 refuses a session from an older build (world-context.mjs), so E15
+// must refuse that build's ticket before payment: a stale 2.0.x tab reloads.
+test('under a 2.1.0 server the seed endpoint refuses an HMH ticket to a 2.0.x portal, before payment', async () => scenario(async (ctx) => {
+  const minimum = hmhRankedSeedMinGameVersion(8);
+  for (const [buildHash, outdated] of [['site-2.0.0:game-2.0.0:cabinet-0.6.0', true], ['site-2.1.0:game-2.0.9', true], ['site-2.1.0:game-2.1.0:cabinet-0.6.0', false], ['site-2.10.0:game-2.10.0', false]]) {
+    assert.equal(hmhSeedClientOutdated(buildHash, minimum), outdated, buildHash);
+  }
+  const handler = seedHandler(ctx, { wrap: (deps) => ({ ...deps, hmhSeedMinGameVersion: minimum }) });
+  const player = local.chain.wallets.player1;
+  const uuid = '55555555-5555-4555-8555-555555555555';
+  const call = (body) => invoke(handler, { method: 'POST', url: '/api/ranked-seed', headers: { authorization: bearer(player.address), 'x-forwarded-for': IP }, body });
+  const hmh = (buildHash) => ({ gameId: 'lester-blaster', sessionId: `game-session-${uuid}`, seasonId: 'hmh-season-1-2026', buildHash });
+  const refused = await call(hmh('site-2.0.0:game-2.0.0:cabinet-0.6.0'));
+  assert.deepEqual([refused.status, refused.body], [409, { ok: false, error: 'client-outdated', minGameVersion: '2.1.0', reload: true, hint: CLIENT_OUTDATED_HINT }]);
+  const issued = await call(hmh('site-2.1.0:game-2.1.0:cabinet-0.6.0'));
+  assert.equal(issued.status, 200, JSON.stringify(issued.body));
 }));
 
 test('paused settlement answers 503 and touches nothing', async () => scenario(async (ctx) => {
