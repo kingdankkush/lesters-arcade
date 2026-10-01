@@ -24,8 +24,18 @@ import {
   spawnCapacity,
   validateRebootRunPlausibility,
 } from '../../server/verify/hmh-plausibility.mjs';
-// Schema 1-7 (the v7 module answers schema 1-6 exactly as the base module).
-import { validateRunSummaryPayload } from '../../sdk/hmh-run-summary-schema-v7.mjs';
+// Schema 1-8 (the v8 module answers schema 1-7 exactly as the v7 module).
+import { validateRunSummaryPayload } from '../../sdk/hmh-run-summary-schema-v8.mjs';
+import { HMH_RUN_SUMMARY_CATALOGS_V8 } from '../../sdk/hmh-run-summary-schema-v8.mjs';
+import { HMH_V8_MOVEMENT_RULES } from '../../sdk/hmh-run-contract-v8.mjs';
+import {
+  V8_MAX_GAINS,
+  hmhV8Ceilings,
+  hmhV8DistrictTravel,
+  hmhV8KillCapacity,
+  hmhV8MinTicksForTravel,
+  validateV8RunPlausibility,
+} from '../../server/verify/hmh-plausibility-v8.mjs';
 import { FIXTURE_CHAIN_ID, FIXTURE_ISSUED_AT, FIXTURE_REGISTRY, FIXTURE_SEED_SECRET, FIXTURE_WALLET, GAME_ID } from './identity.mjs';
 
 const rows = (list, key, value) => Object.fromEntries((list ?? []).map((row) => [row[key], row[value]]));
@@ -104,6 +114,25 @@ export function margins(summary) {
   };
 }
 
+// How close a schema-8 (ten-area) run came to the v8 rules that scale with play.
+export function marginsV8(summary) {
+  const runTicks = summary.totals.survivalTicks;
+  const travel = hmhV8DistrictTravel(summary.exploration.visitedDistrictMask);
+  const minTicks = hmhV8MinTicksForTravel(travel.travelPx);
+  const capacity = hmhV8KillCapacity(summary);
+  const ceilings = hmhV8Ceilings(summary, V8_MAX_GAINS);
+  const movement = summary.movement;
+  return {
+    runTicks,
+    district: { mask: summary.exploration.visitedDistrictMask, areas: HMH_RUN_SUMMARY_CATALOGS_V8.districts.filter((_, i) => Math.floor(summary.exploration.visitedDistrictMask / 2 ** i) % 2 === 1), pathValid: travel.pathValid, travelPx: Math.round(travel.travelPx), minTicks, ratio: runTicks ? Number((minTicks / runTicks).toFixed(4)) : null },
+    killsCapacity: { kills: summary.kills.total, capacity, ratio: Number((summary.kills.total / capacity).toFixed(4)) },
+    xpCeiling: { xp: summary.totals.xp, ceiling: ceilings.xp, ratio: ceilings.xp ? Number((summary.totals.xp / ceilings.xp).toFixed(4)) : null },
+    scoreCeiling: { score: summary.totals.score, ceiling: ceilings.score, ratio: ceilings.score ? Number((summary.totals.score / ceilings.score).toFixed(4)) : null },
+    movement: { ...movement, coverEnterCadence: Math.floor(runTicks / HMH_V8_MOVEMENT_RULES.coverEnterTicks) },
+    bosses: summary.bosses.filter((row) => row.initiations > 0),
+  };
+}
+
 // The compact statistics the report prints for one summary.
 export function summaryStats(summary) {
   return {
@@ -115,7 +144,7 @@ export function summaryStats(summary) {
     grenades: summary.grenades,
     pickupsByEffect: Object.fromEntries(summary.collectibles.filter((row) => row.collected).map((row) => [row.effectId, row.collected])),
     visitedDistrictMask: summary.exploration.visitedDistrictMask,
-    districts: DISTRICT_IDS.filter((_, i) => (summary.exploration.visitedDistrictMask >> i) & 1),
+    districts: (summary.schemaVersion === 8 ? HMH_RUN_SUMMARY_CATALOGS_V8.districts : DISTRICT_IDS).filter((_, i) => (summary.exploration.visitedDistrictMask >> i) & 1),
     sitesOperated: summary.milestones.sites.filter((row) => row.operated).map((row) => `${row.siteId}@${row.tick}`),
     secretsFound: summary.milestones.secrets.filter((row) => row.found).map((row) => `${row.secretId}@${row.tick}`),
     weaponPickups: Object.fromEntries(summary.weapons.filter((row) => row.pickups).map((row) => [row.weaponId, row.pickups])),
@@ -150,8 +179,9 @@ export async function verifyRun(run, { id, out }) {
   if (!summary) return record;
   record.schemaError = validateRunSummaryPayload(summary) || null;
   record.stats = summaryStats(summary);
-  record.plausibility = validateRebootRunPlausibility(summary);
-  record.margins = margins(summary);
+  // Schema 8 (the ten-area Level 1) has its own plausibility path.
+  record.plausibility = summary.schemaVersion === 8 ? validateV8RunPlausibility(summary) : validateRebootRunPlausibility(summary);
+  record.margins = summary.schemaVersion === 8 ? marginsV8(summary) : margins(summary);
   // Full §5.1 body: the ticket, the ticket seed, and a session envelope built
   // from the child's own run events.
   const evidence = createSessionEvidenceState({ sessionId: id.identity.sessionId });
