@@ -102,6 +102,26 @@ and any error the child threw.
 batch captured elsewhere). `export` refuses a batch whose summaries carry more
 than one build hash: one corpus file holds one child release.
 
+## The ten-area Level 1 (2.1.0, schema 8)
+
+From game 2.1.0 the child's Level 1 is the ten-area world for Free and Ranked
+(docs/2.0/slices/HMH-RANKED-V8-TEN-AREA.md). `--ten-area` selects the ten-area
+plan (`plan-ten-area.mjs`: 43 rows, every hero, one entry, seed tickets from
+the first salt) and its pilots (`pilot-ten-area.mjs`: suicide, idle, brawler,
+hunter, explorer, turtle, camper, cover, ledge, grenadier and a seeker per
+boss court). Run it under the 2.1.0 label: with `HMH_HARNESS_RELEASE` set,
+`register-hooks.mjs` also hands the child that game version, so its own gate
+picks the ten-area world. The legacy plan and `pilot.mjs` are untouched.
+
+```bash
+HMH_HARNESS_RELEASE=2.1.0 node scripts/hmh-honest-corpus/batch.mjs run --ten-area --concurrency=5 --runs=<dir>
+HMH_HARNESS_RELEASE=2.1.0 node scripts/hmh-honest-corpus/batch.mjs verify --ten-area --runs=<dir>
+HMH_HARNESS_RELEASE=2.1.0 node scripts/hmh-honest-corpus/batch.mjs export --ten-area --runs=<dir> --commit=<sha>   --out=tests/fixtures/hmh-honest-corpus/real-child-2.1.0-ten-area.json
+```
+
+`verify` checks schema-8 summaries on the v8 path (`server/verify/hmh-plausibility-v8.mjs`).
+`tests/server-verify-hmh-v8-corpus.test.mjs` pins the file.
+
 ## The committed corpus
 
 `tests/fixtures/hmh-honest-corpus/real-child-<release>.json`, one file per

@@ -134,7 +134,9 @@ function bossZoneRow({ id, kind, arena, position, mode, clip, fillTicks, readyTi
 }
 
 export function createWorldV2Gameplay(world) {
-  if (world?.id !== WORLD_V2_RUNTIME_ID || world.officialRun !== false || world.rankedEligible !== false) throw new TypeError('ten-area gameplay requires the unofficial ten-area world');
+  // The unofficial 2.0.x preview (both false) or the 2.1.0 Level 1 (both true).
+  if (world?.id !== WORLD_V2_RUNTIME_ID || typeof world.officialRun !== 'boolean' || world.rankedEligible !== world.officialRun) throw new TypeError('ten-area gameplay requires the ten-area world');
+  const official = world.officialRun;
   // Slice HMH-TEN-AREA-GAMEPLAY-WIRING: an area hosting a 2.0 enemy whose
   // role its tier lacks gains that role; the bands still gate it by time.
   const roleGates = Object.fromEntries(world.districts.map((district) => {
@@ -201,7 +203,9 @@ export function createWorldV2Gameplay(world) {
       },
     },
     tips: [
-      'This is the unranked ten-area Free world: no score is submitted and nothing you do here counts toward Ranked.',
+      official
+        ? 'Level 1 is the ten-area world. Ranked runs here are verified and count; Free runs keep their own result and share card.'
+        : 'This is the unranked ten-area Free world: no score is submitted and nothing you do here counts toward Ranked.',
       'Roads connect the ten areas. Danger rises with distance from the Meadows; the Fortress service road is the long way round.',
       'Stand still in a machine’s ring to crank it; buttons start as you pass. Progress is never lost.',
     ],
@@ -209,8 +213,8 @@ export function createWorldV2Gameplay(world) {
 
   return freezeDeep({
     worldId: world.id,
-    officialRun: false,
-    rankedEligible: false,
+    officialRun: official,
+    rankedEligible: official,
     defaultDistrictId: WORLD_V2_DEFAULT_DISTRICT_ID,
     roleGates,
     districtArchetypes: WORLD_V2_DISTRICT_ARCHETYPES,

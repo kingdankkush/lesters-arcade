@@ -248,7 +248,7 @@ import {
   revealLevelOneAt,
 } from './level-one-world.mjs';
 import { selectLevelEntry as selectLegacyLevelEntry } from './level-entry.mjs';
-import { resolveHmhWorldContext, sessionAllowedForWorld } from './world-context.mjs';
+import { CLIENT_OUTDATED_MESSAGE, resolveHmhWorldContext, sessionAllowedForWorld, sessionClientOutdated } from './world-context.mjs';
 import {
   HMH_CRITICAL_HELD_WEAPON_IDS,
   HMH_WEAPON_DEFINITIONS,
@@ -344,7 +344,9 @@ function loadLazyRuntimeModules() {
     import('./world-production-art.mjs'),
     import('./authored-prop-layout.mjs'),
   ]).then(([boss, creature, telegraph, interactions, life, pacing, nativeAssets, briefing, panel, content, mission, slots, arenas, geometry, drops, effects, prisoners, v7, cockpitUi, worldArt, propLayout]) => {
-    summaryV7 = v7;
+    // 2.1.0: the official ten-area Level 1 records schema 8 through the same
+    // accumulator path; its lazy context hands the same API (run-summary-v8.mjs).
+    summaryV7 = HMH_WORLD_CONTEXT?.runSummary ?? v7;
     ({ createCockpitUi } = cockpitUi);
     ({ createWorldProductionLayers, renderWorldProductionArt } = worldArt);
     ({ AUTHORED_DRESSING_SEED, AUTHORED_PROP_ATLAS_IMAGE_URL, AUTHORED_PROP_ATLAS_METADATA_URL, authoredPropItemUrl,
@@ -459,6 +461,7 @@ function adoptWorldContext(context) {
   ENEMY_ARCHETYPES = TEN_AREA_COMBAT?.archetypes ?? LEGACY_ENEMY_ARCHETYPES;
   LEVEL_ONE_WORLD = context.world;
   RUN_SUMMARY_ENABLED = context.official === true;
+  if (context.runSummary) summaryV7 = context.runSummary;
   worldReveal = context.legacy ? LEGACY_WORLD_REVEAL : context.reveal;
   PACIFIED_HAZARDS = Object.freeze(LEVEL_ONE_WORLD.interactions.hazards.filter((hazard) => hazard.id !== YARD_GRID_HAZARD_ID));
   WORLD_BOUNDS = LEVEL_ONE_WORLD.bounds;
@@ -3492,6 +3495,12 @@ async function boot() {
     const navGrid = navGridAuthority.require();
     // W4a: an unofficial world accepts only an explicitly unranked Free
     // session; a Ranked or rankedEligible payload never gets a run here.
+    // 2.1.0: a stale portal tab is told to reload before it plays a run it could not record.
+    if (sessionClientOutdated(HMH_WORLD_CONTEXT, payload)) {
+      setStatus('Update required', CLIENT_OUTDATED_MESSAGE);
+      try { bridge?.send('game:error', { code: 'client-outdated', message: CLIENT_OUTDATED_MESSAGE }); } catch { /* the parent is told or already gone */ }
+      return;
+    }
     if (!sessionAllowedForWorld(HMH_WORLD_CONTEXT, payload)) {
       setStatus('Unofficial world refused', `${LEVEL_ONE_WORLD.id} accepts only explicit unranked Free sessions`);
       try { bridge?.send('game:error', { code: 'unofficial-world-session', message: 'This world accepts only unranked Free sessions' }); } catch { /* the parent is told or already gone */ }
@@ -5360,6 +5369,7 @@ async function boot() {
             // place of the 1.8.1 ten coins, 1,040 XP through the kill, the
             // Yard pacified with a grace, and the Golden Parachute for a Dark
             // Pool win. kills.boss counts the Liquidator only.
+            tenAreaRun?.creditKill();
             const defeatedArenaId = bossSlots.slots.liquidator.arena?.id ?? 'margin-floor';
             const rewards = defeatBossSlot(bossSlots, { bossId: 'liquidator', tick });
             refreshBossLockNavigation(rewards.opened);
@@ -5473,6 +5483,7 @@ async function boot() {
           });
           // Package 8.2 Salvage: read from the weapon step of the next tick.
           creditWeaponKills(weaponLoadout, { tick, weaponId: scoreEvent.weaponId, count: 1, progressionByWeapon });
+          tenAreaRun?.creditKill();
           queueEnemyDeathVisual(defeatedEnemy, tick, { dismember: killDismembers(scoreEvent.weaponId), direction: { x: defeatedEnemy.x - actor.x, y: defeatedEnemy.y - actor.y } });
           runKills += 1;
           addSilverDrop(silverDropState,{sequence:runKills,tick,x:defeatedEnemy.x,y:defeatedEnemy.y});

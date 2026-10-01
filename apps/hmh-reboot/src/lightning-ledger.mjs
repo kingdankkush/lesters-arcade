@@ -79,7 +79,12 @@ export function selectLightningLedgerChain({ origin, targets, lineOfSight = () =
     from = selected;
     range = policy.jumpRange;
   }
-  return freezeDeep(chain);
+  // Each link is a shallow copy of its target, so freeze the copies only: a
+  // deep freeze reached through them froze the live target's own arrays (a
+  // boss's pendingEvents and pendingAttacks), and the boss's next step threw.
+  // freezeDeep stops at an already frozen object, so the results that wrap
+  // the chain keep the targets' state writable too.
+  return Object.freeze(chain.map((target) => Object.freeze(target)));
 }
 
 export function createLightningLedgerState({ cellsRemaining = LIGHTNING_LEDGER_CONFIG.cellSegments } = {}) {

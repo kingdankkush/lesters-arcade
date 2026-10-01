@@ -171,7 +171,10 @@ function buildCrossings(authored) {
   return { crossings, legalAscents };
 }
 
-export function createWorldV2RuntimeWorld({ authored = createGreyboxWorld() } = {}) {
+// `official`: the 2.1.0 Level 1 (Free and Ranked, schema-8 run summaries);
+// false is the 2.0.x unofficial Free preview. The world data is the same.
+export function createWorldV2RuntimeWorld({ authored = createGreyboxWorld(), official = false } = {}) {
+  if (typeof official !== 'boolean') throw new TypeError('ten-area world official must be a boolean');
   const geometry = createWorldV2Geometry(authored);
   const areaById = new Map(geometry.areas.map((area) => [area.id, area]));
   const authoredAreaById = new Map(authored.areas.map((area) => [area.id, area]));
@@ -244,8 +247,8 @@ export function createWorldV2RuntimeWorld({ authored = createGreyboxWorld() } = 
     id: WORLD_V2_RUNTIME_ID,
     displayName: 'Crypto Wasteland: Ten-Area Frontier',
     version: WORLD_V2_RUNTIME_VERSION,
-    officialRun: false,
-    rankedEligible: false,
+    officialRun: official,
+    rankedEligible: official,
     sourceMapId: geometry.sourceMapId,
     bounds,
     traversalTargetSeconds: { minimum: 10, maximum: 25 },

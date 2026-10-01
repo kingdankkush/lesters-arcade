@@ -27,8 +27,12 @@ const rows = (values, length) => values.map(() => Array(length).fill(0));
 // Schema 7 (contract §11): the child passes the V7 catalogues (the v7 schema
 // module is off its initial path) and, at finalize, the v7 rows its own
 // simulation holds; the accumulator shapes them. Schema 6 is unchanged.
+// Schema 8 (the 2.1.0 Level 1 map, version 2) passes the V8 catalogues, whose
+// districtAreas place each tick's position in an area, and adds the movement
+// row at finalize.
 export function createRunSummaryAccumulator({ seed, buildHash, mode, heroId, startTick = 0, startPosition, schemaVersion = 6, catalogs = C6 } = {}) {
-  if (schemaVersion !== 6 && !(schemaVersion === 7 && catalogs !== C6 && catalogs?.objectives)) throw new TypeError('schema 6, or schema 7 with the V7 catalogues');
+  if (schemaVersion !== 6 && !(schemaVersion === 7 && catalogs !== C6 && catalogs?.objectives && !catalogs.movementFields)
+    && !(schemaVersion === 8 && catalogs?.movementFields && catalogs.districtAreas)) throw new TypeError('schema 6, or schema 7 with the V7 catalogues');
   const C = catalogs;
   if (!Number.isInteger(seed) || seed < 0 || seed > 0xffff_ffff) throw new TypeError('seed must be an unsigned 32-bit integer');
   if (typeof buildHash !== 'string' || buildHash.length < 1 || buildHash.length > 128) throw new TypeError('buildHash must be bounded');
@@ -85,7 +89,10 @@ export function recordRunTick(state, { tick, position, activeWeaponId, districtI
   state.lastPosition = next;
   state.lastTick = tick;
   state.weapons[index(state.C.weapons, activeWeaponId, 'weapon')][9] += 1;
-  state.exploration[0] |= 1 << index(state.C.districts, districtId, 'district');
+  // Schema 8: the area holding the hero, if any (a road between areas is none).
+  const area = state.C.districtAreas?.findIndex(([minX, minY, maxX, maxY]) => next.x >= minX && next.x <= maxX && next.y >= minY && next.y <= maxY);
+  if (area === undefined) state.exploration[0] |= 1 << index(state.C.districts, districtId, 'district');
+  else if (area >= 0) state.exploration[0] |= 1 << area;
   for (const id of discoveredPoiIds) state.exploration[1] |= 1 << index(state.C.pointsOfInterest, id, 'point of interest');
   for (const id of activeEffectIds) state.collectibles[index(state.C.collectibles, id, 'collectible effect')][1] += 1;
   if (level !== undefined) recordLevel(state, count(level, 'level'), tick);
@@ -361,6 +368,16 @@ export function finalizeRunSummary(state, {
     state.lightningLedgerChannelStartTick = null;
   }
   state.finalized = true;
+  // Schema 8: the child's one boss-defeat path records every boss kill under
+  // the Liquidator's role; each defeat the bosses rows hold is its own boss's.
+  if (state.schemaVersion === 8) {
+    const liquidator = index(state.C.enemyRoles, 'liquidator', 'enemy role');
+    for (const row of v7?.bosses ?? []) {
+      if (row?.bossId === 'liquidator' || !(row?.defeatedTick > 0) || state.enemyKills[liquidator] < 1) continue;
+      state.enemyKills[liquidator] -= 1;
+      state.enemyKills[index(state.C.enemyRoles, row.bossId, 'enemy role')] += 1;
+    }
+  }
   for (const attack of state.weaponAttacks.values()) {
     const row = state.weapons[attack.weaponIndex];
     row[18 + Math.min(3, attack.contacts)] += 1;
@@ -453,7 +470,7 @@ export function finalizeRunSummary(state, {
       secrets: state.secrets.map(([found, tick], i) => ({ secretId: state.C.secrets[i], found, tick })),
     },
   };
-  if (state.schemaVersion === 7) finalizeV7(state, summary, v7);
+  if (state.schemaVersion >= 7) finalizeV7(state, summary, v7);
   return freezeDeep(summary);
 }
 
@@ -463,7 +480,7 @@ export function finalizeRunSummary(state, {
 // mirror objectives are read from them (S8), the Liquidator's kill and first
 // initiation fill kills.boss and bossEngagedTick (S5-S7), and the Seals found
 // are the genesis-seal pickups (S12).
-function finalizeV7(state, summary, { objectives, prisoners, bosses, evolutions, upgrades, progression } = {}) {
+function finalizeV7(state, summary, { objectives, prisoners, bosses, evolutions, upgrades, progression, movement } = {}) {
   const C = state.C;
   const exact = (list, catalog, key) => {
     if (!Array.isArray(list) || list.length !== catalog.length || list.some((row, i) => row?.[key] !== catalog[i])) throw new TypeError(`v7 ${key} rows must follow the catalogue`);
@@ -476,7 +493,7 @@ function finalizeV7(state, summary, { objectives, prisoners, bosses, evolutions,
     evolutions: exact(evolutions, C.evolutions, 'evolutionId'),
   };
   const objective = (id) => rowsOf.objectives[C.objectives.indexOf(id)];
-  summary.schemaVersion = 7;
+  summary.schemaVersion = state.schemaVersion;
   summary.upgrades = exact(upgrades, C.upgrades, 'upgradeId').map(({ upgradeId, offered, selected }) => ({ upgradeId, offered: count(offered, 'offered'), selected: count(selected, 'selected') }));
   summary.kills.boss = state.enemyKills[index(C.enemyRoles, 'liquidator', 'enemy role')];
   summary.milestones.bossEngagedTick = rowsOf.bosses[C.bosses.indexOf('liquidator')].firstInitiatedTick;
@@ -484,6 +501,10 @@ function finalizeV7(state, summary, { objectives, prisoners, bosses, evolutions,
   summary.milestones.secrets = C.secrets.map((secretId) => ({ secretId, found: objective(secretId).completed, tick: objective(secretId).tick }));
   summary.collectibles[index(C.collectibles, 'genesis-seal', 'collectible effect')].collected = count(progression?.sealsFound, 'sealsFound');
   Object.assign(summary, rowsOf, { progression: { ...progression } });
+  if (state.schemaVersion === 8) {
+    if (typeof movement?.rulesVersion !== 'string') throw new TypeError('v8 movement row needs its rules version');
+    summary.movement = Object.fromEntries(C.movementFields.map((field) => [field, field === 'rulesVersion' ? movement.rulesVersion : count(movement[field], `movement.${field}`)]));
+  }
 }
 
 export function runSummaryMatchesResult(summary, result) {
