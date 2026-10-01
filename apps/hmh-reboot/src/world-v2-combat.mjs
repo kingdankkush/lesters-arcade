@@ -421,7 +421,9 @@ export function createWorldV2MovementRun({ faces, markers }) {
 // `?evidenceSafe=1&tenAreaEvidence=court:<bossId>` stands the hero 200 west of
 // a court's threshold with the boss ready at tick 120;
 // `tenAreaEvidence=cover` stands it 60 out from the tall cover face nearest
-// the spawn; `tenAreaEvidence=ledge` in the nearest derived climb strip. Smoke tooling, like main.mjs's ?boss=1.
+// the spawn; `tenAreaEvidence=ledge` in the nearest derived climb strip;
+// `tenAreaEvidence=at:<x>,<y>` on that clear point (the collision-art wall
+// walk). Smoke tooling, like main.mjs's ?boss=1.
 export function worldV2EvidenceReady({ value, gameplay, bossSlots }) {
   const bossId = typeof value === 'string' && value.startsWith('court:') ? value.slice(6) : null;
   if (!bossId || !gameplay.districtCourts[bossId] || !bossSlots?.slots[bossId]) return false;
@@ -431,6 +433,11 @@ export function worldV2EvidenceReady({ value, gameplay, bossSlots }) {
 
 export function worldV2EvidenceSpawn({ value, gameplay, faces, markers = [], spawn, isClear = () => true }) {
   if (typeof value !== 'string') return null;
+  if (value.startsWith('at:')) {
+    const [x, y, extra] = value.slice(3).split(',').map(Number);
+    const spot = { x, y };
+    return extra === undefined && Number.isFinite(x) && Number.isFinite(y) && isClear(spot) ? { id: 'evidence-at', ...spot, walk: { x: 0, y: 0 } } : null;
+  }
   if (value.startsWith('court:')) {
     const bossId = value.slice(6);
     const court = gameplay.districtCourts[bossId];
