@@ -295,6 +295,31 @@ Results:
     curated-inventory and frontier-preview pins. Both are fixed in `9e910f537`
     and `6d89e8757`.
 
+## After merging `codex/visual-overhaul-200-20260929` (`aed85e132`)
+
+- The one conflict was `scripts/hmh-honest-corpus/child-driver.mjs`. The
+  merged `runChild()` takes both `connectBeforeBoot` and `settingsOverride`.
+- `node build.mjs` after the merge:
+  - HMH initial + shared: **1,001,455 B** of 1,048,576 (47,121 B headroom);
+  - HMH initial (entry + vendor): 801,469 B;
+  - HMH entry: 330,611 B;
+  - STACKED initial: 581,120 B.
+- `node scripts/syntax-check.mjs` passes.
+- Tests: the HMH suites, the feel suites (including the real-child parity
+  run), the corpus, v7, v8, determinism and settings suites ran: 1,825 passed,
+  3 failed.
+- All three failures come from `aed85e132` itself. Each fails on that commit
+  without this lane's changes, and this lane touched none of the code involved:
+  - `hmh-reboot-runtime-settings` U9/X2 looks for a
+    `Liquidator: ${warning}` caption that `aed85e132`'s `main.mjs` no longer
+    contains.
+  - `hmh-cockpit-lazy-startup` hits `HMH_WORLD_CONTEXT is not defined`.
+    `aed85e132` added `HMH_WORLD_CONTEXT?.runSummary` to
+    `loadLazyRuntimeModules`, and the test evaluates that function in
+    isolation.
+  - `server-verify-hmh-v7` "district bosses unlock no boss achievement" fails
+    after `aed85e132`'s `server/verify/hmh.mjs` change.
+
 ## Capture
 
 Receipts are in `docs/2.0/receipts/hmh-feel-2-1/`.
@@ -326,12 +351,20 @@ Receipts are in `docs/2.0/receipts/hmh-feel-2-1/`.
 - `feel-parity.json`: the four real-child parity runs. All four have
   evidence SHA-256 `7ebe2d6139b9…` and stream digest `3637027350`.
 
-**375 px gameplay.** At 375 px, the opening enemies stand outside the
-portrait view, so the first mobile capture run had no number on screen; only
-the mobile pause screenshot above came from it. A longer mobile pass was
-queued behind the shared heavy lock. The glyph cell is 24 CSS px, the same
-size on every viewport, and the desktop frames show the outline staying legible
-over flash, blood and road.
+**375 px gameplay: not captured.**
+- In a 1,800-tick mobile pass, 24 numbers spawned, with at most 2 live. Every
+  hit landed on an enemy outside the 375 px portrait view: the hero's
+  automatic fire reaches past the narrow viewport's right edge. None of the 12
+  frames had a number on screen.
+- A follow-up pass that walked toward the enemies failed on a pause-panel
+  timeout while the machine was loaded, and was cut at the 2.1 release
+  cut-off.
+- Readability at 375 px is therefore argued from size, not shown. The glyph
+  cell is a fixed 24 CSS px on every viewport, and the desktop frames show the
+  outline staying legible over flash, blood and road.
+- Follow-up: capture a 375 px frame with an on-screen hit, and decide whether
+  automatic fire should reach targets that are off-screen on a phone (that is
+  a gameplay question, not a feel one).
 
 ## Out of scope / follow-ups
 
