@@ -268,8 +268,13 @@ export function createAreaArt({ world, areaId, plan, kit = null, loadTexture, te
   const cache = textureCache ?? createAreaArtTextureCache({ loadTexture });
   const ownsCache = !textureCache;
   const ratio = resolution === 'half' ? 0.5 : 1;
+  let gateVisible = 0;
   let disposed = false, mounted = false, summary = null, manifest = kit, residency = null, depthLayer = container, groundLayer = null, shadowLayer = null;
-  const owned = [], painted = [], frames = new Map(), tiles = new Map(), live = new Map(), solidNodes = [];
+  const owned = [], painted = [], frames = new Map(), tiles = new Map(), live = new Map(), solidNodes = [], solidRecords = [];
+  // Camera gate: residency and solid culling run only after the camera moves a
+  // cell or the zoom/view changes; views are padded by the cell so nothing that
+  // should be on screen waits for the next gate.
+  const GATE = 48; let gateX = NaN, gateY = NaN, gateZoom = NaN, gateW = NaN, gateH = NaN; const paddedView = { width: 0, height: 0 };
   let host = null, depthKey = y => y;
   let detailTexture = null, pageTextures = new Map(), controlTexture = null, terrainField = null, terrainMesh = null;
   const overlays = new Map();
@@ -306,7 +311,7 @@ export function createAreaArt({ world, areaId, plan, kit = null, loadTexture, te
       for (const overlay of summary.overlays) jobs.push(acquire(AREA_ART_TILE_ROOT + tileFile(overlay)).then(texture => { if (texture) { texture.source.style.addressMode = 'repeat'; texture.source.style.update(); overlays.set(overlay, texture); } }));
       if (summary.terrain) {
         terrainField = buildTerrainField({ summary, world, size: terrainFieldSize ?? (ratio === 0.5 ? 256 : 384) });
-        jobs.push(Promise.resolve(createControlTexture(terrainField)).then(result => { const pair = result && result.control ? result : result ? { control: result, light: result } : null; if (disposed) { pair?.control.destroy(true); if (pair && pair.light !== pair.control) pair.light.destroy(true); return; } controlTexture = pair; }));
+        jobs.push(Promise.resolve(createControlTexture(terrainField)).then(result => { const pair = result && result.control ? result : result ? { control: result, light: result } : null; if (disposed) { pair?.control.destroy(true); if (pair && pair.light !== pair.control) pair.light.destroy(true); return; } controlTexture = pair; if (pair) terrainField = { ...terrainField, fieldBytes: terrainField.data.length + (terrainField.extra?.length ?? 0), data: null, extra: null }; }));
       }
       if (summary.detailPage) jobs.push(acquire(AREA_ART_DETAIL_ROOT + AREA_ART_DETAIL_PAGE).then(texture => { detailTexture = texture; }));
       const results = await Promise.allSettled(jobs);
@@ -726,8 +731,13 @@ export function createAreaArt({ world, areaId, plan, kit = null, loadTexture, te
   // ---- props via viewport residency ----
   // A depth node either becomes a child of the depth container (private scene)
   // or a child of `host` attached to a Pixi RenderLayer (real game).
-  const admit = (node, y) => { node.zIndex = depthKey(y); if (host) { host.addChild(node); depthLayer.attach(node); } else depthLayer.addChild(node); };
-  const evict = node => { if (host && !depthLayer.destroyed) depthLayer.detach(node); node.destroy({ children: true }); };
+  // Depth nodes outside the view leave the scene graph entirely (not just
+  // visible=false): Pixi walks every child for transforms each frame and the
+  // shared RenderLayer sorts every attached node.
+  const attachNode = node => { if (node.areaArtAttached) return; node.areaArtAttached = true; if (host) { host.addChild(node); depthLayer.attach(node); } else depthLayer.addChild(node); };
+  const detachNode = node => { if (!node.areaArtAttached) return; node.areaArtAttached = false; if (host) { if (!depthLayer.destroyed) depthLayer.detach(node); host.removeChild(node); } else node.removeFromParent(); };
+  const admit = (node, y) => { node.zIndex = depthKey(y); attachNode(node); };
+  const evict = node => { detachNode(node); node.destroy({ children: true }); };
   function createProp(record) {
     const prop = summary.props[record.ordinal], node = new Container();
     const { node: sprite, width } = card(prop.source, prop);
@@ -746,10 +756,12 @@ export function createAreaArt({ world, areaId, plan, kit = null, loadTexture, te
     for (const solid of summary.solids) {
       const piece = pieces.find(entry => entry.id === solid.pieceId);
       if (!piece?.blocker) continue;
-      const node = createSolid(piece);
-      if (!node) continue;
-      const sb = piece.visible.bounds; node.terrainBounds = { minX: sb.minX - 40, minY: sb.minY - (solid.height ?? piece.visible.height) - 40, maxX: sb.maxX + 40, maxY: sb.maxY + 40 };
-      node.label = `area-art-solid-${piece.id}`; admit(node, piece.visible.bounds.maxY); solidNodes.push(node); ids.push(piece.blocker.id);
+      // Nodes are built lazily the first time a solid comes into view and
+      // dropped again far outside it; the blocker id is claimed now so the
+      // production renderer never draws its own slab under it.
+      const sb = piece.visible.bounds;
+      solidRecords.push({ piece, bounds: { minX: sb.minX - 40, minY: sb.minY - (solid.height ?? piece.visible.height) - 40, maxX: sb.maxX + 40, maxY: sb.maxY + 40 }, node: null });
+      ids.push(piece.blocker.id);
     }
     return ids;
   }
@@ -759,29 +771,44 @@ export function createAreaArt({ world, areaId, plan, kit = null, loadTexture, te
     mounted = true; depthLayer = layer; groundLayer = ground; host = options.host ?? null; if (typeof options.depthKey === 'function') depthKey = options.depthKey;
     residency = createGreyboxPropResidency({
       catalog: summary.props.map(prop => { const entry = frameFor(prop.source), width = entry.alphaWidth * (prop.height / entry.alphaHeight); return { id: prop.id, areaId: summary.roadsPlan ? null : summary.areaId, bounds: { left: prop.x - width * 0.6, right: prop.x + width * 0.6, top: prop.y - prop.groundZ - prop.height * 1.1, bottom: prop.y - prop.groundZ + width * 0.3 } }; }),
-      create: createProp, setVisible: (node, value) => { node.visible = value; }, destroy: node => { live.delete(node.label); evict(node); },
+      create: createProp, setVisible: (node, value) => { if (value) attachNode(node); else detachNode(node); }, destroy: node => { live.delete(node.label); evict(node); },
     });
   }
   function update(camera, view, actor = null) {
     if (!residency || disposed) return 0;
     // Fog drifts slowly side to side; reduced motion keeps every card still.
-    if (fogCards.length && (fogFrame++ % 60 === 0)) fogStatic = Boolean(reducedMotion());
-    for (const { sprite, card, phase } of fogCards) sprite.x = card.x + (fogStatic ? 0 : Math.sin(fogFrame * 0.004 + phase) * Math.min(40, card.rx * 0.12));
-    const visible = residency.update({ camera, view });
-    // Solids are static depth nodes; hide the ones outside the view so the
-    // hundreds of closed masses cost nothing off screen.
-    if (solidNodes.length && camera && view) {
-      const zoom = camera.zoom || 1, hw = view.width / 2 / zoom + 120, hh = view.height / 2 / zoom + 120;
-      const minX = camera.x - hw, maxX = camera.x + hw, minY = camera.y - hh, maxY = camera.y + hh;
-      for (const node of solidNodes) { const b = node.terrainBounds; if (b) node.visible = !(b.maxX < minX || b.minX > maxX || b.maxY < minY || b.minY > maxY); }
+    if (fogCards.length && (fogFrame++ % 60 === 0)) fogStatic = ratio === 0.5 || Boolean(reducedMotion());
+    // Fog drifts only on the full tier; the phone tier keeps it still.
+    if (!fogStatic || fogFrame === 0) for (const { sprite, card, phase } of fogCards) sprite.x = card.x + (fogStatic ? 0 : Math.sin(fogFrame * 0.004 + phase) * Math.min(40, card.rx * 0.12));
+    const zoom = camera.zoom || 1;
+    if (Math.abs(camera.x - gateX) >= GATE || Math.abs(camera.y - gateY) >= GATE || zoom !== gateZoom || view.width !== gateW || view.height !== gateH) {
+      gateX = camera.x; gateY = camera.y; gateZoom = zoom; gateW = view.width; gateH = view.height;
+      paddedView.width = view.width + 2 * GATE * zoom; paddedView.height = view.height + 2 * GATE * zoom;
+      gateVisible = residency.update({ camera, view: paddedView });
+      if (solidRecords.length) {
+        const hw = view.width / 2 / zoom + 120 + GATE, hh = view.height / 2 / zoom + 120 + GATE;
+        const minX = camera.x - hw, maxX = camera.x + hw, minY = camera.y - hh, maxY = camera.y + hh;
+        for (const record of solidRecords) {
+          const b = record.bounds, inView = !(b.maxX < minX || b.minX > maxX || b.maxY < minY || b.minY > maxY);
+          if (inView) {
+            if (!record.node) { record.node = createSolid(record.piece); if (!record.node) { record.bounds = { minX: Infinity, minY: Infinity, maxX: -Infinity, maxY: -Infinity }; continue; } record.node.label = `area-art-solid-${record.piece.id}`; record.node.zIndex = depthKey(record.piece.visible.bounds.maxY); solidNodes.push(record.node); }
+            attachNode(record.node);
+          } else if (record.node) {
+            detachNode(record.node);
+            // Far outside (beyond two views) the node is released entirely.
+            if (b.maxX < minX - 2 * hw || b.minX > maxX + 2 * hw || b.maxY < minY - 2 * hh || b.minY > maxY + 2 * hh) { const i = solidNodes.indexOf(record.node); if (i >= 0) solidNodes.splice(i, 1); record.node.destroy({ children: true }); record.node = null; }
+          }
+        }
+      }
     }
+    const visible = gateVisible;
     if (actor) for (const { node, prop, width } of live.values()) node.alpha = prop.fade && Math.abs(actor.x - prop.x) < width * 0.42 && actor.y < prop.y && actor.y > prop.y - prop.height - prop.groundZ ? 0.38 : 1;
     return visible;
   }
   function dispose() {
     if (disposed) return; disposed = true;
     try { residency?.dispose(); } catch {}
-    for (const node of solidNodes) { try { evict(node); } catch {} } solidNodes.length = 0;
+    for (const node of solidNodes) { try { evict(node); } catch {} } solidNodes.length = 0; for (const record of solidRecords) record.node = null; solidRecords.length = 0;
     for (const node of painted) { try { node.removeFromParent?.(); node.destroy?.({ children: true }); } catch {} } painted.length = 0;
     for (const entry of frames.values()) entry.texture.destroy(false); frames.clear(); live.clear();
     for (const url of owned) cache.release(url); owned.length = 0; tiles.clear(); overlays.clear(); pageTextures.clear(); detailTexture = null;
@@ -789,6 +816,6 @@ export function createAreaArt({ world, areaId, plan, kit = null, loadTexture, te
     try { controlTexture?.control.destroy(true); if (controlTexture && controlTexture.light !== controlTexture.control) controlTexture.light.destroy(true); } catch {} controlTexture = null; terrainMesh = null;
     if (ownsCache) cache.dispose();
   }
-  const snapshot = () => Object.freeze({ artId: AREA_ART_ID, areaId, resolution, disposed, mounted, pages: summary?.pages ?? null, tiles: summary?.tiles ?? null, counts: summary?.counts ?? null, budget: summary?.budget ?? null, terrain: summary?.terrain ? Object.freeze({ materials: summary.terrain.materials, field: terrainField ? `${terrainField.width}x${terrainField.height}` : null, fieldBytes: terrainField ? terrainField.data.length : 0, splat: Boolean(terrainMesh), counts: terrainField?.counts ?? null }) : null, ownedUrls: Object.freeze([...owned].sort()), painted: painted.length, residency: residency?.snapshot() ?? null, runtimeAuthority: 'projection-only' });
+  const snapshot = () => Object.freeze({ artId: AREA_ART_ID, areaId, resolution, disposed, mounted, pages: summary?.pages ?? null, tiles: summary?.tiles ?? null, counts: summary?.counts ?? null, budget: summary?.budget ?? null, terrain: summary?.terrain ? Object.freeze({ materials: summary.terrain.materials, field: terrainField ? `${terrainField.width}x${terrainField.height}` : null, fieldBytes: terrainField ? terrainField.fieldBytes ?? terrainField.data.length : 0, splat: Boolean(terrainMesh), counts: terrainField?.counts ?? null }) : null, ownedUrls: Object.freeze([...owned].sort()), painted: painted.length, residency: residency?.snapshot() ?? null, runtimeAuthority: 'projection-only' });
   return Object.freeze({ artId: AREA_ART_ID, ready, plan, get summary() { return summary; }, claimsSurface, paintSurface, paintGround, createSolid, mountSolids, mount, update, dispose, snapshot, textureCache: cache });
 }

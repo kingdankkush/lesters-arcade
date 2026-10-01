@@ -264,3 +264,22 @@ test('half-tier kit pages loaded at resolution 0.5 frame cards in texture units,
   assert.equal(sprite.texture.frame.width, item.frame.w);
   art.dispose();
 });
+
+test('per-frame update is gated on camera movement and keeps off-screen solids out of the scene graph', async () => {
+  const cache = createAreaArtTextureCache({ loadTexture: loader([]) });
+  const art = createAreaArt({ world, areaId: 'world-masses', plan: createWorldMassesArtPlan(world), kit, textureCache: cache, createProgram: kind => ({ name: kind }) });
+  await art.ready;
+  const depth = new Container(); art.mount(depth, new Container());
+  const ids = art.mountSolids(world.pieces);
+  assert.ok(ids.length > 400 && depth.children.length === 0, 'blocker ids claimed up front, no node built yet');
+  const view = { width: 414, height: 896 }, at = (x, y) => ({ x, y, zoom: 1, groundZ: 0, shakeX: 0, shakeY: 0 });
+  art.update(at(10100, 6700), view);
+  const first = depth.children.length;
+  assert.ok(first > 0 && first < 60, `${first} closed masses attached near the City highway`);
+  const before = depth.children.map(c => c.label).join();
+  art.update(at(10120, 6710), view);
+  assert.equal(depth.children.map(c => c.label).join(), before, 'a sub-cell camera move does no residency or culling work');
+  art.update(at(2500, 2500), view);
+  assert.ok(!depth.children.some(c => before.split(',').includes(c.label)), 'moving away detaches the old solids');
+  art.dispose(); assert.equal(cache.snapshot().references, 0);
+});

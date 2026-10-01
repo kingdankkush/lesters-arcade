@@ -21,6 +21,9 @@ export async function bindWorldV2AreaArt({ world, host, depthLayer, before = nul
   if (!hooks.length) return null;
   const root = new ContainerClass(); root.label = 'world-v2-area-art';
   const ground = new ContainerClass(); ground.label = 'world-v2-area-art-ground';
+  // Static ground (terrain, roads, decals, fog) in its own render group: the
+  // per-frame camera move of the root no longer re-walks every ground child.
+  if ('isRenderGroup' in ground) ground.isRenderGroup = true;
   const depth = new ContainerClass(); depth.label = 'world-v2-area-art-depth';
   root.addChild(ground, depth);
   const cache = createAreaArtTextureCache({ loadTexture, unloadTexture });
@@ -48,12 +51,14 @@ export async function bindWorldV2AreaArt({ world, host, depthLayer, before = nul
     if (before && before.parent === host) host.addChildAt(root, host.getChildIndex(before)); else host.addChild(root);
     mounted = true;
   } catch (error) { dispose(); throw error; }
+  const artCamera = { x: 0, y: 0, zoom: 1, groundZ: 0, shakeX: 0, shakeY: 0 };
   const update = (camera, view, actor = null) => {
     if (disposed || !camera || !view) return 0;
     const origin = worldToScreen({ x: 0, y: 0, z: 0 }, camera, view);
     root.position.set(origin.x, origin.y); root.scale.set(camera.zoom);
     let visible = 0;
-    for (const art of arts) visible += art.update({ ...camera, shakeX: camera.shakeX ?? 0, shakeY: camera.shakeY ?? 0, groundZ: camera.groundZ ?? 0 }, view, actor);
+    artCamera.x = camera.x; artCamera.y = camera.y; artCamera.zoom = camera.zoom; artCamera.groundZ = camera.groundZ ?? 0; artCamera.shakeX = camera.shakeX ?? 0; artCamera.shakeY = camera.shakeY ?? 0;
+    for (const art of arts) visible += art.update(artCamera, view, actor);
     return visible;
   };
   return Object.freeze({ id: AREA_ART_BINDING_ID, root, blockerIds, update, dispose, snapshot: () => Object.freeze({ id: AREA_ART_BINDING_ID, disposed, mounted, resolution, plans: arts.map(art => art.snapshot()), textureCache: cache.snapshot(), blockerIds: [...blockerIds].sort(), runtimeAuthority: 'projection-only' }) });

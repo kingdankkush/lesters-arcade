@@ -161,3 +161,42 @@ Receipts: `docs/2.0/receipts/terrain-roads-20260930/` (`pass-1/` before,
   vegetation clusters.
 - Phone frame cost of the 10-sampler terrain quad plus road strips is not
   measured.
+
+## Phone-tier performance (2026-10-01)
+
+Probe: `perf-probe-isolate.mjs` (headless Chrome, 414×896 @3, CPU throttle
+4×, 8 s walk east from the Meadows spawn), portal served from this worktree
+after `node build.mjs`, under the heavy lock. Absolute numbers move with
+machine load (the coordinator's run measured 30.5 fps with art and 52 fps
+without), so the before and after rows were taken in the same session.
+
+| Run | fps | p50 ms | p95 ms | frames > 50 ms | heap MiB |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| before, area art (CPU profile on) | 46.1 | 20.8 | 34.8 | 1 | 71 |
+| before, `?areaArt=0` | 100.9 | 7.0 | 14.0 | 0 | 28 |
+| after, area art (CPU profile on) | 123.9 | 7.0 | 13.9 | 1 | 39 |
+| after, area art (no profiler) | 103.9 | 7.0 | 20.8 | 1 | 48 |
+| after, `?areaArt=0` (no profiler) | 130.4 | 7.0 | 13.9 | 0 | 25 |
+
+The profile showed the cost was Pixi walking the scene graph, not our code:
+the camera moves the area-art root every frame, so Pixi recomputed the
+transform of every descendant (`updateTransformAndChildren` + `appendFrom`
+≈ 1.9 s of 9.3 s sampled), and the shared depth `RenderLayer` sorted every
+attached node — including ~480 closed-mass solids (≈ 3,000 nodes) that were
+merely `visible = false`. Fixes, all in the lazy chunk:
+
+- The ground container is its own render group, so moving the root no longer
+  re-walks terrain, roads, decals and fog.
+- Solids build lazily the first time they come into view, leave the scene
+  graph and the RenderLayer when they leave it, and are destroyed beyond two
+  views; their blocker ids are still claimed at bind so production never
+  draws a slab under them.
+- Residency and solid culling run only when the camera moves 48 units or the
+  zoom/view changes, against a view padded by that cell; props outside the
+  view are detached instead of hidden.
+- Fog is static on the phone tier; the binding reuses one camera object per
+  frame; terrain field bytes are released once uploaded.
+
+Visuals are unchanged: re-captured City highway, Woods camp and Ledger Ridge
+(desktop and phone) match the `final/` receipts apart from props added by
+the newer integration plans.
