@@ -313,8 +313,14 @@ test('only one boss lives at a time: a second court refuses while the first figh
 
 test('cover faces come from the ten-area cover-tall / cover-short blockers; markers from the greybox', () => {
   const coverBlockers = world.collisionBlockers.filter((blocker) => blocker.coverKind === 'tall' || blocker.coverKind === 'short');
-  assert.equal(coverBlockers.length, 31);
-  assert.equal(combat.coverFaces.length, 124);
+  const authoredCover = coverBlockers.filter((blocker) => !blocker.id.startsWith('prop-'));
+  assert.equal(authoredCover.length, 31);
+  assert.equal(combat.coverFaces.filter((face) => authoredCover.some((blocker) => blocker.id === face.blockerId)).length, 124);
+  // 2.1 collision-art: the vehicles, containers and hard barriers the area
+  // plans draw stand on prop colliders (dev/greybox-prop-blockers.mjs), and
+  // those are cover too.
+  assert.equal(coverBlockers.length - authoredCover.length, 113);
+  assert.equal(combat.coverFaces.length, 434);
   assert.ok(combat.coverFaces.every((face) => coverBlockers.some((blocker) => blocker.id === face.blockerId)));
   assert.deepEqual([...new Set(combat.coverFaces.map((face) => face.kind))].sort(), ['short', 'tall']);
   const markers = combat.traversalMarkers;

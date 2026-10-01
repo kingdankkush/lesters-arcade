@@ -13,6 +13,7 @@ import { authorFortressKit } from './greybox-fortress.mjs';
 import { authorWoodsKit } from './greybox-woods.mjs';
 import { authorBayouKit } from './greybox-bayou.mjs';
 import { authorRiverKit } from './greybox-river.mjs';
+import { authorPropBlockers } from './greybox-prop-blockers.mjs';
 const bounds = { minX: 0, minY: 0, maxX: 20000, maxY: 14000 };
 const areaSpecs = [
   ['mweb-meadows', 'MWEB Meadows', 12500, 6700, 1, 'relay-neighbourhood'],
@@ -82,6 +83,8 @@ export function createGreyboxWorld() {
     arenas.push(arena);
     arena.exits.forEach(exit=>sites.push({...exit,kind:'arena-exit',areaId:area.id,arenaId:arena.id,runtimeEffect:'none'}));
   }
+  // Colliders under the area plans' blocking prop cards (generated data).
+  authorPropBlockers(pieces);
   for (const road of roads) {
     for (const [areaId,point] of [[road.fromAreaId,road.points[0]],[road.toAreaId,road.points.at(-1)]]) {
       const id=`${road.id}-${areaId}-entrance`; byId.get(areaId).entranceIds.push(id); sites.push({id,kind:'entrance',areaId,roadId:road.id,...point,runtimeEffect:'none'});

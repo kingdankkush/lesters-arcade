@@ -33,7 +33,7 @@ export const CITY_BRAND_SLOTS = freezeDeep([
   { slot: 'junction-shelter', brand: 'Arkada', carrier: 'shelter', source: 'b2-53', x: 560, y: -180, height: 110 },
   { slot: 'river-street-shelter', brand: 'OmniHub', carrier: 'shelter', source: 'b2-53', x: -170, y: 560, height: 110 },
   { slot: 'plaza-stall-row', brand: 'Lester Labs', carrier: 'stall', source: 'b1-13', x: -260, y: 260, height: 120 },
-  { slot: 'plaza-kiosk-1', brand: 'LitVMSwap', carrier: 'kiosk', source: 'b1-20', x: 550, y: 1200, height: 90 },
+  { slot: 'plaza-kiosk-1', brand: 'LitVMSwap', carrier: 'kiosk', source: 'b1-20', x: 400, y: 1200, height: 90 }, // off the Liquidator's exchange floor (its collider would block the floor)
   { slot: 'plaza-kiosk-2', brand: 'Dappit', carrier: 'kiosk', source: 'b1-20', x: 560, y: 1460, height: 90 },
   { slot: 'plaza-kiosk-3', brand: 'Lit Clinic', carrier: 'kiosk', source: 'b1-20', x: 1460, y: 1500, height: 90 },
   { slot: 'plaza-kiosk-4', brand: 'Litescribe', carrier: 'kiosk', source: 'b1-20', x: 1500, y: 700, height: 90 },

@@ -56,8 +56,9 @@ export function placeEdgeWoodland(context, { key, sources, perSide = 23, drift =
     const support = context.supportAt(x, y);
     if (!support || support.visible.areaId) continue;
     const source = sources[(n + side) % sources.length];
-    context.prop(source, x, y, height(source, side, n, stableUnit(key, side, n)), { groundZ: support.visible.height, flip: n % 2 === 1, tint });
-    placed++;
+    // A footprint that reaches back over the area edge steps outward, deeper into the closed land.
+    const seat = side === 0 ? { x: -1, y: 0 } : side === 1 ? { x: 1, y: 0 } : side === 2 ? { x: 0, y: -1 } : { x: 0, y: 1 };
+    if (context.prop(source, x, y, height(source, side, n, stableUnit(key, side, n)), { groundZ: support.visible.height, flip: n % 2 === 1, tint, seat })) placed++;
   }
   return placed;
 }

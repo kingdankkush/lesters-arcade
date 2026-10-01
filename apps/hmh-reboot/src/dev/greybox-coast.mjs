@@ -13,7 +13,7 @@ export function authorCoastKit(area,{pieces,sites,arenas},roads){
   // These solids are rock faces, not simulated deep water or invisible beaches.
   polygon('headland-cliff','cliff',[[-1900,-1900],[-1200,-1900],[-850,-1300],[-1400,-700],[-1900,-500]],220);
   polygon('shore-cliff','cliff',[[-1900,-100],[-1500,-300],[-1200,400],[-1450,1300],[-1900,1700]],160);
-  polygon('lighthouse','mass',[[-700,-1610],[-610,-1700],[-490,-1700],[-400,-1610],[-400,-1490],[-490,-1400],[-610,-1400],[-700,-1490]],440);
+  polygon('lighthouse','mass',[[-750,-1805],[-720,-1835],[-400,-1835],[-370,-1805],[-370,-1430],[-400,-1400],[-720,-1400],[-750,-1430]],440);
   // A roof-free wall shell makes the secret physically interior. South entry
   // faces the road; a separate west door returns toward the coastal shelf.
   add('mansion-north-wall','mass',1100,-1400,1280,80,280);
@@ -24,7 +24,7 @@ export function authorCoastKit(area,{pieces,sites,arenas},roads){
   add('mansion-west-south-wall','mass',500,-515,80,430,280);
   add('utility-house','mass',950,600,400,300,190);
   add('terrace-wall','cover-tall',-500,800,120,300,128);
-  add('terrace-bench','cover-short',900,950,180,70,48);
+  add('terrace-bench','cover-short',900,905,180,160,48);
   add('overlook-ramp','ramp',-675,-450,350,300,0,{fromZ:24,toZ:0,priority:40});
   add('overlook-deck','deck',-1050,-450,400,300,24,{visibleStepId:true,priority:41});
   add('climb-intent','climb-marker',-1250,-450,40,120,24);

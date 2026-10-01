@@ -75,7 +75,7 @@ export const WORLD_V2_AREA_ART_HOOKS = Object.freeze({
 });
 export const WORLD_V2_ROAD_ART_HOOK = Object.freeze({ kind: 'area-art-plan', planId: 'world-roads', load: () => import('./world-v2-area-plans/world-roads.mjs').then((module) => module.createWorldRoadsArtPlan) });
 
-const PIECE_VISUAL_KIND = Object.freeze({ mass: 'building', cliff: 'cliff', 'cover-tall': 'containers', 'cover-short': 'fence' });
+const PIECE_VISUAL_KIND = Object.freeze({ mass: 'building', cliff: 'cliff', 'cover-tall': 'containers', 'cover-short': 'fence', 'prop-solid': 'machinery' });
 const ROAD_ROUTE_KIND = Object.freeze({ paved: 'main', gravel: 'street', path: 'loop' });
 
 const point = (x, y) => Object.freeze({ x, y });
