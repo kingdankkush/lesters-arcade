@@ -140,9 +140,11 @@ test('the child bridge validates its outgoing summary with the v7 validator; the
   assert.ok(main.includes("validateRunSummary: (payload) => summaryV7?.validateRunSummaryV7(payload) ?? 'run summary schema 7 is not loaded',"));
   assert.ok(main.includes('schemaVersion: summaryV7.RUN_SUMMARY_SCHEMA_VERSION,'));
   assert.ok(main.includes('v7: summaryV7.runSummaryV7Rows({ mission: missionState, bossSlots, progression: runProgression }),'));
+  // 2.1.0: the portal bridge and history read the schema 1-8 module, which
+  // answers schema 1-7 exactly as the v7 module (server-verify-hmh-v8.test.mjs).
   const portal = readFileSync(new URL('../apps/portal/src/hmh-reboot-bridge.mjs', import.meta.url), 'utf8');
-  assert.ok(portal.includes("import { validateRunSummaryPayload as validateRunSummary } from '../../../sdk/hmh-run-summary-schema-v7.mjs';"));
+  assert.ok(portal.includes("import { validateRunSummaryPayload as validateRunSummary } from '../../../sdk/hmh-run-summary-schema-v8.mjs';"));
   assert.ok(portal.includes('validateChildMessage(event.data, { validateRunSummary })'));
   const history = readFileSync(new URL('../apps/portal/src/hmh-run-history.mjs', import.meta.url), 'utf8');
-  assert.ok(history.includes("from '../../../sdk/hmh-run-summary-schema-v7.mjs';"));
+  assert.ok(history.includes("from '../../../sdk/hmh-run-summary-schema-v8.mjs';"));
 });

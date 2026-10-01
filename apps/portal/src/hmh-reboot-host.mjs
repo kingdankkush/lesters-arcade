@@ -1,8 +1,13 @@
 import { createHmhParentBridge } from './hmh-reboot-bridge.mjs';
 
-// The only world the host can request for the child, and the child's query
-// key for it (world-context.mjs HMH_WORLD_PARAM / TEN_AREA_WORLD_VALUE).
+// The worlds the host can request for the child, and the child's query key
+// for them (world-context.mjs HMH_WORLD_PARAM, TEN_AREA_WORLD_VALUE and
+// LEGACY_WORLD_VALUE): the 2.0.x New Frontier preview (`ten-area`), and from
+// game 2.1.0, where the ten-area world is Level 1 by default, the original
+// map for Free only (`legacy`). With no request the child runs its default.
 export const HMH_FRONTIER_PREVIEW_WORLD = 'ten-area';
+export const HMH_ORIGINAL_MAP_WORLD = 'legacy';
+const HMH_REQUESTABLE_WORLDS = Object.freeze([HMH_FRONTIER_PREVIEW_WORLD, HMH_ORIGINAL_MAP_WORLD]);
 const HMH_FRONTIER_PREVIEW_WORLD_PARAM = 'world';
 
 function normalizeOrigin(value) {
@@ -37,17 +42,18 @@ export function createHmhRebootHost({
   const runtimeParams = new URLSearchParams();
   if (requestedRuntimeParams.get('evidenceSafe') === '1') runtimeParams.set('evidenceSafe', '1');
   if (runtimeParams.has('evidenceSafe') && requestedRuntimeParams.get('terminalPilot') === '1') runtimeParams.set('terminalPilot', '1');
-  // The New Frontier preview (W4a ten-area world) is an explicit Free-only
-  // request from the portal's mode select, never a portal URL. The child
-  // selects it only from exactly one `mode=free` plus one `world=ten-area`
-  // (apps/hmh-reboot/src/world-context.mjs), and this host adds that pair
-  // only for a Free session whose payload is already unranked. A Ranked or
-  // rankedEligible session gets the legacy world whatever was requested.
+  // A world request (the New Frontier preview, or the original map from
+  // 2.1.0) is an explicit Free-only request from the portal's mode select,
+  // never a portal URL. The child honours it only from exactly one
+  // `mode=free` plus one `world=` value (apps/hmh-reboot/src/world-context.mjs),
+  // and this host adds that pair only for a Free session whose payload is
+  // already unranked. A Ranked or rankedEligible session gets the child's
+  // default world whatever was requested.
   const childUrl = (session, world) => {
     const params = new URLSearchParams(runtimeParams);
-    if (world === HMH_FRONTIER_PREVIEW_WORLD && session.mode === 'free' && session.session?.rankedEligible === false) {
+    if (HMH_REQUESTABLE_WORLDS.includes(world) && session.mode === 'free' && session.session?.rankedEligible === false) {
       params.set('mode', 'free');
-      params.set(HMH_FRONTIER_PREVIEW_WORLD_PARAM, HMH_FRONTIER_PREVIEW_WORLD);
+      params.set(HMH_FRONTIER_PREVIEW_WORLD_PARAM, world);
     }
     return `${origin}/hmh-reboot/index.html${params.size > 0 ? `?${params}` : ''}`;
   };
@@ -134,7 +140,8 @@ export function createHmhRebootHost({
     iframe.className = 'hmh-reboot-frame';
     iframe.title = 'Hard Money Heroes reboot runtime';
     iframe.src = childUrl(session, world);
-    if (new URL(iframe.src).searchParams.get(HMH_FRONTIER_PREVIEW_WORLD_PARAM) === HMH_FRONTIER_PREVIEW_WORLD) iframe.dataset.world = HMH_FRONTIER_PREVIEW_WORLD;
+    const forwardedWorld = new URL(iframe.src).searchParams.get(HMH_FRONTIER_PREVIEW_WORLD_PARAM);
+    if (HMH_REQUESTABLE_WORLDS.includes(forwardedWorld)) iframe.dataset.world = forwardedWorld;
     iframe.loading = 'eager';
     iframe.referrerPolicy = 'same-origin';
     iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-pointer-lock');
