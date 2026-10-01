@@ -31,6 +31,8 @@ const NODE_CHECK_FILES = [
   'tests/hmh-feel-hitstop.test.mjs',
   'apps/hmh-reboot/src/damage-numbers.mjs',
   'tests/hmh-feel-damage-numbers.test.mjs',
+  'apps/portal/src/feel/texture-prewarm.mjs',
+  'tests/hmh-feel-alloc-prewarm.test.mjs',
   'apps/chikun/src/course-v2-art.mjs',
   'apps/chikun/src/course-v2-view.mjs',
   'tests/chikun-course-two-art.test.mjs',

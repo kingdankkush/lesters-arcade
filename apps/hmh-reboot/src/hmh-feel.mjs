@@ -60,9 +60,10 @@ export function createHmhFeel({ pixi = null } = {}) {
   const hitstop = createHitstop({ maxPerSecond: HMH_HITSTOP_MAX_PER_SECOND });
   const damage = createDamageNumberModel();
   let damageView = null;
+  let atlas = null;
   if (pixi) {
     try {
-      const atlas = createDamageGlyphAtlas(pixi);
+      atlas = createDamageGlyphAtlas(pixi);
       if (atlas) damageView = createDamageNumberView({ model: damage, atlas, ContainerClass: pixi.ContainerClass, SpriteClass: pixi.SpriteClass });
     } catch {
       damageView = null;
@@ -73,6 +74,8 @@ export function createHmhFeel({ pixi = null } = {}) {
     hitstop,
     damage,
     damageLayer: damageView?.layer ?? null,
+    // The glyph atlas, for the GPU prewarm (§2.9).
+    damageTexture: damageView ? atlas.base : null,
     // One enemy damage event, called from the step callback after the
     // simulation resolved it. Primitive copies only; nothing is written back.
     // `numbers` is the damage-number setting; `tick` the event's tick.

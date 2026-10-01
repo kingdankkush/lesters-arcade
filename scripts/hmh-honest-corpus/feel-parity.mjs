@@ -53,14 +53,16 @@ const result = await runChild({
     reduceMotion: false,
     reduceFlash: false,
     screenShake: spec.screenShake ?? true,
-    hitstop: spec.hitstop !== false,
+    // Omitted keys leave the child's own defaults (and keep the probe valid
+    // against an older child whose bridge has no feel settings).
+    ...(spec.hitstop === undefined ? {} : { hitstop: spec.hitstop !== false }),
     ...(spec.damageNumbers === undefined ? {} : { damageNumbers: spec.damageNumbers }),
   },
 });
 const dataset = globalThis.document?.querySelector?.('#hmhRebootStage')?.dataset ?? {};
 const evidence = result.outbox.map((entry) => ({ tick: entry.tick, valid: entry.valid, message: entry.message }));
 process.stdout.write(`${JSON.stringify({
-  spec: { seed, tickCap, hitstop: spec.hitstop !== false, damageNumbers: spec.damageNumbers ?? null },
+  spec: { seed, tickCap, hitstop: spec.hitstop ?? null, damageNumbers: spec.damageNumbers ?? null },
   finalTick: result.tick,
   finalState: result.state,
   errors: result.errors.map((error) => `${error.where}: ${String(error.message).slice(0, 400)}`),

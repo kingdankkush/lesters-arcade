@@ -10,6 +10,7 @@ import { stepWorldExplosions } from './world-explosives.mjs';
 import { createStartupArtGate } from './startup-art.mjs';
 import { Application, Assets, Container, Graphics, Rectangle, RenderLayer, Sprite, Text, Texture, TilingSprite } from 'pixi.js';
 import { deterministicUnit } from './deterministic-hash.mjs';
+import { prewarmTexture, prewarmTextures } from '../../portal/src/feel/texture-prewarm.mjs';
 import { WORLD_DESIGN_SITE_PROPS, WORLD_DESIGN_ORCHARD } from './world-design-encounters.mjs';
 import { WORLD_ENVIRONMENT_WEAPON_IDS, worldHazardField, buildWorldHazardHits, withholdLethalHazardHits } from './world-hazards.mjs';
 import { createCorpseClock, corpsePresentation, pruneCorpseCapacity } from './corpse-presentation.mjs';
@@ -1278,6 +1279,9 @@ async function boot() {
 
   const enemyRosterIndexes = new Map();
   const enemyRosterTextures = new Map();
+  // 2.1 (§2.9): GPU sources already uploaded by the prewarm, so a late atlas
+  // (the boss) is uploaded once, on load, before its first draw.
+  const prewarmedSources = new WeakSet();
   const enemyRosterRequested = new Set();
   const enemyRosterFailed = new Set();
   let enemyRosterLoadError = null;
@@ -1311,6 +1315,7 @@ async function boot() {
       }).destroy({ children: true });
       enemyRosterIndexes.set(archetypeId, index);
       enemyRosterTextures.set(archetypeId, texture);
+      prewarmTexture(app.renderer, texture, prewarmedSources);
       // Rebuild live bodies so the authored art appears without a restart.
       syncEnemyMarkers(grayboxEnemies, true);
       if (archetypeId === 'the-liquidator') {
@@ -1894,6 +1899,7 @@ async function boot() {
     // Damage numbers sit on the stage under the HUD overlay, offset by the
     // world shake like the health pips.
     if (hmhFeel.damageLayer) app.stage.addChildAt(hmhFeel.damageLayer, app.stage.getChildIndex(overlayVisuals));
+    prewarmTexture(app.renderer, hmhFeel.damageTexture, prewarmedSources);
     dataset.damageNumbersView = hmhFeel.damageLayer ? 'ready' : 'unavailable';
   }).catch(() => { dataset.feelStatus = 'unavailable'; });
   // Damage-number projection: one scratch point, the frame's viewport.
@@ -5943,7 +5949,13 @@ async function boot() {
         progress?.setAttribute('aria-valuenow', String(percent));
         if (progress?.firstElementChild) progress.firstElementChild.style.width = `${percent}%`;
         startupPanel.setAttribute('aria-busy', String(!ready));
-        if (ready && entryButton.disabled) { renderWorld(); entryButton.focus({preventScroll:true}); }
+        if (ready && entryButton.disabled) {
+          renderWorld();
+          // 2.1 (§2.9): upload every loaded enemy atlas before the player
+          // enters. Textures only: no display object, no actor is created.
+          dataset.texturePrewarm = String(prewarmTextures(app.renderer, enemyRosterTextures.values(), prewarmedSources));
+          entryButton.focus({preventScroll:true});
+        }
         entryButton.disabled = !ready;
         entryButton.textContent = ready ? 'Enter Level 1' : 'Preparing Level 1…';
         if (ready && startupCopy) startupCopy.textContent = 'Ready when you are. Take a moment to plan your run.';
@@ -5982,7 +5994,10 @@ async function boot() {
       for (const id of ['whale-enforcer', 'gas-bomber', 'validator-cultist']) requestEnemyRosterAtlas(id);
     }
     const nowMs = performance.now();
-    const gamepad = [...(navigator.getGamepads?.() ?? [])].find(Boolean);
+    // 2.1 (§2.8): first connected pad without spreading the list every frame.
+    const gamepads = navigator.getGamepads?.() ?? null;
+    let gamepad = null;
+    if (gamepads) for (let index = 0; index < gamepads.length; index += 1) if (gamepads[index]) { gamepad = gamepads[index]; break; }
     if (gamepad) {
       const mapped = mapGamepadSnapshot(gamepad, {
         deadzone: settings.gamepadDeadzone ?? 0.2,

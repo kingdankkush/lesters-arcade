@@ -185,7 +185,10 @@ test('sprite pooling reuses sprites, excludes the mask, and hides stale ones', a
   const source = await readFile(new URL('../apps/hmh-reboot/src/world-production-art.mjs', import.meta.url), 'utf8');
   // The road container holds its mask at child 0. Indexing raw children hid
   // the sprite that had just been placed.
-  assert.match(source, /const poolable = \(\) => container\.children\.filter\(\(child\) => child\.label !== 'world-road-mask' && child\.label !== 'world-path-mask'\)/);
+  // 2.1 (§2.8): the filtered view is cached per container (poolableSprites)
+  // instead of re-filtered on every place(); the mask exclusion is unchanged.
+  assert.match(source, /const sprites = children\.filter\(\(child\) => child\.label !== 'world-road-mask' && child\.label !== 'world-path-mask'\)/);
+  assert.match(source, /const poolable = \(\) => poolableSprites\(container\);/);
   assert.match(source, /let sprite = poolable\(\)\[cursor\]/, 'placement must index the filtered pool');
   const finishBlock = source.slice(source.indexOf('    finish() {'), source.indexOf('    finish() {') + 260);
   assert.ok(finishBlock.includes('poolable()'), 'finish must hide over the same filtered view');
