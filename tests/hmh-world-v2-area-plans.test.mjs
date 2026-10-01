@@ -2,13 +2,15 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { createGreyboxWorld } from '../apps/hmh-reboot/src/dev/greybox-world-v1.mjs';
-import { validateAreaArtPlan, pointInPolygon, distanceToPolyline, distanceToSegment, resolveKitItem, AREA_ART_SHARED_KIT_PAGES } from '../apps/hmh-reboot/src/world-v2-area-art-schema.mjs';
+import { validateAreaArtPlan, assertDecorativeTint, pointInPolygon, distanceToPolyline, distanceToSegment, resolveKitItem, AREA_ART_SHARED_KIT_PAGES } from '../apps/hmh-reboot/src/world-v2-area-art-schema.mjs';
 import { createRugpullWoodsArtPlan, RUGPULL_WOODS_PAGES } from '../apps/hmh-reboot/src/world-v2-area-plans/rugpull-woods.mjs';
 import { createMwebMeadowsArtPlan, MWEB_MEADOWS_PAGES } from '../apps/hmh-reboot/src/world-v2-area-plans/mweb-meadows.mjs';
 import { createWorldRoadsArtPlan, ROAD_CLEARANCE_FRACTION } from '../apps/hmh-reboot/src/world-v2-area-plans/world-roads.mjs';
 // Lane B area plans (briefs 06-09).
 import { createHashwoodRiverArtPlan, HASHWOOD_RIVER_PAGES, RIVER_STONE_TINT } from '../apps/hmh-reboot/src/world-v2-area-plans/hashwood-river.mjs';
 import { createHalvingFarmsArtPlan, HALVING_FARMS_PAGES } from '../apps/hmh-reboot/src/world-v2-area-plans/halving-farms.mjs';
+import { createLitecoinCityArtPlan, LITECOIN_CITY_PAGES } from '../apps/hmh-reboot/src/world-v2-area-plans/litecoin-city.mjs';
+import { CITY_BRAND_SLOTS, CITY_BRANDS, CITY_SIGN_PREFIX, CITY_SIGN_STYLE, signForProp, signForPiece } from '../apps/hmh-reboot/src/world-v2-area-plans/city-branding.mjs';
 
 const kit = JSON.parse(fs.readFileSync(new URL('../apps/portal/assets/generated/hmh-reboot-tripo-props-hd/hmh-tripo-props-hd.json', import.meta.url), 'utf8'));
 const world = createGreyboxWorld(), worldBefore = JSON.stringify(world);
@@ -18,8 +20,32 @@ const areaPieceIds = areaId => world.pieces.filter(p => p.visible.areaId === are
 const routeSegments = areaId => world.areas.find(a => a.id === areaId).inspectionRoutes.flatMap(route => route.points.slice(1).map((b, i) => ({ a: route.points[i], b })));
 const sites = areaId => world.sites.filter(s => s.areaId === areaId && ['objective', 'arena-exit', 'secret', 'height-option', 'area'].includes(s.kind));
 
+// Shared lane-A clearance proof: every ground-standing prop is inside the area,
+// outside blockers and water, off inspection routes, roads, sites and spawn;
+// every lifted prop roots on a blocker of exactly its groundZ.
+function assertAreaPlacements(areaId, summary, { routeClearance = 64, siteClearance = 140 } = {}) {
+  const area = world.areas.find(a => a.id === areaId), segments = routeSegments(areaId), water = world.pieces.filter(p => p.kind === 'water');
+  const guarded = world.sites.filter(s => s.areaId === areaId && ['objective', 'arena-exit', 'entrance', 'secret', 'height-option', 'area'].includes(s.kind));
+  const inside = (x, y) => x >= area.bounds.minX && x <= area.bounds.maxX && y >= area.bounds.minY && y <= area.bounds.maxY;
+  for (const prop of summary.props) {
+    const support = inSolid(prop.x, prop.y);
+    if (prop.groundZ > 0) { assert.ok(support && support.visible.height === prop.groundZ, `${prop.id} roots on a support of matching height`); continue; }
+    assert.ok(inside(prop.x, prop.y), `${prop.id} inside ${areaId}`);
+    assert.equal(support, null, `${prop.id} outside blockers`);
+    for (const w of water) assert.ok(!pointInPolygon(prop.x, prop.y, w.visible.vertices), `${prop.id} out of the water`);
+    for (const { a, b } of segments) assert.ok(distanceToSegment(prop.x, prop.y, a, b) >= routeClearance, `${prop.id} clears inspection routes`);
+    for (const road of world.roads) assert.ok(distanceToPolyline(prop.x, prop.y, road.points) >= road.width / 2, `${prop.id} clears ${road.id}`);
+    for (const site of guarded) assert.ok(Math.hypot(site.x - prop.x, site.y - prop.y) >= siteClearance, `${prop.id} clears ${site.id}`);
+    assert.ok(Math.hypot(prop.x - world.spawn.x, prop.y - world.spawn.y) >= world.protectedSpawnRadius, `${prop.id} clears spawn`);
+  }
+  for (const zone of summary.zones) for (const v of zone.vertices) assert.ok(inside(v.x, v.y), `${zone.id} inside ${areaId}`);
+  assert.ok(summary.terrain, `${areaId} carries the district terrain`);
+  assert.ok(summary.budget.exclusiveKitPages <= 2 && summary.budget.kitPages <= 3, `${areaId} page budget`);
+  assert.ok(summary.tiles.length <= 5 && summary.budget.tileDecodedBytes <= 8 * 1024 * 1024, `${areaId} ground pages ${summary.tiles.join(',')}`);
+}
+
 test('every authored plan validates against the HD kit, is deterministic and leaves the world untouched', () => {
-  for (const [make, expected] of [[createRugpullWoodsArtPlan, 'rugpull-woods'], [createMwebMeadowsArtPlan, 'mweb-meadows'], [createWorldRoadsArtPlan, 'world-roads'], [createHashwoodRiverArtPlan, 'hashwood-river'], [createHalvingFarmsArtPlan, 'halving-farms']]) {
+  for (const [make, expected] of [[createRugpullWoodsArtPlan, 'rugpull-woods'], [createMwebMeadowsArtPlan, 'mweb-meadows'], [createWorldRoadsArtPlan, 'world-roads'], [createHashwoodRiverArtPlan, 'hashwood-river'], [createHalvingFarmsArtPlan, 'halving-farms'], [createLitecoinCityArtPlan, 'litecoin-city']]) {
     const plan = make(world), again = make(createGreyboxWorld());
     assert.equal(plan.areaId, expected);
     assert.ok(Object.isFrozen(plan) && Object.isFrozen(plan.props));
@@ -34,6 +60,7 @@ test('every authored plan validates against the HD kit, is deterministic and lea
   assert.equal(createMwebMeadowsArtPlan({ ...world, areas: [] }), null);
   assert.equal(createHashwoodRiverArtPlan({ ...world, areas: [] }), null);
   assert.equal(createHalvingFarmsArtPlan({ ...world, areas: [] }), null);
+  assert.equal(createLitecoinCityArtPlan({ ...world, areas: [] }), null);
 });
 
 test('Rugpull Woods roots trees on matching-height banks, keeps understory off trails and dresses every camp solid with HD cards', () => {
@@ -138,6 +165,45 @@ test('Halving Farms follows brief 03: furrowed crop fields, hedgerow and picket 
   for (const decal of summary.decals) { assert.equal(inSolid(decal.x, decal.y), null); for (const { a, b } of segments) assert.ok(distanceToSegment(decal.x, decal.y, a, b) >= 64); }
   for (const zone of summary.zones) for (const v of zone.vertices) assert.ok(v.x >= farms.bounds.minX && v.x <= farms.bounds.maxX && v.y >= farms.bounds.minY && v.y <= farms.bounds.maxY, zone.id);
   assert.ok(summary.zones.filter(z => z.id.startsWith('field-')).length === 4 && summary.zones.some(z => z.id === 'working-yard' && z.material === 'earth'));
+});
+
+test('Litecoin City follows brief 02: asphalt streets, a stone exchange plaza, a skyline cluster on the north roof, kerb furniture and wrecks, and nineteen name-only brand sign slots', () => {
+  const plan = createLitecoinCityArtPlan(world), summary = validateAreaArtPlan(plan, kit), city = world.areas.find(a => a.id === 'litecoin-city');
+  assert.deepEqual(plan.pages, LITECOIN_CITY_PAGES);
+  assertAreaPlacements('litecoin-city', summary);
+  assert.deepEqual(summary.zones.filter(z => z.material === 'asphalt').map(z => z.id), ['high-street', 'river-street']);
+  assert.ok(summary.zones.some(z => z.id === 'exchange-plaza' && z.material === 'masonry') && summary.zones.some(z => z.id === 'service-lane' && z.material === 'gravel'));
+  const byPiece = Object.fromEntries(summary.solids.map(s => [s.pieceId.slice('litecoin-city-'.length), s]));
+  assert.equal(byPiece['market-block'].card.source, 'b1-51');
+  for (const name of ['north-commercial-block', 'exchange', 'river-housing']) { assert.equal(byPiece[name].style, 'mass'); assert.equal(byPiece[name].wall, 'masonry'); assert.equal(byPiece[name].roof, 'slate'); }
+  assert.equal(byPiece['plaza-wall'].card.source, 'b2-49'); assert.equal(byPiece['river-service-shed'].card.source, 'b2-68');
+  assert.equal(byPiece['gantry-deck'], undefined, 'the gantry deck keeps its greybox paint');
+  // Skyline: the tallest cards in the plan stand on the north commercial roof.
+  const north = world.pieces.find(p => p.id === 'litecoin-city-north-commercial-block');
+  const roofTowers = summary.props.filter(p => p.groundZ === north.visible.height && pointInPolygon(p.x, p.y, north.blocker.shape.vertices));
+  assert.ok(roofTowers.length >= 8 && roofTowers.every(p => ['b1-12', 'b1-52', 'b1-56'].includes(p.source)), `${roofTowers.length} roof towers`);
+  const top = p => p.groundZ + p.height, tallest = Math.max(...summary.props.map(top));
+  assert.ok(roofTowers.some(p => top(p) === tallest) && tallest >= 950, `skyline peaks at ${tallest}`);
+  const edge = summary.props.filter(p => p.groundZ > 0 && !inSolid(p.x, p.y).visible.areaId);
+  assert.ok(edge.length >= 20 && edge.every(p => p.y <= city.bounds.maxY), `${edge.length} edge buildings, none on the south band where they would rise over the exchange`);
+  // Street furniture.
+  for (const source of ['b2-52', 'b2-51', 'b2-53', 'b2-49', 'b1-19', 'b1-20', 'b1-13', 'b2-54', 'b2-56', 'b2-58']) assert.ok(summary.props.some(p => p.source === source), source);
+  assert.ok(summary.props.filter(p => p.height < 150 && p.groundZ === 0).length >= 50, 'kerb density');
+  const objective = world.sites.find(s => s.id === 'litecoin-city-objective'), plaza = world.encounterArenas?.find?.(a => a.id === 'litecoin-city-court') ?? { center: { x: city.center.x + 1000, y: city.center.y + 1000 } };
+  assert.ok(summary.props.filter(p => p.groundZ === 0 && Math.hypot(p.x - plaza.center.x, p.y - plaza.center.y) < 350).length === 0, 'the Liquidator plaza centre stays open');
+  assert.ok(summary.trails.some(t => t.material === 'paving' && t.width === 120 && t.points.some(p => p.x === objective.x && p.y === objective.y)), 'a strong approach axis to the bell');
+  // Branding: the slot file names every brand once, names only, and every carrier exists.
+  assert.deepEqual([...CITY_BRANDS].sort(), ['Arkada', 'Canary Capital', 'Dappit', 'Drunken Cats', 'Grayscale', 'Lester Labs', "Lester's Arcade", 'Lit Clinic', 'LitVM', 'LitVMSwap', 'LiteForge', 'Lite Strategy', 'Litecoin', 'Litescribe', 'Luxxfolio', 'MidasPredict', 'OmniHub', 'OnChainGM', 'WheelX'].sort());
+  assert.equal(CITY_SIGN_STYLE.logos, false);
+  assertDecorativeTint(CITY_SIGN_STYLE.panel, 'sign panel'); assertDecorativeTint(CITY_SIGN_STYLE.text, 'sign text');
+  for (const slot of CITY_BRAND_SLOTS) {
+    if (slot.pieceId) { assert.ok(summary.solids.some(s => s.pieceId === slot.pieceId), slot.slot); assert.equal(signForPiece(slot.pieceId).text, slot.brand); continue; }
+    const carrier = summary.props.find(p => p.id === `${CITY_SIGN_PREFIX}${slot.slot}`);
+    assert.ok(carrier && carrier.source === slot.source, `${slot.slot} carrier stands`);
+    assert.equal(signForProp(carrier.id).text, slot.brand);
+  }
+  assert.equal(signForProp('litecoin-city-art-0'), null);
+  assert.ok(!summary.sources.some(source => resolveKitItem(kit, source).class === 'plants'), 'City loads no foliage page');
 });
 
 test('the world roads plan ribbons all fourteen authored roads by kind and keeps road-side props on the shoulders', () => {
