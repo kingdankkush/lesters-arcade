@@ -352,6 +352,11 @@ export function createAreaArt({ world, areaId, plan, kit = null, loadTexture, te
   const waterPieces = (world.pieces ?? []).filter(piece => piece.kind === 'water' && piece.visible?.areaId === areaId);
   const raisedPieces = (world.pieces ?? []).filter(piece => piece.visible?.areaId === areaId && isRaisedPiece(piece));
   const waterBodies = [], waterMeshes = [];
+  // Water and raised-surface nodes with their world boxes: hidden while off
+  // view so the ground pass never issues their draw calls (one custom shader
+  // each) for the other side of the world.
+  const surfaceNodes = [];
+  const trackSurface = (node, b) => { surfaceNodes.push({ node, b }); return node; };
   let waterFrame = 0, waterStatic = true, occlusion = null;
   const tileFile = (tile, suffix = '') => ratio === 0.5 ? `${tile}${suffix}@0.5x.webp` : `${tile}${suffix}.png`;
   const acquire = async url => { const texture = await cache.acquire(url); owned.push(url); if (disposed) { cache.release(url); owned.pop(); return null; } return texture; };
@@ -668,7 +673,7 @@ export function createAreaArt({ world, areaId, plan, kit = null, loadTexture, te
     const f = body.field, p = body.palette, glProgram = body.texture ? programFor('water') : null;
     if (!glProgram) {
       const g = new Graphics(); g.poly(waterOutline(body.piece).flatMap(v => [v.x, v.y])).fill({ color: p.deep }); g.label = `area-water-${body.piece.id}`;
-      target.addChild(g); painted.push(g); return g;
+      target.addChild(trackSurface(g, f)); painted.push(g); return g;
     }
     const flow = Math.hypot(p.flow.x, p.flow.y) || 1, fx = p.flow.x / flow, fy = p.flow.y / flow, k = p.flow.speed / 88;
     const uniforms = {
@@ -682,7 +687,7 @@ export function createAreaArt({ world, areaId, plan, kit = null, loadTexture, te
     const geometry = new Geometry({ attributes: { aPosition: { buffer: new Float32Array([f.minX, f.minY, f.maxX, f.minY, f.maxX, f.maxY, f.minX, f.maxY]), format: 'float32x2' } }, indexBuffer: new Uint16Array([0, 1, 2, 0, 2, 3]) });
     const mesh = new Mesh({ geometry, shader: new Shader({ glProgram, resources: { waterUniforms: group, uShore: body.texture.source, uShoreSampler: body.texture.source.style } }), texture: body.texture });
     mesh.label = `area-water-${body.piece.id}`;
-    target.addChild(mesh); painted.push(mesh); waterMeshes.push(group);
+    target.addChild(trackSurface(mesh, f)); painted.push(mesh); waterMeshes.push(group);
     return mesh;
   }
   function raisedMesh(record) {
@@ -710,12 +715,12 @@ export function createAreaArt({ world, areaId, plan, kit = null, loadTexture, te
     return mesh;
   }
   function paintRaised(target, record) {
-    const kit = RAISED_KITS[record.kit];
+    const kit = RAISED_KITS[record.kit], rb = record.bounds, box = { minX: rb.minX - 40, minY: rb.minY - record.maxZ - 40, maxX: rb.maxX + record.maxZ + 40, maxY: rb.maxY + record.maxZ + 40 };
     if (record.shadow) {
       const g = new Graphics(), soft = offsetPolygon(record.shadow, 8);
       g.poly(soft.flatMap(p => [p.x, p.y])).fill({ color: SHADOW_TINT, alpha: 0.14 });
       g.poly(record.shadow.flatMap(p => [p.x, p.y])).fill({ color: SHADOW_TINT, alpha: 0.24 });
-      g.label = `area-raised-shadow-${record.id}`; target.addChild(g); painted.push(g);
+      g.label = `area-raised-shadow-${record.id}`; target.addChild(trackSurface(g, box)); painted.push(g);
     }
     let top = raisedMesh(record);
     if (!top) {
@@ -725,7 +730,7 @@ export function createAreaArt({ world, areaId, plan, kit = null, loadTexture, te
       for (const face of record.faces) materialFill(top, [{ x: face.a.x, y: face.a.y - face.a.z }, { x: face.c.x, y: face.c.y - face.c.z }, { x: face.c.x, y: face.c.y }, { x: face.a.x, y: face.a.y }], kit.material, { tint: 0xa0a0a0 });
       top.label = `area-raised-${record.id}`;
     }
-    target.addChild(top); painted.push(top);
+    target.addChild(trackSurface(top, box)); painted.push(top);
     if (record.rails.length) {
       const g = new Graphics(), step = 62;
       for (const rail of record.rails) {
@@ -744,7 +749,7 @@ export function createAreaArt({ world, areaId, plan, kit = null, loadTexture, te
         g.moveTo(ax, ay - 16).lineTo(cx, cy - 16).stroke({ color: kit.rail, width: 4 });
         g.moveTo(ax, ay - 17.5).lineTo(cx, cy - 17.5).stroke({ color: 0xd8d5c6, width: 1.5, alpha: 0.28 });
       }
-      g.label = `area-raised-rails-${record.id}`; target.addChild(g); painted.push(g);
+      g.label = `area-raised-rails-${record.id}`; target.addChild(trackSurface(g, box)); painted.push(g);
     }
   }
   function paintSurfaces(target) {
@@ -1096,6 +1101,10 @@ export function createAreaArt({ world, areaId, plan, kit = null, loadTexture, te
       gateX = camera.x; gateY = camera.y; gateZoom = zoom; gateW = view.width; gateH = view.height;
       paddedView.width = view.width + 2 * GATE * zoom; paddedView.height = view.height + 2 * GATE * zoom;
       gateVisible = residency.update({ camera, view: paddedView });
+      if (surfaceNodes.length) {
+        const hw = view.width / 2 / zoom + 120 + GATE, hh = view.height / 2 / zoom + 120 + GATE;
+        for (const { node, b } of surfaceNodes) { const on = !(b.maxX < camera.x - hw || b.minX > camera.x + hw || b.maxY < camera.y - hh || b.minY > camera.y + hh); if (node.visible !== on) node.visible = on; }
+      }
       if (solidRecords.length) {
         const hw = view.width / 2 / zoom + 120 + GATE, hh = view.height / 2 / zoom + 120 + GATE;
         const minX = camera.x - hw, maxX = camera.x + hw, minY = camera.y - hh, maxY = camera.y + hh;
@@ -1137,7 +1146,7 @@ export function createAreaArt({ world, areaId, plan, kit = null, loadTexture, te
     for (const entry of frames.values()) entry.texture.destroy(false); frames.clear(); live.clear();
     for (const url of owned) cache.release(url); owned.length = 0; tiles.clear(); overlays.clear(); pageTextures.clear(); detailTexture = null;
     for (const texture of signTextures.values()) { try { texture?.destroy(true); } catch {} } signTextures.clear(); fogCards.length = 0; try { fogTexture?.destroy(true); } catch {} fogTexture = null;
-    for (const body of waterBodies) { try { body.texture?.destroy(true); } catch {} } waterBodies.length = 0; waterMeshes.length = 0;
+    for (const body of waterBodies) { try { body.texture?.destroy(true); } catch {} } waterBodies.length = 0; waterMeshes.length = 0; surfaceNodes.length = 0;
     try { controlTexture?.control.destroy(true); if (controlTexture && controlTexture.light !== controlTexture.control) controlTexture.light.destroy(true); } catch {} controlTexture = null; terrainMesh = null;
     if (ownsCache) cache.dispose();
   }

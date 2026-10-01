@@ -428,3 +428,20 @@ test('the sliced terrain field build yields between row slices and produces the 
   const aborted = new AbortController(); aborted.abort();
   assert.equal(await buildTerrainFieldAsync({ summary, world, size: 64 }, { rowsPerStep: 8, pause: async () => {}, signal: aborted.signal }), null, 'an aborted bind stops building');
 });
+
+test('water and raised-surface nodes leave the draw list while they are off view', async () => {
+  const cache = createAreaArtTextureCache({ loadTexture: loader([]) });
+  const art = createAreaArt({ world, areaId: 'hashwood-river', plan: createDistrictTerrainArtPlan(world, 'hashwood-river'), kit, textureCache: cache, terrainFieldSize: 16, createControlTexture: () => null, createProgram: kind => ({ name: `test-${kind}` }), createShoreTexture: field => new Texture({ source: new TextureSource({ width: field.width, height: field.height }) }), reducedMotion: () => true });
+  await art.ready;
+  const ground = new Container(); art.paintSurfaces(ground); art.mount(new Container(), ground);
+  const surfaces = ground.children.filter(c => /^area-(water|raised)-/.test(c.label ?? ''));
+  assert.ok(surfaces.length > 6);
+  art.update({ x: 1000, y: 1000, zoom: 1 }, { width: 800, height: 600 });
+  assert.ok(surfaces.every(c => c.visible === false), 'far from the river nothing is drawn');
+  const bridge = world.pieces.find(p => p.id === 'hashwood-river-city-bridge').visible.bounds;
+  art.update({ x: (bridge.minX + bridge.maxX) / 2, y: (bridge.minY + bridge.maxY) / 2, zoom: 1 }, { width: 800, height: 600 });
+  assert.equal(ground.children.find(c => c.label === 'area-raised-hashwood-river-city-bridge').visible, true);
+  assert.equal(ground.children.find(c => c.label === 'area-water-hashwood-river-channel').visible, true);
+  assert.equal(ground.children.find(c => c.label === 'area-raised-hashwood-river-woods-bridge').visible, false, 'the other crossing, 1,400 units away, stays off');
+  art.dispose();
+});
