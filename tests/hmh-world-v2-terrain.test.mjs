@@ -396,6 +396,10 @@ test('decks, ramps and bridges draw as material meshes at their authored heights
   const north = river.find(r => r.id === 'hashwood-river-city-north-ramp'), bridge = river.find(r => r.id === 'hashwood-river-city-bridge');
   assert.equal(north.travel, 'y'); assert.equal(bridge.travel, 'y');
   assert.equal(north.faces.length, 0, 'north ramp continues onto the bridge'); assert.equal(bridge.faces.length, 0, 'bridge continues onto the south ramp');
+  assert.equal(north.rails.length, 2, 'crossing ramps carry the rails from ramp foot to ramp foot');
+  assert.ok(north.rails.every(rail => rail.a.z === 0 && rail.c.z === 24), 'ramp rails rise with the ramp');
+  // Collision edge guards are claimed by the area art and never treated as rock when classifying cliff edges.
+  assert.ok(world.pieces.some(p => p.visible.guardOf), 'the world carries bank and rail guards');
   const bayou = buildRaisedSurfaces(world.pieces, 'scrypt-bayou'), lock = bayou.find(r => r.id === 'scrypt-bayou-lock-bridge');
   assert.equal(lock.travel, 'x'); assert.equal(lock.faces.length, 1, 'the bayou bridge shows its beam over the water');
   assert.deepEqual(buildRaisedSurfaces(world.pieces, 'scrypt-bayou'), bayou, 'deterministic');

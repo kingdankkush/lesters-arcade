@@ -100,6 +100,17 @@ export function buildRaisedSurfaces(pieces, areaId) {
       if ((!open || k === steps) && run) { if (run.c.x - run.a.x > 1) faces.push(run); run = null; }
     }
     const rails = [];
+    // A ramp that carries a bridge crossing gets the same rails (the collision
+    // lane's 40-unit rail guards run from ramp foot to ramp foot), rising with
+    // the ramp.
+    const crossingRamp = piece.kind === 'ramp' && raised.some(other => other.kind === 'bridge' && (travel === 'y'
+      ? other.visible.bounds.minX === b.minX && other.visible.bounds.maxX === b.maxX && (other.visible.bounds.minY === b.maxY || other.visible.bounds.maxY === b.minY)
+      : other.visible.bounds.minY === b.minY && other.visible.bounds.maxY === b.maxY && (other.visible.bounds.minX === b.maxX || other.visible.bounds.maxX === b.minX)));
+    if (crossingRamp) {
+      const z = (x, y) => heightAt(s, b, x, y);
+      if (travel === 'y') rails.push({ a: { x: b.minX, y: b.minY, z: z(b.minX, b.minY) }, c: { x: b.minX, y: b.maxY, z: z(b.minX, b.maxY) }, side: 'west' }, { a: { x: b.maxX, y: b.minY, z: z(b.maxX, b.minY) }, c: { x: b.maxX, y: b.maxY, z: z(b.maxX, b.maxY) }, side: 'east' });
+      else rails.push({ a: { x: b.minX, y: b.minY, z: z(b.minX, b.minY) }, c: { x: b.maxX, y: b.minY, z: z(b.maxX, b.minY) }, side: 'north' }, { a: { x: b.minX, y: b.maxY, z: z(b.minX, b.maxY) }, c: { x: b.maxX, y: b.maxY, z: z(b.maxX, b.maxY) }, side: 'south' });
+    }
     if (piece.kind === 'bridge') {
       if (travel === 'y') rails.push({ a: { x: b.minX, y: b.minY, z: maxZ }, c: { x: b.minX, y: b.maxY, z: maxZ }, side: 'west' }, { a: { x: b.maxX, y: b.minY, z: maxZ }, c: { x: b.maxX, y: b.maxY, z: maxZ }, side: 'east' });
       else rails.push({ a: { x: b.minX, y: b.minY, z: maxZ }, c: { x: b.maxX, y: b.minY, z: maxZ }, side: 'north' }, { a: { x: b.minX, y: b.maxY, z: maxZ }, c: { x: b.maxX, y: b.maxY, z: maxZ }, side: 'south' });
@@ -125,7 +136,8 @@ export function rockFaceVariant(x, seed = 4721) {
 // solid of comparable height is a shared (hidden) edge and is not drawn.
 export function createSolidOcclusionIndex(pieces, cell = 600) {
   const grid = new Map(), key = (i, j) => `${i},${j}`;
-  const solids = pieces.filter(piece => piece.blocker && piece.visible.height > 30);
+  // Masses only: edge guards and prop-card colliders are not visual rock.
+  const solids = pieces.filter(piece => piece.blocker && piece.visible.height > 30 && !piece.visible.guardOf && !piece.visible.artPlanId);
   for (const piece of solids) {
     const b = piece.visible.bounds;
     for (let i = Math.floor(b.minX / cell); i <= Math.floor(b.maxX / cell); i++) for (let j = Math.floor(b.minY / cell); j <= Math.floor(b.maxY / cell); j++) {
