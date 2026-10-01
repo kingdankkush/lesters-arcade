@@ -62,8 +62,12 @@ export const WORLD_V2_POINT_OF_INTEREST_ASSETS = freezeDeep({
 export const WORLD_V2_AREA_ART_HOOKS = Object.freeze({
   'mweb-meadows': Object.freeze({ kind: 'area-art-plan', planId: 'mweb-meadows', load: () => import('./world-v2-area-plans/mweb-meadows.mjs').then((module) => module.createMwebMeadowsArtPlan) }),
   'rugpull-woods': Object.freeze({ kind: 'area-art-plan', planId: 'rugpull-woods', load: () => import('./world-v2-area-plans/rugpull-woods.mjs').then((module) => module.createRugpullWoodsArtPlan) }),
-  // Lane B (areas 06-09): River is live; Pines, Ridge and Fortress follow on the same hook path.
+  // Lane B (areas 06-09).
   'hashwood-river': Object.freeze({ kind: 'area-art-plan', planId: 'hashwood-river', load: () => import('./world-v2-area-plans/hashwood-river.mjs').then((module) => module.createHashwoodRiverArtPlan) }),
+  'hollow-pines': Object.freeze({ kind: 'area-art-plan', planId: 'hollow-pines', load: () => import('./world-v2-area-plans/hollow-pines.mjs').then((module) => module.createHollowPinesArtPlan) }),
+  'ledger-ridge': Object.freeze({ kind: 'area-art-plan', planId: 'ledger-ridge', load: () => import('./world-v2-area-plans/ledger-ridge.mjs').then((module) => module.createLedgerRidgeArtPlan) }),
+  'fork-fortress': Object.freeze({ kind: 'area-art-plan', planId: 'fork-fortress', load: () => import('./world-v2-area-plans/fork-fortress.mjs').then((module) => module.createForkFortressArtPlan) }),
+  // End lane B.
   'halving-farms': Object.freeze({ kind: 'area-art-plan', planId: 'halving-farms', load: () => import('./world-v2-area-plans/halving-farms.mjs').then((module) => module.createHalvingFarmsArtPlan) }),
   'scrypt-bayou': Object.freeze({ kind: 'area-art-plan', planId: 'scrypt-bayou', load: () => import('./world-v2-area-plans/scrypt-bayou.mjs').then((module) => module.createScryptBayouArtPlan) }),
   'silver-coast': Object.freeze({ kind: 'area-art-plan', planId: 'silver-coast', load: () => import('./world-v2-area-plans/silver-coast.mjs').then((module) => module.createSilverCoastArtPlan) }),

@@ -14,6 +14,9 @@ import { createSilverCoastArtPlan } from '../world-v2-area-plans/silver-coast.mj
 import { createLitecoinCityArtPlan } from '../world-v2-area-plans/litecoin-city.mjs';
 import { createWorldRoadsArtPlan } from '../world-v2-area-plans/world-roads.mjs';
 import { createHashwoodRiverArtPlan } from '../world-v2-area-plans/hashwood-river.mjs';
+import { createHollowPinesArtPlan } from '../world-v2-area-plans/hollow-pines.mjs';
+import { createLedgerRidgeArtPlan } from '../world-v2-area-plans/ledger-ridge.mjs';
+import { createForkFortressArtPlan } from '../world-v2-area-plans/fork-fortress.mjs';
 import { quantizeDirection } from '../movement.mjs';
 import { InputState, createBrowserInputController } from '../input.mjs';
 import { TouchControlState } from '../touch-controls.mjs';
@@ -33,7 +36,7 @@ export function mountGreyboxPlaytest(root,{areaArt=true}={}){
   const authored=createGreyboxWorld(),abort=new AbortController(),input=new InputState(),touch=new TouchControlState({stickRadius:64});
   const relayPlan=createLocalMeadowsRelayPlan(authored);
   const textureCache=areaArt?createAreaArtTextureCache():null;
-  const arts=areaArt?[['rugpull-woods',createRugpullWoodsArtPlan],['mweb-meadows',createMwebMeadowsArtPlan],['hashwood-river',createHashwoodRiverArtPlan],['halving-farms',createHalvingFarmsArtPlan],['scrypt-bayou',createScryptBayouArtPlan],['silver-coast',createSilverCoastArtPlan],['litecoin-city',createLitecoinCityArtPlan],['world-roads',createWorldRoadsArtPlan]].flatMap(([areaId,make])=>{const plan=make(authored);return plan?[createAreaArt({world:authored,areaId,plan,textureCache,signal:abort.signal,resolution:window.innerWidth<768?'half':'full'})]:[];}):[];
+  const arts=areaArt?[['rugpull-woods',createRugpullWoodsArtPlan],['mweb-meadows',createMwebMeadowsArtPlan],['hashwood-river',createHashwoodRiverArtPlan],['halving-farms',createHalvingFarmsArtPlan],['scrypt-bayou',createScryptBayouArtPlan],['silver-coast',createSilverCoastArtPlan],['litecoin-city',createLitecoinCityArtPlan],['world-roads',createWorldRoadsArtPlan],['hollow-pines',createHollowPinesArtPlan],['ledger-ridge',createLedgerRidgeArtPlan],['fork-fortress',createForkFortressArtPlan]].flatMap(([areaId,make])=>{const plan=make(authored);return plan?[createAreaArt({world:authored,areaId,plan,textureCache,signal:abort.signal,resolution:window.innerWidth<768?'half':'full'})]:[];}):[];
   let geometry=createWorldV2Geometry(authored),runtime=createWorldV2LocalRuntime({geometry,relayPlan});
   let disposed=false,failure=null,initialized=false,initSettled=false,appDestroyed=false,atlasTexture=null,image=null,hero=null,inputController=null;
   let frameId=null,lastTime=null,generation=0,inspectionJumps=0,renderFrames=0,nativeEvents=0,navWaitMs=null,width=1,height=1,shown=false;

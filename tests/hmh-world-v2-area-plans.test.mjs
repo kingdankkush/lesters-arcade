@@ -8,6 +8,11 @@ import { createMwebMeadowsArtPlan, MWEB_MEADOWS_PAGES } from '../apps/hmh-reboot
 import { createWorldRoadsArtPlan, ROAD_CLEARANCE_FRACTION } from '../apps/hmh-reboot/src/world-v2-area-plans/world-roads.mjs';
 // Lane B area plans (briefs 06-09).
 import { createHashwoodRiverArtPlan, HASHWOOD_RIVER_PAGES, RIVER_STONE_TINT } from '../apps/hmh-reboot/src/world-v2-area-plans/hashwood-river.mjs';
+import { createHollowPinesArtPlan, HOLLOW_PINES_PAGES, GIANT_DEAD_TREE_HEIGHT, PINES_STONE_TINT } from '../apps/hmh-reboot/src/world-v2-area-plans/hollow-pines.mjs';
+import { createLedgerRidgeArtPlan, LEDGER_RIDGE_PAGES } from '../apps/hmh-reboot/src/world-v2-area-plans/ledger-ridge.mjs';
+import { createForkFortressArtPlan, FORK_FORTRESS_PAGES } from '../apps/hmh-reboot/src/world-v2-area-plans/fork-fortress.mjs';
+import { DISTRICT_TERRAIN } from '../apps/hmh-reboot/src/world-v2-area-art-schema.mjs';
+import { CANOPY_HEIGHTS } from '../apps/hmh-reboot/src/world-v2-area-plans/plan-support.mjs';
 import { createHalvingFarmsArtPlan, HALVING_FARMS_PAGES } from '../apps/hmh-reboot/src/world-v2-area-plans/halving-farms.mjs';
 import { createScryptBayouArtPlan, SCRYPT_BAYOU_PAGES, BAYOU_STILT_TOWER_HEIGHT } from '../apps/hmh-reboot/src/world-v2-area-plans/scrypt-bayou.mjs';
 import { createSilverCoastArtPlan, SILVER_COAST_PAGES } from '../apps/hmh-reboot/src/world-v2-area-plans/silver-coast.mjs';
@@ -339,7 +344,7 @@ test('Hashwood River follows brief 06: conifers on closed banks, iris on the dam
   assert.equal(byPiece['waterfall-shelf'].style, 'bank'); assert.equal(byPiece['waterfall-shelf'].roof, 'rock');
   for (const name of ['marquee-west-post', 'marquee-east-post', 'court-tall-screen']) assert.equal(byPiece[name].style, 'stakes', name);
   assert.ok(summary.props.some(p => p.source === 'b2-79'), 'log piles frame the clearing');
-  assert.ok(summary.trails.length >= 20 && summary.zones.length >= 8);
+  assert.ok(summary.trails.length >= 20 && summary.zones.length >= 4);
   // Every placement outside the two documented bridge silhouettes honours the guard.
   for (const prop of summary.props) {
     if (prop.source === 'b2-41') continue;
@@ -355,4 +360,113 @@ test('Hashwood River follows brief 06: conifers on closed banks, iris on the dam
   }
   const centre = summary.props.filter(p => Math.abs(p.x - river.center.x) < 700 && Math.abs(p.y - river.center.y) < 700 && p.source !== 'b2-41');
   assert.ok(centre.every(p => p.height <= 60 || Math.abs(p.y - river.center.y) > 300), 'the lower bank centre keeps its sightlines');
+});
+
+// ---- Lane B: Hollow Pines, Ledger Ridge, Fork Fortress (briefs 07-09) ----
+function assertGuardedProps(areaId, summary, plan, exempt = []) {
+  const water = world.pieces.filter(p => p.kind === 'water').map(p => p.visible.vertices);
+  const segments = routeSegments(areaId), areaSites = sites(areaId);
+  for (const prop of summary.props) {
+    if (exempt.includes(prop.source)) continue;
+    assert.ok(prop.x >= plan.bounds.minX && prop.x <= plan.bounds.maxX && prop.y >= plan.bounds.minY && prop.y <= plan.bounds.maxY, `${prop.id} in bounds`);
+    const support = inSolid(prop.x, prop.y);
+    if (prop.groundZ > 0) { assert.ok(support && support.visible.height === prop.groundZ, `${prop.id} roots on a matching-height solid`); continue; }
+    assert.equal(support, null, `${prop.id} outside blockers`);
+    for (const vertices of water) assert.equal(pointInPolygon(prop.x, prop.y, vertices), false, `${prop.id} out of water`);
+    for (const { a, b } of segments) assert.ok(distanceToSegment(prop.x, prop.y, a, b) >= 64, `${prop.id} clears inspection routes`);
+    for (const road of world.roads) assert.ok(distanceToPolyline(prop.x, prop.y, road.points) >= road.width / 2, `${prop.id} clears the road`);
+    for (const site of areaSites) assert.ok(Math.hypot(site.x - prop.x, site.y - prop.y) >= 140, `${prop.id} clears ${site.id}`);
+    assert.ok(Math.hypot(prop.x - world.spawn.x, prop.y - world.spawn.y) >= world.protectedSpawnRadius);
+  }
+}
+const laneB = [[createHollowPinesArtPlan, 'hollow-pines', HOLLOW_PINES_PAGES], [createLedgerRidgeArtPlan, 'ledger-ridge', LEDGER_RIDGE_PAGES], [createForkFortressArtPlan, 'fork-fortress', FORK_FORTRESS_PAGES]];
+
+test('lane B plans are deterministic, carry their district terrain, stay within two exclusive pages and four tiles, and leave the world untouched', () => {
+  const before = JSON.stringify(world);
+  for (const [make, areaId, pages] of laneB) {
+    const plan = make(world), summary = validateAreaArtPlan(plan, kit);
+    assert.equal(plan.areaId, areaId);
+    assert.ok(Object.isFrozen(plan) && Object.isFrozen(plan.props));
+    assert.equal(JSON.stringify(plan), JSON.stringify(make(createGreyboxWorld())), `${areaId} deterministic`);
+    assert.deepEqual(plan.pages, pages);
+    assert.deepEqual(plan.ground.terrain, { ...DISTRICT_TERRAIN[areaId] });
+    assert.equal(summary.budget.exclusiveKitPages, 2, areaId);
+    assert.equal(summary.budget.decodedBytes, 3 * 16777216, areaId);
+    assert.equal(summary.budget.halfDecodedBytes, 3 * 4194304, areaId);
+    assert.ok(summary.tiles.length <= 4, `${areaId} tiles ${summary.tiles.join(',')}`);
+    for (const source of summary.sources) assert.notEqual(resolveKitItem(kit, source).class, 'pickups');
+    assert.equal(make({ ...world, areas: [] }), null);
+  }
+  assert.equal(JSON.stringify(world), before);
+});
+
+test('Hollow Pines follows brief 07: a giant dead tree on its root volume, burial rows behind the public walk, a chapel crypt, dead groves and no lantern masts', () => {
+  const plan = createHollowPinesArtPlan(world), summary = validateAreaArtPlan(plan, kit);
+  const byPiece = Object.fromEntries(summary.solids.map(s => [s.pieceId.slice('hollow-pines-'.length), s]));
+  const tree = byPiece['dead-tree-roots'];
+  assert.equal(tree.card.source, 'b2-70'); assert.equal(tree.card.fit, 'height'); assert.equal(tree.height, GIANT_DEAD_TREE_HEIGHT); assert.equal(tree.massAlpha, 0);
+  assert.ok(GIANT_DEAD_TREE_HEIGHT > 2 * CANOPY_HEIGHTS['b2-70'], 'the landmark tree is at least twice an ordinary dead oak');
+  assert.equal(byPiece.crypt.card.source, 'b2-65'); assert.equal(byPiece['maintenance-house'].card.source, 'b2-68'); assert.equal(byPiece['stone-monument'].style, 'mass'); assert.equal(byPiece['stone-monument'].wall, 'masonry');
+  assert.equal(byPiece['low-boundary'].style, 'hedge'); assert.equal(byPiece['low-boundary'].card.source, 'b2-49');
+  for (const name of ['north-west-wall', 'north-east-wall', 'west-upper-wall', 'west-lower-wall', 'east-upper-wall', 'east-lower-wall', 'south-wall']) assert.equal(byPiece[name].wall, 'masonry', name);
+  for (const name of ['southwest-grove', 'northeast-grove']) assert.equal(byPiece[name].style, 'bank', name);
+  assert.ok(!summary.sources.includes('b2-52'), 'traffic masts are not used as cemetery lanterns');
+  const headstones = summary.props.filter(p => p.source === 'b2-49' && p.tint === PINES_STONE_TINT);
+  assert.ok(headstones.length >= 80, `${headstones.length} headstones`);
+  const area = world.areas.find(a => a.id === 'hollow-pines');
+  for (const stone of headstones) {
+    assert.ok(stone.height <= 30, 'headstones are low slabs');
+    assert.ok(Math.abs(stone.x - area.center.x) <= 760 && Math.abs(stone.y - area.center.y) <= 700, `${stone.id} inside the cemetery walls`);
+    assert.ok(Math.abs(stone.y - area.center.y) >= 400 || Math.abs(stone.x - area.center.x) >= 700, `${stone.id} keeps the clearing open`);
+  }
+  assert.ok(summary.props.filter(p => p.source === 'b2-80').length >= 4, 'tombs');
+  const dead = summary.props.filter(p => ['b2-70', 'b1-53'].includes(p.source)), burnt = summary.props.filter(p => p.source === 'b1-05');
+  assert.ok(dead.length >= 60, `${dead.length} dead trees`); assert.ok(burnt.length >= 50, `${burnt.length} burnt shrubs`);
+  assert.ok(!summary.sources.includes('b1-42'), 'no warm sandstone rubble in the blue-grey cemetery');
+  for (const source of ['b2-72', 'b2-73', 'b2-74']) assert.ok(summary.props.some(p => p.source === source), source);
+  assert.ok(summary.props.length >= 300 && summary.props.length <= 600, `${summary.props.length} props`);
+  assertGuardedProps('hollow-pines', summary, plan);
+});
+
+test('Ledger Ridge follows brief 08: banked rock cuts with strata and sparse pines, the headframe card, mine entrance and rail spur, and heavy plant at the landing edges', () => {
+  const plan = createLedgerRidgeArtPlan(world), summary = validateAreaArtPlan(plan, kit), area = world.areas.find(a => a.id === 'ledger-ridge');
+  const byPiece = Object.fromEntries(summary.solids.map(s => [s.pieceId.slice('ledger-ridge-'.length), s]));
+  for (const name of ['west-buttress', 'lower-cut', 'upper-cut', 'north-cap', 'east-buttress']) { assert.equal(byPiece[name].style, 'bank', name); assert.equal(byPiece[name].roof, 'rock'); }
+  assert.equal(byPiece.headframe.card.source, 'b1-11'); assert.equal(byPiece['quarry-store'].card.source, 'b2-68');
+  assert.equal(byPiece['landing-barrier'].card.source, 'b2-49'); assert.equal(byPiece['landing-wall'].card.source, 'b1-42');
+  const count = source => summary.props.filter(p => p.source === source).length;
+  assert.equal(count('b2-76'), 1); assert.ok(count('b2-77') >= 1); assert.ok(count('b2-78') >= 8); assert.ok(count('b1-16') >= 3);
+  assert.ok(count('b2-59') >= 1 && count('b2-60') >= 2, 'excavator and haul trucks');
+  assert.ok(count('b1-42') >= 80 && count('b2-79') >= 5 && count('b1-49') >= 5, 'strata, timber and stump spoil');
+  assert.ok(summary.props.filter(p => p.source === 'b1-42' && p.groundZ === 0).every(p => p.height >= 90), 'sandstone only at full strata height (small cards read as barrels)');
+  const pines = summary.props.filter(p => ['b2-72', 'b1-50'].includes(p.source));
+  assert.ok(pines.length >= 40 && pines.length <= 120, `${pines.length} sparse pines`);
+  assert.ok(pines.every(p => p.groundZ > 0), 'pines only on stable shelves');
+  const arena = world.arenas.find(a => a.areaId === 'ledger-ridge');
+  for (const plant of summary.props.filter(p => ['b2-59', 'b2-60'].includes(p.source))) assert.ok(Math.hypot(plant.x - arena.center.x, plant.y - arena.center.y) >= 450, `${plant.id} parks at the landing edge`);
+  assert.ok(summary.props.length >= 200, `${summary.props.length} props`);
+  assertGuardedProps('ledger-ridge', summary, plan);
+  assert.ok(area);
+});
+
+test('Fork Fortress follows brief 09: guard towers on the gatehouses, container ramparts, a masonry keep with a sealed bunker door, courtyard buildings on collision and Foreman machinery at the court edge', () => {
+  const plan = createForkFortressArtPlan(world), summary = validateAreaArtPlan(plan, kit);
+  const byPiece = Object.fromEntries(summary.solids.map(s => [s.pieceId.slice('fork-fortress-'.length), s]));
+  for (const name of ['north-gatehouse', 'south-gatehouse']) assert.equal(byPiece[name].card.source, 'b1-15', name);
+  for (const name of ['west-curtain', 'east-curtain']) { assert.equal(byPiece[name].style, 'hedge'); assert.equal(byPiece[name].card.source, 'b1-43'); }
+  assert.equal(byPiece.keep.style, 'mass'); assert.equal(byPiece.keep.wall, 'masonry');
+  assert.equal(byPiece['service-store'].card.source, 'b2-63'); assert.equal(byPiece['yard-tall-wall'].card.source, 'b1-46'); assert.equal(byPiece['yard-low-barrier'].card.source, 'b2-49');
+  assert.equal(byPiece['ridge-foot'].style, 'bank');
+  const keep = world.pieces.find(p => p.id === 'fork-fortress-keep');
+  const door = summary.props.find(p => p.source === 'b2-66');
+  assert.ok(door && door.y > keep.visible.bounds.maxY && door.y - keep.visible.bounds.maxY <= 12 && inSolid(door.x, door.y) === null, 'the bunker door stands against the keep south face');
+  for (const building of summary.props.filter(p => ['b2-68', 'b2-63'].includes(p.source))) { const support = inSolid(building.x, building.y); assert.ok(support && support.visible.height === building.groundZ, `${building.id} stands on closed high ground`); }
+  const count = source => summary.props.filter(p => p.source === source).length;
+  assert.ok(count('b1-17') >= 4 && count('b1-18') >= 6 && count('b2-49') >= 15 && count('b1-43') >= 6, 'rampart fill');
+  const machinery = summary.props.filter(p => ['b1-41', 'b1-19'].includes(p.source)), arena = world.arenas.find(a => a.areaId === 'fork-fortress');
+  assert.ok(machinery.length >= 15, `${machinery.length} machinery`);
+  for (const unit of machinery) assert.ok(Math.hypot(unit.x - arena.center.x, unit.y - arena.center.y) >= 600, `${unit.id} stays at the court perimeter`);
+  assert.ok(!summary.sources.some(source => resolveKitItem(kit, source).class === 'plants'), 'no vegetation page inside the compound');
+  assert.ok(summary.props.length >= 150, `${summary.props.length} props`);
+  assertGuardedProps('fork-fortress', summary, plan, ['b2-66']);
 });

@@ -120,7 +120,7 @@ test('presentation hooks resolve to existing production kits and ten valid cache
     assert.ok(DISTRICT_TERRAIN_MATERIAL[district.materialId], `${district.id} terrain material`);
     assert.equal(world.artPlans.districts[district.id].materialId, district.materialId);
     const hook = world.artPlans.districts[district.id].artTarget;
-    if (['mweb-meadows', 'rugpull-woods', 'hashwood-river', 'halving-farms', 'scrypt-bayou', 'silver-coast', 'litecoin-city'].includes(district.id)) { assert.equal(hook.kind, 'area-art-plan'); assert.equal(hook.planId, district.id); assert.equal(typeof hook.load, 'function'); }
+    if (['mweb-meadows', 'rugpull-woods', 'hashwood-river', 'halving-farms', 'scrypt-bayou', 'silver-coast', 'litecoin-city', 'hollow-pines', 'ledger-ridge', 'fork-fortress'].includes(district.id)) { assert.equal(hook.kind, 'area-art-plan'); assert.equal(hook.planId, district.id); assert.equal(typeof hook.load, 'function'); }
     else assert.equal(hook, null);
     assert.ok(world.districts.filter((other) => other !== district).every((other) => !(district.area.minX < other.area.maxX && other.area.minX < district.area.maxX && district.area.minY < other.area.maxY && other.area.minY < district.area.maxY)));
   }
