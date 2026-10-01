@@ -81,9 +81,10 @@ const specs = [
 ];
 export const CHIKUN_2_0_TROPHY_IDS = Object.freeze(['chikun-escape-complete']);
 
-const catalog = defineCatalog('chikun', specs, ({ tier }) => ({
-  image: `/assets/generated/achievement-badges/chikun/${tier}.png`,
-  lockedImage: `/assets/generated/achievement-badges/chikun/locked-${tier}.png`,
-}));
+// The completion trophy has its own badge (scripts/generate-trophy-achievement-badges.py);
+// the other entries share the per-tier Chikun badges.
+const catalog = defineCatalog('chikun', specs, ({ id, tier }) => (CHIKUN_2_0_TROPHY_IDS.includes(id)
+  ? { image: `/assets/generated/achievement-badges/${id}.png`, lockedImage: `/assets/generated/achievement-badges/locked-${id}.png` }
+  : { image: `/assets/generated/achievement-badges/chikun/${tier}.png`, lockedImage: `/assets/generated/achievement-badges/chikun/locked-${tier}.png` }));
 export const CHIKUN_ACHIEVEMENTS = catalog.entries;
 export const CHIKUN_HISTORY_FIELDS = catalog.historyFields;

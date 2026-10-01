@@ -1433,6 +1433,7 @@ const PY_COMPILE_FILES = [
   'scripts/build-chikun-ground-audio.py',
   'scripts/build-chikun-ground-motion.py',
   'scripts/generate-game-achievement-badges.py',
+  'scripts/generate-trophy-achievement-badges.py',
   'scripts/build-chikun-ground-props.py',
   'scripts/build-share-card-backgrounds.py',
   'scripts/build-hmh-banner-art.py',
