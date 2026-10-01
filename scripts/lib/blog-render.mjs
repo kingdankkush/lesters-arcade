@@ -6,7 +6,11 @@ const ART=Object.freeze({
   chikun:{src:'/assets/generated/chikun-mode-select/chikuns-escape-free-mode.webp',alt:'Chikun’s Escape key art'},
   stacked:{src:'/assets/stacked-mode-select/stacked-free-v1.png',alt:'STACKED key art'},
 });
-export const blogArtwork=post=>ART[post?.games?.[0]]??{src:'/assets/brand/lesters-arcade-logo-horizontal.png',alt:'Lester’s Arcade'};
+// Article-specific share images (1200x630, gore-free, built by scripts/build-blog-og-card.py).
+const ART_BY_SLUG=Object.freeze({
+  'lesters-arcade-2-0-first-drop':{src:'/assets/share-cards/blog/lesters-arcade-2-0-first-drop.jpg',alt:'Lester’s Arcade 2.0, the visual overhaul first drop: Hard Money Heroes, Chikun’s Escape and STACKED',width:1200,height:630},
+});
+export const blogArtwork=post=>ART_BY_SLUG[post?.slug]??ART[post?.games?.[0]]??{src:'/assets/brand/lesters-arcade-logo-horizontal.png',alt:'Lester’s Arcade'};
 
 const escape=value=>String(value).replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
 function linkTarget(value){
@@ -81,7 +85,7 @@ export function renderBlogArticle(post,{preview=false,index}={}){
 <meta name="theme-color" content="#05070f" /><title>${escape(title)}</title>
 <meta name="description" content="${escape(checked.summary)}" /><meta name="robots" content="${preview?'noindex, nofollow':'index, follow'}" />
 ${preview?'':`<link rel="canonical" href="${canonical}" /><link rel="alternate" type="application/atom+xml" title="Lester’s Arcade journal" href="/blog/feed.xml" /><meta property="og:type" content="article" /><meta property="og:url" content="${canonical}" /><meta property="og:title" content="${escape(title)}" /><meta property="og:description" content="${escape(checked.summary)}" />`}
-<meta property="og:image" content="${ORIGIN+art.src}" /><meta property="og:image:alt" content="${escape(art.alt)}" /><meta name="twitter:card" content="summary_large_image" /><meta name="twitter:image" content="${ORIGIN+art.src}" />
+<meta property="og:image" content="${ORIGIN+art.src}" /><meta property="og:image:alt" content="${escape(art.alt)}" />${art.width?`<meta property="og:image:width" content="${art.width}" /><meta property="og:image:height" content="${art.height}" />`:''}<meta name="twitter:card" content="summary_large_image" /><meta name="twitter:image" content="${ORIGIN+art.src}" />
 <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg" />
 <link rel="stylesheet" href="/src/design-tokens.css" /><link rel="stylesheet" href="/how-ranked-works.css" /><link rel="stylesheet" href="/blog/article.css" />
 </head><body>
