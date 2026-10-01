@@ -177,6 +177,10 @@ export const SIGNATURE_TOLERANCE = 2.5;
 export const SIGNATURE_MAX_CELL_DELTA = 26;
 export const SIGNATURE_MAX_CHANGED_CELLS = 24;
 
+// From 2.1.0 the default Level 1 is the ten-area world; these baselines are
+// the original six-district map, which stays selectable for Free play.
+const LEGACY_MAP_QUERY = 'mode=free&world=legacy';
+
 // Deterministic capture scenes. evidenceSafe pins the run (invulnerable
 // player, stable spawns) so a baseline stays reproducible across machines.
 export const VISUAL_SCENES = Object.freeze([
@@ -365,7 +369,7 @@ if (isMain) {
       page.on('pageerror', (error) => errors.push(`page: ${error.message}`));
       page.on('console', (message) => { if (message.type() === 'error') errors.push(`console: ${message.text()}`); });
 
-      await page.goto(`${origin}/hmh-reboot/index.html?${scene.query}`, { waitUntil: 'domcontentloaded' });
+      await page.goto(`${origin}/hmh-reboot/index.html?${scene.query}&${LEGACY_MAP_QUERY}`, { waitUntil: 'domcontentloaded' });
       try {
         await page.waitForSelector('#hmhRebootStage canvas', { timeout: 30_000 });
       } catch (error) {
@@ -582,7 +586,7 @@ if (isMain) {
     }
     const reducedPage = await browser.newPage({ viewport: { ...VISUAL_SCENES[0].viewport }, deviceScaleFactor: 1 });
     await reducedPage.emulateMedia({ reducedMotion: 'reduce' });
-    await reducedPage.goto(`${origin}/hmh-reboot/index.html?${VISUAL_SCENES[0].query}`, { waitUntil: 'domcontentloaded' });
+    await reducedPage.goto(`${origin}/hmh-reboot/index.html?${VISUAL_SCENES[0].query}&${LEGACY_MAP_QUERY}`, { waitUntil: 'domcontentloaded' });
     await reducedPage.waitForFunction(() => {
       const stage = document.querySelector('#hmhRebootStage');
       return stage?.dataset.authoredPropStatus === 'ready'
