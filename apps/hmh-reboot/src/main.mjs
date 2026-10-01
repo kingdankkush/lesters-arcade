@@ -1587,7 +1587,7 @@ async function boot() {
     ? (await import('./debug-grid-overlay.mjs')).buildDebugGridOverlay({ bounds: WORLD_BOUNDS, spacing: 512, queryGround })
     : null;
 
-  let settings = { musicEnabled: true, screenShake: true, gore: false, reduceMotion: false, reduceFlash: false, colorblindTags: false };
+  let settings = { musicEnabled: true, screenShake: true, gore: false, reduceMotion: false, reduceFlash: false, colorblindTags: false, hitstop: true };
   // The bridge shell is already ready; load the audio player during asset
   // preparation, before accepting a run, instead of delaying the first paint.
   const { createCombatAudio } = await import('./combat-audio.mjs');
@@ -1653,6 +1653,7 @@ async function boot() {
     dataset.settingReduceMotion = String(settings.reduceMotion);
     dataset.settingReduceFlash = String(settings.reduceFlash);
     dataset.settingGoreLevel = settings.goreLevel;
+    dataset.settingHitstop = String(settings.hitstop !== false);
     if (notify && bridge?.initialized) {
       bridge.send('game:settings', { settings: { ...settings } });
       bridge.send('game:state', statePayload());
@@ -1682,6 +1683,13 @@ async function boot() {
     const level = normalizeGoreLevel(value, settings.goreLevel);
     syncRuntimeSettings({ ...settings, goreLevel: level }, { notify: true });
     combatAudio.play('menu-click', { volume: 0.08 });
+  };
+  // 2.1 feel toggles: their own path, like the gore choice, so the pinned
+  // boolean path above stays byte-identical. Projection-only.
+  const PAUSE_FEEL_KEYS = new Set(['hitstop']);
+  const applyPauseFeel = (key, enabled) => {
+    if (!PAUSE_FEEL_KEYS.has(key)) throw new TypeError(`unsupported pause feel setting ${String(key)}`);
+    syncRuntimeSettings({ ...settings, [key]: Boolean(enabled) }, { notify: true });
   };
   let maxPlayerHealth = 100;
   // The session hero's starting stats and perk (hero-loadout.mjs).
@@ -5335,6 +5343,11 @@ async function boot() {
             // "no direction" and falls back to a full circle.
             direction: damageEvent.knockback,
           });
+          // 2.1 feel (presentation-only): hitstop request for this resolved
+          // hit. Primitive copies after the fact; the simulation never reads it.
+          if (damageEvent.targetId !== 'player' && (!bossHit || bossDamage.damageApplied > 0)) {
+            hmhFeel?.enemyHit(damageEvent.critical === true, damageEvent.killed === true, damageEvent.weaponId, bossHit, Boolean(bossHit && bossDamage.runEvent));
+          }
           if (damageEvent.targetId === 'player') {
             if (settings.captionCriticalAudio) setAccessibleCombatStatus('Critical audio: player hit.');
             // `heavy` is presentation only: a heavy hit ends the mission clip.
@@ -5824,6 +5837,7 @@ async function boot() {
     onSettingToggle: (key, enabled) => applyPauseSetting(key, enabled),
     onSettingLevel: applyPauseLevel,
     onSettingChoice: applyPauseChoice,
+    onSettingFeel: applyPauseFeel,
     onBindingChange: (actionId, code) => {
       const keyboardBindings = rebindKeyboardAction(settings.keyboardBindings, actionId, code, {
         rankedActive: sessionPayload?.mode === 'ranked',
@@ -6048,6 +6062,20 @@ async function boot() {
     // an active shake, so per-weapon recoil could regress to zero silently.
     dataset.cameraShake = String(Number(Math.hypot(world.position.x, world.position.y).toFixed(3)));
     dataset.cameraZoom = camera.zoom.toFixed(3);
+    // 2.1 hitstop, presentation-only (owner decision, every mode). The
+    // simulation already stepped this frame; the renderer keeps the last
+    // presented pose for N frames and catches up when the hold ends.
+    if (hmhFeel) {
+      if (hmhFeel.commitHitstop(nowMs, settings)) {
+        dataset.hitstopStarted = String(hmhFeel.hitstop.stats.started);
+        dataset.hitstopMaxPerSecond = String(hmhFeel.hitstop.stats.peakPerSecond);
+      }
+      if (hmhFeel.holding(nowMs, settings)) {
+        dataset.hitstopHeldFrames = String(hmhFeel.hitstop.stats.heldFrames);
+        dataset.hitstopIgnored = String(hmhFeel.hitstop.stats.ignoredActive + hmhFeel.hitstop.stats.ignoredRate);
+        return;
+      }
+    }
     renderWorld(renderActor);
     syncMusicDuck(bossMusicDuckWanted);
     const locomotionPulse = actor.locomotion === 'dash'

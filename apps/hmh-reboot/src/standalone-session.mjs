@@ -32,6 +32,10 @@ export function createStandaloneInitPayload({ heroId = 'lit-commando' } = {}) {
       // 2.0 gore setting: the owner default is Full; the boolean mirrors it.
       gore: true,
       goreLevel: 'full',
+      // 2.1 feel: off for the same reason as screenShake -- standalone is the
+      // evidence-capture path and a held frame would destabilise baselines.
+      // The pause menu still turns it on for a dev session.
+      hitstop: false,
       reduceMotion: false,
       reduceFlash: false,
       colorblindTags: false,

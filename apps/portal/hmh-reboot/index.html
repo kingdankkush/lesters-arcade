@@ -200,6 +200,14 @@
                   <input id="hmhSettingReduceFlash" type="checkbox">
                   <span><strong>Reduced flash</strong><small>Steady combat warnings</small></span>
                 </label>
+                <!-- 2.1 feel toggles: own family (hmh-setting-feel), own ids and
+                     path (onSettingFeel), so the four pinned toggles stay as
+                     they were. Projection-only; they ride game:settings and the
+                     portal persists them in 'hmh-settings'. -->
+                <label class="hmh-setting-toggle hmh-setting-feel">
+                  <input id="hmhSettingHitstop" type="checkbox" checked>
+                  <span><strong>Hit stop</strong><small>Brief freeze on big hits. Off under reduced motion</small></span>
+                </label>
                 <!-- 2.0 gore setting (owner decision): Off / Reduced / Full,
                      default Full. A native radio group: arrow keys move the
                      choice, Tab enters and leaves it. Projection-only; it

@@ -53,6 +53,11 @@ const PAUSE_CHOICE_KEYS = Object.freeze({
   goreLevel: Object.freeze({ off: 'hmhSettingGoreOff', reduced: 'hmhSettingGoreReduced', full: 'hmhSettingGoreFull' }),
 });
 const PAUSE_CHOICE_DEFAULTS = Object.freeze({ goreLevel: 'full' });
+// 2.1 feel toggles (default on). Optional elements and their own callback, so
+// the four pinned toggles and their boolean path stay byte-identical.
+const PAUSE_FEEL_KEYS = Object.freeze({
+  hitstop: 'hmhSettingHitstop',
+});
 
 // Shared with the lazy upgrade panel, so every dynamic cockpit node goes
 // through one tag allowlist and textContent, never markup.
@@ -72,6 +77,7 @@ export function createCockpitUi({
   onSettingToggle = () => {},
   onSettingLevel = () => {},
   onSettingChoice = () => {},
+  onSettingFeel = () => {},
   onBindingChange = () => {},
   onResume = () => {},
   onRestart = () => {},
@@ -110,6 +116,7 @@ export function createCockpitUi({
     sfxVolumeValue: required(documentRef, 'hmhSettingSfxVolumeValue'),
     choices: Object.fromEntries(Object.entries(PAUSE_CHOICE_KEYS).map(([key, options]) => [key,
       Object.entries(options).map(([value, id]) => [value, documentRef.getElementById(id)]).filter(([, input]) => input)])),
+    feel: Object.entries(PAUSE_FEEL_KEYS).map(([key, id]) => [key, documentRef.getElementById(id)]).filter(([, input]) => input),
     buildEmpty: required(documentRef, 'hmhBuildEmpty'),
     buildSummary: required(documentRef, 'hmhBuildSummary'),
     controlsCard: required(documentRef, 'hmhControlsCard'),
@@ -185,6 +192,10 @@ export function createCockpitUi({
     for (const [value, input] of options) {
       listen(input, 'change', () => { if (input.checked) onSettingChoice(key, value); });
     }
+  }
+
+  for (const [key, input] of elements.feel) {
+    listen(input, 'change', () => onSettingFeel(key, Boolean(input.checked)));
   }
 
   const keyboardLabel = (code) => String(code ?? '')
@@ -307,6 +318,7 @@ export function createCockpitUi({
       // combat-audio's sfx bus defaults to 1 when the host never sent a level.
       showLevel(nextSettings.sfxVolume ?? 1);
       for (const key of Object.keys(elements.choices)) showChoice(key, nextSettings[key]);
+      for (const [key, input] of elements.feel) input.checked = nextSettings[key] !== false;
       musicEnabled = Boolean(nextSettings.musicEnabled);
       elements.music.textContent = musicEnabled ? 'Music on' : 'Music off';
       elements.music.setAttribute('aria-pressed', String(musicEnabled));
