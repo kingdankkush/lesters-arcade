@@ -7,6 +7,10 @@ import { HERO_ACTOR_IDS, createIdleFidgetPicker, heroClipTime, heroHasClip } fro
 // hmh-actor-3d-pilot/) without touching the initial bundle or the legacy tables.
 export const ACTOR3D_ENEMY_IDS = Object.freeze(['bagholder-rusher', 'forkrunner', 'liquidator-agent', 'whale-enforcer', 'gas-bomber', 'validator-cultist',
   'tollkeeper', 'money-printer', 'pump-and-dump-bloater', 'hodl-revenant', 'rug-puller', 'oracle-marksman']);
+// The ten-area district bosses (lazy, optional): each loads its own GLB by id
+// once one is published under hmh-actor-3d-pilot/; until then a 404 marks it
+// failed and the boss entry falls back to the tinted Liquidator body.
+export const ACTOR3D_BOSS_IDS = Object.freeze(['boss-rug-pull-baron', 'boss-51-foreman', 'boss-lockkeeper']);
 // Guns the 3D hero can hold: the native pistol, or a lazily seated weapon
 // model (2.0 weapons lane). Until that model is resident the sprite hero and
 // its held-weapon page keep drawing, so a slow fetch never empties the hand.
@@ -113,6 +117,9 @@ export function createActor3dPilotController({ renderer, canvas, qualityTier = '
       restore(); if (disposed || session.status !== 'ready') return false;
       try {
         if (!Array.isArray(entries) || entries.length > maxActors) throw new TypeError('quality-bounded actor frame required');
+        // A boss whose own GLB is not resident wears its fallback body.
+        entries = entries.map(entry => entry.descriptor.fallbackActorId && backend?.prepareActor?.(entry.descriptor.actorId) === false
+          ? { ...entry, descriptor: { ...entry.descriptor, actorId: entry.descriptor.fallbackActorId } } : entry);
         entries = entries.filter(entry => backend?.prepareActor?.(entry.descriptor.actorId) !== false
           && (entry.descriptor.id !== 'hero' || !entry.descriptor.weaponId || entry.descriptor.weaponId === 'coin-blaster' || backend?.prepareWeapon?.(entry.descriptor.weaponId) === true));
         const frame = entries.map(entry => createActor3dProjection(entry.descriptor, camera, viewport));

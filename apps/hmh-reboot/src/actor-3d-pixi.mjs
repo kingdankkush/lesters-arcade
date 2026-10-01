@@ -3,7 +3,7 @@
 import { Bounds, Container, Geometry, GlProgram, Mesh, RenderTexture, Shader, State, Texture, UniformGroup } from 'pixi.js';
 import { decodeActor3dGlb, createActor3dPoseWorkspace, evaluateActor3dPose,
   createActor3dJointBounds, projectActor3dBounds } from './actor-3d-model.mjs';
-import { createActor3dDepthRegistry, ACTOR3D_ENEMY_IDS, ACTOR3D_HERO_WEAPON_IDS } from './actor-3d-controller.mjs';
+import { createActor3dDepthRegistry, ACTOR3D_BOSS_IDS, ACTOR3D_ENEMY_IDS, ACTOR3D_HERO_WEAPON_IDS } from './actor-3d-controller.mjs';
 import { heroClipProp } from './actor-3d-clips.mjs';
 import { validateWeaponModelManifest, decodeWeaponGlb, createWeaponAttachment, weaponModelUrl, weaponSocketToModel, weaponModelToWorldOffset } from './weapon-model.mjs';
 
@@ -223,7 +223,7 @@ export async function createActor3dPixiBackend({ renderer, signal, maxActors = 2
     prepareActor(id) {
       if (disposed) return false;
       if (ready.has(id)) return true;
-      if (!ACTOR3D_ENEMY_IDS.includes(id) || pending.has(id) || failed.has(id)) return false;
+      if ((!ACTOR3D_ENEMY_IDS.includes(id) && !ACTOR3D_BOSS_IDS.includes(id)) || pending.has(id) || failed.has(id)) return false;
       pending.add(id);
       // One decode/upload at a time. A failed optional archetype retains its
       // original sprites; it cannot retire already working hero/boss assets.

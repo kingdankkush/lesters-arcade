@@ -32,7 +32,7 @@ import { createPlayerDefeatController } from './combat-lifecycle.mjs';
 import { resolveCombatHits } from './combat-events.mjs';
 import { resolveEnemyAttackAgainstPlayer, stepEnemyAttacks } from './enemy-combat.mjs';
 import { projectGasBomberCanister } from './enemy-attack-presentation.mjs';
-import { ENEMY_ARCHETYPES, ENEMY_ARCHETYPE_IDS } from './enemy-archetypes.mjs';
+import { ENEMY_ARCHETYPES as LEGACY_ENEMY_ARCHETYPES, ENEMY_ARCHETYPE_IDS } from './enemy-archetypes.mjs';
 import { createOrdinaryEnemyHurtboxProfile } from './enemy-hurtboxes.mjs';
 import {
   createLiquidatorProductionDisplay,
@@ -434,6 +434,13 @@ const WEAPON_COLORS = WEAPON_VFX_COLORS;
 // filled by adoptWorldContext before the bridge, the renderer or any session
 // can read them; every legacy call site keeps reading this one name.
 let HMH_WORLD_CONTEXT = null;
+// The ten-area world's gameplay wiring (its lazy combat module): live
+// district bosses, the 2.0 enemies, cover and traversal. Null in the legacy
+// world, where every call below is skipped and the tick is unchanged.
+let TEN_AREA_COMBAT = null;
+// The archetype table the runtime reads: the legacy six, plus the 2.0 enemies
+// in the ten-area world.
+let ENEMY_ARCHETYPES = LEGACY_ENEMY_ARCHETYPES;
 let LEVEL_ONE_WORLD = LEGACY_LEVEL_ONE_WORLD;
 let WORLD_BOUNDS = LEVEL_ONE_WORLD.bounds;
 let WORLD_BLOCKERS = LEVEL_ONE_WORLD.collisionBlockers;
@@ -448,6 +455,8 @@ let worldReveal = LEGACY_WORLD_REVEAL;
 const selectLevelEntry = (seed) => (HMH_WORLD_CONTEXT?.gameplay ? HMH_WORLD_CONTEXT.selectEntry(seed) : selectLegacyLevelEntry(seed));
 function adoptWorldContext(context) {
   HMH_WORLD_CONTEXT = context;
+  TEN_AREA_COMBAT = context.combat ?? null;
+  ENEMY_ARCHETYPES = TEN_AREA_COMBAT?.archetypes ?? LEGACY_ENEMY_ARCHETYPES;
   LEVEL_ONE_WORLD = context.world;
   RUN_SUMMARY_ENABLED = context.official === true;
   worldReveal = context.legacy ? LEGACY_WORLD_REVEAL : context.reveal;
@@ -687,6 +696,10 @@ async function boot() {
     }
     throw error;
   }
+  // Ten-area only: the one boss code path serves whichever boss is live.
+  // The defeat path names the Liquidator (the legacy map's only boss); here
+  // it settles the slot that was live and drops that boss's Seal.
+  if (TEN_AREA_COMBAT) ({ stepLiquidatorBoss, applyLiquidatorDamage, isLiquidatorTargetable, getLiquidatorVulnerability, liquidatorPose, defeatBossSlot, dropGenesisSeal } = TEN_AREA_COMBAT.bossDispatch({ stepLiquidatorBoss, applyLiquidatorDamage, isLiquidatorTargetable, getLiquidatorVulnerability, liquidatorPose, defeatBossSlot, dropGenesisSeal }));
   // Adaptive sharpness (2026-09-16): a phone starts at the safe resolution and
   // earns one step up to 1.5 after ~4 s of fast frames; slow frames step it
   // back down for the rest of the session. Desktop keeps its profile value.
@@ -1334,6 +1347,10 @@ async function boot() {
   };
 
   const createRosterOrVectorDisplay = (archetypeId, eliteProjection) => {
+    // Ten-area 2.0 enemies borrow their declared legacy roster sprite with a
+    // distinct tint until their own atlas exists (projection only).
+    const spriteFallback = TEN_AREA_COMBAT?.spriteFallback(archetypeId);
+    if (spriteFallback) archetypeId = spriteFallback.sourceActorId;
     const index = enemyRosterIndexes.get(archetypeId);
     const texture = enemyRosterTextures.get(archetypeId);
     if (index && texture) {
@@ -1360,6 +1377,7 @@ async function boot() {
       // The vector fallback below already draws its own and must stay untagged
       // or it would sit on two.
       display.contactShadowFootprint = ENEMY_ARCHETYPES[archetypeId]?.radius ?? 20;
+      if (spriteFallback) display.tint = spriteFallback.tint;
       return display;
     }
     requestEnemyRosterAtlas(archetypeId);
@@ -1421,7 +1439,10 @@ async function boot() {
   const { createEnemyDisplayPool } = await enemyDisplayPoolModule;
   const enemyDisplayPool = createEnemyDisplayPool({
     create: createRosterOrVectorDisplay,
-    keyFor: (archetypeId, elite) => enemyRosterIndexes.get(archetypeId) ?? `${archetypeId}:${elite}`,
+    keyFor: (archetypeId, elite) => {
+      const borrowed = TEN_AREA_COMBAT?.spriteFallback(archetypeId)?.sourceActorId;
+      return borrowed ? `${archetypeId}:${enemyRosterIndexes.has(borrowed)}:${elite}` : enemyRosterIndexes.get(archetypeId) ?? `${archetypeId}:${elite}`;
+    },
     eliteOf: isEliteEnemyProjection,
     markers: enemyMarkers,
     parent: enemyVisuals,
@@ -1538,7 +1559,7 @@ async function boot() {
   const worldTourSpawns = tourModule?.createWorldTourSpawns(authoredPointOfInterestPlacements) ?? {};
   const evidencePlayerSpawn = evidenceSafeEnabled && worldTourSpawns[worldTourId]
     ? worldTourSpawns[worldTourId]
-    : LEVEL_ONE_WORLD.player.spawn;
+    : (evidenceSafeEnabled && TEN_AREA_COMBAT?.evidenceSpawn(runtimeParams.get('tenAreaEvidence'), LEVEL_ONE_WORLD.player.spawn)) || LEVEL_ONE_WORLD.player.spawn;
   let runtimePlayerSpawn = evidencePlayerSpawn;
   // The portal forwards evidenceSafe in any mode, so its gameplay effects (the
   // evidence spawn and an invulnerable hero) apply only outside Ranked: a
@@ -1797,6 +1818,8 @@ async function boot() {
   // S1.5 boss registry and lifecycle (boss-slots.mjs); liquidatorBoss is its
   // Liquidator once a trigger has started him.
   let bossSlots = null;
+  // Ten-area cover + traversal state for the session (null in the legacy world).
+  let tenAreaRun = null;
   let bossHitVisualUntilTick = -1;
   let bossDeathVisualUntilTick = -1;
   let lastBossStep = null;
@@ -1888,8 +1911,9 @@ async function boot() {
   // A live boss floor's closed locks join the world's blockers (S1.5).
   // W4a: a world-keyed boss table brings its own lock capsules.
   const activeBossLockBlockers = () => HMH_WORLD_CONTEXT.gameplay?.bossLockBlockers ?? BOSS_LOCK_BLOCKERS;
+  const closedBossWalls = () => (TEN_AREA_COMBAT ? TEN_AREA_COMBAT.closedBossWalls(bossSlots) : bossSlots?.slots.liquidator.closedWalls);
   const bossLockBlockers = () => {
-    const closed = bossSlots?.slots.liquidator.closedWalls;
+    const closed = closedBossWalls();
     return closed?.length ? activeBossLockBlockers().filter((wall) => closed.includes(wall.id)) : [];
   };
   const rebuildWorldBlockers = () => {
@@ -2257,6 +2281,15 @@ async function boot() {
           .moveTo(a.x, a.y).lineTo(b.x, b.y).stroke({ color: 0xff496c, width: 3, alpha: 0.85 });
         bossTelegraphPrimitiveCount += 1;
       }
+      // Ten-area contextual prompts (presentation only): a small pulsing ring
+      // on the cover spot or ledge the hero could take from here.
+      for (const ring of tenAreaRun?.prompts(actor, playerBody?.radius) ?? []) {
+        const at = worldToScreen(ring, camera, view);
+        const pulse = 0.55 + 0.45 * Math.sin((bossVisualTick % 60) / 60 * Math.PI * 2);
+        const radius = 15 * camera.zoom;
+        bossTelegraphs.ellipse(at.x, at.y, radius, radius * 0.5).stroke({ color: 0x080d12, width: 4, alpha: 0.5 })
+          .ellipse(at.x, at.y, radius, radius * 0.5).stroke({ color: ring.kind.startsWith('cover') ? 0x7fe7ff : 0xffd166, width: 2, alpha: 0.45 + pulse * 0.4 });
+      }
     if (liquidatorBoss && (liquidatorBoss.active || bossVisualTick < bossDeathVisualUntilTick)) {
         const bossY = interpolateStep(bossPreviousY, liquidatorBoss.y, renderAlpha);
         const bossScreen = worldToScreen({ x: interpolateStep(bossPreviousX, liquidatorBoss.x, renderAlpha), y: bossY, z: liquidatorBoss.groundZ }, camera, view);
@@ -2270,6 +2303,8 @@ async function boot() {
         bossVisual.position.set(bossScreen.x, bossScreen.y);
         bossVisual.zIndex = worldDepthKey(bossY);
         bossVisual.scale.set((bossVisual.rosterScale ?? 1) * camera.zoom * (1 + bossHaltBeat));
+        // Ten-area district bosses wear the Liquidator body tinted and scaled.
+        TEN_AREA_COMBAT?.styleBoss(bossVisual, liquidatorBoss);
         // Boss health reads from the dedicated bar, never from transparency;
         // the bell intro fades him in as the freight lift brings him down.
         const bossIntroTicks = liquidatorBoss.startTick + liquidatorBoss.introTicks - bossVisualTick;
@@ -3143,10 +3178,12 @@ async function boot() {
           pose: liquidatorPose({ boss: liquidatorBoss, player: actor, tick: bossVisualTick,
             lastAttack: lastBossResolvedAttack, hitUntil: bossHitVisualUntilTick, deathUntil: bossDeathVisualUntilTick }),
           original: bossVisual,
+          ...TEN_AREA_COMBAT?.boss3d(liquidatorBoss),
         } : null;
         actor3dPilot.updateGame(productionHeroDisplay ? { actorId: productionHeroId, weaponId: heldWeapon?.id,
           x: renderState.x, y: renderState.y, z: renderState.z, heading: Math.atan2(heldAim.y, heldAim.x),
           action: actor3dHeroAction, actionTick: actor3dHeroTick, moving: motion?.locomotion === 'moving',
+          ...tenAreaRun?.heroClip(bossVisualTick),
           bodyTint: actor3dHeroFlash !== 0xffffff ? actor3dHeroFlash : settings.cosmetics?.heroTint,
           weaponTint: actor3dHeroFlash !== 0xffffff ? actor3dHeroFlash : settings.cosmetics?.weaponTint,
           bodyHeight: productionHeroDisplay.minimumBodyHeight, originals: [actorVisual, heldWeaponLayer] } : null, enemy3d, camera, view, boss3d);
@@ -3491,7 +3528,12 @@ async function boot() {
     // W4a: a world-keyed mission owns its own objective and boss-zone rows and
     // has no prisoner cages; the legacy tables above stay untouched.
     if (HMH_WORLD_CONTEXT.gameplay) missionState=createMissionState(payload.session.seed,{objectives:HMH_WORLD_CONTEXT.gameplay.missionObjectives,bossZones:HMH_WORLD_CONTEXT.gameplay.missionBossZones});
+    // The ten-area courts' locks reopen the same way.
+    if (TEN_AREA_COMBAT) for (const wallId of TEN_AREA_COMBAT.closedBossWalls(bossSlots)) refreshWorldDesignGateNavigation(navGrid, BOSS_LOCK_WORLD, queryGround, wallId, LEVEL_ONE_WORLD.collisionBlockers);
     bossSlots=createBossSlots({ seed: payload.session.seed, ...(HMH_WORLD_CONTEXT.gameplay ? { definitions: HMH_WORLD_CONTEXT.gameplay.bossDefinitions } : {}) });
+    tenAreaRun = TEN_AREA_COMBAT?.createRun() ?? null;
+    // Smoke tooling (evidenceSafe, never Ranked): a court's boss is ready at tick 120.
+    if (evidenceGameplayEnabled && TEN_AREA_COMBAT) TEN_AREA_COMBAT.evidenceReady(runtimeParams.get('tenAreaEvidence'), bossSlots);
     worldDestructibleState=createWorldDestructibles();
     worldPacingState=createWorldDesignPacing();
     // The flow field is per-run simulation state: a restart resets the tick
@@ -3861,9 +3903,11 @@ async function boot() {
         ? liquidatorBoss.pendingAttacks.filter((pending) => pending.geometry && pending.damage > 0)
           .map((pending) => ({ contains: bossShapeDodgeDanger(pending.geometry, playerBody.radius), resolveTick: pending.resolveTick }))
         : [];
-      const dodge = !rosterPreviewEnabled ? resolveDodgeIntent({
+      // A ten-area mantle or landing locks the hero, dodges included; a dodge
+      // out of cover rolls along the cover facing on a neutral stick.
+      const dodge = !rosterPreviewEnabled && !tenAreaRun?.locked() ? resolveDodgeIntent({
         tick, input: { ...tickInput, dash: dodgePressed }, actor, state: dashState, body: playerBody, bounds: WORLD_BOUNDS,
-        blockers: WORLD_BLOCKERS, queryGround, enemies: grayboxEnemies, bossDangers, lastMove: lastMoveDirection, aim: aimIntent.direction,
+        blockers: WORLD_BLOCKERS, queryGround, enemies: grayboxEnemies, bossDangers, lastMove: tenAreaRun ? tenAreaRun.dodgeLastMove(lastMoveDirection) : lastMoveDirection, aim: aimIntent.direction,
       }) : null;
       // Under 48 safe units a manual dodge is refused: no cooldown, a flash.
       if (dodge?.blocked) pushCombatVisualEvent({ type: 'dash-blocked', tick, point: { x: actor.x, y: actor.y, z: actor.groundZ + 24 } });
@@ -3877,6 +3921,19 @@ async function boot() {
         lastDashDirection = { ...dashState.direction };
       }
       const dashFrame = stepDash(dashState, { tick });
+      // Ten-area cover + traversal (HMH-COVER-TRAVERSAL-V1 §3.2 B, C): the
+      // pre-movement hero and this tick's input; a dash rolls out of cover
+      // and never triggers a ledge. Null in the legacy world.
+      const tenAreaStep = tenAreaRun?.step({
+        tick,
+        player: { x: motion.x, y: motion.y, groundZ: actor.groundZ, radius: playerBody.radius },
+        move: dashFrame.active ? { x: 0, y: 0 } : tickInput.move,
+        fire: aimIntent.fire,
+        aimHeld: tickInput.aimDevice === 'gamepad' && tickInput.aimAssist === true,
+        dodge: Boolean(dashStart?.started) || dashFrame.active,
+        reload: weaponLoadout.weapons[weaponLoadout.activeWeaponId]?.reloadCompleteTick != null,
+        hit: lastPlayerHit?.tick === tick - 1,
+      }) ?? null;
       if (dashFrame.active) {
         const dashWorld = resolveDashWorldStep({
           state: dashState,
@@ -3915,6 +3972,28 @@ async function boot() {
           point: { x: motion.x, y: motion.y, z: lastGround.groundZ + 24 },
           direction: { ...dashState.direction },
         });
+      } else if (tenAreaStep?.position) {
+        // §3.2 D: cover or a mantle / landing holds the hero. No free movement
+        // and no sweeps (the cover snap keeps a one-unit standoff); the ground
+        // is re-read only once a transition lands on authored ground. Enemies
+        // still yield to a hero in cover.
+        motion.x = tenAreaStep.position.x;
+        motion.y = tenAreaStep.position.y;
+        motion.vx = 0;
+        motion.vy = 0;
+        motion.recoilVx = 0;
+        motion.recoilVy = 0;
+        lastCollision = { position: { x: motion.x, y: motion.y }, contacts: [], depenetrations: [], telemetry: { zeroDisplacementFrames: 0 } };
+        lastTraversal = null;
+        zeroDisplacementFrames = 0;
+        if (tenAreaStep.reground || !lastGround) lastGround = queryGround(motion.x, motion.y);
+        if (tenAreaStep.inCover) {
+          const pressure = resolveEnemyPressure({ x: motion.x, y: motion.y, radius: 24, velocity: { x: 0, y: 0 } }, grayboxEnemies);
+          for (const enemy of grayboxEnemies) {
+            const delta = pressure.enemyDeltas.get(enemy.id);
+            if (delta) { enemy.x += delta.x; enemy.y += delta.y; }
+          }
+        }
       } else {
         const currentGround = queryGround(motion.x, motion.y);
         const moveMagnitude = Math.hypot(tickInput.move.x, tickInput.move.y);
@@ -4011,6 +4090,8 @@ async function boot() {
         zeroDisplacementFrames = lastCollision.telemetry.zeroDisplacementFrames;
       }
       if (lastTraversal?.dropped) {
+        // §3.2 E: an authored ledge drop takes the same land recovery.
+        tenAreaRun?.landRecovery(tick, { x: motion.x, y: motion.y, z: lastGround.groundZ });
         combatAudio.play('land', { volume: 0.11 });
         pushCombatVisualEvent({
           type: 'landing',
@@ -4038,7 +4119,7 @@ async function boot() {
       actor.vx = motion.vx;
       actor.vy = motion.vy;
       actor.heading = Math.atan2(aimIntent.direction.y, aimIntent.direction.x);
-      actor.locomotion = dashFrame.active ? 'dash' : motion.locomotion;
+      actor.locomotion = dashFrame.active ? 'dash' : tenAreaStep?.locomotion ?? motion.locomotion;
       actor.combat = aimIntent.fire ? 'firing' : 'ready';
       // S1.4 mission step (package §3.2, order within a tick): after movement,
       // before the grants, gate changes and navgrid patches it returns, and
@@ -4141,7 +4222,8 @@ async function boot() {
         level: runProgression.level,
         enemies: grayboxEnemies.filter((enemy) => enemy.active && enemy.health > 0),
       });
-      liquidatorBoss = bossSlots.slots.liquidator.boss;
+      // The ten-area world presents whichever boss is live (one at a time).
+      liquidatorBoss = TEN_AREA_COMBAT ? TEN_AREA_COMBAT.activeBoss(bossSlots) : bossSlots.slots.liquidator.boss;
       if (bossFrame.closed.length || bossFrame.opened.length) refreshBossLockNavigation([...bossFrame.closed, ...bossFrame.opened]);
       let bossRecycled = false;
       for (const enemyId of bossFrame.recycle) bossRecycled = retireEnemyFromPopulation(enemyPopulation, enemyId, { tick, reason: 'boss-lock' }).retired || bossRecycled;
@@ -4150,9 +4232,9 @@ async function boot() {
         // Owner audio ruling: boss starts, locks and tells are silent.
         if (event.type === 'boss-initiated') {
           requestEnemyRosterAtlas('the-liquidator');
-          setAccessibleCombatStatus(event.trigger === 'dark-pool' ? 'The Liquidator looks up from his ledgers. The door seals behind you.' : 'The Closing Bell rings. The Liquidator is coming down.');
+          setAccessibleCombatStatus(TEN_AREA_COMBAT?.bossText(event) ?? (event.trigger === 'dark-pool' ? 'The Liquidator looks up from his ledgers. The door seals behind you.' : 'The Closing Bell rings. The Liquidator is coming down.'));
         } else if (event.type === 'boss-withdrawn') {
-          setAccessibleCombatStatus(event.reason === 'retreat' ? 'You slip out. The Liquidator withdraws to recover.' : 'You left the floor. The Liquidator withdraws.');
+          setAccessibleCombatStatus(TEN_AREA_COMBAT?.bossText(event) ?? (event.reason === 'retreat' ? 'You slip out. The Liquidator withdraws to recover.' : 'You left the floor. The Liquidator withdraws.'));
         }
       }
 
@@ -4188,6 +4270,8 @@ async function boot() {
           visualMode: 'normal',
           // W4a: a world-keyed role table; the legacy table is the default.
           ...(HMH_WORLD_CONTEXT.gameplay ? { roleGates: HMH_WORLD_CONTEXT.gameplay.roleGates } : {}),
+          // Ten-area: the 2.0 enemies join their areas' role pools.
+          ...(TEN_AREA_COMBAT ? { districtArchetypes: TEN_AREA_COMBAT.districtArchetypes } : {}),
         });
       if (lastDirectorStep.inserted) syncEnemyMarkers(grayboxEnemies);
 
@@ -4995,7 +5079,8 @@ async function boot() {
         pushCombatVisualEvent({ type: 'enemy-attack', tick, point: event.target, color: ENEMY_ARCHETYPES[event.archetypeId].visual.color });
         const resolved = resolveEnemyAttackAgainstPlayer(event, {
           player: { id: 'player', x: actor.x, y: actor.y, groundZ: actor.groundZ, radius: playerBody.radius },
-          invulnerable: playerInvulnerable,
+          // §3.2 G: a ten-area mantle refuses melee; lanes and blasts land.
+          invulnerable: playerInvulnerable || tenAreaRun?.meleeInvulnerable(event) === true,
           blockers: WORLD_BLOCKERS,
         });
         if (!resolved.hit) continue;
@@ -5007,7 +5092,8 @@ async function boot() {
           targetId: 'player',
           sourceId: event.enemyId,
           weaponId: `enemy-${event.archetypeId}`,
-          damage: resolved.damage,
+          // §3.2 I: ten-area cover cuts what still reaches the hero.
+          damage: tenAreaRun ? tenAreaRun.coverDamage({ x: event.origin.x, y: event.origin.y, z: event.origin.groundZ ?? actor.groundZ }, resolved.damage) : resolved.damage,
           criticalChance: 0,
           criticalMultiplier: 1,
           armorPiercing: false,
@@ -5056,7 +5142,8 @@ async function boot() {
           targetId: 'player',
           sourceId: liquidatorBoss.id,
           weaponId: `boss-${event.attackId}`,
-          damage: resolved.damage,
+          // §3.2 J: boss strikes on a hero in ten-area cover, from the boss.
+          damage: tenAreaRun ? tenAreaRun.coverDamage({ x: event.origin.x, y: event.origin.y, z: event.groundZ }, resolved.damage) : resolved.damage,
           criticalChance: 0,
           criticalMultiplier: 1,
           armorPiercing: false,
@@ -5301,7 +5388,7 @@ async function boot() {
             pushCombatVisualEvent({ type: 'kill', tick, point: { x: liquidatorBoss.x, y: liquidatorBoss.y, z: liquidatorBoss.groundZ + 24 }, color: 0xff6b5c });
             bossDeathVisualUntilTick = tick + 45;
             triggerCameraShake(tick, 12);
-            setAccessibleCombatStatus(rewards.goldenParachute ? 'The Liquidator is liquidated. A Golden Parachute is yours.' : 'The Liquidator is liquidated. His vault is open.');
+            setAccessibleCombatStatus(TEN_AREA_COMBAT?.bossText({ type: 'boss-defeated', bossId: liquidatorBoss.bossId }) ?? (rewards.goldenParachute ? 'The Liquidator is liquidated. A Golden Parachute is yours.' : 'The Liquidator is liquidated. His vault is open.'));
             if (bridge?.initialized) {
               bridge.send('game:run-event', {
                 tick,
