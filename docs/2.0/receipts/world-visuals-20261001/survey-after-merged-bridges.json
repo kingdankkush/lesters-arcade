@@ -1,0 +1,188 @@
+{
+ "origin": "http://127.0.0.1:62878",
+ "captures": [
+  {
+   "tier": "desktop",
+   "name": "bridge-scrypt-bayou-lock-bridge",
+   "cat": "water",
+   "x": 2860,
+   "y": 12250,
+   "file": "desktop-bridge-scrypt-bayou-lock-bridge.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "desktop",
+   "name": "bridge-scrypt-bayou-north-bridge",
+   "cat": "water",
+   "x": 2860,
+   "y": 10950,
+   "file": "desktop-bridge-scrypt-bayou-north-bridge.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "desktop",
+   "name": "bridge-hashwood-river-city-bridge",
+   "cat": "water",
+   "x": 7500,
+   "y": 11150,
+   "file": "desktop-bridge-hashwood-river-city-bridge.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "desktop",
+   "name": "bridge-hashwood-river-woods-bridge",
+   "cat": "water",
+   "x": 8900,
+   "y": 11150,
+   "file": "desktop-bridge-hashwood-river-woods-bridge.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "desktop",
+   "name": "water-bayou-mid",
+   "cat": "water",
+   "x": 2540,
+   "y": 11600,
+   "file": "desktop-water-bayou-mid.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "desktop",
+   "name": "water-river-waterfall",
+   "cat": "water",
+   "x": 6100,
+   "y": 10900,
+   "file": "desktop-water-river-waterfall.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "desktop",
+   "name": "deck-ledger-ridge-maintenance-shelf",
+   "cat": "elevation",
+   "x": 7425,
+   "y": 1650,
+   "file": "desktop-deck-ledger-ridge-maintenance-shelf.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "phone",
+   "name": "bridge-scrypt-bayou-lock-bridge",
+   "cat": "water",
+   "x": 2860,
+   "y": 12250,
+   "file": "phone-bridge-scrypt-bayou-lock-bridge.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "phone",
+   "name": "bridge-scrypt-bayou-north-bridge",
+   "cat": "water",
+   "x": 2860,
+   "y": 10950,
+   "file": "phone-bridge-scrypt-bayou-north-bridge.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "phone",
+   "name": "bridge-hashwood-river-city-bridge",
+   "cat": "water",
+   "x": 7500,
+   "y": 11150,
+   "file": "phone-bridge-hashwood-river-city-bridge.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "phone",
+   "name": "bridge-hashwood-river-woods-bridge",
+   "cat": "water",
+   "x": 8900,
+   "y": 11150,
+   "file": "phone-bridge-hashwood-river-woods-bridge.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "phone",
+   "name": "water-bayou-mid",
+   "cat": "water",
+   "x": 2540,
+   "y": 11600,
+   "file": "phone-water-bayou-mid.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "phone",
+   "name": "water-river-waterfall",
+   "cat": "water",
+   "x": 6100,
+   "y": 10900,
+   "file": "phone-water-river-waterfall.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "phone",
+   "name": "deck-ledger-ridge-maintenance-shelf",
+   "cat": "elevation",
+   "x": 7425,
+   "y": 1650,
+   "file": "phone-deck-ledger-ridge-maintenance-shelf.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  }
+ ],
+ "errors": []
+}
