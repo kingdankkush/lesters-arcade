@@ -56,7 +56,7 @@ export function createAreaPlanContext(world, areaId, { pages, margin = 0, routeC
   const pieces = world.pieces.filter(piece => piece.visible.areaId === areaId);
   // Prop blockers (pieces authored under a plan's own cards) are collision for
   // those cards, never a support or obstacle for placing them.
-  const solids = world.pieces.filter(piece => piece.blocker && !piece.visible.artPlanId);
+  const solids = world.pieces.filter(piece => piece.blocker && !piece.visible.artPlanId && !piece.visible.guardOf);
   const guard = createPlacementGuard({ world, areaId, routeClearance, siteClearance });
   const blockingGuard = createBlockingCardGuard(world);
   const piece = name => pieces.find(entry => entry.id === `${areaId}-${name}`) ?? null;

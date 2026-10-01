@@ -80,7 +80,8 @@ export function createHollowPinesArtPlan(world) {
     [-700, -1250, 160, 160], [550, -1300, 200, 150], [1450, 300, 160, 200], [-1750, -1750, 150, 150], [-200, 1750, 200, 120], [1750, -500, 140, 200]];
   POCKETS.forEach(([x, y, rx, ry], p) => scatter({ key: `pocket-${p}`, x: cx + x, y: cy + y, rx, ry, count: 12, radius: 18, place: (px, py, n, v) => {
     if (n % 6 === 0) prop(n % 12 === 0 ? 'b2-70' : 'b1-53', px, py, (n % 12 === 0 ? 230 : 210) * (0.85 + 0.3 * v), { flip: v > 0.5, tint: n % 12 === 0 ? PINES_ASH_TINT : 0xc8c6cc });
-    else if (n % 6 === 3) prop(n % 4 === 1 ? 'b2-74' : 'b2-73', px, py, n % 4 === 1 ? 92 : 58, { flip: v > 0.5, tint: 0xbcb8b8 });
+    // Pocket debris stays knee-to-waist high (<= 48): walk-over clutter between the dead trees.
+    else if (n % 6 === 3) prop(n % 4 === 1 ? 'b2-74' : 'b2-73', px, py, n % 4 === 1 ? 48 : 44, { flip: v > 0.5, tint: 0xbcb8b8 });
     else prop('b1-05', px, py, 42 + n % 3 * 7, { flip: v > 0.5, tint: PINES_ASH_TINT, shadow: n % 2 === 0 });
   } }));
   // Groundskeeper's stacked materials behind the house, clear of both ramps.

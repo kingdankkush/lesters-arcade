@@ -74,10 +74,12 @@ test('the generated prop-blocker module is current and every row is a frozen aut
     assert.ok(piece.blocker.maxZ > 0);
     assert.equal(piece.blocker.combatCover, piece.blocker.coverKind !== 'none');
   }
-  // Placement guards and terrain see only layout solids, so the plans that
-  // the colliders were generated from never move because of them.
-  const guard = createPlacementGuard({ world });
-  assert.equal(guard.counts.blockers, world.pieces.filter(piece => piece.blocker).length - props.length);
+  // Placement guards and terrain see only layout solids (no prop blocker, no
+  // edge guard), so the plans the colliders were generated from never move
+  // because of them.
+  const guard = createPlacementGuard({ world }), edgeGuards = world.pieces.filter(piece => piece.kind === 'edge-guard');
+  assert.ok(edgeGuards.length >= 20);
+  assert.equal(guard.counts.blockers, world.pieces.filter(piece => piece.blocker).length - props.length - edgeGuards.length);
 });
 
 // Headless textures sized like the real files (as the renderer tests do).
