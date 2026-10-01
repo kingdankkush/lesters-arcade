@@ -251,3 +251,16 @@ test('Litecoin City keeps tall cards off the walked street centrelines and masts
   assert.ok(masts.length >= 4 && masts.every(p => p.height <= MAST_MAX_HEIGHT && p.fade), 'masts are human-relative and fade over the hero');
   assert.ok(summary.signs.length >= 15, 'sign carriers survive the rule');
 });
+
+test('half-tier kit pages loaded at resolution 0.5 frame cards in texture units, not pixels', async () => {
+  const cache = createAreaArtTextureCache({ loadTexture: async url => { const [w, h] = sizeFor(url); const half = url.includes('@0.5x'); return new Texture({ source: new TextureSource({ width: half ? w * 2 : w, height: half ? h * 2 : h, resolution: half ? 0.5 : 1 }) }); } });
+  const plan = createRugpullWoodsArtPlan(world);
+  const art = createAreaArt({ world, areaId: 'rugpull-woods', plan, kit, textureCache: cache, resolution: 'half', createProgram: kind => ({ name: kind }), createControlTexture: () => null });
+  await art.ready;
+  const tent = world.pieces.find(p => p.id === 'rugpull-woods-supply-tent'), node = art.createSolid(tent);
+  const sprite = node.children.find(child => child.texture?.frame);
+  const item = kit.items.find(i => i.assetId === 'b1-13');
+  assert.equal(sprite.texture.frame.x, item.frame.x, 'frame x in units equals the full-page pixel x');
+  assert.equal(sprite.texture.frame.width, item.frame.w);
+  art.dispose();
+});

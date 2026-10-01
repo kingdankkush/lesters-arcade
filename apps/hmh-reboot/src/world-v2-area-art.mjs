@@ -21,7 +21,11 @@ const DETAIL_FRAMES = Object.freeze({ 'detail:grass': { x: 0, y: 0, w: 180, h: 1
 const scaleMatrix = s => ({ a: s, b: 0, c: 0, d: s, tx: 0, ty: 0 });
 // Tiles decode at 512 px (full) or 256 px (@0.5x); fills map world units per
 // 512-texel repeat whatever the decoded size.
-const tileScale = (texture, scale) => scale * 512 / (texture?.source.pixelWidth || 512);
+// Pixi's asset resolver reads `@0.5x` in a file name as resolution 0.5, so a
+// half page is 1024 px but 2048 texture units wide. Frames and fill matrices
+// are in units; `unitsPerPixel` converts pixel coordinates.
+const unitsPerPixel = texture => (texture?.source.width && texture.source.pixelWidth ? texture.source.width / texture.source.pixelWidth : 1);
+const tileScale = (texture, scale) => scale * 512 / (texture?.source.width || 512);
 
 // ---- splat shader: palette colour x amplified tile grain, blended per pixel by the control field ----
 const TERRAIN_VERTEX = `#version 300 es
@@ -316,9 +320,9 @@ export function createAreaArt({ world, areaId, plan, kit = null, loadTexture, te
     if (entry) return entry;
     const item = resolveKitItem(manifest, assetId), page = pageTextures.get(item.pageImage);
     if (!page) throw new Error(`kit page for ${assetId} is not resident`);
-    const f = item.frame;
-    const texture = new Texture({ source: page.source, frame: new Rectangle(f.x * ratio, f.y * ratio, f.w * ratio, f.h * ratio) });
-    entry = { item, texture, alphaHeight: item.alphaBounds.h * ratio, alphaWidth: item.alphaBounds.w * ratio, anchor: item.anchor };
+    const f = item.frame, k = ratio * unitsPerPixel(page);
+    const texture = new Texture({ source: page.source, frame: new Rectangle(f.x * k, f.y * k, f.w * k, f.h * k) });
+    entry = { item, texture, alphaHeight: item.alphaBounds.h * k, alphaWidth: item.alphaBounds.w * k, anchor: item.anchor };
     frames.set(assetId, entry);
     return entry;
   };
@@ -363,7 +367,7 @@ export function createAreaArt({ world, areaId, plan, kit = null, loadTexture, te
       const a = vertices[i], b = vertices[(i + 1) % n], oa = outer[i], ob = outer[(i + 1) % n];
       const dx = b.x - a.x, dy = b.y - a.y, len = Math.hypot(dx, dy) || 1, ux = dx / len, uy = dy / len;
       const nx = oa.x - a.x, ny = oa.y - a.y, nlen = Math.hypot(nx, ny) || 1;
-      const s = tileScale(texture, m.scale), fh = texture.source.pixelHeight || 128, matrix = { a: ux * s, b: uy * s, c: nx / nlen * (feather / fh), d: ny / nlen * (feather / fh), tx: a.x, ty: a.y };
+      const s = tileScale(texture, m.scale), fh = texture.source.height || 128, matrix = { a: ux * s, b: uy * s, c: nx / nlen * (feather / fh), d: ny / nlen * (feather / fh), tx: a.x, ty: a.y };
       // Global texture space: the strip's own bounds must not rescale the gradient.
       g.poly([a.x, a.y, b.x, b.y, ob.x, ob.y, oa.x, oa.y]).fill({ texture, matrix, textureSpace: 'global', color: multiplyTint(m.tint, tint), alpha: Math.min(1, m.alpha + 0.15) * alpha });
     }
@@ -653,7 +657,7 @@ export function createAreaArt({ world, areaId, plan, kit = null, loadTexture, te
         let enx = (oc.y - oa.y) / ol, eny = -(oc.x - oa.x) / ol; if (enx * nx + eny * ny < 0) { enx = -enx; eny = -eny; }
         const lit = Math.min(1, 0.78 + 0.22 * Math.max(0, -enx) + 0.1 * Math.max(0, eny)), shade = Math.round(lit * 255) * 0x010101;
         if (rocky && rockFace) {
-          const s = 260 / (rockFace.source.pixelWidth || 512), fh = rockFace.source.pixelHeight || 128;
+          const s = 260 / (rockFace.source.width || 512), fh = rockFace.source.height || 128;
           // World-continuous u along x (the strip never restarts per segment);
           // v runs from the lip to the foot along this segment's slope.
           const slope = Math.abs(dx) > len * 0.3 ? dy / dx : null;
