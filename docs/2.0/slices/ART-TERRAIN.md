@@ -93,8 +93,9 @@ walked with WASD at 240 units/s. `review.md` holds the per-shot inspection.
 
 Merged integration `7d26c1880` and then `31022b045` (Farms, River, City,
 Coast and Bayou plans attach `ground.terrain`). Commits `bdde94cf1` (roads +
-banks), `e13117d0c` (splat slots, coherent rock edges, signs, fog) and the
-receipts/doc commit. Still lazy-chunk only: every new symbol lands in
+banks), `e13117d0c` (splat slots, coherent rock edges, signs, fog),
+`7a7242847` (rock faces), `3750fd22b` (City street rule), `b4bb508c3`
+(half-tier frames) and the receipts commit. Still lazy-chunk only: every new symbol lands in
 `chunks/world-v2-area-art-binding-*.js`; `node build.mjs` reports
 `HMH initial JS + shared: 993,366 B` (the integration candidate number; the
 grep of `hmh-reboot/game.js` and its static chunks finds none of the new
@@ -141,8 +142,14 @@ Decoded ground pages per area (tiles + fringes + rock face + 2 × 384²
 control): 6.4–7.9 MB, gate ≤ 8 MB in tests; the world-roads plan loads
 crushed-ore, packed-earth, road and the earth/track grains (≈ 5 MB, shared).
 
-Receipts: `docs/2.0/receipts/terrain-roads-20260930/` (pass-1 to pass-5,
-`review.md`).
+- **City street rule and half-tier frames**: junction masts sit on the
+  pavement (≤ 160 units, fading); no ground card taller than 100 units within
+  120 units of a walked street/road centreline. Half-tier kit pages load at
+  Pixi resolution 0.5 (`@0.5x`), so card frames and fill matrices are now in
+  texture units — this fixed cropped cards across the whole phone tier.
+
+Receipts: `docs/2.0/receipts/terrain-roads-20260930/` (`pass-1/` before,
+`final/` after, JPEG, 4.6 MB, `review.md`).
 
 ## Not done (next window)
 
