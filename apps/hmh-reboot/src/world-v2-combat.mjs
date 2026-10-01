@@ -12,6 +12,7 @@ import { ENEMY_ARCHETYPES, registerEnemyArchetypes } from './enemy-archetypes.mj
 import { NEW_ENEMY_ARCHETYPES } from './enemy-archetypes-2.mjs';
 import { DISTRICT_BOSS_KITS } from './boss-slots.mjs';
 import { dropCourtGenesisSeal } from './boss-courts-world-v1.mjs';
+import { LIQUIDATOR_PHASES } from './liquidator-boss.mjs';
 import { applyCoverToDamage, coverFaceIndex, createCoverState, stepCover } from './cover-system.mjs';
 import {
   TRAVERSAL_RULES_V1,
@@ -103,8 +104,9 @@ function districtBossPose(kit, { boss, player, tick, lastAttack, hitUntil, death
     phaseTick = Math.max(0, tick - pending.resolveTick + (kit.definition.attacks[pending.attackId]?.tellTicks ?? 0));
   } else if (lastAttack && tick >= lastAttack.tick && tick - lastAttack.tick < 30) {
     state = 'attack'; phaseTick = tick - lastAttack.tick;
-  } else if (boss.motion) state = 'run';
-  return { state, tick: poseTick, phaseTick, direction, phase: boss.phaseId, elite: true };
+  }
+  // The shared Liquidator sprite knows only his own phase silhouettes.
+  return { state, tick: poseTick, phaseTick, direction, phase: LIQUIDATOR_PHASES[Math.min(boss.phaseIndex, LIQUIDATOR_PHASES.length - 1)].id, elite: true };
 }
 
 // The district boss GLBs carry ten clips (idle, run, tell, attack, attack-2,
@@ -397,7 +399,7 @@ export function createWorldV2MovementRun({ faces, markers }) {
 // `?evidenceSafe=1&tenAreaEvidence=court:<bossId>` stands the hero 200 west of
 // a court's threshold with the boss ready at tick 120;
 // `tenAreaEvidence=cover` stands it 60 out from the tall cover face nearest
-// the spawn. Smoke tooling, like main.mjs's ?boss=1.
+// the spawn; `tenAreaEvidence=ledge` in the nearest derived climb strip. Smoke tooling, like main.mjs's ?boss=1.
 export function worldV2EvidenceReady({ value, gameplay, bossSlots }) {
   const bossId = typeof value === 'string' && value.startsWith('court:') ? value.slice(6) : null;
   if (!bossId || !gameplay.districtCourts[bossId] || !bossSlots?.slots[bossId]) return false;
@@ -405,7 +407,7 @@ export function worldV2EvidenceReady({ value, gameplay, bossSlots }) {
   return true;
 }
 
-export function worldV2EvidenceSpawn({ value, gameplay, faces, spawn, isClear = () => true }) {
+export function worldV2EvidenceSpawn({ value, gameplay, faces, markers = [], spawn, isClear = () => true }) {
   if (typeof value !== 'string') return null;
   if (value.startsWith('court:')) {
     const bossId = value.slice(6);
@@ -419,6 +421,17 @@ export function worldV2EvidenceSpawn({ value, gameplay, faces, spawn, isClear = 
       if (isClear(spot)) return { id: `evidence-${bossId}`, ...spot, walk: { x: -dx, y: -dy } };
     }
     return null;
+  }
+  if (value === 'ledge') {
+    // The derived climb marker nearest the spawn: stand in its strip.
+    let best = null;
+    for (const marker of markers) {
+      if (marker.kind !== 'climb') continue;
+      const centre = { x: (marker.zone.minX + marker.zone.maxX) / 2, y: (marker.zone.minY + marker.zone.maxY) / 2 };
+      const distance = Math.hypot(centre.x - spawn.x, centre.y - spawn.y);
+      if (!best || distance < best.distance) best = { marker, centre, distance };
+    }
+    return best ? { id: `evidence-ledge-${best.marker.id}`, ...best.centre, walk: { ...best.marker.direction }, markerId: best.marker.id } : null;
   }
   if (value === 'cover') {
     let best = null;
@@ -454,7 +467,7 @@ export function createWorldV2Combat({ world, gameplay, queryGround }) {
     activeBoss: activeWorldV2Boss,
     closedBossWalls: closedWorldV2BossWalls,
     createRun: () => createWorldV2MovementRun({ faces, markers: traversalMarkers.markers }),
-    evidenceSpawn: (value, spawn) => worldV2EvidenceSpawn({ value, gameplay, faces, spawn, isClear: (point) => isWorldV2PointClear(world, queryGround, point) }),
+    evidenceSpawn: (value, spawn) => worldV2EvidenceSpawn({ value, gameplay, faces, markers: traversalMarkers.markers, spawn, isClear: (point) => isWorldV2PointClear(world, queryGround, point) }),
     evidenceReady: (value, bossSlots) => worldV2EvidenceReady({ value, gameplay, bossSlots }),
     // Accessible status lines for a district boss; null keeps the
     // Liquidator's own wording.
