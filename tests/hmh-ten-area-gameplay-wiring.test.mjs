@@ -439,6 +439,12 @@ test('evidence spawns stand the hero beside a court threshold or a tall cover fa
   const cover = combat.evidenceSpawn('cover', world.player.spawn);
   assert.ok(isWorldV2PointClear(world, queryGround, cover));
   assert.equal(combat.evidenceSpawn('nope', world.player.spawn), null);
+  // Survey camera: an explicit clear point (a river bridge deck) is accepted; deep water or a malformed value is not.
+  const deck = combat.evidenceSpawn('at:7500,11150', world.player.spawn);
+  assert.deepEqual({ x: deck.x, y: deck.y, walk: deck.walk }, { x: 7500, y: 11150, walk: { x: 0, y: 0 } });
+  assert.equal(combat.evidenceSpawn('at:6200,11100', world.player.spawn), null, 'deep water is never a spawn');
+  assert.equal(combat.evidenceSpawn('at:-5,10', world.player.spawn), null);
+  assert.equal(combat.evidenceSpawn('at:1,2,3', world.player.spawn), null);
   assert.equal(combat.evidenceReady('cover', slots), false);
   assert.match(source('main.mjs'), /evidenceGameplayEnabled && TEN_AREA_COMBAT/);
 });

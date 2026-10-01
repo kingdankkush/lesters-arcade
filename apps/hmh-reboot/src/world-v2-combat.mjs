@@ -431,6 +431,10 @@ export function worldV2EvidenceReady({ value, gameplay, bossSlots }) {
 
 export function worldV2EvidenceSpawn({ value, gameplay, faces, markers = [], spawn, isClear = () => true }) {
   if (typeof value !== 'string') return null;
+  // Survey camera: stand at an explicit clear world point (`at:x,y`), e.g. a
+  // bridge or deck for the world-visuals receipts. Evidence-only, like the rest.
+  const at = /^at:(\d{1,5}),(\d{1,5})$/.exec(value);
+  if (at) { const spot = { x: Number(at[1]), y: Number(at[2]) }; return isClear(spot) ? { id: `evidence-at-${spot.x}-${spot.y}`, ...spot, walk: { x: 0, y: 0 } } : null; }
   if (value.startsWith('court:')) {
     const bossId = value.slice(6);
     const court = gameplay.districtCourts[bossId];
