@@ -287,3 +287,20 @@ the 2.1.0 rules with the gate on, and the gate-dependent tests
 legacy real-child harness (`batch.mjs` without `--ten-area`) runs the
 default world, which at 2.1.0 is the ten-area one; reproduce legacy runs
 with an older label.
+
+## 11. Review follow-ups (independent review)
+
+- **Stale tabs (required):** E15's deployed child schema follows the game
+  version (8 from 2.1.0), so its HMH ticket minimum is 2.1.0 there and a
+  2.0.x tab gets 409 `client-outdated` before paying (`9e8aaeea1`). The 2.1.0
+  ten-area child also refuses a Free or Ranked session from a pre-2.1.0 build
+  with `game:error client-outdated` and a reload message, so a stale portal
+  never plays a run its v7 bridge would drop at game over.
+- **Review hold:** HMH `nft: true` trophies are withheld from runs with a
+  `*-near-ceiling`, `*-above-selected-upgrades` or `kills-near-capacity` flag
+  and recorded as `pendingReviewAchievementIds` in the stored plausibility
+  (`e7478a3c9`). Of the honest corpus, the 4 flagged runs would be held.
+- **Spawnable roles:** `enemy-role-not-in-visited-areas` rejects kills of
+  ordinary roles outside the visited areas' director pools, the opening pair
+  and the Liquidator's adds (`bd7f3482d`); the corpus stays 43/43, the
+  Tollkeeper relabel forge is refused.
