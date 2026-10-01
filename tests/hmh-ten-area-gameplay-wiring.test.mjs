@@ -484,3 +484,24 @@ test('a district boss never stays out of the hero\'s reach: a stationary hero an
     }
   }
 });
+
+// QA sweep 2026-10-01: a district boss's tells and halts reached the
+// critical-audio caption as "Liquidator: ...". The caption names the boss on
+// the court; the Liquidator keeps his own line.
+test('critical-audio captions name the district boss, never "Liquidator" for another boss', () => {
+  for (const bossId of Object.keys(DISTRICT_BOSS_KITS)) assert.equal(combat.bossCaptionName(bossId), gameplay.bossDefinitions[bossId].name);
+  assert.equal(combat.bossCaptionName('liquidator'), null);
+  assert.equal(combat.bossCaptionName(undefined), null);
+  const source = readFileSync(new URL('../apps/hmh-reboot/src/main.mjs', import.meta.url), 'utf8');
+  assert.match(source, /setAccessibleCombatStatus\(`\$\{TEN_AREA_COMBAT\?\.bossCaptionName\(event\.bossId\) \?\? 'Liquidator'\}: \$\{warning\}\.`\);/);
+  assert.doesNotMatch(source, /setAccessibleCombatStatus\(`Liquidator: \$\{warning\}\.`\)/);
+});
+
+// QA sweep 2026-10-01: the ten-area Liquidator's defeat line promised "His
+// vault is open", but this world places no Arc Rifle vault.
+test('the ten-area Liquidator defeat line names the Genesis Seal, not a vault', () => {
+  const line = combat.bossText({ type: 'boss-defeated', bossId: 'liquidator' });
+  assert.match(line, /Genesis Seal/);
+  assert.doesNotMatch(line, /vault/i);
+  assert.equal(combat.bossText({ type: 'boss-initiated', bossId: 'liquidator' }), null, "the bell line stays the Liquidator's own");
+});

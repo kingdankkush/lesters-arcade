@@ -1,0 +1,1134 @@
+{
+ "seed": 20261001,
+ "ms": 109310,
+ "frames": 200000,
+ "tick": 70193,
+ "state": "game-over",
+ "errors": [],
+ "errorCount": 0,
+ "visits": {
+  "mweb-meadows": 0,
+  "fork-fortress": 2592,
+  "ledger-ridge": 4577,
+  "litecoin-city": 6612,
+  "silver-coast": 8020,
+  "scrypt-bayou": 9702,
+  "hashwood-river": 13966,
+  "hollow-pines": 25195,
+  "rugpull-woods": 27199,
+  "halving-farms": 29855
+ },
+ "unvisited": [],
+ "targets": [
+  {
+   "kind": "mission",
+   "id": "ten-area-meadows-relay",
+   "reached": 364
+  },
+  {
+   "kind": "cache",
+   "id": "mweb-meadows-cache",
+   "reached": 934
+  },
+  {
+   "kind": "area",
+   "id": "fork-fortress",
+   "reached": 3077
+  },
+  {
+   "kind": "cache",
+   "id": "fork-fortress-cache",
+   "reached": 3636
+  },
+  {
+   "kind": "area",
+   "id": "ledger-ridge",
+   "reached": 5070
+  },
+  {
+   "kind": "cache",
+   "id": "ledger-ridge-cache",
+   "reached": 5662
+  },
+  {
+   "kind": "area",
+   "id": "litecoin-city",
+   "reached": 7010
+  },
+  {
+   "kind": "cache",
+   "id": "litecoin-city-cache",
+   "reached": 7456
+  },
+  {
+   "kind": "area",
+   "id": "silver-coast",
+   "reached": 8419
+  },
+  {
+   "kind": "cache",
+   "id": "silver-coast-cache",
+   "reached": 8738
+  },
+  {
+   "kind": "area",
+   "id": "scrypt-bayou",
+   "reached": 10103
+  },
+  {
+   "kind": "cache",
+   "id": "scrypt-bayou-cache",
+   "reached": 13205
+  },
+  {
+   "kind": "area",
+   "id": "hashwood-river",
+   "reached": 14363
+  },
+  {
+   "kind": "cache",
+   "id": "hashwood-river-cache",
+   "reached": 20339
+  },
+  {
+   "kind": "area",
+   "id": "hollow-pines",
+   "reached": 25592
+  },
+  {
+   "kind": "cache",
+   "id": "hollow-pines-cache",
+   "reached": 26010
+  },
+  {
+   "kind": "area",
+   "id": "rugpull-woods",
+   "reached": 27593
+  },
+  {
+   "kind": "cache",
+   "id": "rugpull-woods-cache",
+   "reached": 27990
+  },
+  {
+   "kind": "mission",
+   "id": "ten-area-woods-camp",
+   "reached": 29098
+  },
+  {
+   "kind": "area",
+   "id": "halving-farms",
+   "reached": 30249
+  },
+  {
+   "kind": "cache",
+   "id": "halving-farms-cache",
+   "reached": 30497
+  },
+  {
+   "kind": "court",
+   "id": "rug-pull-baron",
+   "done": 39128
+  },
+  {
+   "kind": "court",
+   "id": "lockkeeper",
+   "done": 47072
+  },
+  {
+   "kind": "court",
+   "id": "fifty-one-percent-foreman",
+   "done": 60491
+  }
+ ],
+ "remaining": [
+  "liquidator"
+ ],
+ "stuckCount": 40,
+ "stuck": [
+  {
+   "tick": 10604,
+   "x": 2700,
+   "y": 12049,
+   "target": "scrypt-bayou-cache",
+   "cover": "free",
+   "trav": "free"
+  },
+  {
+   "tick": 10845,
+   "x": 2700,
+   "y": 12055,
+   "target": "scrypt-bayou-cache",
+   "cover": "free",
+   "trav": "free"
+  },
+  {
+   "tick": 11086,
+   "x": 2700,
+   "y": 12055,
+   "target": "scrypt-bayou-cache",
+   "cover": "free",
+   "trav": "free"
+  },
+  {
+   "tick": 11327,
+   "x": 2700,
+   "y": 12055,
+   "target": "scrypt-bayou-cache",
+   "cover": "free",
+   "trav": "free"
+  },
+  {
+   "tick": 11568,
+   "x": 2700,
+   "y": 12054,
+   "target": "scrypt-bayou-cache",
+   "cover": "free",
+   "trav": "free"
+  },
+  {
+   "tick": 11809,
+   "x": 2700,
+   "y": 12054,
+   "target": "scrypt-bayou-cache",
+   "cover": "free",
+   "trav": "free"
+  },
+  {
+   "tick": 12050,
+   "x": 2700,
+   "y": 12054,
+   "target": "scrypt-bayou-cache",
+   "cover": "free",
+   "trav": "free"
+  },
+  {
+   "tick": 12291,
+   "x": 2700,
+   "y": 12039,
+   "target": "scrypt-bayou-cache",
+   "cover": "free",
+   "trav": "free"
+  },
+  {
+   "tick": 12773,
+   "x": 2700,
+   "y": 12070,
+   "target": "scrypt-bayou-cache",
+   "cover": "free",
+   "trav": "free"
+  },
+  {
+   "tick": 14701,
+   "x": 7262,
+   "y": 11320,
+   "target": "hashwood-river-cache",
+   "cover": "free",
+   "trav": "free"
+  },
+  {
+   "tick": 14942,
+   "x": 7264,
+   "y": 11320,
+   "target": "hashwood-river-cache",
+   "cover": "free",
+   "trav": "free"
+  },
+  {
+   "tick": 15183,
+   "x": 7264,
+   "y": 11320,
+   "target": "hashwood-river-cache",
+   "cover": "free",
+   "trav": "free"
+  },
+  {
+   "tick": 15424,
+   "x": 7261,
+   "y": 11320,
+   "target": "hashwood-river-cache",
+   "cover": "free",
+   "trav": "free"
+  },
+  {
+   "tick": 15665,
+   "x": 7262,
+   "y": 11320,
+   "target": "hashwood-river-cache",
+   "cover": "free",
+   "trav": "free"
+  },
+  {
+   "tick": 15906,
+   "x": 7262,
+   "y": 11320,
+   "target": "hashwood-river-cache",
+   "cover": "free",
+   "trav": "free"
+  },
+  {
+   "tick": 16147,
+   "x": 7255,
+   "y": 11321,
+   "target": "hashwood-river-cache",
+   "cover": "free",
+   "trav": "free"
+  },
+  {
+   "tick": 16629,
+   "x": 7289,
+   "y": 11320,
+   "target": "hashwood-river-cache",
+   "cover": "free",
+   "trav": "free"
+  },
+  {
+   "tick": 17111,
+   "x": 7252,
+   "y": 11320,
+   "target": "hashwood-river-cache",
+   "cover": "free",
+   "trav": "free"
+  },
+  {
+   "tick": 17352,
+   "x": 7252,
+   "y": 11320,
+   "target": "hashwood-river-cache",
+   "cover": "free",
+   "trav": "free"
+  },
+  {
+   "tick": 17593,
+   "x": 7237,
+   "y": 11320,
+   "target": "hashwood-river-cache",
+   "cover": "free",
+   "trav": "free"
+  },
+  {
+   "tick": 18075,
+   "x": 7290,
+   "y": 11320,
+   "target": "hashwood-river-cache",
+   "cover": "free",
+   "trav": "free"
+  },
+  {
+   "tick": 18557,
+   "x": 7234,
+   "y": 11320,
+   "target": "hashwood-river-cache",
+   "cover": "free",
+   "trav": "free"
+  },
+  {
+   "tick": 18798,
+   "x": 7234,
+   "y": 11320,
+   "target": "hashwood-river-cache",
+   "cover": "free",
+   "trav": "free"
+  },
+  {
+   "tick": 19039,
+   "x": 7217,
+   "y": 11320,
+   "target": "hashwood-river-cache",
+   "cover": "free",
+   "trav": "free"
+  },
+  {
+   "tick": 19521,
+   "x": 7290,
+   "y": 10899,
+   "target": "hashwood-river-cache",
+   "cover": "free",
+   "trav": "free"
+  },
+  {
+   "tick": 19762,
+   "x": 7290,
+   "y": 10899,
+   "target": "hashwood-river-cache",
+   "cover": "free",
+   "trav": "free"
+  },
+  {
+   "tick": 21449,
+   "x": 8690,
+   "y": 10980,
+   "target": "hollow-pines",
+   "cover": "free",
+   "trav": "free"
+  },
+  {
+   "tick": 21690,
+   "x": 8690,
+   "y": 10974,
+   "target": "hollow-pines",
+   "cover": "free",
+   "trav": "free"
+  },
+  {
+   "tick": 21931,
+   "x": 8690,
+   "y": 10976,
+   "target": "hollow-pines",
+   "cover": "free",
+   "trav": "free"
+  },
+  {
+   "tick": 22172,
+   "x": 8690,
+   "y": 10976,
+   "target": "hollow-pines",
+   "cover": "free",
+   "trav": "free"
+  },
+  {
+   "tick": 22413,
+   "x": 8690,
+   "y": 10976,
+   "target": "hollow-pines",
+   "cover": "free",
+   "trav": "free"
+  },
+  {
+   "tick": 22654,
+   "x": 8689,
+   "y": 10976,
+   "target": "hollow-pines",
+   "cover": "free",
+   "trav": "free"
+  },
+  {
+   "tick": 22895,
+   "x": 8690,
+   "y": 10977,
+   "target": "hollow-pines",
+   "cover": "free",
+   "trav": "free"
+  },
+  {
+   "tick": 23136,
+   "x": 8690,
+   "y": 10977,
+   "target": "hollow-pines",
+   "cover": "free",
+   "trav": "free"
+  },
+  {
+   "tick": 23377,
+   "x": 8690,
+   "y": 10975,
+   "target": "hollow-pines",
+   "cover": "free",
+   "trav": "free"
+  },
+  {
+   "tick": 23618,
+   "x": 8690,
+   "y": 10975,
+   "target": "hollow-pines",
+   "cover": "free",
+   "trav": "free"
+  },
+  {
+   "tick": 23859,
+   "x": 8690,
+   "y": 10974,
+   "target": "hollow-pines",
+   "cover": "free",
+   "trav": "free"
+  },
+  {
+   "tick": 24100,
+   "x": 8689,
+   "y": 10961,
+   "target": "hollow-pines",
+   "cover": "free",
+   "trav": "free"
+  },
+  {
+   "tick": 24341,
+   "x": 8690,
+   "y": 10962,
+   "target": "hollow-pines",
+   "cover": "free",
+   "trav": "free"
+  },
+  {
+   "tick": 24582,
+   "x": 8690,
+   "y": 10962,
+   "target": "hollow-pines",
+   "cover": "free",
+   "trav": "free"
+  }
+ ],
+ "spawns": {
+  "bagholder-rusher@mweb-meadows": 28,
+  "forkrunner@mweb-meadows": 12,
+  "forkrunner@fork-fortress": 7,
+  "bagholder-rusher@fork-fortress": 13,
+  "forkrunner@ledger-ridge": 12,
+  "liquidator-agent@ledger-ridge": 3,
+  "bagholder-rusher@ledger-ridge": 19,
+  "rug-puller@litecoin-city": 9,
+  "liquidator-agent@litecoin-city": 13,
+  "bagholder-rusher@litecoin-city": 21,
+  "bagholder-rusher@silver-coast": 3,
+  "forkrunner@scrypt-bayou": 12,
+  "liquidator-agent@scrypt-bayou": 3,
+  "bagholder-rusher@scrypt-bayou": 17,
+  "bagholder-rusher@hashwood-river": 50,
+  "forkrunner@hashwood-river": 34,
+  "liquidator-agent@hashwood-river": 10,
+  "gas-bomber@hashwood-river": 3,
+  "tollkeeper@hashwood-river": 10,
+  "hodl-revenant@hollow-pines": 3,
+  "bagholder-rusher@hollow-pines": 4,
+  "forkrunner@hollow-pines": 1,
+  "bagholder-rusher@rugpull-woods": 3,
+  "rug-puller@rugpull-woods": 2,
+  "pump-and-dump-bloater@halving-farms": 1,
+  "liquidator-agent@silver-coast": 3,
+  "gas-bomber@litecoin-city": 2,
+  "forkrunner@litecoin-city": 5,
+  "money-printer@litecoin-city": 6,
+  "whale-enforcer@ledger-ridge": 5,
+  "gas-bomber@ledger-ridge": 3,
+  "oracle-marksman@ledger-ridge": 3,
+  "liquidator-agent@fork-fortress": 3,
+  "whale-enforcer@fork-fortress": 3,
+  "gas-bomber@fork-fortress": 3
+ },
+ "spawnIssueCount": 0,
+ "spawnIssues": [],
+ "enemyStuckCount": 142,
+ "enemyStuck": [
+  {
+   "tick": 11580,
+   "id": "encounter-000062",
+   "a": "bagholder-rusher",
+   "x": 2658,
+   "y": 11130,
+   "dh": 925
+  },
+  {
+   "tick": 11760,
+   "id": "encounter-000024",
+   "a": "bagholder-rusher",
+   "x": 2710,
+   "y": 11129,
+   "dh": 925
+  },
+  {
+   "tick": 12119,
+   "id": "encounter-000070",
+   "a": "forkrunner",
+   "x": 3022,
+   "y": 11831,
+   "dh": 410
+  },
+  {
+   "tick": 12180,
+   "id": "encounter-000062",
+   "a": "bagholder-rusher",
+   "x": 2658,
+   "y": 11130,
+   "dh": 910
+  },
+  {
+   "tick": 12270,
+   "id": "encounter-000023",
+   "a": "bagholder-rusher",
+   "x": 2681,
+   "y": 11129,
+   "dh": 910
+  },
+  {
+   "tick": 12360,
+   "id": "encounter-000024",
+   "a": "bagholder-rusher",
+   "x": 2712,
+   "y": 11130,
+   "dh": 940
+  },
+  {
+   "tick": 12450,
+   "id": "encounter-000011",
+   "a": "bagholder-rusher",
+   "x": 2684,
+   "y": 10767,
+   "dh": 1303
+  },
+  {
+   "tick": 12479,
+   "id": "encounter-000074",
+   "a": "forkrunner",
+   "x": 3021,
+   "y": 11802,
+   "dh": 418
+  },
+  {
+   "tick": 12719,
+   "id": "encounter-000070",
+   "a": "forkrunner",
+   "x": 3022,
+   "y": 11831,
+   "dh": 401
+  },
+  {
+   "tick": 12780,
+   "id": "encounter-000062",
+   "a": "bagholder-rusher",
+   "x": 2658,
+   "y": 11130,
+   "dh": 928
+  },
+  {
+   "tick": 12870,
+   "id": "encounter-000023",
+   "a": "bagholder-rusher",
+   "x": 2680,
+   "y": 11127,
+   "dh": 1028
+  },
+  {
+   "tick": 15569,
+   "id": "encounter-000095",
+   "a": "forkrunner",
+   "x": 6026,
+   "y": 11255,
+   "dh": 1238
+  },
+  {
+   "tick": 15989,
+   "id": "encounter-000093",
+   "a": "forkrunner",
+   "x": 6091,
+   "y": 11260,
+   "dh": 1113
+  },
+  {
+   "tick": 16169,
+   "id": "encounter-000095",
+   "a": "forkrunner",
+   "x": 6026,
+   "y": 11255,
+   "dh": 1265
+  },
+  {
+   "tick": 16589,
+   "id": "encounter-000093",
+   "a": "forkrunner",
+   "x": 6091,
+   "y": 11260,
+   "dh": 1200
+  },
+  {
+   "tick": 16769,
+   "id": "encounter-000095",
+   "a": "forkrunner",
+   "x": 6026,
+   "y": 11255,
+   "dh": 1227
+  },
+  {
+   "tick": 16949,
+   "id": "encounter-000077",
+   "a": "liquidator-agent",
+   "x": 6750,
+   "y": 11320,
+   "dh": 501
+  },
+  {
+   "tick": 17189,
+   "id": "encounter-000093",
+   "a": "forkrunner",
+   "x": 6091,
+   "y": 11260,
+   "dh": 1163
+  },
+  {
+   "tick": 17369,
+   "id": "encounter-000095",
+   "a": "forkrunner",
+   "x": 6026,
+   "y": 11255,
+   "dh": 1191
+  },
+  {
+   "tick": 17544,
+   "id": "encounter-000136",
+   "a": "liquidator-agent",
+   "x": 7289,
+   "y": 10970,
+   "dh": 354
+  },
+  {
+   "tick": 17549,
+   "id": "encounter-000077",
+   "a": "liquidator-agent",
+   "x": 6750,
+   "y": 11320,
+   "dh": 487
+  },
+  {
+   "tick": 17730,
+   "id": "encounter-000037",
+   "a": "liquidator-agent",
+   "x": 6832,
+   "y": 11320,
+   "dh": 458
+  },
+  {
+   "tick": 17730,
+   "id": "encounter-000057",
+   "a": "liquidator-agent",
+   "x": 6790,
+   "y": 11320,
+   "dh": 500
+  },
+  {
+   "tick": 17789,
+   "id": "encounter-000093",
+   "a": "forkrunner",
+   "x": 6091,
+   "y": 11260,
+   "dh": 1201
+  },
+  {
+   "tick": 17969,
+   "id": "encounter-000095",
+   "a": "forkrunner",
+   "x": 6026,
+   "y": 11255,
+   "dh": 1265
+  },
+  {
+   "tick": 18330,
+   "id": "encounter-000037",
+   "a": "liquidator-agent",
+   "x": 6832,
+   "y": 11320,
+   "dh": 402
+  },
+  {
+   "tick": 18330,
+   "id": "encounter-000057",
+   "a": "liquidator-agent",
+   "x": 6790,
+   "y": 11320,
+   "dh": 444
+  },
+  {
+   "tick": 18384,
+   "id": "encounter-000132",
+   "a": "forkrunner",
+   "x": 7710,
+   "y": 10979,
+   "dh": 585
+  },
+  {
+   "tick": 18389,
+   "id": "encounter-000093",
+   "a": "forkrunner",
+   "x": 6091,
+   "y": 11260,
+   "dh": 1145
+  },
+  {
+   "tick": 18569,
+   "id": "encounter-000095",
+   "a": "forkrunner",
+   "x": 6026,
+   "y": 11255,
+   "dh": 1210
+  },
+  {
+   "tick": 18930,
+   "id": "encounter-000057",
+   "a": "liquidator-agent",
+   "x": 6790,
+   "y": 11320,
+   "dh": 428
+  },
+  {
+   "tick": 18984,
+   "id": "encounter-000132",
+   "a": "forkrunner",
+   "x": 7710,
+   "y": 10979,
+   "dh": 599
+  },
+  {
+   "tick": 18989,
+   "id": "encounter-000093",
+   "a": "forkrunner",
+   "x": 6091,
+   "y": 11260,
+   "dh": 1128
+  },
+  {
+   "tick": 19169,
+   "id": "encounter-000095",
+   "a": "forkrunner",
+   "x": 6026,
+   "y": 11255,
+   "dh": 1280
+  },
+  {
+   "tick": 19584,
+   "id": "encounter-000132",
+   "a": "forkrunner",
+   "x": 7710,
+   "y": 10979,
+   "dh": 427
+  },
+  {
+   "tick": 19589,
+   "id": "encounter-000093",
+   "a": "forkrunner",
+   "x": 6091,
+   "y": 11260,
+   "dh": 1253
+  },
+  {
+   "tick": 19769,
+   "id": "encounter-000095",
+   "a": "forkrunner",
+   "x": 6026,
+   "y": 11255,
+   "dh": 1328
+  },
+  {
+   "tick": 19949,
+   "id": "encounter-000077",
+   "a": "liquidator-agent",
+   "x": 6813,
+   "y": 11321,
+   "dh": 575
+  },
+  {
+   "tick": 20130,
+   "id": "encounter-000057",
+   "a": "liquidator-agent",
+   "x": 6856,
+   "y": 11320,
+   "dh": 800
+  },
+  {
+   "tick": 20189,
+   "id": "encounter-000093",
+   "a": "forkrunner",
+   "x": 6091,
+   "y": 11260,
+   "dh": 783
+  },
+  {
+   "tick": 20369,
+   "id": "encounter-000095",
+   "a": "forkrunner",
+   "x": 6026,
+   "y": 11255,
+   "dh": 1090
+  },
+  {
+   "tick": 20459,
+   "id": "encounter-000180",
+   "a": "bagholder-rusher",
+   "x": 7290,
+   "y": 11337,
+   "dh": 1453
+  },
+  {
+   "tick": 20549,
+   "id": "encounter-000077",
+   "a": "liquidator-agent",
+   "x": 6813,
+   "y": 11321,
+   "dh": 905
+  },
+  {
+   "tick": 20699,
+   "id": "encounter-000174",
+   "a": "tollkeeper",
+   "x": 7290,
+   "y": 10914,
+   "dh": 290
+  },
+  {
+   "tick": 20730,
+   "id": "encounter-000057",
+   "a": "liquidator-agent",
+   "x": 6856,
+   "y": 11320,
+   "dh": 589
+  },
+  {
+   "tick": 20784,
+   "id": "encounter-000132",
+   "a": "forkrunner",
+   "x": 7717,
+   "y": 10980,
+   "dh": 341
+  },
+  {
+   "tick": 20879,
+   "id": "encounter-000177",
+   "a": "bagholder-rusher",
+   "x": 7263,
+   "y": 11322,
+   "dh": 723
+  },
+  {
+   "tick": 21059,
+   "id": "encounter-000180",
+   "a": "bagholder-rusher",
+   "x": 7290,
+   "y": 11337,
+   "dh": 1379
+  },
+  {
+   "tick": 21479,
+   "id": "encounter-000177",
+   "a": "bagholder-rusher",
+   "x": 7263,
+   "y": 11322,
+   "dh": 1469
+  },
+  {
+   "tick": 21659,
+   "id": "encounter-000180",
+   "a": "bagholder-rusher",
+   "x": 7290,
+   "y": 11337,
+   "dh": 1446
+  },
+  {
+   "tick": 21719,
+   "id": "encounter-000171",
+   "a": "liquidator-agent",
+   "x": 7267,
+   "y": 10980,
+   "dh": 1407
+  },
+  {
+   "tick": 21839,
+   "id": "encounter-000173",
+   "a": "gas-bomber",
+   "x": 7291,
+   "y": 10948,
+   "dh": 1399
+  },
+  {
+   "tick": 22020,
+   "id": "encounter-000197",
+   "a": "bagholder-rusher",
+   "x": 7708,
+   "y": 10951,
+   "dh": 982
+  },
+  {
+   "tick": 22079,
+   "id": "encounter-000177",
+   "a": "bagholder-rusher",
+   "x": 7263,
+   "y": 11322,
+   "dh": 1468
+  },
+  {
+   "tick": 22080,
+   "id": "encounter-000198",
+   "a": "bagholder-rusher",
+   "x": 7710,
+   "y": 10931,
+   "dh": 981
+  },
+  {
+   "tick": 22140,
+   "id": "encounter-000199",
+   "a": "bagholder-rusher",
+   "x": 7710,
+   "y": 10984,
+   "dh": 980
+  },
+  {
+   "tick": 22259,
+   "id": "encounter-000180",
+   "a": "bagholder-rusher",
+   "x": 7290,
+   "y": 11337,
+   "dh": 1446
+  },
+  {
+   "tick": 22262,
+   "id": "encounter-000213",
+   "a": "bagholder-rusher",
+   "x": 7237,
+   "y": 11320,
+   "dh": 1493
+  },
+  {
+   "tick": 22319,
+   "id": "encounter-000171",
+   "a": "liquidator-agent",
+   "x": 7267,
+   "y": 10980,
+   "dh": 1423
+  },
+  {
+   "tick": 22320,
+   "id": "encounter-000192",
+   "a": "tollkeeper",
+   "x": 7710,
+   "y": 10888,
+   "dh": 984
+  }
+ ],
+ "boss": {
+  "liquidator": {
+   "statuses": [
+    {
+     "s": "dormant",
+     "tick": 0,
+     "locked": false,
+     "walls": 0
+    },
+    {
+     "s": "live",
+     "tick": 63443,
+     "locked": true,
+     "walls": 12
+    }
+   ],
+   "phases": [
+    "market-open",
+    "margin-call"
+   ],
+   "hp": [
+    2295,
+    2067,
+    1827,
+    1623,
+    1443,
+    1194
+   ]
+  },
+  "fifty-one-percent-foreman": {
+   "statuses": [
+    {
+     "s": "dormant",
+     "tick": 0,
+     "locked": false,
+     "walls": 0
+    },
+    {
+     "s": "live",
+     "tick": 51962,
+     "locked": true,
+     "walls": 2
+    },
+    {
+     "s": "defeated",
+     "tick": 60491,
+     "locked": false,
+     "walls": 0
+    }
+   ],
+   "phases": [
+    "shift-start",
+    "overtime",
+    "majority-rule"
+   ],
+   "hp": [
+    1270,
+    887,
+    668,
+    563,
+    422,
+    170,
+    36
+   ]
+  },
+  "rug-pull-baron": {
+   "statuses": [
+    {
+     "s": "dormant",
+     "tick": 0,
+     "locked": false,
+     "walls": 0
+    },
+    {
+     "s": "live",
+     "tick": 33649,
+     "locked": true,
+     "walls": 2
+    },
+    {
+     "s": "defeated",
+     "tick": 39128,
+     "locked": false,
+     "walls": 0
+    }
+   ],
+   "phases": [
+    "grand-opening",
+    "the-rug-pull",
+    "curtain-call"
+   ],
+   "hp": [
+    955,
+    679,
+    428,
+    147
+   ]
+  },
+  "lockkeeper": {
+   "statuses": [
+    {
+     "s": "dormant",
+     "tick": 0,
+     "locked": false,
+     "walls": 0
+    },
+    {
+     "s": "live",
+     "tick": 40463,
+     "locked": false,
+     "walls": 1
+    },
+    {
+     "s": "defeated",
+     "tick": 47072,
+     "locked": false,
+     "walls": 0
+    }
+   ],
+   "phases": [
+    "high-water",
+    "lock-down",
+    "drained"
+   ],
+   "hp": [
+    1379,
+    1185,
+    959,
+    678,
+    425,
+    76
+   ]
+  }
+ },
+ "heroOOB": 0,
+ "health": 0,
+ "outboxTypes": [
+  "game:ready",
+  "game:state",
+  "game:run-event"
+ ],
+ "invalidOut": []
+}

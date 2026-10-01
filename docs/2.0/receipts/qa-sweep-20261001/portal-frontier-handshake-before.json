@@ -1,0 +1,15 @@
+{
+ "frontier": {
+  "marks": [
+   "150ms Starting PixiJS renderer… / Standalone shell / {} | startup:true | Preparing Level 1… | undefined mode=free&world=ten-area",
+   "992ms Starting PixiJS renderer… / Standalone shell / {\"worldId\":\"ten-area-frontier\",\"worldOfficial\":\"false\",\"worldSelection\":\"explicit-unranked-free-ten-area\",\"adaptiveResolution\":\"1\"} | startup:true | Preparing Level 1… | undefined mode=free&world=ten-area",
+   "1862ms Renderer ready / Waiting for portal session… / {\"worldId\":\"ten-area-frontier\",\"worldOfficial\":\"false\",\"worldSelection\":\"explicit-unranked-free-ten-area\",\"adaptiveResolution\":\"1\",\"actor3dStatus\":\"disabled\",\"bootFirstFrame\":\"true\",\"navGridBootMs\":\"0.2\",\"navGridReady\":\"true\",\"nativeBarrierStatus\":\"skipped\"} | startup:true | Preparing Level 1… | undefined mode=free&world=ten-area",
+   "4055ms Renderer ready / Waiting for portal session… / {\"worldId\":\"ten-area-frontier\",\"worldOfficial\":\"false\",\"worldSelection\":\"explicit-unranked-free-ten-area\",\"adaptiveResolution\":\"1\",\"actor3dStatus\":\"disabled\",\"bootFirstFrame\":\"true\",\"navGridBootMs\":\"0.2\",\"navGridReady\":\"true\",\"nativeBarrierStatus\":\"skipped\",\"nativePropStatus\":\"ready\",\"nativePropBindings\":\"48\",\"worldDesignStatus\":\"ready\",\"worldDesignBindings\":\"17\",\"authoredPropStatus\":\"ready\",\"authoredPropCount\":\"10\"} | startup:true | Preparing Level 1… | undefined mode=free&world=ten-area",
+   "6892ms Renderer ready / Waiting for portal session… / {\"worldId\":\"ten-area-frontier\",\"worldOfficial\":\"false\",\"worldSelection\":\"explicit-unranked-free-ten-area\",\"adaptiveResolution\":\"1\",\"actor3dStatus\":\"disabled\",\"bootFirstFrame\":\"true\",\"navGridBootMs\":\"0.2\",\"navGridReady\":\"true\",\"nativeBarrierStatus\":\"skipped\",\"nativePropStatus\":\"ready\",\"nativePropBindings\":\"48\",\"worldDesignStatus\":\"ready\",\"worldDesignBindings\":\"17\",\"authoredPropStatus\":\"ready\",\"authoredPropCount\":\"10\",\"areaArtStatus\":\"ready\"} | startup:true | Preparing Level 1… | undefined mode=free&world=ten-area",
+   "45305ms no-frame "
+  ],
+  "errors": [
+   "console: [HMH reboot bridge] Error: HMH reboot READY timed out after 45000ms\n    at http://127.0.0.1:49224/dist/main.js?v=arcade-discovery-20260914:2:16603"
+  ]
+ }
+}

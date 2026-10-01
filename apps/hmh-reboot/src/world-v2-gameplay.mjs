@@ -25,6 +25,21 @@ import { WORLD_V2_DISTRICT_ARCHETYPES, WORLD_V2_EXTRA_ROLES } from './world-v2-c
 
 export const WORLD_V2_DEFAULT_DISTRICT_ID = 'mweb-meadows';
 
+// QA sweep 2026-10-01: the ten-area world showed the legacy "The Forked
+// Frontier" title, story and RELAY/RAVINE/HASHWOOD/THE YARD route on its
+// loading panel and pause menu. No brief names this world; "The Litecoin
+// Frontier" is the proposed name (owner to confirm), kept in this one table.
+export const WORLD_V2_PRESENTATION = freezeDeep({
+  kicker: ' / FREE PREVIEW',
+  title: 'The Litecoin Frontier',
+  story: 'Ten areas, one road network, and the horde holds every road. Light the Meadows relay, then find the Liquidator in Litecoin City.',
+  route: ['MEADOWS', 'CITY', 'RIVER', 'FORTRESS'],
+  pauseTitle: 'Litecoin Frontier',
+});
+// From game 2.1.0 the world is the official Level 1: same name and route,
+// Level 1 kicker, no preview wording.
+export const WORLD_V2_LEVEL_ONE_PRESENTATION = freezeDeep({ ...WORLD_V2_PRESENTATION, kicker: ' / LEVEL 01' });
+
 // Conservative role gates from each area's authored difficulty tier (1-5).
 const TIER_ROLES = freezeDeep({
   1: ['rusher', 'flanker'],
@@ -190,6 +205,7 @@ export function createWorldV2Gameplay(world) {
   const entry = { id: 'meadows', name: 'MWEB Meadows', x: world.player.spawn.x, y: world.player.spawn.y };
   const briefing = {
     levelId: world.id,
+    presentation: official ? WORLD_V2_LEVEL_ONE_PRESENTATION : WORLD_V2_PRESENTATION,
     entries: {
       meadows: {
         objective: 'Press the relay switch east of the entry green, then take the paved road west into Litecoin City.',

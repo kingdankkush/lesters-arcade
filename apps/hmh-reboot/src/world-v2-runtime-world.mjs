@@ -245,7 +245,7 @@ export function createWorldV2RuntimeWorld({ authored = createGreyboxWorld(), off
 
   return freezeDeep({
     id: WORLD_V2_RUNTIME_ID,
-    displayName: 'Crypto Wasteland: Ten-Area Frontier',
+    displayName: 'Crypto Wasteland: The Litecoin Frontier',
     version: WORLD_V2_RUNTIME_VERSION,
     officialRun: official,
     rankedEligible: official,

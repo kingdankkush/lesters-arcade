@@ -24,7 +24,7 @@ function traceRow(spies, tick, pad) {
 
 // `search` and `mode` default to the corpus's Ranked page; an unofficial
 // Free probe passes its own query and mode: 'free' (unranked session).
-export async function runChild({ seed, buildHash, seasonId, heroId = 'lit-commando', pilot, maxFrames = 400_000, log = () => {}, trace = null, search = '', mode = 'ranked' }) {
+export async function runChild({ seed, buildHash, seasonId, heroId = 'lit-commando', pilot, maxFrames = 400_000, log = () => {}, trace = null, search = '', mode = 'ranked', connectBeforeBoot = false }) {
   const gamepadRef = { current: null };
   const headless = installHeadlessEnvironment({ gamepadRef, search });
   const origin = new URL(PAGE_URL).origin;
@@ -42,7 +42,9 @@ export async function runChild({ seed, buildHash, seasonId, heroId = 'lit-comman
   process.on('unhandledRejection', (error) => headless.errors.push({ where: 'unhandledRejection', message: error?.stack ?? String(error) }));
 
   await import('../../apps/hmh-reboot/src/main.mjs');
-  await tickYield();
+  // connectBeforeBoot: hand the handshake over while boot() is still
+  // resolving its world context, the way a fast iframe load event does.
+  if (!connectBeforeBoot) await tickYield();
   // Parent side of the handshake: one transferred port, then portal:init.
   headless.dispatchWindowEvent(makeEvent('message', {
     data: { protocol: 'hmh-bridge/v1', type: 'portal:connect', nonce: 'headlessRealRunsNonce0001' },
@@ -59,6 +61,8 @@ export async function runChild({ seed, buildHash, seasonId, heroId = 'lit-comman
     reduceMotion: true,
     reduceFlash: true,
   };
+  // A real MessagePort queues portal:init until the child listens on it.
+  for (let guard = 0; guard < 200_000 && typeof port.onmessage !== 'function'; guard += 1) { headless.clock.nowMs += 1; await tickYield(); }
   port.onmessage({
     data: createBridgeEnvelope({
       type: 'portal:init',

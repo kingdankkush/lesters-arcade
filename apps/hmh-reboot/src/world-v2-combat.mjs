@@ -529,9 +529,17 @@ export function createWorldV2Combat({ world, gameplay, queryGround }) {
     currentRun: () => currentRun,
     evidenceSpawn: (value, spawn) => worldV2EvidenceSpawn({ value, gameplay, faces, markers: traversalMarkers.markers, spawn, isClear: (point) => isWorldV2PointClear(world, queryGround, point) }),
     evidenceReady: (value, bossSlots) => worldV2EvidenceReady({ value, gameplay, bossSlots }),
+    // The name a district boss's critical-audio captions carry (its tells and
+    // halts share the Liquidator's caption line); null keeps "Liquidator".
+    bossCaptionName(bossId) {
+      return Object.hasOwn(DISTRICT_BOSS_KITS, bossId) ? bossName(gameplay, bossId) : null;
+    },
     // Accessible status lines for a district boss; null keeps the
     // Liquidator's own wording.
     bossText(event) {
+      // This world has no Arc Rifle vault (that is a legacy objective reward):
+      // the Liquidator's defeat line names the seal he does drop.
+      if (event?.type === 'boss-defeated' && event.bossId === 'liquidator') return 'The Liquidator is liquidated. The exchange floor opens and a Genesis Seal drops.';
       if (!event || !Object.hasOwn(DISTRICT_BOSS_KITS, event.bossId)) return null;
       const name = bossName(gameplay, event.bossId);
       if (event.type === 'boss-initiated') return `${name} takes the court. The exits lock behind you.`;

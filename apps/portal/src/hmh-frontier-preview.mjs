@@ -23,7 +23,49 @@ export const HMH_FRONTIER_PREVIEW_COPY = Object.freeze({
   title: 'New Frontier (preview)',
   gameplay: 'New Frontier preview: unfinished ten-area world, Free and unranked; no result, leaderboard or share card.',
   result: 'Preview run: New Frontier runs are unranked and have no result or share card.',
+  // The level intro the preview shows instead of the legacy Forked Frontier
+  // card (QA sweep 2026-10-01). The world's proposed name matches the child's
+  // loading panel (apps/hmh-reboot/src/world-v2-gameplay.mjs).
+  intro: Object.freeze({
+    eyebrow: 'Hard Money Heroes // New Frontier (preview)',
+    title: 'The Litecoin Frontier',
+    body: 'Ten areas joined by roads, from the MWEB Meadows to the Fork Fortress. Light the Meadows relay, find a cache in every area and take on the Liquidator, the Rug Pull Baron, the Lockkeeper and the 51% Foreman in their courts. This world is unfinished: runs are Free and unranked, with no result, leaderboard or share card.',
+  }),
 });
+
+// The Level 1 intro a 2.1.0 portal shows by default: the ten-area world is
+// Level 1, so no preview wording (QA sweep merge, 2026-10-01).
+export const HMH_TEN_AREA_LEVEL_ONE_INTRO = Object.freeze({
+  eyebrow: 'Hard Money Heroes // Level 1',
+  title: 'Level 1: The Litecoin Frontier',
+  body: 'Ten areas joined by roads, from the MWEB Meadows to the Fork Fortress. Light the Meadows relay, find a cache in every area and take on the Liquidator, the Rug Pull Baron, the Lockkeeper and the 51% Foreman in their courts. Your approach changes each run; keep moving as the horde closes in. The run ends when your hero falls.',
+});
+
+// Which level intro the card shows: before 2.1.0 the preview start gets the
+// preview copy and an ordinary run the page's own (legacy) card; from 2.1.0
+// an ordinary run gets the ten-area Level 1 copy and the original-map start
+// the page's own Forked Frontier card.
+export function hmhLevelIntroMode({ levelOne = HMH_TEN_AREA_LEVEL_ONE, optionRequested = false } = {}) {
+  if (levelOne) return optionRequested ? 'legacy' : 'level-one';
+  return optionRequested ? 'preview' : 'legacy';
+}
+
+// Swaps the level intro card's eyebrow, title and story and restores the
+// page's own copy for 'legacy'. `mode` is 'preview', 'level-one' or 'legacy'
+// (true/false keep meaning preview/legacy). Returns the copy now showing.
+export function applyHmhFrontierPreviewIntro(section, mode) {
+  const resolved = mode === true ? 'preview' : mode === 'preview' || mode === 'level-one' ? mode : 'legacy';
+  const card = section?.querySelector?.('.level-intro-card');
+  if (!card) return null;
+  const copy = resolved === 'preview' ? HMH_FRONTIER_PREVIEW_COPY.intro : resolved === 'level-one' ? HMH_TEN_AREA_LEVEL_ONE_INTRO : null;
+  const slots = [['eyebrow', card.querySelector('.eyebrow')], ['title', card.querySelector('h2')], ['body', card.querySelector('h2 + p')]];
+  for (const [key, element] of slots) {
+    if (!element) continue;
+    if (element.dataset.legacyCopy === undefined) element.dataset.legacyCopy = element.textContent;
+    element.textContent = copy ? copy[key] : element.dataset.legacyCopy;
+  }
+  return resolved;
+}
 
 export const HMH_ORIGINAL_MAP_COPY = Object.freeze({
   button: 'Play the original map (Free only)',

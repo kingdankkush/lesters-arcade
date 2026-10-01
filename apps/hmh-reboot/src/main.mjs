@@ -301,7 +301,7 @@ let refreshWorldDesignGateNavigation, buildWorldDesignHazardHits;
 let createMissionState, stepMissionObjectives, settleMissionObjective, missionDockStep, missionActiveBlockers, missionSealTargets,
   applyMissionSealDamage, missionHiddenSecretProps;
 let createWorldDesignLife, prepareWorldDesignEnemyPose, createWorldDesignPacing, stepWorldDesignPacing, loadWorldDesignAppearance;
-let resolveLevelBriefing, applyLevelBriefing, createUpgradePanel, RUN_UPGRADE_CONTENT, runUpgradeContent;
+let resolveLevelBriefing, applyLevelBriefing, applyLevelPresentation, createUpgradePanel, RUN_UPGRADE_CONTENT, runUpgradeContent;
 // Genesis Seals and wave-1 evolutions (design package 8.4/8.5, S1.7).
 let createBossDrops, dropGenesisSeal, collectGenesisSeals, resolveGenesisSeal, openRunEvolutionOffer, rerollRunEvolutionSlot,
   selectRunEvolution, evolveBankedSealOnMastery;
@@ -367,7 +367,7 @@ function loadLazyRuntimeModules() {
     ({ createWorldDesignLife, prepareWorldDesignEnemyPose } = life);
     ({ createWorldDesignPacing, stepWorldDesignPacing } = pacing);
     ({ loadWorldDesignAppearance } = nativeAssets);
-    ({ resolveLevelBriefing, applyLevelBriefing } = briefing);
+    ({ resolveLevelBriefing, applyLevelBriefing, applyLevelPresentation } = briefing);
     ({ createUpgradePanel } = panel);
     ({ RUN_UPGRADE_CONTENT, runUpgradeContent } = content);
     ({ createBossDrops, dropGenesisSeal, collectGenesisSeals, resolveGenesisSeal, openRunEvolutionOffer, rerollRunEvolutionSlot,
@@ -553,6 +553,14 @@ async function boot() {
   // S0.2: the lazy runtime chunks download while the renderer initialises.
   const lazyRuntimeModules = loadLazyRuntimeModules();
   lazyRuntimeModules.catch(() => {});
+  // The portal sends its one handshake on the iframe's load event, which can
+  // land while the world context is still loading (the ten-area chunk always
+  // could; the portal then timed out waiting for READY). Hold any window
+  // message that arrives before the bridge listens and hand it over once it
+  // does (QA sweep 2026-10-01).
+  const earlyWindowMessages = [];
+  const holdEarlyWindowMessage = (event) => { earlyWindowMessages.push(event); };
+  window.addEventListener('message', holdEarlyWindowMessage);
   // W4a: one world per page, decided before the bridge, renderer or session.
   adoptWorldContext(await resolveHmhWorldContext({ params: new URLSearchParams(window.location.search) }));
   const dataset = stageElement.dataset;
@@ -673,8 +681,13 @@ async function boot() {
       },
       onProtocolError: (error) => handleBridgeProtocolError(error),
     });
+    window.removeEventListener('message', holdEarlyWindowMessage);
     bridge.start();
+    // Re-dispatch the same events (origin, source, data and ports intact).
+    for (const event of earlyWindowMessages.splice(0)) window.dispatchEvent(event);
   }
+  window.removeEventListener('message', holdEarlyWindowMessage);
+  earlyWindowMessages.length = 0;
   await app.init({
     resizeTo: stageElement,
     background: '#071522',
@@ -3521,6 +3534,7 @@ async function boot() {
     if (entryLabel) entryLabel.textContent = runtimePlayerSpawn.name ?? 'Frontier Relay';
     applyLevelBriefing(startupPanel, resolveLevelBriefing({ entryId: runtimePlayerSpawn.id, seed: payload.session.seed }));
     if (HMH_WORLD_CONTEXT.briefing) applyLevelBriefing(startupPanel, resolveLevelBriefing({ entryId: runtimePlayerSpawn.id, seed: payload.session.seed, briefing: HMH_WORLD_CONTEXT.briefing }));
+    if (HMH_WORLD_CONTEXT.briefing?.presentation) applyLevelPresentation(document, HMH_WORLD_CONTEXT.briefing.presentation);
     startupGate = createStartupArtGate(performance.now(), { requireEntry: !evidenceSafeEnabled });
     const entryButton = startupPanel?.querySelector?.('#hmhStartupEnter');
     if (entryButton) { entryButton.disabled = true; entryButton.textContent = 'Preparing Level 1…'; }
@@ -5116,7 +5130,7 @@ async function boot() {
         if (event.type === 'tell' || event.type === 'halt') {
           if (settings.captionCriticalAudio) {
             const warning = event.type === 'halt' ? `trading halt, ${event.phaseId.replaceAll('-', ' ')}` : event.tier === 'super' ? 'super attack' : event.attackId.replaceAll('-', ' ');
-            setAccessibleCombatStatus(`Liquidator: ${warning}.`);
+            setAccessibleCombatStatus(`${TEN_AREA_COMBAT?.bossCaptionName(event.bossId) ?? 'Liquidator'}: ${warning}.`);
           }
           continue;
         }
@@ -5703,7 +5717,7 @@ async function boot() {
     // The map is used only in the pause menu; gameplay never waits for it.
     void import('./world-design-field-map.mjs').then(({ buildWorldDesignFieldMap, renderWorldDesignFieldMap }) => {
       if (simulation?.state !== 'paused') return;
-      renderWorldDesignFieldMap(fieldMapMount, buildWorldDesignFieldMap({ world: LEVEL_ONE_WORLD, player: actor, reveal: revealSnapshot, mission: missionState, collectibles: collectibleState, tick: simulation.tick }));
+      renderWorldDesignFieldMap(fieldMapMount, buildWorldDesignFieldMap({ world: LEVEL_ONE_WORLD, player: actor, reveal: revealSnapshot, mission: missionState, collectibles: collectibleState, tick: simulation.tick, legacy: HMH_WORLD_CONTEXT.legacy }));
     }).catch(() => {
       if (simulation?.state === 'paused' && fieldMapMount) fieldMapMount.textContent = 'Field map unavailable. You can still resume your run.';
     });
