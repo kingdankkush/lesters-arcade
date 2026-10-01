@@ -138,6 +138,7 @@ const NODE_CHECK_FILES = [
   'apps/hmh-reboot/src/world-v2-area-plans/world-roads.mjs',
   'apps/hmh-reboot/src/world-v2-area-plans/district-terrain.mjs',
   'apps/hmh-reboot/src/world-v2-terrain-field.mjs',
+  'apps/hmh-reboot/src/world-v2-area-surfaces.mjs',
   'tests/hmh-world-v2-terrain.test.mjs',
   'tests/hmh-world-v2-area-art-schema.test.mjs',
   'tests/hmh-world-v2-area-plans.test.mjs',

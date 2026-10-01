@@ -77,10 +77,12 @@ export function buildTerrainField({ summary, world, size = 512 } = {}) {
         if (!contains(trail.box, x, y)) continue;
         // Authored routes are axis-aligned; a low-frequency meander and a
         // patchy wear factor keep the worn path from reading as a ruled stripe.
-        const mx = (fbm(x, y, 460, 2, seed + 11) - 0.5) * 110, my = (fbm(x, y, 460, 2, seed + 13) - 0.5) * 110;
+        // Plank and paved walks are built: straight, unworn, near-straight edge.
+        const built = HARD_MATERIALS.has(trail.material);
+        const mx = built ? 0 : (fbm(x, y, 460, 2, seed + 11) - 0.5) * 110, my = built ? 0 : (fbm(x, y, 460, 2, seed + 13) - 0.5) * 110;
         const d = distanceToPolyline(x + mx, y + my, trail.points), e = trail.width / 2;
-        const wear = 0.55 + 0.45 * smooth(0.3, 0.7, fbm(x, y, 260, 2, seed + 17));
-        const wt = smooth(e + trail.halo, e * 0.3, d + wobble * e * 2.2) * wear;
+        const wear = built ? 1 : 0.55 + 0.45 * smooth(0.3, 0.7, fbm(x, y, 260, 2, seed + 17));
+        const wt = smooth(e + trail.halo, e * 0.3, d + wobble * e * (built ? 0.3 : 2.2)) * wear;
         if (wt <= 0) continue;
         if (trail.slot === 0) { for (let k = 1; k < 5; k++) w[k] *= 1 - wt; } else { w[trail.slot] += (1 - w[trail.slot]) * wt; for (let k = trail.slot + 1; k < 5; k++) w[k] *= 1 - wt; }
         value -= wt * 0.06;

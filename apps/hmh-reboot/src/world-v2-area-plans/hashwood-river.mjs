@@ -1,12 +1,10 @@
 // Hashwood River dressing plan (brief 06): tall conifers on the enclosed banks,
-// iris along the damp channel edges, stone arch silhouettes on both authored
-// crossings, exposed rock and a rock arch on the waterfall shelf, and a worn
+// iris along the damp channel edges (the renderer draws both stone crossings
+// over the water), exposed rock and a rock arch on the waterfall shelf, and a worn
 // theatrical clearing for the Baron's marquee. Frozen data only; the plan never
 // adds a blocker, surface, objective or rule.
 //
-// Page budget: plants-00 + structures-01 (+ shared props-00). The timber
-// trestle (b2-42) and rope span (b2-44) live on structures-00, which would be a
-// third exclusive page, so the stone arch (b2-41) stands on both crossings.
+// Page budget: plants-00 + structures-01 (+ shared props-00).
 import { freezeDeep } from '../value-guards.mjs';
 import { pointInPolygon, stableUnit, DISTRICT_TERRAIN } from '../world-v2-area-art-schema.mjs';
 import { createAreaPlanContext, CANOPY_HEIGHTS } from './plan-support.mjs';
@@ -49,15 +47,10 @@ export function createHashwoodRiverArtPlan(world) {
   solid('marquee-east-post', 'stakes', { tint: 0xcdbfae, spacing: 30 });
   solid('court-low-stack', 'hedge', { source: 'b2-79', spacing: 80, tint: 0xd8cfbd });
   solid('court-tall-screen', 'stakes', { tint: 0xc9bfae, spacing: 28 });
-  // Bridge silhouettes on the two authored north-south crossings. They stand on
-  // the crossing itself (bypassing the guard on purpose) and fade when the
-  // actor walks behind them; both crossings run north-south so the vertical
-  // span card reads along the deck.
-  for (const [name, x, flip] of [['city', 0, false], ['woods', 1400, true]]) {
-    const bridge = context.piece(`${name}-bridge`);
-    if (!bridge) throw new Error(`hashwood-river plan requires the authored ${name} bridge`);
-    prop('b2-41', (bridge.visible.bounds.minX + bridge.visible.bounds.maxX) / 2, bridge.visible.bounds.maxY + 10, 430, { flip, tint: 0xd8dad4, shadow: false, fade: true });
-  }
+  // The two authored crossings are drawn by the renderer from their surfaces
+  // (stone deck, rails, shadow over the water; world-v2-area-surfaces.mjs), so
+  // no standing arch card stands in for them any more.
+  for (const name of ['city', 'woods']) if (!context.piece(`${name}-bridge`)) throw new Error(`hashwood-river plan requires the authored ${name} bridge`);
   // Tall conifers root on the shelf top and on the closed woodland beyond the
   // area edge; road mouths stay open because those cells are not closed land.
   const shelf = context.piece('waterfall-shelf');

@@ -47,6 +47,8 @@ export async function bindWorldV2AreaArt({ world, host, depthLayer, before = nul
     for (const art of arts) { await art.ready; await new Promise(resolve => setTimeout(resolve, 0)); }
     if (disposed || signal?.aborted) { dispose(); return null; }
     for (const art of arts) art.paintGround(ground);
+    // Water, decks, ramps and bridges over every ground and road.
+    for (const art of arts) art.paintSurfaces?.(ground);
     for (const art of arts) { art.mount(depthLayer, ground, { host: depth, depthKey }); for (const id of art.mountSolids(authored.pieces)) blockerIds.add(id); }
     if (before && before.parent === host) host.addChildAt(root, host.getChildIndex(before)); else host.addChild(root);
     mounted = true;

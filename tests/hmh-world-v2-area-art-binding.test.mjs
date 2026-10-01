@@ -28,7 +28,7 @@ test('the binding reads the world hooks, loads every plan lazily, paints below t
   assert.equal(f.host.getChildIndex(binding.root), f.host.getChildIndex(f.before) - 1, 'area art root sits directly below the decal layer');
   const snapshot = binding.snapshot();
   assert.deepEqual(snapshot.plans.map(p => p.areaId).sort(), [...DISTRICTS, 'world-masses', 'world-roads'], 'authored plans, generic terrain for the eight undressed districts, roads and closed masses');
-  for (const plan of snapshot.plans) if (DISTRICTS.includes(plan.areaId)) { assert.equal(plan.terrain.materials.length, 3, plan.areaId); assert.equal(plan.terrain.field, '48x48'); assert.equal(plan.terrain.splat, false, 'no document: the splat mesh is skipped and the flat fill paints'); }
+  for (const plan of snapshot.plans) if (DISTRICTS.includes(plan.areaId)) { assert.equal(plan.terrain.materials.length, 3, plan.areaId); const [fw, fh] = plan.terrain.field.split('x').map(Number); assert.equal(fw, 48); assert.ok(fh >= 40 && fh <= 56, `${plan.areaId} field ${plan.terrain.field} spans the area plus its gap reach`); assert.equal(plan.terrain.splat, false, 'no document: the splat mesh is skipped and the flat fill paints'); }
   assert.ok(snapshot.blockerIds.includes('closed-mass-0') && snapshot.blockerIds.includes('halving-farms-barn'), 'closed masses and undressed buildings are drawn by the terrain plans');
   // The production renderer skips every id in blockerIds, so no old flat slab can draw under a rock bank.
   const authored = f.options.world.artPlans.authored, skip = new Set(snapshot.blockerIds);
