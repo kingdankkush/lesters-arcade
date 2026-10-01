@@ -75,6 +75,11 @@ const pilot = {
       const slot = slots.slots[bossId];
       if (slot.status === 'live' && log.boss.firstLiveTick === null) log.boss.firstLiveTick = tick;
       if (slot.locked && log.boss.lockedAtTick === null) log.boss.lockedAtTick = tick;
+      if (slot.boss && process.env.HMH_PROBE_DEBUG && tick % 300 === 0) {
+        const b = slot.boss;
+        process.stderr.write(`BOSS ${tick} hp ${Math.round(b.health)} boss ${Math.round(b.x)},${Math.round(b.y)} motion ${b.motion?.kind ?? '-'} pend ${b.pendingAttacks.length} hero ${Math.round(me.x)},${Math.round(me.y)} cover ${run.cover.phase}
+`);
+      }
       if (slot.boss) { log.boss.phases.add(slot.boss.phaseId); if (tick % 600 === 0 && slot.status === 'live') log.boss.healthSeen.push(Math.round(slot.boss.health)); }
       if (slot.status === 'defeated' && log.boss.defeatedTick === null) { log.boss.defeatedTick = tick; log.boss.opened = slot.closedWalls.length === 0; }
     }

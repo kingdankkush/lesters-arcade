@@ -147,10 +147,10 @@ with the same arguments; §6 is the proof.
 
 | Scenario | Result |
 |---|---|
-| court:rug-pull-baron | live 120, sealed 120, 3 phases, dead 4,278, court open, Seal at 6,600 / 12,650 |
-| court:fifty-one-percent-foreman | live 120, 3 phases, dead 8,195, court open, Seal at 12,600 / 2,250 |
-| court:lockkeeper | live 120, 3 phases, dead 10,707, court open, Seal at 1,550 / 12,250 |
-| cover-under-boss-fire | held in Bayou short cover, 14 of 16 hits cut to 60% (12→7, 24→14, 14→8) |
+| court:rug-pull-baron | live 120, sealed 120, 3 phases, dead 3,656, court open, Seal at 6,600 / 12,650 |
+| court:fifty-one-percent-foreman | live 120, 3 phases, dead 6,831, court open, Seal at 12,600 / 2,250 |
+| court:lockkeeper | live 120, 3 phases, dead 5,388 (orbit 480: 2,523), court open, Seal at 1,550 / 12,250 |
+| cover-under-boss-fire | held in Bayou cover at orbit 480: since the reach fix (§9) the Lockkeeper walks to where he can see the hero, so all 9 hits come from the open side, unreduced. (Before the fix he stood inside the tall screen and 14 of 16 hits were cut to 60%.) |
 | field-cover | Free entry, no evidence: walked to the Meadows court wall, 18 open-side hits unreduced (rule) |
 | ledge | Meadows climb: 1 mantle (18 ticks), 1 drop (6 landing ticks) |
 
@@ -212,3 +212,58 @@ traversal rules, clips, prompts) is in the lazy ten-area chunk.
   world records no run summary); schema 8 stays a proposal.
 - Balance: the 2.0 enemies are `balancePending`; Bloater, Tollkeeper and
   Money Printer only appear from the pressure band (18,000 ticks).
+
+## 9. Fix: a district boss out of the hero's reach (pre-release)
+
+**Symptom.** With the probe orbiting the Bayou court at radius 480 the
+Lockkeeper fight stalled: his health stopped moving while the hero lived.
+
+**Cause** (reproduced with `HMH_PROBE_DEBUG=1 HMH_PROBE_ORBIT=480 node
+scripts/hmh-ten-area-wiring-probe.mjs court:lockkeeper`, then at the kit level
+with a stationary hero):
+
+1. Every third attack the boss retreats to the court mark *farthest* from the
+   hero. Courts are 1,800 square, so that mark is often 900 to 1,300 away,
+   beyond the hero's 720 automatic aim. Outside the last phase he never
+   approaches, so a hero holding a spot (in cover, or pinned on the low stack)
+   never got a shot.
+2. District bosses swept only against the court locks, so a boss walking
+   toward the hero went straight through props and could park inside one: the
+   Lockkeeper stood inside `scrypt-bayou-court-tall-screen`, where no shot
+   reaches him.
+
+**Fix** (district kit and ten-area dispatch only; the Liquidator and the legacy
+map are untouched):
+
+- `retreatMark` replaces `farthestMark`: the farthest mark within
+  `DISTRICT_BOSS_ENGAGE_RANGE` (600) of the hero that the hero can see, else
+  the farthest in range, else the nearest.
+- When an action comes due and he is beyond 660, or screened from the hero
+  and beyond 280, he closes in first. He walks to the nearest vantage point on
+  rings of 360 and 240 around the hero that is inside the court, clear for his
+  body and in the hero's sight, preferring a straight walk. With no vantage
+  point he walks straight at the hero to 480 (in sight) or 220.
+- The ten-area dispatch passes the world's collision list to the kit for
+  movement (he walks around props) and for sight (`sightBlockers`). Called
+  without it, the kit behaves as before apart from the 600 retreat cap and
+  the closing step. `tests/hmh-district-bosses.test.mjs` is green.
+
+**Consequence.** A boss now walks to where he can see a hero hiding in cover,
+which is the open side, so cover does not cut his damage there. That follows
+the cover rules: cover protects from the wall side. Enemy flanking AI is
+still deferred.
+
+**Evidence.**
+
+- Regression test (in `hmh-ten-area-gameplay-wiring.test.mjs`): a
+  stationary hero at the centre and four corners of each court. Over 6,000
+  ticks the boss is never out of a clear 720 shot for more than 900 ticks in a
+  row, and is in reach at least half the time. Before the fix this fails
+  (Baron from 5,860 / 11,910 and Lockkeeper from 810 / 11,510: 6,001 ticks out
+  of reach).
+- Real child, orbit 480 and 300, all three courts: every fight ends. Baron
+  4,805 / 3,656; Lockkeeper 2,523 / 5,388; Foreman 6,831 at 300, and at 480 the
+  hero dies at boss HP 51 (a lost fight, steady damage, no stall). Legacy
+  corpus 128 / 128 identical, digest `e6464972…cb101`; legacy `?boss=1`
+  Liquidator digest `6cfb1755…10d24`. Initial + shared bundle unchanged at
+  996,019 B.
