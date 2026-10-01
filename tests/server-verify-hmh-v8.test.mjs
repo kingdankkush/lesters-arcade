@@ -15,7 +15,7 @@ import { HMH_RUN_SUMMARY_CATALOGS_V8 as C8, validateRunSummaryPayload } from '..
 import { HMH_V8_TRAVEL } from '../sdk/hmh-run-contract-v8.mjs';
 import { RANKED_GAMES } from '../apps/portal/src/ranked-identity.mjs';
 import { createInitialArcadeState, recordScore, startPlaySession } from '../apps/portal/src/arcade-core.mjs';
-import { deriveEarnedAchievements, emptyHistory } from '../apps/portal/src/achievements/index.mjs';
+import { deriveEarnedAchievements, emptyHistory, pendingReviewAchievements } from '../apps/portal/src/achievements/index.mjs';
 import { achievementById } from '../apps/portal/src/achievements/index.mjs';
 import { HMH_BOSS_ROLE_IDS } from '../apps/portal/src/achievements/hmh.mjs';
 import { hmhRecordScoreInputsFromRunSummary, statsFromHmhRunSummary } from '../apps/portal/src/achievements/stats.mjs';
@@ -267,7 +267,10 @@ test('achievements read schema-8 rows: boss kills, enemy roles and areas; Full R
   assert.equal(stats.districtsVisited, 10);
   assert.ok(stats.killsByRole['rug-puller'] + stats.killsByRole['hodl-revenant'] > 0, 'the 2.0 enemies reach killsByRole');
   const earned = (summary) => deriveEarnedAchievements('lester-blaster', { gameId: 'lester-blaster', wallet: FIXTURE_WALLET, score: summary.totals.score, stats: statsFromHmhRunSummary(summary) }, emptyHistory(FIXTURE_WALLET, 'lester-blaster')).map((entry) => entry.id);
-  assert.ok(earned(four).includes('full-roster-run'));
+  // Full Roster Run criteria are met, but it is always held for review (verifier review hardening).
+  assert.ok(!earned(four).includes('full-roster-run'));
+  const pendingIds = pendingReviewAchievements('lester-blaster', { gameId: 'lester-blaster', wallet: FIXTURE_WALLET, score: four.totals.score, stats: statsFromHmhRunSummary(four) }, emptyHistory(FIXTURE_WALLET, 'lester-blaster')).map((entry) => entry.id);
+  assert.deepEqual(pendingIds, ['full-roster-run']);
   assert.ok(earned(four).includes('beat-level-1-boss'));
   assert.ok(earned(four).includes('getaway-clear'), 'six or more Level 1 areas and the Liquidator');
   const baronOnly = earned(baronRun.runSummary);
