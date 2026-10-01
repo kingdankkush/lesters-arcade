@@ -50,7 +50,7 @@ export function createScryptBayouArtPlan(world) {
   // and a plank screen as court cover.
   for (const name of ['northwest-root-bank', 'southwest-root-foot']) solid(name, 'bank', { roof: 'moss', tint: 0xc8c6b4 });
   solid('control-house', 'card', { source: 'b2-45', fit: 'width', tint: 0xb8b8ac, massAlpha: 0.4 });
-  solid('wheel-tower', 'card', { source: 'b1-47', fit: 'height', tint: 0xbcb6a8, massAlpha: 0.3 });
+  solid('wheel-tower', 'card', { source: 'b1-47', fit: 'height', tint: 0x9ea29a, massAlpha: 0.3 }); // cool grey keeps the rusted tank off the cue band
   solid('stilt-store', 'card', { source: 'b1-15', fit: 'height', height: BAYOU_STILT_TOWER_HEIGHT, tint: 0xc4bcaa, massAlpha: 0.25 });
   solid('court-low-stack', 'hedge', { source: 'b2-79', spacing: 80, tint: 0xc8bea8 });
   solid('court-tall-screen', 'stakes', { tint: 0x9d8f78, spacing: 24 });

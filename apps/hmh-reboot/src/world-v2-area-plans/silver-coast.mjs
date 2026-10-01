@@ -17,7 +17,9 @@ import { createAreaPlanContext } from './plan-support.mjs';
 import { placeOnBank, placeEdgeWoodland, placeAlongPolygonEdges, placeLine } from './plan-lines.mjs';
 
 export const SILVER_COAST_PAGES = Object.freeze(['tripo-props-hd-plants-00.webp', 'tripo-props-hd-structures-01.webp', 'tripo-props-hd-props-00.webp']);
-export const COAST_CHALK_TINT = 0xe8e2d2;
+// Cool chalk grey: the warm sandstone card otherwise reads close to the
+// reserved orange cue band at gameplay zoom (first capture pass).
+export const COAST_CHALK_TINT = 0x98aab4;
 const BANK_SOURCES = ['b1-42', 'b1-53', 'b1-42', 'b1-42', 'b1-10', 'b1-53', 'b1-42'];
 const BANK_HEIGHT = Object.freeze({ 'b1-42': 130, 'b1-53': 230, 'b1-10': 40 });
 const GRASS = ['b1-09', 'b1-10', 'b1-09', 'b1-01', 'b1-10'];
@@ -57,8 +59,8 @@ export function createSilverCoastArtPlan(world) {
   solid('terrace-bench', 'card', { source: 'b1-42', fit: 'width', tint: COAST_CHALK_TINT, massAlpha: 0 });
   // Landmark: the rock arch stands on the headland top, framing the lighthouse.
   const headland = context.piece('headland-cliff');
-  const arch = point(-1500, -1450);
-  if (supportAt(arch.x, arch.y)?.id === headland.id) prop('b2-76', arch.x, arch.y, 430, { groundZ: headland.visible.height, tint: 0xe6e0d0, fade: true });
+  const arch = point(-1000, -1400); // on the headland's inland lip, beside the lighthouse
+  if (supportAt(arch.x, arch.y)?.id === headland.id) prop('b2-76', arch.x, arch.y, 430, { groundZ: headland.visible.height, tint: COAST_CHALK_TINT, fade: true });
   // Layered sandstone and bleached driftwood trees on both banks.
   for (const bank of [headland, context.piece('shore-cliff')]) placeOnBank(context, bank, { key: 'coast-bank', stepX: 190, stepY: 170, inset: 80, radius: 50, sources: BANK_SOURCES, height: (source, n, v) => BANK_HEIGHT[source] * (0.8 + 0.4 * v), tint: source => source === 'b1-53' ? 0xe0dccc : COAST_CHALK_TINT });
   // Rubble at the cliff feet and sheltered corners, never across the shelf.
