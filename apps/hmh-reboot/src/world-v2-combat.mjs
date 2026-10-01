@@ -13,7 +13,7 @@ import { NEW_ENEMY_ARCHETYPES } from './enemy-archetypes-2.mjs';
 import { DISTRICT_BOSS_KITS } from './boss-slots.mjs';
 import { dropCourtGenesisSeal } from './boss-courts-world-v1.mjs';
 import { LIQUIDATOR_PHASES } from './liquidator-boss.mjs';
-import { applyCoverToDamage, coverFaceIndex, createCoverState, stepCover } from './cover-system.mjs';
+import { COVER_RULES_V1, applyCoverToDamage, coverFaceIndex, createCoverState, stepCover } from './cover-system.mjs';
 import {
   TRAVERSAL_RULES_V1,
   beginLandRecovery,
@@ -300,10 +300,16 @@ export function heroClipForPose({ coverPose, coverKind, peekMode, shuffleSide, t
 const oneShotTicks = (clip) => (clip?.startsWith('cover-enter') ? ONE_SHOT_CLIP_TICKS.enter
   : clip?.startsWith('cover-leave') ? ONE_SHOT_CLIP_TICKS.leave : clip === 'drop' ? ONE_SHOT_CLIP_TICKS.drop : 0);
 
+// The run summary's movement rules version (schema 8, HMH-COVER-TRAVERSAL-V1 §6).
+export const WORLD_V2_MOVEMENT_RULES_VERSION = `${COVER_RULES_V1.rulesVersion}+${TRAVERSAL_RULES_V1.rulesVersion}`;
+
 export function createWorldV2MovementRun({ faces, markers }) {
   const cover = createCoverState();
   const traversal = createTraversalState();
   let shuffleSide = 'r';
+  // Run-summary counters the cover and traversal states do not keep
+  // themselves. Recorded only; nothing in the simulation reads them.
+  const tally = { leaves: 0, coverKills: 0, coverDamageReduced: 0 };
   // Presentation memo only: which named clip is showing and since when.
   const shown = { clip: null, startTick: 0, holdUntil: -1 };
   const run = {
@@ -323,6 +329,7 @@ export function createWorldV2MovementRun({ faces, markers }) {
       const alongBefore = cover.along;
       const coverStep = traversalStep.movementLocked ? null
         : stepCover(cover, { player, input: { move, fire, aimHeld, dodge, reload, hit }, faces, tick });
+      if (coverStep?.event?.startsWith('leave')) tally.leaves += 1;
       if (coverStep?.pose === 'cover-shuffle' && cover.along !== alongBefore) {
         const right = rightOf(cover.facing);
         const sign = cover.along > alongBefore ? 1 : -1;
@@ -351,7 +358,28 @@ export function createWorldV2MovementRun({ faces, markers }) {
     },
     // Steps I and J: damage reaching a hero in cover from the covered side.
     coverDamage(origin, damage) {
-      return applyCoverToDamage(cover, origin, damage);
+      const applied = applyCoverToDamage(cover, origin, damage);
+      tally.coverDamageReduced += damage - applied;
+      return applied;
+    },
+    // A kill recorded while the hero holds cover (schema 8 coverKills).
+    creditKill() {
+      if (cover.phase === 'cover') tally.coverKills += 1;
+    },
+    // The schema-8 movement row (HMH-COVER-TRAVERSAL-V1 §6).
+    movementRow() {
+      return freezeDeep({
+        rulesVersion: WORLD_V2_MOVEMENT_RULES_VERSION,
+        coverTicks: cover.coverTicks,
+        coverEnters: cover.enters,
+        coverLeaves: tally.leaves,
+        coverKills: tally.coverKills,
+        coverDamageReduced: Math.round(tally.coverDamageReduced),
+        mantles: traversal.mantles,
+        drops: traversal.drops,
+        mantleTicks: traversal.mantleTicks,
+        landTicks: traversal.landTicks,
+      });
     },
     // Presentation: the named library clip for this frame, or null.
     heroClip(tick) {
@@ -478,6 +506,7 @@ export function createWorldV2Combat({ world, gameplay, queryGround }) {
   registerEnemyArchetypes(WORLD_V2_NEW_ENEMY_RUNTIME);
   const faces = coverFaceIndex(world.collisionBlockers);
   const traversalMarkers = deriveWorldV2TraversalMarkers(world, queryGround);
+  let currentRun = null;
   return Object.freeze({
     archetypes: WORLD_V2_ENEMY_ARCHETYPES,
     districtArchetypes: WORLD_V2_DISTRICT_ARCHETYPES,
@@ -488,7 +517,9 @@ export function createWorldV2Combat({ world, gameplay, queryGround }) {
     bossDispatch: (api) => createWorldV2BossDispatch(api, gameplay, world.collisionBlockers),
     activeBoss: activeWorldV2Boss,
     closedBossWalls: closedWorldV2BossWalls,
-    createRun: () => createWorldV2MovementRun({ faces, markers: traversalMarkers.markers }),
+    createRun: () => (currentRun = createWorldV2MovementRun({ faces, markers: traversalMarkers.markers })),
+    // The run createRun made last (the session's), for its summary row.
+    currentRun: () => currentRun,
     evidenceSpawn: (value, spawn) => worldV2EvidenceSpawn({ value, gameplay, faces, markers: traversalMarkers.markers, spawn, isClear: (point) => isWorldV2PointClear(world, queryGround, point) }),
     evidenceReady: (value, bossSlots) => worldV2EvidenceReady({ value, gameplay, bossSlots }),
     // Accessible status lines for a district boss; null keeps the

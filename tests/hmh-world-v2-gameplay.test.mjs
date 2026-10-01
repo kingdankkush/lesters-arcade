@@ -149,5 +149,14 @@ test('the entry, briefing and tables are deterministic and unofficial', () => {
   assert.equal(gameplay.officialRun, false);
   assert.equal(gameplay.rankedEligible, false);
   assert.equal(hash(createWorldV2Gameplay(createWorldV2RuntimeWorld())), hash(gameplay));
-  assert.throws(() => createWorldV2Gameplay({ ...world, officialRun: true }), /unofficial/);
+  // The official/Ranked flags must agree (2.0.x preview: both false; 2.1.0 Level 1: both true).
+  assert.throws(() => createWorldV2Gameplay({ ...world, officialRun: true }), /requires the ten-area world/);
+  assert.throws(() => createWorldV2Gameplay({ ...world, rankedEligible: true }), /requires the ten-area world/);
+  // The 2.1.0 Level 1 builds the same tables; only the flags and the first tip differ.
+  const official = createWorldV2Gameplay(createWorldV2RuntimeWorld({ official: true }));
+  assert.equal(official.officialRun, true);
+  assert.equal(official.rankedEligible, true);
+  assert.doesNotMatch(official.briefing.tips[0], /unranked/);
+  const flagsOff = (table) => ({ ...table, officialRun: null, rankedEligible: null, briefing: { ...table.briefing, tips: table.briefing.tips.slice(1) } });
+  assert.equal(hash(flagsOff(official)), hash(flagsOff(gameplay)));
 });
