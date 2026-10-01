@@ -360,6 +360,17 @@ export function createWorldV2MovementRun({ faces, markers }) {
       if (!shown.clip) return null;
       return { clip: shown.clip, clipTick: Math.max(0, tick - shown.startTick) };
     },
+    // Presentation: a small pulsing ground ring per prompt, drawn into the
+    // caller's per-frame graphics.
+    drawPrompts(graphics, { hero, radius, project, zoom, tick }) {
+      for (const ring of run.prompts(hero, radius)) {
+        const at = project(ring);
+        const pulse = 0.55 + 0.45 * Math.sin(((tick % 60) / 60) * Math.PI * 2);
+        const r = 15 * zoom;
+        graphics.ellipse(at.x, at.y, r, r * 0.5).stroke({ color: 0x080d12, width: 4, alpha: 0.5 })
+          .ellipse(at.x, at.y, r, r * 0.5).stroke({ color: ring.kind.startsWith('cover') ? 0x7fe7ff : 0xffd166, width: 2, alpha: 0.45 + pulse * 0.4 });
+      }
+    },
     // Presentation: rings for the cover face and the ledge the hero could
     // take from here (nothing while in cover or mid-transition).
     prompts(hero, radius = 24) {
