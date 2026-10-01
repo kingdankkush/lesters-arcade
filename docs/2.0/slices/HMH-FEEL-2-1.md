@@ -244,9 +244,9 @@ world shake like the health pips.
 
 | | 2.0.0 base | this branch |
 |---|---|---|
-| HMH initial JS (entry + vendor) | 797,441 B | 799,832 B (+2,391) |
-| HMH initial + shared | 996,019 B | **998,593 B** (+2,574; cap 1,048,576; 49,983 B headroom) |
-| HMH entry | 326,583 B | 328,974 B |
+| HMH initial JS (entry + vendor) | 797,441 B | 799,890 B (+2,449) |
+| HMH initial + shared | 996,019 B | **998,651 B** (+2,632; cap 1,048,576; 49,925 B headroom) |
+| HMH entry | 326,583 B | 329,032 B |
 | Lazy `hmh-feel` chunk | none | 7,153 B |
 | Lazy `combat-audio` chunk (compressors, duck) | (existing) | 9,131 B |
 
