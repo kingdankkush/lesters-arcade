@@ -140,7 +140,9 @@ async function headlessFetch(input) {
   };
 }
 
-export function installHeadlessEnvironment({ gamepadRef }) {
+// `search` (default none) is the page query string, for an unofficial-world
+// probe (scripts/hmh-ten-area-wiring-probe.mjs); corpus runs never pass it.
+export function installHeadlessEnvironment({ gamepadRef, search = '' }) {
   const headless = {
     errors: [],
     app: null,
@@ -180,7 +182,7 @@ export function installHeadlessEnvironment({ gamepadRef }) {
 
   const parentWindow = { postMessage() {} };
   const windowObj = {
-    location: { href: PAGE_URL, origin: ORIGIN, protocol: 'http:', host: '127.0.0.1:8791', hostname: '127.0.0.1', port: '8791', pathname: '/hmh-reboot/index.html', search: '', hash: '', assign() {}, reload() {}, replace() {} },
+    location: { href: PAGE_URL + search, origin: ORIGIN, protocol: 'http:', host: '127.0.0.1:8791', hostname: '127.0.0.1', port: '8791', pathname: '/hmh-reboot/index.html', search, hash: '', assign() {}, reload() {}, replace() {} },
     parent: parentWindow,
     top: parentWindow,
     innerWidth: 1280,

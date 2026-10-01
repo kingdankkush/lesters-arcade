@@ -1,0 +1,1 @@
+{"scenario":"cover","worldId":"ten-area","frames":16000,"finalTick":15995,"state":"active","errors":[],"runSummaries":0,"traversalMarkers":12,"cover":{"enters":2,"coverTicks":905,"poses":["cover-enter","cover-idle-l","cover-peek-fire","cover-shuffle"],"phase":"free"},"coverDamage":{"calls":0,"reduced":0,"inCover":0,"sample":[]},"boss":null,"health":138}

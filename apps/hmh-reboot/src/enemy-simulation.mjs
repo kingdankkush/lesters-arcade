@@ -310,7 +310,7 @@ export function planEnemyIntent(enemy, { player, tick, navigation = null, format
       coverTarget = freezeDeep({ ...cover.target });
     }
   }
-  if (!hazardAvoiding && !coverSeeking && archetype.id === 'whale-enforcer' && enemy.attackPhase !== 'tell'
+  if (!hazardAvoiding && !coverSeeking && (archetype.balanceSource ?? archetype.id) === 'whale-enforcer' && enemy.attackPhase !== 'tell'
     && distance > archetype.attack.reserveRange && distance <= 520
     && navigation && typeof navigation.chokepointDirectionAt === 'function') {
     const chokepoint = navigation.chokepointDirectionAt(enemy.x, enemy.y, player.x, player.y);

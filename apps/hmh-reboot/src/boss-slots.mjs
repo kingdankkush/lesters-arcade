@@ -11,8 +11,14 @@
 // for a grace after; the first four adds of a slot are free once per run and
 // every further add draws from the director's capacity bank (contract 5.3).
 //
-// Only the Liquidator is registered: the Rug Pull Baron, the Lockkeeper and
-// the 51% Foreman stay dark until their slices, and their v7 rows stay zero.
+// On the shipped Level 1 map only the Liquidator is registered: the Rug Pull
+// Baron, the Lockkeeper and the 51% Foreman stay dark there and their v7 rows
+// stay zero. A world-keyed table injected through createBossSlots({ definitions })
+// (W4a; world-v2-gameplay.mjs supplies the ten-area one) may register all four:
+// WORLD_V1_BOSS_DEFINITIONS and createDistrictBossDefinition build the district
+// rows (slice HMH-BOSSES-2-4). Each definition carries its own `create` factory,
+// and every step below reads the slot's definition rather than assuming the
+// Liquidator.
 // Pure simulation, loaded lazily with the boss modules.
 import { freezeDeep } from './value-guards.mjs';
 import { directorViewBounds } from './encounter-director.mjs';
@@ -23,8 +29,12 @@ import {
   insideBossArena,
   pastDarkPoolThreshold,
 } from './boss-arenas.mjs';
+import { WORLD_V1_DISTRICT_COURTS, pastCourtThreshold } from './boss-courts-world-v1.mjs';
 import { referenceDps } from './boss-reference-dps.mjs';
 import { LIQUIDATOR_TARGET_ID, createLiquidatorAddCandidates, createLiquidatorBoss } from './liquidator-boss.mjs';
+import { rugPullBaron } from './rug-pull-baron-boss.mjs';
+import { lockkeeper } from './lockkeeper-boss.mjs';
+import { fiftyOneForeman } from './fifty-one-foreman-boss.mjs';
 import { attemptScheduledEnemyInsertion } from './enemy-simulation.mjs';
 import { HMH_V7_BOSSES, HMH_V7_BOSS_RULES, HMH_V7_RUN_RULES, hmhV7BossHp } from '../../../sdk/hmh-run-contract-v7.mjs';
 import { HMH_RUN_SUMMARY_CATALOGS_V7 } from '../../../sdk/hmh-run-summary-schema-v7.mjs';
@@ -52,8 +62,47 @@ export const BOSS_DEFINITIONS = freezeDeep({
     retreatZones: { 'margin-floor': 'liquidator-retreat-margin-floor', 'dark-pool': 'liquidator-retreat-dark-pool' },
     darkPoolObjective: 'warehouse-logbook',
     unlockObjective: 'liquidator-defeated',
+    create: createLiquidatorBoss,
   },
 });
+
+// A district boss row for a world-keyed table: the shipped row shape, the
+// court as its only arena, one trigger (the hero crossing the court threshold)
+// and one retreat ring; the Dark Pool stays the Liquidator's own.
+export function createDistrictBossDefinition(kit, court, { retreatZone = `${kit.definition.bossId}-retreat-${court.id}`, unlockObjective = `${kit.definition.bossId}-defeated` } = {}) {
+  const contract = HMH_V7_BOSSES[kit.definition.bossId];
+  return {
+    bossId: kit.definition.bossId,
+    targetId: kit.definition.targetId,
+    roleId: kit.definition.bossId,
+    name: kit.definition.name,
+    districtId: contract.district,
+    readyTick: contract.readyTick,
+    targetSeconds: contract.targetSeconds,
+    silverBurst: contract.silverBurst,
+    threat: contract.threat,
+    markers: contract.phaseThresholds,
+    arenas: { threshold: court },
+    triggerZone: `${kit.definition.bossId}-threshold`,
+    retreatZones: { [court.id]: retreatZone },
+    darkPoolObjective: null,
+    unlockObjective,
+    create: kit.create,
+  };
+}
+
+export const DISTRICT_BOSS_KITS = Object.freeze({ 'rug-pull-baron': rugPullBaron, lockkeeper, 'fifty-one-percent-foreman': fiftyOneForeman });
+
+// The reference ten-area table on the greybox courts: the shipped Liquidator
+// row plus the three district rows. world-v2-gameplay.mjs builds the live
+// table the same way from the world's own arena anchors.
+export const WORLD_V1_BOSS_DEFINITIONS = freezeDeep({
+  'rug-pull-baron': createDistrictBossDefinition(rugPullBaron, WORLD_V1_DISTRICT_COURTS['rug-pull-baron']),
+  lockkeeper: createDistrictBossDefinition(lockkeeper, WORLD_V1_DISTRICT_COURTS.lockkeeper),
+  'fifty-one-percent-foreman': createDistrictBossDefinition(fiftyOneForeman, WORLD_V1_DISTRICT_COURTS['fifty-one-percent-foreman']),
+  liquidator: BOSS_DEFINITIONS.liquidator,
+});
+
 
 // Director insertions the capacity bank allows by `tick` (the verifier's
 // directorSpawnCapacity over the v7 band schedule; a parity test pins it).
@@ -144,7 +193,7 @@ function initiate(slots, slot, { trigger, tick, level, events }) {
   slot.initiatedTick = tick;
   slot.closedWalls = [];
   slot.locked = false;
-  slot.boss = createLiquidatorBoss({
+  slot.boss = definition.create({
     arena,
     entry: trigger,
     startTick: tick,
@@ -196,9 +245,12 @@ export function stepBossSlots(slots, {
   const closed = [];
   const opened = [];
   const recycle = new Set();
-  const slot = slots.slots.liquidator;
-  const definition = definitionsOf(slots).liquidator;
+  const definitions = definitionsOf(slots);
+  for (const slot of Object.values(slots.slots)) stepBossSlot(slots, slot, definitions[slot.bossId], { tick, player, missionEvents, mission, level, enemies, events, closed, opened, recycle });
+  return freezeDeep({ tick, events, closed, opened, recycle: [...recycle].sort() });
+}
 
+function stepBossSlot(slots, slot, definition, { tick, player, missionEvents, mission, level, enemies, events, closed, opened, recycle }) {
   for (const event of missionEvents) {
     if (event?.type !== 'boss-zone' || event.bossId !== slot.bossId) continue;
     if (event.zoneKind === 'trigger' && triggerArmed(slots, slot, event.trigger, tick)) initiate(slots, slot, { trigger: event.trigger, tick, level, events });
@@ -216,8 +268,14 @@ export function stepBossSlots(slots, {
   }
   // The Dark Pool: the logbook found (this tick or earlier) and the hero 48
   // past the threshold.
-  if (mission?.completed?.has(definition.darkPoolObjective) && pastDarkPoolThreshold(player) && triggerArmed(slots, slot, 'dark-pool', tick)) {
+  if (definition.darkPoolObjective && mission?.completed?.has(definition.darkPoolObjective) && pastDarkPoolThreshold(player) && triggerArmed(slots, slot, 'dark-pool', tick)) {
     initiate(slots, slot, { trigger: 'dark-pool', tick, level, events });
+  }
+  // A ten-area court: the hero crossing its threshold starts the district boss
+  // without a mission zone.
+  const court = definition.arenas.threshold;
+  if (court && pastCourtThreshold(court, player) && triggerArmed(slots, slot, 'threshold', tick)) {
+    initiate(slots, slot, { trigger: 'threshold', tick, level, events });
   }
 
   if (slot.status === 'live' && !slot.locked) {
@@ -261,17 +319,18 @@ export function stepBossSlots(slots, {
       }
     }
   }
-  return freezeDeep({ tick, events, closed, opened, recycle: [...recycle].sort() });
 }
 
 // Presentation and smoke tooling only (main.mjs ?boss=1): starts the boss on
 // an arena of the caller's choosing with no locks. Never reached in play.
 export function forceBossStart(slots, { bossId, tick, arena, level = 1 }) {
   const slot = slots.slots[bossId];
+  const definition = definitionsOf(slots)[bossId];
   const events = [];
-  initiate(slots, slot, { trigger: 'bell', tick, level, events });
+  const trigger = Object.keys(definition.arenas)[0];
+  initiate(slots, slot, { trigger, tick, level, events });
   slot.arena = arena;
-  slot.boss = createLiquidatorBoss({ arena, entry: 'bell', startTick: tick, seed: slots.seed, maxHealth: slot.boss.maxHealth, wave: slot.addWaves });
+  slot.boss = definition.create({ arena, entry: trigger, startTick: tick, seed: slots.seed, maxHealth: slot.boss.maxHealth, wave: slot.addWaves });
   slot.locked = true;
   return slot.boss;
 }
@@ -374,7 +433,7 @@ export function insertBossAdds(slots, { bossId, event, tick, population, alive, 
 // The director's view of the bosses: suppressed while one lives and during a
 // grace; the Yard leans to Agents until the Liquidator falls (4.3 "Purpose").
 export function bossDirectorOverlay(slots, tick) {
-  const pacified = slots.slots.liquidator.status === 'defeated';
+  const pacified = slots.slots.liquidator?.status === 'defeated';
   return freezeDeep({
     suppressed: Boolean(liveSlot(slots)) || tick < slots.graceUntil,
     leanRole: pacified ? null : 'suppressor',

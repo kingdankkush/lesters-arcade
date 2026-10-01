@@ -7,15 +7,21 @@
 // (createMissionState objectives/bossZones, createBossSlots definitions,
 // stepEncounterDirector roleGates, resolveLevelBriefing briefing).
 //
-// Only the Liquidator is playable today. The Rug Pull Baron, Lockkeeper and
-// 51% Foreman arenas exist as encounter sites on the world contract with no
-// boss definition, trigger or lock until their own slices.
+// All four bosses are registered (slice HMH-BOSSES-2-4): the Liquidator on his
+// exchange floor, and the Rug Pull Baron, the Lockkeeper and the 51% Foreman on
+// district courts placed on the world's own arena anchors
+// (boss-courts-world-v1.mjs). A district boss starts when the hero crosses its
+// court threshold at or after its contract ready tick; main.mjs still steps
+// only the Liquidator slot's boss, so binding the district engine into the
+// runtime tick is the next slice.
 import { freezeDeep } from './value-guards.mjs';
 import { createStaticBlocker } from './collision.mjs';
-import { BOSS_DEFINITIONS } from './boss-slots.mjs';
+import { BOSS_DEFINITIONS, DISTRICT_BOSS_KITS, createDistrictBossDefinition } from './boss-slots.mjs';
+import { createDistrictCourt } from './boss-courts-world-v1.mjs';
 import { MISSION_RULES } from './mission-objectives.mjs';
 import { HMH_V7_BOSSES, HMH_V7_BOSS_RULES, HMH_V7_RUN_RULES } from '../../../sdk/hmh-run-contract-v7.mjs';
 import { WORLD_V2_RUNTIME_ID } from './world-v2-runtime-world.mjs';
+import { WORLD_V2_DISTRICT_ARCHETYPES, WORLD_V2_EXTRA_ROLES } from './world-v2-combat.mjs';
 
 export const WORLD_V2_DEFAULT_DISTRICT_ID = 'mweb-meadows';
 
@@ -102,19 +108,40 @@ export function createWorldV2LiquidatorFloor(world) {
   });
 }
 
-function bossZoneRow({ id, kind, arena, position, mode, clip, fillTicks, readyTick, name, task }) {
+// The greybox arenas name the Foreman by his area label; the v7 contract id
+// is the boss id everywhere else.
+const WORLD_ARENA_BOSS_IDS = freezeDeep({ 'rug-pull-baron': 'rug-pull-baron', lockkeeper: 'lockkeeper', '51-percent-foreman': 'fifty-one-percent-foreman' });
+
+export function createWorldV2DistrictCourts(world) {
+  const courts = {};
+  for (const arena of world.encounterArenas) {
+    const bossId = WORLD_ARENA_BOSS_IDS[arena.bossId];
+    if (!bossId) continue;
+    courts[bossId] = createDistrictCourt(bossId, { centre: arena.anchor, id: arena.id });
+  }
+  for (const bossId of Object.values(WORLD_ARENA_BOSS_IDS)) if (!courts[bossId]) throw new TypeError('ten-area world has no ' + bossId + ' court');
+  return freezeDeep(courts);
+}
+
+function bossZoneRow({ id, kind, arena, position, mode, clip, fillTicks, readyTick, name, task, bossId = 'liquidator' }) {
   return {
     id, objectiveClass: kind === 'trigger' ? 'boss-trigger' : 'boss-retreat', districtId: arena.districtId, name, task, kind: 'boss-zone',
     mode, clip, fillTicks, ringRadius: MISSION_RULES[mode].ringRadius, readyTick,
     anchor: point(position.x, position.y), operate: { x: position.x, y: position.y, facing: position.facing },
     propBlockerId: null, requires: null, xpPerLevel: 0, effects: [],
-    bossZone: kind === 'trigger' ? { bossId: 'liquidator', kind, trigger: arena.trigger } : { bossId: 'liquidator', kind, arena: arena.id },
+    bossZone: kind === 'trigger' ? { bossId, kind, trigger: arena.trigger } : { bossId, kind, arena: arena.id },
   };
 }
 
 export function createWorldV2Gameplay(world) {
   if (world?.id !== WORLD_V2_RUNTIME_ID || world.officialRun !== false || world.rankedEligible !== false) throw new TypeError('ten-area gameplay requires the unofficial ten-area world');
-  const roleGates = Object.fromEntries(world.districts.map((district) => [district.id, TIER_ROLES[district.tier] ?? TIER_ROLES[5]]));
+  // Slice HMH-TEN-AREA-GAMEPLAY-WIRING: an area hosting a 2.0 enemy whose
+  // role its tier lacks gains that role; the bands still gate it by time.
+  const roleGates = Object.fromEntries(world.districts.map((district) => {
+    const roles = TIER_ROLES[district.tier] ?? TIER_ROLES[5];
+    const extra = (WORLD_V2_EXTRA_ROLES[district.id] ?? []).filter((role) => !roles.includes(role));
+    return [district.id, [...roles, ...extra]];
+  }));
   if (!roleGates[WORLD_V2_DEFAULT_DISTRICT_ID]) throw new TypeError('ten-area default district has no role gate');
 
   const floor = createWorldV2LiquidatorFloor(world);
@@ -130,6 +157,8 @@ export function createWorldV2Gameplay(world) {
       darkPoolObjective: 'ten-area-dark-pool-unavailable',
     },
   };
+  const districtCourts = createWorldV2DistrictCourts(world);
+  for (const [bossId, court] of Object.entries(districtCourts)) bossDefinitions[bossId] = createDistrictBossDefinition(DISTRICT_BOSS_KITS[bossId], court);
 
   const missionObjectives = [
     machineRow(world, {
@@ -150,6 +179,10 @@ export function createWorldV2Gameplay(world) {
       fillTicks: 90, readyTick: HMH_V7_BOSSES.liquidator.readyTick, name: 'The Closing Bell', task: 'Ring the Closing Bell' }),
     bossZoneRow({ id: bossDefinitions.liquidator.retreatZones[floor.id], kind: 'retreat', arena: floor, position: floor.retreat, mode: 'channel', clip: 'crank',
       fillTicks: HMH_V7_BOSS_RULES.BOSS_RETREAT_CHANNEL_TICKS, readyTick: 0, name: 'Retreat', task: 'Hold to retreat' }),
+    // District bosses trigger on their court threshold, not a mission zone;
+    // each court keeps one retreat ring.
+    ...Object.entries(districtCourts).map(([bossId, court]) => bossZoneRow({ id: bossDefinitions[bossId].retreatZones[court.id], kind: 'retreat', arena: court, position: court.retreat, mode: 'channel', clip: 'crank',
+      fillTicks: HMH_V7_BOSS_RULES.BOSS_RETREAT_CHANNEL_TICKS, readyTick: 0, name: 'Retreat', task: 'Hold to retreat', bossId })),
   ].sort(byId);
 
   const entry = { id: 'meadows', name: 'MWEB Meadows', x: world.player.spawn.x, y: world.player.spawn.y };
@@ -158,7 +191,7 @@ export function createWorldV2Gameplay(world) {
     entries: {
       meadows: {
         objective: 'Press the relay switch east of the entry green, then take the paved road west into Litecoin City.',
-        watch: 'Enemies arrive from the road ends of every area. Only the Closing Bell in the City exchange court is live; the River, Bayou and Fortress courts are marked but empty.',
+        watch: 'Enemies arrive from the road ends of every area. The Closing Bell waits in the City exchange court; the Rug Pull Baron, the Lockkeeper and the 51% Foreman hold the River, Bayou and Fortress courts.',
         supply: 'A bonus life waits in the Meadows garden loop. Each area hides one cache: weapons in the City, Farms, Bayou, Ridge and Woods.',
         features: [
           { kind: 'objective', id: 'ten-area-meadows-relay', bearing: 'east' },
@@ -180,14 +213,16 @@ export function createWorldV2Gameplay(world) {
     rankedEligible: false,
     defaultDistrictId: WORLD_V2_DEFAULT_DISTRICT_ID,
     roleGates,
+    districtArchetypes: WORLD_V2_DISTRICT_ARCHETYPES,
     missionObjectives,
     missionBossZones,
     bossDefinitions,
-    bossLockBlockers: [...floor.walls],
+    bossLockBlockers: [...floor.walls, ...Object.values(districtCourts).flatMap((court) => court.walls)],
     liquidatorFloor: floor,
+    districtCourts,
     entries: [entry],
     briefing,
-    stubbedBosses: world.encounterArenas.filter((arena) => arena.bossId && arena.bossId !== 'liquidator').map((arena) => ({ arenaId: arena.id, bossId: arena.bossId, districtId: arena.districtId })),
+    stubbedBosses: world.encounterArenas.filter((arena) => arena.bossId && arena.bossId !== 'liquidator' && !WORLD_ARENA_BOSS_IDS[arena.bossId]).map((arena) => ({ arenaId: arena.id, bossId: arena.bossId, districtId: arena.districtId })),
   });
 }
 

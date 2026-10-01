@@ -1,0 +1,1 @@
+{"scenario":"field","worldId":"ten-area","frames":20000,"finalTick":18576,"state":"game-over","errors":[],"runSummaries":0,"traversalMarkers":12,"cover":{"enters":1,"coverTicks":18287,"poses":["cover-blind-fire","cover-enter","cover-hit","cover-idle-l","cover-reload"],"phase":"cover"},"coverDamage":{"calls":18,"reduced":0,"inCover":18,"sample":[]},"boss":null,"health":0}

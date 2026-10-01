@@ -21,9 +21,11 @@ function traceRow(spies, tick, pad) {
   return { tick, x: Math.round(me.x), y: Math.round(me.y), hp: spies.health, enemies: enemies.length, nearest: Math.round(nearest), within200, weapon: spies.loadout?.activeWeaponId, move: pad ? [Number(pad.axes[0].toFixed(2)), Number(pad.axes[1].toFixed(2))] : null };
 }
 
-export async function runChild({ seed, buildHash, seasonId, heroId = 'lit-commando', pilot, maxFrames = 400_000, log = () => {}, trace = null }) {
+// `search` and `mode` default to the corpus's Ranked page; an unofficial
+// Free probe passes its own query and mode: 'free' (unranked session).
+export async function runChild({ seed, buildHash, seasonId, heroId = 'lit-commando', pilot, maxFrames = 400_000, log = () => {}, trace = null, search = '', mode = 'ranked' }) {
   const gamepadRef = { current: null };
-  const headless = installHeadlessEnvironment({ gamepadRef });
+  const headless = installHeadlessEnvironment({ gamepadRef, search });
   const origin = new URL(PAGE_URL).origin;
   const port = {
     onmessage: null,
@@ -63,10 +65,10 @@ export async function runChild({ seed, buildHash, seasonId, heroId = 'lit-comman
       messageId: 'portal-1',
       payload: {
         gameId: 'lester-blaster',
-        mode: 'ranked',
+        mode,
         heroId,
         profile: { displayName: 'Headless Pilot', locale: 'en-US' },
-        session: { seed, buildHash, seasonId, rankedEligible: true },
+        session: { seed, buildHash, seasonId, rankedEligible: mode === 'ranked' },
         settings,
       },
     }),
