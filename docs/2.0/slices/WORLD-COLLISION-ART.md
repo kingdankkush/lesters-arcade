@@ -31,7 +31,7 @@ settlement change.
 `apps/hmh-reboot/src/world-v2-area-plans/card-footprints.mjs` classes every
 non-pickup kit item. A card **blocks** when it is a building, structure,
 container or vehicle (always; a motorcycle is clutter), a barrier from knee
-height (jersey barrier, guardrail, barricade, sandbag, hedgerow at 30+ units;
+height (jersey barrier, barricade, sandbag, hedgerow at 30+ units;
 the same slab cut to a 18-26-unit headstone or rubble block is walk-over
 debris), or a large prop, big rock, tree or pole taller than 48 units
 (1.2 m; trees and poles block at the trunk). Grass, flowers, shrubs, ferns,
@@ -39,7 +39,10 @@ reeds, crack decals, rails, bridge decks and overhead gantries never block.
 
 A card's footprint is the manifest's `groundFootprintPixels` clipped to its
 painted alpha bounds (`cardGroundPixels` in the art schema), at the card's
-placement scale; trunks and poles are a 16-40-unit square at the anchor.
+placement scale; trunks and poles are a 16-32-unit square at the anchor
+(stopping where the card stops painting ground). A road guardrail never blocks:
+the roads plan stands one only where the corridor's closed land is 24 units
+behind it, and that land holds a body (2.1 QA follow-up).
 
 ## Audit tool
 
@@ -63,7 +66,7 @@ overhangs orange, covered footprints green, invisible walls magenta).
 | | Blocking cards | walk-over | overhang | invisible-wall | blocker-overhang | Total |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
 | Before (2.0.0, `receipts/collision-art-20261001/before/`) | 1,563 | 614 | 34 | 7 | 0 | **655** |
-| After (`receipts/collision-art-20261001/audit-after.json`) | 1,525 | 0 | 0 | 0 | 0 | **0** |
+| After (`receipts/collision-art-20261001/audit-after.json`) | 1,441 | 0 | 0 | 0 | 0 | **0** |
 
 The before audit ran on an archive of `f044868ff` with the shipped seat
 (anchor on the front edge) and the same audit definitions.
@@ -103,9 +106,10 @@ kinds are unchanged. Grown pieces keep their front edge.
 
 Unchanged: every surface (floors, roads, water, decks, ramps, bridges),
 closed mass, world guard, site, road, inspection route and arena. Pieces
-635 → 1,120; collision blockers 581 → 1,066.
+635 → 1,068; collision blockers 581 → 1,014 (with the QA follow-up below:
+bridge decks, the Ridge cap foot and 31 edge guards).
 
-### Authored geometry: prop colliders (485 new)
+### Authored geometry: prop colliders (401 new)
 
 `apps/hmh-reboot/src/dev/greybox-prop-blockers.mjs` (generated; do not edit)
 adds one `prop-solid` piece per ground-level blocking card a plan draws on
@@ -113,8 +117,7 @@ open walkable ground: a rectangle equal to the card's blocking footprint,
 `minZ 0`, `maxZ` = painted height, id
 `prop-<plan>-<source>-<round x>-<round y>`. Vehicles, containers and hard
 barriers (jersey, sandbag, scrap barricade) are combat cover (`short` up to
-80 units, `tall` above; 113 colliders, 310 cover faces); guardrails,
-hedgerows, trees, rocks and props are not. Prop colliders carry no
+80 units, `tall` above); hedgerows, trees, rocks and props are not. Prop colliders carry no
 `areaId` (area layout budgets are unchanged), and the placement guard,
 `supportAt` and the terrain field ignore them, so the plans they were
 generated from never move because of them; regeneration is idempotent and
@@ -132,9 +135,11 @@ The full per-collider table is in the appendix.
 | Farms pickup moves from local (-250, 420) to (-250, 560), off the court exit line; the north-south west hedge column (sideways hedge cards) becomes a walk-through shrub line | `halving-farms.mjs` |
 | Fortress container moves from local (1850, 400) to (1930, 400), out of the gate-court approach band | `fork-fortress.mjs` |
 | Ridge mine entrances set back 10 units into the cap foot; switchback root clumps stay at walk-over height (<= 48) | `ledger-ridge.mjs` |
-| Road guardrails stand 12 units inside the road edge (was 30) | `world-roads.mjs` |
+| Road guardrails stand 12 units inside the road edge (was 30), only where closed land is right behind them | `world-roads.mjs` |
+| Hollow Pines pocket debris (root balls, hollow stumps) and Ridge cut-foot timber and stumps drawn at walk-over height (<= 48) | `hollow-pines.mjs`, `ledger-ridge.mjs` |
+| Tree trunk colliders at most 32 wide (was 40) | `card-footprints.mjs` |
 
-Visible consequences: drawn cards 3,056 → 3,039. Six City skyline/roof cards
+Visible consequences: drawn cards 3,056 → 3,017. Six City skyline/roof cards
 that cannot stand on their support are left out (39 → 33 elevated City
 cards; the rest step deeper into the closed land), the six-card Farms west
 hedge column becomes a low shrub line, a handful of ground cards that stood on a
@@ -151,7 +156,7 @@ about half their painted depth.
   farmhouse footprint front on its collider front edge; the `at:` evidence
   spawn refuses colliders.
 - Greybox world check (`checkGreyboxWorld`): passes. Real enemy nav grid
-  walkable fraction 0.4736 → 0.4504 (band 0.45-0.55); every area, cache,
+  walkable fraction 0.4736 → 0.4515 (band 0.45-0.55); every area, cache,
   arena and spawn point reachable and returnable; every road and local route
   sweeps clear both ways; the Fortress (240) and Ridge (300) main-route
   moving bands stay clear; arena exits and cover stand-offs reachable.
@@ -196,19 +201,96 @@ Desktop shots (hero walked into the art, inspected):
 | `walk/city-parked-pickup.jpg` | City parked pickup (prop collider), stopped at the truck bed |
 | `walk/fortress-container-west.jpg` | Fortress container stack (prop collider), west face |
 
+## QA follow-up: pins at bridge ends and water banks
+
+QA sweep on integration `5f0c15aca` (merged here first): the hero pinned for
+minutes at the west end of the Scrypt Bayou lock bridge near (2700, 12050)
+and beside the Hashwood River City bridge near (7262, 11320); 23 enemies
+stuck at bridge ends and water edges, some on cells the nav grid marks
+unwalkable.
+
+**Cause.** The traversal pass (deep water, a deck's side drop, a ramp's high
+side) refuses a whole step and zeroes velocity; it never slides. Only the
+swept collision slides. So a body pushed diagonally into a bank or a bridge
+side stood still for as long as the input held, at exactly the QA spots: the
+inside corners where a ramp, a deck and the bank meet. Two geometry gaps made
+the corners worse: every bridge deck overhung 20 units of dry ground past the
+water at each end (Bayou deck x 2680..3040 over water 2700..3020; River deck
+y 10960..11340 over water 10980..11320), leaving pockets beside the deck ends,
+and at Ledger Ridge a 100-unit strip between the north cap and the
+maintenance shelf's lip, closed at both ends by the mine entrances, could be
+entered only by a 32-drop enemy falling from the shelf and never left.
+
+**Fix (ten-area data only).**
+
+| Change | Pieces | Before | After |
+| --- | --- | --- | --- |
+| Bridge decks span exactly the channel; ramp feet unchanged, ramps meet the deck at the bank | `scrypt-bayou-{lock,north}-bridge` | x 2680..3040 | x 2700..3020 |
+| | `scrypt-bayou-{lock,north}-{west,east}-ramp` | x 2400..2680 / 3040..3320 | x 2400..2700 / 3020..3320 |
+| | `hashwood-river-{city,woods}-bridge` | y 10960..11340 | y 10980..11320 |
+| | `hashwood-river-{city,woods}-{north,south}-ramp` | y 10700..10960 / 11340..11600 | y 10700..10980 / 11320..11600 |
+| Bayou drop marker follows the new deck edge | `scrypt-bayou-drop-intent` | x 3020..3060 | x 3000..3040 |
+| Ridge cap foot fills the dead strip (rock, height 160, drawn as a bank) | `ledger-ridge-cap-foot` (new) | none | 7200, 1400, 8110, 1495 |
+| Edge guards (`dev/greybox-edge-guards.mjs`, derived): a bank guard 16..28 units inside every deep-water edge with walkable land behind it, cut where a crossing passes (maxZ 8, so shots and sight lines pass over); a rail 12 deep along both sides of every bridge deck and the upper half of each of its ramps (maxZ 40). Never cover, no area id, drawn by the water and deck edges they follow (the binding claims them). | 23 `*-channel-bank-*`, 8 `*-bridge-rail-*` (new) | none | see `audit-after.json` blocker list |
+
+A body now slides along every bank and bridge side, the smallest enemy
+(radius 18) still stops 2 units short of the water, and decks and ramps are
+entered at their ends. Deck sides elsewhere (porches, gantries, shelves) are
+climb/drop ledges with traversal markers and keep the old traversal stop; a
+diagonal push into one still halts the body (no slide). Sliding there needs
+the traversal pass itself to slide, a runtime change outside this data lane.
+
+**Deep water is invisible in the area-art view.** With area art ready the
+whole Bayou channel and River channel paint as marsh/forest grass, not only a
+strip: the area ground layer is drawn above the production bake's water
+surfaces and the plans paint no water. The surface data is correct (both
+channels are `kind: 'water'`, `deepWater: true`, `walkable: false`, polygon
+outlines exact), so the WORLD-VISUALS water material can paint them by kind;
+this lane changed no material or renderer for it.
+
+**Proofs.** `tests/hmh-ten-area-crossings.test.mjs` (RED with the guards
+removed: the north Bayou bridge agent pinned at 2698, 10768):
+- the hero walks every bridge end to end and up and down every deck ramp, in
+  both directions on three lanes, with no pin (66+ legs);
+- 4,000+ diagonal pushes by a hero (r 24) and a small enemy (r 18, the
+  conservative nav transitions) around every bridge end and both QA spots:
+  no pin;
+- every enemy nav cell at a bridge or deck end has a legal edge, is in the
+  spawn-reachable and spawn-returnable network, and an agent standing on it
+  follows the grid across the crossing without a pin.
+
+Real child (built after the fix, area art ready, headless Chrome 1440 x 900):
+the hero held a diagonal toward each QA corner for 3 s
+(`receipts/collision-art-20261001/qa-pins/pin-probe.jsonl` and JPGs).
+
+| Probe | Start | End | What happened |
+| --- | --- | --- | --- |
+| Bayou lock bridge west end, from the north-west (D+S) | 2614, 11993 | 2692, 12034 | walked to the bank, slid 41 south along it, stopped in the bank/rail corner (both colliders) |
+| Same, from the south-west (D+W) | 2611, 12504 | 2692, 12466 | slid north along the bank into the far rail corner |
+| River City bridge south end, from the south-west (D+W) | 7175, 11400 | 7254, 11328 | slid up the ramp's rail to the bank corner |
+| Same, from the south-east (A+W) | 7796, 11399 | 7746, 11328 | slid up the east rail to the bank corner |
+
+Each end position is 24 units (the hero radius) from both guards: a wall
+corner, not a traversal pin; with the guards removed the Node proof above
+pins at the first bank contact. `area-art-*-paints-as-grass.jpg` show the invisible
+channels.
+
 ## Receipts
 
 `docs/2.0/receipts/collision-art-20261001/`: `before/audit-before.json` and
 `before/overlay-<area>.png` (2.0.0), `audit-after.json` and
 `overlay-<area>.png` (this slice), `walk/walk-receipt.json` and six
-`walk/*.jpg` desktop shots.
+`walk/*.jpg` desktop shots; `qa-pins/` (QA follow-up probes).
 
 ## For the verifier lane (RANKED-V8)
 
-Map data changed: 15 resized pieces and 485 new `prop-solid` colliders (all
+Map data changed: the resized pieces above and in the QA follow-up, the new
+`ledger-ridge-cap-foot`, 31 `edge-guard` colliders and 401 new `prop-solid` colliders (all
 `minZ 0`, finite `maxZ`, convex rectangles except the two polygon pieces
-above). Collision blocker count 581 → 1,066. Surfaces, roads, routes, sites,
-arenas, spawn and bounds are byte-identical to 2.0.0. Any map hash or
+above). Collision blocker count 581 → 1,014. Roads, routes, sites, arenas,
+spawn and bounds are byte-identical to 2.0.0; the only surface changes are the
+four bridge decks and their eight ramps (QA follow-up), and the Ranked v8
+travel graph re-derived from ground is unchanged (`tests/hmh-ranked-v8-contract.test.mjs`). Any map hash or
 geometry version the verifier pins must be taken after this slice. The prop
 collider module is generated from the plans, so a later plan edit that moves
 a blocking card must regenerate it (the test enforces this).
@@ -223,22 +305,21 @@ none: the card was drawn without a collider in 2.0.0.
 | fork-fortress | 81 |
 | halving-farms | 21 |
 | hashwood-river | 84 |
-| hollow-pines | 54 |
-| ledger-ridge | 47 |
-| litecoin-city | 80 |
-| mweb-meadows | 23 |
-| road corridor | 20 |
+| hollow-pines | 33 |
+| ledger-ridge | 25 |
+| litecoin-city | 69 |
+| mweb-meadows | 18 |
 | rugpull-woods | 4 |
 | scrypt-bayou | 17 |
-| silver-coast | 54 |
-| **Total** | **485** |
+| silver-coast | 49 |
+| **Total** | **401** |
 
 | Class | Count |
 |---|---:|
-| barrier | 125 |
+| barrier | 84 |
 | building | 8 |
 | container | 6 |
-| large-prop | 120 |
+| large-prop | 77 |
 | pole | 7 |
 | rock | 58 |
 | tree | 128 |
@@ -327,16 +408,16 @@ none: the card was drawn without a collider in 2.0.0.
 | `prop-fork-fortress-b2-49-13734-1405` | fork-fortress | b2-49 Concrete Jersey Barrier | none (walk-through card) | 13692, 1396, 13776, 1413 | 32 | short |
 | `prop-fork-fortress-b2-49-13734-1785` | fork-fortress | b2-49 Concrete Jersey Barrier | none (walk-through card) | 13692, 1776, 13776, 1793 | 32 | short |
 | `prop-fork-fortress-b2-66-12240-1288` | fork-fortress | b2-66 Concrete Bunker Entrance | none (walk-through card) | 12101, 1210, 12378, 1363 | 210 | none |
-| `prop-halving-farms-b1-03-15700-7950` | halving-farms | b1-03 Birch Cluster | none (walk-through card) | 15683, 7933, 15717, 7967 | 356 | none |
-| `prop-halving-farms-b1-03-19250-4950` | halving-farms | b1-03 Birch Cluster | none (walk-through card) | 19232, 4932, 19268, 4968 | 392 | none |
-| `prop-halving-farms-b1-03-19350-6150` | halving-farms | b1-03 Birch Cluster | none (walk-through card) | 19335, 6135, 19365, 6165 | 320 | none |
+| `prop-halving-farms-b1-03-15700-7950` | halving-farms | b1-03 Birch Cluster | none (walk-through card) | 15685, 7935, 15715, 7965 | 356 | none |
+| `prop-halving-farms-b1-03-19250-4950` | halving-farms | b1-03 Birch Cluster | none (walk-through card) | 19234, 4934, 19266, 4966 | 392 | none |
+| `prop-halving-farms-b1-03-19350-6150` | halving-farms | b1-03 Birch Cluster | none (walk-through card) | 19337, 6137, 19363, 6163 | 320 | none |
 | `prop-halving-farms-b1-18-16600-5000` | halving-farms | b1-18 Scrap Barricade | none (walk-through card) | 16533, 4987, 16667, 5012 | 60 | short |
 | `prop-halving-farms-b2-54-17250-7260` | halving-farms | b2-54 Rusted Pickup Truck | none (walk-through card) | 17186, 7236, 17314, 7280 | 74 | short |
 | `prop-halving-farms-b2-57-18750-5020` | halving-farms | b2-57 Flatbed Semi Trailer | none (walk-through card) | 18655, 5000, 18844, 5037 | 60 | short |
 | `prop-halving-farms-b2-70-19350-7850` | halving-farms | b2-70 Dead Oak Broken Limbs | none (walk-through card) | 19340, 7840, 19360, 7860 | 221 | none |
-| `prop-halving-farms-b2-71-15750-5050` | halving-farms | b2-71 Weeping Willow | none (walk-through card) | 15735, 5035, 15765, 5065 | 323 | none |
-| `prop-halving-farms-b2-71-15850-5550` | halving-farms | b2-71 Weeping Willow | none (walk-through card) | 15834, 5534, 15866, 5566 | 340 | none |
-| `prop-halving-farms-b2-71-18100-8400` | halving-farms | b2-71 Weeping Willow | none (walk-through card) | 18086, 8386, 18114, 8414 | 301 | none |
+| `prop-halving-farms-b2-71-15750-5050` | halving-farms | b2-71 Weeping Willow | none (walk-through card) | 15737, 5037, 15763, 5063 | 323 | none |
+| `prop-halving-farms-b2-71-15850-5550` | halving-farms | b2-71 Weeping Willow | none (walk-through card) | 15836, 5536, 15864, 5564 | 340 | none |
+| `prop-halving-farms-b2-71-18100-8400` | halving-farms | b2-71 Weeping Willow | none (walk-through card) | 18087, 8387, 18113, 8413 | 301 | none |
 | `prop-halving-farms-b2-75-16350-5980` | halving-farms | b2-75 Hedgerow Section | none (walk-through card) | 16275, 5966, 16425, 5991 | 66 | none |
 | `prop-halving-farms-b2-75-16550-5980` | halving-farms | b2-75 Hedgerow Section | none (walk-through card) | 16475, 5966, 16625, 5991 | 66 | none |
 | `prop-halving-farms-b2-75-16750-5980` | halving-farms | b2-75 Hedgerow Section | none (walk-through card) | 16675, 5966, 16825, 5991 | 66 | none |
@@ -350,80 +431,80 @@ none: the card was drawn without a collider in 2.0.0.
 | `prop-hashwood-river-b1-42-5600-10800` | hashwood-river | b1-42 Stylized Layered Sandstone Rock Formation | none (walk-through card) | 5573, 10776, 5626, 10823 | 60 | none |
 | `prop-hashwood-river-b1-42-5880-10830` | hashwood-river | b1-42 Stylized Layered Sandstone Rock Formation | none (walk-through card) | 5843, 10797, 5917, 10862 | 84 | none |
 | `prop-hashwood-river-b1-42-6200-10855` | hashwood-river | b1-42 Stylized Layered Sandstone Rock Formation | none (walk-through card) | 6169, 10827, 6231, 10882 | 70 | none |
-| `prop-hashwood-river-b1-50-5641-12314` | hashwood-river | b1-50 Stylized Layered Evergreen Tree | none (walk-through card) | 5628, 12301, 5654, 12327 | 280 | none |
-| `prop-hashwood-river-b1-50-5644-12183` | hashwood-river | b1-50 Stylized Layered Evergreen Tree | none (walk-through card) | 5631, 12170, 5656, 12195 | 266 | none |
-| `prop-hashwood-river-b1-50-5764-13467` | hashwood-river | b1-50 Stylized Layered Evergreen Tree | none (walk-through card) | 5751, 13454, 5777, 13479 | 275 | none |
-| `prop-hashwood-river-b1-50-5778-12274` | hashwood-river | b1-50 Stylized Layered Evergreen Tree | none (walk-through card) | 5762, 12259, 5794, 12290 | 339 | none |
-| `prop-hashwood-river-b1-50-5844-13388` | hashwood-river | b1-50 Stylized Layered Evergreen Tree | none (walk-through card) | 5828, 13372, 5860, 13405 | 348 | none |
-| `prop-hashwood-river-b1-50-6782-10074` | hashwood-river | b1-50 Stylized Layered Evergreen Tree | none (walk-through card) | 6769, 10061, 6795, 10087 | 275 | none |
-| `prop-hashwood-river-b1-50-6825-9972` | hashwood-river | b1-50 Stylized Layered Evergreen Tree | none (walk-through card) | 6813, 9959, 6838, 9984 | 268 | none |
-| `prop-hashwood-river-b1-50-7259-13321` | hashwood-river | b1-50 Stylized Layered Evergreen Tree | none (walk-through card) | 7243, 13305, 7275, 13337 | 340 | none |
-| `prop-hashwood-river-b1-50-7446-13332` | hashwood-river | b1-50 Stylized Layered Evergreen Tree | none (walk-through card) | 7430, 13316, 7461, 13348 | 343 | none |
-| `prop-hashwood-river-b1-50-7666-13016` | hashwood-river | b1-50 Stylized Layered Evergreen Tree | none (walk-through card) | 7653, 13003, 7678, 13029 | 273 | none |
-| `prop-hashwood-river-b1-50-7852-10201` | hashwood-river | b1-50 Stylized Layered Evergreen Tree | none (walk-through card) | 7839, 10189, 7865, 10214 | 273 | none |
-| `prop-hashwood-river-b1-50-7878-13054` | hashwood-river | b1-50 Stylized Layered Evergreen Tree | none (walk-through card) | 7864, 13040, 7893, 13068 | 306 | none |
-| `prop-hashwood-river-b1-50-7993-12976` | hashwood-river | b1-50 Stylized Layered Evergreen Tree | none (walk-through card) | 7976, 12959, 8010, 12992 | 359 | none |
-| `prop-hashwood-river-b1-50-8007-10196` | hashwood-river | b1-50 Stylized Layered Evergreen Tree | none (walk-through card) | 7991, 10180, 8023, 10212 | 342 | none |
-| `prop-hashwood-river-b1-50-8122-10284` | hashwood-river | b1-50 Stylized Layered Evergreen Tree | none (walk-through card) | 8109, 10271, 8136, 10297 | 286 | none |
-| `prop-hashwood-river-b1-50-8307-10043` | hashwood-river | b1-50 Stylized Layered Evergreen Tree | none (walk-through card) | 8293, 10029, 8321, 10057 | 299 | none |
-| `prop-hashwood-river-b1-50-8320-12159` | hashwood-river | b1-50 Stylized Layered Evergreen Tree | none (walk-through card) | 8307, 12145, 8334, 12173 | 296 | none |
-| `prop-hashwood-river-b1-50-8321-11995` | hashwood-river | b1-50 Stylized Layered Evergreen Tree | none (walk-through card) | 8307, 11981, 8335, 12009 | 302 | none |
-| `prop-hashwood-river-b1-50-8436-9959` | hashwood-river | b1-50 Stylized Layered Evergreen Tree | none (walk-through card) | 8423, 9946, 8449, 9972 | 286 | none |
-| `prop-hashwood-river-b1-50-8532-12793` | hashwood-river | b1-50 Stylized Layered Evergreen Tree | none (walk-through card) | 8516, 12778, 8547, 12809 | 337 | none |
-| `prop-hashwood-river-b1-50-8594-12916` | hashwood-river | b1-50 Stylized Layered Evergreen Tree | none (walk-through card) | 8578, 12901, 8609, 12932 | 332 | none |
-| `prop-hashwood-river-b1-50-8788-12837` | hashwood-river | b1-50 Stylized Layered Evergreen Tree | none (walk-through card) | 8773, 12822, 8803, 12852 | 323 | none |
-| `prop-hashwood-river-b1-50-8900-12290` | hashwood-river | b1-50 Stylized Layered Evergreen Tree | none (walk-through card) | 8885, 12275, 8915, 12305 | 322 | none |
-| `prop-hashwood-river-b1-50-8913-12145` | hashwood-river | b1-50 Stylized Layered Evergreen Tree | none (walk-through card) | 8901, 12133, 8926, 12158 | 272 | none |
-| `prop-hashwood-river-b1-50-9020-12246` | hashwood-river | b1-50 Stylized Layered Evergreen Tree | none (walk-through card) | 9004, 12230, 9036, 12262 | 347 | none |
-| `prop-hashwood-river-b1-50-9260-10266` | hashwood-river | b1-50 Stylized Layered Evergreen Tree | none (walk-through card) | 9245, 10251, 9276, 10282 | 329 | none |
-| `prop-hashwood-river-b1-50-9282-10013` | hashwood-river | b1-50 Stylized Layered Evergreen Tree | none (walk-through card) | 9267, 9998, 9296, 10027 | 311 | none |
-| `prop-hashwood-river-b1-50-9326-13076` | hashwood-river | b1-50 Stylized Layered Evergreen Tree | none (walk-through card) | 9310, 13060, 9342, 13092 | 348 | none |
-| `prop-hashwood-river-b1-50-9342-13201` | hashwood-river | b1-50 Stylized Layered Evergreen Tree | none (walk-through card) | 9325, 13185, 9358, 13218 | 352 | none |
-| `prop-hashwood-river-b1-50-9368-10192` | hashwood-river | b1-50 Stylized Layered Evergreen Tree | none (walk-through card) | 9352, 10176, 9384, 10208 | 338 | none |
-| `prop-hashwood-river-b2-72-5553-12239` | hashwood-river | b2-72 Tall Conifer Trio | none (walk-through card) | 5535, 12220, 5571, 12257 | 396 | none |
-| `prop-hashwood-river-b2-72-5651-12080` | hashwood-river | b2-72 Tall Conifer Trio | none (walk-through card) | 5634, 12062, 5668, 12097 | 374 | none |
-| `prop-hashwood-river-b2-72-5674-13346` | hashwood-river | b2-72 Tall Conifer Trio | none (walk-through card) | 5654, 13326, 5693, 13365 | 418 | none |
-| `prop-hashwood-river-b2-72-5678-13484` | hashwood-river | b2-72 Tall Conifer Trio | none (walk-through card) | 5661, 13467, 5695, 13501 | 369 | none |
-| `prop-hashwood-river-b2-72-5744-12164` | hashwood-river | b2-72 Tall Conifer Trio | none (walk-through card) | 5729, 12148, 5760, 12179 | 332 | none |
-| `prop-hashwood-river-b2-72-5746-13272` | hashwood-river | b2-72 Tall Conifer Trio | none (walk-through card) | 5727, 13254, 5764, 13291 | 405 | none |
-| `prop-hashwood-river-b2-72-5769-13368` | hashwood-river | b2-72 Tall Conifer Trio | none (walk-through card) | 5752, 13351, 5786, 13385 | 366 | none |
-| `prop-hashwood-river-b2-72-6819-10194` | hashwood-river | b2-72 Tall Conifer Trio | none (walk-through card) | 6804, 10179, 6834, 10209 | 330 | none |
-| `prop-hashwood-river-b2-72-6907-10137` | hashwood-river | b2-72 Tall Conifer Trio | none (walk-through card) | 6889, 10120, 6924, 10155 | 371 | none |
-| `prop-hashwood-river-b2-72-7011-10061` | hashwood-river | b2-72 Tall Conifer Trio | none (walk-through card) | 6994, 10044, 7027, 10078 | 364 | none |
-| `prop-hashwood-river-b2-72-7031-10164` | hashwood-river | b2-72 Tall Conifer Trio | none (walk-through card) | 7013, 10146, 7049, 10182 | 386 | none |
-| `prop-hashwood-river-b2-72-7176-10025` | hashwood-river | b2-72 Tall Conifer Trio | none (walk-through card) | 7160, 10009, 7193, 10041 | 350 | none |
-| `prop-hashwood-river-b2-72-7179-9925` | hashwood-river | b2-72 Tall Conifer Trio | none (walk-through card) | 7162, 9908, 7195, 9941 | 350 | none |
-| `prop-hashwood-river-b2-72-7292-13414` | hashwood-river | b2-72 Tall Conifer Trio | none (walk-through card) | 7274, 13396, 7310, 13431 | 388 | none |
-| `prop-hashwood-river-b2-72-7394-13494` | hashwood-river | b2-72 Tall Conifer Trio | none (walk-through card) | 7378, 13477, 7410, 13510 | 349 | none |
-| `prop-hashwood-river-b2-72-7427-13421` | hashwood-river | b2-72 Tall Conifer Trio | none (walk-through card) | 7408, 13402, 7445, 13440 | 404 | none |
-| `prop-hashwood-river-b2-72-7549-13397` | hashwood-river | b2-72 Tall Conifer Trio | none (walk-through card) | 7533, 13381, 7564, 13412 | 327 | none |
-| `prop-hashwood-river-b2-72-7775-13147` | hashwood-river | b2-72 Tall Conifer Trio | none (walk-through card) | 7760, 13132, 7791, 13162 | 326 | none |
-| `prop-hashwood-river-b2-72-7944-10085` | hashwood-river | b2-72 Tall Conifer Trio | none (walk-through card) | 7929, 10070, 7960, 10100 | 326 | none |
-| `prop-hashwood-river-b2-72-8009-13254` | hashwood-river | b2-72 Tall Conifer Trio | none (walk-through card) | 7992, 13237, 8025, 13270 | 357 | none |
-| `prop-hashwood-river-b2-72-8043-12018` | hashwood-river | b2-72 Tall Conifer Trio | none (walk-through card) | 8027, 12002, 8059, 12033 | 340 | none |
-| `prop-hashwood-river-b2-72-8060-13127` | hashwood-river | b2-72 Tall Conifer Trio | none (walk-through card) | 8044, 13111, 8076, 13143 | 343 | none |
-| `prop-hashwood-river-b2-72-8087-12149` | hashwood-river | b2-72 Tall Conifer Trio | none (walk-through card) | 8071, 12133, 8103, 12165 | 346 | none |
-| `prop-hashwood-river-b2-72-8100-10020` | hashwood-river | b2-72 Tall Conifer Trio | none (walk-through card) | 8081, 10001, 8119, 10038 | 403 | none |
-| `prop-hashwood-river-b2-72-8184-10173` | hashwood-river | b2-72 Tall Conifer Trio | none (walk-through card) | 8169, 10158, 8200, 10189 | 332 | none |
-| `prop-hashwood-river-b2-72-8196-12071` | hashwood-river | b2-72 Tall Conifer Trio | none (walk-through card) | 8179, 12054, 8213, 12088 | 359 | none |
-| `prop-hashwood-river-b2-72-8258-12277` | hashwood-river | b2-72 Tall Conifer Trio | none (walk-through card) | 8242, 12261, 8274, 12293 | 344 | none |
-| `prop-hashwood-river-b2-72-8401-10088` | hashwood-river | b2-72 Tall Conifer Trio | none (walk-through card) | 8386, 10073, 8416, 10103 | 325 | none |
-| `prop-hashwood-river-b2-72-8506-10032` | hashwood-river | b2-72 Tall Conifer Trio | none (walk-through card) | 8490, 10016, 8522, 10048 | 346 | none |
-| `prop-hashwood-river-b2-72-8540-12698` | hashwood-river | b2-72 Tall Conifer Trio | none (walk-through card) | 8522, 12680, 8557, 12715 | 380 | none |
-| `prop-hashwood-river-b2-72-8559-10106` | hashwood-river | b2-72 Tall Conifer Trio | none (walk-through card) | 8542, 10088, 8577, 10123 | 380 | none |
-| `prop-hashwood-river-b2-72-8569-9959` | hashwood-river | b2-72 Tall Conifer Trio | none (walk-through card) | 8554, 9944, 8583, 9974 | 315 | none |
-| `prop-hashwood-river-b2-72-8653-12829` | hashwood-river | b2-72 Tall Conifer Trio | none (walk-through card) | 8635, 12811, 8671, 12847 | 381 | none |
-| `prop-hashwood-river-b2-72-8716-12742` | hashwood-river | b2-72 Tall Conifer Trio | none (walk-through card) | 8697, 12723, 8735, 12761 | 409 | none |
-| `prop-hashwood-river-b2-72-8989-12456` | hashwood-river | b2-72 Tall Conifer Trio | none (walk-through card) | 8973, 12440, 9004, 12471 | 333 | none |
-| `prop-hashwood-river-b2-72-9017-13110` | hashwood-river | b2-72 Tall Conifer Trio | none (walk-through card) | 8999, 13092, 9034, 13127 | 375 | none |
-| `prop-hashwood-river-b2-72-9092-12372` | hashwood-river | b2-72 Tall Conifer Trio | none (walk-through card) | 9075, 12356, 9108, 12388 | 354 | none |
-| `prop-hashwood-river-b2-72-9139-12218` | hashwood-river | b2-72 Tall Conifer Trio | none (walk-through card) | 9121, 12200, 9158, 12236 | 396 | none |
-| `prop-hashwood-river-b2-72-9145-13208` | hashwood-river | b2-72 Tall Conifer Trio | none (walk-through card) | 9126, 13189, 9164, 13227 | 417 | none |
-| `prop-hashwood-river-b2-72-9165-10278` | hashwood-river | b2-72 Tall Conifer Trio | none (walk-through card) | 9149, 10262, 9181, 10294 | 350 | none |
-| `prop-hashwood-river-b2-72-9173-13073` | hashwood-river | b2-72 Tall Conifer Trio | none (walk-through card) | 9156, 13056, 9190, 13090 | 366 | none |
-| `prop-hashwood-river-b2-72-9195-10087` | hashwood-river | b2-72 Tall Conifer Trio | none (walk-through card) | 9180, 10071, 9211, 10102 | 334 | none |
-| `prop-hashwood-river-b2-72-9200-12952` | hashwood-river | b2-72 Tall Conifer Trio | none (walk-through card) | 9184, 12937, 9216, 12968 | 338 | none |
-| `prop-hashwood-river-b2-72-9286-10141` | hashwood-river | b2-72 Tall Conifer Trio | none (walk-through card) | 9268, 10123, 9304, 10159 | 389 | none |
+| `prop-hashwood-river-b1-50-5641-12314` | hashwood-river | b1-50 Stylized Layered Evergreen Tree | none (walk-through card) | 5629, 12302, 5653, 12325 | 280 | none |
+| `prop-hashwood-river-b1-50-5644-12183` | hashwood-river | b1-50 Stylized Layered Evergreen Tree | none (walk-through card) | 5633, 12172, 5655, 12194 | 266 | none |
+| `prop-hashwood-river-b1-50-5764-13467` | hashwood-river | b1-50 Stylized Layered Evergreen Tree | none (walk-through card) | 5753, 13455, 5776, 13478 | 275 | none |
+| `prop-hashwood-river-b1-50-5778-12274` | hashwood-river | b1-50 Stylized Layered Evergreen Tree | none (walk-through card) | 5764, 12260, 5792, 12288 | 339 | none |
+| `prop-hashwood-river-b1-50-5844-13388` | hashwood-river | b1-50 Stylized Layered Evergreen Tree | none (walk-through card) | 5830, 13374, 5859, 13403 | 348 | none |
+| `prop-hashwood-river-b1-50-6782-10074` | hashwood-river | b1-50 Stylized Layered Evergreen Tree | none (walk-through card) | 6770, 10062, 6793, 10085 | 275 | none |
+| `prop-hashwood-river-b1-50-6825-9972` | hashwood-river | b1-50 Stylized Layered Evergreen Tree | none (walk-through card) | 6814, 9961, 6836, 9983 | 268 | none |
+| `prop-hashwood-river-b1-50-7259-13321` | hashwood-river | b1-50 Stylized Layered Evergreen Tree | none (walk-through card) | 7245, 13307, 7273, 13335 | 340 | none |
+| `prop-hashwood-river-b1-50-7446-13332` | hashwood-river | b1-50 Stylized Layered Evergreen Tree | none (walk-through card) | 7431, 13318, 7460, 13347 | 343 | none |
+| `prop-hashwood-river-b1-50-7666-13016` | hashwood-river | b1-50 Stylized Layered Evergreen Tree | none (walk-through card) | 7654, 13004, 7677, 13027 | 273 | none |
+| `prop-hashwood-river-b1-50-7852-10201` | hashwood-river | b1-50 Stylized Layered Evergreen Tree | none (walk-through card) | 7840, 10190, 7863, 10213 | 273 | none |
+| `prop-hashwood-river-b1-50-7878-13054` | hashwood-river | b1-50 Stylized Layered Evergreen Tree | none (walk-through card) | 7866, 13041, 7891, 13067 | 306 | none |
+| `prop-hashwood-river-b1-50-7993-12976` | hashwood-river | b1-50 Stylized Layered Evergreen Tree | none (walk-through card) | 7978, 12961, 8008, 12991 | 359 | none |
+| `prop-hashwood-river-b1-50-8007-10196` | hashwood-river | b1-50 Stylized Layered Evergreen Tree | none (walk-through card) | 7993, 10182, 8021, 10211 | 342 | none |
+| `prop-hashwood-river-b1-50-8122-10284` | hashwood-river | b1-50 Stylized Layered Evergreen Tree | none (walk-through card) | 8110, 10272, 8134, 10296 | 286 | none |
+| `prop-hashwood-river-b1-50-8307-10043` | hashwood-river | b1-50 Stylized Layered Evergreen Tree | none (walk-through card) | 8295, 10031, 8320, 10056 | 299 | none |
+| `prop-hashwood-river-b1-50-8320-12159` | hashwood-river | b1-50 Stylized Layered Evergreen Tree | none (walk-through card) | 8308, 12147, 8333, 12171 | 296 | none |
+| `prop-hashwood-river-b1-50-8321-11995` | hashwood-river | b1-50 Stylized Layered Evergreen Tree | none (walk-through card) | 8309, 11982, 8334, 12008 | 302 | none |
+| `prop-hashwood-river-b1-50-8436-9959` | hashwood-river | b1-50 Stylized Layered Evergreen Tree | none (walk-through card) | 8424, 9947, 8448, 9971 | 286 | none |
+| `prop-hashwood-river-b1-50-8532-12793` | hashwood-river | b1-50 Stylized Layered Evergreen Tree | none (walk-through card) | 8518, 12779, 8546, 12807 | 337 | none |
+| `prop-hashwood-river-b1-50-8594-12916` | hashwood-river | b1-50 Stylized Layered Evergreen Tree | none (walk-through card) | 8580, 12903, 8607, 12930 | 332 | none |
+| `prop-hashwood-river-b1-50-8788-12837` | hashwood-river | b1-50 Stylized Layered Evergreen Tree | none (walk-through card) | 8775, 12824, 8802, 12850 | 323 | none |
+| `prop-hashwood-river-b1-50-8900-12290` | hashwood-river | b1-50 Stylized Layered Evergreen Tree | none (walk-through card) | 8886, 12276, 8913, 12303 | 322 | none |
+| `prop-hashwood-river-b1-50-8913-12145` | hashwood-river | b1-50 Stylized Layered Evergreen Tree | none (walk-through card) | 8902, 12134, 8925, 12157 | 272 | none |
+| `prop-hashwood-river-b1-50-9020-12246` | hashwood-river | b1-50 Stylized Layered Evergreen Tree | none (walk-through card) | 9006, 12232, 9035, 12261 | 347 | none |
+| `prop-hashwood-river-b1-50-9260-10266` | hashwood-river | b1-50 Stylized Layered Evergreen Tree | none (walk-through card) | 9247, 10253, 9274, 10280 | 329 | none |
+| `prop-hashwood-river-b1-50-9282-10013` | hashwood-river | b1-50 Stylized Layered Evergreen Tree | none (walk-through card) | 9269, 10000, 9295, 10026 | 311 | none |
+| `prop-hashwood-river-b1-50-9326-13076` | hashwood-river | b1-50 Stylized Layered Evergreen Tree | none (walk-through card) | 9312, 13062, 9340, 13090 | 348 | none |
+| `prop-hashwood-river-b1-50-9342-13201` | hashwood-river | b1-50 Stylized Layered Evergreen Tree | none (walk-through card) | 9327, 13187, 9356, 13216 | 352 | none |
+| `prop-hashwood-river-b1-50-9368-10192` | hashwood-river | b1-50 Stylized Layered Evergreen Tree | none (walk-through card) | 9354, 10178, 9382, 10206 | 338 | none |
+| `prop-hashwood-river-b2-72-5553-12239` | hashwood-river | b2-72 Tall Conifer Trio | none (walk-through card) | 5537, 12222, 5569, 12255 | 396 | none |
+| `prop-hashwood-river-b2-72-5651-12080` | hashwood-river | b2-72 Tall Conifer Trio | none (walk-through card) | 5635, 12064, 5666, 12095 | 374 | none |
+| `prop-hashwood-river-b2-72-5674-13346` | hashwood-river | b2-72 Tall Conifer Trio | none (walk-through card) | 5657, 13329, 5690, 13362 | 418 | none |
+| `prop-hashwood-river-b2-72-5678-13484` | hashwood-river | b2-72 Tall Conifer Trio | none (walk-through card) | 5663, 13469, 5694, 13499 | 369 | none |
+| `prop-hashwood-river-b2-72-5744-12164` | hashwood-river | b2-72 Tall Conifer Trio | none (walk-through card) | 5730, 12150, 5758, 12178 | 332 | none |
+| `prop-hashwood-river-b2-72-5746-13272` | hashwood-river | b2-72 Tall Conifer Trio | none (walk-through card) | 5729, 13256, 5762, 13289 | 405 | none |
+| `prop-hashwood-river-b2-72-5769-13368` | hashwood-river | b2-72 Tall Conifer Trio | none (walk-through card) | 5754, 13352, 5784, 13383 | 366 | none |
+| `prop-hashwood-river-b2-72-6819-10194` | hashwood-river | b2-72 Tall Conifer Trio | none (walk-through card) | 6805, 10180, 6833, 10208 | 330 | none |
+| `prop-hashwood-river-b2-72-6907-10137` | hashwood-river | b2-72 Tall Conifer Trio | none (walk-through card) | 6891, 10122, 6922, 10153 | 371 | none |
+| `prop-hashwood-river-b2-72-7011-10061` | hashwood-river | b2-72 Tall Conifer Trio | none (walk-through card) | 6995, 10046, 7026, 10076 | 364 | none |
+| `prop-hashwood-river-b2-72-7031-10164` | hashwood-river | b2-72 Tall Conifer Trio | none (walk-through card) | 7015, 10148, 7047, 10180 | 386 | none |
+| `prop-hashwood-river-b2-72-7176-10025` | hashwood-river | b2-72 Tall Conifer Trio | none (walk-through card) | 7162, 10010, 7191, 10039 | 350 | none |
+| `prop-hashwood-river-b2-72-7179-9925` | hashwood-river | b2-72 Tall Conifer Trio | none (walk-through card) | 7164, 9910, 7193, 9939 | 350 | none |
+| `prop-hashwood-river-b2-72-7292-13414` | hashwood-river | b2-72 Tall Conifer Trio | none (walk-through card) | 7276, 13398, 7308, 13430 | 388 | none |
+| `prop-hashwood-river-b2-72-7394-13494` | hashwood-river | b2-72 Tall Conifer Trio | none (walk-through card) | 7380, 13479, 7409, 13508 | 349 | none |
+| `prop-hashwood-river-b2-72-7427-13421` | hashwood-river | b2-72 Tall Conifer Trio | none (walk-through card) | 7410, 13404, 7443, 13437 | 404 | none |
+| `prop-hashwood-river-b2-72-7549-13397` | hashwood-river | b2-72 Tall Conifer Trio | none (walk-through card) | 7535, 13383, 7562, 13410 | 327 | none |
+| `prop-hashwood-river-b2-72-7775-13147` | hashwood-river | b2-72 Tall Conifer Trio | none (walk-through card) | 7762, 13134, 7789, 13161 | 326 | none |
+| `prop-hashwood-river-b2-72-7944-10085` | hashwood-river | b2-72 Tall Conifer Trio | none (walk-through card) | 7931, 10071, 7958, 10099 | 326 | none |
+| `prop-hashwood-river-b2-72-8009-13254` | hashwood-river | b2-72 Tall Conifer Trio | none (walk-through card) | 7994, 13239, 8024, 13268 | 357 | none |
+| `prop-hashwood-river-b2-72-8043-12018` | hashwood-river | b2-72 Tall Conifer Trio | none (walk-through card) | 8029, 12004, 8057, 12032 | 340 | none |
+| `prop-hashwood-river-b2-72-8060-13127` | hashwood-river | b2-72 Tall Conifer Trio | none (walk-through card) | 8046, 13113, 8074, 13142 | 343 | none |
+| `prop-hashwood-river-b2-72-8087-12149` | hashwood-river | b2-72 Tall Conifer Trio | none (walk-through card) | 8072, 12134, 8101, 12163 | 346 | none |
+| `prop-hashwood-river-b2-72-8100-10020` | hashwood-river | b2-72 Tall Conifer Trio | none (walk-through card) | 8083, 10003, 8116, 10036 | 403 | none |
+| `prop-hashwood-river-b2-72-8184-10173` | hashwood-river | b2-72 Tall Conifer Trio | none (walk-through card) | 8171, 10160, 8198, 10187 | 332 | none |
+| `prop-hashwood-river-b2-72-8196-12071` | hashwood-river | b2-72 Tall Conifer Trio | none (walk-through card) | 8181, 12056, 8211, 12086 | 359 | none |
+| `prop-hashwood-river-b2-72-8258-12277` | hashwood-river | b2-72 Tall Conifer Trio | none (walk-through card) | 8244, 12263, 8273, 12292 | 344 | none |
+| `prop-hashwood-river-b2-72-8401-10088` | hashwood-river | b2-72 Tall Conifer Trio | none (walk-through card) | 8387, 10075, 8414, 10102 | 325 | none |
+| `prop-hashwood-river-b2-72-8506-10032` | hashwood-river | b2-72 Tall Conifer Trio | none (walk-through card) | 8491, 10017, 8520, 10046 | 346 | none |
+| `prop-hashwood-river-b2-72-8540-12698` | hashwood-river | b2-72 Tall Conifer Trio | none (walk-through card) | 8524, 12682, 8555, 12714 | 380 | none |
+| `prop-hashwood-river-b2-72-8559-10106` | hashwood-river | b2-72 Tall Conifer Trio | none (walk-through card) | 8544, 10090, 8575, 10121 | 380 | none |
+| `prop-hashwood-river-b2-72-8569-9959` | hashwood-river | b2-72 Tall Conifer Trio | none (walk-through card) | 8556, 9946, 8582, 9972 | 315 | none |
+| `prop-hashwood-river-b2-72-8653-12829` | hashwood-river | b2-72 Tall Conifer Trio | none (walk-through card) | 8637, 12813, 8669, 12845 | 381 | none |
+| `prop-hashwood-river-b2-72-8716-12742` | hashwood-river | b2-72 Tall Conifer Trio | none (walk-through card) | 8699, 12725, 8732, 12758 | 409 | none |
+| `prop-hashwood-river-b2-72-8989-12456` | hashwood-river | b2-72 Tall Conifer Trio | none (walk-through card) | 8975, 12442, 9003, 12469 | 333 | none |
+| `prop-hashwood-river-b2-72-9017-13110` | hashwood-river | b2-72 Tall Conifer Trio | none (walk-through card) | 9001, 13094, 9032, 13125 | 375 | none |
+| `prop-hashwood-river-b2-72-9092-12372` | hashwood-river | b2-72 Tall Conifer Trio | none (walk-through card) | 9077, 12357, 9106, 12387 | 354 | none |
+| `prop-hashwood-river-b2-72-9139-12218` | hashwood-river | b2-72 Tall Conifer Trio | none (walk-through card) | 9123, 12201, 9156, 12234 | 396 | none |
+| `prop-hashwood-river-b2-72-9145-13208` | hashwood-river | b2-72 Tall Conifer Trio | none (walk-through card) | 9129, 13192, 9162, 13225 | 417 | none |
+| `prop-hashwood-river-b2-72-9165-10278` | hashwood-river | b2-72 Tall Conifer Trio | none (walk-through card) | 9151, 10263, 9180, 10292 | 350 | none |
+| `prop-hashwood-river-b2-72-9173-13073` | hashwood-river | b2-72 Tall Conifer Trio | none (walk-through card) | 9158, 13058, 9188, 13088 | 366 | none |
+| `prop-hashwood-river-b2-72-9195-10087` | hashwood-river | b2-72 Tall Conifer Trio | none (walk-through card) | 9181, 10073, 9209, 10100 | 334 | none |
+| `prop-hashwood-river-b2-72-9200-12952` | hashwood-river | b2-72 Tall Conifer Trio | none (walk-through card) | 9186, 12938, 9214, 12966 | 338 | none |
+| `prop-hashwood-river-b2-72-9286-10141` | hashwood-river | b2-72 Tall Conifer Trio | none (walk-through card) | 9270, 10125, 9302, 10157 | 389 | none |
 | `prop-hashwood-river-b2-73-5650-13500` | hashwood-river | b2-73 Hollow Stump Shelf Fungus | none (walk-through card) | 5610, 13472, 5690, 13528 | 70 | none |
 | `prop-hashwood-river-b2-73-7800-10300` | hashwood-river | b2-73 Hollow Stump Shelf Fungus | none (walk-through card) | 7765, 10275, 7836, 10325 | 62 | none |
 | `prop-hashwood-river-b2-74-5600-11920` | hashwood-river | b2-74 Uprooted Root Ball | none (walk-through card) | 5548, 11879, 5653, 11937 | 110 | none |
@@ -436,46 +517,25 @@ none: the card was drawn without a collider in 2.0.0.
 | `prop-hollow-pines-b1-53-11782-13056` | hollow-pines | b1-53 Twisted Bleached Tree Relic | none (walk-through card) | 11772, 13045, 11793, 13066 | 225 | none |
 | `prop-hollow-pines-b1-53-11895-10291` | hollow-pines | b1-53 Twisted Bleached Tree Relic | none (walk-through card) | 11884, 10281, 11905, 10302 | 217 | none |
 | `prop-hollow-pines-b1-53-12167-13371` | hollow-pines | b1-53 Twisted Bleached Tree Relic | none (walk-through card) | 12157, 13361, 12178, 13382 | 215 | none |
-| `prop-hollow-pines-b1-53-13000-13211` | hollow-pines | b1-53 Twisted Bleached Tree Relic | none (walk-through card) | 12989, 13200, 13011, 13223 | 235 | none |
-| `prop-hollow-pines-b1-53-13135-10374` | hollow-pines | b1-53 Twisted Bleached Tree Relic | none (walk-through card) | 13123, 10362, 13146, 10385 | 240 | none |
+| `prop-hollow-pines-b1-53-13000-13211` | hollow-pines | b1-53 Twisted Bleached Tree Relic | none (walk-through card) | 12989, 13201, 13010, 13222 | 235 | none |
+| `prop-hollow-pines-b1-53-13135-10374` | hollow-pines | b1-53 Twisted Bleached Tree Relic | none (walk-through card) | 13124, 10363, 13145, 10384 | 240 | none |
 | `prop-hollow-pines-b1-53-13751-11304` | hollow-pines | b1-53 Twisted Bleached Tree Relic | none (walk-through card) | 13740, 11293, 13761, 11314 | 193 | none |
 | `prop-hollow-pines-b1-53-14026-11979` | hollow-pines | b1-53 Twisted Bleached Tree Relic | none (walk-through card) | 14015, 11969, 14036, 11990 | 218 | none |
-| `prop-hollow-pines-b1-53-14217-13069` | hollow-pines | b1-53 Twisted Bleached Tree Relic | none (walk-through card) | 14205, 13058, 14228, 13081 | 237 | none |
+| `prop-hollow-pines-b1-53-14217-13069` | hollow-pines | b1-53 Twisted Bleached Tree Relic | none (walk-through card) | 14206, 13059, 14227, 13080 | 237 | none |
 | `prop-hollow-pines-b1-53-14300-11225` | hollow-pines | b1-53 Twisted Bleached Tree Relic | none (walk-through card) | 14290, 11214, 14311, 11235 | 227 | none |
 | `prop-hollow-pines-b2-70-10778-9855` | hollow-pines | b2-70 Dead Oak Broken Limbs | none (walk-through card) | 10768, 9845, 10789, 9866 | 199 | none |
-| `prop-hollow-pines-b2-70-11219-11120` | hollow-pines | b2-70 Dead Oak Broken Limbs | none (walk-through card) | 11208, 11108, 11231, 11131 | 237 | none |
-| `prop-hollow-pines-b2-70-11323-12209` | hollow-pines | b2-70 Dead Oak Broken Limbs | none (walk-through card) | 11311, 12197, 11335, 12221 | 263 | none |
-| `prop-hollow-pines-b2-70-11779-10331` | hollow-pines | b2-70 Dead Oak Broken Limbs | none (walk-through card) | 11767, 10318, 11792, 10343 | 261 | none |
-| `prop-hollow-pines-b2-70-12020-13088` | hollow-pines | b2-70 Dead Oak Broken Limbs | none (walk-through card) | 12009, 13077, 12031, 13098 | 232 | none |
+| `prop-hollow-pines-b2-70-11219-11120` | hollow-pines | b2-70 Dead Oak Broken Limbs | none (walk-through card) | 11209, 11109, 11230, 11130 | 237 | none |
+| `prop-hollow-pines-b2-70-11323-12209` | hollow-pines | b2-70 Dead Oak Broken Limbs | none (walk-through card) | 11312, 12198, 11334, 12220 | 263 | none |
+| `prop-hollow-pines-b2-70-11779-10331` | hollow-pines | b2-70 Dead Oak Broken Limbs | none (walk-through card) | 11768, 10320, 11790, 10342 | 261 | none |
+| `prop-hollow-pines-b2-70-12020-13088` | hollow-pines | b2-70 Dead Oak Broken Limbs | none (walk-through card) | 12010, 13077, 12031, 13098 | 232 | none |
 | `prop-hollow-pines-b2-70-12317-13368` | hollow-pines | b2-70 Dead Oak Broken Limbs | none (walk-through card) | 12307, 13357, 12328, 13378 | 221 | none |
 | `prop-hollow-pines-b2-70-13069-10279` | hollow-pines | b2-70 Dead Oak Broken Limbs | none (walk-through card) | 13058, 10269, 13079, 10290 | 200 | none |
-| `prop-hollow-pines-b2-70-13154-13106` | hollow-pines | b2-70 Dead Oak Broken Limbs | none (walk-through card) | 13143, 13096, 13165, 13117 | 225 | none |
-| `prop-hollow-pines-b2-70-13790-11138` | hollow-pines | b2-70 Dead Oak Broken Limbs | none (walk-through card) | 13779, 11126, 13802, 11150 | 247 | none |
+| `prop-hollow-pines-b2-70-13154-13106` | hollow-pines | b2-70 Dead Oak Broken Limbs | none (walk-through card) | 13143, 13096, 13164, 13117 | 225 | none |
+| `prop-hollow-pines-b2-70-13790-11138` | hollow-pines | b2-70 Dead Oak Broken Limbs | none (walk-through card) | 13780, 11127, 13801, 11148 | 247 | none |
 | `prop-hollow-pines-b2-70-13962-11868` | hollow-pines | b2-70 Dead Oak Broken Limbs | none (walk-through card) | 13951, 11858, 13972, 11879 | 223 | none |
-| `prop-hollow-pines-b2-70-14117-13191` | hollow-pines | b2-70 Dead Oak Broken Limbs | none (walk-through card) | 14104, 13178, 14129, 13203 | 262 | none |
-| `prop-hollow-pines-b2-70-14267-11075` | hollow-pines | b2-70 Dead Oak Broken Limbs | none (walk-through card) | 14256, 11064, 14279, 11087 | 244 | none |
-| `prop-hollow-pines-b2-73-10782-9914` | hollow-pines | b2-73 Hollow Stump Shelf Fungus | none (walk-through card) | 10749, 9890, 10816, 9937 | 58 | none |
-| `prop-hollow-pines-b2-73-11165-11046` | hollow-pines | b2-73 Hollow Stump Shelf Fungus | none (walk-through card) | 11132, 11022, 11199, 11069 | 58 | none |
-| `prop-hollow-pines-b2-73-11288-12143` | hollow-pines | b2-73 Hollow Stump Shelf Fungus | none (walk-through card) | 11254, 12119, 11320, 12166 | 58 | none |
-| `prop-hollow-pines-b2-73-11808-10271` | hollow-pines | b2-73 Hollow Stump Shelf Fungus | none (walk-through card) | 11775, 10247, 11841, 10294 | 58 | none |
-| `prop-hollow-pines-b2-73-11905-13130` | hollow-pines | b2-73 Hollow Stump Shelf Fungus | none (walk-through card) | 11872, 13106, 11938, 13153 | 58 | none |
-| `prop-hollow-pines-b2-73-12264-13402` | hollow-pines | b2-73 Hollow Stump Shelf Fungus | none (walk-through card) | 12231, 13379, 12297, 13426 | 58 | none |
-| `prop-hollow-pines-b2-73-13152-10296` | hollow-pines | b2-73 Hollow Stump Shelf Fungus | none (walk-through card) | 13119, 10272, 13185, 10319 | 58 | none |
-| `prop-hollow-pines-b2-73-13166-13178` | hollow-pines | b2-73 Hollow Stump Shelf Fungus | none (walk-through card) | 13133, 13154, 13199, 13201 | 58 | none |
+| `prop-hollow-pines-b2-70-14117-13191` | hollow-pines | b2-70 Dead Oak Broken Limbs | none (walk-through card) | 14106, 13180, 14128, 13202 | 262 | none |
+| `prop-hollow-pines-b2-70-14267-11075` | hollow-pines | b2-70 Dead Oak Broken Limbs | none (walk-through card) | 14257, 11065, 14278, 11086 | 244 | none |
 | `prop-hollow-pines-b2-73-13380-12040` | hollow-pines | b2-73 Hollow Stump Shelf Fungus | none (walk-through card) | 13350, 12019, 13410, 12061 | 52 | none |
-| `prop-hollow-pines-b2-73-13834-11220` | hollow-pines | b2-73 Hollow Stump Shelf Fungus | none (walk-through card) | 13801, 11196, 13867, 11243 | 58 | none |
-| `prop-hollow-pines-b2-73-14034-11877` | hollow-pines | b2-73 Hollow Stump Shelf Fungus | none (walk-through card) | 14001, 11853, 14067, 11900 | 58 | none |
-| `prop-hollow-pines-b2-73-14108-13092` | hollow-pines | b2-73 Hollow Stump Shelf Fungus | none (walk-through card) | 14075, 13069, 14141, 13116 | 58 | none |
-| `prop-hollow-pines-b2-73-14325-11114` | hollow-pines | b2-73 Hollow Stump Shelf Fungus | none (walk-through card) | 14292, 11090, 14358, 11137 | 58 | none |
-| `prop-hollow-pines-b2-74-10642-9872` | hollow-pines | b2-74 Uprooted Root Ball | none (walk-through card) | 10598, 9838, 10686, 9887 | 92 | none |
-| `prop-hollow-pines-b2-74-11834-12934` | hollow-pines | b2-74 Uprooted Root Ball | none (walk-through card) | 11790, 12899, 11878, 12948 | 92 | none |
-| `prop-hollow-pines-b2-74-12181-13295` | hollow-pines | b2-74 Uprooted Root Ball | none (walk-through card) | 12137, 13261, 12225, 13310 | 92 | none |
-| `prop-hollow-pines-b2-74-12835-13128` | hollow-pines | b2-74 Uprooted Root Ball | none (walk-through card) | 12790, 13093, 12878, 13142 | 92 | none |
-| `prop-hollow-pines-b2-74-13014-10431` | hollow-pines | b2-74 Uprooted Root Ball | none (walk-through card) | 12969, 10396, 13058, 10445 | 92 | none |
-| `prop-hollow-pines-b2-74-13605-11272` | hollow-pines | b2-74 Uprooted Root Ball | none (walk-through card) | 13561, 11237, 13650, 11286 | 92 | none |
-| `prop-hollow-pines-b2-74-13944-12075` | hollow-pines | b2-74 Uprooted Root Ball | none (walk-through card) | 13900, 12040, 13988, 12089 | 92 | none |
-| `prop-hollow-pines-b2-74-14205-11254` | hollow-pines | b2-74 Uprooted Root Ball | none (walk-through card) | 14161, 11220, 14249, 11268 | 92 | none |
-| `prop-hollow-pines-b2-74-14313-13174` | hollow-pines | b2-74 Uprooted Root Ball | none (walk-through card) | 14269, 13140, 14357, 13189 | 92 | none |
 | `prop-hollow-pines-b2-79-13920-12070` | hollow-pines | b2-79 Stacked Log Pile | none (walk-through card) | 13885, 12048, 13955, 12091 | 56 | none |
 | `prop-hollow-pines-b2-79-13930-12300` | hollow-pines | b2-79 Stacked Log Pile | none (walk-through card) | 13897, 12280, 13963, 12319 | 52 | none |
 | `prop-hollow-pines-b2-80-11800-10960` | hollow-pines | b2-80 Stone Well With Winch | none (walk-through card) | 11779, 10942, 11821, 10977 | 64 | none |
@@ -501,36 +561,14 @@ none: the card was drawn without a collider in 2.0.0.
 | `prop-ledger-ridge-b1-42-7661-2641` | ledger-ridge | b1-42 Stylized Layered Sandstone Rock Formation | none (walk-through card) | 7619, 2602, 7703, 2678 | 96 | none |
 | `prop-ledger-ridge-b1-42-7975-1860` | ledger-ridge | b1-42 Stylized Layered Sandstone Rock Formation | none (walk-through card) | 7933, 1822, 8017, 1897 | 96 | none |
 | `prop-ledger-ridge-b1-42-8097-2975` | ledger-ridge | b1-42 Stylized Layered Sandstone Rock Formation | none (walk-through card) | 8055, 2937, 8140, 3012 | 96 | none |
-| `prop-ledger-ridge-b1-49-5549-2347` | ledger-ridge | b1-49 Jagged Tree Stump With Teal Sprout | none (walk-through card) | 5519, 2324, 5577, 2370 | 70 | none |
-| `prop-ledger-ridge-b1-49-5552-3208` | ledger-ridge | b1-49 Jagged Tree Stump With Teal Sprout | none (walk-through card) | 5523, 3185, 5580, 3231 | 70 | none |
-| `prop-ledger-ridge-b1-49-5724-4202` | ledger-ridge | b1-49 Jagged Tree Stump With Teal Sprout | none (walk-through card) | 5696, 4178, 5753, 4225 | 70 | none |
-| `prop-ledger-ridge-b1-49-6163-1983` | ledger-ridge | b1-49 Jagged Tree Stump With Teal Sprout | none (walk-through card) | 6133, 1959, 6191, 2006 | 70 | none |
-| `prop-ledger-ridge-b1-49-6327-3689` | ledger-ridge | b1-49 Jagged Tree Stump With Teal Sprout | none (walk-through card) | 6299, 3665, 6357, 3712 | 70 | none |
-| `prop-ledger-ridge-b1-49-6331-2848` | ledger-ridge | b1-49 Jagged Tree Stump With Teal Sprout | none (walk-through card) | 6302, 2824, 6360, 2871 | 70 | none |
-| `prop-ledger-ridge-b1-49-6922-3113` | ledger-ridge | b1-49 Jagged Tree Stump With Teal Sprout | none (walk-through card) | 6893, 3089, 6951, 3136 | 70 | none |
-| `prop-ledger-ridge-b1-49-7293-2650` | ledger-ridge | b1-49 Jagged Tree Stump With Teal Sprout | none (walk-through card) | 7264, 2627, 7322, 2673 | 70 | none |
-| `prop-ledger-ridge-b1-49-7295-1872` | ledger-ridge | b1-49 Jagged Tree Stump With Teal Sprout | none (walk-through card) | 7266, 1848, 7324, 1895 | 70 | none |
-| `prop-ledger-ridge-b1-49-7475-2333` | ledger-ridge | b1-49 Jagged Tree Stump With Teal Sprout | none (walk-through card) | 7446, 2309, 7504, 2356 | 70 | none |
-| `prop-ledger-ridge-b1-49-7975-3200` | ledger-ridge | b1-49 Jagged Tree Stump With Teal Sprout | none (walk-through card) | 7946, 3176, 8004, 3223 | 70 | none |
-| `prop-ledger-ridge-b1-49-8099-1975` | ledger-ridge | b1-49 Jagged Tree Stump With Teal Sprout | none (walk-through card) | 8071, 1951, 8128, 1998 | 70 | none |
 | `prop-ledger-ridge-b2-59-9200-3850` | ledger-ridge | b2-59 Tracked Excavator | none (walk-through card) | 9091, 3815, 9309, 3885 | 120 | tall |
 | `prop-ledger-ridge-b2-60-6800-4000` | ledger-ridge | b2-60 Mining Haul Truck | none (walk-through card) | 6710, 3961, 6889, 4037 | 140 | tall |
 | `prop-ledger-ridge-b2-60-7950-4320` | ledger-ridge | b2-60 Mining Haul Truck | none (walk-through card) | 7861, 4281, 8040, 4357 | 140 | tall |
 | `prop-ledger-ridge-b2-60-9050-4320` | ledger-ridge | b2-60 Mining Haul Truck | none (walk-through card) | 8954, 4279, 9146, 4359 | 150 | tall |
 | `prop-ledger-ridge-b2-77-7120-1440` | ledger-ridge | b2-77 Collapsed Mine Entrance | none (walk-through card) | 7032, 1364, 7207, 1497 | 230 | none |
 | `prop-ledger-ridge-b2-77-8200-1440` | ledger-ridge | b2-77 Collapsed Mine Entrance | none (walk-through card) | 8113, 1364, 8288, 1497 | 230 | none |
-| `prop-ledger-ridge-b2-79-5555-2864` | ledger-ridge | b2-79 Stacked Log Pile | none (walk-through card) | 5523, 2845, 5586, 2882 | 50 | none |
-| `prop-ledger-ridge-b2-79-5557-3725` | ledger-ridge | b2-79 Stacked Log Pile | none (walk-through card) | 5526, 3706, 5589, 3744 | 50 | none |
 | `prop-ledger-ridge-b2-79-5740-1600` | ledger-ridge | b2-79 Stacked Log Pile | none (walk-through card) | 5709, 1581, 5772, 1619 | 50 | none |
 | `prop-ledger-ridge-b2-79-5770-1420` | ledger-ridge | b2-79 Stacked Log Pile | none (walk-through card) | 5736, 1399, 5804, 1440 | 54 | none |
-| `prop-ledger-ridge-b2-79-6309-3184` | ledger-ridge | b2-79 Stacked Log Pile | none (walk-through card) | 6277, 3165, 6340, 3203 | 50 | none |
-| `prop-ledger-ridge-b2-79-6320-4025` | ledger-ridge | b2-79 Stacked Log Pile | none (walk-through card) | 6289, 4006, 6352, 4044 | 50 | none |
-| `prop-ledger-ridge-b2-79-6329-2343` | ledger-ridge | b2-79 Stacked Log Pile | none (walk-through card) | 6298, 2324, 6361, 2362 | 50 | none |
-| `prop-ledger-ridge-b2-79-7142-2342` | ledger-ridge | b2-79 Stacked Log Pile | none (walk-through card) | 7110, 2323, 7173, 2360 | 50 | none |
-| `prop-ledger-ridge-b2-79-7635-1849` | ledger-ridge | b2-79 Stacked Log Pile | none (walk-through card) | 7604, 1830, 7667, 1867 | 50 | none |
-| `prop-ledger-ridge-b2-79-7635-3186` | ledger-ridge | b2-79 Stacked Log Pile | none (walk-through card) | 7604, 3167, 7667, 3205 | 50 | none |
-| `prop-ledger-ridge-b2-79-7845-2649` | ledger-ridge | b2-79 Stacked Log Pile | none (walk-through card) | 7814, 2630, 7877, 2668 | 50 | none |
-| `prop-ledger-ridge-b2-79-7975-2342` | ledger-ridge | b2-79 Stacked Log Pile | none (walk-through card) | 7943, 2322, 8006, 2360 | 50 | none |
 | `prop-litecoin-city-b1-13-7240-6960` | litecoin-city | b1-13 Covered Market Stall Row | none (walk-through card) | 7112, 6934, 7368, 6984 | 120 | none |
 | `prop-litecoin-city-b1-13-7940-8280` | litecoin-city | b1-13 Covered Market Stall Row | none (walk-through card) | 7823, 8256, 8057, 8302 | 110 | none |
 | `prop-litecoin-city-b1-18-5800-8150` | litecoin-city | b1-18 Scrap Barricade | none (walk-through card) | 5737, 8138, 5863, 8161 | 56 | short |
@@ -592,14 +630,14 @@ none: the card was drawn without a collider in 2.0.0.
 | `prop-litecoin-city-b2-58-7200-6525` | litecoin-city | b2-58 Burnt Out Hatchback | none (walk-through card) | 7146, 6506, 7254, 6544 | 62 | short |
 | `prop-litecoin-city-b2-58-7325-6000` | litecoin-city | b2-58 Burnt Out Hatchback | none (walk-through card) | 7272, 5981, 7377, 6018 | 60 | short |
 | `prop-litecoin-city-b2-58-7830-6442` | litecoin-city | b2-58 Burnt Out Hatchback | none (walk-through card) | 7780, 6424, 7881, 6460 | 58 | short |
-| `prop-mweb-meadows-b1-03-12170-5140` | mweb-meadows | b1-03 Birch Cluster | none (walk-through card) | 12153, 5123, 12187, 5157 | 357 | none |
-| `prop-mweb-meadows-b1-03-13020-8200` | mweb-meadows | b1-03 Birch Cluster | none (walk-through card) | 13002, 8182, 13038, 8218 | 386 | none |
-| `prop-mweb-meadows-b1-03-14280-4950` | mweb-meadows | b1-03 Birch Cluster | none (walk-through card) | 14264, 4934, 14296, 4966 | 350 | none |
-| `prop-mweb-meadows-b2-70-10950-5050` | mweb-meadows | b2-70 Dead Oak Broken Limbs | none (walk-through card) | 10938, 5038, 10962, 5062 | 246 | none |
-| `prop-mweb-meadows-b2-71-11000-8320` | mweb-meadows | b2-71 Weeping Willow | none (walk-through card) | 10985, 8305, 11015, 8335 | 312 | none |
-| `prop-mweb-meadows-b2-71-11740-5980` | mweb-meadows | b2-71 Weeping Willow | none (walk-through card) | 11724, 5964, 11756, 5996 | 334 | none |
-| `prop-mweb-meadows-b2-71-13620-7320` | mweb-meadows | b2-71 Weeping Willow | none (walk-through card) | 13603, 7303, 13637, 7337 | 360 | none |
-| `prop-mweb-meadows-b2-71-14060-8200` | mweb-meadows | b2-71 Weeping Willow | none (walk-through card) | 14044, 8184, 14076, 8216 | 341 | none |
+| `prop-mweb-meadows-b1-03-12170-5140` | mweb-meadows | b1-03 Birch Cluster | none (walk-through card) | 12155, 5125, 12185, 5155 | 357 | none |
+| `prop-mweb-meadows-b1-03-13020-8200` | mweb-meadows | b1-03 Birch Cluster | none (walk-through card) | 13004, 8184, 13036, 8216 | 386 | none |
+| `prop-mweb-meadows-b1-03-14280-4950` | mweb-meadows | b1-03 Birch Cluster | none (walk-through card) | 14266, 4936, 14294, 4964 | 350 | none |
+| `prop-mweb-meadows-b2-70-10950-5050` | mweb-meadows | b2-70 Dead Oak Broken Limbs | none (walk-through card) | 10940, 5040, 10960, 5060 | 246 | none |
+| `prop-mweb-meadows-b2-71-11000-8320` | mweb-meadows | b2-71 Weeping Willow | none (walk-through card) | 10987, 8307, 11013, 8333 | 312 | none |
+| `prop-mweb-meadows-b2-71-11740-5980` | mweb-meadows | b2-71 Weeping Willow | none (walk-through card) | 11726, 5966, 11754, 5994 | 334 | none |
+| `prop-mweb-meadows-b2-71-13620-7320` | mweb-meadows | b2-71 Weeping Willow | none (walk-through card) | 13605, 7305, 13635, 7335 | 360 | none |
+| `prop-mweb-meadows-b2-71-14060-8200` | mweb-meadows | b2-71 Weeping Willow | none (walk-through card) | 14046, 8186, 14074, 8214 | 341 | none |
 | `prop-mweb-meadows-b2-75-11680-5440` | mweb-meadows | b2-75 Hedgerow Section | none (walk-through card) | 11605, 5426, 11755, 5451 | 66 | none |
 | `prop-mweb-meadows-b2-75-11860-7880` | mweb-meadows | b2-75 Hedgerow Section | none (walk-through card) | 11785, 7866, 11935, 7891 | 66 | none |
 | `prop-mweb-meadows-b2-75-13320-7680` | mweb-meadows | b2-75 Hedgerow Section | none (walk-through card) | 13245, 7666, 13395, 7691 | 66 | none |
@@ -612,18 +650,18 @@ none: the card was drawn without a collider in 2.0.0.
 | `prop-rugpull-woods-b1-18-18760-11520` | rugpull-woods | b1-18 Scrap Barricade | none (walk-through card) | 18695, 11508, 18825, 11531 | 58 | short |
 | `prop-rugpull-woods-b1-18-18800-12020` | rugpull-woods | b1-18 Scrap Barricade | none (walk-through card) | 18730, 12007, 18870, 12032 | 62 | short |
 | `prop-scrypt-bayou-b1-18-4050-12880` | scrypt-bayou | b1-18 Scrap Barricade | none (walk-through card) | 3992, 12869, 4108, 12890 | 52 | short |
-| `prop-scrypt-bayou-b1-53-1700-10400` | scrypt-bayou | b1-53 Twisted Bleached Tree Relic | none (walk-through card) | 1689, 10389, 1711, 10411 | 238 | none |
-| `prop-scrypt-bayou-b2-70-1350-9950` | scrypt-bayou | b2-70 Dead Oak Broken Limbs | none (walk-through card) | 1338, 9938, 1362, 9962 | 247 | none |
-| `prop-scrypt-bayou-b2-70-4250-10500` | scrypt-bayou | b2-70 Dead Oak Broken Limbs | none (walk-through card) | 4238, 10488, 4262, 10512 | 247 | none |
-| `prop-scrypt-bayou-b2-70-4300-13450` | scrypt-bayou | b2-70 Dead Oak Broken Limbs | none (walk-through card) | 4288, 13438, 4312, 13462 | 247 | none |
-| `prop-scrypt-bayou-b2-70-700-12200` | scrypt-bayou | b2-70 Dead Oak Broken Limbs | none (walk-through card) | 688, 12188, 712, 12212 | 247 | none |
-| `prop-scrypt-bayou-b2-71-1300-13400` | scrypt-bayou | b2-71 Weeping Willow | none (walk-through card) | 1285, 13385, 1315, 13415 | 323 | none |
-| `prop-scrypt-bayou-b2-71-2000-13400` | scrypt-bayou | b2-71 Weeping Willow | none (walk-through card) | 1985, 13385, 2015, 13415 | 323 | none |
-| `prop-scrypt-bayou-b2-71-2200-9900` | scrypt-bayou | b2-71 Weeping Willow | none (walk-through card) | 2185, 9885, 2215, 9915 | 323 | none |
-| `prop-scrypt-bayou-b2-71-3600-9950` | scrypt-bayou | b2-71 Weeping Willow | none (walk-through card) | 3585, 9935, 3615, 9965 | 323 | none |
-| `prop-scrypt-bayou-b2-71-4000-11300` | scrypt-bayou | b2-71 Weeping Willow | none (walk-through card) | 3985, 11285, 4015, 11315 | 323 | none |
-| `prop-scrypt-bayou-b2-71-4300-12200` | scrypt-bayou | b2-71 Weeping Willow | none (walk-through card) | 4285, 12185, 4315, 12215 | 323 | none |
-| `prop-scrypt-bayou-b2-71-800-10800` | scrypt-bayou | b2-71 Weeping Willow | none (walk-through card) | 785, 10785, 815, 10815 | 323 | none |
+| `prop-scrypt-bayou-b1-53-1700-10400` | scrypt-bayou | b1-53 Twisted Bleached Tree Relic | none (walk-through card) | 1690, 10390, 1710, 10410 | 238 | none |
+| `prop-scrypt-bayou-b2-70-1350-9950` | scrypt-bayou | b2-70 Dead Oak Broken Limbs | none (walk-through card) | 1340, 9940, 1360, 9960 | 247 | none |
+| `prop-scrypt-bayou-b2-70-4250-10500` | scrypt-bayou | b2-70 Dead Oak Broken Limbs | none (walk-through card) | 4240, 10490, 4260, 10510 | 247 | none |
+| `prop-scrypt-bayou-b2-70-4300-13450` | scrypt-bayou | b2-70 Dead Oak Broken Limbs | none (walk-through card) | 4290, 13440, 4310, 13460 | 247 | none |
+| `prop-scrypt-bayou-b2-70-700-12200` | scrypt-bayou | b2-70 Dead Oak Broken Limbs | none (walk-through card) | 690, 12190, 710, 12210 | 247 | none |
+| `prop-scrypt-bayou-b2-71-1300-13400` | scrypt-bayou | b2-71 Weeping Willow | none (walk-through card) | 1287, 13387, 1313, 13413 | 323 | none |
+| `prop-scrypt-bayou-b2-71-2000-13400` | scrypt-bayou | b2-71 Weeping Willow | none (walk-through card) | 1987, 13387, 2013, 13413 | 323 | none |
+| `prop-scrypt-bayou-b2-71-2200-9900` | scrypt-bayou | b2-71 Weeping Willow | none (walk-through card) | 2187, 9887, 2213, 9913 | 323 | none |
+| `prop-scrypt-bayou-b2-71-3600-9950` | scrypt-bayou | b2-71 Weeping Willow | none (walk-through card) | 3587, 9937, 3613, 9963 | 323 | none |
+| `prop-scrypt-bayou-b2-71-4000-11300` | scrypt-bayou | b2-71 Weeping Willow | none (walk-through card) | 3987, 11287, 4013, 11313 | 323 | none |
+| `prop-scrypt-bayou-b2-71-4300-12200` | scrypt-bayou | b2-71 Weeping Willow | none (walk-through card) | 4287, 12187, 4313, 12213 | 323 | none |
+| `prop-scrypt-bayou-b2-71-800-10800` | scrypt-bayou | b2-71 Weeping Willow | none (walk-through card) | 787, 10787, 813, 10813 | 323 | none |
 | `prop-scrypt-bayou-b2-73-1000-10500` | scrypt-bayou | b2-73 Hollow Stump Shelf Fungus | none (walk-through card) | 962, 10473, 1037, 10527 | 66 | none |
 | `prop-scrypt-bayou-b2-73-4150-10900` | scrypt-bayou | b2-73 Hollow Stump Shelf Fungus | none (walk-through card) | 4116, 10876, 4184, 10924 | 60 | none |
 | `prop-scrypt-bayou-b2-74-2600-12900` | scrypt-bayou | b2-74 Uprooted Root Ball | none (walk-through card) | 2554, 12864, 2646, 12915 | 96 | none |
@@ -673,50 +711,9 @@ none: the card was drawn without a collider in 2.0.0.
 | `prop-silver-coast-b1-42-923-8189` | silver-coast | b1-42 Stylized Layered Sandstone Rock Formation | none (walk-through card) | 896, 8165, 949, 8212 | 59 | none |
 | `prop-silver-coast-b1-53-4350-7300` | silver-coast | b1-53 Twisted Bleached Tree Relic | none (walk-through card) | 4340, 7290, 4360, 7310 | 220 | none |
 | `prop-silver-coast-b2-49-3760-7520` | silver-coast | b2-49 Concrete Jersey Barrier | none (walk-through card) | 3718, 7511, 3802, 7528 | 32 | short |
-| `prop-silver-coast-b2-71-2800-5100` | silver-coast | b2-71 Weeping Willow | none (walk-through card) | 2786, 5086, 2814, 5114 | 300 | none |
-| `prop-silver-coast-b2-71-4350-5100` | silver-coast | b2-71 Weeping Willow | none (walk-through card) | 4335, 5085, 4365, 5115 | 320 | none |
+| `prop-silver-coast-b2-71-2800-5100` | silver-coast | b2-71 Weeping Willow | none (walk-through card) | 2788, 5088, 2812, 5112 | 300 | none |
+| `prop-silver-coast-b2-71-4350-5100` | silver-coast | b2-71 Weeping Willow | none (walk-through card) | 4337, 5087, 4363, 5113 | 320 | none |
 | `prop-silver-coast-b2-75-3060-6500` | silver-coast | b2-75 Hedgerow Section | none (walk-through card) | 2992, 6487, 3128, 6510 | 60 | none |
-| `prop-world-roads-b2-48-10171-6412` | road corridor | b2-48 Road Guardrail Section | none (walk-through card) | 10070, 6404, 10273, 6417 | 40 | none |
-| `prop-world-roads-b2-48-10171-6988` | road corridor | b2-48 Road Guardrail Section | none (walk-through card) | 10070, 6980, 10273, 6993 | 40 | none |
-| `prop-world-roads-b2-48-10447-6412` | road corridor | b2-48 Road Guardrail Section | none (walk-through card) | 10345, 6404, 10548, 6417 | 40 | none |
-| `prop-world-roads-b2-48-10447-6988` | road corridor | b2-48 Road Guardrail Section | none (walk-through card) | 10345, 6980, 10548, 6993 | 40 | none |
-| `prop-world-roads-b2-48-10653-6412` | mweb-meadows | b2-48 Road Guardrail Section | none (walk-through card) | 10551, 6404, 10754, 6417 | 40 | none |
-| `prop-world-roads-b2-48-10653-6988` | mweb-meadows | b2-48 Road Guardrail Section | none (walk-through card) | 10551, 6980, 10754, 6993 | 40 | none |
-| `prop-world-roads-b2-48-10859-6412` | mweb-meadows | b2-48 Road Guardrail Section | none (walk-through card) | 10757, 6404, 10960, 6417 | 40 | none |
-| `prop-world-roads-b2-48-10859-6988` | mweb-meadows | b2-48 Road Guardrail Section | none (walk-through card) | 10757, 6980, 10960, 6993 | 40 | none |
-| `prop-world-roads-b2-48-11065-6988` | mweb-meadows | b2-48 Road Guardrail Section | none (walk-through card) | 10963, 6980, 11166, 6993 | 40 | none |
-| `prop-world-roads-b2-48-3660-6988` | silver-coast | b2-48 Road Guardrail Section | none (walk-through card) | 3559, 6980, 3761, 6993 | 40 | none |
-| `prop-world-roads-b2-48-3866-6988` | silver-coast | b2-48 Road Guardrail Section | none (walk-through card) | 3765, 6980, 3967, 6993 | 40 | none |
-| `prop-world-roads-b2-48-4072-6988` | silver-coast | b2-48 Road Guardrail Section | none (walk-through card) | 3971, 6980, 4173, 6993 | 40 | none |
-| `prop-world-roads-b2-48-4278-6412` | silver-coast | b2-48 Road Guardrail Section | none (walk-through card) | 4177, 6404, 4379, 6417 | 40 | none |
-| `prop-world-roads-b2-48-4278-6988` | silver-coast | b2-48 Road Guardrail Section | none (walk-through card) | 4177, 6980, 4379, 6993 | 40 | none |
-| `prop-world-roads-b2-48-4553-6412` | road corridor | b2-48 Road Guardrail Section | none (walk-through card) | 4452, 6404, 4655, 6417 | 40 | none |
-| `prop-world-roads-b2-48-4553-6988` | road corridor | b2-48 Road Guardrail Section | none (walk-through card) | 4452, 6980, 4655, 6993 | 40 | none |
-| `prop-world-roads-b2-48-4759-6412` | road corridor | b2-48 Road Guardrail Section | none (walk-through card) | 4658, 6404, 4861, 6417 | 40 | none |
-| `prop-world-roads-b2-48-4759-6988` | road corridor | b2-48 Road Guardrail Section | none (walk-through card) | 4658, 6980, 4861, 6993 | 40 | none |
-| `prop-world-roads-b2-48-4965-6412` | road corridor | b2-48 Road Guardrail Section | none (walk-through card) | 4864, 6404, 5067, 6417 | 40 | none |
-| `prop-world-roads-b2-48-4965-6988` | road corridor | b2-48 Road Guardrail Section | none (walk-through card) | 4864, 6980, 5067, 6993 | 40 | none |
-| `prop-world-roads-b2-48-5171-6412` | road corridor | b2-48 Road Guardrail Section | none (walk-through card) | 5070, 6404, 5273, 6417 | 40 | none |
-| `prop-world-roads-b2-48-5171-6988` | road corridor | b2-48 Road Guardrail Section | none (walk-through card) | 5070, 6980, 5273, 6993 | 40 | none |
-| `prop-world-roads-b2-48-5447-6412` | road corridor | b2-48 Road Guardrail Section | none (walk-through card) | 5345, 6404, 5548, 6417 | 40 | none |
-| `prop-world-roads-b2-48-5447-6988` | road corridor | b2-48 Road Guardrail Section | none (walk-through card) | 5345, 6980, 5548, 6993 | 40 | none |
-| `prop-world-roads-b2-48-5653-6412` | litecoin-city | b2-48 Road Guardrail Section | none (walk-through card) | 5551, 6404, 5754, 6417 | 40 | none |
-| `prop-world-roads-b2-48-5653-6988` | litecoin-city | b2-48 Road Guardrail Section | none (walk-through card) | 5551, 6980, 5754, 6993 | 40 | none |
-| `prop-world-roads-b2-48-5859-6412` | litecoin-city | b2-48 Road Guardrail Section | none (walk-through card) | 5757, 6404, 5960, 6417 | 40 | none |
-| `prop-world-roads-b2-48-5859-6988` | litecoin-city | b2-48 Road Guardrail Section | none (walk-through card) | 5757, 6980, 5960, 6993 | 40 | none |
-| `prop-world-roads-b2-48-6065-6412` | litecoin-city | b2-48 Road Guardrail Section | none (walk-through card) | 5963, 6404, 6166, 6417 | 40 | none |
-| `prop-world-roads-b2-48-6065-6988` | litecoin-city | b2-48 Road Guardrail Section | none (walk-through card) | 5963, 6980, 6166, 6993 | 40 | none |
-| `prop-world-roads-b2-48-8660-6412` | litecoin-city | b2-48 Road Guardrail Section | none (walk-through card) | 8559, 6404, 8761, 6417 | 40 | none |
-| `prop-world-roads-b2-48-8660-6988` | litecoin-city | b2-48 Road Guardrail Section | none (walk-through card) | 8559, 6980, 8761, 6993 | 40 | none |
-| `prop-world-roads-b2-48-8866-6412` | litecoin-city | b2-48 Road Guardrail Section | none (walk-through card) | 8765, 6404, 8967, 6417 | 40 | none |
-| `prop-world-roads-b2-48-9072-6412` | litecoin-city | b2-48 Road Guardrail Section | none (walk-through card) | 8971, 6404, 9173, 6417 | 40 | none |
-| `prop-world-roads-b2-48-9278-6412` | litecoin-city | b2-48 Road Guardrail Section | none (walk-through card) | 9177, 6404, 9379, 6417 | 40 | none |
-| `prop-world-roads-b2-48-9553-6412` | road corridor | b2-48 Road Guardrail Section | none (walk-through card) | 9452, 6404, 9655, 6417 | 40 | none |
-| `prop-world-roads-b2-48-9553-6988` | road corridor | b2-48 Road Guardrail Section | none (walk-through card) | 9452, 6980, 9655, 6993 | 40 | none |
-| `prop-world-roads-b2-48-9759-6412` | road corridor | b2-48 Road Guardrail Section | none (walk-through card) | 9658, 6404, 9861, 6417 | 40 | none |
-| `prop-world-roads-b2-48-9759-6988` | road corridor | b2-48 Road Guardrail Section | none (walk-through card) | 9658, 6980, 9861, 6993 | 40 | none |
-| `prop-world-roads-b2-48-9965-6412` | road corridor | b2-48 Road Guardrail Section | none (walk-through card) | 9864, 6404, 10067, 6417 | 40 | none |
-| `prop-world-roads-b2-48-9965-6988` | road corridor | b2-48 Road Guardrail Section | none (walk-through card) | 9864, 6980, 10067, 6993 | 40 | none |
 | `prop-world-roads-b2-49-11270-6460` | mweb-meadows | b2-49 Concrete Jersey Barrier | none (walk-through card) | 11225, 6451, 11314, 6469 | 34 | short |
 | `prop-world-roads-b2-49-3730-6940` | silver-coast | b2-49 Concrete Jersey Barrier | none (walk-through card) | 3686, 6931, 3775, 6949 | 34 | short |
 | `prop-world-roads-b2-49-6270-6460` | litecoin-city | b2-49 Concrete Jersey Barrier | none (walk-through card) | 6225, 6451, 6314, 6469 | 34 | short |
