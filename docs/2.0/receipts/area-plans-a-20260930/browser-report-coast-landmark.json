@@ -1,0 +1,280 @@
+{
+ "origin": "http://127.0.0.1:8853",
+ "captures": [
+  {
+   "scene": "coast-landmark",
+   "file": "desktop-coast-landmark.png",
+   "areaId": "silver-coast",
+   "position": {
+    "x": 2198,
+    "y": 5258
+   },
+   "areaArt": [
+    {
+     "artId": "world-v2-area-art/v1",
+     "areaId": "silver-coast",
+     "resolution": "full",
+     "disposed": false,
+     "mounted": true,
+     "pages": [
+      "tripo-props-hd-plants-00.webp",
+      "tripo-props-hd-structures-01.webp",
+      "tripo-props-hd-props-00.webp"
+     ],
+     "tiles": [
+      "crushed-ore",
+      "industrial-slab",
+      "ledge-top",
+      "packed-earth",
+      "shallow-water"
+     ],
+     "counts": {
+      "zones": 6,
+      "trails": 22,
+      "decals": 0,
+      "roads": 0,
+      "props": 292,
+      "solids": 12
+     },
+     "budget": {
+      "kitPages": 3,
+      "exclusiveKitPages": 2,
+      "kitPageBudget": 2,
+      "encodedBytes": 6170898,
+      "decodedBytes": 50331648,
+      "halfEncodedBytes": 614744,
+      "halfDecodedBytes": 12582912,
+      "tilePages": 12,
+      "tileDecodedBytes": 7864320
+     },
+     "terrain": {
+      "materials": [
+       "sand",
+       "wetsand",
+       "shallows"
+      ],
+      "field": "512x512",
+      "fieldBytes": 1048576,
+      "splat": true,
+      "counts": {
+       "zones": 2,
+       "trails": 22,
+       "roads": 14,
+       "blockers": 23,
+       "trees": 38
+      }
+     },
+     "ownedUrls": [
+      "/assets/generated/hmh-reboot-tripo-props-hd/tripo-props-hd-plants-00.webp",
+      "/assets/generated/hmh-reboot-tripo-props-hd/tripo-props-hd-props-00.webp",
+      "/assets/generated/hmh-reboot-tripo-props-hd/tripo-props-hd-structures-01.webp",
+      "/assets/generated/hmh-terrain-tiles/crushed-ore-fringe.png",
+      "/assets/generated/hmh-terrain-tiles/crushed-ore.png",
+      "/assets/generated/hmh-terrain-tiles/industrial-slab-fringe.png",
+      "/assets/generated/hmh-terrain-tiles/industrial-slab.png",
+      "/assets/generated/hmh-terrain-tiles/ledge-top-fringe.png",
+      "/assets/generated/hmh-terrain-tiles/ledge-top.png",
+      "/assets/generated/hmh-terrain-tiles/packed-earth-fringe.png",
+      "/assets/generated/hmh-terrain-tiles/packed-earth.png",
+      "/assets/generated/hmh-terrain-tiles/rock-face.png",
+      "/assets/generated/hmh-terrain-tiles/shallow-water-fringe.png",
+      "/assets/generated/hmh-terrain-tiles/shallow-water.png"
+     ],
+     "painted": 5,
+     "residency": {
+      "disposed": false,
+      "catalogCount": 292,
+      "liveCount": 85,
+      "visibleCount": 26,
+      "peakCount": 105,
+      "createdCount": 166,
+      "destroyedCount": 81,
+      "residentIds": [
+       "silver-coast-art-0",
+       "silver-coast-art-1",
+       "silver-coast-art-10",
+       "silver-coast-art-11",
+       "silver-coast-art-12",
+       "silver-coast-art-13",
+       "silver-coast-art-14",
+       "silver-coast-art-15",
+       "silver-coast-art-16",
+       "silver-coast-art-17",
+       "silver-coast-art-18",
+       "silver-coast-art-19",
+       "silver-coast-art-2",
+       "silver-coast-art-20",
+       "silver-coast-art-21",
+       "silver-coast-art-216",
+       "silver-coast-art-217",
+       "silver-coast-art-218",
+       "silver-coast-art-219",
+       "silver-coast-art-22",
+       "silver-coast-art-220",
+       "silver-coast-art-221",
+       "silver-coast-art-222",
+       "silver-coast-art-223",
+       "silver-coast-art-224",
+       "silver-coast-art-225",
+       "silver-coast-art-226",
+       "silver-coast-art-227",
+       "silver-coast-art-228",
+       "silver-coast-art-229",
+       "silver-coast-art-23",
+       "silver-coast-art-24",
+       "silver-coast-art-240",
+       "silver-coast-art-241",
+       "silver-coast-art-242",
+       "silver-coast-art-243",
+       "silver-coast-art-244",
+       "silver-coast-art-245",
+       "silver-coast-art-246",
+       "silver-coast-art-247",
+       "silver-coast-art-248",
+       "silver-coast-art-249",
+       "silver-coast-art-25",
+       "silver-coast-art-250",
+       "silver-coast-art-26",
+       "silver-coast-art-27",
+       "silver-coast-art-271",
+       "silver-coast-art-28",
+       "silver-coast-art-283",
+       "silver-coast-art-285",
+       "silver-coast-art-287",
+       "silver-coast-art-289",
+       "silver-coast-art-29",
+       "silver-coast-art-290",
+       "silver-coast-art-3",
+       "silver-coast-art-30",
+       "silver-coast-art-31",
+       "silver-coast-art-4",
+       "silver-coast-art-5",
+       "silver-coast-art-55",
+       "silver-coast-art-56",
+       "silver-coast-art-57",
+       "silver-coast-art-58",
+       "silver-coast-art-59",
+       "silver-coast-art-6",
+       "silver-coast-art-60",
+       "silver-coast-art-61",
+       "silver-coast-art-62",
+       "silver-coast-art-63",
+       "silver-coast-art-64",
+       "silver-coast-art-65",
+       "silver-coast-art-66",
+       "silver-coast-art-67",
+       "silver-coast-art-68",
+       "silver-coast-art-69",
+       "silver-coast-art-7",
+       "silver-coast-art-70",
+       "silver-coast-art-71",
+       "silver-coast-art-72",
+       "silver-coast-art-73",
+       "silver-coast-art-8",
+       "silver-coast-art-86",
+       "silver-coast-art-87",
+       "silver-coast-art-88",
+       "silver-coast-art-9"
+      ],
+      "visibleIds": [
+       "silver-coast-art-0",
+       "silver-coast-art-13",
+       "silver-coast-art-17",
+       "silver-coast-art-216",
+       "silver-coast-art-217",
+       "silver-coast-art-218",
+       "silver-coast-art-219",
+       "silver-coast-art-22",
+       "silver-coast-art-220",
+       "silver-coast-art-221",
+       "silver-coast-art-222",
+       "silver-coast-art-223",
+       "silver-coast-art-224",
+       "silver-coast-art-225",
+       "silver-coast-art-226",
+       "silver-coast-art-227",
+       "silver-coast-art-228",
+       "silver-coast-art-229",
+       "silver-coast-art-271",
+       "silver-coast-art-61",
+       "silver-coast-art-62",
+       "silver-coast-art-63",
+       "silver-coast-art-64",
+       "silver-coast-art-65",
+       "silver-coast-art-66",
+       "silver-coast-art-67"
+      ],
+      "areaIds": [
+       "silver-coast"
+      ]
+     },
+     "runtimeAuthority": "projection-only"
+    },
+    {
+     "artId": "world-v2-area-art/v1",
+     "areaId": "world-roads",
+     "resolution": "full",
+     "disposed": false,
+     "mounted": true,
+     "pages": [
+      "tripo-props-hd-props-00.webp"
+     ],
+     "tiles": [
+      "crushed-ore",
+      "packed-earth",
+      "road"
+     ],
+     "counts": {
+      "zones": 0,
+      "trails": 0,
+      "decals": 0,
+      "roads": 14,
+      "props": 63,
+      "solids": 0
+     },
+     "budget": {
+      "kitPages": 1,
+      "exclusiveKitPages": 1,
+      "kitPageBudget": 1,
+      "encodedBytes": 2093182,
+      "decodedBytes": 16777216,
+      "halfEncodedBytes": 201074,
+      "halfDecodedBytes": 4194304,
+      "tilePages": 6,
+      "tileDecodedBytes": 3932160
+     },
+     "terrain": null,
+     "ownedUrls": [
+      "/assets/generated/hmh-reboot-tripo-props-hd/tripo-props-hd-props-00.webp",
+      "/assets/generated/hmh-terrain-tiles/crushed-ore-fringe.png",
+      "/assets/generated/hmh-terrain-tiles/crushed-ore.png",
+      "/assets/generated/hmh-terrain-tiles/packed-earth-fringe.png",
+      "/assets/generated/hmh-terrain-tiles/packed-earth.png",
+      "/assets/generated/hmh-terrain-tiles/road-fringe.png",
+      "/assets/generated/hmh-terrain-tiles/road.png"
+     ],
+     "painted": 36,
+     "residency": {
+      "disposed": false,
+      "catalogCount": 63,
+      "liveCount": 2,
+      "visibleCount": 0,
+      "peakCount": 8,
+      "createdCount": 15,
+      "destroyedCount": 13,
+      "residentIds": [
+       "road-art-0",
+       "road-art-1"
+      ],
+      "visibleIds": [],
+      "areaIds": []
+     },
+     "runtimeAuthority": "projection-only"
+    }
+   ]
+  }
+ ],
+ "errors": [
+  "coast-landmark console: Failed to load resource: the server responded with a status of 404 (File not found)"
+ ]
+}
