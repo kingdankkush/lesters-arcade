@@ -57,3 +57,21 @@ deleted; all files in this folder are pass 2.
    a pass-3 capture to confirm.
 3. Closed-mass rock faces not visually verified at an area border.
 4. No phone frame-cost measurement for the six-sampler full-screen quad.
+
+## Pass 3 (`pass-3/`, desktop only, gains 2.6/2.4 and Woods/Meadows zones moved into the splat sets; same build byte number: HMH initial JS + shared 1,047,913 B)
+
+- `pass-3/desktop-meadows-spawn.png` — The salt speckle is gone; the meadow
+  reads as sage ground with earth patches and a soft gravel apron, broad
+  value shapes, the human legible on a quieter floor. This is the frame I
+  would put in front of the owner for the ground itself; the road at the top
+  left still shows the old ribbon edge.
+- `pass-3/desktop-woods-camp.png` — Forest floor and worn camp earth are
+  calmer, but two straight-edged rectangles remain: they are not plan zones
+  (those now rasterise into the field) but the Woods `bank` solids' roof
+  fills (`roof: 'forest'`, plain `Graphics` tile fill) and, at the left, a
+  tall flat brown band that is either a bank face strip stretched over a
+  back edge or the dirt road ribbon. Bank/mass rendering needs a dedicated
+  pass before it reads as rock.
+- `pass-3/desktop-meadows-woods-road.png` — Meadow-to-earth transition is
+  soft; the flat brown band with two lighter lines beyond the area border is
+  unchanged and unresolved (same candidates as above).
