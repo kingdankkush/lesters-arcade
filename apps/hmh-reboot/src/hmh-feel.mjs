@@ -1,11 +1,13 @@
 // HMH feel layer (2.1). One lazy chunk that owns the projection-only feel
 // systems the frame loop consults: the trauma-squared screen shake (shared
-// module, upgrade guide §2.2) and the presentation-only hitstop (§2.1 b). Everything here is presentation: it consumes
+// module, upgrade guide §2.2), the presentation-only hitstop (§2.1 b) and
+// the pooled damage numbers (§2.3). Everything here is presentation: it consumes
 // primitives copied out of events the simulation already produced and moves
 // render containers. It never reads or writes simulation state, RNG streams,
 // run evidence, bridge messages or results.
 import { createTraumaShake } from '../../portal/src/feel/trauma-shake.mjs';
 import { createHitstop } from '../../portal/src/feel/hitstop.mjs';
+import { createDamageGlyphAtlas, createDamageNumberModel, createDamageNumberView } from './damage-numbers.mjs';
 
 // §2.2: the old impulse ceiling (boss defeat, 12 px) is the trauma ceiling.
 export const HMH_SHAKE_MAX_PX = 12;
@@ -46,17 +48,50 @@ export function hmhHitstopFrames(critical, killed, weaponId, boss, bossDeath) {
 // Own toggle (default on), separate from screen shake; off under reduced motion.
 export const hmhHitstopEnabled = (settings) => settings?.hitstop !== false && !settings?.reduceMotion;
 
-export function createHmhFeel() {
+// Damage numbers: own toggle, default on.
+export const hmhDamageNumbersEnabled = (settings) => settings?.damageNumbers !== false;
+
+// `pixi` ({ documentRef, ContainerClass, SpriteClass, TextureClass,
+// RectangleClass }) enables the damage-number view; without it, or where the
+// document cannot draw the glyph atlas, the model still runs (telemetry) and
+// nothing is drawn.
+export function createHmhFeel({ pixi = null } = {}) {
   const shake = createTraumaShake({ maxPx: HMH_SHAKE_MAX_PX, decayPerSecond: HMH_SHAKE_DECAY_PER_SECOND });
   const hitstop = createHitstop({ maxPerSecond: HMH_HITSTOP_MAX_PER_SECOND });
+  const damage = createDamageNumberModel();
+  let damageView = null;
+  if (pixi) {
+    try {
+      const atlas = createDamageGlyphAtlas(pixi);
+      if (atlas) damageView = createDamageNumberView({ model: damage, atlas, ContainerClass: pixi.ContainerClass, SpriteClass: pixi.SpriteClass });
+    } catch {
+      damageView = null;
+    }
+  }
   return {
     shake,
     hitstop,
+    damage,
+    damageLayer: damageView?.layer ?? null,
     // One enemy damage event, called from the step callback after the
     // simulation resolved it. Primitive copies only; nothing is written back.
-    enemyHit(critical, killed, weaponId, boss, bossDeath) {
+    // `numbers` is the damage-number setting; `tick` the event's tick.
+    enemyHit(critical, killed, weaponId, boss, bossDeath, targetId, amount, x, y, z, tick, numbers) {
       const frames = hmhHitstopFrames(critical, killed, weaponId, boss, bossDeath);
       if (frames > 0) hitstop.request(frames);
+      if (numbers && Number.isFinite(x) && Number.isFinite(y)) damage.add(targetId, amount, critical, x, y, Number.isFinite(z) ? z : 0, tick * HMH_TICK_MS);
+    },
+    // Per rendered frame: retire, then draw at `nowMs` (simulation clock with
+    // interpolation). Returns the live count.
+    drawDamageNumbers(nowMs, settings, project, offsetX, offsetY) {
+      if (!hmhDamageNumbersEnabled(settings)) {
+        if (damage.stats.active > 0) damage.clear();
+        damageView?.hide();
+        return 0;
+      }
+      const live = damage.update(nowMs);
+      damageView?.draw(nowMs, project, offsetX, offsetY);
+      return live;
     },
     // Once per frame, after simulation.update(): start a hold for the
     // strongest request of the frame (the impact frame itself still renders).
@@ -79,6 +114,8 @@ export function createHmhFeel() {
     reset() {
       shake.reset();
       hitstop.reset();
+      damage.clear();
+      damageView?.hide();
     },
   };
 }

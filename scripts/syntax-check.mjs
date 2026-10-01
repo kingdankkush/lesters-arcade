@@ -29,6 +29,8 @@ const NODE_CHECK_FILES = [
   'apps/portal/src/feel/hitstop.mjs',
   'scripts/hmh-honest-corpus/feel-parity.mjs',
   'tests/hmh-feel-hitstop.test.mjs',
+  'apps/hmh-reboot/src/damage-numbers.mjs',
+  'tests/hmh-feel-damage-numbers.test.mjs',
   'apps/chikun/src/course-v2-art.mjs',
   'apps/chikun/src/course-v2-view.mjs',
   'tests/chikun-course-two-art.test.mjs',

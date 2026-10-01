@@ -138,7 +138,7 @@ test('main.mjs: the simulation steps before the hold is consulted; a hold only s
   assert.doesNotMatch(held, /simulation\.|bridge\.|recordRun|runSummary/);
   // One call site feeds it, after the hit was resolved, with primitive copies.
   assert.equal(main.match(/hmhFeel\?\.enemyHit\(/g)?.length, 1);
-  assert.match(main, /hmhFeel\?\.enemyHit\(damageEvent\.critical === true, damageEvent\.killed === true, damageEvent\.weaponId, bossHit, Boolean\(bossHit && bossDamage\.runEvent\)\);/);
+  assert.match(main, /hmhFeel\?\.enemyHit\(damageEvent\.critical === true, damageEvent\.killed === true, damageEvent\.weaponId, bossHit, Boolean\(bossHit && bossDamage\.runEvent\),/);
   // The simulation and evidence modules never mention it.
   for (const file of ['simulation.mjs', 'enemy-simulation.mjs', 'combat-events.mjs', 'combat-lifecycle.mjs', 'run-summary-v7.mjs', 'enemy-combat.mjs', 'collision.mjs']) {
     assert.doesNotMatch(read(`../apps/hmh-reboot/src/${file}`), /hitstop|hmhFeel/i, file);
@@ -180,10 +180,12 @@ test('settings: bridge optional boolean, portal persistence, standalone off, pau
 // off with reduced motion off. The bridge messages (run events, state, score
 // result, game over, run summary) and the per-tick simulation stream must be
 // byte-identical, and the on run must actually have frozen frames.
-test('real child: evidence and the simulation stream are byte-identical with hitstop on and off', () => {
+test('real child: evidence and the simulation stream are byte-identical with hitstop (and damage numbers) on and off', () => {
   const script = fileURLToPath(new URL('../scripts/hmh-honest-corpus/feel-parity.mjs', import.meta.url));
   const run = (hitstop) => {
-    const result = spawnSync(process.execPath, [script, JSON.stringify({ hitstop, tickCap: 2400 })], { encoding: 'utf8', maxBuffer: 256 * 1024 * 1024, timeout: 240_000 });
+    // 2.1 item 4: damage numbers ride the same switch, so the off run has no
+    // presentation feel at all and the on run has both.
+    const result = spawnSync(process.execPath, [script, JSON.stringify({ hitstop, damageNumbers: hitstop, tickCap: 2400 })], { encoding: 'utf8', maxBuffer: 256 * 1024 * 1024, timeout: 240_000 });
     assert.equal(result.status, 0, result.stderr.slice(-2000));
     return JSON.parse(result.stdout.trim().split('\n').at(-1));
   };
@@ -198,6 +200,9 @@ test('real child: evidence and the simulation stream are byte-identical with hit
   assert.ok(on.feel.hitstopHeldFrames > 10);
   assert.ok(on.feel.hitstopMaxPerSecond <= HMH_HITSTOP_MAX_PER_SECOND);
   assert.equal(off.feel.hitstopStarted, 0);
+  assert.ok(on.feel.damageNumbersSpawned > 10, `damage numbers spawned (${on.feel.damageNumbersSpawned})`);
+  assert.ok(on.feel.damageNumbersPeak <= 32, 'the pool plateaus');
+  assert.equal(off.feel.damageNumbersSpawned, 0);
   assert.equal(on.finalTick, off.finalTick);
   assert.equal(JSON.stringify(on.evidence), JSON.stringify(off.evidence), 'bridge evidence byte-identical');
   assert.equal(JSON.stringify(on.stream), JSON.stringify(off.stream), 'simulation stream byte-identical');

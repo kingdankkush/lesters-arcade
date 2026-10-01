@@ -57,6 +57,7 @@ const PAUSE_CHOICE_DEFAULTS = Object.freeze({ goreLevel: 'full' });
 // the four pinned toggles and their boolean path stay byte-identical.
 const PAUSE_FEEL_KEYS = Object.freeze({
   hitstop: 'hmhSettingHitstop',
+  damageNumbers: 'hmhSettingDamageNumbers',
 });
 
 // Shared with the lazy upgrade panel, so every dynamic cockpit node goes

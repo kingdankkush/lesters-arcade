@@ -1587,7 +1587,7 @@ async function boot() {
     ? (await import('./debug-grid-overlay.mjs')).buildDebugGridOverlay({ bounds: WORLD_BOUNDS, spacing: 512, queryGround })
     : null;
 
-  let settings = { musicEnabled: true, screenShake: true, gore: false, reduceMotion: false, reduceFlash: false, colorblindTags: false, hitstop: true };
+  let settings = { musicEnabled: true, screenShake: true, gore: false, reduceMotion: false, reduceFlash: false, colorblindTags: false, hitstop: true, damageNumbers: true };
   // The bridge shell is already ready; load the audio player during asset
   // preparation, before accepting a run, instead of delaying the first paint.
   const { createCombatAudio } = await import('./combat-audio.mjs');
@@ -1654,6 +1654,7 @@ async function boot() {
     dataset.settingReduceFlash = String(settings.reduceFlash);
     dataset.settingGoreLevel = settings.goreLevel;
     dataset.settingHitstop = String(settings.hitstop !== false);
+    dataset.settingDamageNumbers = String(settings.damageNumbers !== false);
     if (notify && bridge?.initialized) {
       bridge.send('game:settings', { settings: { ...settings } });
       bridge.send('game:state', statePayload());
@@ -1686,7 +1687,7 @@ async function boot() {
   };
   // 2.1 feel toggles: their own path, like the gore choice, so the pinned
   // boolean path above stays byte-identical. Projection-only.
-  const PAUSE_FEEL_KEYS = new Set(['hitstop']);
+  const PAUSE_FEEL_KEYS = new Set(['hitstop', 'damageNumbers']);
   const applyPauseFeel = (key, enabled) => {
     if (!PAUSE_FEEL_KEYS.has(key)) throw new TypeError(`unsupported pause feel setting ${String(key)}`);
     syncRuntimeSettings({ ...settings, [key]: Boolean(enabled) }, { notify: true });
@@ -1888,8 +1889,21 @@ async function boot() {
   // 2.1 feel layer (lazy chunk): trauma-squared shake. Every impulse adds
   // trauma; the frame loop reads the decayed offset. Presentation only.
   let hmhFeel = null;
-  void import('./hmh-feel.mjs').then((module) => { hmhFeel = module.createHmhFeel(); })
-    .catch(() => { dataset.feelStatus = 'unavailable'; });
+  void import('./hmh-feel.mjs').then((module) => {
+    hmhFeel = module.createHmhFeel({ pixi: { documentRef: document, ContainerClass: Container, SpriteClass: Sprite, TextureClass: Texture, RectangleClass: Rectangle } });
+    // Damage numbers sit on the stage under the HUD overlay, offset by the
+    // world shake like the health pips.
+    if (hmhFeel.damageLayer) app.stage.addChildAt(hmhFeel.damageLayer, app.stage.getChildIndex(overlayVisuals));
+    dataset.damageNumbersView = hmhFeel.damageLayer ? 'ready' : 'unavailable';
+  }).catch(() => { dataset.feelStatus = 'unavailable'; });
+  // Damage-number projection: one scratch point, the frame's viewport.
+  const damageNumberPoint = { x: 0, y: 0, z: 0 };
+  let damageNumberViewport = null;
+  const projectDamageNumber = (x, y, z, out) => {
+    damageNumberPoint.x = x; damageNumberPoint.y = y; damageNumberPoint.z = z;
+    return worldToScreenInto(out, damageNumberPoint, camera, damageNumberViewport);
+  };
+  let damageNumbersSpawnedSeen = 0;
   // Combat sparks and debris inherit the active quality tier, so the
   // reduced-motion profile (0 particles per hazard) emits none.
   const particleScale = performanceProfile.particlesPerHazard;
@@ -5346,7 +5360,9 @@ async function boot() {
           // 2.1 feel (presentation-only): hitstop request for this resolved
           // hit. Primitive copies after the fact; the simulation never reads it.
           if (damageEvent.targetId !== 'player' && (!bossHit || bossDamage.damageApplied > 0)) {
-            hmhFeel?.enemyHit(damageEvent.critical === true, damageEvent.killed === true, damageEvent.weaponId, bossHit, Boolean(bossHit && bossDamage.runEvent));
+            hmhFeel?.enemyHit(damageEvent.critical === true, damageEvent.killed === true, damageEvent.weaponId, bossHit, Boolean(bossHit && bossDamage.runEvent),
+              damageEvent.targetId, bossHit ? bossDamage.damageApplied : damageEvent.damageApplied,
+              damageEvent.point?.x, damageEvent.point?.y, damageEvent.point?.z, tick, settings.damageNumbers !== false);
           }
           if (damageEvent.targetId === 'player') {
             if (settings.captionCriticalAudio) setAccessibleCombatStatus('Critical audio: player hit.');
@@ -6078,6 +6094,16 @@ async function boot() {
     }
     renderWorld(renderActor);
     syncMusicDuck(bossMusicDuckWanted);
+    if (hmhFeel) {
+      damageNumberViewport = viewport();
+      hmhFeel.drawDamageNumbers((simulation.tick + frame.alpha) * simulation.fixedStepMs, settings, projectDamageNumber, world.position.x, world.position.y);
+      if (hmhFeel.damage.stats.spawned !== damageNumbersSpawnedSeen) {
+        damageNumbersSpawnedSeen = hmhFeel.damage.stats.spawned;
+        dataset.damageNumbersSpawned = String(damageNumbersSpawnedSeen);
+        dataset.damageNumbersPeak = String(hmhFeel.damage.stats.peak);
+        dataset.damageNumbersAggregated = String(hmhFeel.damage.stats.aggregated);
+      }
+    }
     const locomotionPulse = actor.locomotion === 'dash'
       ? 0.18
       : motion?.locomotion === 'run' ? Math.sin(elapsedMs * 0.012) * 0.07 : 0;

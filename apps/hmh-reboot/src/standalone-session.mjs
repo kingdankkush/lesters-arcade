@@ -36,6 +36,7 @@ export function createStandaloneInitPayload({ heroId = 'lit-commando' } = {}) {
       // evidence-capture path and a held frame would destabilise baselines.
       // The pause menu still turns it on for a dev session.
       hitstop: false,
+      damageNumbers: false,
       reduceMotion: false,
       reduceFlash: false,
       colorblindTags: false,
