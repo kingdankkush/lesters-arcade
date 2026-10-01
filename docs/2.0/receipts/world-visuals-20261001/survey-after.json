@@ -1,0 +1,2164 @@
+{
+ "origin": "http://127.0.0.1:52307",
+ "captures": [
+  {
+   "tier": "desktop",
+   "name": "centre-mweb-meadows",
+   "cat": "centre",
+   "x": 12500,
+   "y": 6700,
+   "file": "desktop-centre-mweb-meadows.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "desktop",
+   "name": "centre-litecoin-city",
+   "cat": "centre",
+   "x": 7500,
+   "y": 6700,
+   "file": "desktop-centre-litecoin-city.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "desktop",
+   "name": "centre-halving-farms",
+   "cat": "centre",
+   "x": 17500,
+   "y": 6700,
+   "file": "desktop-centre-halving-farms.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "desktop",
+   "name": "centre-silver-coast",
+   "cat": "centre",
+   "x": 2500,
+   "y": 6700,
+   "file": "desktop-centre-silver-coast.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "desktop",
+   "name": "centre-scrypt-bayou",
+   "cat": "centre",
+   "x": 2500,
+   "y": 11600,
+   "file": "desktop-centre-scrypt-bayou.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "desktop",
+   "name": "centre-hashwood-river",
+   "cat": "centre",
+   "x": 7500,
+   "y": 11600,
+   "file": "desktop-centre-hashwood-river.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "desktop",
+   "name": "centre-hollow-pines",
+   "cat": "centre",
+   "x": 12500,
+   "y": 11600,
+   "file": "desktop-centre-hollow-pines.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "desktop",
+   "name": "centre-ledger-ridge",
+   "cat": "centre",
+   "x": 7500,
+   "y": 2500,
+   "file": "desktop-centre-ledger-ridge.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "desktop",
+   "name": "centre-fork-fortress",
+   "cat": "centre",
+   "x": 12500,
+   "y": 2500,
+   "file": "desktop-centre-fork-fortress.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "desktop",
+   "name": "centre-rugpull-woods",
+   "cat": "centre",
+   "x": 17500,
+   "y": 11600,
+   "file": "desktop-centre-rugpull-woods.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "desktop",
+   "name": "road-coast-city-mid",
+   "cat": "road",
+   "x": 6600,
+   "y": 6700,
+   "file": "desktop-road-coast-city-mid.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "desktop",
+   "name": "road-coast-city-in",
+   "cat": "junction",
+   "x": 6600,
+   "y": 6700,
+   "file": "desktop-road-coast-city-in.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "desktop",
+   "name": "road-city-meadows-mid",
+   "cat": "road",
+   "x": 11600,
+   "y": 6700,
+   "file": "desktop-road-city-meadows-mid.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "desktop",
+   "name": "road-city-meadows-in",
+   "cat": "junction",
+   "x": 11600,
+   "y": 6700,
+   "file": "desktop-road-city-meadows-in.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "desktop",
+   "name": "road-meadows-farms-mid",
+   "cat": "road",
+   "x": 16600,
+   "y": 6700,
+   "file": "desktop-road-meadows-farms-mid.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "desktop",
+   "name": "road-meadows-farms-in",
+   "cat": "junction",
+   "x": 16600,
+   "y": 6700,
+   "file": "desktop-road-meadows-farms-in.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "desktop",
+   "name": "road-coast-bayou-mid",
+   "cat": "road",
+   "x": 2500,
+   "y": 10700,
+   "file": "desktop-road-coast-bayou-mid.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "desktop",
+   "name": "road-coast-bayou-in",
+   "cat": "junction",
+   "x": 2500,
+   "y": 10700,
+   "file": "desktop-road-coast-bayou-in.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "desktop",
+   "name": "road-city-river-mid",
+   "cat": "road",
+   "x": 7500,
+   "y": 10700,
+   "file": "desktop-road-city-river-mid.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "desktop",
+   "name": "road-city-river-in",
+   "cat": "junction",
+   "x": 7500,
+   "y": 10700,
+   "file": "desktop-road-city-river-in.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "desktop",
+   "name": "road-meadows-woods-mid",
+   "cat": "road",
+   "x": 15000,
+   "y": 9000,
+   "file": "desktop-road-meadows-woods-mid.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "desktop",
+   "name": "road-meadows-woods-in",
+   "cat": "junction",
+   "x": 16600,
+   "y": 10650,
+   "file": "desktop-road-meadows-woods-in.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "desktop",
+   "name": "road-farms-woods-mid",
+   "cat": "road",
+   "x": 17500,
+   "y": 10700,
+   "file": "desktop-road-farms-woods-mid.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "desktop",
+   "name": "road-farms-woods-in",
+   "cat": "junction",
+   "x": 17500,
+   "y": 10700,
+   "file": "desktop-road-farms-woods-in.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "desktop",
+   "name": "road-bayou-river-mid",
+   "cat": "road",
+   "x": 6600,
+   "y": 11600,
+   "file": "desktop-road-bayou-river-mid.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "desktop",
+   "name": "road-bayou-river-in",
+   "cat": "junction",
+   "x": 6600,
+   "y": 11600,
+   "file": "desktop-road-bayou-river-in.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "desktop",
+   "name": "road-river-pines-mid",
+   "cat": "road",
+   "x": 11600,
+   "y": 11600,
+   "file": "desktop-road-river-pines-mid.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "desktop",
+   "name": "road-river-pines-in",
+   "cat": "junction",
+   "x": 11600,
+   "y": 11600,
+   "file": "desktop-road-river-pines-in.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "desktop",
+   "name": "road-pines-woods-mid",
+   "cat": "road",
+   "x": 16600,
+   "y": 11600,
+   "file": "desktop-road-pines-woods-mid.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "desktop",
+   "name": "road-pines-woods-in",
+   "cat": "junction",
+   "x": 16600,
+   "y": 11600,
+   "file": "desktop-road-pines-woods-in.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "desktop",
+   "name": "road-river-woods-mid",
+   "cat": "road",
+   "x": 15000,
+   "y": 9200,
+   "file": "desktop-road-river-woods-mid.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "desktop",
+   "name": "road-river-woods-in",
+   "cat": "junction",
+   "x": 15900,
+   "y": 10650,
+   "file": "desktop-road-river-woods-in.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "desktop",
+   "name": "road-city-ridge-mid",
+   "cat": "road",
+   "x": 7500,
+   "y": 3400,
+   "file": "desktop-road-city-ridge-mid.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "desktop",
+   "name": "road-city-ridge-in",
+   "cat": "junction",
+   "x": 7500,
+   "y": 3400,
+   "file": "desktop-road-city-ridge-in.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "desktop",
+   "name": "road-ridge-fortress-mid",
+   "cat": "road",
+   "x": 10400,
+   "y": 1700,
+   "file": "desktop-road-ridge-fortress-mid.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "desktop",
+   "name": "road-ridge-fortress-in",
+   "cat": "junction",
+   "x": 11600,
+   "y": 2500,
+   "file": "desktop-road-ridge-fortress-in.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "desktop",
+   "name": "road-fortress-service-mid",
+   "cat": "road",
+   "x": 14600,
+   "y": 5200,
+   "file": "desktop-road-fortress-service-mid.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "desktop",
+   "name": "road-fortress-service-in",
+   "cat": "junction",
+   "x": 14000,
+   "y": 5750,
+   "file": "desktop-road-fortress-service-in.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "desktop",
+   "name": "bridge-scrypt-bayou-lock-bridge",
+   "cat": "water",
+   "x": 2860,
+   "y": 12250,
+   "file": "desktop-bridge-scrypt-bayou-lock-bridge.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "desktop",
+   "name": "bridge-scrypt-bayou-north-bridge",
+   "cat": "water",
+   "x": 2860,
+   "y": 10950,
+   "file": "desktop-bridge-scrypt-bayou-north-bridge.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "desktop",
+   "name": "bridge-hashwood-river-city-bridge",
+   "cat": "water",
+   "x": 7500,
+   "y": 11150,
+   "file": "desktop-bridge-hashwood-river-city-bridge.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "desktop",
+   "name": "bridge-hashwood-river-woods-bridge",
+   "cat": "water",
+   "x": 8900,
+   "y": 11150,
+   "file": "desktop-bridge-hashwood-river-woods-bridge.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "desktop",
+   "name": "water-bayou-north",
+   "cat": "water",
+   "x": 2540,
+   "y": 10100,
+   "file": "desktop-water-bayou-north.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "desktop",
+   "name": "water-bayou-mid",
+   "cat": "water",
+   "x": 2540,
+   "y": 11600,
+   "file": "desktop-water-bayou-mid.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "desktop",
+   "name": "water-bayou-south",
+   "cat": "water",
+   "x": 2540,
+   "y": 13200,
+   "file": "desktop-water-bayou-south.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "desktop",
+   "name": "water-river-west",
+   "cat": "water",
+   "x": 6100,
+   "y": 11480,
+   "file": "desktop-water-river-west.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "desktop",
+   "name": "water-river-mid",
+   "cat": "water",
+   "x": 8200,
+   "y": 11480,
+   "file": "desktop-water-river-mid.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "desktop",
+   "name": "water-river-east",
+   "cat": "water",
+   "x": 9100,
+   "y": 11480,
+   "file": "desktop-water-river-east.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "desktop",
+   "name": "water-river-waterfall",
+   "cat": "water",
+   "x": 6100,
+   "y": 10900,
+   "file": "desktop-water-river-waterfall.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "desktop",
+   "name": "coast-shore",
+   "cat": "water",
+   "x": 1500,
+   "y": 7400,
+   "file": "desktop-coast-shore.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "desktop",
+   "name": "deck-mweb-meadows-deck",
+   "cat": "elevation",
+   "x": 11700,
+   "y": 6900,
+   "file": "desktop-deck-mweb-meadows-deck.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "desktop",
+   "name": "deck-litecoin-city-gantry-deck",
+   "cat": "elevation",
+   "x": 9275,
+   "y": 7625,
+   "file": "desktop-deck-litecoin-city-gantry-deck.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "desktop",
+   "name": "deck-halving-farms-loading-deck",
+   "cat": "elevation",
+   "x": 17000,
+   "y": 6150,
+   "file": "desktop-deck-halving-farms-loading-deck.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "desktop",
+   "name": "deck-silver-coast-overlook-deck",
+   "cat": "elevation",
+   "x": 1450,
+   "y": 6250,
+   "file": "desktop-deck-silver-coast-overlook-deck.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "desktop",
+   "name": "deck-hollow-pines-maintenance-bank",
+   "cat": "elevation",
+   "x": 13500,
+   "y": 12650,
+   "file": "desktop-deck-hollow-pines-maintenance-bank.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "desktop",
+   "name": "deck-ledger-ridge-maintenance-shelf",
+   "cat": "elevation",
+   "x": 7425,
+   "y": 1650,
+   "file": "desktop-deck-ledger-ridge-maintenance-shelf.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "desktop",
+   "name": "deck-fork-fortress-maintenance-platform",
+   "cat": "elevation",
+   "x": 13600,
+   "y": 3600,
+   "file": "desktop-deck-fork-fortress-maintenance-platform.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "desktop",
+   "name": "deck-rugpull-woods-lookout-bank",
+   "cat": "elevation",
+   "x": 18150,
+   "y": 10350,
+   "file": "desktop-deck-rugpull-woods-lookout-bank.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "desktop",
+   "name": "ramp-litecoin-city-gantry-ramp",
+   "cat": "elevation",
+   "x": 9275,
+   "y": 7200,
+   "file": "desktop-ramp-litecoin-city-gantry-ramp.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "desktop",
+   "name": "cliff-silver-coast-headland-cliff",
+   "cat": "cliff",
+   "x": 1125,
+   "y": 6340,
+   "file": "desktop-cliff-silver-coast-headland-cliff.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "desktop",
+   "name": "cliff-silver-coast-shore-cliff",
+   "cat": "cliff",
+   "x": 950,
+   "y": 8540,
+   "file": "desktop-cliff-silver-coast-shore-cliff.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "desktop",
+   "name": "cliff-scrypt-bayou-northwest-root-bank",
+   "cat": "cliff",
+   "x": 900,
+   "y": 10480,
+   "file": "desktop-cliff-scrypt-bayou-northwest-root-bank.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "desktop",
+   "name": "cliff-scrypt-bayou-southwest-root-foot",
+   "cat": "cliff",
+   "x": 630,
+   "y": 13575,
+   "file": "desktop-cliff-scrypt-bayou-southwest-root-foot.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "desktop",
+   "name": "cliff-hashwood-river-waterfall-shelf",
+   "cat": "cliff",
+   "x": 5832,
+   "y": 10892,
+   "file": "desktop-cliff-hashwood-river-waterfall-shelf.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "desktop",
+   "name": "cliff-ledger-ridge-west-buttress",
+   "cat": "cliff",
+   "x": 5940,
+   "y": 4390,
+   "file": "desktop-cliff-ledger-ridge-west-buttress.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "desktop",
+   "name": "cliff-ledger-ridge-lower-cut",
+   "cat": "cliff",
+   "x": 7450,
+   "y": 3290,
+   "file": "desktop-cliff-ledger-ridge-lower-cut.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "desktop",
+   "name": "cliff-ledger-ridge-upper-cut",
+   "cat": "cliff",
+   "x": 7475,
+   "y": 2440,
+   "file": "desktop-cliff-ledger-ridge-upper-cut.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "desktop",
+   "name": "cliff-ledger-ridge-north-cap",
+   "cat": "cliff",
+   "x": 7875,
+   "y": 1540,
+   "file": "desktop-cliff-ledger-ridge-north-cap.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "desktop",
+   "name": "cliff-ledger-ridge-east-buttress",
+   "cat": "cliff",
+   "x": 9175,
+   "y": 1640,
+   "file": "desktop-cliff-ledger-ridge-east-buttress.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "desktop",
+   "name": "cliff-fork-fortress-ridge-foot",
+   "cat": "cliff",
+   "x": 10875,
+   "y": 1590,
+   "file": "desktop-cliff-fork-fortress-ridge-foot.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "desktop",
+   "name": "cliff-rugpull-woods-northwest-root-bank",
+   "cat": "cliff",
+   "x": 16075,
+   "y": 10440,
+   "file": "desktop-cliff-rugpull-woods-northwest-root-bank.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "desktop",
+   "name": "cliff-rugpull-woods-western-woodland-edge",
+   "cat": "cliff",
+   "x": 15840,
+   "y": 13560,
+   "file": "desktop-cliff-rugpull-woods-western-woodland-edge.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "desktop",
+   "name": "cliff-rugpull-woods-southeast-bank",
+   "cat": "cliff",
+   "x": 18948,
+   "y": 13575,
+   "file": "desktop-cliff-rugpull-woods-southeast-bank.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "desktop",
+   "name": "seam-meadows-city",
+   "cat": "seam",
+   "x": 10000,
+   "y": 6440,
+   "file": "desktop-seam-meadows-city.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "desktop",
+   "name": "seam-meadows-farms",
+   "cat": "seam",
+   "x": 14778,
+   "y": 5908,
+   "file": "desktop-seam-meadows-farms.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "desktop",
+   "name": "seam-coast-city",
+   "cat": "seam",
+   "x": 5000,
+   "y": 6440,
+   "file": "desktop-seam-coast-city.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "desktop",
+   "name": "seam-bayou-river",
+   "cat": "seam",
+   "x": 5000,
+   "y": 11480,
+   "file": "desktop-seam-bayou-river.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "desktop",
+   "name": "seam-river-pines",
+   "cat": "seam",
+   "x": 9802,
+   "y": 10802,
+   "file": "desktop-seam-river-pines.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "desktop",
+   "name": "seam-pines-woods",
+   "cat": "seam",
+   "x": 15170,
+   "y": 10830,
+   "file": "desktop-seam-pines-woods.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "desktop",
+   "name": "seam-ridge-fortress",
+   "cat": "seam",
+   "x": 10560,
+   "y": 2500,
+   "file": "desktop-seam-ridge-fortress.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "desktop",
+   "name": "seam-meadows-pines",
+   "cat": "seam",
+   "x": 12000,
+   "y": 9100,
+   "file": "desktop-seam-meadows-pines.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "desktop",
+   "name": "seam-city-ridge",
+   "cat": "seam",
+   "x": 7061,
+   "y": 4748,
+   "file": "desktop-seam-city-ridge.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "desktop",
+   "name": "seam-meadows-fortress",
+   "cat": "seam",
+   "x": 12061,
+   "y": 4748,
+   "file": "desktop-seam-meadows-fortress.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "phone",
+   "name": "centre-mweb-meadows",
+   "cat": "centre",
+   "x": 12500,
+   "y": 6700,
+   "file": "phone-centre-mweb-meadows.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "phone",
+   "name": "centre-litecoin-city",
+   "cat": "centre",
+   "x": 7500,
+   "y": 6700,
+   "file": "phone-centre-litecoin-city.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "phone",
+   "name": "centre-halving-farms",
+   "cat": "centre",
+   "x": 17500,
+   "y": 6700,
+   "file": "phone-centre-halving-farms.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "phone",
+   "name": "centre-silver-coast",
+   "cat": "centre",
+   "x": 2500,
+   "y": 6700,
+   "file": "phone-centre-silver-coast.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "phone",
+   "name": "centre-scrypt-bayou",
+   "cat": "centre",
+   "x": 2500,
+   "y": 11600,
+   "file": "phone-centre-scrypt-bayou.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "phone",
+   "name": "centre-hashwood-river",
+   "cat": "centre",
+   "x": 7500,
+   "y": 11600,
+   "file": "phone-centre-hashwood-river.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "phone",
+   "name": "centre-hollow-pines",
+   "cat": "centre",
+   "x": 12500,
+   "y": 11600,
+   "file": "phone-centre-hollow-pines.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "phone",
+   "name": "centre-ledger-ridge",
+   "cat": "centre",
+   "x": 7500,
+   "y": 2500,
+   "file": "phone-centre-ledger-ridge.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "phone",
+   "name": "centre-fork-fortress",
+   "cat": "centre",
+   "x": 12500,
+   "y": 2500,
+   "file": "phone-centre-fork-fortress.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "phone",
+   "name": "centre-rugpull-woods",
+   "cat": "centre",
+   "x": 17500,
+   "y": 11600,
+   "file": "phone-centre-rugpull-woods.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "phone",
+   "name": "road-coast-city-mid",
+   "cat": "road",
+   "x": 6600,
+   "y": 6700,
+   "file": "phone-road-coast-city-mid.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "phone",
+   "name": "road-coast-city-in",
+   "cat": "junction",
+   "x": 6600,
+   "y": 6700,
+   "file": "phone-road-coast-city-in.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "phone",
+   "name": "road-city-meadows-mid",
+   "cat": "road",
+   "x": 11600,
+   "y": 6700,
+   "file": "phone-road-city-meadows-mid.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "phone",
+   "name": "road-city-meadows-in",
+   "cat": "junction",
+   "x": 11600,
+   "y": 6700,
+   "file": "phone-road-city-meadows-in.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "phone",
+   "name": "road-meadows-farms-mid",
+   "cat": "road",
+   "x": 16600,
+   "y": 6700,
+   "file": "phone-road-meadows-farms-mid.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "phone",
+   "name": "road-meadows-farms-in",
+   "cat": "junction",
+   "x": 16600,
+   "y": 6700,
+   "file": "phone-road-meadows-farms-in.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "phone",
+   "name": "road-coast-bayou-mid",
+   "cat": "road",
+   "x": 2500,
+   "y": 10700,
+   "file": "phone-road-coast-bayou-mid.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "phone",
+   "name": "road-coast-bayou-in",
+   "cat": "junction",
+   "x": 2500,
+   "y": 10700,
+   "file": "phone-road-coast-bayou-in.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "phone",
+   "name": "road-city-river-mid",
+   "cat": "road",
+   "x": 7500,
+   "y": 10700,
+   "file": "phone-road-city-river-mid.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "phone",
+   "name": "road-city-river-in",
+   "cat": "junction",
+   "x": 7500,
+   "y": 10700,
+   "file": "phone-road-city-river-in.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "phone",
+   "name": "road-meadows-woods-mid",
+   "cat": "road",
+   "x": 15000,
+   "y": 9000,
+   "file": "phone-road-meadows-woods-mid.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "phone",
+   "name": "road-meadows-woods-in",
+   "cat": "junction",
+   "x": 16600,
+   "y": 10650,
+   "file": "phone-road-meadows-woods-in.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "phone",
+   "name": "road-farms-woods-mid",
+   "cat": "road",
+   "x": 17500,
+   "y": 10700,
+   "file": "phone-road-farms-woods-mid.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "phone",
+   "name": "road-farms-woods-in",
+   "cat": "junction",
+   "x": 17500,
+   "y": 10700,
+   "file": "phone-road-farms-woods-in.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "phone",
+   "name": "road-bayou-river-mid",
+   "cat": "road",
+   "x": 6600,
+   "y": 11600,
+   "file": "phone-road-bayou-river-mid.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "phone",
+   "name": "road-bayou-river-in",
+   "cat": "junction",
+   "x": 6600,
+   "y": 11600,
+   "file": "phone-road-bayou-river-in.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "phone",
+   "name": "road-river-pines-mid",
+   "cat": "road",
+   "x": 11600,
+   "y": 11600,
+   "file": "phone-road-river-pines-mid.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "phone",
+   "name": "road-river-pines-in",
+   "cat": "junction",
+   "x": 11600,
+   "y": 11600,
+   "file": "phone-road-river-pines-in.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "phone",
+   "name": "road-pines-woods-mid",
+   "cat": "road",
+   "x": 16600,
+   "y": 11600,
+   "file": "phone-road-pines-woods-mid.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "phone",
+   "name": "road-pines-woods-in",
+   "cat": "junction",
+   "x": 16600,
+   "y": 11600,
+   "file": "phone-road-pines-woods-in.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "phone",
+   "name": "road-river-woods-mid",
+   "cat": "road",
+   "x": 15000,
+   "y": 9200,
+   "file": "phone-road-river-woods-mid.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "phone",
+   "name": "road-river-woods-in",
+   "cat": "junction",
+   "x": 15900,
+   "y": 10650,
+   "file": "phone-road-river-woods-in.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "phone",
+   "name": "road-city-ridge-mid",
+   "cat": "road",
+   "x": 7500,
+   "y": 3400,
+   "file": "phone-road-city-ridge-mid.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "phone",
+   "name": "road-city-ridge-in",
+   "cat": "junction",
+   "x": 7500,
+   "y": 3400,
+   "file": "phone-road-city-ridge-in.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "phone",
+   "name": "road-ridge-fortress-mid",
+   "cat": "road",
+   "x": 10400,
+   "y": 1700,
+   "file": "phone-road-ridge-fortress-mid.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "phone",
+   "name": "road-ridge-fortress-in",
+   "cat": "junction",
+   "x": 11600,
+   "y": 2500,
+   "file": "phone-road-ridge-fortress-in.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "phone",
+   "name": "road-fortress-service-mid",
+   "cat": "road",
+   "x": 14600,
+   "y": 5200,
+   "file": "phone-road-fortress-service-mid.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "phone",
+   "name": "road-fortress-service-in",
+   "cat": "junction",
+   "x": 14000,
+   "y": 5750,
+   "file": "phone-road-fortress-service-in.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "phone",
+   "name": "bridge-scrypt-bayou-lock-bridge",
+   "cat": "water",
+   "x": 2860,
+   "y": 12250,
+   "file": "phone-bridge-scrypt-bayou-lock-bridge.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "phone",
+   "name": "bridge-scrypt-bayou-north-bridge",
+   "cat": "water",
+   "x": 2860,
+   "y": 10950,
+   "file": "phone-bridge-scrypt-bayou-north-bridge.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "phone",
+   "name": "bridge-hashwood-river-city-bridge",
+   "cat": "water",
+   "x": 7500,
+   "y": 11150,
+   "file": "phone-bridge-hashwood-river-city-bridge.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "phone",
+   "name": "bridge-hashwood-river-woods-bridge",
+   "cat": "water",
+   "x": 8900,
+   "y": 11150,
+   "file": "phone-bridge-hashwood-river-woods-bridge.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "phone",
+   "name": "water-bayou-north",
+   "cat": "water",
+   "x": 2540,
+   "y": 10100,
+   "file": "phone-water-bayou-north.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "phone",
+   "name": "water-bayou-mid",
+   "cat": "water",
+   "x": 2540,
+   "y": 11600,
+   "file": "phone-water-bayou-mid.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "phone",
+   "name": "water-bayou-south",
+   "cat": "water",
+   "x": 2540,
+   "y": 13200,
+   "file": "phone-water-bayou-south.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "phone",
+   "name": "water-river-west",
+   "cat": "water",
+   "x": 6100,
+   "y": 11480,
+   "file": "phone-water-river-west.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "phone",
+   "name": "water-river-mid",
+   "cat": "water",
+   "x": 8200,
+   "y": 11480,
+   "file": "phone-water-river-mid.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "phone",
+   "name": "water-river-east",
+   "cat": "water",
+   "x": 9100,
+   "y": 11480,
+   "file": "phone-water-river-east.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "phone",
+   "name": "water-river-waterfall",
+   "cat": "water",
+   "x": 6100,
+   "y": 10900,
+   "file": "phone-water-river-waterfall.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "phone",
+   "name": "coast-shore",
+   "cat": "water",
+   "x": 1500,
+   "y": 7400,
+   "file": "phone-coast-shore.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "phone",
+   "name": "deck-mweb-meadows-deck",
+   "cat": "elevation",
+   "x": 11700,
+   "y": 6900,
+   "file": "phone-deck-mweb-meadows-deck.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "phone",
+   "name": "deck-litecoin-city-gantry-deck",
+   "cat": "elevation",
+   "x": 9275,
+   "y": 7625,
+   "file": "phone-deck-litecoin-city-gantry-deck.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "phone",
+   "name": "deck-halving-farms-loading-deck",
+   "cat": "elevation",
+   "x": 17000,
+   "y": 6150,
+   "file": "phone-deck-halving-farms-loading-deck.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "phone",
+   "name": "deck-silver-coast-overlook-deck",
+   "cat": "elevation",
+   "x": 1450,
+   "y": 6250,
+   "file": "phone-deck-silver-coast-overlook-deck.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "phone",
+   "name": "deck-hollow-pines-maintenance-bank",
+   "cat": "elevation",
+   "x": 13500,
+   "y": 12650,
+   "file": "phone-deck-hollow-pines-maintenance-bank.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "phone",
+   "name": "deck-ledger-ridge-maintenance-shelf",
+   "cat": "elevation",
+   "x": 7425,
+   "y": 1650,
+   "file": "phone-deck-ledger-ridge-maintenance-shelf.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "phone",
+   "name": "deck-fork-fortress-maintenance-platform",
+   "cat": "elevation",
+   "x": 13600,
+   "y": 3600,
+   "file": "phone-deck-fork-fortress-maintenance-platform.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "phone",
+   "name": "deck-rugpull-woods-lookout-bank",
+   "cat": "elevation",
+   "x": 18150,
+   "y": 10350,
+   "file": "phone-deck-rugpull-woods-lookout-bank.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "phone",
+   "name": "ramp-litecoin-city-gantry-ramp",
+   "cat": "elevation",
+   "x": 9275,
+   "y": 7200,
+   "file": "phone-ramp-litecoin-city-gantry-ramp.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "phone",
+   "name": "cliff-silver-coast-headland-cliff",
+   "cat": "cliff",
+   "x": 1125,
+   "y": 6340,
+   "file": "phone-cliff-silver-coast-headland-cliff.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "phone",
+   "name": "cliff-silver-coast-shore-cliff",
+   "cat": "cliff",
+   "x": 950,
+   "y": 8540,
+   "file": "phone-cliff-silver-coast-shore-cliff.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "phone",
+   "name": "cliff-scrypt-bayou-northwest-root-bank",
+   "cat": "cliff",
+   "x": 900,
+   "y": 10480,
+   "file": "phone-cliff-scrypt-bayou-northwest-root-bank.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "phone",
+   "name": "cliff-scrypt-bayou-southwest-root-foot",
+   "cat": "cliff",
+   "x": 630,
+   "y": 13575,
+   "file": "phone-cliff-scrypt-bayou-southwest-root-foot.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "phone",
+   "name": "cliff-hashwood-river-waterfall-shelf",
+   "cat": "cliff",
+   "x": 5832,
+   "y": 10892,
+   "file": "phone-cliff-hashwood-river-waterfall-shelf.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "phone",
+   "name": "cliff-ledger-ridge-west-buttress",
+   "cat": "cliff",
+   "x": 5940,
+   "y": 4390,
+   "file": "phone-cliff-ledger-ridge-west-buttress.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "phone",
+   "name": "cliff-ledger-ridge-lower-cut",
+   "cat": "cliff",
+   "x": 7450,
+   "y": 3290,
+   "file": "phone-cliff-ledger-ridge-lower-cut.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "phone",
+   "name": "cliff-ledger-ridge-upper-cut",
+   "cat": "cliff",
+   "x": 7475,
+   "y": 2440,
+   "file": "phone-cliff-ledger-ridge-upper-cut.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "phone",
+   "name": "cliff-ledger-ridge-north-cap",
+   "cat": "cliff",
+   "x": 7875,
+   "y": 1540,
+   "file": "phone-cliff-ledger-ridge-north-cap.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "phone",
+   "name": "cliff-ledger-ridge-east-buttress",
+   "cat": "cliff",
+   "x": 9175,
+   "y": 1640,
+   "file": "phone-cliff-ledger-ridge-east-buttress.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "phone",
+   "name": "cliff-fork-fortress-ridge-foot",
+   "cat": "cliff",
+   "x": 10875,
+   "y": 1590,
+   "file": "phone-cliff-fork-fortress-ridge-foot.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "phone",
+   "name": "cliff-rugpull-woods-northwest-root-bank",
+   "cat": "cliff",
+   "x": 16075,
+   "y": 10440,
+   "file": "phone-cliff-rugpull-woods-northwest-root-bank.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "phone",
+   "name": "cliff-rugpull-woods-western-woodland-edge",
+   "cat": "cliff",
+   "x": 15840,
+   "y": 13560,
+   "file": "phone-cliff-rugpull-woods-western-woodland-edge.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "phone",
+   "name": "cliff-rugpull-woods-southeast-bank",
+   "cat": "cliff",
+   "x": 18948,
+   "y": 13575,
+   "file": "phone-cliff-rugpull-woods-southeast-bank.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "phone",
+   "name": "seam-meadows-city",
+   "cat": "seam",
+   "x": 10000,
+   "y": 6440,
+   "file": "phone-seam-meadows-city.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "phone",
+   "name": "seam-meadows-farms",
+   "cat": "seam",
+   "x": 14778,
+   "y": 5908,
+   "file": "phone-seam-meadows-farms.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "phone",
+   "name": "seam-coast-city",
+   "cat": "seam",
+   "x": 5000,
+   "y": 6440,
+   "file": "phone-seam-coast-city.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "phone",
+   "name": "seam-bayou-river",
+   "cat": "seam",
+   "x": 5000,
+   "y": 11480,
+   "file": "phone-seam-bayou-river.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "phone",
+   "name": "seam-river-pines",
+   "cat": "seam",
+   "x": 9802,
+   "y": 10802,
+   "file": "phone-seam-river-pines.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "phone",
+   "name": "seam-pines-woods",
+   "cat": "seam",
+   "x": 15170,
+   "y": 10830,
+   "file": "phone-seam-pines-woods.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "phone",
+   "name": "seam-ridge-fortress",
+   "cat": "seam",
+   "x": 10560,
+   "y": 2500,
+   "file": "phone-seam-ridge-fortress.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "phone",
+   "name": "seam-meadows-pines",
+   "cat": "seam",
+   "x": 12000,
+   "y": 9100,
+   "file": "phone-seam-meadows-pines.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "phone",
+   "name": "seam-city-ridge",
+   "cat": "seam",
+   "x": 7061,
+   "y": 4748,
+   "file": "phone-seam-city-ridge.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  },
+  {
+   "tier": "phone",
+   "name": "seam-meadows-fortress",
+   "cat": "seam",
+   "x": 12061,
+   "y": 4748,
+   "file": "phone-seam-meadows-fortress.jpg",
+   "data": {
+    "areaArtStatus": "ready",
+    "worldId": "ten-area-frontier"
+   },
+   "errors": []
+  }
+ ],
+ "errors": []
+}

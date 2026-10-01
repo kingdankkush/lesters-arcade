@@ -9,7 +9,8 @@
 import { Container, Graphics, Sprite, Texture, Rectangle, Mesh, Shader, GlProgram, Geometry, UniformGroup } from 'pixi.js';
 import { createGreyboxPropResidency } from './dev/greybox-prop-residency.mjs';
 import { AREA_ART_KIT_ROOT, AREA_ART_KIT_MANIFEST, AREA_ART_TILE_ROOT, AREA_ART_DETAIL_ROOT, AREA_ART_DETAIL_PAGE, AREA_ART_MATERIALS, AREA_ART_TILE_MEANS, ROAD_RECIPES, FOLIAGE_TINT_RULES, validateAreaArtPlan, resolveKitItem, seatCardAnchorY, seatSolidCardY, ribbonPolygon, offsetPolygon, polygonBounds, rectVertices, pointInPolygon, stableUnit } from './world-v2-area-art-schema.mjs';
-import { buildTerrainField, TERRAIN_LIGHT_RANGE, valueNoise } from './world-v2-terrain-field.mjs';
+import { buildTerrainFieldAsync, TERRAIN_LIGHT_RANGE, valueNoise } from './world-v2-terrain-field.mjs';
+import { WATER_PALETTES, RAISED_KITS, RAISED_KIT_BY_AREA, WATER_FRAGMENT, RAISED_VERTEX, RAISED_FRAGMENT, buildShoreField, buildRaisedSurfaces, waterOutline, isRaisedPiece, rockFaceVariant, createSolidOcclusionIndex } from './world-v2-area-surfaces.mjs';
 export { validateAreaArtPlan, createPlacementGuard, AREA_ART_SCHEMA, AREA_ART_MATERIALS } from './world-v2-area-art-schema.mjs';
 
 export const AREA_ART_ID = 'world-v2-area-art/v1';
@@ -42,8 +43,11 @@ uniform sampler2D uT0; uniform sampler2D uT1; uniform sampler2D uT2; uniform sam
 uniform vec4 uL0; uniform vec4 uL1; uniform vec4 uL2; uniform vec4 uL3; uniform vec4 uL4; uniform vec4 uL5; uniform vec4 uL6; uniform vec4 uL7; uniform vec4 uL8; uniform vec4 uL9;
 uniform vec3 uM0; uniform vec3 uM1; uniform vec3 uM2; uniform vec3 uM3; uniform vec3 uM4; uniform vec3 uM5; uniform vec3 uM6; uniform vec3 uM7; uniform vec3 uM8; uniform vec3 uM9;
 uniform vec3 uC0; uniform vec3 uC1; uniform vec3 uC2; uniform vec3 uC3; uniform vec3 uC4;
-uniform vec4 uField; uniform vec4 uParams;
+uniform vec4 uField; uniform vec4 uParams; uniform vec4 uFade;
 uniform vec4 uColor; uniform vec4 uWorldColorAlpha;
+float hashT(vec2 p) { vec3 q = fract(vec3(p.xyx) * 0.1031); q += dot(q, q.yzx + 33.33); return fract((q.x + q.y) * q.z); }
+float noiseT(vec2 p) { vec2 i = floor(p), f = fract(p), u = f * f * (3.0 - 2.0 * f);
+  return mix(mix(hashT(i), hashT(i + vec2(1.0, 0.0)), u.x), mix(hashT(i + vec2(0.0, 1.0)), hashT(i + vec2(1.0, 1.0)), u.x), u.y); }
 vec3 grain(sampler2D t, vec4 p, vec3 mean) {
   vec2 uv = p.w > 0.5 ? vec2(-vWorld.y, vWorld.x) * p.x + vec2(0.37, 0.19) : vWorld * p.x;
   vec3 s = texture(t, uv).rgb / mean;
@@ -62,7 +66,12 @@ void main() {
   if (lx.b > 0.004) { vec3 g8 = grain(uT8, uL8, uM8), g9 = grain(uT9, uL9, uM9); ground = mix(ground, uC4 * g8 * g9, smoothstep(0.22, 0.78, lx.b + (dot(g8, vec3(0.3333)) - 1.0) * uParams.w)); }
   ground *= 1.0 + (c.b - 0.5) * 2.0 * uParams.x;
   ground *= mix(uParams.y, uParams.z, c.a);
-  finalColor = vec4(clamp(ground, 0.0, 1.0), 1.0) * uColor * uWorldColorAlpha;
+  // Feathered edge where the quad runs out into the gap between areas: the
+  // neighbouring area's ground blends in instead of meeting on a ruled line.
+  vec2 out2 = max(max(uFade.xy - vWorld, vWorld - uFade.zw), vec2(0.0));
+  float edge = max(out2.x, out2.y) + (noiseT(vWorld / 90.0) - 0.5) * 70.0 + (noiseT(vWorld / 23.0 + 7.0) - 0.5) * 20.0;
+  float alpha = uFade.z > uFade.x ? 1.0 - smoothstep(0.0, 120.0, edge) : 1.0;
+  finalColor = vec4(clamp(ground, 0.0, 1.0) * alpha, alpha) * uColor * uWorldColorAlpha;
 }`;
 // Shared GLSL: amplified tile grain and a sine-free lattice hash noise
 // (presentation only; the simulation never sees it).
@@ -110,7 +119,9 @@ void main() {
   vec3 shCol = uShoulder * grain(uT2, uL2, uM2) * grain(uT3, uL3, uM3);
   coreCol *= 1.0 + m * 0.22;
   float rutWidth = 6.0 + 5.0 * fbm2(vec2(along / 90.0, sign(vRoad.x) * 7.0));
-  float rut = exp(-pow((lat - uWear.x * uShape.x) / rutWidth, 2.0)) * uWear.y * (0.45 + 0.9 * fbm2(vec2(along / 210.0, sign(vRoad.x) * 3.0 + 1.0)));
+  // Ruts wander a little across the road instead of running ruler-straight.
+  float rutLat = uWear.x * uShape.x + (fbm2(vec2(along / 160.0, sign(vRoad.x) * 5.0 + 2.0)) - 0.5) * 22.0;
+  float rut = exp(-pow((lat - rutLat) / rutWidth, 2.0)) * uWear.y * (0.35 + 0.9 * smoothstep(0.25, 0.75, fbm2(vec2(along / 210.0, sign(vRoad.x) * 3.0 + 1.0))));
   coreCol *= 1.0 - rut;
   if (uWear.z > 0.5) {
     float dash = smoothstep(0.38, 0.42, fract(along / 260.0)) * (1.0 - smoothstep(0.92, 0.96, fract(along / 260.0)));
@@ -142,7 +153,51 @@ void main() {
   col = mix(col, uMoss * grain(uT1, uL1, uM1), smoothstep(0.52, 0.72, fbm2(vWorld / 380.0 + 4.0)) * uSurface.z);
   finalColor = vec4(clamp(col, 0.0, 1.0), 1.0) * uColor * uWorldColorAlpha;
 }`;
-const TERRAIN_PROGRAMS = { terrain: [TERRAIN_VERTEX, TERRAIN_FRAGMENT], road: [ROAD_VERTEX, ROAD_FRAGMENT], surface: [TERRAIN_VERTEX, SURFACE_FRAGMENT] };
+// Rock solids in one mesh: the grain roof (aFace.w == 0) and the camera-facing
+// rock faces (aFace = world u, units below the lip, units above the foot,
+// light). Faces sample the rock-face strip three ways at incommensurate
+// periods, blended by per-vertex variant weights (rockFaceVariant), mirror
+// the strip vertically every 110 units instead of stretching it over the
+// whole height, and carry the lit lip and dark foot in the shader.
+const SOLID_VERTEX = `#version 300 es
+precision highp float;
+in vec2 aPosition; in vec4 aFace; in vec2 aVariant;
+uniform mat3 uProjectionMatrix; uniform mat3 uWorldTransformMatrix; uniform mat3 uTransformMatrix;
+out vec2 vWorld; out vec4 vFace; out vec2 vVariant;
+void main() { vWorld = aPosition; vFace = aFace; vVariant = aVariant; vec3 p = uProjectionMatrix * uWorldTransformMatrix * uTransformMatrix * vec3(aPosition, 1.0); gl_Position = vec4(p.xy, 0.0, 1.0); }`;
+const SOLID_FRAGMENT = `#version 300 es
+precision highp float;
+in vec2 vWorld; in vec4 vFace; in vec2 vVariant;
+out vec4 finalColor;
+uniform sampler2D uT0; uniform sampler2D uT1; uniform sampler2D uRock;
+uniform vec4 uL0; uniform vec4 uL1; uniform vec3 uM0; uniform vec3 uM1;
+uniform vec3 uBase; uniform vec4 uSurface; uniform vec3 uMoss; uniform vec3 uFaceTint;
+uniform vec4 uColor; uniform vec4 uWorldColorAlpha;
+${GRAIN_GLSL}
+void main() {
+  vec3 col;
+  if (vFace.w < 0.01) {
+    col = uBase * grain(uT0, uL0, uM0) * grain(uT1, uL1, uM1);
+    col *= 1.0 + (fbm2(vWorld / 520.0) - 0.5) * uSurface.x + (fbm2(vWorld / 90.0 + 9.0) - 0.5) * uSurface.y;
+    col = mix(col, uMoss * grain(uT1, uL1, uM1), smoothstep(0.52, 0.72, fbm2(vWorld / 380.0 + 4.0)) * uSurface.z);
+    // Rock tops: fissures and darker ledges so a broad cap never reads as one flat slab.
+    float fissure = (1.0 - smoothstep(0.0, 0.012, abs(fbm2(vWorld / 150.0 + 2.0) - 0.5))) * smoothstep(0.45, 0.7, vnoise(vWorld / 60.0 + 3.0)) * 0.7;
+    float ledge = smoothstep(0.55, 0.75, fbm2(vec2(vWorld.x / 700.0, vWorld.y / 160.0) + 6.0));
+    col *= 1.0 - (0.3 * fissure + 0.12 * ledge) * step(0.01, uSurface.z);
+  } else {
+    float u = vFace.x, lip = vFace.y, foot = vFace.z, t = lip / 110.0;
+    float vA = 1.0 - abs(fract(t * 0.5) * 2.0 - 1.0), vC = 1.0 - abs(fract(t * 0.5 + 0.31) * 2.0 - 1.0);
+    vec3 a = texture(uRock, vec2(u / 260.0, vA)).rgb;
+    vec3 b = texture(uRock, vec2(-u / 337.0 + 0.41, vA * 0.92 + 0.04)).rgb;
+    vec3 c = texture(uRock, vec2(u / 211.0 + 0.73, vC)).rgb;
+    col = (a * (1.0 - vVariant.x - vVariant.y) + b * vVariant.x + c * vVariant.y) * uFaceTint * vFace.w;
+    col *= 1.0 + (fbm2(vec2(u, lip * 1.6) / 170.0) - 0.5) * 0.3;
+    col = mix(col, col * 1.32 + 0.03, (1.0 - smoothstep(0.0, 7.0, lip)) * 0.6);
+    col *= mix(0.46, 1.0, smoothstep(0.0, min((lip + foot) * 0.22, 40.0), foot));
+  }
+  finalColor = vec4(clamp(col, 0.0, 1.0), 1.0) * uColor * uWorldColorAlpha;
+}`;
+const TERRAIN_PROGRAMS = { terrain: [TERRAIN_VERTEX, TERRAIN_FRAGMENT], road: [ROAD_VERTEX, ROAD_FRAGMENT], surface: [TERRAIN_VERTEX, SURFACE_FRAGMENT], solid: [SOLID_VERTEX, SOLID_FRAGMENT], water: [TERRAIN_VERTEX, WATER_FRAGMENT], raised: [RAISED_VERTEX, RAISED_FRAGMENT] };
 const programs = new Map();
 const defaultTerrainProgram = (kind = 'terrain') => { let program = programs.get(kind); if (!program) { const [vertex, fragment] = TERRAIN_PROGRAMS[kind]; program = GlProgram.from({ name: `hmh-area-${kind}`, vertex, fragment }); programs.set(kind, program); } return program; };
 // Ear clipping for the small authored solid outlines (no earcut in the vendor chunk).
@@ -259,9 +314,20 @@ function defaultFogTexture() {
   g.fillStyle = gradient; g.fillRect(0, 0, 128, 128);
   return Texture.from(canvas);
 }
+// Shore field upload: one opaque grey canvas (distance in every channel).
+function defaultShoreTexture(field) {
+  if (typeof document === 'undefined') return null;
+  const canvas = document.createElement('canvas'); canvas.width = field.width; canvas.height = field.height;
+  const context = canvas.getContext('2d'), image = context.createImageData(field.width, field.height), out = image.data;
+  for (let i = 0; i < field.data.length; i++) { const v = field.data[i], o = i * 4; out[o] = out[o + 1] = out[o + 2] = v; out[o + 3] = 255; }
+  context.putImageData(image, 0, 0);
+  const texture = Texture.from(canvas);
+  texture.source.style.addressMode = 'clamp-to-edge'; texture.source.style.update();
+  return texture;
+}
 const defaultReducedMotion = () => { try { return document.querySelector('#hmhRebootStage')?.dataset.settingReduceMotion === 'true' || matchMedia('(prefers-reduced-motion: reduce)').matches; } catch { return true; } };
 
-export function createAreaArt({ world, areaId, plan, kit = null, loadTexture, textureCache = null, container = null, signal, resolution = 'full', fetchImpl = typeof fetch === 'function' ? fetch : null, createControlTexture = defaultControlTexture, terrainFieldSize = null, createTerrainProgram = defaultTerrainProgram, createProgram = createTerrainProgram, createSignTexture = defaultSignTexture, createFogTexture = defaultFogTexture, reducedMotion = defaultReducedMotion } = {}) {
+export function createAreaArt({ world, areaId, plan, kit = null, loadTexture, textureCache = null, container = null, signal, resolution = 'full', fetchImpl = typeof fetch === 'function' ? fetch : null, createControlTexture = defaultControlTexture, terrainFieldSize = null, createTerrainProgram = defaultTerrainProgram, createProgram = createTerrainProgram, createSignTexture = defaultSignTexture, createFogTexture = defaultFogTexture, createShoreTexture = defaultShoreTexture, reducedMotion = defaultReducedMotion } = {}) {
   if (!world || typeof areaId !== 'string' || !plan) throw new TypeError('world, areaId and plan required');
   if (plan.areaId !== areaId) throw new TypeError(`plan ${plan.areaId} does not dress ${areaId}`);
   if (!['full', 'half'].includes(resolution)) throw new TypeError('resolution must be full or half');
@@ -280,9 +346,36 @@ export function createAreaArt({ world, areaId, plan, kit = null, loadTexture, te
   const overlays = new Map();
   const signTextures = new Map(), fogCards = [];
   let fogTexture = null, fogFrame = 0, fogStatic = true;
+  // Water bodies and raised walkable surfaces authored in this area (pieces
+  // with visible.areaId === areaId); painted by paintSurfaces after every
+  // area's ground so no later road or splat covers them.
+  const waterPieces = (world.pieces ?? []).filter(piece => piece.kind === 'water' && piece.visible?.areaId === areaId);
+  const raisedPieces = (world.pieces ?? []).filter(piece => piece.visible?.areaId === areaId && isRaisedPiece(piece));
+  const waterBodies = [], waterMeshes = [];
+  // Water and raised-surface nodes with their world boxes: hidden while off
+  // view so the ground pass never issues their draw calls (one custom shader
+  // each) for the other side of the world.
+  const surfaceNodes = [];
+  const trackSurface = (node, b) => { surfaceNodes.push({ node, b }); return node; };
+  // Program warm-up: for the first frames after bind every surface node (and
+  // one degenerate rock mesh) is drawn, so the water, raised and rock
+  // programs compile while the area loads instead of on first sight mid-run.
+  let warmFrames = 3; const warmNodes = [];
+  let waterFrame = 0, waterStatic = true, occlusion = null;
   const tileFile = (tile, suffix = '') => ratio === 0.5 ? `${tile}${suffix}@0.5x.webp` : `${tile}${suffix}.png`;
   const acquire = async url => { const texture = await cache.acquire(url); owned.push(url); if (disposed) { cache.release(url); owned.pop(); return null; } return texture; };
 
+  // A district's splat quad reaches 560 units past its area into the gaps
+  // between areas (the corridors were bare production ground) and feathers
+  // out over the last 120, overlapping its neighbour's.
+  const TERRAIN_REACH = 560, TERRAIN_FEATHER = 120;
+  const districtArea = () => (world.areas ?? []).find(area => area.id === areaId) ?? null;
+  function terrainBounds() {
+    const b = summary.bounds, area = districtArea(), wb = world.bounds;
+    if (!area) return b;
+    const a = area.bounds, out = { minX: Math.min(b.minX, a.minX - TERRAIN_REACH), minY: Math.min(b.minY, a.minY - TERRAIN_REACH), maxX: Math.max(b.maxX, a.maxX + TERRAIN_REACH), maxY: Math.max(b.maxY, a.maxY + TERRAIN_REACH) };
+    return wb ? { minX: Math.max(out.minX, wb.minX), minY: Math.max(out.minY, wb.minY), maxX: Math.min(out.maxX, wb.maxX), maxY: Math.min(out.maxY, wb.maxY) } : out;
+  }
   const ready = (async () => {
     try {
       if (!manifest) {
@@ -308,10 +401,20 @@ export function createAreaArt({ world, areaId, plan, kit = null, loadTexture, te
         jobs.push(acquire(AREA_ART_TILE_ROOT + tileFile(tile)).then(texture => { if (texture) { texture.source.style.addressMode = 'repeat'; texture.source.style.update(); tiles.set(tile, texture); } }));
         jobs.push(acquire(AREA_ART_TILE_ROOT + tileFile(tile, '-fringe')).then(texture => { if (texture) { texture.source.style.addressMode = 'repeat'; texture.source.style.update(); tiles.set(`${tile}-fringe`, texture); } }));
       }
+      // Deck/ramp/bridge grain tiles the plan's own materials do not load.
+      if (raisedPieces.length) for (const tile of new Set(AREA_ART_MATERIALS[RAISED_KITS[RAISED_KIT_BY_AREA[areaId] ?? 'timber'].material].grain.map(layer => layer.tile))) {
+        if (summary.tiles.includes(tile)) continue;
+        jobs.push(acquire(AREA_ART_TILE_ROOT + tileFile(tile)).then(texture => { if (texture) { texture.source.style.addressMode = 'repeat'; texture.source.style.update(); tiles.set(tile, texture); } }));
+      }
+      for (const piece of waterPieces) {
+        const field = buildShoreField(waterOutline(piece), { unitsPerTexel: ratio === 0.5 ? 16 : 8 });
+        let texture = null; try { texture = createShoreTexture(field) ?? null; } catch { texture = null; }
+        waterBodies.push({ piece, field: { ...field, data: null, bytes: field.data.length }, texture, palette: WATER_PALETTES[areaId] ?? WATER_PALETTES.default });
+      }
       for (const overlay of summary.overlays) jobs.push(acquire(AREA_ART_TILE_ROOT + tileFile(overlay)).then(texture => { if (texture) { texture.source.style.addressMode = 'repeat'; texture.source.style.update(); overlays.set(overlay, texture); } }));
       if (summary.terrain) {
-        terrainField = buildTerrainField({ summary, world, size: terrainFieldSize ?? (ratio === 0.5 ? 256 : 384) });
-        jobs.push(Promise.resolve(createControlTexture(terrainField)).then(result => { const pair = result && result.control ? result : result ? { control: result, light: result } : null; if (disposed) { pair?.control.destroy(true); if (pair && pair.light !== pair.control) pair.light.destroy(true); return; } controlTexture = pair; if (pair) terrainField = { ...terrainField, fieldBytes: terrainField.data.length + (terrainField.extra?.length ?? 0), data: null, extra: null }; }));
+        // Built in row slices between frames (no single long task at bind).
+        jobs.push(buildTerrainFieldAsync({ summary: { ...summary, bounds: terrainBounds() }, world, size: terrainFieldSize ?? (ratio === 0.5 ? 256 : 384) }, { signal }).then(field => { if (!field || disposed) return null; terrainField = field; return createControlTexture(field); }).then(result => { const pair = result && result.control ? result : result ? { control: result, light: result } : null; if (disposed) { pair?.control.destroy(true); if (pair && pair.light !== pair.control) pair.light.destroy(true); return; } controlTexture = pair; if (pair) terrainField = { ...terrainField, fieldBytes: terrainField.data.length + (terrainField.extra?.length ?? 0), data: null, extra: null }; }));
       }
       if (summary.detailPage) jobs.push(acquire(AREA_ART_DETAIL_ROOT + AREA_ART_DETAIL_PAGE).then(texture => { detailTexture = texture; }));
       const results = await Promise.allSettled(jobs);
@@ -512,8 +615,10 @@ export function createAreaArt({ world, areaId, plan, kit = null, loadTexture, te
     // channel stays zero in the field, so the duplicate never shows.
     if (t.materials.length < 3) uniforms.uC2 = uniforms.uC1;
     // Unused extra slots keep a zero weight channel, so their duplicate grain never shows.
+    const b = { minX: terrainField.minX, minY: terrainField.minY, maxX: terrainField.maxX, maxY: terrainField.maxY }, area = districtArea();
+    const inner = area ? [area.bounds.minX - TERRAIN_REACH + TERRAIN_FEATHER, area.bounds.minY - TERRAIN_REACH + TERRAIN_FEATHER, area.bounds.maxX + TERRAIN_REACH - TERRAIN_FEATHER, area.bounds.maxY + TERRAIN_REACH - TERRAIN_FEATHER] : [0, 0, 0, 0];
+    uniforms.uFade = { value: new Float32Array(inner), type: 'vec4<f32>' };
     resources.terrainUniforms = new UniformGroup(uniforms);
-    const b = summary.bounds;
     const geometry = new Geometry({ attributes: { aPosition: { buffer: new Float32Array([b.minX, b.minY, b.maxX, b.minY, b.maxX, b.maxY, b.minX, b.maxY]), format: 'float32x2' } }, indexBuffer: new Uint16Array([0, 1, 2, 0, 2, 3]) });
     const shader = new Shader({ glProgram, resources });
     terrainMesh = new Mesh({ geometry, shader, texture: controlTexture.control });
@@ -563,23 +668,130 @@ export function createAreaArt({ world, areaId, plan, kit = null, loadTexture, te
   }
   function paintGround(target) { if (disposed || !summary) return; groundLayer = target; paintAreaGround(target); const roads = roadsByRank(); for (const road of roads) paintRoad(target, road, false); for (const road of roads) paintRoadCracks(target, road); }
 
+  // ---- water and raised walkable surfaces ----
+  // One quad per water body through the water shader (shore field texture,
+  // procedural ripples), then cast shadows, deck/ramp/bridge tops, their
+  // camera-facing faces and bridge rails. Projection only: the authored
+  // surfaces already carry walkability and height.
+  function paintWater(target, body) {
+    const f = body.field, p = body.palette, glProgram = body.texture ? programFor('water') : null;
+    if (!glProgram) {
+      const g = new Graphics(); g.poly(waterOutline(body.piece).flatMap(v => [v.x, v.y])).fill({ color: p.deep }); g.label = `area-water-${body.piece.id}`;
+      target.addChild(trackSurface(g, f)); painted.push(g); return g;
+    }
+    const flow = Math.hypot(p.flow.x, p.flow.y) || 1, fx = p.flow.x / flow, fy = p.flow.y / flow, k = p.flow.speed / 88;
+    const uniforms = {
+      uField: { value: new Float32Array([f.minX, f.minY, 1 / (f.maxX - f.minX), 1 / (f.maxY - f.minY)]), type: 'vec4<f32>' },
+      uWater: { value: new Float32Array([0, ratio === 0.5 ? 0 : 1, f.depth, f.bank]), type: 'vec4<f32>' },
+      uFlow: { value: new Float32Array([fx * k, fy * k, fx, fy]), type: 'vec4<f32>' },
+      uShallow: { value: new Float32Array(rgb(p.shallow)), type: 'vec3<f32>' }, uDeep: { value: new Float32Array(rgb(p.deep)), type: 'vec3<f32>' },
+      uSky: { value: new Float32Array(rgb(p.sky)), type: 'vec3<f32>' }, uFoam: { value: new Float32Array(rgb(p.foam)), type: 'vec3<f32>' }, uBank: { value: new Float32Array(rgb(p.bank)), type: 'vec3<f32>' },
+    };
+    const group = new UniformGroup(uniforms);
+    const geometry = new Geometry({ attributes: { aPosition: { buffer: new Float32Array([f.minX, f.minY, f.maxX, f.minY, f.maxX, f.maxY, f.minX, f.maxY]), format: 'float32x2' } }, indexBuffer: new Uint16Array([0, 1, 2, 0, 2, 3]) });
+    const mesh = new Mesh({ geometry, shader: new Shader({ glProgram, resources: { waterUniforms: group, uShore: body.texture.source, uShoreSampler: body.texture.source.style } }), texture: body.texture });
+    mesh.label = `area-water-${body.piece.id}`;
+    target.addChild(trackSurface(mesh, f)); painted.push(mesh); waterMeshes.push(group);
+    return mesh;
+  }
+  function raisedMesh(record) {
+    const kit = RAISED_KITS[record.kit], glProgram = programFor('raised'), uniforms = {}, resources = {};
+    if (!glProgram || !grainUniforms(kit.material, uniforms, resources, 0)) return null;
+    const b = record.bounds, positions = [], surface = [], index = [];
+    const quad = (pts, attrs) => { const base = positions.length / 2; for (let i = 0; i < 4; i++) { positions.push(pts[i].x, pts[i].y); surface.push(...attrs[i]); } index.push(base, base + 1, base + 2, base, base + 2, base + 3); };
+    // Top: corners lifted by their authored height; slope shade 0 at the low end of a ramp.
+    const shade = z => record.maxZ > 0 ? z / record.maxZ : 1;
+    quad(record.corners.map(p => ({ x: p.x, y: p.y - p.z })), record.corners.map(p => [p.x, p.y, record.kind === 'ramp' ? shade(p.z) : 1, 0]));
+    // Faces down to the ground (water level for a bridge), lip to foot.
+    for (const face of record.faces) quad([{ x: face.a.x, y: face.a.y - face.a.z }, { x: face.c.x, y: face.c.y - face.c.z }, { x: face.c.x, y: face.c.y }, { x: face.a.x, y: face.a.y }], [[face.a.x, face.a.z, 0, 1], [face.c.x, face.c.z, 0, 1], [face.c.x, face.c.z, face.c.z, 1], [face.a.x, face.a.z, face.a.z, 1]]);
+    // Timber decks use the plank tile itself (planks across the travel
+    // direction, about 32 units wide); stone and concrete add their joints.
+    if (kit.pattern.along === 0) uniforms.uL0.value = new Float32Array([1 / 260, 1.1, 0, record.travel === 'x' ? 1 : 0]);
+    uniforms.uBase = { value: new Float32Array(rgb(kit.base)), type: 'vec3<f32>' };
+    uniforms.uFace = { value: new Float32Array(rgb(kit.face)), type: 'vec3<f32>' };
+    uniforms.uPattern = { value: new Float32Array([kit.pattern.along, kit.pattern.across, kit.pattern.gap, record.travel === 'y' ? 1 : 0]), type: 'vec4<f32>' };
+    uniforms.uRect = { value: new Float32Array([b.minX, b.minY, b.maxX, b.maxY]), type: 'vec4<f32>' };
+    uniforms.uSlope = { value: new Float32Array([record.kind === 'ramp' ? 1 : 0, record.travel === 'y' ? 1 : 0, 0, 0]), type: 'vec4<f32>' };
+    resources.raisedUniforms = new UniformGroup(uniforms);
+    const geometry = new Geometry({ attributes: { aPosition: { buffer: new Float32Array(positions), format: 'float32x2' }, aSurface: { buffer: new Float32Array(surface), format: 'float32x4' } }, indexBuffer: new Uint32Array(index) });
+    const mesh = new Mesh({ geometry, shader: new Shader({ glProgram, resources }), texture: tiles.get(AREA_ART_MATERIALS[kit.material].grain[0].tile) });
+    mesh.label = `area-raised-${record.id}`;
+    return mesh;
+  }
+  function paintRaised(target, record) {
+    const kit = RAISED_KITS[record.kit], rb = record.bounds, box = { minX: rb.minX - 40, minY: rb.minY - record.maxZ - 40, maxX: rb.maxX + record.maxZ + 40, maxY: rb.maxY + record.maxZ + 40 };
+    if (record.shadow) {
+      const g = new Graphics(), soft = offsetPolygon(record.shadow, 8);
+      g.poly(soft.flatMap(p => [p.x, p.y])).fill({ color: SHADOW_TINT, alpha: 0.14 });
+      g.poly(record.shadow.flatMap(p => [p.x, p.y])).fill({ color: SHADOW_TINT, alpha: 0.24 });
+      g.label = `area-raised-shadow-${record.id}`; target.addChild(trackSurface(g, box)); painted.push(g);
+    }
+    let top = raisedMesh(record);
+    if (!top) {
+      // Fallback (no GL program): grain tile fills for the top and faces.
+      top = new Graphics();
+      materialFill(top, record.corners.map(p => ({ x: p.x, y: p.y - p.z })), kit.material);
+      for (const face of record.faces) materialFill(top, [{ x: face.a.x, y: face.a.y - face.a.z }, { x: face.c.x, y: face.c.y - face.c.z }, { x: face.c.x, y: face.c.y }, { x: face.a.x, y: face.a.y }], kit.material, { tint: 0xa0a0a0 });
+      top.label = `area-raised-${record.id}`;
+    }
+    target.addChild(trackSurface(top, box)); painted.push(top);
+    if (record.rails.length) {
+      const g = new Graphics(), step = 62;
+      for (const rail of record.rails) {
+        const ax = rail.a.x, ay = rail.a.y - rail.a.z, cx = rail.c.x, cy = rail.c.y - rail.c.z, len = Math.hypot(cx - ax, cy - ay), count = Math.max(2, Math.round(len / step));
+        // Kerb beam along the deck edge, posts, then the top rail with a lit edge.
+        if (rail.side === 'west' || rail.side === 'east') {
+          // A rail running up the screen: kerb beam and post caps seen from above.
+          const out = rail.side === 'west' ? -1 : 1;
+          g.moveTo(ax + out * 2, ay).lineTo(cx + out * 2, cy).stroke({ color: kit.rail, width: 11 });
+          g.moveTo(ax - out * 2, ay).lineTo(cx - out * 2, cy).stroke({ color: 0xd8d5c6, width: 2, alpha: 0.3 });
+          for (let i = 0; i <= count; i++) { const t = i / count, x = ax + (cx - ax) * t + out * 2, y = ay + (cy - ay) * t; g.rect(x - 6, y - 14, 12, 14).fill({ color: kit.rail }); g.rect(x - 6, y - 14, 12, 3).fill({ color: 0xd8d5c6, alpha: 0.22 }); g.rect(x + 6, y - 11, 4, 11).fill({ color: SHADOW_TINT, alpha: 0.25 }); }
+          continue;
+        }
+        g.moveTo(ax, ay).lineTo(cx, cy).stroke({ color: kit.rail, width: 7, alpha: 0.9 });
+        for (let i = 0; i <= count; i++) { const t = i / count, x = ax + (cx - ax) * t, y = ay + (cy - ay) * t; g.rect(x - 3.5, y - 17, 7, 17).fill({ color: kit.rail }); g.rect(x - 3.5, y - 17, 2.5, 17).fill({ color: 0xd8d5c6, alpha: 0.16 }); }
+        g.moveTo(ax, ay - 16).lineTo(cx, cy - 16).stroke({ color: kit.rail, width: 4 });
+        g.moveTo(ax, ay - 17.5).lineTo(cx, cy - 17.5).stroke({ color: 0xd8d5c6, width: 1.5, alpha: 0.28 });
+      }
+      g.label = `area-raised-rails-${record.id}`; target.addChild(trackSurface(g, box)); painted.push(g);
+    }
+  }
+  function paintSurfaces(target) {
+    if (disposed || !summary) return;
+    for (const body of waterBodies) paintWater(target, body);
+    // Low pieces first so a ramp's foot never overdraws the deck it climbs to.
+    const records = buildRaisedSurfaces(raisedPieces, areaId).sort((a, b) => a.bounds.maxY - b.bounds.maxY || a.maxZ - b.maxZ);
+    for (const record of records) paintRaised(target, record);
+    const rockFace = overlays.get('rock-face') ?? null, sample = summary.solids.find(solid => solid.style === 'bank' || (solid.style === 'mass' && !solid.wall));
+    if (rockFace && sample) {
+      const b = summary.bounds, dot = [{ x: b.minX, y: b.minY }, { x: b.minX, y: b.minY }, { x: b.minX, y: b.minY }];
+      const warm = rockSolidMesh(dot, dot, sample.roof ?? 'rock', sample.tint, [{ a: dot[0], c: dot[0], ra: dot[0], rc: dot[0], lit: 1 }], 1, rockFace);
+      if (warm) { warm.label = 'area-warmup-rock'; target.addChild(warm); painted.push(warm); warmNodes.push(warm); }
+    }
+  }
+
   // ---- solids ----
   const surfaceShaders = new Map();
   // Ragged rock edge from world-space noise, so the many thin closed-mass
   // strips that share a straight run break it up continuously. Mostly
   // outward (-8..+26 units) so the art never sits well inside the collider.
   const rockPush = (x, y) => -8 + 34 * (0.7 * valueNoise(x, y, 95, 9173) + 0.3 * valueNoise(x, y, 31, 9181));
-  function raggedOutline(vertices) {
+  // Edges shared with a neighbouring solid (`exposed[i] === false`) stay
+  // straight and their corners only slide along them, so abutting closed-mass
+  // strips meet without gaps, overlaps or ragged slivers.
+  function raggedOutline(vertices, exposed = null) {
     const n = vertices.length, out = [], starts = [];
     let area = 0; for (let i = 0; i < n; i++) { const p = vertices[i], q = vertices[(i + 1) % n]; area += p.x * q.y - q.x * p.y; }
     const sign = area >= 0 ? 1 : -1;
     const normal = (a, c) => { const dx = c.x - a.x, dy = c.y - a.y, len = Math.hypot(dx, dy) || 1; return { x: dy / len * sign, y: -dx / len * sign }; };
+    const open = i => !exposed || exposed[(i + n) % n];
     for (let i = 0; i < n; i++) {
       const prev = vertices[(i + n - 1) % n], a = vertices[i], c = vertices[(i + 1) % n], n0 = normal(prev, a), n1 = normal(a, c);
-      let bx = n0.x + n1.x, by = n0.y + n1.y; const bl = Math.hypot(bx, by) || 1; bx /= bl; by /= bl;
-      const corner = rockPush(a.x, a.y);
+      const e0 = open(i - 1), e1 = open(i);
+      let bx = (e0 ? n0.x : 0) + (e1 ? n1.x : 0), by = (e0 ? n0.y : 0) + (e1 ? n1.y : 0); const bl = Math.hypot(bx, by);
+      const corner = bl > 1e-6 ? rockPush(a.x, a.y) : 0; if (bl > 1e-6) { bx /= bl; by /= bl; }
       starts.push(out.length); out.push({ x: a.x + bx * corner, y: a.y + by * corner });
-      const dx = c.x - a.x, dy = c.y - a.y, steps = Math.max(1, Math.round(Math.hypot(dx, dy) / 40));
+      const dx = c.x - a.x, dy = c.y - a.y, steps = e1 ? Math.max(1, Math.round(Math.hypot(dx, dy) / 40)) : 1;
       for (let k = 1; k < steps; k++) {
         const t = k / steps, px = a.x + dx * t, py = a.y + dy * t, push = rockPush(px, py);
         out.push({ x: px + n1.x * push, y: py + n1.y * push });
@@ -623,58 +835,164 @@ export function createAreaArt({ world, areaId, plan, kit = null, loadTexture, te
     mesh.label = 'area-solid-roof';
     return mesh;
   }
+  // Rock solid as one mesh: roof triangles plus camera-facing rock faces
+  // (see SOLID_FRAGMENT); one draw call per solid like the old roof mesh.
+  const rockShaders = new Map();
+  function rockSolidMesh(outline, ragged, materialId, tint, segments, h, rockFace) {
+    const glProgram = programFor('solid');
+    if (!glProgram) return null;
+    const { positions: roofPoints, indices } = roofIndices(outline, ragged);
+    if (!indices.length) return null;
+    const key = `${materialId}:${tint}`;
+    let shader = rockShaders.get(key);
+    if (!shader) {
+      const uniforms = {}, resources = {};
+      if (!grainUniforms(materialId, uniforms, resources, 0)) return null;
+      uniforms.uBase = { value: new Float32Array(rgb(multiplyTint(AREA_ART_MATERIALS[materialId].color, tint))), type: 'vec3<f32>' };
+      uniforms.uSurface = { value: new Float32Array([0.34, 0.22, materialId === 'rock' ? 0.55 : 0, 0]), type: 'vec4<f32>' };
+      uniforms.uMoss = { value: new Float32Array(rgb(0x5b6650)), type: 'vec3<f32>' };
+      uniforms.uFaceTint = { value: new Float32Array(rgb(tint)), type: 'vec3<f32>' };
+      resources.solidUniforms = new UniformGroup(uniforms);
+      resources.uRock = rockFace.source; resources.uRockSampler = rockFace.source.style;
+      shader = new Shader({ glProgram, resources }); rockShaders.set(key, shader);
+    }
+    const positions = roofPoints.flatMap(p => [p.x, p.y]), face = new Array(roofPoints.length * 4).fill(0), variant = new Array(roofPoints.length * 2).fill(0), index = [...indices];
+    for (const { a, c, ra, rc, lit } of segments) {
+      const base = positions.length / 2, va = rockFaceVariant(a.x), vc = rockFaceVariant(c.x);
+      positions.push(a.x, a.y, c.x, c.y, rc.x, rc.y, ra.x, ra.y);
+      face.push(a.x, h, 0, lit, c.x, h, 0, lit, c.x, 0, h, lit, a.x, 0, h, lit);
+      variant.push(va[1], va[2], vc[1], vc[2], vc[1], vc[2], va[1], va[2]);
+      index.push(base, base + 1, base + 2, base, base + 2, base + 3);
+    }
+    const geometry = new Geometry({ attributes: { aPosition: { buffer: new Float32Array(positions), format: 'float32x2' }, aFace: { buffer: new Float32Array(face), format: 'float32x4' }, aVariant: { buffer: new Float32Array(variant), format: 'float32x2' } }, indexBuffer: new Uint32Array(index) });
+    const mesh = new Mesh({ geometry, shader, texture: tiles.get(AREA_ART_MATERIALS[materialId].grain[0].tile) });
+    mesh.label = 'area-solid-rock';
+    return mesh;
+  }
+  // Authored edges with their outward normal and whether another solid at
+  // least 60 % as tall (or the world edge) covers their outside.
+  function solidEdges(piece, outline, h) {
+    const n = outline.length, wb = world.bounds;
+    return outline.map((a, i) => {
+      const c = outline[(i + 1) % n], len = Math.hypot(c.x - a.x, c.y - a.y) || 1;
+      let nx = (c.y - a.y) / len, ny = -(c.x - a.x) / len;
+      const mx = (a.x + c.x) / 2, my = (a.y + c.y) / 2;
+      if (pointInPolygon(mx + nx * 2, my + ny * 2, outline)) { nx = -nx; ny = -ny; }
+      let exposed = false;
+      for (const t of [0.2, 0.5, 0.8]) {
+        const x = a.x + (c.x - a.x) * t + nx * 14, y = a.y + (c.y - a.y) * t + ny * 14;
+        if (wb && (x < wb.minX || x > wb.maxX || y < wb.minY || y > wb.maxY)) continue;
+        if (!occlusion.covered(x, y, h * 0.6, piece)) { exposed = true; break; }
+      }
+      return { nx, ny, exposed, mx, my };
+    });
+  }
+  // Walkable depth behind (north of) a rock mass: march north from every
+  // exposed back edge until the ground is no longer covered by any solid.
+  function visualRockHeight(piece, outline, edges, h) {
+    let clear = Infinity;
+    for (const edge of edges) {
+      if (!edge.exposed || edge.ny > -0.3) continue;
+      let s = 14;
+      while (s < h && occlusion.covered(edge.mx, edge.my - s, 0, piece) && edge.my - s > (world.bounds?.minY ?? -Infinity)) s += 20;
+      clear = Math.min(clear, s);
+    }
+    if (clear >= h) return h;
+    const closed = /^(closed-mass|world-guard)-/.test(piece.id);
+    return Math.min(h, Math.max(56, clear, closed ? 0 : h * 0.55));
+  }
   function createSolid(piece) {
     if (disposed || !summary) return null;
     const solid = summary.solids.find(entry => entry.pieceId === piece.id);
     if (!solid) return null;
-    const b = piece.visible.bounds, w = b.maxX - b.minX, d = b.maxY - b.minY, h = solid.height ?? piece.visible.height, cx = (b.minX + b.maxX) / 2;
+    const b = piece.visible.bounds, w = b.maxX - b.minX, d = b.maxY - b.minY, authoredH = solid.height ?? piece.visible.height, cx = (b.minX + b.maxX) / 2;
     const outline = piece.visible.vertices ?? rectVertices(b);
     const rockyOutline = ['bank'].includes(solid.style) || (solid.style === 'mass' && !solid.wall);
-    // Rock outlines are authored as straight runs; break them into a ragged
-    // edge (mostly outward, so art never sits well inside the collider).
-    const vertices = rockyOutline ? raggedOutline(outline) : outline, roof = vertices.map(p => ({ x: p.x, y: p.y - h }));
+    occlusion ??= createSolidOcclusionIndex(world.pieces ?? []);
+    const edges = solidEdges(piece, outline, authoredH);
+    // A rock mass with walkable ground right behind it (north) would hide that
+    // ground under its roof: draw it lower (closed masses as a low foreground
+    // rim, area cliffs at no less than 55 %); the collider is unchanged.
+    const h = rockyOutline ? visualRockHeight(piece, outline, edges, authoredH) : authoredH;
+    let top = solid.massAlpha > 0 && solid.style !== 'card' ? h : 0;
+    // Rock outlines are authored as straight runs; break the exposed ones into
+    // a ragged edge (mostly outward, so art never sits well inside the collider).
+    const vertices = rockyOutline ? raggedOutline(outline, edges.map(edge => edge.exposed)) : outline, roof = vertices.map(p => ({ x: p.x, y: p.y - h }));
     const node = new Container(); node.areaArtDecorated = true;
     const timber = multiplyTint(0x6b5c48, solid.tint), dark = multiplyTint(0x3f3629, solid.tint), pale = multiplyTint(0xd8d5c6, solid.tint);
-    if (solid.style !== 'hedge' && solid.style !== 'pickets') contactShadow(node, { x: cx, y: b.maxY - d * 0.5, width: w * 0.9, depth: d * 0.9, alpha: 0.16, ao: false });
-    if (solid.massAlpha > 0) {
+    // Rock masses get their AO from the terrain field and their dark face foot;
+    // a footprint ellipse on a thin strip drew a dark hairline over its neighbour.
+    if (solid.style !== 'hedge' && solid.style !== 'pickets' && !rockyOutline) contactShadow(node, { x: cx, y: b.maxY - d * 0.5, width: w * 0.9, depth: d * 0.9, alpha: 0.16, ao: false });
+    // A card building marks its collision footprint as a grounded footing
+    // (soft dark base) instead of a translucent lifted box behind the card,
+    // which read as a leftover greybox volume.
+    if (solid.style === 'card' && solid.massAlpha > 0) {
+      const footing = new Graphics(), flat = outline.flatMap(p => [p.x, p.y]);
+      footing.poly(offsetPolygon(outline, 10).flatMap(p => [p.x, p.y])).fill({ color: SHADOW_TINT, alpha: 0.08 + solid.massAlpha * 0.12 });
+      footing.poly(flat).fill({ color: SHADOW_TINT, alpha: 0.12 + solid.massAlpha * 0.25 });
+      node.addChild(footing);
+    } else if (solid.massAlpha > 0) {
       const mass = new Container(), faces = new Graphics(), lips = new Graphics(), rockFace = overlays.get('rock-face') ?? null, wallMaterial = solid.wall ?? null;
       const rocky = solid.style === 'bank' || (solid.style === 'mass' && !wallMaterial);
       const roofMaterial = solid.roof ?? (rocky ? 'rock' : 'slate');
-      // Roof through the grain shader (Graphics tile fill only as a fallback).
-      const roofOutline = outline.map(p => ({ x: p.x, y: p.y - h })), raggedRoof = roof; raggedRoof.starts = vertices.starts;
-      const roofMesh = surfaceMesh(roofOutline, vertices.starts ? raggedRoof : roofOutline, roofMaterial, solid.tint, rocky);
-      if (roofMesh) mass.addChild(roofMesh); else { const flat = new Graphics(); materialFill(flat, roof, roofMaterial, { tint: solid.tint }); mass.addChild(flat); }
       // Faces only on edges whose outward normal points down the screen
-      // (toward the camera); back and side edges leave the roof's lip.
+      // (toward the camera); back and side edges leave the roof's lip. An
+      // edge whose outside lies inside another solid at least as tall is a
+      // shared (hidden) edge: no face and no lip.
+      // A face belongs to an exposed authored edge that faces the camera
+      // (its outward normal points down the screen); its ragged segments draw
+      // unless a jog turns away. Shared edges get neither face nor lip, so the
+      // jogs of a long side run never stand up as rock slivers.
+      const segments = [];
       for (let i = 0; i < vertices.length; i++) {
         const j = (i + 1) % vertices.length, a = vertices[i], c = vertices[j];
         const dx = c.x - a.x, dy = c.y - a.y, len = Math.hypot(dx, dy) || 1, ux = dx / len, uy = dy / len;
         let nx = uy, ny = -ux; const mx = (a.x + c.x) / 2, my = (a.y + c.y) / 2;
         if (pointInPolygon(mx + nx * 2, my + ny * 2, vertices)) { nx = -nx; ny = -ny; }
         const ra = roof[i], rc = roof[j];
-        if (ny <= 0.12) { if (ny < -0.3) lips.moveTo(ra.x, ra.y).lineTo(rc.x, rc.y).stroke({ color: SHADOW_TINT, width: 3, alpha: 0.3 }); continue; }
-        const quad = [a, c, rc, ra], flat = quad.flatMap(p => [p.x, p.y]);
+        const edgeIndex = vertices.starts ? Math.max(0, vertices.starts.findLastIndex(start => start <= i)) : i, edge = edges[edgeIndex];
+        if (!edge.exposed) continue;
+        if (edge.ny <= 0.12) { if (edge.ny < -0.3) lips.moveTo(ra.x, ra.y).lineTo(rc.x, rc.y).stroke({ color: SHADOW_TINT, width: 3, alpha: 0.3 }); continue; }
+        if (ny <= 0.05) continue;
         // Upper-left key: faces turned toward the left catch more light.
         // Shade from the authored edge, not the ragged segment, so a run of
         // jogs never reads as vertical stripes.
-        const edgeIndex = vertices.starts ? Math.max(0, vertices.starts.findLastIndex(start => start <= i)) : i;
-        const oa = outline[edgeIndex], oc = outline[(edgeIndex + 1) % outline.length], ol = Math.hypot(oc.x - oa.x, oc.y - oa.y) || 1;
-        let enx = (oc.y - oa.y) / ol, eny = -(oc.x - oa.x) / ol; if (enx * nx + eny * ny < 0) { enx = -enx; eny = -eny; }
-        const lit = Math.min(1, 0.78 + 0.22 * Math.max(0, -enx) + 0.1 * Math.max(0, eny)), shade = Math.round(lit * 255) * 0x010101;
-        if (rocky && rockFace) {
-          const s = 260 / (rockFace.source.width || 512), fh = rockFace.source.height || 128;
-          // World-continuous u along x (the strip never restarts per segment);
-          // v runs from the lip to the foot along this segment's slope.
-          const slope = Math.abs(dx) > len * 0.3 ? dy / dx : null;
-          const matrix = slope === null ? { a: ux * s, b: uy * s, c: 0, d: h / fh, tx: a.x, ty: a.y - h } : { a: s, b: slope * s, c: 0, d: h / fh, tx: 0, ty: a.y - h - slope * a.x };
-          faces.poly(flat).fill({ texture: rockFace, textureSpace: 'global', matrix, color: multiplyTint(solid.tint, shade) });
-        } else materialFill(faces, quad, wallMaterial ?? 'dirt', { tint: multiplyTint(solid.tint, shade) });
-        // Dark foot where the face meets the ground, lit lip along the top.
-        const foot = Math.min(h * 0.22, 40);
-        faces.poly([a.x, a.y - foot, c.x, c.y - foot, c.x, c.y, a.x, a.y]).fill({ color: SHADOW_TINT, alpha: 0.22 });
-        faces.poly([a.x, a.y - foot * 0.45, c.x, c.y - foot * 0.45, c.x, c.y, a.x, a.y]).fill({ color: SHADOW_TINT, alpha: 0.2 });
-        lips.moveTo(ra.x, ra.y).lineTo(rc.x, rc.y).stroke({ color: 0xd8d5c6, width: rocky ? 5 : 3, alpha: 0.22 + 0.2 * Math.max(0, -nx) });
+        const lit = Math.min(1, 0.78 + 0.22 * Math.max(0, -edge.nx) + 0.1 * Math.max(0, edge.ny));
+        segments.push({ a, c, ra, rc, dx, dy, len, ux, uy, nx, lit });
       }
+      const roofOutline = outline.map(p => ({ x: p.x, y: p.y - h })), raggedRoof = roof; raggedRoof.starts = vertices.starts;
+      const rockMesh = rocky && rockFace ? rockSolidMesh(roofOutline, vertices.starts ? raggedRoof : roofOutline, roofMaterial, solid.tint, segments, h, rockFace) : null;
+      if (rockMesh) mass.addChild(rockMesh);
+      else {
+        // Roof through the grain shader (Graphics tile fill only as a fallback).
+        const roofMesh = surfaceMesh(roofOutline, vertices.starts ? raggedRoof : roofOutline, roofMaterial, solid.tint, rocky);
+        if (roofMesh) mass.addChild(roofMesh); else { const flat = new Graphics(); materialFill(flat, roof, roofMaterial, { tint: solid.tint }); mass.addChild(flat); }
+        for (const { a, c, ra, rc, dx, dy, len, ux, uy, nx, lit } of segments) {
+          const quad = [a, c, rc, ra], flat = quad.flatMap(p => [p.x, p.y]), shade = Math.round(lit * 255) * 0x010101;
+          if (rocky && rockFace) {
+            const sc = 260 / (rockFace.source.width || 512), fh = rockFace.source.height || 128;
+            const slope = Math.abs(dx) > len * 0.3 ? dy / dx : null;
+            const matrix = slope === null ? { a: ux * sc, b: uy * sc, c: 0, d: h / fh, tx: a.x, ty: a.y - h } : { a: sc, b: slope * sc, c: 0, d: h / fh, tx: 0, ty: a.y - h - slope * a.x };
+            faces.poly(flat).fill({ texture: rockFace, textureSpace: 'global', matrix, color: multiplyTint(solid.tint, shade) });
+          } else {
+            materialFill(faces, quad, wallMaterial ?? 'dirt', { tint: multiplyTint(solid.tint, shade) });
+            // Built walls read as built: block courses with staggered joints on
+            // masonry, vertical boards on timber (projection only).
+            const span = Math.hypot(c.x - a.x, c.y - a.y);
+            if (wallMaterial === 'timber') { for (let u = 16; u < span; u += 16) { const t = u / span, x = a.x + (c.x - a.x) * t, y = a.y + (c.y - a.y) * t; faces.moveTo(x, y).lineTo(x, y - h).stroke({ color: SHADOW_TINT, width: 1.5, alpha: 0.22 }); } }
+            else if (wallMaterial) for (let k = 1, v = 17; v < h - 4; v += 17, k++) {
+              faces.moveTo(a.x, a.y - v).lineTo(c.x, c.y - v).stroke({ color: SHADOW_TINT, width: 1.2, alpha: 0.2 });
+              for (let u = (k % 2) * 21 + 21; u < span; u += 42) { const t = u / span, x = a.x + (c.x - a.x) * t, y = a.y + (c.y - a.y) * t - v; faces.moveTo(x, y).lineTo(x, y + 17).stroke({ color: SHADOW_TINT, width: 1.2, alpha: 0.16 }); }
+            }
+          }
+          // Dark foot where the face meets the ground, lit lip along the top.
+          const foot = Math.min(h * 0.22, 40);
+          faces.poly([a.x, a.y - foot, c.x, c.y - foot, c.x, c.y, a.x, a.y]).fill({ color: SHADOW_TINT, alpha: 0.22 });
+          faces.poly([a.x, a.y - foot * 0.45, c.x, c.y - foot * 0.45, c.x, c.y, a.x, a.y]).fill({ color: SHADOW_TINT, alpha: 0.2 });
+          lips.moveTo(ra.x, ra.y).lineTo(rc.x, rc.y).stroke({ color: 0xd8d5c6, width: rocky ? 5 : 3, alpha: 0.22 + 0.2 * Math.max(0, -nx) });
+        }
+      }
+      if (!rocky && wallMaterial) { const ring = roof.flatMap(p => [p.x, p.y]); lips.poly(ring).stroke({ color: 0xd8d5c6, width: 3, alpha: 0.32 }); lips.poly(offsetPolygon(roof, -6).flatMap(p => [p.x, p.y])).stroke({ color: SHADOW_TINT, width: 2, alpha: 0.18 }); }
       mass.addChild(faces, lips);
       mass.alpha = solid.massAlpha; node.addChild(mass);
     }
@@ -686,7 +1004,7 @@ export function createAreaArt({ world, areaId, plan, kit = null, loadTexture, te
       // the collider front edge, a tree's trunk at the collider centre.
       const height = entry.alphaHeight * scale, y = seatSolidCardY(entry.item, b, height / entry.item.alphaBounds.h);
       const { node: sprite } = card(solid.card.source, { x: cx, y, height, groundZ: solid.card.lift, tint: solid.tint });
-      node.addChild(sprite);
+      node.addChild(sprite); top = Math.max(top, height + (solid.card.lift ?? 0) - (y - b.minY));
     } else if (solid.style === 'hedge') {
       const vertical = d > w, length = vertical ? d : w, spacing = solid.spacing || 120, count = Math.max(1, Math.ceil(length / spacing)), step = length / count;
       for (let i = 0; i < count; i++) {
@@ -729,6 +1047,9 @@ export function createAreaArt({ world, areaId, plan, kit = null, loadTexture, te
       node.addChild(g);
     }
     if (facadeSign) { const panel = signPanel(facadeSign); if (panel) { panel.position.set(cx, b.maxY - Math.min(h, 260) * facadeSign.anchor); node.addChild(panel); } }
+    // Readability cutaway: the footprint and the screen height this solid
+    // covers, so update() can fade it while an actor stands behind it.
+    node.areaArtCover = { outline, top, minX: b.minX - 30, maxX: b.maxX + 30, minY: b.minY - top - 20, maxY: b.maxY };
     return node;
   }
 
@@ -796,11 +1117,21 @@ export function createAreaArt({ world, areaId, plan, kit = null, loadTexture, te
     if (fogCards.length && (fogFrame++ % 60 === 0)) fogStatic = ratio === 0.5 || Boolean(reducedMotion());
     // Fog drifts only on the full tier; the phone tier keeps it still.
     if (!fogStatic || fogFrame === 0) for (const { sprite, card, phase } of fogCards) sprite.x = card.x + (fogStatic ? 0 : Math.sin(fogFrame * 0.004 + phase) * Math.min(40, card.rx * 0.12));
+    // Water drifts on the full tier; the half tier and reduced motion keep static normals.
+    if (waterMeshes.length) {
+      if (waterFrame++ % 60 === 0) waterStatic = ratio === 0.5 || Boolean(reducedMotion());
+      if (!waterStatic) for (const group of waterMeshes) { group.uniforms.uWater[0] = waterFrame / 60; group.update?.(); }
+    }
+    if (warmFrames > 0 && --warmFrames === 0) { for (const node of warmNodes) node.visible = false; gateZoom = NaN; }
     const zoom = camera.zoom || 1;
     if (Math.abs(camera.x - gateX) >= GATE || Math.abs(camera.y - gateY) >= GATE || zoom !== gateZoom || view.width !== gateW || view.height !== gateH) {
       gateX = camera.x; gateY = camera.y; gateZoom = zoom; gateW = view.width; gateH = view.height;
       paddedView.width = view.width + 2 * GATE * zoom; paddedView.height = view.height + 2 * GATE * zoom;
       gateVisible = residency.update({ camera, view: paddedView });
+      if (surfaceNodes.length && warmFrames <= 0) {
+        const hw = view.width / 2 / zoom + 120 + GATE, hh = view.height / 2 / zoom + 120 + GATE;
+        for (const { node, b } of surfaceNodes) { const on = !(b.maxX < camera.x - hw || b.minX > camera.x + hw || b.maxY < camera.y - hh || b.minY > camera.y + hh); if (node.visible !== on) node.visible = on; }
+      }
       if (solidRecords.length) {
         const hw = view.width / 2 / zoom + 120 + GATE, hh = view.height / 2 / zoom + 120 + GATE;
         const minX = camera.x - hw, maxX = camera.x + hw, minY = camera.y - hh, maxY = camera.y + hh;
@@ -819,6 +1150,19 @@ export function createAreaArt({ world, areaId, plan, kit = null, loadTexture, te
     }
     const visible = gateVisible;
     if (actor) for (const { node, prop, width } of live.values()) node.alpha = prop.fade && Math.abs(actor.x - prop.x) < width * 0.42 && actor.y < prop.y && actor.y > prop.y - prop.height - prop.groundZ ? 0.38 : 1;
+    // A solid whose roof, face or card stands over the actor (the actor is
+    // behind it) fades so the hero is never hidden; presentation only.
+    if (actor && Number.isFinite(actor.x) && Number.isFinite(actor.y)) for (const node of solidNodes) {
+      const cover = node.areaArtCover;
+      if (!cover || !node.areaArtAttached) continue;
+      // Fade only when the solid covers the actor's chest, not a low rim at the feet.
+      const bodyY = actor.y - (actor.groundZ ?? actor.z ?? 0) - 50;
+      let behind = false;
+      if (cover.top > 0 && actor.x > cover.minX && actor.x < cover.maxX && actor.y < cover.maxY && bodyY > cover.minY) {
+        for (const lift of [0, 0.5, 1]) if (pointInPolygon(actor.x, bodyY + cover.top * lift, cover.outline)) { behind = true; break; }
+      }
+      node.alpha = behind ? 0.5 : 1;
+    }
     return visible;
   }
   function dispose() {
@@ -829,9 +1173,10 @@ export function createAreaArt({ world, areaId, plan, kit = null, loadTexture, te
     for (const entry of frames.values()) entry.texture.destroy(false); frames.clear(); live.clear();
     for (const url of owned) cache.release(url); owned.length = 0; tiles.clear(); overlays.clear(); pageTextures.clear(); detailTexture = null;
     for (const texture of signTextures.values()) { try { texture?.destroy(true); } catch {} } signTextures.clear(); fogCards.length = 0; try { fogTexture?.destroy(true); } catch {} fogTexture = null;
+    for (const body of waterBodies) { try { body.texture?.destroy(true); } catch {} } waterBodies.length = 0; waterMeshes.length = 0; surfaceNodes.length = 0;
     try { controlTexture?.control.destroy(true); if (controlTexture && controlTexture.light !== controlTexture.control) controlTexture.light.destroy(true); } catch {} controlTexture = null; terrainMesh = null;
     if (ownsCache) cache.dispose();
   }
-  const snapshot = () => Object.freeze({ artId: AREA_ART_ID, areaId, resolution, disposed, mounted, pages: summary?.pages ?? null, tiles: summary?.tiles ?? null, counts: summary?.counts ?? null, budget: summary?.budget ?? null, terrain: summary?.terrain ? Object.freeze({ materials: summary.terrain.materials, field: terrainField ? `${terrainField.width}x${terrainField.height}` : null, fieldBytes: terrainField ? terrainField.fieldBytes ?? terrainField.data.length : 0, splat: Boolean(terrainMesh), counts: terrainField?.counts ?? null }) : null, ownedUrls: Object.freeze([...owned].sort()), painted: painted.length, residency: residency?.snapshot() ?? null, runtimeAuthority: 'projection-only' });
-  return Object.freeze({ artId: AREA_ART_ID, ready, plan, get summary() { return summary; }, claimsSurface, paintSurface, paintGround, createSolid, mountSolids, mount, update, dispose, snapshot, textureCache: cache });
+  const snapshot = () => Object.freeze({ artId: AREA_ART_ID, areaId, resolution, disposed, mounted, pages: summary?.pages ?? null, tiles: summary?.tiles ?? null, counts: summary?.counts ?? null, budget: summary?.budget ?? null, terrain: summary?.terrain ? Object.freeze({ materials: summary.terrain.materials, field: terrainField ? `${terrainField.width}x${terrainField.height}` : null, fieldBytes: terrainField ? terrainField.fieldBytes ?? terrainField.data.length : 0, splat: Boolean(terrainMesh), counts: terrainField?.counts ?? null }) : null, water: Object.freeze(waterBodies.map(body => Object.freeze({ id: body.piece.id, field: `${body.field.width}x${body.field.height}`, bytes: body.field.bytes, shader: Boolean(body.texture) }))), raised: raisedPieces.length, ownedUrls: Object.freeze([...owned].sort()), painted: painted.length, residency: residency?.snapshot() ?? null, runtimeAuthority: 'projection-only' });
+  return Object.freeze({ artId: AREA_ART_ID, ready, plan, get summary() { return summary; }, claimsSurface, paintSurface, paintGround, paintSurfaces, createSolid, mountSolids, mount, update, dispose, snapshot, textureCache: cache });
 }

@@ -331,16 +331,9 @@ test('Hashwood River follows brief 06: conifers on closed banks, iris on the dam
   assert.ok(!summary.sources.includes('b2-42') && !summary.sources.includes('b2-44'), 'structures-00 bridge cards stay out of the two-page budget');
   const water = world.pieces.filter(p => p.kind === 'water').map(p => p.visible.vertices);
   const segments = routeSegments('hashwood-river'), areaSites = sites('hashwood-river');
-  // Both authored crossings run north-south, so the vertical-span stone arch stands on each deck.
-  const arches = summary.props.filter(p => p.source === 'b2-41');
-  assert.equal(arches.length, 2);
-  for (const [name, arch] of [['city', arches[0]], ['woods', arches[1]]]) {
-    const bridge = world.pieces.find(p => p.id === `hashwood-river-${name}-bridge`), b = bridge.visible.bounds;
-    const ramp = world.pieces.find(p => p.id === `hashwood-river-${name}-north-ramp`);
-    assert.equal(ramp.surface.axis, 'y', 'the crossing is authored north-south');
-    assert.equal(arch.x, (b.minX + b.maxX) / 2); assert.equal(arch.y, b.maxY + 10); assert.equal(arch.fade, true); assert.equal(arch.shadow, false);
-    assert.ok(arch.height >= 400 && arch.height <= 460);
-  }
+  // Both authored crossings are drawn by the renderer from their surfaces, so no arch card stands in for them.
+  assert.equal(summary.props.filter(p => p.source === 'b2-41').length, 0);
+  for (const name of ['city', 'woods']) assert.equal(world.pieces.find(p => p.id === `hashwood-river-${name}-north-ramp`).surface.axis, 'y', 'the crossing is authored north-south');
   const conifers = summary.props.filter(p => ['b2-72', 'b1-50'].includes(p.source)), iris = summary.props.filter(p => p.source === 'b1-09');
   assert.ok(conifers.length >= 120 && conifers.length <= 220, `${conifers.length} conifers`);
   assert.ok(conifers.every(p => p.source !== 'b2-72' || p.tint === 0xd6dcc0), 'conifer trio tinted toward the bible green through the plan');

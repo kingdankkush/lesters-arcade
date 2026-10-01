@@ -3,12 +3,13 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { Container, Texture, TextureSource } from 'pixi.js';
 import { createGreyboxWorld } from '../apps/hmh-reboot/src/dev/greybox-world-v1.mjs';
-import { AREA_ART_MATERIALS, AREA_ART_TILE_MEANS, DISTRICT_TERRAIN, AREA_ART_GRAIN_SIZE, validateAreaArtPlan, createAreaArtPlanShell } from '../apps/hmh-reboot/src/world-v2-area-art-schema.mjs';
-import { buildTerrainField, latticeHash, fbm, TERRAIN_FIELD_ID } from '../apps/hmh-reboot/src/world-v2-terrain-field.mjs';
+import { AREA_ART_MATERIALS, AREA_ART_TILE_MEANS, DISTRICT_TERRAIN, AREA_ART_GRAIN_SIZE, validateAreaArtPlan, createAreaArtPlanShell, assertDecorativeTint } from '../apps/hmh-reboot/src/world-v2-area-art-schema.mjs';
+import { buildTerrainField, buildTerrainFieldAsync, latticeHash, fbm, TERRAIN_FIELD_ID } from '../apps/hmh-reboot/src/world-v2-terrain-field.mjs';
 import { createDistrictTerrainArtPlan, createWorldMassesArtPlan } from '../apps/hmh-reboot/src/world-v2-area-plans/district-terrain.mjs';
 import { createMwebMeadowsArtPlan } from '../apps/hmh-reboot/src/world-v2-area-plans/mweb-meadows.mjs';
 import { createRugpullWoodsArtPlan } from '../apps/hmh-reboot/src/world-v2-area-plans/rugpull-woods.mjs';
 import { createAreaArt, createAreaArtTextureCache, triangulatePolygon } from '../apps/hmh-reboot/src/world-v2-area-art.mjs';
+import { rockFaceVariant, buildShoreField, buildRaisedSurfaces, WATER_PALETTES, RAISED_KIT_BY_AREA } from '../apps/hmh-reboot/src/world-v2-area-surfaces.mjs';
 import { createWorldRoadsArtPlan } from '../apps/hmh-reboot/src/world-v2-area-plans/world-roads.mjs';
 import { ROAD_RECIPES } from '../apps/hmh-reboot/src/world-v2-area-art-schema.mjs';
 
@@ -149,7 +150,7 @@ test('roads paint as one mesh each in dirt, gravel, paved order with opaque erod
   art.dispose(); assert.equal(cache.snapshot().references, 0);
 });
 
-test('bank and mass solids roof through the grain shader and face only camera-facing edges', async () => {
+test('bank and mass solids draw roof and camera-facing rock faces as one mesh, never on shared or back edges', async () => {
   assert.deepEqual(triangulatePolygon([{ x: 0, y: 0 }, { x: 10, y: 0 }, { x: 10, y: 10 }, { x: 0, y: 10 }]).length, 6);
   const concave = [{ x: 0, y: 0 }, { x: 20, y: 0 }, { x: 20, y: 20 }, { x: 10, y: 8 }, { x: 0, y: 20 }];
   assert.equal(triangulatePolygon(concave).length, 9, 'concave outlines triangulate fully');
@@ -157,19 +158,54 @@ test('bank and mass solids roof through the grain shader and face only camera-fa
   const art = createAreaArt({ world, areaId: 'world-masses', plan: createWorldMassesArtPlan(world), kit, textureCache: cache, createProgram: kind => ({ name: `test-${kind}` }) });
   await art.ready;
   const piece = world.pieces.find(p => p.id === 'closed-mass-1'), node = art.createSolid(piece);
-  const mass = node.children.at(-1), roof = mass.children.find(child => child.label === 'area-solid-roof');
-  assert.ok(roof, 'roof is a grain-shaded mesh, not a plain tile rectangle');
-  const indices = roof.geometry.indexBuffer.data, b = piece.visible.bounds;
-  assert.ok(indices.length > 6 && indices.length % 3 === 0, 'authored outline plus ragged-edge fans');
-  // Ragged rock edge: roof points stay within -8..+26 units of the authored outline.
-  const positions = roof.geometry.getAttribute('aPosition').buffer.data, h = piece.visible.height;
-  for (let i = 0; i < positions.length; i += 2) assert.ok(positions[i] >= b.minX - 27 && positions[i] <= b.maxX + 27 && positions[i + 1] + h >= b.minY - 27 && positions[i + 1] + h <= b.maxY + 27);
-  // Faces only where the ragged edge turns toward the camera: the south run plus small jogs on the
-  // side runs, never the north run. Three fills (face + two foot bands) per facing segment.
-  const faces = mass.children[1], fills = faces.context.instructions.filter(i => i.action === 'fill').length, width = b.maxX - b.minX, height = b.maxY - b.minY;
-  const southSegments = Math.round(width / 40), allSegments = 2 * southSegments + 2 * Math.round(height / 40);
-  assert.ok(fills % 3 === 0 && fills / 3 >= southSegments * 0.8 && fills / 3 < allSegments / 2, `${fills / 3} facing segments of ${allSegments}`);
+  const mass = node.children.at(-1), rock = mass.children.find(child => child.label === 'area-solid-rock');
+  assert.ok(rock, 'roof and faces are one grain/rock-face mesh (one draw call per solid)');
+  const indices = rock.geometry.indexBuffer.data, b = piece.visible.bounds;
+  assert.ok(indices.length > 6 && indices.length % 3 === 0);
+  // Ragged rock edge: every vertex stays within -8..+26 units of the authored outline (roof lifted by its drawn height).
+  const positions = rock.geometry.getAttribute('aPosition').buffer.data, face = rock.geometry.getAttribute('aFace').buffer.data, h = piece.visible.height;
+  for (let i = 0, v = 0; i < positions.length; i += 2, v += 4) {
+    const lift = face[v + 3] > 0 ? 0 : null;
+    assert.ok(positions[i] >= b.minX - 27 && positions[i] <= b.maxX + 27);
+    if (lift === 0) assert.ok(positions[i + 1] <= b.maxY + 27 && positions[i + 1] >= b.minY - h - 27);
+  }
+  // Every face vertex belongs to a camera-facing segment: lip/foot distances sum to the drawn height, light in 0.78..1.
+  const faceVerts = []; for (let v = 0; v < face.length; v += 4) if (face[v + 3] > 0) faceVerts.push([face[v], face[v + 1], face[v + 2], face[v + 3]]);
+  assert.ok(faceVerts.length > 0 && faceVerts.length % 4 === 0);
+  const drawn = faceVerts[0][1] + faceVerts[0][2];
+  assert.ok(drawn >= 56 && drawn <= h, `drawn face height ${drawn}`);
+  for (const [, lip, foot, light] of faceVerts) { assert.ok(Math.abs(lip + foot - drawn) < 1e-6); assert.ok(light >= 0.78 && light <= 1); }
+  // No face on a north (back) edge: every face foot lies on the south half of the footprint.
+  for (let i = 0, v = 0; i < positions.length; i += 2, v += 4) if (face[v + 3] > 0 && face[v + 1] > 0) assert.ok(positions[i + 1] > (b.minY + b.maxY) / 2 - 27, 'faces stand only on camera-facing edges');
   art.dispose(); assert.equal(cache.snapshot().references, 0);
+});
+
+test('shared edges between abutting closed-mass strips get no face, no lip and no ragged jog', async () => {
+  const cache = createAreaArtTextureCache({ loadTexture: loader([]) });
+  const art = createAreaArt({ world, areaId: 'world-masses', plan: createWorldMassesArtPlan(world), kit, textureCache: cache, createProgram: kind => ({ name: `test-${kind}` }) });
+  await art.ready;
+  // Tall thin strips that share long vertical edges with neighbours.
+  const strips = world.pieces.filter(p => /^closed-mass-/.test(p.id) && p.visible.bounds.maxX - p.visible.bounds.minX < 60 && p.visible.bounds.maxY - p.visible.bounds.minY > 600).slice(0, 12);
+  assert.ok(strips.length >= 4, 'the world keeps thin closed-mass strips');
+  for (const piece of strips) {
+    const rock = art.createSolid(piece)?.children.at(-1)?.children.find(c => c.label === 'area-solid-rock');
+    if (!rock) continue;
+    const positions = rock.geometry.getAttribute('aPosition').buffer.data, face = rock.geometry.getAttribute('aFace').buffer.data, b = piece.visible.bounds;
+    // Faces may only stand on the strip's south end, never as slivers up its long sides.
+    for (let i = 0, v = 0; i < positions.length; i += 2, v += 4) if (face[v + 3] > 0 && face[v + 1] > 0) assert.ok(positions[i + 1] >= b.maxY - 40, `${piece.id} face foot at ${positions[i + 1]} is on a side run`);
+  }
+  art.dispose();
+});
+
+test('cliff face variants are deterministic hash blends that break the 260-unit strip repeat', () => {
+  const xs = Array.from({ length: 400 }, (_, i) => i * 37.5);
+  const a = xs.map(x => rockFaceVariant(x)), b = xs.map(x => rockFaceVariant(x));
+  assert.deepEqual(a, b, 'identical weights on every call');
+  for (const w of a) { assert.ok(w.every(v => v >= 0 && v <= 1)); assert.ok(Math.abs(w[0] + w[1] + w[2] - 1) < 1e-9); }
+  assert.ok(a.some(w => w[1] > 0.5) && a.some(w => w[2] > 0.3) && a.some(w => w[0] > 0.9), 'all three samplings appear along a run');
+  // Same strip position 260 units apart rarely carries the same blend.
+  const differs = xs.filter(x => Math.abs(rockFaceVariant(x)[1] - rockFaceVariant(x + 260)[1]) > 0.05).length;
+  assert.ok(differs > xs.length * 0.4, `${differs} of ${xs.length}`);
 });
 
 test('Litecoin City letters every placed carrier and facade from the branding table, off the cue palette', async () => {
@@ -282,4 +318,136 @@ test('per-frame update is gated on camera movement and keeps off-screen solids o
   art.update(at(2500, 2500), view);
   assert.ok(!depth.children.some(c => before.split(',').includes(c.label)), 'moving away detaches the old solids');
   art.dispose(); assert.equal(cache.snapshot().references, 0);
+});
+
+test('every authored water body gets the water material in its area art: shore field, palette off the cue band, drift frozen on the half tier', async () => {
+  const waters = world.pieces.filter(p => p.kind === 'water');
+  assert.ok(waters.length >= 2, 'bayou channel and river channel are authored water');
+  const seen = new Map();
+  for (const areaId of Object.keys(DISTRICT_TERRAIN)) for (const resolution of ['full', 'half']) {
+    const cache = createAreaArtTextureCache({ loadTexture: loader([]) });
+    const art = createAreaArt({ world, areaId, plan: createDistrictTerrainArtPlan(world, areaId), kit, textureCache: cache, resolution, terrainFieldSize: 16, createControlTexture: () => null, createProgram: kind => ({ name: `test-${kind}` }), createShoreTexture: field => new Texture({ source: new TextureSource({ width: field.width, height: field.height }) }), reducedMotion: () => false });
+    await art.ready;
+    const ground = new Container(); art.paintSurfaces(ground);
+    art.mount(new Container(), ground);
+    for (const mesh of ground.children.filter(c => c.label?.startsWith('area-water-'))) {
+      const id = mesh.label.slice('area-water-'.length), group = mesh.shader.resources.waterUniforms;
+      assert.ok(group, `${id} renders through the water shader, not a flat fill`);
+      assert.ok(mesh.shader.resources.uShore, `${id} samples its shore field`);
+      const u = group.uniforms;
+      assert.equal(u.uWater[1], resolution === 'half' ? 0 : 1, 'half tier drops the fine ripple octave');
+      assert.equal(u.uWater[2], 199); assert.equal(u.uWater[3], 56);
+      const before = u.uWater[0];
+      for (let i = 0; i < 90; i++) art.update({ x: 0, y: 0, zoom: 1 }, { width: 100, height: 100 });
+      if (resolution === 'half') assert.equal(u.uWater[0], before, 'phone tier keeps static normals');
+      else assert.ok(u.uWater[0] > before, 'full tier drifts');
+      seen.set(`${id}:${resolution}`, areaId);
+    }
+    assert.equal(art.snapshot().water.length, waters.filter(p => p.visible.areaId === areaId).length);
+    art.dispose(); assert.equal(cache.snapshot().references, 0);
+  }
+  for (const water of waters) for (const resolution of ['full', 'half']) assert.equal(seen.get(`${water.id}:${resolution}`), water.visible.areaId, `${water.id} drawn by its own area (${resolution})`);
+  assert.equal(JSON.stringify(world), JSON.stringify(createGreyboxWorld()), 'the art never mutates the authored world');
+  for (const palette of Object.values(WATER_PALETTES)) for (const key of ['shallow', 'deep', 'sky', 'foam', 'bank']) assertDecorativeTint(palette[key], key);
+  // Shore field: deterministic, positive inside the water, negative on the bank.
+  const outline = waters[0].visible.vertices;
+  const f1 = buildShoreField(outline), f2 = buildShoreField(outline);
+  assert.deepEqual(f1.data, f2.data);
+  const at = (x, y) => f1.data[Math.floor((y - f1.minY) / f1.unitsPerTexel) * f1.width + Math.floor((x - f1.minX) / f1.unitsPerTexel)] / 255 * (f1.bank + f1.depth) - f1.bank;
+  const b = waters[0].visible.bounds;
+  assert.ok(at((b.minX + b.maxX) / 2, (b.minY + b.maxY) / 2) > 20, 'deep inside the channel');
+  assert.ok(at(f1.minX + 4, f1.minY + 4) < -20, 'the corner of the field is dry bank');
+});
+
+test('decks, ramps and bridges draw as material meshes at their authored heights with no greybox fill on any walkable top', async () => {
+  const raised = world.pieces.filter(p => ['deck', 'ramp', 'bridge'].includes(p.kind));
+  assert.ok(raised.length >= 30);
+  const drawn = new Set();
+  for (const areaId of Object.keys(DISTRICT_TERRAIN)) {
+    const programs = [], cache = createAreaArtTextureCache({ loadTexture: loader([]) });
+    const art = createAreaArt({ world, areaId, plan: createDistrictTerrainArtPlan(world, areaId), kit, textureCache: cache, terrainFieldSize: 16, createControlTexture: () => null, createProgram: kind => { programs.push(kind); return { name: `test-${kind}` }; }, createShoreTexture: () => null });
+    await art.ready;
+    const ground = new Container(); art.paintSurfaces(ground);
+    const records = buildRaisedSurfaces(world.pieces, areaId);
+    for (const record of records) {
+      const mesh = ground.children.find(c => c.label === `area-raised-${record.id}`);
+      assert.ok(mesh?.geometry && mesh.shader?.resources.raisedUniforms, `${record.id} is a material mesh, not a flat Graphics fill`);
+      assert.equal(record.kit, RAISED_KIT_BY_AREA[areaId]);
+      const pos = mesh.geometry.getAttribute('aPosition').buffer.data, surf = mesh.geometry.getAttribute('aSurface').buffer.data;
+      const piece = world.pieces.find(p => p.id === record.id), s = piece.surface;
+      // Top quad: each corner lifted by the authored height at that corner.
+      for (let k = 0; k < 4; k++) {
+        const z = record.corners[k].z;
+        assert.equal(pos[k * 2], surf[k * 4]); assert.equal(pos[k * 2 + 1], surf[k * 4 + 1] - z);
+        assert.ok(z >= Math.min(s.fromZ, s.toZ, s.groundZ) - 1e-9 && z <= Math.max(s.fromZ, s.toZ, s.groundZ) + 1e-9);
+        if (piece.kind === 'ramp') assert.ok(Math.abs(surf[k * 4 + 2] - z / record.maxZ) < 1e-6, 'ramp slope gradient from the low end');
+      }
+      for (const face of record.faces) { assert.equal(face.a.y, record.bounds.maxY); assert.ok(face.a.z > 0 || face.c.z > 0); }
+      if (piece.kind === 'bridge') assert.equal(record.rails.length, 2, 'bridges carry rails on both long sides');
+      drawn.add(record.id);
+    }
+    assert.ok(!ground.children.some(c => /^area-raised-(?!shadow|rails)/.test(c.label ?? '') && !c.geometry), 'no greybox Graphics top on any raised surface');
+    if (records.length) assert.ok(programs.includes('raised'));
+    art.dispose(); assert.equal(cache.snapshot().references, 0);
+  }
+  for (const piece of raised) assert.ok(drawn.has(piece.id), `${piece.id} is drawn`);
+  // A ramp landing on a bridge at the same height gets no face where they meet.
+  const river = buildRaisedSurfaces(world.pieces, 'hashwood-river');
+  const north = river.find(r => r.id === 'hashwood-river-city-north-ramp'), bridge = river.find(r => r.id === 'hashwood-river-city-bridge');
+  assert.equal(north.travel, 'y'); assert.equal(bridge.travel, 'y');
+  assert.equal(north.faces.length, 0, 'north ramp continues onto the bridge'); assert.equal(bridge.faces.length, 0, 'bridge continues onto the south ramp');
+  assert.equal(north.rails.length, 2, 'crossing ramps carry the rails from ramp foot to ramp foot');
+  assert.ok(north.rails.every(rail => rail.a.z === 0 && rail.c.z === 24), 'ramp rails rise with the ramp');
+  // Collision edge guards are claimed by the area art and never treated as rock when classifying cliff edges.
+  assert.ok(world.pieces.some(p => p.visible.guardOf), 'the world carries bank and rail guards');
+  const bayou = buildRaisedSurfaces(world.pieces, 'scrypt-bayou'), lock = bayou.find(r => r.id === 'scrypt-bayou-lock-bridge');
+  assert.equal(lock.travel, 'x'); assert.equal(lock.faces.length, 1, 'the bayou bridge shows its beam over the water');
+  assert.deepEqual(buildRaisedSurfaces(world.pieces, 'scrypt-bayou'), bayou, 'deterministic');
+});
+
+test('district splat quads reach into the gaps between areas and feather out, so no corridor shows bare production ground', async () => {
+  for (const areaId of ['litecoin-city', 'scrypt-bayou']) {
+    const cache = createAreaArtTextureCache({ loadTexture: loader([]) }), fields = [];
+    const art = createAreaArt({ world, areaId, plan: createDistrictTerrainArtPlan(world, areaId), kit, textureCache: cache, terrainFieldSize: 32, createTerrainProgram: () => ({ name: 'test-terrain-program' }), createControlTexture: field => { fields.push(field); return new Texture({ source: new TextureSource({ width: field.width, height: field.height }) }); } });
+    await art.ready;
+    const ground = new Container(); art.paintGround(ground);
+    const mesh = ground.children.find(c => c.label === `area-terrain-${areaId}`), area = world.areas.find(a => a.id === areaId).bounds, wb = world.bounds;
+    const pos = mesh.geometry.getAttribute('aPosition').buffer.data;
+    assert.equal(pos[0], Math.max(wb.minX, area.minX - 560)); assert.equal(pos[1], Math.max(wb.minY, area.minY - 560));
+    assert.ok(pos[2] >= Math.min(wb.maxX, area.maxX + 560) - 1e-6);
+    const fade = mesh.shader.resources.terrainUniforms.uniforms.uFade;
+    assert.deepEqual([...fade], [area.minX - 440, area.minY - 440, area.maxX + 440, area.maxY + 440], 'feather over the outer 120 units');
+    assert.equal(fields[0].minX, pos[0], 'the control field covers the whole quad');
+    art.dispose();
+  }
+});
+
+test('the sliced terrain field build yields between row slices and produces the same bytes as the one-shot build', async () => {
+  const summary = validateAreaArtPlan(createDistrictTerrainArtPlan(world, 'hollow-pines'), kit);
+  const sync = buildTerrainField({ summary, world, size: 64 });
+  let pauses = 0;
+  const sliced = await buildTerrainFieldAsync({ summary, world, size: 64 }, { rowsPerStep: 8, pause: async () => { pauses++; } });
+  assert.deepEqual(sliced.data, sync.data); assert.deepEqual(sliced.extra, sync.extra);
+  assert.equal(pauses, Math.ceil(sync.height / 8) - 1, 'one pause between each slice of 8 rows');
+  const aborted = new AbortController(); aborted.abort();
+  assert.equal(await buildTerrainFieldAsync({ summary, world, size: 64 }, { rowsPerStep: 8, pause: async () => {}, signal: aborted.signal }), null, 'an aborted bind stops building');
+});
+
+test('water and raised-surface nodes leave the draw list while they are off view', async () => {
+  const cache = createAreaArtTextureCache({ loadTexture: loader([]) });
+  const art = createAreaArt({ world, areaId: 'hashwood-river', plan: createDistrictTerrainArtPlan(world, 'hashwood-river'), kit, textureCache: cache, terrainFieldSize: 16, createControlTexture: () => null, createProgram: kind => ({ name: `test-${kind}` }), createShoreTexture: field => new Texture({ source: new TextureSource({ width: field.width, height: field.height }) }), reducedMotion: () => true });
+  await art.ready;
+  const ground = new Container(); art.paintSurfaces(ground); art.mount(new Container(), ground);
+  const surfaces = ground.children.filter(c => /^area-(water|raised)-/.test(c.label ?? ''));
+  assert.ok(surfaces.length > 6);
+  art.update({ x: 1000, y: 1000, zoom: 1 }, { width: 800, height: 600 });
+  assert.ok(surfaces.every(c => c.visible === true), 'warm-up frames draw every surface once so their programs compile at load');
+  art.update({ x: 1000, y: 1000, zoom: 1 }, { width: 800, height: 600 }); art.update({ x: 1000, y: 1000, zoom: 1 }, { width: 800, height: 600 });
+  assert.ok(surfaces.every(c => c.visible === false), 'after warm-up, far from the river nothing is drawn');
+  const bridge = world.pieces.find(p => p.id === 'hashwood-river-city-bridge').visible.bounds;
+  art.update({ x: (bridge.minX + bridge.maxX) / 2, y: (bridge.minY + bridge.maxY) / 2, zoom: 1 }, { width: 800, height: 600 });
+  assert.equal(ground.children.find(c => c.label === 'area-raised-hashwood-river-city-bridge').visible, true);
+  assert.equal(ground.children.find(c => c.label === 'area-water-hashwood-river-channel').visible, true);
+  assert.equal(ground.children.find(c => c.label === 'area-raised-hashwood-river-woods-bridge').visible, false, 'the other crossing, 1,400 units away, stays off');
+  art.dispose();
 });
