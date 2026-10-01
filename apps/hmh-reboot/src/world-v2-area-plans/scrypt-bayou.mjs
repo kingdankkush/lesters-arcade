@@ -13,7 +13,7 @@
 // box culvert (b2-45). Fog cards are not a schema primitive (decals accept
 // only the ground detail frames); fog stays an open renderer hook.
 import { freezeDeep } from '../value-guards.mjs';
-import { DISTRICT_TERRAIN } from '../world-v2-area-art-schema.mjs';
+import { DISTRICT_TERRAIN, stableUnit } from '../world-v2-area-art-schema.mjs';
 import { createAreaPlanContext, CANOPY_HEIGHTS } from './plan-support.mjs';
 import { placeOnBank, placeEdgeWoodland, placeAlongPolygonEdges } from './plan-lines.mjs';
 
@@ -76,5 +76,16 @@ export function createScryptBayouArtPlan(world) {
   }
   // Cypress woodland beyond every edge, rooted on the closed world masses.
   placeEdgeWoodland(context, { key: 'bayou-edge', sources: CYPRESS, perSide: 24, height: (source, side, n, v) => CANOPY_HEIGHTS[source] * (0.9 + 0.22 * v), tint: 0xc4c6ae });
+  // Low fog: faint ground-level cards over the channel and the outer banks,
+  // drawn under every actor (presentation only; still under reduced motion).
+  const fogTint = 0xc9d2cc;
+  for (let n = 0, y = area.bounds.minY + 220; y < area.bounds.maxY - 150; y += 340, n++) {
+    const u = stableUnit('bayou-fog', n);
+    plan.ground.fog.push({ id: `fog-channel-${n}`, x: cx + 450 + (u - 0.5) * 220, y, rx: 300 + u * 160, ry: 90 + u * 40, alpha: 0.16 + u * 0.08, tint: fogTint });
+  }
+  for (const [n, [x, y]] of [[-1500, -1500], [-1600, 200], [-1450, 1500], [1500, -1450], [1600, 400], [1350, 1600]].entries()) {
+    const u = stableUnit('bayou-bank-fog', n);
+    plan.ground.fog.push({ id: `fog-bank-${n}`, x: cx + x, y: cy + y, rx: 380 + u * 200, ry: 120 + u * 60, alpha: 0.14 + u * 0.08, tint: fogTint });
+  }
   return freezeDeep(plan);
 }

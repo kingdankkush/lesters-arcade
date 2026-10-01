@@ -8,7 +8,9 @@ import { buildTerrainField, latticeHash, fbm, TERRAIN_FIELD_ID } from '../apps/h
 import { createDistrictTerrainArtPlan, createWorldMassesArtPlan } from '../apps/hmh-reboot/src/world-v2-area-plans/district-terrain.mjs';
 import { createMwebMeadowsArtPlan } from '../apps/hmh-reboot/src/world-v2-area-plans/mweb-meadows.mjs';
 import { createRugpullWoodsArtPlan } from '../apps/hmh-reboot/src/world-v2-area-plans/rugpull-woods.mjs';
-import { createAreaArt, createAreaArtTextureCache } from '../apps/hmh-reboot/src/world-v2-area-art.mjs';
+import { createAreaArt, createAreaArtTextureCache, triangulatePolygon } from '../apps/hmh-reboot/src/world-v2-area-art.mjs';
+import { createWorldRoadsArtPlan } from '../apps/hmh-reboot/src/world-v2-area-plans/world-roads.mjs';
+import { ROAD_RECIPES } from '../apps/hmh-reboot/src/world-v2-area-art-schema.mjs';
 
 const kit = JSON.parse(fs.readFileSync(new URL('../apps/portal/assets/generated/hmh-reboot-tripo-props-hd/hmh-tripo-props-hd.json', import.meta.url), 'utf8'));
 const tileManifest = JSON.parse(fs.readFileSync(new URL('../apps/portal/assets/generated/hmh-terrain-tiles/hmh-terrain-tiles.json', import.meta.url), 'utf8'));
@@ -48,7 +50,7 @@ test('ground.terrain validates its materials, the generic district plans and the
   assert.throws(() => validateAreaArtPlan({ ...shell, ground: { ...shell.ground, terrain: { materials: ['meadow', 'lava'] } } }, kit), /known material/);
   assert.throws(() => validateAreaArtPlan({ ...shell, ground: { ...shell.ground, terrain: { materials: ['meadow', 'meadow'] } } }, kit), /repeat/);
   const ok = validateAreaArtPlan({ ...shell, ground: { ...shell.ground, terrain: { materials: ['meadow', 'earth'], blend: 0.4 } } }, kit);
-  assert.deepEqual(ok.terrain, { materials: ['meadow', 'earth'], seed: 'mweb-meadows', blend: 0.4, patch: 800, value: 0.14 });
+  assert.deepEqual(ok.terrain, { materials: ['meadow', 'earth'], seed: 'mweb-meadows', blend: 0.4, patch: 800, value: 0.14, extras: [], slots: {} });
   assert.deepEqual(ok.tiles, ['crushed-ore', 'forest-floor', 'ledge-top', 'packed-earth']);
   for (const area of world.areas) {
     const plan = createDistrictTerrainArtPlan(world, area.id), again = createDistrictTerrainArtPlan(createGreyboxWorld(), area.id);
@@ -121,4 +123,144 @@ test('the renderer builds one splat mesh per terrain plan from an injected contr
   art.dispose(); half.dispose();
   assert.equal(cache.snapshot().references, 0);
   assert.equal(JSON.stringify(world), JSON.stringify(createGreyboxWorld()));
+});
+
+test('roads paint as one mesh each in dirt, gravel, paved order with opaque eroded cores, shoulders, ruts and a chalk centre line on paved roads', async () => {
+  assert.ok(ROAD_RECIPES.dirt.rank < ROAD_RECIPES.gravel.rank && ROAD_RECIPES.gravel.rank < ROAD_RECIPES.paved.rank);
+  assert.equal(ROAD_RECIPES.paved.centreLine, true); assert.equal(ROAD_RECIPES.gravel.centreLine, false);
+  for (const recipe of Object.values(ROAD_RECIPES)) assert.ok(recipe.coreFraction > 0.4 && recipe.coreFraction < 0.9 && recipe.rutAlpha > 0 && recipe.shoulderOut > 0);
+  const urls = [], programs = [], cache = createAreaArtTextureCache({ loadTexture: loader(urls) });
+  const plan = createWorldRoadsArtPlan(world);
+  const art = createAreaArt({ world, areaId: 'world-roads', plan, kit, textureCache: cache, createProgram: kind => { programs.push(kind); return { name: `test-${kind}` }; } });
+  await art.ready;
+  const ground = new Container(); art.paintGround(ground);
+  const meshes = ground.children.filter(child => child.label?.startsWith('area-road-'));
+  assert.equal(meshes.length, 14, 'one mesh per authored road');
+  const kinds = meshes.map(mesh => plan.roads.find(road => `area-road-${road.roadId}` === mesh.label).kind);
+  for (let i = 1; i < kinds.length; i++) assert.ok(ROAD_RECIPES[kinds[i - 1]].rank <= ROAD_RECIPES[kinds[i]].rank, 'overlaps resolve dirt under gravel under paved');
+  const paved = meshes.find(mesh => mesh.label === 'area-road-city-meadows'), uniforms = paved.shader.resources.roadUniforms.uniforms;
+  assert.equal(uniforms.uWear[2], 1, 'paved roads carry the centre line');
+  assert.equal(uniforms.uShape[0], 300 * ROAD_RECIPES.paved.coreFraction);
+  assert.equal(uniforms.uShape[2], 3200, 'along coordinate spans the road length');
+  const crackCards = ground.children.filter(child => !child.label?.startsWith('area-road-'));
+  assert.equal(crackCards.length, plan.roads.reduce((n, road) => n + road.cracks.length, 0), 'b2-47 crack cards stay on the paved roads');
+  assert.ok(crackCards.every(card => ground.children.indexOf(card) > ground.children.indexOf(meshes.at(-1))), 'cracks draw over every road core');
+  assert.ok(programs.includes('road'));
+  art.dispose(); assert.equal(cache.snapshot().references, 0);
+});
+
+test('bank and mass solids roof through the grain shader and face only camera-facing edges', async () => {
+  assert.deepEqual(triangulatePolygon([{ x: 0, y: 0 }, { x: 10, y: 0 }, { x: 10, y: 10 }, { x: 0, y: 10 }]).length, 6);
+  const concave = [{ x: 0, y: 0 }, { x: 20, y: 0 }, { x: 20, y: 20 }, { x: 10, y: 8 }, { x: 0, y: 20 }];
+  assert.equal(triangulatePolygon(concave).length, 9, 'concave outlines triangulate fully');
+  const urls = [], cache = createAreaArtTextureCache({ loadTexture: loader(urls) });
+  const art = createAreaArt({ world, areaId: 'world-masses', plan: createWorldMassesArtPlan(world), kit, textureCache: cache, createProgram: kind => ({ name: `test-${kind}` }) });
+  await art.ready;
+  const piece = world.pieces.find(p => p.id === 'closed-mass-1'), node = art.createSolid(piece);
+  const mass = node.children.at(-1), roof = mass.children.find(child => child.label === 'area-solid-roof');
+  assert.ok(roof, 'roof is a grain-shaded mesh, not a plain tile rectangle');
+  const indices = roof.geometry.indexBuffer.data, b = piece.visible.bounds;
+  assert.ok(indices.length > 6 && indices.length % 3 === 0, 'authored outline plus ragged-edge fans');
+  // Ragged rock edge: roof points stay within -8..+26 units of the authored outline.
+  const positions = roof.geometry.getAttribute('aPosition').buffer.data, h = piece.visible.height;
+  for (let i = 0; i < positions.length; i += 2) assert.ok(positions[i] >= b.minX - 27 && positions[i] <= b.maxX + 27 && positions[i + 1] + h >= b.minY - 27 && positions[i + 1] + h <= b.maxY + 27);
+  // Faces only where the ragged edge turns toward the camera: the south run plus small jogs on the
+  // side runs, never the north run. Three fills (face + two foot bands) per facing segment.
+  const faces = mass.children[1], fills = faces.context.instructions.filter(i => i.action === 'fill').length, width = b.maxX - b.minX, height = b.maxY - b.minY;
+  const southSegments = Math.round(width / 40), allSegments = 2 * southSegments + 2 * Math.round(height / 40);
+  assert.ok(fills % 3 === 0 && fills / 3 >= southSegments * 0.8 && fills / 3 < allSegments / 2, `${fills / 3} facing segments of ${allSegments}`);
+  art.dispose(); assert.equal(cache.snapshot().references, 0);
+});
+
+test('Litecoin City letters every placed carrier and facade from the branding table, off the cue palette', async () => {
+  const { createLitecoinCityArtPlan } = await import('../apps/hmh-reboot/src/world-v2-area-plans/litecoin-city.mjs');
+  const { CITY_BRAND_SLOTS, CITY_SIGN_PREFIX } = await import('../apps/hmh-reboot/src/world-v2-area-plans/city-branding.mjs');
+  const plan = createLitecoinCityArtPlan(world), summary = validateAreaArtPlan(plan, kit);
+  const carriers = summary.props.filter(p => p.id.startsWith(CITY_SIGN_PREFIX));
+  assert.ok(carriers.length >= 15, `${carriers.length} carriers placed`);
+  for (const carrier of carriers) assert.ok(summary.signs.some(s => s.propId === carrier.id), `${carrier.id} is lettered`);
+  for (const sign of summary.signs) assert.ok(CITY_BRAND_SLOTS.some(slot => slot.brand === sign.text), `${sign.text} comes from the branding table`);
+  assert.ok(summary.signs.some(s => s.pieceId === 'litecoin-city-exchange' && s.text === 'Litecoin') || !summary.solids.some(s => s.pieceId === 'litecoin-city-exchange'));
+  const made = [];
+  const urls = [], cache = createAreaArtTextureCache({ loadTexture: loader(urls) });
+  const art = createAreaArt({ world, areaId: 'litecoin-city', plan, kit, textureCache: cache, createProgram: kind => ({ name: kind }), createControlTexture: () => null, createSignTexture: (text, sign) => { made.push(text); return new Texture({ source: new TextureSource({ width: Math.round(sign.height * 4 * 4), height: Math.round(sign.height * 4) }) }); } });
+  await art.ready;
+  const depth = new Container(); art.mount(depth, new Container());
+  const tower = summary.props.find(p => p.id === `${CITY_SIGN_PREFIX}tower-1`) ?? carriers[0];
+  art.update({ x: tower.x, y: tower.y, zoom: 1, groundZ: 0, shakeX: 0, shakeY: 0 }, { width: 1280, height: 800 });
+  const panels = depth.children.flatMap(node => node.children).filter(child => child.label?.startsWith('area-sign-'));
+  assert.ok(panels.length >= 1 && made.length >= 1, 'visible carriers get a baked panel');
+  assert.throws(() => validateAreaArtPlan({ ...plan, signs: [{ id: 'x', propId: carriers[0].id, text: 'Buy <now>!' }] }, kit), /plain characters/);
+  assert.throws(() => validateAreaArtPlan({ ...plan, signs: [{ id: 'x', propId: carriers[0].id, text: 'Ok', panel: 0xff3300 }] }, kit), /reserved cue colour/);
+  assert.throws(() => validateAreaArtPlan({ ...plan, signs: [{ id: 'x', propId: 'nope', text: 'Ok' }] }, kit), /not a plan prop/);
+  art.dispose(); assert.equal(cache.snapshot().references, 0);
+});
+
+test('Scrypt Bayou lays faint low fog cards under the actors that hold still under reduced motion', async () => {
+  const { createScryptBayouArtPlan } = await import('../apps/hmh-reboot/src/world-v2-area-plans/scrypt-bayou.mjs');
+  const plan = createScryptBayouArtPlan(world), summary = validateAreaArtPlan(plan, kit);
+  assert.ok(summary.fog.length >= 12 && summary.fog.every(card => card.alpha <= 0.25), 'faint fog');
+  assert.equal(JSON.stringify(createScryptBayouArtPlan(createGreyboxWorld()).ground.fog), JSON.stringify(plan.ground.fog), 'deterministic');
+  let reduce = true;
+  const cache = createAreaArtTextureCache({ loadTexture: loader([]) });
+  const art = createAreaArt({ world, areaId: 'scrypt-bayou', plan, kit, textureCache: cache, createProgram: kind => ({ name: kind }), createControlTexture: () => null, createFogTexture: () => new Texture({ source: new TextureSource({ width: 128, height: 128 }) }), reducedMotion: () => reduce });
+  await art.ready;
+  const ground = new Container(), depth = new Container(); art.paintGround(ground); art.mount(depth, ground);
+  const fog = ground.children.filter(child => child.label?.startsWith('area-fog-'));
+  assert.equal(fog.length, summary.fog.length);
+  assert.ok(ground.getChildIndex(fog[0]) > 0, 'fog paints over the ground, inside the ground layer under every actor');
+  const camera = { x: 2500, y: 11600, zoom: 1, groundZ: 0, shakeX: 0, shakeY: 0 }, view = { width: 1280, height: 800 };
+  for (let i = 0; i < 200; i++) art.update(camera, view);
+  assert.ok(fog.every((sprite, i) => sprite.x === summary.fog[i].x), 'reduced motion: static');
+  reduce = false; for (let i = 0; i < 200; i++) art.update(camera, view);
+  assert.ok(fog.some((sprite, i) => sprite.x !== summary.fog[i].x), 'otherwise a slow drift');
+  art.dispose(); assert.equal(cache.snapshot().references, 0);
+});
+
+test('every zone and trail material lands in a splat slot, so no straight-edged polygon fill is left under the splat', async () => {
+  const plans = await Promise.all(['mweb-meadows', 'litecoin-city', 'halving-farms', 'silver-coast', 'scrypt-bayou', 'hashwood-river', 'rugpull-woods'].map(async id => {
+    const name = id.replace(/-([a-z])/g, (_, c) => c.toUpperCase()), module = await import(`../apps/hmh-reboot/src/world-v2-area-plans/${id}.mjs`);
+    return module[`create${name[0].toUpperCase()}${name.slice(1)}ArtPlan`](world);
+  }));
+  for (const plan of plans) {
+    const summary = validateAreaArtPlan(plan, kit), t = summary.terrain;
+    assert.ok(t.extras.length <= 2, `${summary.areaId} extras`);
+    for (const entry of [...summary.zones, ...summary.trails]) assert.ok(Number.isInteger(t.slots[entry.material]) && t.slots[entry.material] >= 0 && t.slots[entry.material] <= 4, `${summary.areaId} ${entry.material} has a slot`);
+    assert.ok(summary.budget.tileDecodedBytes <= 8 * 1024 * 1024, `${summary.areaId} ${summary.budget.tileDecodedBytes}`);
+    const field = buildTerrainField({ summary, world, size: 48 });
+    assert.equal(field.extra.length, 48 * field.height * 2);
+    if (t.extras.length) assert.ok(field.extra.some(v => v > 0), `${summary.areaId} extra material reaches the field`);
+  }
+  const cache = createAreaArtTextureCache({ loadTexture: loader([]) }), coast = plans[3];
+  const art = createAreaArt({ world, areaId: 'silver-coast', plan: coast, kit, textureCache: cache, terrainFieldSize: 32, createProgram: kind => ({ name: kind }), createControlTexture: field => new Texture({ source: new TextureSource({ width: field.width, height: field.height }) }) });
+  await art.ready; const ground = new Container(); art.paintGround(ground);
+  assert.equal(ground.children.filter(c => c.constructor.name === 'Graphics').length, 0, 'no Graphics zone fills when the splat paints');
+  art.dispose();
+});
+
+test('Litecoin City keeps tall cards off the walked street centrelines and masts at human-relative height', async () => {
+  const { createLitecoinCityArtPlan, TALL_CARD_HEIGHT, TALL_STREET_CLEARANCE, MAST_MAX_HEIGHT, CITY_STREET_CENTRELINES } = await import('../apps/hmh-reboot/src/world-v2-area-plans/litecoin-city.mjs');
+  const { distanceToPolyline } = await import('../apps/hmh-reboot/src/world-v2-area-art-schema.mjs');
+  const plan = createLitecoinCityArtPlan(world), summary = validateAreaArtPlan(plan, kit), city = world.areas.find(a => a.id === 'litecoin-city');
+  assert.ok(MAST_MAX_HEIGHT <= 180 && TALL_STREET_CLEARANCE >= 120 && TALL_CARD_HEIGHT <= 100);
+  const streets = [...world.roads.map(r => r.points), ...CITY_STREET_CENTRELINES.map(line => line.map(p => ({ x: city.center.x + p.x, y: city.center.y + p.y })))];
+  const tall = summary.props.filter(p => p.height > TALL_CARD_HEIGHT && p.groundZ === 0);
+  assert.ok(tall.length > 0);
+  for (const prop of tall) for (const line of streets) assert.ok(distanceToPolyline(prop.x, prop.y, line) >= TALL_STREET_CLEARANCE, `${prop.id} (${prop.source}, ${prop.height}) clears the street centreline`);
+  const masts = summary.props.filter(p => p.source === 'b2-52');
+  assert.ok(masts.length >= 4 && masts.every(p => p.height <= MAST_MAX_HEIGHT && p.fade), 'masts are human-relative and fade over the hero');
+  assert.ok(summary.signs.length >= 15, 'sign carriers survive the rule');
+});
+
+test('half-tier kit pages loaded at resolution 0.5 frame cards in texture units, not pixels', async () => {
+  const cache = createAreaArtTextureCache({ loadTexture: async url => { const [w, h] = sizeFor(url); const half = url.includes('@0.5x'); return new Texture({ source: new TextureSource({ width: half ? w * 2 : w, height: half ? h * 2 : h, resolution: half ? 0.5 : 1 }) }); } });
+  const plan = createRugpullWoodsArtPlan(world);
+  const art = createAreaArt({ world, areaId: 'rugpull-woods', plan, kit, textureCache: cache, resolution: 'half', createProgram: kind => ({ name: kind }), createControlTexture: () => null });
+  await art.ready;
+  const tent = world.pieces.find(p => p.id === 'rugpull-woods-supply-tent'), node = art.createSolid(tent);
+  const sprite = node.children.find(child => child.texture?.frame);
+  const item = kit.items.find(i => i.assetId === 'b1-13');
+  assert.equal(sprite.texture.frame.x, item.frame.x, 'frame x in units equals the full-page pixel x');
+  assert.equal(sprite.texture.frame.width, item.frame.w);
+  art.dispose();
 });

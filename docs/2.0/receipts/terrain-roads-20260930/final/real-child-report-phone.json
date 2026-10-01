@@ -1,0 +1,89 @@
+{
+  "url": "http://127.0.0.1:59394/hmh-reboot/index.html?mode=free&world=ten-area&evidenceSafe=1",
+  "viewports": [
+    {
+      "name": "phone",
+      "captures": [
+        {
+          "scene": "meadows-woods-road",
+          "file": "phone-meadows-woods-road.jpg",
+          "readyMs": 2459,
+          "data": {
+            "worldId": "ten-area-frontier",
+            "worldSelection": "explicit-unranked-free-ten-area",
+            "areaArtStatus": "ready",
+            "status": "Standalone session ready"
+          }
+        },
+        {
+          "scene": "woods-camp",
+          "file": "phone-woods-camp.jpg",
+          "readyMs": 1966,
+          "data": {
+            "worldId": "ten-area-frontier",
+            "worldSelection": "explicit-unranked-free-ten-area",
+            "areaArtStatus": "ready",
+            "status": "Standalone session ready"
+          }
+        },
+        {
+          "scene": "city-highway",
+          "file": "phone-city-highway.jpg",
+          "readyMs": 1950,
+          "data": {
+            "worldId": "ten-area-frontier",
+            "worldSelection": "explicit-unranked-free-ten-area",
+            "areaArtStatus": "ready",
+            "status": "Standalone session ready"
+          }
+        },
+        {
+          "scene": "farms-gravel-road",
+          "file": "phone-farms-gravel-road.jpg",
+          "readyMs": 1972,
+          "data": {
+            "worldId": "ten-area-frontier",
+            "worldSelection": "explicit-unranked-free-ten-area",
+            "areaArtStatus": "ready",
+            "status": "Standalone session ready"
+          }
+        },
+        {
+          "scene": "ledger-ridge-cliffs",
+          "file": "phone-ledger-ridge-cliffs.jpg",
+          "readyMs": 1932,
+          "data": {
+            "worldId": "ten-area-frontier",
+            "worldSelection": "explicit-unranked-free-ten-area",
+            "areaArtStatus": "ready",
+            "status": "Standalone session ready"
+          }
+        },
+        {
+          "scene": "city-signs",
+          "file": "phone-city-signs.jpg",
+          "readyMs": 2007,
+          "data": {
+            "worldId": "ten-area-frontier",
+            "worldSelection": "explicit-unranked-free-ten-area",
+            "areaArtStatus": "ready",
+            "status": "Standalone session ready"
+          }
+        },
+        {
+          "scene": "bayou-channel",
+          "file": "phone-bayou-channel.jpg",
+          "readyMs": 1918,
+          "data": {
+            "worldId": "ten-area-frontier",
+            "worldSelection": "explicit-unranked-free-ten-area",
+            "areaArtStatus": "ready",
+            "status": "Standalone session ready"
+          }
+        }
+      ],
+      "consoleErrors": []
+    }
+  ],
+  "errors": []
+}

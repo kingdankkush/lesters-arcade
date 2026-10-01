@@ -78,7 +78,9 @@ test('ground zones, trails, decals and solids validate their materials, sources 
   assert.equal(summary.detailPage, true);
   assert.equal(summary.solids[0].massAlpha, 0.32);
   assert.equal(summary.solids[1].massAlpha, 0);
-  assert.equal(summary.budget.tilePages, 3);
+  // The card's drawn mass gets an earth roof through the grain path: packed-earth + crushed-ore pages plus the detail page.
+  assert.equal(summary.solids[0].roof, 'earth');
+  assert.equal(summary.budget.tilePages, 5);
   assert.throws(() => validateAreaArtPlan({ ...plan, ground: { ...plan.ground, zones: [{ id: 'z', material: 'lava', vertices: plan.ground.zones[0].vertices }] } }, kit), /known material/);
   assert.throws(() => validateAreaArtPlan({ ...plan, ground: { ...plan.ground, trails: [{ id: 't', material: 'dirt', points: [{ x: 0, y: 0 }, { x: 1, y: 1 }], width: 400 }] } }, kit), /worn trail/);
   assert.throws(() => validateAreaArtPlan({ ...plan, ground: { ...plan.ground, decals: [{ id: 'd', source: 'b1-04', x: 1, y: 1 }] } }, kit), /ground detail frame/);

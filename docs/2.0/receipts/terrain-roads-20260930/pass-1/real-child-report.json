@@ -1,0 +1,150 @@
+{
+  "url": "http://127.0.0.1:51652/hmh-reboot/index.html?mode=free&world=ten-area&evidenceSafe=1",
+  "viewports": [
+    {
+      "name": "desktop",
+      "captures": [
+        {
+          "scene": "meadows-woods-road",
+          "file": "desktop-meadows-woods-road.jpg",
+          "readyMs": 4507,
+          "data": {
+            "worldId": "ten-area-frontier",
+            "worldSelection": "explicit-unranked-free-ten-area",
+            "areaArtStatus": "ready",
+            "status": "Standalone session ready"
+          }
+        },
+        {
+          "scene": "woods-camp",
+          "file": "desktop-woods-camp.jpg",
+          "readyMs": 3701,
+          "data": {
+            "worldId": "ten-area-frontier",
+            "worldSelection": "explicit-unranked-free-ten-area",
+            "areaArtStatus": "ready",
+            "status": "Standalone session ready"
+          }
+        },
+        {
+          "scene": "city-highway",
+          "file": "desktop-city-highway.jpg",
+          "readyMs": 5105,
+          "data": {
+            "worldId": "ten-area-frontier",
+            "worldSelection": "explicit-unranked-free-ten-area",
+            "areaArtStatus": "ready",
+            "status": "Standalone session ready"
+          }
+        },
+        {
+          "scene": "farms-gravel-road",
+          "file": "desktop-farms-gravel-road.jpg",
+          "readyMs": 5238,
+          "data": {
+            "worldId": "ten-area-frontier",
+            "worldSelection": "explicit-unranked-free-ten-area",
+            "areaArtStatus": "ready",
+            "status": "Standalone session ready"
+          }
+        },
+        {
+          "scene": "ledger-ridge-cliffs",
+          "file": "desktop-ledger-ridge-cliffs.jpg",
+          "readyMs": 5140,
+          "data": {
+            "worldId": "ten-area-frontier",
+            "worldSelection": "explicit-unranked-free-ten-area",
+            "areaArtStatus": "ready",
+            "status": "Standalone session ready"
+          }
+        },
+        {
+          "scene": "meadows-spawn",
+          "file": "desktop-meadows-spawn.jpg",
+          "readyMs": 4934,
+          "data": {
+            "worldId": "ten-area-frontier",
+            "worldSelection": "explicit-unranked-free-ten-area",
+            "areaArtStatus": "ready",
+            "status": "Standalone session ready"
+          }
+        }
+      ],
+      "consoleErrors": []
+    },
+    {
+      "name": "phone",
+      "captures": [
+        {
+          "scene": "meadows-woods-road",
+          "file": "phone-meadows-woods-road.jpg",
+          "readyMs": 2464,
+          "data": {
+            "worldId": "ten-area-frontier",
+            "worldSelection": "explicit-unranked-free-ten-area",
+            "areaArtStatus": "ready",
+            "status": "Standalone session ready"
+          }
+        },
+        {
+          "scene": "woods-camp",
+          "file": "phone-woods-camp.jpg",
+          "readyMs": 2497,
+          "data": {
+            "worldId": "ten-area-frontier",
+            "worldSelection": "explicit-unranked-free-ten-area",
+            "areaArtStatus": "ready",
+            "status": "Standalone session ready"
+          }
+        },
+        {
+          "scene": "city-highway",
+          "file": "phone-city-highway.jpg",
+          "readyMs": 2572,
+          "data": {
+            "worldId": "ten-area-frontier",
+            "worldSelection": "explicit-unranked-free-ten-area",
+            "areaArtStatus": "ready",
+            "status": "Standalone session ready"
+          }
+        },
+        {
+          "scene": "farms-gravel-road",
+          "file": "phone-farms-gravel-road.jpg",
+          "readyMs": 2506,
+          "data": {
+            "worldId": "ten-area-frontier",
+            "worldSelection": "explicit-unranked-free-ten-area",
+            "areaArtStatus": "ready",
+            "status": "Standalone session ready"
+          }
+        },
+        {
+          "scene": "ledger-ridge-cliffs",
+          "file": "phone-ledger-ridge-cliffs.jpg",
+          "readyMs": 1826,
+          "data": {
+            "worldId": "ten-area-frontier",
+            "worldSelection": "explicit-unranked-free-ten-area",
+            "areaArtStatus": "ready",
+            "status": "Standalone session ready"
+          }
+        },
+        {
+          "scene": "meadows-spawn",
+          "file": "phone-meadows-spawn.jpg",
+          "readyMs": 1566,
+          "data": {
+            "worldId": "ten-area-frontier",
+            "worldSelection": "explicit-unranked-free-ten-area",
+            "areaArtStatus": "ready",
+            "status": "Standalone session ready"
+          }
+        }
+      ],
+      "consoleErrors": []
+    }
+  ],
+  "errors": []
+}

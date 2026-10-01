@@ -1,0 +1,172 @@
+{
+  "url": "http://127.0.0.1:62231/hmh-reboot/index.html?mode=free&world=ten-area&evidenceSafe=1",
+  "viewports": [
+    {
+      "name": "desktop",
+      "captures": [
+        {
+          "scene": "meadows-woods-road",
+          "file": "desktop-meadows-woods-road.jpg",
+          "readyMs": 3113,
+          "data": {
+            "worldId": "ten-area-frontier",
+            "worldSelection": "explicit-unranked-free-ten-area",
+            "areaArtStatus": "ready",
+            "status": "Standalone session ready"
+          }
+        },
+        {
+          "scene": "woods-camp",
+          "file": "desktop-woods-camp.jpg",
+          "readyMs": 3053,
+          "data": {
+            "worldId": "ten-area-frontier",
+            "worldSelection": "explicit-unranked-free-ten-area",
+            "areaArtStatus": "ready",
+            "status": "Standalone session ready"
+          }
+        },
+        {
+          "scene": "city-highway",
+          "file": "desktop-city-highway.jpg",
+          "readyMs": 2774,
+          "data": {
+            "worldId": "ten-area-frontier",
+            "worldSelection": "explicit-unranked-free-ten-area",
+            "areaArtStatus": "ready",
+            "status": "Standalone session ready"
+          }
+        },
+        {
+          "scene": "farms-gravel-road",
+          "file": "desktop-farms-gravel-road.jpg",
+          "readyMs": 2639,
+          "data": {
+            "worldId": "ten-area-frontier",
+            "worldSelection": "explicit-unranked-free-ten-area",
+            "areaArtStatus": "ready",
+            "status": "Standalone session ready"
+          }
+        },
+        {
+          "scene": "ledger-ridge-cliffs",
+          "file": "desktop-ledger-ridge-cliffs.jpg",
+          "readyMs": 2669,
+          "data": {
+            "worldId": "ten-area-frontier",
+            "worldSelection": "explicit-unranked-free-ten-area",
+            "areaArtStatus": "ready",
+            "status": "Standalone session ready"
+          }
+        },
+        {
+          "scene": "city-signs",
+          "file": "desktop-city-signs.jpg",
+          "readyMs": 2674,
+          "data": {
+            "worldId": "ten-area-frontier",
+            "worldSelection": "explicit-unranked-free-ten-area",
+            "areaArtStatus": "ready",
+            "status": "Standalone session ready"
+          }
+        },
+        {
+          "scene": "bayou-channel",
+          "file": "desktop-bayou-channel.jpg",
+          "readyMs": 2679,
+          "data": {
+            "worldId": "ten-area-frontier",
+            "worldSelection": "explicit-unranked-free-ten-area",
+            "areaArtStatus": "ready",
+            "status": "Standalone session ready"
+          }
+        }
+      ],
+      "consoleErrors": []
+    },
+    {
+      "name": "phone",
+      "captures": [
+        {
+          "scene": "meadows-woods-road",
+          "file": "phone-meadows-woods-road.jpg",
+          "readyMs": 2023,
+          "data": {
+            "worldId": "ten-area-frontier",
+            "worldSelection": "explicit-unranked-free-ten-area",
+            "areaArtStatus": "ready",
+            "status": "Standalone session ready"
+          }
+        },
+        {
+          "scene": "woods-camp",
+          "file": "phone-woods-camp.jpg",
+          "readyMs": 1979,
+          "data": {
+            "worldId": "ten-area-frontier",
+            "worldSelection": "explicit-unranked-free-ten-area",
+            "areaArtStatus": "ready",
+            "status": "Standalone session ready"
+          }
+        },
+        {
+          "scene": "city-highway",
+          "file": "phone-city-highway.jpg",
+          "readyMs": 2502,
+          "data": {
+            "worldId": "ten-area-frontier",
+            "worldSelection": "explicit-unranked-free-ten-area",
+            "areaArtStatus": "ready",
+            "status": "Standalone session ready"
+          }
+        },
+        {
+          "scene": "farms-gravel-road",
+          "file": "phone-farms-gravel-road.jpg",
+          "readyMs": 1943,
+          "data": {
+            "worldId": "ten-area-frontier",
+            "worldSelection": "explicit-unranked-free-ten-area",
+            "areaArtStatus": "ready",
+            "status": "Standalone session ready"
+          }
+        },
+        {
+          "scene": "ledger-ridge-cliffs",
+          "file": "phone-ledger-ridge-cliffs.jpg",
+          "readyMs": 1997,
+          "data": {
+            "worldId": "ten-area-frontier",
+            "worldSelection": "explicit-unranked-free-ten-area",
+            "areaArtStatus": "ready",
+            "status": "Standalone session ready"
+          }
+        },
+        {
+          "scene": "city-signs",
+          "file": "phone-city-signs.jpg",
+          "readyMs": 1899,
+          "data": {
+            "worldId": "ten-area-frontier",
+            "worldSelection": "explicit-unranked-free-ten-area",
+            "areaArtStatus": "ready",
+            "status": "Standalone session ready"
+          }
+        },
+        {
+          "scene": "bayou-channel",
+          "file": "phone-bayou-channel.jpg",
+          "readyMs": 1953,
+          "data": {
+            "worldId": "ten-area-frontier",
+            "worldSelection": "explicit-unranked-free-ten-area",
+            "areaArtStatus": "ready",
+            "status": "Standalone session ready"
+          }
+        }
+      ],
+      "consoleErrors": []
+    }
+  ],
+  "errors": []
+}
