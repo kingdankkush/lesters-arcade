@@ -1,0 +1,3917 @@
+{
+ "token": "claude-collision-55248-2026-10-01T10:02:27.484Z",
+ "base": "portal static server (apps/portal, built child in dist)",
+ "radius": 24,
+ "standoff": 90,
+ "buildings": [
+  {
+   "id": "litecoin-city-north-commercial-block",
+   "areaId": "litecoin-city",
+   "bounds": {
+    "minX": 7850,
+    "minY": 5200,
+    "maxX": 9350,
+    "maxY": 6100
+   },
+   "sides": [
+    {
+     "ms": 60623,
+     "side": "south",
+     "reachedOnFoot": false,
+     "start": {
+      "x": 8600,
+      "y": 6190
+     },
+     "before": {
+      "x": 8593,
+      "y": 6192
+     },
+     "predicted": {
+      "x": 8593,
+      "y": 6124
+     },
+     "after": {
+      "x": 8593,
+      "y": 6124
+     },
+     "moved": 68,
+     "retries": 0,
+     "axisError": 0.0000010000003385357559,
+     "stoppedAtWall": true,
+     "penetrated": false,
+     "clearanceToWall": 24,
+     "insideWall": false,
+     "heldOutside": true
+    },
+    {
+     "ms": 89690,
+     "side": "east",
+     "reachedOnFoot": false,
+     "start": {
+      "x": 9440,
+      "y": 5650
+     },
+     "before": {
+      "x": 9440,
+      "y": 5653
+     },
+     "predicted": {
+      "x": 9374,
+      "y": 5653
+     },
+     "after": {
+      "x": 9374,
+      "y": 5653
+     },
+     "moved": 66,
+     "retries": 0,
+     "axisError": 0.0000010000003385357559,
+     "stoppedAtWall": true,
+     "penetrated": false,
+     "clearanceToWall": 24,
+     "insideWall": false,
+     "heldOutside": true
+    },
+    {
+     "ms": 107919,
+     "side": "north",
+     "reachedOnFoot": false,
+     "start": {
+      "x": 8600,
+      "y": 5110
+     },
+     "before": {
+      "x": 8594,
+      "y": 5113
+     },
+     "predicted": {
+      "x": 8594,
+      "y": 5176
+     },
+     "after": {
+      "x": 8594,
+      "y": 5176
+     },
+     "moved": 63,
+     "retries": 0,
+     "axisError": 0.0000010000003385357559,
+     "stoppedAtWall": true,
+     "penetrated": false,
+     "clearanceToWall": 24,
+     "insideWall": false,
+     "heldOutside": true
+    },
+    {
+     "ms": 88245,
+     "side": "west",
+     "reachedOnFoot": false,
+     "start": {
+      "x": 7760,
+      "y": 5650
+     },
+     "before": {
+      "x": 7757,
+      "y": 5653
+     },
+     "predicted": {
+      "x": 7826,
+      "y": 5653
+     },
+     "after": {
+      "x": 7826,
+      "y": 5653
+     },
+     "moved": 69,
+     "retries": 0,
+     "axisError": 0.0000010000003385357559,
+     "stoppedAtWall": true,
+     "penetrated": false,
+     "clearanceToWall": 24,
+     "insideWall": false,
+     "heldOutside": true
+    }
+   ]
+  },
+  {
+   "id": "litecoin-city-river-housing",
+   "areaId": "litecoin-city",
+   "bounds": {
+    "minX": 6125,
+    "minY": 7150,
+    "maxX": 7075,
+    "maxY": 8250
+   },
+   "sides": [
+    {
+     "ms": 58866,
+     "side": "south",
+     "reachedOnFoot": false,
+     "start": {
+      "x": 6600,
+      "y": 8340
+     },
+     "before": {
+      "x": 6593,
+      "y": 8342
+     },
+     "predicted": {
+      "x": 6593,
+      "y": 8274
+     },
+     "after": {
+      "x": 6593,
+      "y": 8274
+     },
+     "moved": 68,
+     "retries": 0,
+     "axisError": 0.0000010000003385357559,
+     "stoppedAtWall": true,
+     "penetrated": false,
+     "clearanceToWall": 24,
+     "insideWall": false,
+     "heldOutside": true
+    },
+    {
+     "ms": 93174,
+     "side": "east",
+     "reachedOnFoot": false,
+     "start": {
+      "x": 7165,
+      "y": 7700
+     },
+     "before": {
+      "x": 7159,
+      "y": 7703
+     },
+     "predicted": {
+      "x": 7099,
+      "y": 7703
+     },
+     "after": {
+      "x": 7099,
+      "y": 7703
+     },
+     "moved": 60,
+     "retries": 0,
+     "axisError": 0.0000010000003385357559,
+     "stoppedAtWall": true,
+     "penetrated": false,
+     "clearanceToWall": 24,
+     "insideWall": false,
+     "heldOutside": true
+    },
+    {
+     "ms": 22822,
+     "side": "north",
+     "reachedOnFoot": true,
+     "start": {
+      "x": 6600,
+      "y": 7060
+     },
+     "before": {
+      "x": 6599,
+      "y": 7056
+     },
+     "predicted": {
+      "x": 6599,
+      "y": 7126
+     },
+     "after": {
+      "x": 6599,
+      "y": 7126
+     },
+     "moved": 70,
+     "retries": 0,
+     "axisError": 0.0000010000003385357559,
+     "stoppedAtWall": true,
+     "penetrated": false,
+     "clearanceToWall": 24,
+     "insideWall": false,
+     "heldOutside": true
+    },
+    {
+     "ms": 89653,
+     "side": "west",
+     "reachedOnFoot": false,
+     "start": {
+      "x": 6035,
+      "y": 7700
+     },
+     "before": {
+      "x": 6035,
+      "y": 7700
+     },
+     "predicted": {
+      "x": 6101,
+      "y": 7700
+     },
+     "after": {
+      "x": 6101,
+      "y": 7702
+     },
+     "moved": 66,
+     "retries": 0,
+     "axisError": 0.0000010000003385357559,
+     "stoppedAtWall": true,
+     "penetrated": false,
+     "clearanceToWall": 24,
+     "insideWall": false,
+     "heldOutside": true
+    }
+   ]
+  },
+  {
+   "id": "hollow-pines-southwest-grove",
+   "areaId": "hollow-pines",
+   "bounds": {
+    "minX": 10600,
+    "minY": 11750,
+    "maxX": 11200,
+    "maxY": 13100
+   },
+   "sides": [
+    {
+     "ms": 81505,
+     "side": "south",
+     "reachedOnFoot": false,
+     "start": {
+      "x": 10900,
+      "y": 13190
+     },
+     "before": {
+      "x": 10882,
+      "y": 13197
+     },
+     "predicted": {
+      "x": 10937,
+      "y": 13025
+     },
+     "after": {
+      "x": 11015,
+      "y": 12991
+     },
+     "moved": 206,
+     "retries": 0,
+     "axisError": 33.662929915441055,
+     "stoppedAtWall": false,
+     "penetrated": false,
+     "clearanceToWall": 23.9,
+     "insideWall": false,
+     "heldOutside": true
+    },
+    {
+     "ms": 28090,
+     "side": "east",
+     "reachedOnFoot": true,
+     "start": {
+      "x": 11290,
+      "y": 12425
+     },
+     "before": {
+      "x": 11292,
+      "y": 12416
+     },
+     "predicted": {
+      "x": 11180,
+      "y": 12456
+     },
+     "after": {
+      "x": 11180,
+      "y": 12459
+     },
+     "moved": 112,
+     "retries": 0,
+     "axisError": 0.3257955010267324,
+     "stoppedAtWall": true,
+     "penetrated": false,
+     "clearanceToWall": 24.2,
+     "insideWall": false,
+     "heldOutside": true
+    },
+    {
+     "ms": 95532,
+     "side": "north",
+     "reachedOnFoot": false,
+     "start": {
+      "x": 10900,
+      "y": 11660
+     },
+     "before": {
+      "x": 10894,
+      "y": 11663
+     },
+     "predicted": {
+      "x": 10866,
+      "y": 11743
+     },
+     "after": {
+      "x": 10857,
+      "y": 11744
+     },
+     "moved": 81,
+     "retries": 0,
+     "axisError": 1.4915931103296316,
+     "stoppedAtWall": true,
+     "penetrated": false,
+     "clearanceToWall": 23.7,
+     "insideWall": false,
+     "heldOutside": true
+    },
+    {
+     "side": "west",
+     "start": null,
+     "reason": "no clear stand-off point with the building first in line"
+    }
+   ]
+  },
+  {
+   "id": "fork-fortress-keep",
+   "areaId": "fork-fortress",
+   "bounds": {
+    "minX": 11920,
+    "minY": 700,
+    "maxX": 13280,
+    "maxY": 1280
+   },
+   "sides": [
+    {
+     "ms": 68409,
+     "side": "south",
+     "reachedOnFoot": false,
+     "start": {
+      "x": 12600,
+      "y": 1370
+     },
+     "before": {
+      "x": 12593,
+      "y": 1372
+     },
+     "predicted": {
+      "x": 12593,
+      "y": 1304
+     },
+     "after": {
+      "x": 12593,
+      "y": 1304
+     },
+     "moved": 68,
+     "retries": 0,
+     "axisError": 9.99999883788405e-7,
+     "stoppedAtWall": true,
+     "penetrated": false,
+     "clearanceToWall": 24,
+     "insideWall": false,
+     "heldOutside": true
+    },
+    {
+     "ms": 102321,
+     "side": "east",
+     "reachedOnFoot": false,
+     "start": {
+      "x": 13370,
+      "y": 903
+     },
+     "before": {
+      "x": 13364,
+      "y": 906
+     },
+     "predicted": {
+      "x": 13304,
+      "y": 906
+     },
+     "after": {
+      "x": 13304,
+      "y": 906
+     },
+     "moved": 60,
+     "retries": 0,
+     "axisError": 0.0000010000003385357559,
+     "stoppedAtWall": true,
+     "penetrated": false,
+     "clearanceToWall": 24,
+     "insideWall": false,
+     "heldOutside": true
+    },
+    {
+     "ms": 19185,
+     "side": "north",
+     "reachedOnFoot": true,
+     "start": {
+      "x": 12600,
+      "y": 610
+     },
+     "before": {
+      "x": 12590,
+      "y": 612
+     },
+     "predicted": {
+      "x": 12590,
+      "y": 676
+     },
+     "after": {
+      "x": 12590,
+      "y": 676
+     },
+     "moved": 64,
+     "retries": 0,
+     "axisError": 9.999999974752427e-7,
+     "stoppedAtWall": true,
+     "penetrated": false,
+     "clearanceToWall": 24,
+     "insideWall": false,
+     "heldOutside": true
+    },
+    {
+     "ms": 21324,
+     "side": "west",
+     "reachedOnFoot": true,
+     "start": {
+      "x": 11830,
+      "y": 990
+     },
+     "before": {
+      "x": 11831,
+      "y": 981
+     },
+     "predicted": {
+      "x": 11896,
+      "y": 981
+     },
+     "after": {
+      "x": 11896,
+      "y": 981
+     },
+     "moved": 65,
+     "retries": 0,
+     "axisError": 0.0000010000003385357559,
+     "stoppedAtWall": true,
+     "penetrated": false,
+     "clearanceToWall": 24,
+     "insideWall": false,
+     "heldOutside": true
+    }
+   ]
+  },
+  {
+   "id": "hollow-pines-northeast-grove",
+   "areaId": "hollow-pines",
+   "bounds": {
+    "minX": 13450,
+    "minY": 9900,
+    "maxX": 14300,
+    "maxY": 10800
+   },
+   "sides": [
+    {
+     "ms": 57654,
+     "side": "south",
+     "reachedOnFoot": false,
+     "start": {
+      "x": 13875,
+      "y": 10890
+     },
+     "before": {
+      "x": 13874,
+      "y": 10889
+     },
+     "predicted": {
+      "x": 13810,
+      "y": 10750
+     },
+     "after": {
+      "x": 13765,
+      "y": 10732
+     },
+     "moved": 157,
+     "retries": 0,
+     "axisError": 17.731717371791092,
+     "stoppedAtWall": false,
+     "penetrated": false,
+     "clearanceToWall": 24.1,
+     "insideWall": false,
+     "heldOutside": true
+    },
+    {
+     "ms": 89672,
+     "side": "east",
+     "reachedOnFoot": false,
+     "start": {
+      "x": 14390,
+      "y": 10350
+     },
+     "before": {
+      "x": 14390,
+      "y": 10353
+     },
+     "predicted": {
+      "x": 14307,
+      "y": 10331
+     },
+     "after": {
+      "x": 14307,
+      "y": 10328
+     },
+     "moved": 83,
+     "retries": 0,
+     "axisError": 0.24723019374141586,
+     "stoppedAtWall": true,
+     "penetrated": false,
+     "clearanceToWall": 24.1,
+     "insideWall": false,
+     "heldOutside": true
+    },
+    {
+     "ms": 27981,
+     "side": "north",
+     "reachedOnFoot": true,
+     "start": {
+      "x": 13875,
+      "y": 9810
+     },
+     "before": {
+      "x": 13877,
+      "y": 9807
+     },
+     "predicted": {
+      "x": 13908,
+      "y": 9919
+     },
+     "after": {
+      "x": 13893,
+      "y": 9916
+     },
+     "moved": 109,
+     "retries": 0,
+     "axisError": 2.731950247040004,
+     "stoppedAtWall": true,
+     "penetrated": false,
+     "clearanceToWall": 24.2,
+     "insideWall": false,
+     "heldOutside": true
+    },
+    {
+     "ms": 108047,
+     "side": "west",
+     "reachedOnFoot": false,
+     "start": {
+      "x": 13360,
+      "y": 10350
+     },
+     "before": {
+      "x": 13357,
+      "y": 10352
+     },
+     "predicted": {
+      "x": 13448,
+      "y": 10378
+     },
+     "after": {
+      "x": 13447,
+      "y": 10370
+     },
+     "moved": 90,
+     "retries": 0,
+     "axisError": 1.0776376589019492,
+     "stoppedAtWall": true,
+     "penetrated": false,
+     "clearanceToWall": 24.1,
+     "insideWall": false,
+     "heldOutside": true
+    }
+   ]
+  },
+  {
+   "id": "halving-farms-barn",
+   "areaId": "halving-farms",
+   "bounds": {
+    "minX": 17300,
+    "minY": 5100,
+    "maxX": 18400,
+    "maxY": 5700
+   },
+   "sides": [
+    {
+     "ms": 67882,
+     "side": "south",
+     "reachedOnFoot": false,
+     "start": {
+      "x": 17850,
+      "y": 5790
+     },
+     "before": {
+      "x": 17843,
+      "y": 5792
+     },
+     "predicted": {
+      "x": 17843,
+      "y": 5724
+     },
+     "after": {
+      "x": 17843,
+      "y": 5724
+     },
+     "moved": 68,
+     "retries": 0,
+     "axisError": 0.0000010000003385357559,
+     "stoppedAtWall": true,
+     "penetrated": false,
+     "clearanceToWall": 24,
+     "insideWall": false,
+     "heldOutside": true
+    },
+    {
+     "ms": 18806,
+     "side": "east",
+     "reachedOnFoot": true,
+     "start": {
+      "x": 18490,
+      "y": 5400
+     },
+     "before": {
+      "x": 18494,
+      "y": 5397
+     },
+     "predicted": {
+      "x": 18424,
+      "y": 5397
+     },
+     "after": {
+      "x": 18424,
+      "y": 5397
+     },
+     "moved": 70,
+     "retries": 0,
+     "axisError": 0.0000010000003385357559,
+     "stoppedAtWall": true,
+     "penetrated": false,
+     "clearanceToWall": 24,
+     "insideWall": false,
+     "heldOutside": true
+    },
+    {
+     "ms": 110474,
+     "side": "north",
+     "reachedOnFoot": false,
+     "start": {
+      "x": 17850,
+      "y": 5010
+     },
+     "before": {
+      "x": 17845,
+      "y": 5010
+     },
+     "predicted": {
+      "x": 17845,
+      "y": 5076
+     },
+     "after": {
+      "x": 17845,
+      "y": 5076
+     },
+     "moved": 66,
+     "retries": 0,
+     "axisError": 0.0000010000003385357559,
+     "stoppedAtWall": true,
+     "penetrated": false,
+     "clearanceToWall": 24,
+     "insideWall": false,
+     "heldOutside": true
+    },
+    {
+     "ms": 18776,
+     "side": "west",
+     "reachedOnFoot": true,
+     "start": {
+      "x": 17210,
+      "y": 5400
+     },
+     "before": {
+      "x": 17211,
+      "y": 5410
+     },
+     "predicted": {
+      "x": 17276,
+      "y": 5410
+     },
+     "after": {
+      "x": 17276,
+      "y": 5410
+     },
+     "moved": 65,
+     "retries": 0,
+     "axisError": 0.0000010000003385357559,
+     "stoppedAtWall": true,
+     "penetrated": false,
+     "clearanceToWall": 24,
+     "insideWall": false,
+     "heldOutside": true
+    }
+   ]
+  },
+  {
+   "id": "litecoin-city-market-block",
+   "areaId": "litecoin-city",
+   "bounds": {
+    "minX": 6500,
+    "minY": 5425,
+    "maxX": 7200,
+    "maxY": 6275
+   },
+   "sides": [
+    {
+     "ms": 69059,
+     "side": "south",
+     "reachedOnFoot": false,
+     "start": {
+      "x": 6850,
+      "y": 6365
+     },
+     "before": {
+      "x": 6843,
+      "y": 6367
+     },
+     "predicted": {
+      "x": 6843,
+      "y": 6299
+     },
+     "after": {
+      "x": 6843,
+      "y": 6299
+     },
+     "moved": 68,
+     "retries": 0,
+     "axisError": 0.0000010000003385357559,
+     "stoppedAtWall": true,
+     "penetrated": false,
+     "clearanceToWall": 24,
+     "insideWall": false,
+     "heldOutside": true
+    },
+    {
+     "ms": 110583,
+     "side": "east",
+     "reachedOnFoot": false,
+     "start": {
+      "x": 7290,
+      "y": 5850
+     },
+     "before": {
+      "x": 7284,
+      "y": 5853
+     },
+     "predicted": {
+      "x": 7224,
+      "y": 5853
+     },
+     "after": {
+      "x": 7224,
+      "y": 5853
+     },
+     "moved": 60,
+     "retries": 0,
+     "axisError": 0.0000010000003385357559,
+     "stoppedAtWall": true,
+     "penetrated": false,
+     "clearanceToWall": 24,
+     "insideWall": false,
+     "heldOutside": true
+    },
+    {
+     "ms": 22326,
+     "side": "north",
+     "reachedOnFoot": true,
+     "start": {
+      "x": 6850,
+      "y": 5335
+     },
+     "before": {
+      "x": 6844,
+      "y": 5337
+     },
+     "predicted": {
+      "x": 6844,
+      "y": 5401
+     },
+     "after": {
+      "x": 6853,
+      "y": 5401
+     },
+     "moved": 64,
+     "retries": 0,
+     "axisError": 0.0000010000003385357559,
+     "stoppedAtWall": true,
+     "penetrated": false,
+     "clearanceToWall": 24,
+     "insideWall": false,
+     "heldOutside": true
+    },
+    {
+     "ms": 19159,
+     "side": "west",
+     "reachedOnFoot": true,
+     "start": {
+      "x": 6410,
+      "y": 5850
+     },
+     "before": {
+      "x": 6407,
+      "y": 5858
+     },
+     "predicted": {
+      "x": 6476,
+      "y": 5858
+     },
+     "after": {
+      "x": 6476,
+      "y": 5858
+     },
+     "moved": 69,
+     "retries": 0,
+     "axisError": 0.0000010000003385357559,
+     "stoppedAtWall": true,
+     "penetrated": false,
+     "clearanceToWall": 24,
+     "insideWall": false,
+     "heldOutside": true
+    }
+   ]
+  },
+  {
+   "id": "litecoin-city-exchange",
+   "areaId": "litecoin-city",
+   "bounds": {
+    "minX": 7700,
+    "minY": 8350,
+    "maxX": 9300,
+    "maxY": 8650
+   },
+   "sides": [
+    {
+     "side": "south",
+     "start": null,
+     "reason": "no clear stand-off point with the building first in line"
+    },
+    {
+     "ms": 81439,
+     "side": "east",
+     "reachedOnFoot": false,
+     "start": {
+      "x": 9390,
+      "y": 8500
+     },
+     "before": {
+      "x": 9390,
+      "y": 8503
+     },
+     "predicted": {
+      "x": 9324,
+      "y": 8503
+     },
+     "after": {
+      "x": 9324,
+      "y": 8503
+     },
+     "moved": 66,
+     "retries": 0,
+     "axisError": 0.0000010000003385357559,
+     "stoppedAtWall": true,
+     "penetrated": false,
+     "clearanceToWall": 24,
+     "insideWall": false,
+     "heldOutside": true
+    },
+    {
+     "ms": 28827,
+     "side": "north",
+     "reachedOnFoot": true,
+     "start": {
+      "x": 8500,
+      "y": 8260
+     },
+     "before": {
+      "x": 8503,
+      "y": 8256
+     },
+     "predicted": {
+      "x": 8503,
+      "y": 8326
+     },
+     "after": {
+      "x": 8494,
+      "y": 8326
+     },
+     "moved": 70,
+     "retries": 0,
+     "axisError": 0.0000010000003385357559,
+     "stoppedAtWall": true,
+     "penetrated": false,
+     "clearanceToWall": 24,
+     "insideWall": false,
+     "heldOutside": true
+    },
+    {
+     "ms": 93450,
+     "side": "west",
+     "reachedOnFoot": false,
+     "start": {
+      "x": 7610,
+      "y": 8500
+     },
+     "before": {
+      "x": 7607,
+      "y": 8507
+     },
+     "predicted": {
+      "x": 7676,
+      "y": 8507
+     },
+     "after": {
+      "x": 7676,
+      "y": 8507
+     },
+     "moved": 69,
+     "retries": 0,
+     "axisError": 0.0000010000003385357559,
+     "stoppedAtWall": true,
+     "penetrated": false,
+     "clearanceToWall": 24,
+     "insideWall": false,
+     "heldOutside": true
+    }
+   ]
+  },
+  {
+   "id": "litecoin-city-service-warehouse",
+   "areaId": "litecoin-city",
+   "bounds": {
+    "minX": 5800,
+    "minY": 4950,
+    "maxX": 6200,
+    "maxY": 5750
+   },
+   "sides": [
+    {
+     "ms": 74710,
+     "side": "south",
+     "reachedOnFoot": false,
+     "start": {
+      "x": 6000,
+      "y": 5840
+     },
+     "before": {
+      "x": 5982,
+      "y": 5841
+     },
+     "predicted": {
+      "x": 5982,
+      "y": 5774
+     },
+     "after": {
+      "x": 5982,
+      "y": 5774
+     },
+     "moved": 67,
+     "retries": 0,
+     "axisError": 0.0000010000003385357559,
+     "stoppedAtWall": true,
+     "penetrated": false,
+     "clearanceToWall": 24,
+     "insideWall": false,
+     "heldOutside": true
+    },
+    {
+     "ms": 16166,
+     "side": "east",
+     "reachedOnFoot": true,
+     "start": {
+      "x": 6290,
+      "y": 5350
+     },
+     "before": {
+      "x": 6289,
+      "y": 5348
+     },
+     "predicted": {
+      "x": 6224,
+      "y": 5348
+     },
+     "after": {
+      "x": 6224,
+      "y": 5348
+     },
+     "moved": 65,
+     "retries": 0,
+     "axisError": 0.0000010000003385357559,
+     "stoppedAtWall": true,
+     "penetrated": false,
+     "clearanceToWall": 24,
+     "insideWall": false,
+     "heldOutside": true
+    },
+    {
+     "ms": 16430,
+     "side": "north",
+     "reachedOnFoot": true,
+     "start": {
+      "x": 6000,
+      "y": 4860
+     },
+     "before": {
+      "x": 5995,
+      "y": 4860
+     },
+     "predicted": {
+      "x": 5995,
+      "y": 4926
+     },
+     "after": {
+      "x": 5995,
+      "y": 4926
+     },
+     "moved": 66,
+     "retries": 0,
+     "axisError": 0.0000010000003385357559,
+     "stoppedAtWall": true,
+     "penetrated": false,
+     "clearanceToWall": 24,
+     "insideWall": false,
+     "heldOutside": true
+    },
+    {
+     "ms": 15589,
+     "side": "west",
+     "reachedOnFoot": true,
+     "start": {
+      "x": 5710,
+      "y": 5350
+     },
+     "before": {
+      "x": 5710,
+      "y": 5349
+     },
+     "predicted": {
+      "x": 5776,
+      "y": 5349
+     },
+     "after": {
+      "x": 5776,
+      "y": 5349
+     },
+     "moved": 66,
+     "retries": 0,
+     "axisError": 0.0000010000003385357559,
+     "stoppedAtWall": true,
+     "penetrated": false,
+     "clearanceToWall": 24,
+     "insideWall": false,
+     "heldOutside": true
+    }
+   ]
+  },
+  {
+   "id": "mweb-meadows-relay-home",
+   "areaId": "mweb-meadows",
+   "bounds": {
+    "minX": 12830,
+    "minY": 5100,
+    "maxX": 13390,
+    "maxY": 5440
+   },
+   "sides": [
+    {
+     "ms": 77860,
+     "side": "south",
+     "reachedOnFoot": false,
+     "start": {
+      "x": 13110,
+      "y": 5530
+     },
+     "before": {
+      "x": 13094,
+      "y": 5531
+     },
+     "predicted": {
+      "x": 13094,
+      "y": 5464
+     },
+     "after": {
+      "x": 13094,
+      "y": 5464
+     },
+     "moved": 67,
+     "retries": 0,
+     "axisError": 0.0000010000003385357559,
+     "stoppedAtWall": true,
+     "penetrated": false,
+     "clearanceToWall": 24,
+     "insideWall": false,
+     "heldOutside": true
+    },
+    {
+     "ms": 12949,
+     "side": "east",
+     "reachedOnFoot": true,
+     "start": {
+      "x": 13480,
+      "y": 5270
+     },
+     "before": {
+      "x": 13481,
+      "y": 5256
+     },
+     "predicted": {
+      "x": 13414,
+      "y": 5256
+     },
+     "after": {
+      "x": 13414,
+      "y": 5256
+     },
+     "moved": 67,
+     "retries": 0,
+     "axisError": 0.0000010000003385357559,
+     "stoppedAtWall": true,
+     "penetrated": false,
+     "clearanceToWall": 24,
+     "insideWall": false,
+     "heldOutside": true
+    },
+    {
+     "ms": 13382,
+     "side": "north",
+     "reachedOnFoot": true,
+     "start": {
+      "x": 13110,
+      "y": 5010
+     },
+     "before": {
+      "x": 13102,
+      "y": 5008
+     },
+     "predicted": {
+      "x": 13102,
+      "y": 5076
+     },
+     "after": {
+      "x": 13102,
+      "y": 5076
+     },
+     "moved": 68,
+     "retries": 0,
+     "axisError": 0.0000010000003385357559,
+     "stoppedAtWall": true,
+     "penetrated": false,
+     "clearanceToWall": 24,
+     "insideWall": false,
+     "heldOutside": true
+    },
+    {
+     "ms": 92351,
+     "side": "west",
+     "reachedOnFoot": false,
+     "start": {
+      "x": 12740,
+      "y": 5270
+     },
+     "before": {
+      "x": 12737,
+      "y": 5277
+     },
+     "predicted": {
+      "x": 12806,
+      "y": 5277
+     },
+     "after": {
+      "x": 12806,
+      "y": 5277
+     },
+     "moved": 69,
+     "retries": 0,
+     "axisError": 0.0000010000003385357559,
+     "stoppedAtWall": true,
+     "penetrated": false,
+     "clearanceToWall": 24,
+     "insideWall": false,
+     "heldOutside": true
+    }
+   ]
+  },
+  {
+   "id": "halving-farms-east-storage",
+   "areaId": "halving-farms",
+   "bounds": {
+    "minX": 18725,
+    "minY": 7950,
+    "maxX": 19175,
+    "maxY": 8350
+   },
+   "sides": [
+    {
+     "ms": 78414,
+     "side": "south",
+     "reachedOnFoot": false,
+     "start": {
+      "x": 18950,
+      "y": 8440
+     },
+     "before": {
+      "x": 18927,
+      "y": 8439
+     },
+     "predicted": {
+      "x": 18927,
+      "y": 8374
+     },
+     "after": {
+      "x": 18927,
+      "y": 8374
+     },
+     "moved": 65,
+     "retries": 0,
+     "axisError": 0.0000010000003385357559,
+     "stoppedAtWall": true,
+     "penetrated": false,
+     "clearanceToWall": 24,
+     "insideWall": false,
+     "heldOutside": true
+    },
+    {
+     "ms": 16133,
+     "side": "east",
+     "reachedOnFoot": true,
+     "start": {
+      "x": 19265,
+      "y": 8150
+     },
+     "before": {
+      "x": 19268,
+      "y": 8151
+     },
+     "predicted": {
+      "x": 19199,
+      "y": 8151
+     },
+     "after": {
+      "x": 19199,
+      "y": 8151
+     },
+     "moved": 69,
+     "retries": 0,
+     "axisError": 0.0000010000003385357559,
+     "stoppedAtWall": true,
+     "penetrated": false,
+     "clearanceToWall": 24,
+     "insideWall": false,
+     "heldOutside": true
+    },
+    {
+     "ms": 105408,
+     "side": "north",
+     "reachedOnFoot": false,
+     "start": {
+      "x": 18950,
+      "y": 7860
+     },
+     "before": {
+      "x": 18941,
+      "y": 7867
+     },
+     "predicted": {
+      "x": 18941,
+      "y": 7926
+     },
+     "after": {
+      "x": 18941,
+      "y": 7926
+     },
+     "moved": 59,
+     "retries": 0,
+     "axisError": 0.0000010000003385357559,
+     "stoppedAtWall": true,
+     "penetrated": false,
+     "clearanceToWall": 24,
+     "insideWall": false,
+     "heldOutside": true
+    },
+    {
+     "ms": 82553,
+     "side": "west",
+     "reachedOnFoot": false,
+     "start": {
+      "x": 18635,
+      "y": 8150
+     },
+     "before": {
+      "x": 18633,
+      "y": 8158
+     },
+     "predicted": {
+      "x": 18701,
+      "y": 8158
+     },
+     "after": {
+      "x": 18701,
+      "y": 8158
+     },
+     "moved": 68,
+     "retries": 0,
+     "axisError": 0.0000010000003385357559,
+     "stoppedAtWall": true,
+     "penetrated": false,
+     "clearanceToWall": 24,
+     "insideWall": false,
+     "heldOutside": true
+    }
+   ]
+  },
+  {
+   "id": "hollow-pines-maintenance-house",
+   "areaId": "hollow-pines",
+   "bounds": {
+    "minX": 13440,
+    "minY": 12000,
+    "maxX": 13860,
+    "maxY": 12400
+   },
+   "sides": [
+    {
+     "ms": 72793,
+     "side": "south",
+     "reachedOnFoot": false,
+     "start": {
+      "x": 13650,
+      "y": 12490
+     },
+     "before": {
+      "x": 13630,
+      "y": 12483
+     },
+     "predicted": {
+      "x": 13630,
+      "y": 12424
+     },
+     "after": {
+      "x": 13630,
+      "y": 12424
+     },
+     "moved": 59,
+     "retries": 0,
+     "axisError": 0.0000010000003385357559,
+     "stoppedAtWall": true,
+     "penetrated": false,
+     "clearanceToWall": 24,
+     "insideWall": false,
+     "heldOutside": true
+    },
+    {
+     "ms": 107072,
+     "side": "east",
+     "reachedOnFoot": false,
+     "start": {
+      "x": 13950,
+      "y": 12200
+     },
+     "before": {
+      "x": 13933,
+      "y": 12209
+     },
+     "predicted": {
+      "x": 13884,
+      "y": 12209
+     },
+     "after": {
+      "x": 13884,
+      "y": 12209
+     },
+     "moved": 49,
+     "retries": 0,
+     "axisError": 0.0000010000003385357559,
+     "stoppedAtWall": true,
+     "penetrated": false,
+     "clearanceToWall": 24,
+     "insideWall": false,
+     "heldOutside": true
+    },
+    {
+     "ms": 102700,
+     "side": "north",
+     "reachedOnFoot": false,
+     "start": {
+      "x": 13650,
+      "y": 11910
+     },
+     "before": {
+      "x": 13644,
+      "y": 11913
+     },
+     "predicted": {
+      "x": 13644,
+      "y": 11976
+     },
+     "after": {
+      "x": 13644,
+      "y": 11976
+     },
+     "moved": 63,
+     "retries": 0,
+     "axisError": 0.0000010000003385357559,
+     "stoppedAtWall": true,
+     "penetrated": false,
+     "clearanceToWall": 24,
+     "insideWall": false,
+     "heldOutside": true
+    },
+    {
+     "side": "west",
+     "start": null,
+     "reason": "no clear stand-off point with the building first in line"
+    }
+   ]
+  },
+  {
+   "id": "mweb-meadows-south-home",
+   "areaId": "mweb-meadows",
+   "bounds": {
+    "minX": 11210,
+    "minY": 7580,
+    "maxX": 11590,
+    "maxY": 8020
+   },
+   "sides": [
+    {
+     "ms": 67312,
+     "side": "south",
+     "reachedOnFoot": false,
+     "start": {
+      "x": 11400,
+      "y": 8110
+     },
+     "before": {
+      "x": 11380,
+      "y": 8108
+     },
+     "predicted": {
+      "x": 11380,
+      "y": 8044
+     },
+     "after": {
+      "x": 11380,
+      "y": 8044
+     },
+     "moved": 64,
+     "retries": 0,
+     "axisError": 0.0000010000003385357559,
+     "stoppedAtWall": true,
+     "penetrated": false,
+     "clearanceToWall": 24,
+     "insideWall": false,
+     "heldOutside": true
+    },
+    {
+     "ms": 13141,
+     "side": "east",
+     "reachedOnFoot": true,
+     "start": {
+      "x": 11680,
+      "y": 7800
+     },
+     "before": {
+      "x": 11674,
+      "y": 7809
+     },
+     "predicted": {
+      "x": 11614,
+      "y": 7809
+     },
+     "after": {
+      "x": 11614,
+      "y": 7809
+     },
+     "moved": 60,
+     "retries": 0,
+     "axisError": 0.0000010000003385357559,
+     "stoppedAtWall": true,
+     "penetrated": false,
+     "clearanceToWall": 24,
+     "insideWall": false,
+     "heldOutside": true
+    },
+    {
+     "ms": 98623,
+     "side": "north",
+     "reachedOnFoot": false,
+     "start": {
+      "x": 11400,
+      "y": 7490
+     },
+     "before": {
+      "x": 11394,
+      "y": 7493
+     },
+     "predicted": {
+      "x": 11394,
+      "y": 7556
+     },
+     "after": {
+      "x": 11394,
+      "y": 7556
+     },
+     "moved": 63,
+     "retries": 0,
+     "axisError": 0.0000010000003385357559,
+     "stoppedAtWall": true,
+     "penetrated": false,
+     "clearanceToWall": 24,
+     "insideWall": false,
+     "heldOutside": true
+    },
+    {
+     "ms": 12261,
+     "side": "west",
+     "reachedOnFoot": true,
+     "start": {
+      "x": 11120,
+      "y": 7800
+     },
+     "before": {
+      "x": 11117,
+      "y": 7806
+     },
+     "predicted": {
+      "x": 11186,
+      "y": 7806
+     },
+     "after": {
+      "x": 11186,
+      "y": 7806
+     },
+     "moved": 69,
+     "retries": 0,
+     "axisError": 0.0000010000003385357559,
+     "stoppedAtWall": true,
+     "penetrated": false,
+     "clearanceToWall": 24,
+     "insideWall": false,
+     "heldOutside": true
+    }
+   ]
+  },
+  {
+   "id": "silver-coast-lighthouse",
+   "areaId": "silver-coast",
+   "bounds": {
+    "minX": 1750,
+    "minY": 4865,
+    "maxX": 2130,
+    "maxY": 5300
+   },
+   "sides": [
+    {
+     "ms": 64525,
+     "side": "south",
+     "reachedOnFoot": false,
+     "start": {
+      "x": 1940,
+      "y": 5390
+     },
+     "before": {
+      "x": 1922,
+      "y": 5388
+     },
+     "predicted": {
+      "x": 1922,
+      "y": 5324
+     },
+     "after": {
+      "x": 1922,
+      "y": 5324
+     },
+     "moved": 64,
+     "retries": 0,
+     "axisError": 0.0000010000003385357559,
+     "stoppedAtWall": true,
+     "penetrated": false,
+     "clearanceToWall": 24,
+     "insideWall": false,
+     "heldOutside": true
+    },
+    {
+     "ms": 12983,
+     "side": "east",
+     "reachedOnFoot": true,
+     "start": {
+      "x": 2220,
+      "y": 5082.5
+     },
+     "before": {
+      "x": 2216,
+      "y": 5083
+     },
+     "predicted": {
+      "x": 2154,
+      "y": 5083
+     },
+     "after": {
+      "x": 2154,
+      "y": 5083
+     },
+     "moved": 62,
+     "retries": 0,
+     "axisError": 9.99999883788405e-7,
+     "stoppedAtWall": true,
+     "penetrated": false,
+     "clearanceToWall": 24,
+     "insideWall": false,
+     "heldOutside": true
+    },
+    {
+     "ms": 13079,
+     "side": "north",
+     "reachedOnFoot": true,
+     "start": {
+      "x": 1940,
+      "y": 4775
+     },
+     "before": {
+      "x": 1935,
+      "y": 4775
+     },
+     "predicted": {
+      "x": 1935,
+      "y": 4841
+     },
+     "after": {
+      "x": 1935,
+      "y": 4841
+     },
+     "moved": 66,
+     "retries": 0,
+     "axisError": 0.0000010000003385357559,
+     "stoppedAtWall": true,
+     "penetrated": false,
+     "clearanceToWall": 24,
+     "insideWall": false,
+     "heldOutside": true
+    },
+    {
+     "ms": 13552,
+     "side": "west",
+     "reachedOnFoot": true,
+     "start": {
+      "x": 1660,
+      "y": 5082.5
+     },
+     "before": {
+      "x": 1661,
+      "y": 5093
+     },
+     "predicted": {
+      "x": 1726,
+      "y": 5093
+     },
+     "after": {
+      "x": 1726,
+      "y": 5093
+     },
+     "moved": 65,
+     "retries": 0,
+     "axisError": 9.99999883788405e-7,
+     "stoppedAtWall": true,
+     "penetrated": false,
+     "clearanceToWall": 24,
+     "insideWall": false,
+     "heldOutside": true
+    }
+   ]
+  },
+  {
+   "id": "halving-farms-east-field-edge",
+   "areaId": "halving-farms",
+   "bounds": {
+    "minX": 19200,
+    "minY": 6100,
+    "maxX": 19300,
+    "maxY": 7700
+   },
+   "sides": [
+    {
+     "ms": 67534,
+     "side": "south",
+     "reachedOnFoot": false,
+     "start": {
+      "x": 19250,
+      "y": 7790
+     },
+     "before": {
+      "x": 19240,
+      "y": 7797
+     },
+     "predicted": {
+      "x": 19240,
+      "y": 7724
+     },
+     "after": {
+      "x": 19240,
+      "y": 7724
+     },
+     "moved": 73,
+     "retries": 0,
+     "axisError": 0.0000010000003385357559,
+     "stoppedAtWall": true,
+     "penetrated": false,
+     "clearanceToWall": 24,
+     "insideWall": false,
+     "heldOutside": true
+    },
+    {
+     "ms": 23603,
+     "side": "east",
+     "reachedOnFoot": true,
+     "start": {
+      "x": 19390,
+      "y": 6900
+     },
+     "before": {
+      "x": 19391,
+      "y": 6895
+     },
+     "predicted": {
+      "x": 19324,
+      "y": 6895
+     },
+     "after": {
+      "x": 19324,
+      "y": 6895
+     },
+     "moved": 67,
+     "retries": 0,
+     "axisError": 0.0000010000003385357559,
+     "stoppedAtWall": true,
+     "penetrated": false,
+     "clearanceToWall": 24,
+     "insideWall": false,
+     "heldOutside": true
+    },
+    {
+     "ms": 24229,
+     "side": "north",
+     "reachedOnFoot": true,
+     "start": {
+      "x": 19250,
+      "y": 6010
+     },
+     "before": {
+      "x": 19239,
+      "y": 6010
+     },
+     "predicted": {
+      "x": 19239,
+      "y": 6076
+     },
+     "after": {
+      "x": 19239,
+      "y": 6076
+     },
+     "moved": 66,
+     "retries": 0,
+     "axisError": 0.0000010000003385357559,
+     "stoppedAtWall": true,
+     "penetrated": false,
+     "clearanceToWall": 24,
+     "insideWall": false,
+     "heldOutside": true
+    },
+    {
+     "ms": 75383,
+     "side": "west",
+     "reachedOnFoot": false,
+     "start": {
+      "x": 19110,
+      "y": 6900
+     },
+     "before": {
+      "x": 19109,
+      "y": 6899
+     },
+     "predicted": {
+      "x": 19176,
+      "y": 6899
+     },
+     "after": {
+      "x": 19176,
+      "y": 6895
+     },
+     "moved": 67,
+     "retries": 0,
+     "axisError": 0.0000010000003385357559,
+     "stoppedAtWall": true,
+     "penetrated": false,
+     "clearanceToWall": 24,
+     "insideWall": false,
+     "heldOutside": true
+    }
+   ]
+  },
+  {
+   "id": "fork-fortress-service-store",
+   "areaId": "fork-fortress",
+   "bounds": {
+    "minX": 11220,
+    "minY": 3890,
+    "maxX": 11680,
+    "maxY": 4210
+   },
+   "sides": [
+    {
+     "ms": 80390,
+     "side": "south",
+     "reachedOnFoot": false,
+     "start": {
+      "x": 11450,
+      "y": 4300
+     },
+     "before": {
+      "x": 11432,
+      "y": 4298
+     },
+     "predicted": {
+      "x": 11432,
+      "y": 4234
+     },
+     "after": {
+      "x": 11432,
+      "y": 4234
+     },
+     "moved": 64,
+     "retries": 0,
+     "axisError": 0.0000010000003385357559,
+     "stoppedAtWall": true,
+     "penetrated": false,
+     "clearanceToWall": 24,
+     "insideWall": false,
+     "heldOutside": true
+    },
+    {
+     "ms": 13779,
+     "side": "east",
+     "reachedOnFoot": true,
+     "start": {
+      "x": 11770,
+      "y": 4050
+     },
+     "before": {
+      "x": 11769,
+      "y": 4042
+     },
+     "predicted": {
+      "x": 11704,
+      "y": 4042
+     },
+     "after": {
+      "x": 11704,
+      "y": 4042
+     },
+     "moved": 65,
+     "retries": 0,
+     "axisError": 0.0000010000003385357559,
+     "stoppedAtWall": true,
+     "penetrated": false,
+     "clearanceToWall": 24,
+     "insideWall": false,
+     "heldOutside": true
+    },
+    {
+     "ms": 12984,
+     "side": "north",
+     "reachedOnFoot": true,
+     "start": {
+      "x": 11450,
+      "y": 3800
+     },
+     "before": {
+      "x": 11444,
+      "y": 3802
+     },
+     "predicted": {
+      "x": 11444,
+      "y": 3866
+     },
+     "after": {
+      "x": 11444,
+      "y": 3866
+     },
+     "moved": 64,
+     "retries": 0,
+     "axisError": 9.99999883788405e-7,
+     "stoppedAtWall": true,
+     "penetrated": false,
+     "clearanceToWall": 24,
+     "insideWall": false,
+     "heldOutside": true
+    },
+    {
+     "ms": 12630,
+     "side": "west",
+     "reachedOnFoot": true,
+     "start": {
+      "x": 11130,
+      "y": 4050
+     },
+     "before": {
+      "x": 11126,
+      "y": 4059
+     },
+     "predicted": {
+      "x": 11196,
+      "y": 4059
+     },
+     "after": {
+      "x": 11196,
+      "y": 4059
+     },
+     "moved": 70,
+     "retries": 0,
+     "axisError": 0.0000010000003385357559,
+     "stoppedAtWall": true,
+     "penetrated": false,
+     "clearanceToWall": 24,
+     "insideWall": false,
+     "heldOutside": true
+    }
+   ]
+  },
+  {
+   "id": "mweb-meadows-garden-home",
+   "areaId": "mweb-meadows",
+   "bounds": {
+    "minX": 11070,
+    "minY": 5130,
+    "maxX": 11490,
+    "maxY": 5470
+   },
+   "sides": [
+    {
+     "ms": 68816,
+     "side": "south",
+     "reachedOnFoot": false,
+     "start": {
+      "x": 11280,
+      "y": 5560
+     },
+     "before": {
+      "x": 11272,
+      "y": 5561
+     },
+     "predicted": {
+      "x": 11272,
+      "y": 5494
+     },
+     "after": {
+      "x": 11272,
+      "y": 5494
+     },
+     "moved": 67,
+     "retries": 0,
+     "axisError": 0.0000010000003385357559,
+     "stoppedAtWall": true,
+     "penetrated": false,
+     "clearanceToWall": 24,
+     "insideWall": false,
+     "heldOutside": true
+    },
+    {
+     "ms": 112753,
+     "side": "east",
+     "reachedOnFoot": false,
+     "start": {
+      "x": 11580,
+      "y": 5300
+     },
+     "before": {
+      "x": 11574,
+      "y": 5303
+     },
+     "predicted": {
+      "x": 11514,
+      "y": 5303
+     },
+     "after": {
+      "x": 11514,
+      "y": 5303
+     },
+     "moved": 60,
+     "retries": 0,
+     "axisError": 0.0000010000003385357559,
+     "stoppedAtWall": true,
+     "penetrated": false,
+     "clearanceToWall": 24,
+     "insideWall": false,
+     "heldOutside": true
+    },
+    {
+     "ms": 95800,
+     "side": "north",
+     "reachedOnFoot": false,
+     "start": {
+      "x": 11280,
+      "y": 5040
+     },
+     "before": {
+      "x": 11275,
+      "y": 5040
+     },
+     "predicted": {
+      "x": 11275,
+      "y": 5106
+     },
+     "after": {
+      "x": 11275,
+      "y": 5106
+     },
+     "moved": 66,
+     "retries": 0,
+     "axisError": 0.0000010000003385357559,
+     "stoppedAtWall": true,
+     "penetrated": false,
+     "clearanceToWall": 24,
+     "insideWall": false,
+     "heldOutside": true
+    },
+    {
+     "ms": 12008,
+     "side": "west",
+     "reachedOnFoot": true,
+     "start": {
+      "x": 10980,
+      "y": 5300
+     },
+     "before": {
+      "x": 10986,
+      "y": 5299
+     },
+     "predicted": {
+      "x": 11046,
+      "y": 5299
+     },
+     "after": {
+      "x": 11046,
+      "y": 5299
+     },
+     "moved": 60,
+     "retries": 0,
+     "axisError": 0.0000010000003385357559,
+     "stoppedAtWall": true,
+     "penetrated": false,
+     "clearanceToWall": 24,
+     "insideWall": false,
+     "heldOutside": true
+    }
+   ]
+  },
+  {
+   "id": "mweb-meadows-east-home",
+   "areaId": "mweb-meadows",
+   "bounds": {
+    "minX": 13800,
+    "minY": 5225,
+    "maxX": 14200,
+    "maxY": 5575
+   },
+   "sides": [
+    {
+     "ms": 70527,
+     "side": "south",
+     "reachedOnFoot": false,
+     "start": {
+      "x": 14000,
+      "y": 5665
+     },
+     "before": {
+      "x": 13979,
+      "y": 5654
+     },
+     "predicted": {
+      "x": 13979,
+      "y": 5599
+     },
+     "after": {
+      "x": 13979,
+      "y": 5599
+     },
+     "moved": 55,
+     "retries": 0,
+     "axisError": 0.0000010000003385357559,
+     "stoppedAtWall": true,
+     "penetrated": false,
+     "clearanceToWall": 24,
+     "insideWall": false,
+     "heldOutside": true
+    },
+    {
+     "ms": 15466,
+     "side": "east",
+     "reachedOnFoot": true,
+     "start": {
+      "x": 14290,
+      "y": 5400
+     },
+     "before": {
+      "x": 14289,
+      "y": 5391
+     },
+     "predicted": {
+      "x": 14224,
+      "y": 5391
+     },
+     "after": {
+      "x": 14224,
+      "y": 5391
+     },
+     "moved": 65,
+     "retries": 0,
+     "axisError": 0.0000010000003385357559,
+     "stoppedAtWall": true,
+     "penetrated": false,
+     "clearanceToWall": 24,
+     "insideWall": false,
+     "heldOutside": true
+    },
+    {
+     "ms": 13390,
+     "side": "north",
+     "reachedOnFoot": true,
+     "start": {
+      "x": 14000,
+      "y": 5135
+     },
+     "before": {
+      "x": 13994,
+      "y": 5134
+     },
+     "predicted": {
+      "x": 13994,
+      "y": 5201
+     },
+     "after": {
+      "x": 13994,
+      "y": 5201
+     },
+     "moved": 67,
+     "retries": 0,
+     "axisError": 0.0000010000003385357559,
+     "stoppedAtWall": true,
+     "penetrated": false,
+     "clearanceToWall": 24,
+     "insideWall": false,
+     "heldOutside": true
+    },
+    {
+     "ms": 12284,
+     "side": "west",
+     "reachedOnFoot": true,
+     "start": {
+      "x": 13710,
+      "y": 5400
+     },
+     "before": {
+      "x": 13708,
+      "y": 5409
+     },
+     "predicted": {
+      "x": 13776,
+      "y": 5409
+     },
+     "after": {
+      "x": 13776,
+      "y": 5409
+     },
+     "moved": 68,
+     "retries": 0,
+     "axisError": 0.0000010000003385357559,
+     "stoppedAtWall": true,
+     "penetrated": false,
+     "clearanceToWall": 24,
+     "insideWall": false,
+     "heldOutside": true
+    }
+   ]
+  },
+  {
+   "id": "halving-farms-windmill-base",
+   "areaId": "halving-farms",
+   "bounds": {
+    "minX": 15835,
+    "minY": 5195,
+    "maxX": 16350,
+    "maxY": 5460
+   },
+   "sides": [
+    {
+     "ms": 69836,
+     "side": "south",
+     "reachedOnFoot": false,
+     "start": {
+      "x": 16092.5,
+      "y": 5550
+     },
+     "before": {
+      "x": 16074,
+      "y": 5544
+     },
+     "predicted": {
+      "x": 16074,
+      "y": 5484
+     },
+     "after": {
+      "x": 16074,
+      "y": 5484
+     },
+     "moved": 60,
+     "retries": 0,
+     "axisError": 0.0000010000003385357559,
+     "stoppedAtWall": true,
+     "penetrated": false,
+     "clearanceToWall": 24,
+     "insideWall": false,
+     "heldOutside": true
+    },
+    {
+     "ms": 12756,
+     "side": "east",
+     "reachedOnFoot": true,
+     "start": {
+      "x": 16440,
+      "y": 5327.5
+     },
+     "before": {
+      "x": 16445,
+      "y": 5322
+     },
+     "predicted": {
+      "x": 16374,
+      "y": 5322
+     },
+     "after": {
+      "x": 16374,
+      "y": 5322
+     },
+     "moved": 71,
+     "retries": 0,
+     "axisError": 0.0000010000003385357559,
+     "stoppedAtWall": true,
+     "penetrated": false,
+     "clearanceToWall": 24,
+     "insideWall": false,
+     "heldOutside": true
+    },
+    {
+     "ms": 13754,
+     "side": "north",
+     "reachedOnFoot": true,
+     "start": {
+      "x": 16092.5,
+      "y": 5105
+     },
+     "before": {
+      "x": 16102,
+      "y": 5102
+     },
+     "predicted": {
+      "x": 16102,
+      "y": 5171
+     },
+     "after": {
+      "x": 16102,
+      "y": 5171
+     },
+     "moved": 69,
+     "retries": 0,
+     "axisError": 0.0000010000003385357559,
+     "stoppedAtWall": true,
+     "penetrated": false,
+     "clearanceToWall": 24,
+     "insideWall": false,
+     "heldOutside": true
+    },
+    {
+     "ms": 16559,
+     "side": "west",
+     "reachedOnFoot": true,
+     "start": {
+      "x": 15745,
+      "y": 5327.5
+     },
+     "before": {
+      "x": 15739,
+      "y": 5322
+     },
+     "predicted": {
+      "x": 15811,
+      "y": 5322
+     },
+     "after": {
+      "x": 15811,
+      "y": 5331
+     },
+     "moved": 72,
+     "retries": 0,
+     "axisError": 0.0000010000003385357559,
+     "stoppedAtWall": true,
+     "penetrated": false,
+     "clearanceToWall": 24,
+     "insideWall": false,
+     "heldOutside": true
+    }
+   ]
+  },
+  {
+   "id": "litecoin-city-river-service-shed",
+   "areaId": "litecoin-city",
+   "bounds": {
+    "minX": 5675,
+    "minY": 8275,
+    "maxX": 6125,
+    "maxY": 8575
+   },
+   "sides": [
+    {
+     "ms": 70823,
+     "side": "south",
+     "reachedOnFoot": false,
+     "start": {
+      "x": 5900,
+      "y": 8665
+     },
+     "before": {
+      "x": 5895,
+      "y": 8665
+     },
+     "predicted": {
+      "x": 5895,
+      "y": 8599
+     },
+     "after": {
+      "x": 5895,
+      "y": 8599
+     },
+     "moved": 66,
+     "retries": 0,
+     "axisError": 0.0000010000003385357559,
+     "stoppedAtWall": true,
+     "penetrated": false,
+     "clearanceToWall": 24,
+     "insideWall": false,
+     "heldOutside": true
+    },
+    {
+     "ms": 93654,
+     "side": "east",
+     "reachedOnFoot": false,
+     "start": {
+      "x": 6215,
+      "y": 8335
+     },
+     "before": {
+      "x": 6210,
+      "y": 8335
+     },
+     "predicted": {
+      "x": 6149,
+      "y": 8335
+     },
+     "after": {
+      "x": 6149,
+      "y": 8335
+     },
+     "moved": 61,
+     "retries": 0,
+     "axisError": 0.0000010000003385357559,
+     "stoppedAtWall": true,
+     "penetrated": false,
+     "clearanceToWall": 24,
+     "insideWall": false,
+     "heldOutside": true
+    },
+    {
+     "ms": 92719,
+     "side": "north",
+     "reachedOnFoot": false,
+     "start": {
+      "x": 5900,
+      "y": 8185
+     },
+     "before": {
+      "x": 5900,
+      "y": 8188
+     },
+     "predicted": {
+      "x": 5900,
+      "y": 8251
+     },
+     "after": {
+      "x": 5894,
+      "y": 8251
+     },
+     "moved": 63,
+     "retries": 0,
+     "axisError": 0.0000010000003385357559,
+     "stoppedAtWall": true,
+     "penetrated": false,
+     "clearanceToWall": 24,
+     "insideWall": false,
+     "heldOutside": true
+    },
+    {
+     "ms": 13510,
+     "side": "west",
+     "reachedOnFoot": true,
+     "start": {
+      "x": 5585,
+      "y": 8425
+     },
+     "before": {
+      "x": 5582,
+      "y": 8430
+     },
+     "predicted": {
+      "x": 5651,
+      "y": 8430
+     },
+     "after": {
+      "x": 5651,
+      "y": 8430
+     },
+     "moved": 69,
+     "retries": 0,
+     "axisError": 0.0000010000003385357559,
+     "stoppedAtWall": true,
+     "penetrated": false,
+     "clearanceToWall": 24,
+     "insideWall": false,
+     "heldOutside": true
+    }
+   ]
+  },
+  {
+   "id": "hollow-pines-dead-tree-roots",
+   "areaId": "hollow-pines",
+   "bounds": {
+    "minX": 12280,
+    "minY": 10050,
+    "maxX": 12700,
+    "maxY": 10345
+   },
+   "sides": [
+    {
+     "ms": 68339,
+     "side": "south",
+     "reachedOnFoot": false,
+     "start": {
+      "x": 12490,
+      "y": 10435
+     },
+     "before": {
+      "x": 12470,
+      "y": 10433
+     },
+     "predicted": {
+      "x": 12470,
+      "y": 10369
+     },
+     "after": {
+      "x": 12470,
+      "y": 10369
+     },
+     "moved": 64,
+     "retries": 0,
+     "axisError": 0.0000010000003385357559,
+     "stoppedAtWall": true,
+     "penetrated": false,
+     "clearanceToWall": 24,
+     "insideWall": false,
+     "heldOutside": true
+    },
+    {
+     "ms": 14671,
+     "side": "east",
+     "reachedOnFoot": true,
+     "start": {
+      "x": 12790,
+      "y": 10197.5
+     },
+     "before": {
+      "x": 12788,
+      "y": 10188
+     },
+     "predicted": {
+      "x": 12722,
+      "y": 10208
+     },
+     "after": {
+      "x": 12722,
+      "y": 10207
+     },
+     "moved": 66,
+     "retries": 0,
+     "axisError": 0.27519750102328544,
+     "stoppedAtWall": true,
+     "penetrated": false,
+     "clearanceToWall": 24.2,
+     "insideWall": false,
+     "heldOutside": true
+    },
+    {
+     "ms": 99751,
+     "side": "north",
+     "reachedOnFoot": false,
+     "start": {
+      "x": 12490,
+      "y": 9960
+     },
+     "before": {
+      "x": 12484,
+      "y": 9963
+     },
+     "predicted": {
+      "x": 12386,
+      "y": 10086
+     },
+     "after": {
+      "x": 12321,
+      "y": 10122
+     },
+     "moved": 159,
+     "retries": 0,
+     "axisError": 35.951473614282804,
+     "stoppedAtWall": false,
+     "penetrated": false,
+     "clearanceToWall": 24,
+     "insideWall": false,
+     "heldOutside": true
+    },
+    {
+     "ms": 16543,
+     "side": "west",
+     "reachedOnFoot": true,
+     "start": {
+      "x": 12190,
+      "y": 10197.5
+     },
+     "before": {
+      "x": 12189,
+      "y": 10206
+     },
+     "predicted": {
+      "x": 12294,
+      "y": 10154
+     },
+     "after": {
+      "x": 12295,
+      "y": 10150
+     },
+     "moved": 106,
+     "retries": 0,
+     "axisError": 0.9116312179103261,
+     "stoppedAtWall": true,
+     "penetrated": false,
+     "clearanceToWall": 24.2,
+     "insideWall": false,
+     "heldOutside": true
+    }
+   ]
+  },
+  {
+   "id": "halving-farms-west-storage",
+   "areaId": "halving-farms",
+   "bounds": {
+    "minX": 15850,
+    "minY": 8000,
+    "maxX": 16250,
+    "maxY": 8300
+   },
+   "sides": [
+    {
+     "ms": 78396,
+     "side": "south",
+     "reachedOnFoot": false,
+     "start": {
+      "x": 16050,
+      "y": 8390
+     },
+     "before": {
+      "x": 16031,
+      "y": 8384
+     },
+     "predicted": {
+      "x": 16031,
+      "y": 8324
+     },
+     "after": {
+      "x": 16031,
+      "y": 8324
+     },
+     "moved": 60,
+     "retries": 0,
+     "axisError": 0.0000010000003385357559,
+     "stoppedAtWall": true,
+     "penetrated": false,
+     "clearanceToWall": 24,
+     "insideWall": false,
+     "heldOutside": true
+    },
+    {
+     "ms": 97376,
+     "side": "east",
+     "reachedOnFoot": false,
+     "start": {
+      "x": 16340,
+      "y": 8150
+     },
+     "before": {
+      "x": 16334,
+      "y": 8153
+     },
+     "predicted": {
+      "x": 16274,
+      "y": 8153
+     },
+     "after": {
+      "x": 16274,
+      "y": 8153
+     },
+     "moved": 60,
+     "retries": 0,
+     "axisError": 0.0000010000003385357559,
+     "stoppedAtWall": true,
+     "penetrated": false,
+     "clearanceToWall": 24,
+     "insideWall": false,
+     "heldOutside": true
+    },
+    {
+     "ms": 91769,
+     "side": "north",
+     "reachedOnFoot": false,
+     "start": {
+      "x": 16050,
+      "y": 7910
+     },
+     "before": {
+      "x": 16044,
+      "y": 7913
+     },
+     "predicted": {
+      "x": 16044,
+      "y": 7976
+     },
+     "after": {
+      "x": 16044,
+      "y": 7976
+     },
+     "moved": 63,
+     "retries": 0,
+     "axisError": 0.0000010000003385357559,
+     "stoppedAtWall": true,
+     "penetrated": false,
+     "clearanceToWall": 24,
+     "insideWall": false,
+     "heldOutside": true
+    },
+    {
+     "ms": 16188,
+     "side": "west",
+     "reachedOnFoot": true,
+     "start": {
+      "x": 15760,
+      "y": 8150
+     },
+     "before": {
+      "x": 15759,
+      "y": 8154
+     },
+     "predicted": {
+      "x": 15826,
+      "y": 8154
+     },
+     "after": {
+      "x": 15826,
+      "y": 8154
+     },
+     "moved": 67,
+     "retries": 0,
+     "axisError": 0.0000010000003385357559,
+     "stoppedAtWall": true,
+     "penetrated": false,
+     "clearanceToWall": 24,
+     "insideWall": false,
+     "heldOutside": true
+    }
+   ]
+  },
+  {
+   "id": "silver-coast-utility-house",
+   "areaId": "silver-coast",
+   "bounds": {
+    "minX": 3250,
+    "minY": 7150,
+    "maxX": 3650,
+    "maxY": 7450
+   },
+   "sides": [
+    {
+     "ms": 76722,
+     "side": "south",
+     "reachedOnFoot": false,
+     "start": {
+      "x": 3570,
+      "y": 7540
+     },
+     "before": {
+      "x": 3547,
+      "y": 7539
+     },
+     "predicted": {
+      "x": 3547,
+      "y": 7474
+     },
+     "after": {
+      "x": 3547,
+      "y": 7474
+     },
+     "moved": 65,
+     "retries": 0,
+     "axisError": 0.0000010000003385357559,
+     "stoppedAtWall": true,
+     "penetrated": false,
+     "clearanceToWall": 24,
+     "insideWall": false,
+     "heldOutside": true
+    },
+    {
+     "ms": 94541,
+     "side": "east",
+     "reachedOnFoot": false,
+     "start": {
+      "x": 3740,
+      "y": 7300
+     },
+     "before": {
+      "x": 3735,
+      "y": 7300
+     },
+     "predicted": {
+      "x": 3674,
+      "y": 7300
+     },
+     "after": {
+      "x": 3674,
+      "y": 7300
+     },
+     "moved": 61,
+     "retries": 0,
+     "axisError": 9.99999883788405e-7,
+     "stoppedAtWall": true,
+     "penetrated": false,
+     "clearanceToWall": 24,
+     "insideWall": false,
+     "heldOutside": true
+    },
+    {
+     "ms": 92601,
+     "side": "north",
+     "reachedOnFoot": false,
+     "start": {
+      "x": 3450,
+      "y": 7060
+     },
+     "before": {
+      "x": 3444,
+      "y": 7063
+     },
+     "predicted": {
+      "x": 3444,
+      "y": 7126
+     },
+     "after": {
+      "x": 3444,
+      "y": 7126
+     },
+     "moved": 63,
+     "retries": 0,
+     "axisError": 0.0000010000003385357559,
+     "stoppedAtWall": true,
+     "penetrated": false,
+     "clearanceToWall": 24,
+     "insideWall": false,
+     "heldOutside": true
+    },
+    {
+     "ms": 100072,
+     "side": "west",
+     "reachedOnFoot": false,
+     "start": {
+      "x": 3160,
+      "y": 7300
+     },
+     "before": {
+      "x": 3157,
+      "y": 7310
+     },
+     "predicted": {
+      "x": 3226,
+      "y": 7310
+     },
+     "after": {
+      "x": 3226,
+      "y": 7310
+     },
+     "moved": 69,
+     "retries": 0,
+     "axisError": 9.99999883788405e-7,
+     "stoppedAtWall": true,
+     "penetrated": false,
+     "clearanceToWall": 24,
+     "insideWall": false,
+     "heldOutside": true
+    }
+   ]
+  },
+  {
+   "id": "ledger-ridge-quarry-store",
+   "areaId": "ledger-ridge",
+   "bounds": {
+    "minX": 5800,
+    "minY": 1130,
+    "maxX": 6180,
+    "maxY": 1400
+   },
+   "sides": [
+    {
+     "ms": 76681,
+     "side": "south",
+     "reachedOnFoot": false,
+     "start": {
+      "x": 5990,
+      "y": 1490
+     },
+     "before": {
+      "x": 5960,
+      "y": 1481
+     },
+     "predicted": {
+      "x": 5960,
+      "y": 1424
+     },
+     "after": {
+      "x": 5960,
+      "y": 1424
+     },
+     "moved": 57,
+     "retries": 0,
+     "axisError": 9.99999883788405e-7,
+     "stoppedAtWall": true,
+     "penetrated": false,
+     "clearanceToWall": 24,
+     "insideWall": false,
+     "heldOutside": true
+    },
+    {
+     "ms": 12389,
+     "side": "east",
+     "reachedOnFoot": true,
+     "start": {
+      "x": 6270,
+      "y": 1265
+     },
+     "before": {
+      "x": 6265,
+      "y": 1260
+     },
+     "predicted": {
+      "x": 6204,
+      "y": 1260
+     },
+     "after": {
+      "x": 6204,
+      "y": 1260
+     },
+     "moved": 61,
+     "retries": 0,
+     "axisError": 0.0000010000003385357559,
+     "stoppedAtWall": true,
+     "penetrated": false,
+     "clearanceToWall": 24,
+     "insideWall": false,
+     "heldOutside": true
+    },
+    {
+     "ms": 11846,
+     "side": "north",
+     "reachedOnFoot": true,
+     "start": {
+      "x": 5990,
+      "y": 1040
+     },
+     "before": {
+      "x": 5966,
+      "y": 1039
+     },
+     "predicted": {
+      "x": 5966,
+      "y": 1106
+     },
+     "after": {
+      "x": 5966,
+      "y": 1106
+     },
+     "moved": 67,
+     "retries": 0,
+     "axisError": 9.99999883788405e-7,
+     "stoppedAtWall": true,
+     "penetrated": false,
+     "clearanceToWall": 24,
+     "insideWall": false,
+     "heldOutside": true
+    },
+    {
+     "ms": 11784,
+     "side": "west",
+     "reachedOnFoot": true,
+     "start": {
+      "x": 5710,
+      "y": 1265
+     },
+     "before": {
+      "x": 5713,
+      "y": 1264
+     },
+     "predicted": {
+      "x": 5776,
+      "y": 1264
+     },
+     "after": {
+      "x": 5776,
+      "y": 1264
+     },
+     "moved": 63,
+     "retries": 0,
+     "axisError": 0.0000010000003385357559,
+     "stoppedAtWall": true,
+     "penetrated": false,
+     "clearanceToWall": 24,
+     "insideWall": false,
+     "heldOutside": true
+    }
+   ]
+  },
+  {
+   "id": "silver-coast-mansion-north-wall",
+   "areaId": "silver-coast",
+   "bounds": {
+    "minX": 2960,
+    "minY": 5260,
+    "maxX": 4240,
+    "maxY": 5340
+   },
+   "sides": [
+    {
+     "ms": 68777,
+     "side": "south",
+     "reachedOnFoot": false,
+     "start": {
+      "x": 3600,
+      "y": 5430
+     },
+     "before": {
+      "x": 3595,
+      "y": 5430
+     },
+     "predicted": {
+      "x": 3595,
+      "y": 5364
+     },
+     "after": {
+      "x": 3595,
+      "y": 5364
+     },
+     "moved": 66,
+     "retries": 0,
+     "axisError": 0.0000010000003385357559,
+     "stoppedAtWall": true,
+     "penetrated": false,
+     "clearanceToWall": 24,
+     "insideWall": false,
+     "heldOutside": true
+    },
+    {
+     "side": "east",
+     "start": null,
+     "reason": "no clear stand-off point with the building first in line"
+    },
+    {
+     "ms": 67622,
+     "side": "north",
+     "reachedOnFoot": false,
+     "start": {
+      "x": 3600,
+      "y": 5170
+     },
+     "before": {
+      "x": 3594,
+      "y": 5173
+     },
+     "predicted": {
+      "x": 3594,
+      "y": 5236
+     },
+     "after": {
+      "x": 3594,
+      "y": 5236
+     },
+     "moved": 63,
+     "retries": 0,
+     "axisError": 0.0000010000003385357559,
+     "stoppedAtWall": true,
+     "penetrated": false,
+     "clearanceToWall": 24,
+     "insideWall": false,
+     "heldOutside": true
+    },
+    {
+     "ms": 18007,
+     "side": "west",
+     "reachedOnFoot": true,
+     "start": {
+      "x": 2870,
+      "y": 5300
+     },
+     "before": {
+      "x": 2869,
+      "y": 5321
+     },
+     "predicted": {
+      "x": 2936,
+      "y": 5321
+     },
+     "after": {
+      "x": 2936,
+      "y": 5321
+     },
+     "moved": 67,
+     "retries": 0,
+     "axisError": 9.99999883788405e-7,
+     "stoppedAtWall": true,
+     "penetrated": false,
+     "clearanceToWall": 24,
+     "insideWall": false,
+     "heldOutside": true
+    }
+   ]
+  },
+  {
+   "id": "silver-coast-mansion-east-wall",
+   "areaId": "silver-coast",
+   "bounds": {
+    "minX": 4160,
+    "minY": 5260,
+    "maxX": 4240,
+    "maxY": 6440
+   },
+   "sides": [
+    {
+     "ms": 74526,
+     "side": "south",
+     "reachedOnFoot": false,
+     "start": {
+      "x": 4200,
+      "y": 6530
+     },
+     "before": {
+      "x": 4195,
+      "y": 6530
+     },
+     "predicted": {
+      "x": 4195,
+      "y": 6464
+     },
+     "after": {
+      "x": 4195,
+      "y": 6464
+     },
+     "moved": 66,
+     "retries": 0,
+     "axisError": 0.0000010000003385357559,
+     "stoppedAtWall": true,
+     "penetrated": false,
+     "clearanceToWall": 24,
+     "insideWall": false,
+     "heldOutside": true
+    },
+    {
+     "ms": 96279,
+     "side": "east",
+     "reachedOnFoot": false,
+     "start": {
+      "x": 4330,
+      "y": 5850
+     },
+     "before": {
+      "x": 4330,
+      "y": 5853
+     },
+     "predicted": {
+      "x": 4264,
+      "y": 5853
+     },
+     "after": {
+      "x": 4264,
+      "y": 5853
+     },
+     "moved": 66,
+     "retries": 0,
+     "axisError": 0.0000010000003385357559,
+     "stoppedAtWall": true,
+     "penetrated": false,
+     "clearanceToWall": 24,
+     "insideWall": false,
+     "heldOutside": true
+    },
+    {
+     "ms": 16795,
+     "side": "north",
+     "reachedOnFoot": true,
+     "start": {
+      "x": 4200,
+      "y": 5170
+     },
+     "before": {
+      "x": 4210,
+      "y": 5174
+     },
+     "predicted": {
+      "x": 4210,
+      "y": 5236
+     },
+     "after": {
+      "x": 4210,
+      "y": 5236
+     },
+     "moved": 62,
+     "retries": 0,
+     "axisError": 0.0000010000003385357559,
+     "stoppedAtWall": true,
+     "penetrated": false,
+     "clearanceToWall": 24,
+     "insideWall": false,
+     "heldOutside": true
+    },
+    {
+     "ms": 82680,
+     "side": "west",
+     "reachedOnFoot": false,
+     "start": {
+      "x": 4070,
+      "y": 5850
+     },
+     "before": {
+      "x": 4070,
+      "y": 5853
+     },
+     "predicted": {
+      "x": 4136,
+      "y": 5853
+     },
+     "after": {
+      "x": 4136,
+      "y": 5853
+     },
+     "moved": 66,
+     "retries": 0,
+     "axisError": 0.0000010000003385357559,
+     "stoppedAtWall": true,
+     "penetrated": false,
+     "clearanceToWall": 24,
+     "insideWall": false,
+     "heldOutside": true
+    }
+   ]
+  },
+  {
+   "id": "rugpull-woods-supply-tent",
+   "areaId": "rugpull-woods",
+   "bounds": {
+    "minX": 18270,
+    "minY": 11020,
+    "maxX": 18630,
+    "maxY": 11280
+   },
+   "sides": [
+    {
+     "ms": 59277,
+     "side": "south",
+     "reachedOnFoot": false,
+     "start": {
+      "x": 18450,
+      "y": 11370
+     },
+     "before": {
+      "x": 18437,
+      "y": 11372
+     },
+     "predicted": {
+      "x": 18437,
+      "y": 11304
+     },
+     "after": {
+      "x": 18437,
+      "y": 11304
+     },
+     "moved": 68,
+     "retries": 0,
+     "axisError": 0.0000010000003385357559,
+     "stoppedAtWall": true,
+     "penetrated": false,
+     "clearanceToWall": 24,
+     "insideWall": false,
+     "heldOutside": true
+    },
+    {
+     "ms": 12207,
+     "side": "east",
+     "reachedOnFoot": true,
+     "start": {
+      "x": 18720,
+      "y": 11150
+     },
+     "before": {
+      "x": 18722,
+      "y": 11146
+     },
+     "predicted": {
+      "x": 18654,
+      "y": 11146
+     },
+     "after": {
+      "x": 18654,
+      "y": 11146
+     },
+     "moved": 68,
+     "retries": 0,
+     "axisError": 0.0000010000003385357559,
+     "stoppedAtWall": true,
+     "penetrated": false,
+     "clearanceToWall": 24,
+     "insideWall": false,
+     "heldOutside": true
+    },
+    {
+     "ms": 93684,
+     "side": "north",
+     "reachedOnFoot": false,
+     "start": {
+      "x": 18450,
+      "y": 10930
+     },
+     "before": {
+      "x": 18451,
+      "y": 10934
+     },
+     "predicted": {
+      "x": 18451,
+      "y": 10996
+     },
+     "after": {
+      "x": 18452,
+      "y": 10996
+     },
+     "moved": 62,
+     "retries": 1,
+     "axisError": 0.0000010000003385357559,
+     "stoppedAtWall": true,
+     "penetrated": false,
+     "clearanceToWall": 24,
+     "insideWall": false,
+     "heldOutside": true
+    },
+    {
+     "ms": 11366,
+     "side": "west",
+     "reachedOnFoot": true,
+     "start": {
+      "x": 18180,
+      "y": 11150
+     },
+     "before": {
+      "x": 18182,
+      "y": 11153
+     },
+     "predicted": {
+      "x": 18246,
+      "y": 11153
+     },
+     "after": {
+      "x": 18246,
+      "y": 11155
+     },
+     "moved": 64,
+     "retries": 0,
+     "axisError": 0.0000010000003385357559,
+     "stoppedAtWall": true,
+     "penetrated": false,
+     "clearanceToWall": 24,
+     "insideWall": false,
+     "heldOutside": true
+    }
+   ]
+  },
+  {
+   "id": "halving-farms-silo",
+   "areaId": "halving-farms",
+   "bounds": {
+    "minX": 18705,
+    "minY": 5185,
+    "maxX": 18990,
+    "maxY": 5510
+   },
+   "sides": [
+    {
+     "ms": 58912,
+     "side": "south",
+     "reachedOnFoot": false,
+     "start": {
+      "x": 18847.5,
+      "y": 5600
+     },
+     "before": {
+      "x": 18828,
+      "y": 5593
+     },
+     "predicted": {
+      "x": 18828,
+      "y": 5534
+     },
+     "after": {
+      "x": 18828,
+      "y": 5534
+     },
+     "moved": 59,
+     "retries": 0,
+     "axisError": 0.0000010000003385357559,
+     "stoppedAtWall": true,
+     "penetrated": false,
+     "clearanceToWall": 24,
+     "insideWall": false,
+     "heldOutside": true
+    },
+    {
+     "ms": 10480,
+     "side": "east",
+     "reachedOnFoot": true,
+     "start": {
+      "x": 19080,
+      "y": 5347.5
+     },
+     "before": {
+      "x": 19078,
+      "y": 5347
+     },
+     "predicted": {
+      "x": 19014,
+      "y": 5347
+     },
+     "after": {
+      "x": 19014,
+      "y": 5347
+     },
+     "moved": 64,
+     "retries": 0,
+     "axisError": 0.0000010000003385357559,
+     "stoppedAtWall": true,
+     "penetrated": false,
+     "clearanceToWall": 24,
+     "insideWall": false,
+     "heldOutside": true
+    },
+    {
+     "ms": 11814,
+     "side": "north",
+     "reachedOnFoot": true,
+     "start": {
+      "x": 18847.5,
+      "y": 5095
+     },
+     "before": {
+      "x": 18858,
+      "y": 5093
+     },
+     "predicted": {
+      "x": 18858,
+      "y": 5161
+     },
+     "after": {
+      "x": 18858,
+      "y": 5161
+     },
+     "moved": 68,
+     "retries": 0,
+     "axisError": 0.0000010000003385357559,
+     "stoppedAtWall": true,
+     "penetrated": false,
+     "clearanceToWall": 24,
+     "insideWall": false,
+     "heldOutside": true
+    },
+    {
+     "ms": 82914,
+     "side": "west",
+     "reachedOnFoot": false,
+     "start": {
+      "x": 18615,
+      "y": 5347.5
+     },
+     "before": {
+      "x": 18615,
+      "y": 5348
+     },
+     "predicted": {
+      "x": 18681,
+      "y": 5348
+     },
+     "after": {
+      "x": 18681,
+      "y": 5348
+     },
+     "moved": 66,
+     "retries": 0,
+     "axisError": 0.0000010000003385357559,
+     "stoppedAtWall": true,
+     "penetrated": false,
+     "clearanceToWall": 24,
+     "insideWall": false,
+     "heldOutside": true
+    }
+   ]
+  },
+  {
+   "id": "scrypt-bayou-stilt-store",
+   "areaId": "scrypt-bayou",
+   "bounds": {
+    "minX": 3640,
+    "minY": 12910,
+    "maxX": 3960,
+    "maxY": 13190
+   },
+   "sides": [
+    {
+     "ms": 70657,
+     "side": "south",
+     "reachedOnFoot": false,
+     "start": {
+      "x": 3800,
+      "y": 13280
+     },
+     "before": {
+      "x": 3781,
+      "y": 13278
+     },
+     "predicted": {
+      "x": 3781,
+      "y": 13214
+     },
+     "after": {
+      "x": 3781,
+      "y": 13214
+     },
+     "moved": 64,
+     "retries": 0,
+     "axisError": 0.0000010000003385357559,
+     "stoppedAtWall": true,
+     "penetrated": false,
+     "clearanceToWall": 24,
+     "insideWall": false,
+     "heldOutside": true
+    },
+    {
+     "ms": 13438,
+     "side": "east",
+     "reachedOnFoot": true,
+     "start": {
+      "x": 4050,
+      "y": 13050
+     },
+     "before": {
+      "x": 4050,
+      "y": 13045
+     },
+     "predicted": {
+      "x": 3984,
+      "y": 13045
+     },
+     "after": {
+      "x": 3984,
+      "y": 13045
+     },
+     "moved": 66,
+     "retries": 0,
+     "axisError": 9.99999883788405e-7,
+     "stoppedAtWall": true,
+     "penetrated": false,
+     "clearanceToWall": 24,
+     "insideWall": false,
+     "heldOutside": true
+    },
+    {
+     "ms": 99820,
+     "side": "north",
+     "reachedOnFoot": false,
+     "start": {
+      "x": 3800,
+      "y": 12820
+     },
+     "before": {
+      "x": 3794,
+      "y": 12823
+     },
+     "predicted": {
+      "x": 3794,
+      "y": 12886
+     },
+     "after": {
+      "x": 3794,
+      "y": 12886
+     },
+     "moved": 63,
+     "retries": 0,
+     "axisError": 0.0000010000003385357559,
+     "stoppedAtWall": true,
+     "penetrated": false,
+     "clearanceToWall": 24,
+     "insideWall": false,
+     "heldOutside": true
+    },
+    {
+     "ms": 97314,
+     "side": "west",
+     "reachedOnFoot": false,
+     "start": {
+      "x": 3550,
+      "y": 13050
+     },
+     "before": {
+      "x": 3549,
+      "y": 13053
+     },
+     "predicted": {
+      "x": 3616,
+      "y": 13053
+     },
+     "after": {
+      "x": 3616,
+      "y": 13054
+     },
+     "moved": 67,
+     "retries": 1,
+     "axisError": 9.99999883788405e-7,
+     "stoppedAtWall": true,
+     "penetrated": false,
+     "clearanceToWall": 24,
+     "insideWall": false,
+     "heldOutside": true
+    }
+   ]
+  },
+  {
+   "id": "scrypt-bayou-control-house",
+   "areaId": "scrypt-bayou",
+   "bounds": {
+    "minX": 1980,
+    "minY": 11770,
+    "maxX": 2320,
+    "maxY": 12030
+   },
+   "sides": [
+    {
+     "ms": 68646,
+     "side": "south",
+     "reachedOnFoot": false,
+     "start": {
+      "x": 2150,
+      "y": 12120
+     },
+     "before": {
+      "x": 2137,
+      "y": 12121
+     },
+     "predicted": {
+      "x": 2137,
+      "y": 12054
+     },
+     "after": {
+      "x": 2137,
+      "y": 12054
+     },
+     "moved": 67,
+     "retries": 0,
+     "axisError": 0.0000010000003385357559,
+     "stoppedAtWall": true,
+     "penetrated": false,
+     "clearanceToWall": 24,
+     "insideWall": false,
+     "heldOutside": true
+    },
+    {
+     "side": "east",
+     "start": null,
+     "reason": "no clear stand-off point with the building first in line"
+    },
+    {
+     "ms": 76484,
+     "side": "north",
+     "reachedOnFoot": false,
+     "start": {
+      "x": 2150,
+      "y": 11680
+     },
+     "before": {
+      "x": 2144,
+      "y": 11683
+     },
+     "predicted": {
+      "x": 2144,
+      "y": 11746
+     },
+     "after": {
+      "x": 2144,
+      "y": 11746
+     },
+     "moved": 63,
+     "retries": 0,
+     "axisError": 0.0000010000003385357559,
+     "stoppedAtWall": true,
+     "penetrated": false,
+     "clearanceToWall": 24,
+     "insideWall": false,
+     "heldOutside": true
+    },
+    {
+     "ms": 11552,
+     "side": "west",
+     "reachedOnFoot": true,
+     "start": {
+      "x": 1890,
+      "y": 11900
+     },
+     "before": {
+      "x": 1889,
+      "y": 11908
+     },
+     "predicted": {
+      "x": 1956,
+      "y": 11908
+     },
+     "after": {
+      "x": 1956,
+      "y": 11908
+     },
+     "moved": 67,
+     "retries": 0,
+     "axisError": 9.99999883788405e-7,
+     "stoppedAtWall": true,
+     "penetrated": false,
+     "clearanceToWall": 24,
+     "insideWall": false,
+     "heldOutside": true
+    }
+   ]
+  }
+ ],
+ "shots": [
+  {
+   "label": "meadows-farmhouse-south",
+   "id": "mweb-meadows-garden-home",
+   "file": "meadows-farmhouse-south.jpg",
+   "ms": 81931,
+   "side": "south",
+   "reachedOnFoot": false,
+   "start": {
+    "x": 11280,
+    "y": 5560
+   },
+   "before": {
+    "x": 11272,
+    "y": 5561
+   },
+   "predicted": {
+    "x": 11272,
+    "y": 5494
+   },
+   "after": {
+    "x": 11265,
+    "y": 5494
+   },
+   "moved": 67,
+   "retries": 0,
+   "axisError": 0.0000010000003385357559,
+   "stoppedAtWall": true,
+   "penetrated": false
+  },
+  {
+   "label": "city-market-block-south",
+   "id": "litecoin-city-market-block",
+   "file": "city-market-block-south.jpg",
+   "ms": 66281,
+   "side": "south",
+   "reachedOnFoot": false,
+   "start": {
+    "x": 6850,
+    "y": 6365
+   },
+   "before": {
+    "x": 6843,
+    "y": 6367
+   },
+   "predicted": {
+    "x": 6843,
+    "y": 6299
+   },
+   "after": {
+    "x": 6843,
+    "y": 6299
+   },
+   "moved": 68,
+   "retries": 0,
+   "axisError": 0.0000010000003385357559,
+   "stoppedAtWall": true,
+   "penetrated": false
+  },
+  {
+   "label": "farms-watermill-south",
+   "id": "halving-farms-windmill-base",
+   "file": "farms-watermill-south.jpg",
+   "ms": 67706,
+   "side": "south",
+   "reachedOnFoot": false,
+   "start": {
+    "x": 16092.5,
+    "y": 5550
+   },
+   "before": {
+    "x": 16074,
+    "y": 5544
+   },
+   "predicted": {
+    "x": 16074,
+    "y": 5484
+   },
+   "after": {
+    "x": 16074,
+    "y": 5484
+   },
+   "moved": 60,
+   "retries": 0,
+   "axisError": 0.0000010000003385357559,
+   "stoppedAtWall": true,
+   "penetrated": false
+  },
+  {
+   "label": "coast-lighthouse-south",
+   "id": "silver-coast-lighthouse",
+   "file": "coast-lighthouse-south.jpg",
+   "ms": 61406,
+   "side": "south",
+   "reachedOnFoot": false,
+   "start": {
+    "x": 1940,
+    "y": 5390
+   },
+   "before": {
+    "x": 1922,
+    "y": 5388
+   },
+   "predicted": {
+    "x": 1922,
+    "y": 5324
+   },
+   "after": {
+    "x": 1922,
+    "y": 5324
+   },
+   "moved": 64,
+   "retries": 0,
+   "axisError": 0.0000010000003385357559,
+   "stoppedAtWall": true,
+   "penetrated": false
+  },
+  {
+   "label": "city-parked-pickup",
+   "id": "prop-litecoin-city-b2-54-6817-4994",
+   "file": "city-parked-pickup.jpg",
+   "ms": 67960,
+   "side": "south",
+   "reachedOnFoot": false,
+   "start": {
+    "x": 6816.5,
+    "y": 5103
+   },
+   "before": {
+    "x": 6791,
+    "y": 5106
+   },
+   "predicted": {
+    "x": 6791,
+    "y": 5037
+   },
+   "after": {
+    "x": 6791,
+    "y": 5038
+   },
+   "moved": 68,
+   "retries": 0,
+   "axisError": 0.9999989999996615,
+   "stoppedAtWall": true,
+   "penetrated": false
+  },
+  {
+   "label": "fortress-container-west",
+   "id": "prop-fork-fortress-b1-43-13900-900",
+   "file": "fortress-container-west.jpg",
+   "ms": 70438,
+   "side": "west",
+   "reachedOnFoot": false,
+   "start": {
+    "x": 13727,
+    "y": 900
+   },
+   "before": {
+    "x": 13720,
+    "y": 899
+   },
+   "predicted": {
+    "x": 13793,
+    "y": 899
+   },
+   "after": {
+    "x": 13792,
+    "y": 899
+   },
+   "moved": 72,
+   "retries": 0,
+   "axisError": 0.9999989999996615,
+   "stoppedAtWall": true,
+   "penetrated": false
+  }
+ ],
+ "errors": [],
+ "summary": {
+  "buildings": 30,
+  "sidesWalked": 115,
+  "stoppedAtWall": 112,
+  "penetrated": 3,
+  "stoppedShort": 0,
+  "noApproach": 5,
+  "pageErrors": 0,
+  "heldOutsideWall": 115,
+  "insideWall": 0,
+  "slidAlongSlantedFace": 3
+ }
+}
