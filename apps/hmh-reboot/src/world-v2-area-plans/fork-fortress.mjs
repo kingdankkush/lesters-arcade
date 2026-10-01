@@ -64,7 +64,7 @@ export function createForkFortressArtPlan(world) {
   for (const [x, y, flip] of [[-1300, -260, false], [-1300, 260, true], [-1180, -700, false], [-1180, 700, true], [-760, -650, true], [-760, 650, false]]) {
     if (guard.clear(cx + x, cy + y, 26)) prop('b1-17', cx + x, cy + y, 52, { flip, tint: 0xc8c2b0 });
   }
-  for (const [x, y, flip] of [[-760, -1300, false], [880, -1300, true], [-1550, -950, false], [1400, -1600, true], [1850, 400, false], [1400, 1500, true]]) {
+  for (const [x, y, flip] of [[-760, -1300, false], [880, -1300, true], [-1550, -950, false], [1400, -1600, true], [1930, 400, false], [1400, 1500, true]]) {
     if (guard.clear(cx + x, cy + y, 30)) prop('b1-43', cx + x, cy + y, 170, { flip, tint: FORTRESS_IRON_TINT });
   }
   for (const [x, y, flip] of [[-1500, 600, false], [-200, 1300, true], [600, 1350, false], [1400, 600, true], [-1500, 1250, true], [1850, 1500, false]]) {

@@ -49,7 +49,8 @@ export function createLedgerRidgeArtPlan(world) {
   prop('b2-76', cx + 900, cy - 1420, 320, { groundZ: cap.visible.height, tint: RIDGE_STONE_TINT, flip: true });
   placeEdgeWoodland(context, { key: 'ridge-edge', sources: ['b2-72', 'b1-42', 'b2-72', 'b1-50', 'b1-42'], perSide: 18, height: (source, side, n, v) => source === 'b1-42' ? 120 + 60 * v : 300 * (0.85 + 0.25 * v), tint: RIDGE_PINE_TINT });
   // Collapsed mine entrance under the north cap with its rail spur and carts.
-  for (const [x, y, flip] of [[-380, -1050, false], [700, -1050, true]]) if (guard.clear(cx + x, cy + y, 24)) prop('b2-77', cx + x, cy + y, 230, { flip, tint: 0xc4c4be });
+  // Set back into the cap foot so the switchback keeps its 300-unit moving band past their colliders.
+  for (const [x, y, flip] of [[-380, -1060, false], [700, -1060, true]]) if (guard.clear(cx + x, cy + y, 24)) prop('b2-77', cx + x, cy + y, 230, { flip, tint: 0xc4c4be });
   placeLine(context, { key: 'rail-spur', from: point(-840, -1040), to: point(-470, -1040), spacing: 80, radius: 10, place: (px, py) => prop('b2-78', px, py, 34, { tint: 0xc8c4bc, shadow: false, fade: false }) });
   placeLine(context, { key: 'rail-east', from: point(560, -1040), to: point(1150, -1040), spacing: 80, radius: 10, place: (px, py) => prop('b2-78', px, py, 34, { tint: 0xc8c4bc, shadow: false, fade: false }) });
   for (const [x, y, flip] of [[-640, -1060, false], [880, -1050, true], [1080, -1060, false]]) if (guard.clear(cx + x, cy + y, 18)) prop('b1-16', cx + x, cy + y, 56, { flip, tint: 0xc4beb4 });
@@ -67,7 +68,8 @@ export function createLedgerRidgeArtPlan(world) {
     } });
   }
   for (const [x, y] of [[-1080, 900], [-830, 900], [-1080, 250], [-830, 300], [-1080, -400], [-830, -500], [-450, -700], [500, -700], [-150, 1000], [600, 1000]]) {
-    scatter({ key: `switchback-${x}-${y}`, x: cx + x, y: cy + y, rx: 70, ry: 90, count: 5, radius: 12, place: (px, py, n, v) => prop(n % 2 ? 'b1-05' : 'b2-74', px, py, n % 2 ? 38 : 60 + n * 4, { flip: v > 0.5, tint: n % 2 ? 0xc6c0b0 : 0xc4bcb0, shadow: false }) });
+    // Root clumps stay knee-to-waist high (at most 48): walk-over rubble beside the switchback, not walls in its band.
+    scatter({ key: `switchback-${x}-${y}`, x: cx + x, y: cy + y, rx: 70, ry: 90, count: 5, radius: 12, place: (px, py, n, v) => prop(n % 2 ? 'b1-05' : 'b2-74', px, py, n % 2 ? 38 : 40 + n * 2, { flip: v > 0.5, tint: n % 2 ? 0xc6c0b0 : 0xc4bcb0, shadow: false }) });
   }
   // Store stock along its back and side walls, leaving the loading face open.
   for (const [x, y, source, height, flip] of [[-1730, -1080, 'b2-79', 54, false], [-1290, -1080, 'b1-16', 52, true], [-1760, -900, 'b2-79', 50, true]]) {

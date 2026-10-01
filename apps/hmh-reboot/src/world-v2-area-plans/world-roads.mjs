@@ -5,6 +5,7 @@
 // objective clearance. Frozen data only; no surface or rule is added.
 import { freezeDeep } from '../value-guards.mjs';
 import { createAreaArtPlanShell, createPlacementGuard, distanceToPolyline, stableUnit, WORLD_ROADS_PLAN_ID } from '../world-v2-area-art-schema.mjs';
+import { createBlockingCardGuard } from './plan-support.mjs';
 
 export const WORLD_ROADS_PAGES = Object.freeze(['tripo-props-hd-props-00.webp']);
 export const ROAD_KIND_BY_AUTHORED = Object.freeze({ paved: 'paved', gravel: 'gravel', path: 'dirt', dirt: 'dirt' });
@@ -28,8 +29,9 @@ export function createWorldRoadsArtPlan(world) {
   if (!world?.roads?.length) return null;
   const plan = createAreaArtPlanShell({ areaId: WORLD_ROADS_PLAN_ID, bounds: world.bounds, pages: WORLD_ROADS_PAGES });
   const guard = createPlacementGuard({ world, roadClearance: 0, routeClearance: 40, siteClearance: 160 });
+  const blockingGuard = createBlockingCardGuard(world);
   let counter = 0;
-  const prop = (source, x, y, height, extra = {}) => plan.props.push({ id: `road-art-${counter++}`, source, x, y, height, ...extra });
+  const prop = (source, x, y, height, extra = {}) => { if (blockingGuard.clear(source, x, y, height, extra.flip === true)) plan.props.push({ id: `road-art-${counter++}`, source, x, y, height, ...extra }); };
   // Shoulder placement: within the ribbon, outside the clearance corridor, on
   // clear ground, and not overlapping another road's corridor.
   const shoulderClear = (road, x, y, radius) => {
@@ -57,7 +59,7 @@ export function createWorldRoadsArtPlan(world) {
       }
       continue;
     }
-    const half = road.width / 2, edge = half - 30;
+    const half = road.width / 2, edge = half - 12;
     // Guardrail runs on both verges with gaps, jersey barriers as a chicane at
     // each end, a sign gantry and traffic mast at the city ends, wrecks between.
     for (const side of [-1, 1]) for (let run = 0; run < 3; run++) {

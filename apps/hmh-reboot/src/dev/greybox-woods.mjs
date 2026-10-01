@@ -17,9 +17,9 @@ export function authorWoodsKit(area,{pieces,sites,arenas},roads){
   add('supply-tent','mass',950,-450,360,260,180);
   add('east-palisade','cover-tall',1550,100,90,1000,144);
   add('south-windbreak','cover-tall',750,1000,550,90,128);
-  add('supply-stack','cover-short',400,700,240,90,48);
+  add('supply-stack','cover-short',400,722.5,240,45,48);
   // Lookout occupies the northern bank, with a continuous accessible loop.
-  add('lookout-post','mass',650,-1650,260,220,360);
+  add('lookout-post','mass',650,-1690,260,300,360);
   add('lookout-west-ramp','ramp',250,-1250,400,320,0,{fromZ:0,toZ:24,priority:40});
   add('lookout-bank','deck',650,-1250,400,320,24,{visibleStepId:true,priority:41});
   add('lookout-east-ramp','ramp',1050,-1250,400,320,0,{fromZ:24,toZ:0,priority:40});

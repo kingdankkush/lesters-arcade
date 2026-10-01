@@ -30,7 +30,7 @@ export const CITY_STREET_CENTRELINES = Object.freeze([Object.freeze([{ x: -2000,
 export function createLitecoinCityArtPlan(world) {
   const context = createAreaPlanContext(world, 'litecoin-city', { pages: LITECOIN_CITY_PAGES, margin: 260, routeClearance: 64 });
   if (!context) return null;
-  const { area, plan, point, prop, solid, guard, supportAt, routeSegments } = context;
+  const { area, plan, point, prop, solid, guard, blockingGuard, supportAt, seatOnSupport, routeSegments } = context;
   const { x: cx, y: cy } = area.center;
   plan.ground.base = { surfaceId: `${area.id}-floor`, material: 'paving' };
   plan.ground.terrain = { ...DISTRICT_TERRAIN[area.id] };
@@ -57,7 +57,7 @@ export function createLitecoinCityArtPlan(world) {
   solid('north-commercial-block', 'mass', { wall: 'masonry', roof: 'slate', tint: 0xcfd4d2 });
   solid('exchange', 'mass', { wall: 'masonry', roof: 'slate', tint: 0xe0e2dc });
   solid('river-housing', 'mass', { wall: 'masonry', roof: 'slate', tint: 0xc9c4b8 });
-  solid('service-warehouse', 'card', { source: 'b2-63', fit: 'depth', tint: 0xc8c0b4, massAlpha: 0.6, wall: 'masonry', roof: 'slate' });
+  solid('service-warehouse', 'card', { source: 'b2-63', fit: 'width', tint: 0xc8c0b4, massAlpha: 0.6, wall: 'masonry', roof: 'slate' });
   solid('river-service-shed', 'card', { source: 'b2-68', fit: 'width', tint: 0xc9c6bc, massAlpha: 0.4 });
   solid('plaza-wall', 'hedge', { source: 'b2-49', spacing: 80, tint: CONCRETE });
   solid('plaza-bench', 'card', { source: 'b2-49', fit: 'width', tint: CONCRETE, massAlpha: 0 });
@@ -69,8 +69,9 @@ export function createLitecoinCityArtPlan(world) {
     const x = cx + slot.x, y = cy + slot.y, id = `${CITY_SIGN_PREFIX}${slot.slot}`;
     if (slot.carrier === 'tower') {
       const roof = supportAt(x, y);
-      if (roof?.id === `${area.id}-north-commercial-block`) plan.props.push({ id, source: slot.source, x, y, height: slot.height, groundZ: roof.visible.height, tint: 0xd8dcdc, flip: slot.x % 500 === 220 });
-    } else if (guard.clear(x, y, signRadius[slot.carrier])) {
+      const flip = slot.x % 500 === 220, at = roof?.id === `${area.id}-north-commercial-block` ? seatOnSupport(slot.source, x, y, slot.height, flip, roof.visible.height) : null;
+      if (at) plan.props.push({ id, source: slot.source, x: at.x, y: at.y, height: slot.height, groundZ: roof.visible.height, tint: 0xd8dcdc, flip });
+    } else if (guard.clear(x, y, signRadius[slot.carrier]) && blockingGuard.clear(slot.source, x, y, slot.height, slot.y > 0)) {
       plan.props.push({ id, source: slot.source, x, y, height: slot.height, tint: slot.carrier === 'stall' ? 0xd8d2c6 : STEEL, flip: slot.y > 0, fade: slot.carrier === 'gantry', ...(slot.carrier === 'gantry' ? { shadow: false } : {}) });
     }
   }

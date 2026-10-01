@@ -13,7 +13,7 @@ export function authorPinesKit(area,{pieces,sites,arenas},roads){
   // trail to the northwest. These are solid root/grove volumes, not final trees.
   grove('southwest-grove',[[-1900,200],[-1500,150],[-1300,650],[-1450,1350],[-1800,1500],[-1900,1000]],260);
   grove('northeast-grove',[[1150,-1700],[1750,-1600],[1800,-1100],[1500,-800],[1000,-1000],[950,-1400]],300);
-  grove('dead-tree-roots',[[-180,-1450],[0,-1550],[200,-1420],[180,-1190],[-150,-1170],[-220,-1300]],420);
+  grove('dead-tree-roots',[[-180,-1450],[0,-1550],[200,-1420],[186,-1255],[-196,-1255],[-220,-1300]],420);
   add('crypt','mass',-1450,-1230,300,280,200);
   add('maintenance-house','mass',1150,600,420,400,180);
   // Two opposed cemetery gates retain public access. The broken north boundary
@@ -25,7 +25,7 @@ export function authorPinesKit(area,{pieces,sites,arenas},roads){
     add(`${side<0?'west':'east'}-lower-wall`,'cover-tall',side*800,535,60,430,128);
   }
   add('south-wall','cover-tall',0,750,900,60,128);
-  add('low-boundary','cover-short',-280,180,260,70,48);
+  add('low-boundary','cover-short',-280,192.5,260,45,48);
   add('stone-monument','cover-tall',180,-210,100,220,128);
   add('bank-west-ramp','ramp',625,1050,350,300,0,{fromZ:0,toZ:24,priority:40});
   add('maintenance-bank','deck',1000,1050,400,300,24,{visibleStepId:true,priority:41});

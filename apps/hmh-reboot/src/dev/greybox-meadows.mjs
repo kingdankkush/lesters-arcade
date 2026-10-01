@@ -12,7 +12,7 @@ export function authorMeadowsKit(area,{pieces,sites,arenas},roads){
   add('south-home','mass',-1100,1100,380,440,220);
   add('garden-wall','mass',-1550,-740,80,760,180);
   add('garden-fence','cover-short',-1150,-750,70,500,48);
-  add('old-oak-placeholder','mass',-390,-660,260,200,280);
+  add('old-oak-placeholder','mass',-390,-710,260,100,280);
   add('relay-equipment','mass',520,-600,90,90,110);
   add('court-low-cover','cover-short',720,280,160,70,48);
   add('court-wall','cover-tall',950,-650,70,260,128);
