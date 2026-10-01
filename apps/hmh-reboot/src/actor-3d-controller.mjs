@@ -7,6 +7,34 @@ import { HERO_ACTOR_IDS, createIdleFidgetPicker, heroClipTime, heroHasClip } fro
 // hmh-actor-3d-pilot/) without touching the initial bundle or the legacy tables.
 export const ACTOR3D_ENEMY_IDS = Object.freeze(['bagholder-rusher', 'forkrunner', 'liquidator-agent', 'whale-enforcer', 'gas-bomber', 'validator-cultist',
   'tollkeeper', 'money-printer', 'pump-and-dump-bloater', 'hodl-revenant', 'rug-puller', 'oracle-marksman']);
+// The three district bosses (slice HMH-BOSSES-2-4): GLB + manifest under
+// hmh-actor-3d-pilot/<id>.glb, keyed by the boss modules' target ids. Their ten
+// clips are presentation-only; the simulation's boss pose picks one per frame.
+export const ACTOR3D_BOSS_IDS = Object.freeze(['boss-rug-pull-baron', 'boss-51-foreman', 'boss-lockkeeper']);
+export const ACTOR3D_BOSS_CLIPS = Object.freeze(['idle', 'run', 'tell', 'attack', 'attack-2', 'super-tell', 'super', 'hit', 'stagger', 'death']);
+const BOSS_LOOP_CLIPS = new Set(['idle', 'run']);
+
+// District bosses render ahead of ordinary enemies (boss priority, like the
+// Liquidator). Input rows are detached presentation records:
+// { id, actorId, active, visible, alpha, x, y, z, bodyHeight?, pose: { state, direction, phaseTick|tick }, originals }.
+export function createDistrictBoss3dEntries(bosses, pixelsPerMetre = 40) {
+  const rows = Array.isArray(bosses) ? bosses : bosses ? [bosses] : [];
+  const entries = [];
+  for (const boss of rows) {
+    if (!ACTOR3D_BOSS_IDS.includes(boss?.actorId) || boss.active !== true || boss.visible !== true || boss.alpha !== 1) continue;
+    const pose = boss.pose ?? {};
+    if (!ACTOR3D_BOSS_CLIPS.includes(pose.state) || !Number.isInteger(pose.direction) || pose.direction < 0 || pose.direction > 7) continue;
+    const tick = pose.phaseTick ?? pose.tick;
+    if (![boss.x, boss.y, boss.z ?? 0, tick].every(Number.isFinite)) continue;
+    const seconds = Math.max(0, tick) / 60;
+    entries.push({ descriptor: { id: `boss:${boss.actorId}`, actorId: boss.actorId, x: boss.x, y: boss.y, z: boss.z ?? 0,
+      heading: pose.direction * Math.PI / 4, clip: pose.state,
+      clipTimeSeconds: BOSS_LOOP_CLIPS.has(pose.state) ? seconds % 1 : Math.min(1, seconds),
+      pixelsPerMetre: Number.isFinite(boss.bodyHeight) && boss.bodyHeight > 0 ? boss.bodyHeight / 2.1 : pixelsPerMetre }, originals: boss.originals ?? [] });
+  }
+  return entries.sort((a, b) => (a.descriptor.id < b.descriptor.id ? -1 : a.descriptor.id > b.descriptor.id ? 1 : 0));
+}
+
 // Guns the 3D hero can hold: the native pistol, or a lazily seated weapon
 // model (2.0 weapons lane). Until that model is resident the sprite hero and
 // its held-weapon page keep drawing, so a slow fetch never empties the hand.
@@ -56,7 +84,7 @@ function supported(renderer, canvas) {
   finally { if (previous) { try { renderer.renderTarget.bind(previous, false); } catch { return false; } } }
 }
 
-export function createActor3dPresentationEntries(hero, enemies, boss = null, maxActors = ACTOR3D_QUALITY_LIMITS.medium, focus = hero) {
+export function createActor3dPresentationEntries(hero, enemies, boss = null, maxActors = ACTOR3D_QUALITY_LIMITS.medium, focus = hero, districtBosses = null) {
   actorLimit(maxActors);
   const entries = [], pixelsPerMetre = Number.isFinite(hero?.bodyHeight) && hero.bodyHeight > 0 ? hero.bodyHeight / 2.1 : 40;
   if (HERO_ACTOR_IDS.includes(hero?.actorId) && ACTOR3D_HERO_WEAPON_IDS.includes(hero.weaponId) && hero.action !== 'interact') {
@@ -69,6 +97,7 @@ export function createActor3dPresentationEntries(hero, enemies, boss = null, max
       clip, clipTimeSeconds: heroClipTime(clip, tick), pixelsPerMetre }, originals: hero.originals });
   }
   entries.push(...createLiquidator3dEntries(boss));
+  for (const entry of createDistrictBoss3dEntries(districtBosses, pixelsPerMetre)) if (entries.length < maxActors) entries.push(entry);
   const originX = Number.isFinite(focus?.x) ? focus.x : 0, originY = Number.isFinite(focus?.y) ? focus.y : 0;
   const candidates = (Array.isArray(enemies) ? enemies : enemies ? [enemies] : []).filter(enemy =>
     ACTOR3D_ENEMY_IDS.includes(enemy?.actorId) && enemy.active === true && enemy.visible === true && enemy.alpha === 1
@@ -124,11 +153,11 @@ export function createActor3dPilotController({ renderer, canvas, qualityTier = '
         onTelemetry({ status: session.status, count: frame.length, qualityTier: tier, maxActors }); return true;
       } catch { session.handleFailure(); return false; }
     },
-    updateGame(hero, enemies, camera, viewport, boss = null) {
+    updateGame(hero, enemies, camera, viewport, boss = null, districtBosses = null) {
       try {
         const fidget = fidgets.observe({ tick: hero?.actionTick, idle: hero?.actorId === selectedHero && hero.action === 'idle' && !hero.moving && hero.clip === undefined });
         const presented = fidget ? { ...hero, clip: fidget.clip, clipTick: fidget.tick } : hero;
-        return controller.update(createActor3dPresentationEntries(presented, enemies, boss, maxActors, hero ?? camera).filter(entry => entry.descriptor.id !== 'hero' || entry.descriptor.actorId === selectedHero), camera, viewport);
+        return controller.update(createActor3dPresentationEntries(presented, enemies, boss, maxActors, hero ?? camera, districtBosses).filter(entry => entry.descriptor.id !== 'hero' || entry.descriptor.actorId === selectedHero), camera, viewport);
       } catch { restore(); session.handleFailure(); return false; }
     },
     dispose() {

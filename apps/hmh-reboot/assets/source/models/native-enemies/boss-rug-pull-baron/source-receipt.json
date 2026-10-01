@@ -1,0 +1,129 @@
+{
+  "schema": 1,
+  "status": "editable-native-boss-candidate",
+  "actorId": "boss-rug-pull-baron",
+  "name": "Rug Pull Baron",
+  "identityForm": "human",
+  "boss": true,
+  "ownerSource": "military soldier 3d model.glb",
+  "ownerSourceSha256": "0cbc32bdbf58d1aab9c45c03f03c0ddfe7d3616414e4a767f73f15ea932044c2",
+  "ownerSourceUnchanged": true,
+  "ownerProp": null,
+  "figureSelection": null,
+  "sourceTriangles": 491054,
+  "bodyTriangles": 14999,
+  "normalisationScale": 2.2930484423075077,
+  "height": 2.25,
+  "heroHeightRatio": 1.071,
+  "landmarks": {
+    "L": {
+      "shoulderWidth": 0.2447240948677063,
+      "armTip": [
+        0.43593835830688477,
+        0.1294257789850235,
+        1.4512499570846558
+      ],
+      "legX": 0.3131226897239685
+    },
+    "R": {
+      "shoulderWidth": 0.2153145670890808,
+      "armTip": [
+        -0.4663549065589905,
+        0.0945638120174408,
+        1.1137499809265137
+      ],
+      "legX": -0.20162275433540344
+    }
+  },
+  "skinning": {
+    "method": "voxel-proxy-bone-heat-transfer",
+    "proxyVertices": 8330,
+    "proxyTriangles": 16672,
+    "nearestBoneFilled": 0,
+    "blended": 11515,
+    "vertices": 12522
+  },
+  "restCorrectionDegrees": {
+    "upper_arm.L": 26.6,
+    "forearm.L": 11.04,
+    "hand.L": 4.83,
+    "upper_arm.R": 33.34,
+    "forearm.R": 39.75,
+    "hand.R": 22.78,
+    "thigh.L": 2.56,
+    "shin.L": 7.35,
+    "thigh.R": 0.63,
+    "shin.R": 3.57
+  },
+  "source": "boss-rug-pull-baron.blend",
+  "sourceSha256": "efa447ff168b5b9c042c47a32657f3274f8873ced3299808ea43a277d877543a",
+  "sourceBytes": 4569666,
+  "armature": "boss-rug-pull-baron Native Rig",
+  "bones": 19,
+  "nativeBodyVertices": 12522,
+  "costumeMeshes": 1,
+  "gearMeshes": 23,
+  "gearTriangles": 2008,
+  "textures": [
+    {
+      "image": "military+soldier+3d+model_basecolor.jpg",
+      "sourceSize": [
+        4096,
+        4096
+      ],
+      "size": [
+        1024,
+        1024
+      ]
+    },
+    {
+      "image": "military+soldier+3d+model_normal.jpg",
+      "sourceSize": [
+        4096,
+        4096
+      ],
+      "size": [
+        1024,
+        1024
+      ]
+    },
+    {
+      "image": "military+soldier+3d+model_rm.jpg",
+      "sourceSize": [
+        4096,
+        4096
+      ],
+      "size": [
+        1024,
+        1024
+      ]
+    }
+  ],
+  "clipActions": {
+    "idle": "HMH_boss-rug-pull-baron_idle",
+    "run": "HMH_boss-rug-pull-baron_run",
+    "tell": "HMH_boss-rug-pull-baron_tell",
+    "attack": "HMH_boss-rug-pull-baron_attack",
+    "attack-2": "HMH_boss-rug-pull-baron_attack-2",
+    "super-tell": "HMH_boss-rug-pull-baron_super-tell",
+    "super": "HMH_boss-rug-pull-baron_super",
+    "hit": "HMH_boss-rug-pull-baron_hit",
+    "stagger": "HMH_boss-rug-pull-baron_stagger",
+    "death": "HMH_boss-rug-pull-baron_death"
+  },
+  "clipFrames": {
+    "idle": 2,
+    "run": 24,
+    "tell": 2,
+    "attack": 3,
+    "attack-2": 3,
+    "super-tell": 3,
+    "super": 4,
+    "hit": 2,
+    "stagger": 3,
+    "death": 4
+  },
+  "runtimeAuthority": "projection-only",
+  "builderSha256": "bb9ecc87de893467901be6b448f24c03749facde52c53d26480c4bb715b82b9b",
+  "poseAuthorSha256": "128097aa2019f002086100671339742dcc349fbc3754738b226102c4a73271d1"
+}

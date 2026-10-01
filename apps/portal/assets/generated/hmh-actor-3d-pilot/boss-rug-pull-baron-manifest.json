@@ -1,0 +1,153 @@
+{
+  "schema": 1,
+  "classification": "unapproved-runtime-boss-export",
+  "activeRuntimeIntegration": false,
+  "cameraDegreesFromVertical": 55,
+  "groundPivot": "existing-world-foot-position",
+  "simulationAuthority": "none",
+  "actors": {
+    "boss-rug-pull-baron": {
+      "file": "boss-rug-pull-baron.glb",
+      "sha256": "87a0f9f19d156b5e716b966af95d854d69242aded669b1514fddbfdf28d41897",
+      "sourceSha256": "efa447ff168b5b9c042c47a32657f3274f8873ced3299808ea43a277d877543a",
+      "sourceBytes": 4569666,
+      "sourceTriangles": 491054,
+      "ownerSource": "military soldier 3d model.glb",
+      "ownerSourceSha256": "0cbc32bdbf58d1aab9c45c03f03c0ddfe7d3616414e4a767f73f15ea932044c2",
+      "height": 2.25,
+      "heroHeightRatio": 1.071,
+      "identityForm": "human",
+      "requiredClips": [
+        "idle",
+        "run",
+        "tell",
+        "attack",
+        "attack-2",
+        "super-tell",
+        "super",
+        "hit",
+        "stagger",
+        "death"
+      ],
+      "inspection": {
+        "bytes": 5131940,
+        "vertices": 18711,
+        "triangles": 18707,
+        "skinnedMeshes": 2,
+        "joints": 19,
+        "clips": [
+          {
+            "name": "attack",
+            "durationSeconds": 1,
+            "channels": 63
+          },
+          {
+            "name": "attack-2",
+            "durationSeconds": 1,
+            "channels": 63
+          },
+          {
+            "name": "death",
+            "durationSeconds": 1,
+            "channels": 63
+          },
+          {
+            "name": "hit",
+            "durationSeconds": 1,
+            "channels": 63
+          },
+          {
+            "name": "idle",
+            "durationSeconds": 1,
+            "channels": 63
+          },
+          {
+            "name": "run",
+            "durationSeconds": 1,
+            "channels": 63
+          },
+          {
+            "name": "stagger",
+            "durationSeconds": 1,
+            "channels": 63
+          },
+          {
+            "name": "super",
+            "durationSeconds": 1,
+            "channels": 63
+          },
+          {
+            "name": "super-tell",
+            "durationSeconds": 1,
+            "channels": 63
+          },
+          {
+            "name": "tell",
+            "durationSeconds": 1,
+            "channels": 63
+          }
+        ],
+        "bounds": {
+          "min": [
+            -0.7322535514831543,
+            -0.014957950450479984,
+            -0.3227529525756836
+          ],
+          "max": [
+            0.539771318435669,
+            2.4958930015563965,
+            0.3375000059604645
+          ]
+        },
+        "embeddedImages": 6,
+        "images": [
+          {
+            "name": "military+soldier+3d+model_normal",
+            "format": "png",
+            "width": 1024,
+            "height": 1024,
+            "bytes": 937944
+          },
+          {
+            "name": "military+soldier+3d+model_basecolor",
+            "format": "png",
+            "width": 1024,
+            "height": 1024,
+            "bytes": 1473134
+          },
+          {
+            "name": "military+soldier+3d+model_rm",
+            "format": "png",
+            "width": 1024,
+            "height": 1024,
+            "bytes": 1036067
+          },
+          {
+            "name": "boss-rug-pull-baron-palette-emission",
+            "format": "png",
+            "width": 64,
+            "height": 64,
+            "bytes": 379
+          },
+          {
+            "name": "boss-rug-pull-baron-palette-baseColor",
+            "format": "png",
+            "width": 64,
+            "height": 64,
+            "bytes": 409
+          },
+          {
+            "name": "boss-rug-pull-baron-palette-metallicRoughness",
+            "format": "png",
+            "width": 64,
+            "height": 64,
+            "bytes": 390
+          }
+        ],
+        "textureBytesRgba8": 12632064,
+        "textureBytesRgba8Mipmaps": 16842744
+      },
+      "maximumNativeFootResidualMetres": 4.470348358154297e-7
+    }
+  }
+}

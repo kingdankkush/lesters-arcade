@@ -1,0 +1,37 @@
+{
+  "schema": 1,
+  "slice": "HMH-BOSSES-2-4",
+  "kind": "offline-Blender-EEVEE-fit-renders-not-game-screenshots",
+  "cameraDegreesFromVertical": 55,
+  "contactSheet": {
+    "file": "contact-sheet.jpg",
+    "sha256": "72f647e25922ad3b32385d66d583d46b1d45830424c518920f9509ba212a6e81"
+  },
+  "perBoss": {
+    "boss-rug-pull-baron": {
+      "file": "boss-rug-pull-baron-fit.jpg",
+      "sha256": "645f64c1812bcdfea8fbb7c643318394adb7cb6a0b3bcc10ef79b9367a2e4fad",
+      "poses": 10,
+      "headings": 3
+    },
+    "boss-51-foreman": {
+      "file": "boss-51-foreman-fit.jpg",
+      "sha256": "bbdcd86ae637d86254d6a8c3c6a64c8c275c9021115a385f2a4f201d41e29292",
+      "poses": 10,
+      "headings": 3
+    },
+    "boss-lockkeeper": {
+      "file": "boss-lockkeeper-fit.jpg",
+      "sha256": "9909a89ac19e1bb33381fea3b49b5ee15010600e1102f16698cef1b96a5629d1",
+      "poses": 10,
+      "headings": 3
+    }
+  },
+  "review": {
+    "boss-rug-pull-baron": "Human ringmaster read: top hat, epaulettes, open red long coat, cane; clean limb deformation; mild sleeve stretch in the arms-raised tell and super-tell.",
+    "boss-51-foreman": "Bearded heavy in the Whiteout armour, face visible under a gold hard hat with lamp, furnace pack with stacks, steam hammer right, owner minigun on the left forearm; clean deformation.",
+    "boss-lockkeeper": "Riot Enforcer body with a wide-brim hat, open green cloak to the knee, chest chains and padlocks, rust great key, winch drum and crank on the shoulder; grounded after the stray shield fragment was removed.",
+    "firstPassRejected": "Gated nearest-bone skinning tore the torso into wings on every arm move, the palette atlas sampled empty rows (black gear), the hard hat covered the face, and a shield fragment floated the Lockkeeper; all fixed before these renders."
+  },
+  "artAccepted": false
+}
