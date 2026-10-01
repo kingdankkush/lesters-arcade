@@ -126,7 +126,11 @@ function deriveOutcome(gameId, verifiedRun, history) {
   const earns = (entry) => entry.available && !unlocked.has(entry.id) && entry.criteria(verifiedRun, history);
   const candidates = [...game.entries.filter(earns), ...PARENT.entries.filter(earns)];
   const held = achievementReviewFlags(gameId, verifiedRun).length > 0;
-  const isHeld = (entry) => held && entry.nft === true && game.entries.includes(entry);
+  // Full Roster Run (all four bosses) is only reachable on the plausibility-checked
+  // ten-area map, where a forger can stay under every soft flag; it is always held
+  // for review until HMH runs can be replay-verified.
+  const alwaysHeld = (entry) => gameId === 'lester-blaster' && entry.id === 'full-roster-run' && game.entries.includes(entry);
+  const isHeld = (entry) => alwaysHeld(entry) || (held && entry.nft === true && game.entries.includes(entry));
   return {
     earned: Object.freeze(candidates.filter((entry) => !isHeld(entry))),
     pendingReview: Object.freeze(candidates.filter(isHeld)),

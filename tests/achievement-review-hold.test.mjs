@@ -45,14 +45,17 @@ test('the hold flags: near-ceiling, above-selected-upgrades and kills-near-capac
 
 test('a flagged run earns no HMH NFT trophy; they are pending review, and every other achievement is unchanged', () => {
   const clean = deriveEarnedAchievements('lester-blaster', rosterRun([]), history());
-  for (const id of ['full-roster-run', 'boss-rush-fifty', 'arcade-legend-500']) assert.ok(ids(clean).includes(id), `${id} on a clean run`);
-  assert.deepEqual(ids(pendingReviewAchievements('lester-blaster', rosterRun([]), history())), []);
+  for (const id of ['boss-rush-fifty', 'arcade-legend-500']) assert.ok(ids(clean).includes(id), `${id} on a clean run`);
+  // Full Roster Run is held for review on every run, flagged or not (review finding: soft flags can be avoided).
+  assert.ok(!ids(clean).includes('full-roster-run'), 'Full Roster Run is never earned outright');
+  assert.deepEqual(ids(pendingReviewAchievements('lester-blaster', rosterRun([]), history())), ['full-roster-run']);
+  assert.deepEqual(ids(pendingReviewAchievements('lester-blaster', rosterRun(null), history())), ['full-roster-run']);
   for (const holdFlag of ['xp-near-ceiling', 'score-near-ceiling', 'kills-near-capacity', 'xp-above-selected-upgrades', 'score-above-selected-upgrades']) {
     const run = rosterRun([flag(holdFlag)]);
     const earned = ids(deriveEarnedAchievements('lester-blaster', run, history()));
     const pending = ids(pendingReviewAchievements('lester-blaster', run, history()));
     assert.ok(!earned.some((id) => HMH_NFT.includes(id)), `${holdFlag}: no NFT trophy earned`);
-    assert.deepEqual(pending, ids(clean).filter((id) => HMH_NFT.includes(id)), `${holdFlag}: the held ids`);
+    assert.deepEqual([...pending].sort(), ['full-roster-run', ...ids(clean).filter((id) => HMH_NFT.includes(id))].sort(), `${holdFlag}: the held ids`);
     assert.deepEqual(earned, ids(clean).filter((id) => !HMH_NFT.includes(id)), `${holdFlag}: ordinary achievements unchanged`);
   }
   // A non-hold soft flag holds nothing; a run without plausibility (the browser) holds nothing.
