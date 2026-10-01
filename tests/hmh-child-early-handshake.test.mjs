@@ -13,7 +13,7 @@ function boot(search, mode) {
   const source = `import { runChild } from ${JSON.stringify(driver)};
 const pad = (tick) => ({ id: 'p', index: 0, connected: true, mapping: 'standard', timestamp: tick, axes: [0, 0, 0, 0], buttons: Array.from({ length: 17 }, () => ({ pressed: false, value: 0 })) });
 try {
-  const result = await runChild({ seed: 7, buildHash: 'site-2.0.0:game-2.0.0:cabinet-0.6.0', seasonId: 'hmh-season-1-2026', pilot: { frame: (_s, tick) => pad(tick), chooseUpgrade: () => null }, maxFrames: 120, search: ${JSON.stringify(search)}, mode: ${JSON.stringify(mode)}, connectBeforeBoot: true });
+  const result = await runChild({ seed: 7, buildHash: 'site-2.1.0:game-2.1.0:cabinet-0.6.0', seasonId: 'hmh-season-1-2026', pilot: { frame: (_s, tick) => pad(tick), chooseUpgrade: () => null }, maxFrames: 120, search: ${JSON.stringify(search)}, mode: ${JSON.stringify(mode)}, connectBeforeBoot: true });
   process.stdout.write(JSON.stringify({ ok: true, state: result.state, ready: result.outbox.some((entry) => entry.message.type === 'game:ready'), tick: result.tick }) + String.fromCharCode(10));
 } catch (error) { process.stdout.write(JSON.stringify({ ok: false, error: String(error.message).slice(0, 300) }) + String.fromCharCode(10)); }
 process.exit(0);`;

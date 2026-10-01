@@ -100,7 +100,9 @@ export function createSettleHarness({ ip }) {
   // The production mount: buildDeps with only the database, chain, deployment
   // and clock overridden (A30). Nothing is patched onto the deps afterwards.
   h.mount = (api, { provider = true } = {}) => {
-    const overrides = { db: h.db, deployment: h.local.deployment, nowMs };
+    // The stored HMH fixtures are schema-6/7 runs from pre-2.1.0 builds (a cached
+    // old-map child), so the seed endpoint stands in for that deployed child.
+    const overrides = { db: h.db, deployment: h.local.deployment, nowMs, hmhSeedMinGameVersion: '1.7.0' };
     if (provider) overrides.provider = provider === true ? h.local.chain.provider : provider;
     return api.createHandler(() => api.buildDeps(h.env, overrides));
   };

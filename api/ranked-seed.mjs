@@ -24,6 +24,9 @@ export async function buildDeps(env = process.env, overrides = {}) {
   // (no relayer: E15 never submits), so both endpoints agree on readiness.
   const deps = await attachSettleDeps(await buildBaseDeps(env, overrides, cache), { env, relayer: false });
   deps.issueSeedTicket = await loadIssueSeedTicket();
+  // Tests only: stand in for another deployed child (seed.mjs deps.hmhSeedMinGameVersion).
+  // Production mounts never pass it; requests and env cannot set it.
+  if (typeof overrides.hmhSeedMinGameVersion === 'string') deps.hmhSeedMinGameVersion = overrides.hmhSeedMinGameVersion;
   return deps;
 }
 

@@ -46,7 +46,7 @@ test('the real handler seam loads the real verify, achievements and seed-ticket 
   const heroes = await deps.heroGates();
   assert.equal(heroes.gates, HMH_HERO_GATES);
   assert.equal(heroes.free, HMH_FREE_HEROES);
-  const seedDeps = await seedApi.buildDeps(h.env, { db: h.db, deployment: h.local.deployment, nowMs: h.nowMs });
+  const seedDeps = await seedApi.buildDeps(h.env, { db: h.db, deployment: h.local.deployment, nowMs: h.nowMs, hmhSeedMinGameVersion: '1.7.0' });
   assert.equal(seedDeps.issueSeedTicket, issueSeedTicket);
   assert.equal(deps.config.settlementReady, true, JSON.stringify(deps.config));
   // The fee cap uses the deployment's own 0.002 zkLTC reserve, not a test override.
