@@ -79,7 +79,9 @@ export function selectLightningLedgerChain({ origin, targets, lineOfSight = () =
     from = selected;
     range = policy.jumpRange;
   }
-  return freezeDeep(chain);
+  // Each link is a shallow copy of a live target (an enemy or a boss): freeze
+  // the copies, never the target's nested simulation state they still share.
+  return Object.freeze(chain.map((target) => Object.freeze(target)));
 }
 
 export function createLightningLedgerState({ cellsRemaining = LIGHTNING_LEDGER_CONFIG.cellSegments } = {}) {
