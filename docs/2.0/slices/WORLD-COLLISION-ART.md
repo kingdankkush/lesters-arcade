@@ -275,6 +275,38 @@ corner, not a traversal pin; with the guards removed the Node proof above
 pins at the first bank contact. `area-art-*-paints-as-grass.jpg` show the invisible
 channels.
 
+## Ten-area ledge slide (runtime, ten-area only)
+
+`apps/hmh-reboot/src/traversal-slide.mjs`: when the swept traversal refuses
+a step (deck ledge, ramp high side, deep water), the remaining motion is
+retried one axis at a time (x, then y) from the last legal sample, each axis
+swept through the collision solver first; only the refused axis loses its
+velocity. main.mjs (hero) and `stepEnemyPopulation({ traversalSlide })`
+(enemies) use it only when the world context has `legacy === false`
+(`TRAVERSAL_SLIDE`); the legacy world never calls it.
+
+Found while proving it: the Forked Standard bounds its blocker list at 512
+and threw ("Forked Standard blockers must be a bounded array") on its first
+swing in the ten-area world, which already held 581 colliders in 2.0.0 and
+holds 1,014 now (a v8 honest run crashed, t15-explorer). Ten-area melee now
+passes only the colliders within 480 units of the striker
+(`LOCAL_MELEE_BLOCKERS`, ten-area only); the densest neighbourhood holds far
+under 256.
+
+Proofs: `tests/hmh-ten-area-traversal-slide.test.mjs` (228 diagonal pushes
+along every deck ledge and ramp side, hero and radius-18 enemy, all slide;
+130 of them stopped dead without the slide; wiring gated on the context).
+Legacy 128-run honest corpus on base `aed85e132` and on this branch:
+128/128 identical in every emitted field (frames, final tick, run events,
+summary, score result, game-over, upgrade log, pilot stats, health, errors;
+only the batch-folder path in `spec` differs), field digest
+`b2a97e0e…61010` both times (the earlier `e6464972…cb101` was taken by an
+uncommitted script on an older build label, so it is not recomputable here).
+`tests/server-verify-hmh-v8-legacy-identity.test.mjs` (`0a7eec5e…4895`) passes.
+Fresh ten-area v8 corpus with the slide (43 rows): 43/43 verify, no
+reject, 6 soft kills-near-capacity flags. HMH initial JS + shared 1,000,881 B
+of 1,048,576.
+
 ## Receipts
 
 `docs/2.0/receipts/collision-art-20261001/`: `before/audit-before.json` and

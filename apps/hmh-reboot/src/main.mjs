@@ -91,6 +91,7 @@ import {
   resolveSweptTraversalPath,
   traceHeightAwareLineOfSight,
 } from './elevation.mjs';
+import { slideRefusedTraversal } from './traversal-slide.mjs';
 import { InputState, createBrowserInputController, mapGamepadSnapshot } from './input.mjs';
 import { rebindKeyboardAction, normalizeKeyboardBindings } from './action-map.mjs';
 import { createGrenadeSystem, raiseHandGrenadeMaximum, rechargeHandGrenades, stepGrenadeSystem, throwGrenade } from './grenades.mjs';
@@ -440,6 +441,26 @@ let HMH_WORLD_CONTEXT = null;
 // district bosses, the 2.0 enemies, cover and traversal. Null in the legacy
 // world, where every call below is skipped and the tick is unchanged.
 let TEN_AREA_COMBAT = null;
+// Ten-area only: refused ground steps slide along the edge (traversal-slide.mjs).
+let TRAVERSAL_SLIDE = false;
+// Ten-area only: melee strikes see the colliders near the striker. The Forked
+// Standard bounds its blocker list at 512 and the ten-area world holds ~1,000
+// colliders, so the whole list threw on its first swing. Never legacy.
+let LOCAL_MELEE_BLOCKERS = false;
+const meleeBlockerBounds = new WeakMap();
+function blockersNear(blockers, x, y, reach) {
+  return blockers.filter((blocker) => {
+    let b = meleeBlockerBounds.get(blocker);
+    if (!b) {
+      const shape = blocker.shape;
+      const points = shape.type === 'polygon' ? shape.vertices : shape.type === 'capsule' ? [shape.a, shape.b] : [{ x: shape.x, y: shape.y }];
+      const pad = shape.type === 'polygon' ? 0 : (shape.radius ?? 0);
+      b = { minX: Math.min(...points.map((p) => p.x)) - pad, maxX: Math.max(...points.map((p) => p.x)) + pad, minY: Math.min(...points.map((p) => p.y)) - pad, maxY: Math.max(...points.map((p) => p.y)) + pad };
+      meleeBlockerBounds.set(blocker, b);
+    }
+    return b.maxX >= x - reach && b.minX <= x + reach && b.maxY >= y - reach && b.minY <= y + reach;
+  });
+}
 // The archetype table the runtime reads: the legacy six, plus the 2.0 enemies
 // in the ten-area world.
 let ENEMY_ARCHETYPES = LEGACY_ENEMY_ARCHETYPES;
@@ -458,6 +479,8 @@ const selectLevelEntry = (seed) => (HMH_WORLD_CONTEXT?.gameplay ? HMH_WORLD_CONT
 function adoptWorldContext(context) {
   HMH_WORLD_CONTEXT = context;
   TEN_AREA_COMBAT = context.combat ?? null;
+  TRAVERSAL_SLIDE = context.legacy === false;
+  LOCAL_MELEE_BLOCKERS = context.legacy === false;
   ENEMY_ARCHETYPES = TEN_AREA_COMBAT?.archetypes ?? LEGACY_ENEMY_ARCHETYPES;
   LEVEL_ONE_WORLD = context.world;
   RUN_SUMMARY_ENABLED = context.official === true;
@@ -4128,14 +4151,25 @@ async function boot() {
           queryGround,
           maxSampleDistance: Math.max(4, playerBody.radius * 0.5),
         });
+        // Ten-area only: a refused step slides along the ledge or bank (the
+        // crossing axis is spent), instead of stopping dead. Never legacy.
+        if (!lastTraversal.allowed && TRAVERSAL_SLIDE) {
+          const slide = slideRefusedTraversal({
+            attempt: lastTraversal,
+            end: lastCollision.position,
+            queryGround,
+            maxSampleDistance: Math.max(4, playerBody.radius * 0.5),
+            sweep: (point, delta) => resolveSweptCircleMotion({ body: playerBody, start: { x: point.x, y: point.y, z: queryGround(point.x, point.y).groundZ }, delta, blockers: WORLD_BLOCKERS, bounds: WORLD_BOUNDS }).position,
+          });
+          if (slide.moved) lastTraversal = { ...lastTraversal, position: slide.position, ground: slide.ground, dropped: slide.dropped, dropDeltaZ: slide.dropDeltaZ, slidBlocked: slide.blocked };
+        }
         motion.x = lastTraversal.position.x;
         motion.y = lastTraversal.position.y;
         lastGround = lastTraversal.ground;
         if (!lastTraversal.allowed) {
-          motion.vx = 0;
-          motion.vy = 0;
-          motion.recoilVx = 0;
-          motion.recoilVy = 0;
+          const keepX = lastTraversal.slidBlocked && !lastTraversal.slidBlocked.x, keepY = lastTraversal.slidBlocked && !lastTraversal.slidBlocked.y;
+          if (!keepX) { motion.vx = 0; motion.recoilVx = 0; }
+          if (!keepY) { motion.vy = 0; motion.recoilVy = 0; }
         }
         zeroDisplacementFrames = lastCollision.telemetry.zeroDisplacementFrames;
       }
@@ -4363,6 +4397,8 @@ async function boot() {
           fullAiCap: runtimeEncounterSnapshot(tick).fullAiCap,
           // Spore beds and conveyors act on enemies through the same field the hero uses.
           fieldAt: (x, y, ground) => worldHazardField(LEVEL_ONE_WORLD.interactions.hazards, { x, y, groundZ: ground.groundZ }),
+          // Ten-area only: enemies slide along ledges and banks too.
+          ...(TRAVERSAL_SLIDE ? { traversalSlide: true } : {}),
         });
       } else {
         lastEnemyStep = Object.freeze({ decisions: 0, safetySteps: 0, routeReplans: 0, stuckRecoveries: 0, hazardAvoiding: 0, formationAdjusted: 0 });
@@ -4743,7 +4779,7 @@ async function boot() {
           channelStopReason: dashFrame.active ? 'dodge' : '',
           meleeOrigin: { x: actor.x, y: actor.y, z: actor.groundZ },
           meleeTargets,
-          meleeBlockers: WORLD_BLOCKERS,
+          meleeBlockers: LOCAL_MELEE_BLOCKERS ? blockersNear(WORLD_BLOCKERS, actor.x, actor.y, 480) : WORLD_BLOCKERS,
           meleeDownwardDropDirection: lastGround.oneWayDrop,
         });
       activeBurnerHazards = weaponLoadout.weapons['bear-market-burner']?.burnerState?.scorchZones ?? [];
