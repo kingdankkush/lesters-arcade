@@ -1,0 +1,408 @@
+{
+  "schema": 1,
+  "id": "stacked-cabinet-3d",
+  "game": "stacked",
+  "title": "STACKED",
+  "kind": "presentation-only arcade cabinet turntable",
+  "frames": 16,
+  "frameWidth": 384,
+  "frameHeight": 420,
+  "restFrame": 2,
+  "degreesPerFrame": 22.5,
+  "visibleBounds": [
+    27,
+    12,
+    357,
+    408
+  ],
+  "strip": {
+    "src": "stacked-cabinet-turntable.webp",
+    "width": 6144,
+    "height": 420,
+    "bytes": 327820,
+    "sha256": "4b378130d8034382fa3423526fc7420b17ea356c469fe4fea8e0b1ecc695fded",
+    "webpQuality": 80
+  },
+  "poster": {
+    "src": "stacked-cabinet-poster.webp",
+    "width": 384,
+    "height": 420,
+    "bytes": 29206,
+    "sha256": "f480d977559097137c0155879ee0ff3915d82bfdb4ae0381f3c84f9b6fef42ca",
+    "webpQuality": 80
+  },
+  "rects": [
+    [
+      0,
+      0,
+      384,
+      420
+    ],
+    [
+      384,
+      0,
+      384,
+      420
+    ],
+    [
+      768,
+      0,
+      384,
+      420
+    ],
+    [
+      1152,
+      0,
+      384,
+      420
+    ],
+    [
+      1536,
+      0,
+      384,
+      420
+    ],
+    [
+      1920,
+      0,
+      384,
+      420
+    ],
+    [
+      2304,
+      0,
+      384,
+      420
+    ],
+    [
+      2688,
+      0,
+      384,
+      420
+    ],
+    [
+      3072,
+      0,
+      384,
+      420
+    ],
+    [
+      3456,
+      0,
+      384,
+      420
+    ],
+    [
+      3840,
+      0,
+      384,
+      420
+    ],
+    [
+      4224,
+      0,
+      384,
+      420
+    ],
+    [
+      4608,
+      0,
+      384,
+      420
+    ],
+    [
+      4992,
+      0,
+      384,
+      420
+    ],
+    [
+      5376,
+      0,
+      384,
+      420
+    ],
+    [
+      5760,
+      0,
+      384,
+      420
+    ]
+  ],
+  "panels": {
+    "marquee": {
+      "texture": "assets-source/arcade-cabinets-3d/stacked/panel-marquee.webp",
+      "size": [
+        1024,
+        256
+      ],
+      "sha256": "04fe389852e2cf8fa17824e8ce3be9652275eacc1188e5be7f2574289a9b0cb1",
+      "extractedFrom": "apps/portal/assets/stacked-cabinet/stacked-cabinet-turnaround-v1.png",
+      "sourceSha256": "53f6583467387c5c260081fcd388a2467d96f65de5806bb26e27fdd56e96cfca",
+      "quad": [
+        [
+          165,
+          15
+        ],
+        [
+          405,
+          15
+        ],
+        [
+          405,
+          75
+        ],
+        [
+          165,
+          75
+        ]
+      ],
+      "mirror": false
+    },
+    "screen": {
+      "texture": "assets-source/arcade-cabinets-3d/stacked/panel-screen.webp",
+      "size": [
+        1024,
+        695
+      ],
+      "sha256": "5170ba4f1ca0a9d2d9d47e6edf3880c60ffe1fac1b9e6a4673b6a985d7ada3c1",
+      "extractedFrom": "apps/portal/assets/stacked-cabinet/stacked-cabinet-turnaround-v1.png",
+      "sourceSha256": "53f6583467387c5c260081fcd388a2467d96f65de5806bb26e27fdd56e96cfca",
+      "quad": [
+        [
+          165,
+          75
+        ],
+        [
+          405,
+          75
+        ],
+        [
+          405,
+          238
+        ],
+        [
+          165,
+          238
+        ]
+      ],
+      "mirror": false
+    },
+    "deck": {
+      "texture": "assets-source/arcade-cabinets-3d/stacked/panel-deck.webp",
+      "size": [
+        1024,
+        201
+      ],
+      "sha256": "f4e2d6ec8373466643976eeea4fa76d4feef3155c091bbee548beabee1253559",
+      "extractedFrom": "apps/portal/assets/stacked-cabinet/stacked-cabinet-turnaround-v1.png",
+      "sourceSha256": "53f6583467387c5c260081fcd388a2467d96f65de5806bb26e27fdd56e96cfca",
+      "quad": [
+        [
+          165,
+          238
+        ],
+        [
+          405,
+          238
+        ],
+        [
+          405,
+          285
+        ],
+        [
+          165,
+          285
+        ]
+      ],
+      "mirror": false
+    },
+    "control-front": {
+      "texture": "assets-source/arcade-cabinets-3d/stacked/panel-control-front.webp",
+      "size": [
+        1024,
+        201
+      ],
+      "sha256": "06148a0d75704da9ab17e9ad71c41999f3b54eb32daf03f1ab3079dad95e34bf",
+      "extractedFrom": "apps/portal/assets/stacked-cabinet/stacked-cabinet-turnaround-v1.png",
+      "sourceSha256": "53f6583467387c5c260081fcd388a2467d96f65de5806bb26e27fdd56e96cfca",
+      "quad": [
+        [
+          165,
+          285
+        ],
+        [
+          405,
+          285
+        ],
+        [
+          405,
+          332
+        ],
+        [
+          165,
+          332
+        ]
+      ],
+      "mirror": false
+    },
+    "kick": {
+      "texture": "assets-source/arcade-cabinets-3d/stacked/panel-kick.webp",
+      "size": [
+        1024,
+        666
+      ],
+      "sha256": "0e2d0d5024c0369b9180b5f645232353c82dd6e0eaae58a2ccb06897fc1b0e44",
+      "extractedFrom": "apps/portal/assets/stacked-cabinet/stacked-cabinet-turnaround-v1.png",
+      "sourceSha256": "53f6583467387c5c260081fcd388a2467d96f65de5806bb26e27fdd56e96cfca",
+      "quad": [
+        [
+          165,
+          332
+        ],
+        [
+          405,
+          332
+        ],
+        [
+          405,
+          488
+        ],
+        [
+          165,
+          488
+        ]
+      ],
+      "mirror": false
+    },
+    "side-left": {
+      "texture": "assets-source/arcade-cabinets-3d/stacked/panel-side-left.webp",
+      "size": [
+        563,
+        1024
+      ],
+      "sha256": "75ce9b419faf91b38fbc941cdf5c6e3c92ed4ad1ef3161a78aad6a9cfd103933",
+      "extractedFrom": "apps/portal/assets/stacked-cabinet/stacked-cabinet-turnaround-v1.png",
+      "sourceSha256": "53f6583467387c5c260081fcd388a2467d96f65de5806bb26e27fdd56e96cfca",
+      "quad": [
+        [
+          1281,
+          8
+        ],
+        [
+          1416,
+          -6
+        ],
+        [
+          1416,
+          472
+        ],
+        [
+          1281,
+          486
+        ]
+      ],
+      "mirror": false
+    },
+    "side-right": {
+      "texture": "assets-source/arcade-cabinets-3d/stacked/panel-side-right.webp",
+      "size": [
+        563,
+        1024
+      ],
+      "sha256": "e8d4191562da0564f9d2086b91facf92b0992893cc672f547f536671376fccc1",
+      "extractedFrom": "apps/portal/assets/stacked-cabinet/stacked-cabinet-turnaround-v1.png",
+      "sourceSha256": "53f6583467387c5c260081fcd388a2467d96f65de5806bb26e27fdd56e96cfca",
+      "quad": [
+        [
+          1281,
+          8
+        ],
+        [
+          1416,
+          -6
+        ],
+        [
+          1416,
+          472
+        ],
+        [
+          1281,
+          486
+        ]
+      ],
+      "mirror": true
+    },
+    "back": {
+      "texture": "assets-source/arcade-cabinets-3d/stacked/panel-back.webp",
+      "size": [
+        508,
+        1024
+      ],
+      "sha256": "4424167bf10845b11a6f5a5e0aeda046518ded0387544d3f84ab708654877e95",
+      "extractedFrom": "apps/portal/assets/stacked-cabinet/stacked-cabinet-turnaround-v1.png",
+      "sourceSha256": "53f6583467387c5c260081fcd388a2467d96f65de5806bb26e27fdd56e96cfca",
+      "quad": [
+        [
+          166,
+          522
+        ],
+        [
+          398,
+          522
+        ],
+        [
+          398,
+          990
+        ],
+        [
+          166,
+          990
+        ]
+      ],
+      "mirror": false
+    }
+  },
+  "render": {
+    "blender": "5.1.2",
+    "engine": "CYCLES",
+    "device": "CPU",
+    "samples": 96,
+    "seed": 0,
+    "denoiser": "OpenImageDenoise",
+    "viewTransform": "Standard",
+    "filmTransparent": true,
+    "resolution": [
+      384,
+      420
+    ],
+    "frames": 16,
+    "posterFrame": 2,
+    "lens": 70.0,
+    "elevationDegrees": 9,
+    "cameraDistance": 6.3347,
+    "kitDimensionsMetres": {
+      "height": 1.8,
+      "depth": 0.987,
+      "width": 1.34,
+      "mouldingWidth": 0.045
+    },
+    "textures": {
+      "panel-back.webp": "4424167bf10845b11a6f5a5e0aeda046518ded0387544d3f84ab708654877e95",
+      "panel-control-front.webp": "06148a0d75704da9ab17e9ad71c41999f3b54eb32daf03f1ab3079dad95e34bf",
+      "panel-deck.webp": "f4e2d6ec8373466643976eeea4fa76d4feef3155c091bbee548beabee1253559",
+      "panel-kick.webp": "0e2d0d5024c0369b9180b5f645232353c82dd6e0eaae58a2ccb06897fc1b0e44",
+      "panel-marquee.webp": "04fe389852e2cf8fa17824e8ce3be9652275eacc1188e5be7f2574289a9b0cb1",
+      "panel-screen.webp": "5170ba4f1ca0a9d2d9d47e6edf3880c60ffe1fac1b9e6a4673b6a985d7ada3c1",
+      "panel-side-left.webp": "75ce9b419faf91b38fbc941cdf5c6e3c92ed4ad1ef3161a78aad6a9cfd103933",
+      "panel-side-right.webp": "e8d4191562da0564f9d2086b91facf92b0992893cc672f547f536671376fccc1"
+    },
+    "kitSha256": "ee7f270d9bf9eed678f3d68643993879f36fd6267d9a834b0f1477c1a4d63d3a"
+  },
+  "recipe": {
+    "runner": "scripts/run-arcade-cabinets.py",
+    "runnerSha256": "96582dad02099a3eb8a142d038b9180e8b0b4d3a393e5cd0b76402d618010746",
+    "kit": "scripts/hmh-blender/build-arcade-cabinets.py",
+    "kitSha256": "ee7f270d9bf9eed678f3d68643993879f36fd6267d9a834b0f1477c1a4d63d3a"
+  }
+}
