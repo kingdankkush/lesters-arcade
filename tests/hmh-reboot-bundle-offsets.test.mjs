@@ -45,6 +45,10 @@ const LAZY_RUNTIME_MODULES = Object.freeze([
   'run-summary-v7.mjs',
   // 2.0 C1: unchanged cockpit presentation joins the existing startup loader.
   'cockpit-ui.mjs',
+  // 2.0 bundle diet: the world production renderer and the authored prop
+  // layout tables are projection/placement data first read after app.init().
+  'world-production-art.mjs',
+  'authored-prop-layout.mjs',
 ]);
 
 function walk(node, visit) {

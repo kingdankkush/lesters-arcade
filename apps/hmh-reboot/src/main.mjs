@@ -224,19 +224,6 @@ import {
   productionHeroAsset,
 } from './production-hero-assets.mjs';
 import { createSelectedHeroRendererLoader } from './selected-hero-renderer-loader.mjs';
-import {
-  AUTHORED_DRESSING_SEED,
-  AUTHORED_PROP_ATLAS_IMAGE_URL,
-  AUTHORED_PROP_ATLAS_METADATA_URL,
-  authoredPropItemUrl,
-  buildAuthoredDistrictLandmarkPlacements,
-  buildAuthoredEncampmentPlacements,
-  buildAuthoredEnclosurePlacements,
-  buildAuthoredPointOfInterestPlacements,
-  buildAuthoredTownPlacements,
-  buildAuthoredWorldPropPlacements,
-  createAuthoredPropAtlasIndex,
-} from './authored-prop-layout.mjs';
 import { CONTACT_SHADOW_BASE_ALPHA, createContactShadowPool, createContactShadowTextures } from './contact-shadows.mjs';
 import {
   MAX_WEAPON_VFX_SPRITES,
@@ -262,10 +249,6 @@ import {
 } from './level-one-world.mjs';
 import { selectLevelEntry as selectLegacyLevelEntry } from './level-entry.mjs';
 import { resolveHmhWorldContext, sessionAllowedForWorld } from './world-context.mjs';
-import {
-  createWorldProductionLayers,
-  renderWorldProductionArt,
-} from './world-production-art.mjs';
 import {
   HMH_CRITICAL_HELD_WEAPON_IDS,
   HMH_WEAPON_DEFINITIONS,
@@ -329,6 +312,13 @@ let summaryV7 = null;
 let createBombletPool, spawnBomblets, stepBomblets, bombletPosition, ventRingHits, critCandleHitChance, createBombletFeedbackBudget, takeBombletFeedback;
 // The unchanged cockpit joins the existing pre-session startup loader.
 let createCockpitUi;
+// Bundle diet (2.0): the world production renderer and the authored prop
+// layout tables are first read after the renderer initialises, so they join
+// the same awaited loader. Both are projection/placement data, not simulation.
+let createWorldProductionLayers, renderWorldProductionArt;
+let AUTHORED_DRESSING_SEED, AUTHORED_PROP_ATLAS_IMAGE_URL, AUTHORED_PROP_ATLAS_METADATA_URL, authoredPropItemUrl,
+  buildAuthoredDistrictLandmarkPlacements, buildAuthoredEncampmentPlacements, buildAuthoredEnclosurePlacements,
+  buildAuthoredPointOfInterestPlacements, buildAuthoredTownPlacements, buildAuthoredWorldPropPlacements, createAuthoredPropAtlasIndex;
 let lazyRuntimeModulesLoad = null;
 function loadLazyRuntimeModules() {
   lazyRuntimeModulesLoad ??= Promise.all([
@@ -351,9 +341,15 @@ function loadLazyRuntimeModules() {
     import('./prisoners.mjs'),
     import('./run-summary-v7.mjs'),
     import('./cockpit-ui.mjs'),
-  ]).then(([boss, creature, telegraph, interactions, life, pacing, nativeAssets, briefing, panel, content, mission, slots, arenas, geometry, drops, effects, prisoners, v7, cockpitUi]) => {
+    import('./world-production-art.mjs'),
+    import('./authored-prop-layout.mjs'),
+  ]).then(([boss, creature, telegraph, interactions, life, pacing, nativeAssets, briefing, panel, content, mission, slots, arenas, geometry, drops, effects, prisoners, v7, cockpitUi, worldArt, propLayout]) => {
     summaryV7 = v7;
     ({ createCockpitUi } = cockpitUi);
+    ({ createWorldProductionLayers, renderWorldProductionArt } = worldArt);
+    ({ AUTHORED_DRESSING_SEED, AUTHORED_PROP_ATLAS_IMAGE_URL, AUTHORED_PROP_ATLAS_METADATA_URL, authoredPropItemUrl,
+      buildAuthoredDistrictLandmarkPlacements, buildAuthoredEncampmentPlacements, buildAuthoredEnclosurePlacements,
+      buildAuthoredPointOfInterestPlacements, buildAuthoredTownPlacements, buildAuthoredWorldPropPlacements, createAuthoredPropAtlasIndex } = propLayout);
     ({ PRISONERS_LIVE_DEFAULT, PRISONER_TITLES, OG_MINER_XP_PER_LEVEL, prisonerMissionRows, rescuePrisoner, stepPrisonerStations, startPrisonerTimedEffect } = prisoners);
     ({ applyLiquidatorDamage, createLiquidatorBoss, getLiquidatorVulnerability,
       getLiquidatorRoleCheck, resolveLiquidatorAttack, stepLiquidatorBoss, isLiquidatorTargetable, liquidatorOpenArena } = boss);
