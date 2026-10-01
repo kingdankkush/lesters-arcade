@@ -50,7 +50,7 @@ export function createHollowPinesArtPlan(world) {
   solid('maintenance-house', 'card', { source: 'b2-68', fit: 'width', tint: 0xc0c0c4 });
   for (const name of ['north-west-wall', 'north-east-wall', 'west-upper-wall', 'west-lower-wall', 'east-upper-wall', 'east-lower-wall', 'south-wall']) solid(name, 'mass', { wall: 'masonry', roof: 'rock', tint: PINES_STONE_TINT });
   solid('low-boundary', 'hedge', { source: 'b2-49', spacing: 130, tint: PINES_STONE_TINT });
-  solid('stone-monument', 'card', { source: 'b2-80', fit: 'height', tint: 0xbcbcc4, massAlpha: 0.2 });
+  solid('stone-monument', 'mass', { wall: 'masonry', roof: 'rock', tint: PINES_STONE_TINT });
   for (const name of ['southwest-grove', 'northeast-grove']) solid(name, 'bank', { roof: 'needles', tint: 0xc8c8cc });
   // Dark conifers behind, dead oaks and bleached relics at the grove edges.
   for (const name of ['southwest-grove', 'northeast-grove']) placeOnBank(context, context.piece(name), { key: name, stepX: 150, stepY: 140, sources: GROVE_TREES, height, tint: source => TREE_TINT[source] });
@@ -70,10 +70,10 @@ export function createHollowPinesArtPlan(world) {
   for (const [vertices, key] of [[context.piece('crypt').blocker.shape.vertices, 'crypt-rubble'], [context.piece('dead-tree-roots').blocker.shape.vertices, 'tree-rubble']]) {
     placeAlongPolygonEdges(context, vertices, { key, spacing: 110, offset: 46, radius: 16, jitter: 10, place: (px, py, n, v) => {
       if (n % 3 === 2) prop('b1-05', px, py, 44 + n % 3 * 6, { flip: v > 0.5, tint: PINES_ASH_TINT, shadow: false });
-      else prop('b1-42', px, py, 26 + (n % 3) * 6, { flip: v > 0.5, tint: 0x9ea2ac });
+      else prop('b2-49', px, py, 18 + (n % 3) * 3, { flip: v > 0.5, tint: 0xa8aab4, fade: false });
     } });
   }
-  for (const [x, y] of [[-120, -800], [120, -790], [-260, -810], [280, -800]]) if (guard.clear(cx + x, cy + y, 16)) prop('b1-42', cx + x, cy + y, 30, { tint: 0x9ea2ac, flip: x > 0 });
+  for (const [x, y] of [[-120, -800], [120, -790], [-260, -810], [280, -800]]) if (guard.clear(cx + x, cy + y, 16)) prop('b2-49', cx + x, cy + y, 20, { tint: 0xa8aab4, flip: x > 0, fade: false });
   // Tighter tree lanes outside the walls: dead oaks, bleached relics and burnt
   // shrub skeletons in pockets, plus hollow stumps and root balls.
   const POCKETS = [[-1250, -500, 200, 260], [1250, -450, 220, 240], [-1150, 600, 150, 180], [-500, 1450, 340, 200], [600, 1500, 320, 180], [1650, 1600, 200, 220],
@@ -84,7 +84,7 @@ export function createHollowPinesArtPlan(world) {
     else prop('b1-05', px, py, 42 + n % 3 * 7, { flip: v > 0.5, tint: PINES_ASH_TINT, shadow: n % 2 === 0 });
   } }));
   // Groundskeeper's stacked materials behind the house, clear of both ramps.
-  for (const [x, y, source, height, flip] of [[1420, 470, 'b2-79', 56, false], [1430, 700, 'b2-79', 52, true], [880, 440, 'b1-42', 34, false]]) {
+  for (const [x, y, source, height, flip] of [[1420, 470, 'b2-79', 56, false], [1430, 700, 'b2-79', 52, true], [880, 440, 'b2-73', 52, false]]) {
     if (guard.clear(cx + x, cy + y, 24)) prop(source, cx + x, cy + y, height, { flip, tint: 0xc4c0b8 });
   }
   return freezeDeep(plan);

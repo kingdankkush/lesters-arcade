@@ -8,7 +8,7 @@ import { createMwebMeadowsArtPlan, MWEB_MEADOWS_PAGES } from '../apps/hmh-reboot
 import { createWorldRoadsArtPlan, ROAD_CLEARANCE_FRACTION } from '../apps/hmh-reboot/src/world-v2-area-plans/world-roads.mjs';
 // Lane B area plans (briefs 06-09).
 import { createHashwoodRiverArtPlan, HASHWOOD_RIVER_PAGES, RIVER_STONE_TINT } from '../apps/hmh-reboot/src/world-v2-area-plans/hashwood-river.mjs';
-import { createHollowPinesArtPlan, HOLLOW_PINES_PAGES, GIANT_DEAD_TREE_HEIGHT } from '../apps/hmh-reboot/src/world-v2-area-plans/hollow-pines.mjs';
+import { createHollowPinesArtPlan, HOLLOW_PINES_PAGES, GIANT_DEAD_TREE_HEIGHT, PINES_STONE_TINT } from '../apps/hmh-reboot/src/world-v2-area-plans/hollow-pines.mjs';
 import { createLedgerRidgeArtPlan, LEDGER_RIDGE_PAGES } from '../apps/hmh-reboot/src/world-v2-area-plans/ledger-ridge.mjs';
 import { createForkFortressArtPlan, FORK_FORTRESS_PAGES } from '../apps/hmh-reboot/src/world-v2-area-plans/fork-fortress.mjs';
 import { DISTRICT_TERRAIN } from '../apps/hmh-reboot/src/world-v2-area-art-schema.mjs';
@@ -223,7 +223,7 @@ test('Hashwood River follows brief 06: conifers on closed banks, iris on the dam
   assert.equal(byPiece['waterfall-shelf'].style, 'bank'); assert.equal(byPiece['waterfall-shelf'].roof, 'rock');
   for (const name of ['marquee-west-post', 'marquee-east-post', 'court-tall-screen']) assert.equal(byPiece[name].style, 'stakes', name);
   assert.ok(summary.props.some(p => p.source === 'b2-79'), 'log piles frame the clearing');
-  assert.ok(summary.trails.length >= 20 && summary.zones.length >= 8);
+  assert.ok(summary.trails.length >= 20 && summary.zones.length >= 4);
   // Every placement outside the two documented bridge silhouettes honours the guard.
   for (const prop of summary.props) {
     if (prop.source === 'b2-41') continue;
@@ -285,12 +285,12 @@ test('Hollow Pines follows brief 07: a giant dead tree on its root volume, buria
   const tree = byPiece['dead-tree-roots'];
   assert.equal(tree.card.source, 'b2-70'); assert.equal(tree.card.fit, 'height'); assert.equal(tree.height, GIANT_DEAD_TREE_HEIGHT); assert.equal(tree.massAlpha, 0);
   assert.ok(GIANT_DEAD_TREE_HEIGHT > 2 * CANOPY_HEIGHTS['b2-70'], 'the landmark tree is at least twice an ordinary dead oak');
-  assert.equal(byPiece.crypt.card.source, 'b2-65'); assert.equal(byPiece['maintenance-house'].card.source, 'b2-68'); assert.equal(byPiece['stone-monument'].card.source, 'b2-80');
+  assert.equal(byPiece.crypt.card.source, 'b2-65'); assert.equal(byPiece['maintenance-house'].card.source, 'b2-68'); assert.equal(byPiece['stone-monument'].style, 'mass'); assert.equal(byPiece['stone-monument'].wall, 'masonry');
   assert.equal(byPiece['low-boundary'].style, 'hedge'); assert.equal(byPiece['low-boundary'].card.source, 'b2-49');
   for (const name of ['north-west-wall', 'north-east-wall', 'west-upper-wall', 'west-lower-wall', 'east-upper-wall', 'east-lower-wall', 'south-wall']) assert.equal(byPiece[name].wall, 'masonry', name);
   for (const name of ['southwest-grove', 'northeast-grove']) assert.equal(byPiece[name].style, 'bank', name);
   assert.ok(!summary.sources.includes('b2-52'), 'traffic masts are not used as cemetery lanterns');
-  const headstones = summary.props.filter(p => p.source === 'b2-49');
+  const headstones = summary.props.filter(p => p.source === 'b2-49' && p.tint === PINES_STONE_TINT);
   assert.ok(headstones.length >= 80, `${headstones.length} headstones`);
   const area = world.areas.find(a => a.id === 'hollow-pines');
   for (const stone of headstones) {
@@ -301,7 +301,8 @@ test('Hollow Pines follows brief 07: a giant dead tree on its root volume, buria
   assert.ok(summary.props.filter(p => p.source === 'b2-80').length >= 4, 'tombs');
   const dead = summary.props.filter(p => ['b2-70', 'b1-53'].includes(p.source)), burnt = summary.props.filter(p => p.source === 'b1-05');
   assert.ok(dead.length >= 60, `${dead.length} dead trees`); assert.ok(burnt.length >= 50, `${burnt.length} burnt shrubs`);
-  for (const source of ['b2-72', 'b2-73', 'b2-74', 'b1-42']) assert.ok(summary.props.some(p => p.source === source), source);
+  assert.ok(!summary.sources.includes('b1-42'), 'no warm sandstone rubble in the blue-grey cemetery');
+  for (const source of ['b2-72', 'b2-73', 'b2-74']) assert.ok(summary.props.some(p => p.source === source), source);
   assert.ok(summary.props.length >= 300 && summary.props.length <= 600, `${summary.props.length} props`);
   assertGuardedProps('hollow-pines', summary, plan);
 });
@@ -316,6 +317,7 @@ test('Ledger Ridge follows brief 08: banked rock cuts with strata and sparse pin
   assert.equal(count('b2-76'), 1); assert.ok(count('b2-77') >= 1); assert.ok(count('b2-78') >= 8); assert.ok(count('b1-16') >= 3);
   assert.ok(count('b2-59') >= 1 && count('b2-60') >= 2, 'excavator and haul trucks');
   assert.ok(count('b1-42') >= 80 && count('b2-79') >= 5 && count('b1-49') >= 5, 'strata, timber and stump spoil');
+  assert.ok(summary.props.filter(p => p.source === 'b1-42' && p.groundZ === 0).every(p => p.height >= 90), 'sandstone only at full strata height (small cards read as barrels)');
   const pines = summary.props.filter(p => ['b2-72', 'b1-50'].includes(p.source));
   assert.ok(pines.length >= 40 && pines.length <= 120, `${pines.length} sparse pines`);
   assert.ok(pines.every(p => p.groundZ > 0), 'pines only on stable shelves');

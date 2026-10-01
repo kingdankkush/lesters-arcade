@@ -60,12 +60,14 @@ export function createLedgerRidgeArtPlan(world) {
   // Spoil, timber and stumps at the cut feet; scrub and rubble line the switchbacks.
   for (const name of ['lower-cut', 'upper-cut', 'west-buttress']) {
     placeAlongPolygonEdges(context, context.piece(name).blocker.shape.vertices, { key: `${name}-foot`, spacing: 150, offset: 40, radius: 16, jitter: 12, place: (px, py, n, v) => {
-      const source = n % 5 === 4 ? 'b2-79' : n % 5 === 2 ? 'b1-49' : n % 2 ? 'b1-05' : 'b1-42';
-      prop(source, px, py, source === 'b2-79' ? 50 : source === 'b1-49' ? 70 : source === 'b1-05' ? 40 : 30 + n % 3 * 8, { flip: v > 0.5, tint: source === 'b1-42' ? RIDGE_STONE_TINT : 0xc8c2b4, shadow: source !== 'b1-05' });
+      // Small sandstone cards read as rusty barrels at gameplay zoom (pass-1), so
+      // spoil is timber, stumps and dry scrub, with full-height strata only.
+      const source = n % 5 === 4 ? 'b2-79' : n % 5 === 2 ? 'b1-49' : n % 3 === 0 ? 'b1-42' : 'b1-05';
+      prop(source, px, py, source === 'b2-79' ? 50 : source === 'b1-49' ? 70 : source === 'b1-05' ? 40 : 96 + n % 3 * 12, { flip: v > 0.5, tint: source === 'b1-42' ? RIDGE_STONE_TINT : 0xc8c2b4, shadow: source !== 'b1-05' });
     } });
   }
   for (const [x, y] of [[-1080, 900], [-830, 900], [-1080, 250], [-830, 300], [-1080, -400], [-830, -500], [-450, -700], [500, -700], [-150, 1000], [600, 1000]]) {
-    scatter({ key: `switchback-${x}-${y}`, x: cx + x, y: cy + y, rx: 70, ry: 90, count: 5, radius: 12, place: (px, py, n, v) => prop(n % 2 ? 'b1-05' : 'b1-42', px, py, n % 2 ? 38 : 24 + n * 4, { flip: v > 0.5, tint: n % 2 ? 0xc6c0b0 : RIDGE_STONE_TINT, shadow: false }) });
+    scatter({ key: `switchback-${x}-${y}`, x: cx + x, y: cy + y, rx: 70, ry: 90, count: 5, radius: 12, place: (px, py, n, v) => prop(n % 2 ? 'b1-05' : 'b2-74', px, py, n % 2 ? 38 : 60 + n * 4, { flip: v > 0.5, tint: n % 2 ? 0xc6c0b0 : 0xc4bcb0, shadow: false }) });
   }
   // Store stock along its back and side walls, leaving the loading face open.
   for (const [x, y, source, height, flip] of [[-1730, -1080, 'b2-79', 54, false], [-1290, -1080, 'b1-16', 52, true], [-1760, -900, 'b2-79', 50, true]]) {

@@ -17,7 +17,7 @@ import { placeLine, placeOnBank, placeEdgeWoodland, placeAlongPolygonEdges } fro
 export const FORK_FORTRESS_PAGES = Object.freeze(['tripo-props-hd-structures-00.webp', 'tripo-props-hd-structures-01.webp', 'tripo-props-hd-props-00.webp']);
 // Iron #424B4B and masonry #7B7C70 as pale multiplicative tints. The stacked
 // containers' rust panel is pulled toward iron grey.
-export const FORTRESS_IRON_TINT = 0xa4acac;
+export const FORTRESS_IRON_TINT = 0x96a0a4;
 export const FORTRESS_MASONRY_TINT = 0xc4c4bc;
 
 export function createForkFortressArtPlan(world) {
@@ -35,7 +35,7 @@ export function createForkFortressArtPlan(world) {
     { id: 'loading-yard', material: 'dirt', feather: 90, alpha: 0.5, vertices: [point(-1500, 1250), point(-500, 1250), point(-500, 1850), point(-1500, 1850)] },
     { id: 'keep-apron', material: 'masonry', feather: 70, alpha: 0.6, vertices: [point(-560, -1220), point(760, -1220), point(760, -1120), point(-560, -1120)] },
   );
-  for (const segment of routeSegments) plan.ground.trails.push({ id: `trail-${plan.ground.trails.length}`, material: 'dirt', points: [segment.a, segment.b], width: segment.kind === 'main' ? 56 : 42, halo: 18 });
+  for (const segment of routeSegments) plan.ground.trails.push({ id: `trail-${plan.ground.trails.length}`, material: 'gravel', points: [segment.a, segment.b], width: segment.kind === 'main' ? 52 : 40, halo: 14 });
   // Hierarchy on the authored solids.
   solid('keep', 'mass', { wall: 'masonry', roof: 'slate', tint: FORTRESS_MASONRY_TINT });
   solid('ridge-foot', 'bank', { roof: 'rock', tint: 0xc8cac4 });
@@ -81,7 +81,7 @@ export function createForkFortressArtPlan(world) {
   // area edge reads as broken rock rather than open ground.
   placeOnBank(context, context.piece('ridge-foot'), { key: 'ridge-foot-rock', stepX: 170, stepY: 160, inset: 80, sources: ['b1-42'], height: (source, n, v) => 100 + 80 * v, tint: 0xa8acb0 });
   for (const name of ['keep', 'north-gatehouse', 'south-gatehouse', 'service-store']) {
-    placeAlongPolygonEdges(context, context.piece(name).blocker.shape.vertices, { key: `${name}-rubble`, spacing: 140, offset: 40, radius: 14, jitter: 10, place: (px, py, n, v) => prop(n % 3 === 2 ? 'b2-49' : 'b1-42', px, py, n % 3 === 2 ? 26 : 22 + n % 4 * 6, { flip: v > 0.5, tint: n % 3 === 2 ? 0xc8cac6 : 0xa8acb0, fade: false }) });
+    placeAlongPolygonEdges(context, context.piece(name).blocker.shape.vertices, { key: `${name}-rubble`, spacing: 140, offset: 40, radius: 14, jitter: 10, place: (px, py, n, v) => prop(n % 3 === 2 ? 'b1-18' : 'b2-49', px, py, n % 3 === 2 ? 48 : 22 + n % 3 * 4, { flip: v > 0.5, tint: n % 3 === 2 ? 0xc0bcb4 : 0xc8cac6, fade: false }) });
   }
   placeEdgeWoodland(context, { key: 'fortress-edge', sources: ['b1-42', 'b1-42', 'b1-43', 'b1-42'], perSide: 20, height: (source, side, n, v) => source === 'b1-43' ? 160 : 110 + 80 * v, tint: FORTRESS_IRON_TINT });
   // Barricade line on the outer edge of the lower service loop.
