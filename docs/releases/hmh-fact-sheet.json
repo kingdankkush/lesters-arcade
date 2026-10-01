@@ -1,7 +1,7 @@
 {
   "schema": "hmh-release-facts/v1",
   "scope": "Offline source snapshot; not a release certificate or public-byte verification",
-  "sourceSnapshotSha256": "a5d3aa25934d3ea6630f56a50a0d94fdf79accd6bfa8b54f4b087cbf9b2b443f",
+  "sourceSnapshotSha256": "258a26ab04a79b95da99cecdff363f4d2a9e2cd1200df8cfbb1eb7d1ba517a67",
   "sourceInputs": [
     {
       "path": "apps/portal/games/chikun/game.manifest.json",
@@ -20,8 +20,8 @@
     },
     {
       "path": "apps/portal/main.js",
-      "sha256": "b91f36b17d886b68d9ded23eb7e1a5caf470d02cee90b423f0528dbb4ae0a102",
-      "bytes": 457041
+      "sha256": "2831fd6c6d0fe9096b038c7cfa69fd7ec1b11637d60a455149860ab95789e203",
+      "bytes": 457036
     },
     {
       "path": "apps/portal/src/arcade-core.mjs",
@@ -90,8 +90,8 @@
     },
     {
       "path": "README.md",
-      "sha256": "bc3a1f600afe74cd090fdde4b79dfe613cbc3a1683beffb28332e68a8958267b",
-      "bytes": 68517
+      "sha256": "e7adb46dc573323ffb9a34e580bdd5c76b445ac47ca225cac81780b07934c9e8",
+      "bytes": 69130
     },
     {
       "path": "scripts/hmh-release-facts.mjs",
@@ -105,7 +105,7 @@
     },
     {
       "path": "tests/arcade-core.test.mjs",
-      "sha256": "524b9fbafb9de4d5ef785508ca47e7061842e1b2c17188de7cee8d77f9878bb7",
+      "sha256": "0080162ff9f08482ca7b5df6510638bd9bf9cf34c013e42ea4dd83da42d1e6e2",
       "bytes": 193913
     },
     {
@@ -140,7 +140,7 @@
     }
   ],
   "productionPromotionAuthorized": false,
-  "recordedProductionMarker": "lesters-arcade-v66-litecoin-frontier",
+  "recordedProductionMarker": "lesters-arcade-v67-level-one-only",
   "cabinets": [
     {
       "manifestId": "hard-money-heroes",

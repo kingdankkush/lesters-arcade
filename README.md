@@ -1,18 +1,10 @@
-# Lester's Arcade — 2.1.0: The Litecoin Frontier is Level 1
+# Lester's Arcade — 2.1.1: one Level 1 for every run
 
-Hard Money Heroes now plays its new ten-area world as Level 1 in both Free Mode and Ranked. The original six-district map stays available as "Play the original map (Free only)".
+Hard Money Heroes plays the ten-area Litecoin Frontier as Level 1 in Free Mode and Ranked. The "Play the original map (Free only)" start is gone from the mode select, so every player starts on the same world.
 
-What changed for players:
+Not changed: gameplay, scoring, Ranked verification, contracts, fees, settlement and jackpot configuration. Runs recorded on the original map keep verifying exactly as before. Testnet verification is not real-money settlement.
 
-- **The Litecoin Frontier is the default level.** Ten connected areas on a 20,000 × 14,000 map: MWEB Meadows, Litecoin City, Halving Farms, Silver Coast, Scrypt Bayou, Hashwood River, Hollow Pines, Ledger Ridge, Fork Fortress and Rugpull Woods. Four bosses (the Liquidator plus the Rug Pull Baron, the 51% Foreman and the Lockkeeper), six new enemy types, cover and climbing.
-- **Solid buildings.** Every building, vehicle, wall and large prop now blocks movement where it is drawn; bank guards and bridge rails stop players and enemies getting pinned at water edges.
-- **Fixes.** The Arc Rifle no longer freezes a boss fight; the level no longer waits forever for the portal on a slow start; the pause map shows the new world; boss fights stay within reach.
-- **Ranked on the new world.** Ten-area Ranked runs are checked by a new verifier version (run summary schema 8, map version 2). Runs from earlier versions keep verifying exactly as before. A stale tab from 2.0 is asked to reload before it can start a run.
-- **Trophy review.** Full Roster Run and other HMH trophy-class achievements are held for review where the server cannot fully prove a run.
-
-Not changed: contracts, fees, settlement and jackpot configuration. Testnet verification is not real-money settlement.
-
-Site/game version `2.1.0`; cache marker `lesters-arcade-v66-litecoin-frontier`. Continue on `fable/master-list-20260916`.
+Site/game version `2.1.1`; cache marker `lesters-arcade-v67-level-one-only`. Continue on `fable/master-list-20260916`.
 
 ## How to play
 
@@ -130,6 +122,22 @@ The homepage and game browser redesign, HMH mobile optimization and world presen
 
 Runtime source `a0e6b2a5866f13c5cf3ee2a78070e9281d679b71`; deployment `dpl_Gnf2tetZUqK5fsfH7Pgcy4gERe7B`; site/game version `1.5.1`. The hosted gate passes 3,760 of 3,811 tests with exactly 51 unchanged retired exceptions. All 98 public file and route hashes match. Public desktop and 414×896 touch-layout checks cover all three collision types, exact replay results, retries and action audio with zero looping sources or runtime errors. Returning-cache migration from v49 to v50 passes. [Release receipt](docs/qa/chikun-fixes-release-20260914.json). Retained rollback: `dpl_14Wqtwjo1XZbCb6ne13cgovTd7hF`. Continue on `codex/mobile-worlds-aquatic-20260914`. Physical-device acceptance and the broader roadmap remain open.
 
+## 2.1.0: The Litecoin Frontier is Level 1 — live predecessor
+
+Hard Money Heroes now plays its new ten-area world as Level 1 in both Free Mode and Ranked. The original six-district map stays available as "Play the original map (Free only)".
+
+What changed for players:
+
+- **The Litecoin Frontier is the default level.** Ten connected areas on a 20,000 × 14,000 map: MWEB Meadows, Litecoin City, Halving Farms, Silver Coast, Scrypt Bayou, Hashwood River, Hollow Pines, Ledger Ridge, Fork Fortress and Rugpull Woods. Four bosses (the Liquidator plus the Rug Pull Baron, the 51% Foreman and the Lockkeeper), six new enemy types, cover and climbing.
+- **Solid buildings.** Every building, vehicle, wall and large prop now blocks movement where it is drawn; bank guards and bridge rails stop players and enemies getting pinned at water edges.
+- **Fixes.** The Arc Rifle no longer freezes a boss fight; the level no longer waits forever for the portal on a slow start; the pause map shows the new world; boss fights stay within reach.
+- **Ranked on the new world.** Ten-area Ranked runs are checked by a new verifier version (run summary schema 8, map version 2). Runs from earlier versions keep verifying exactly as before. A stale tab from 2.0 is asked to reload before it can start a run.
+- **Trophy review.** Full Roster Run and other HMH trophy-class achievements are held for review where the server cannot fully prove a run.
+
+Not changed: contracts, fees, settlement and jackpot configuration. Testnet verification is not real-money settlement.
+
+Site/game version `2.1.0`; cache marker `lesters-arcade-v66-litecoin-frontier`. Continue on `fable/master-list-20260916`.
+
 ## 2.0.0: the visual overhaul, first drop — live predecessor
 
 The first live drop of the 2.0 overhaul. It ships everything that was complete and verified on the overhaul branch; the remaining 2.0 work (final area art for all ten areas, the three new bosses, the six new enemies in play, weapon models on the hero by default, cover and traversal in the simulation, Chikun course two as an official course) continues in the next update.
@@ -159,7 +167,7 @@ The redesigned [homepage](https://lestersarcade.io) and [cabinet browser](https:
 
 Runtime source `6fe83eb693bda5c36cb77f995b88d244515365f8`; deployment `dpl_6bgHFQsaZ6smUdqFNRzhc7FrsenJ`. The local and cloud release gates pass 3,742 tests with exactly 51 unchanged retirement exceptions. All 107 private/public file and route hashes match. Twenty discovery checks and seven accessibility scans pass in each environment; all three games and the returning-cache transition pass. [Release receipt](docs/qa/arcade-discovery-release-20260914.json) · [Design and verification](docs/qa/arcade-discovery-design-20260914.md). Retained rollback: `dpl_HVFN3wwuWmveoWa4CVk8b1dAnovU`. Continue on `codex/arcade-home-catalog-20260914`.
 
-**Production cache marker:** `lesters-arcade-v66-litecoin-frontier`
+**Production cache marker:** `lesters-arcade-v67-level-one-only`
 
 # Lester's Arcade
 

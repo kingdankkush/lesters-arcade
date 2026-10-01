@@ -2,7 +2,7 @@
 
 **Internal source snapshot. Not a release certificate, launch announcement or current public/chain verification.**
 
-Input snapshot SHA-256: `a5d3aa25934d3ea6630f56a50a0d94fdf79accd6bfa8b54f4b087cbf9b2b443f`
+Input snapshot SHA-256: `258a26ab04a79b95da99cecdff363f4d2a9e2cd1200df8cfbb1eb7d1ba517a67`
 
 ## What the labels mean
 
@@ -23,7 +23,7 @@ Manifest eligibility is not proof of wallet connection, paid-entry charging, tru
 
 ## Release and settlement boundary
 
-- README-recorded production marker: lesters-arcade-v66-litecoin-frontier. Not fetched by this offline generator.
+- README-recorded production marker: lesters-arcade-v67-level-one-only. Not fetched by this offline generator.
 - Last recorded combined run: **BLOCKED**, 2026-09-09T20:12:22.799359+00:00; 8/9 gates passed. This is historical, not a check of the current candidate.
 - Recorded source HEAD: `9ce7372021a1b14a5b6910bcd0fa1d7d328d8bef`.
 - Current candidate certified by this report: **No**. Promotion authorized: **No**.
@@ -119,7 +119,7 @@ These hashes bind local input bytes, not execution, deployment or human approval
 | apps/portal/games/chikun/game.manifest.json | ad3fc63aa65fa8057d36fe6f7836ae01883a5b5215af8d2da5b70902601f19f7 | 592 |
 | apps/portal/games/hard-money-heroes/game.manifest.json | 12f32247d3738e8837f48b5b7fb84c93f73fd64f9e0c8a7fca57e2c6a49748cc | 602 |
 | apps/portal/index.html | 5cf74ce079d5b7650ba286b65ac2285a694a6d0dac8f26887fbf396e88e3f475 | 43695 |
-| apps/portal/main.js | b91f36b17d886b68d9ded23eb7e1a5caf470d02cee90b423f0528dbb4ae0a102 | 457041 |
+| apps/portal/main.js | 2831fd6c6d0fe9096b038c7cfa69fd7ec1b11637d60a455149860ab95789e203 | 457036 |
 | apps/portal/src/arcade-core.mjs | c8ffd8e958f71a52fd4427c7e925b0e72e4506fc7b84291dd8153bf0a9869fa5 | 365415 |
 | apps/portal/src/hmh-challenge-ui.mjs | 3633ac9368005d1969e2f30d794334857e8fe40fb0eb5c7afb51fe001f3838f2 | 2834 |
 | apps/portal/src/hmh-challenges.mjs | 43422c323ffa44b6e6d0e4e19996daefbc5ea44217bde5984c95f0d00ac273a9 | 4201 |
@@ -133,10 +133,10 @@ These hashes bind local input bytes, not execution, deployment or human approval
 | docs/qa/hmh-parent-challenges-checkpoint.json | daa072d9e62c48cacbce18b3658ebbc3910f2858e6f687ed297b2e2d6c343650 | 5589 |
 | docs/qa/hmh-parent-profile-truth-checkpoint.json | 5dcadebb8081e381c56821948661805e24897a8303eac57e02612a7566596126 | 6738 |
 | docs/qa/hmh-upgrade-execution-queue.json | 9a0412c2dae0db940b9b08a1e5c7a1e3bc12f0069230521af0c65434c2aa09d4 | 19028 |
-| README.md | bc3a1f600afe74cd090fdde4b79dfe613cbc3a1683beffb28332e68a8958267b | 68517 |
+| README.md | e7adb46dc573323ffb9a34e580bdd5c76b445ac47ca225cac81780b07934c9e8 | 69130 |
 | scripts/hmh-release-facts.mjs | 4999d5ccc1497c85e4438a149cedf78d6471dfcfd6c758f7419d10eed0c3d06d | 18212 |
 | scripts/syntax-check.mjs | 75ce5f21fea51afd02abbb4f14891c4570e8575fc2f8d7388078ce5c0114644d | 74078 |
-| tests/arcade-core.test.mjs | 524b9fbafb9de4d5ef785508ca47e7061842e1b2c17188de7cee8d77f9878bb7 | 193913 |
+| tests/arcade-core.test.mjs | 0080162ff9f08482ca7b5df6510638bd9bf9cf34c013e42ea4dd83da42d1e6e2 | 193913 |
 | tests/hmh-challenge-session.test.mjs | 8b2f83522c70cdce3b6c35b0b7f37100a763ba272033a65f7258d46e780602f4 | 3577 |
 | tests/hmh-challenge-ui.test.mjs | e79be14c8e865b3132fd3129b9a80f92c69cfc83d0651355c3b13b2c0c0140aa | 9171 |
 | tests/hmh-challenges.test.mjs | 4f21f59275a442223c67754f8fb833d8d02bb5faec150591e6cc6268dc0eee54 | 3905 |
