@@ -1,0 +1,530 @@
+{
+ "tag": "bt-phone4x",
+ "heap": [
+  {
+   "s": 2,
+   "mib": 32,
+   "steps": "41"
+  },
+  {
+   "s": 62,
+   "mib": 72,
+   "steps": "3608"
+  },
+  {
+   "s": 122,
+   "mib": 82,
+   "steps": "7176"
+  },
+  {
+   "s": 182,
+   "mib": 73,
+   "steps": "10624"
+  },
+  {
+   "s": 242,
+   "mib": 58,
+   "steps": "14200"
+  },
+  {
+   "s": 302,
+   "mib": 54,
+   "steps": "17765"
+  },
+  {
+   "s": 362,
+   "mib": 88,
+   "steps": "21281"
+  },
+  {
+   "s": 403,
+   "mib": 85,
+   "end": true
+  }
+ ],
+ "arrivals": [
+  {
+   "id": "relay",
+   "s": 10,
+   "at": "13107,6131"
+  },
+  {
+   "id": "mweb-meadows-cache",
+   "s": 21,
+   "at": "11099,6018"
+  },
+  {
+   "id": "fork-fortress",
+   "s": 59,
+   "at": "12786,2744"
+  },
+  {
+   "id": "fork-fortress-cache",
+   "s": 68,
+   "at": "11739,4023"
+  },
+  {
+   "id": "ledger-ridge",
+   "s": 95,
+   "at": "7897,2473"
+  },
+  {
+   "id": "ledger-ridge-cache",
+   "s": 107,
+   "at": "6024,1570"
+  },
+  {
+   "id": "litecoin-city",
+   "s": 134,
+   "at": "7513,6316"
+  },
+  {
+   "id": "litecoin-city-cache",
+   "s": 142,
+   "at": "6343,5685"
+  },
+  {
+   "id": "silver-coast",
+   "s": 163,
+   "at": "2860,6551"
+  },
+  {
+   "id": "silver-coast-cache",
+   "s": 169,
+   "at": "3580,5866"
+  },
+  {
+   "id": "scrypt-bayou",
+   "s": 194,
+   "at": "2503,11203"
+  },
+  {
+   "id": "scrypt-bayou-cache",
+   "s": 206,
+   "at": "3513,13046"
+  },
+  {
+   "id": "hashwood-river",
+   "s": 226,
+   "at": "7155,11750"
+  },
+  {
+   "id": "hashwood-river-cache",
+   "gaveUp": true,
+   "at": "7238,11320"
+  },
+  {
+   "id": "hollow-pines",
+   "s": 309,
+   "at": "12103,11603"
+  },
+  {
+   "id": "hollow-pines-cache",
+   "s": 317,
+   "at": "11267,10408"
+  },
+  {
+   "id": "rugpull-woods",
+   "s": 346,
+   "at": "17143,11493"
+  },
+  {
+   "id": "rugpull-woods-cache",
+   "s": 355,
+   "at": "16560,12951"
+  },
+  {
+   "id": "woods-camp",
+   "s": 375,
+   "at": "18696,11140"
+  },
+  {
+   "id": "halving-farms",
+   "s": 397,
+   "at": "17493,7096"
+  },
+  {
+   "id": "halving-farms-cache",
+   "s": 402,
+   "at": "17218,8044"
+  }
+ ],
+ "stuck": [
+  {
+   "s": 236,
+   "at": "7275,11321",
+   "target": "hashwood-river-cache"
+  },
+  {
+   "s": 241,
+   "at": "7260,11320",
+   "target": "hashwood-river-cache"
+  },
+  {
+   "s": 246,
+   "at": "7287,11321",
+   "target": "hashwood-river-cache"
+  },
+  {
+   "s": 256,
+   "at": "7242,11320",
+   "target": "hashwood-river-cache"
+  },
+  {
+   "s": 266,
+   "at": "7290,11320",
+   "target": "hashwood-river-cache"
+  },
+  {
+   "s": 276,
+   "at": "7238,11320",
+   "target": "hashwood-river-cache"
+  },
+  {
+   "s": 287,
+   "at": "7290,11320",
+   "target": "hollow-pines"
+  }
+ ],
+ "errors": {
+  "errors": [],
+  "warnings": [],
+  "bad": []
+ },
+ "shots": [
+  "bt-phone4x-relay.jpg",
+  "bt-phone4x-mweb-meadows-cache.jpg",
+  "bt-phone4x-fork-fortress.jpg",
+  "bt-phone4x-fork-fortress-cache.jpg",
+  "bt-phone4x-ledger-ridge.jpg",
+  "bt-phone4x-ledger-ridge-cache.jpg",
+  "bt-phone4x-litecoin-city.jpg",
+  "bt-phone4x-litecoin-city-cache.jpg",
+  "bt-phone4x-map-mid.jpg",
+  "bt-phone4x-silver-coast.jpg",
+  "bt-phone4x-silver-coast-cache.jpg",
+  "bt-phone4x-scrypt-bayou.jpg",
+  "bt-phone4x-scrypt-bayou-cache.jpg",
+  "bt-phone4x-hashwood-river.jpg",
+  "bt-phone4x-stuck-hashwood-river-cache.jpg",
+  "bt-phone4x-hollow-pines.jpg",
+  "bt-phone4x-hollow-pines-cache.jpg",
+  "bt-phone4x-rugpull-woods.jpg",
+  "bt-phone4x-rugpull-woods-cache.jpg",
+  "bt-phone4x-woods-camp.jpg",
+  "bt-phone4x-halving-farms.jpg",
+  "bt-phone4x-halving-farms-cache.jpg",
+  "bt-phone4x-end.jpg",
+  "bt-phone4x-map-end.jpg"
+ ],
+ "states": [
+  "upgrade",
+  "upgrade",
+  "upgrade"
+ ],
+ "perf": {
+  "mweb-meadows": {
+   "windows": 7,
+   "fps": [
+    61.9,
+    62,
+    56.9,
+    53.1,
+    55.6,
+    60.4,
+    69.3
+   ],
+   "p95": [
+    27.9,
+    27.9,
+    34.8,
+    34.8,
+    34.7,
+    27.9,
+    27.7
+   ],
+   "worstFps": 53.1
+  },
+  "road": {
+   "windows": 9,
+   "fps": [
+    53.7,
+    57.4,
+    52.9,
+    45.3,
+    44.8,
+    52.5,
+    34.5,
+    27.5,
+    29.6
+   ],
+   "p95": [
+    34.8,
+    34.7,
+    34.8,
+    41.7,
+    41.8,
+    34.7,
+    55.7,
+    80.4,
+    62.7
+   ],
+   "worstFps": 27.5
+  },
+  "fork-fortress": {
+   "windows": 6,
+   "fps": [
+    57.9,
+    66.6,
+    54.6,
+    49.5,
+    57,
+    64.5
+   ],
+   "p95": [
+    27.9,
+    27.8,
+    34.7,
+    34.8,
+    34.7,
+    27.8
+   ],
+   "worstFps": 49.5
+  },
+  "ledger-ridge": {
+   "windows": 8,
+   "fps": [
+    48.3,
+    60.1,
+    57.5,
+    49,
+    49.2,
+    37.9,
+    35.1,
+    39.1
+   ],
+   "p95": [
+    34.8,
+    27.8,
+    28.2,
+    34.8,
+    41.6,
+    48.6,
+    55.5,
+    42.1
+   ],
+   "worstFps": 35.1
+  },
+  "litecoin-city": {
+   "windows": 5,
+   "fps": [
+    40.4,
+    53.3,
+    46.7,
+    73.6,
+    41.3
+   ],
+   "p95": [
+    48.6,
+    34.7,
+    34.8,
+    34.7,
+    48.5
+   ],
+   "worstFps": 40.4
+  },
+  "silver-coast": {
+   "windows": 5,
+   "fps": [
+    43.8,
+    52.1,
+    41.5,
+    35.3,
+    30.6
+   ],
+   "p95": [
+    41.7,
+    34.7,
+    48.7,
+    48.7,
+    55.5
+   ],
+   "worstFps": 30.6
+  },
+  "scrypt-bayou": {
+   "windows": 5,
+   "fps": [
+    49.8,
+    46.8,
+    41.4,
+    51.3,
+    41.5
+   ],
+   "p95": [
+    41.6,
+    41.5,
+    41.7,
+    34.9,
+    48.7
+   ],
+   "worstFps": 41.4
+  },
+  "hashwood-river": {
+   "windows": 16,
+   "fps": [
+    52.6,
+    49.4,
+    50.6,
+    43.8,
+    45.4,
+    37.8,
+    40.4,
+    35.1,
+    47.9,
+    36.9,
+    41.7,
+    38.6,
+    44.3,
+    32.9,
+    39.1,
+    39
+   ],
+   "p95": [
+    34.9,
+    41.7,
+    34.8,
+    48.6,
+    41.7,
+    48.6,
+    48.7,
+    48.8,
+    41.5,
+    48.7,
+    41.9,
+    48.7,
+    41.4,
+    55.5,
+    55.6,
+    55.6
+   ],
+   "worstFps": 32.9
+  },
+  "hollow-pines": {
+   "windows": 6,
+   "fps": [
+    39.8,
+    44,
+    37.1,
+    39.8,
+    29.4,
+    34.2
+   ],
+   "p95": [
+    48.7,
+    41.7,
+    55.5,
+    48.6,
+    62.6,
+    55.7
+   ],
+   "worstFps": 29.4
+  },
+  "rugpull-woods": {
+   "windows": 9,
+   "fps": [
+    28.7,
+    31.6,
+    30.3,
+    27,
+    28.7,
+    29.4,
+    27.5,
+    26.1,
+    26.3
+   ],
+   "p95": [
+    62.6,
+    62.5,
+    69.5,
+    69.5,
+    69.4,
+    62.6,
+    62.6,
+    62.8,
+    76.5
+   ],
+   "worstFps": 26.1
+  },
+  "halving-farms": {
+   "windows": 2,
+   "fps": [
+    28.9,
+    38.8
+   ],
+   "p95": [
+    62.6,
+    55.6
+   ],
+   "worstFps": 28.9
+  }
+ },
+ "midMapText": "Fork Fortress\nLedger Ridge\nLitecoin City\nMWEB Meadows\n\nWhite ring: you · Square: task available · Cross: locked · Circle: complete. Meadows relay ✓\n\nMachine Gun · restocks in 146s\nGrenade Launcher · restocks in 180s",
+ "endMapText": "Fork Fortress\nHalving Farms\nHashwood River\nHollow Pines\nLedger Ridge\nLitecoin City\nMWEB Meadows\nRugpull Woods\nScrypt Bayou\nSilver Coast\n\nWhite ring: you · Square: task available · Cross: locked · Circle: complete. Meadows relay ✓ · Rugpull camp supplies ✓\n\nShotgun · restocks in 180s\nMachine Gun · ready\nGrenade Launcher · ready\nPistol · restocks in 134s\nSpeed Boost · ready",
+ "endMapSvg": {
+  "cells": 1256,
+  "polylines": 71,
+  "texts": [
+   "Fork Fortress",
+   "Halving Farms",
+   "Hashwood River",
+   "Hollow Pines",
+   "Ledger Ridge",
+   "Litecoin City",
+   "MWEB Meadows",
+   "Rugpull Woods",
+   "Scrypt Bayou",
+   "Silver Coast"
+  ]
+ },
+ "remaining": [],
+ "final": {
+  "worldId": "ten-area-frontier",
+  "worldOfficial": "false",
+  "worldSelection": "explicit-unranked-free-ten-area",
+  "adaptiveResolution": "1",
+  "actor3dStatus": "disabled",
+  "bootFirstFrame": "true",
+  "navGridBootMs": "0.3",
+  "navGridReady": "true",
+  "entryId": "evidence",
+  "startupArt": "ready",
+  "captionCriticalAudio": "false",
+  "settingMusic": "true",
+  "settingScreenShake": "false",
+  "settingReduceMotion": "false",
+  "settingReduceFlash": "false",
+  "settingGoreLevel": "full",
+  "worldDecalsVisible": "0",
+  "tenAreaCover": "none",
+  "tenAreaTraversal": "none",
+  "tenAreaPrompts": "",
+  "tenAreaHero": "17217,8051",
+  "nativeBarrierStatus": "skipped",
+  "nativePropStatus": "ready",
+  "nativePropBindings": "48",
+  "worldDesignStatus": "ready",
+  "worldDesignBindings": "17",
+  "authoredPropStatus": "ready",
+  "authoredPropCount": "13",
+  "simulationFrameSteps": "2",
+  "simulationStepsTotal": "23667",
+  "simulationState": "paused",
+  "simulationCatchUpSaturationFrames": "330",
+  "simulationDroppedMs": "3772.633",
+  "cameraShake": "0",
+  "cameraZoom": "1.345",
+  "silverVisible": "3",
+  "areaArtStatus": "ready",
+  "pickupMarkers": "0"
+ }
+}

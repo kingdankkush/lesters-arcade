@@ -1,0 +1,18 @@
+{
+ "free": {
+  "marks": [
+   "36ms Starting PixiJS renderer… | startup:true | Preparing Level 1… | undefined ",
+   "539ms Renderer ready | startup:true | Preparing Level 1… | undefined ",
+   "1043ms Portal session connected | startup:true | Enter Level 1 | undefined "
+  ],
+  "errors": []
+ },
+ "frontier": {
+  "marks": [
+   "65ms Starting PixiJS renderer… | startup:true | Preparing Level 1… | undefined mode=free&world=ten-area",
+   "812ms Portal session connected | startup:true | Preparing Level 1… | undefined mode=free&world=ten-area",
+   "1875ms Portal session connected | startup:true | Enter Level 1 | undefined mode=free&world=ten-area"
+  ],
+  "errors": []
+ }
+}
