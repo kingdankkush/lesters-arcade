@@ -123,10 +123,8 @@ export function createLiquidator3dEntries(input) {
   const tick=pose.phaseTick??pose.tick;
   if(!Number.isFinite(tick))throw new TypeError('private boss finite pose clock required');
   const seconds=Math.max(0,tick)/60;
-  // A ten-area district boss names its own actor, a fallback body, a tint and a scale.
-  const descriptor=Object.freeze({id:input.id??'boss:liquidator',actorId:input.actorId??'the-liquidator',x,y,z,
+  const descriptor=Object.freeze({id:'boss:liquidator',actorId:'the-liquidator',x,y,z,
     heading:pose.direction*Math.PI/4,clip:pose.state,
-    clipTimeSeconds:['idle','run'].includes(pose.state)?seconds%1:Math.min(1,seconds),pixelsPerMetre:bodyHeight*(input.scale??1)/2.1,
-    ...(input.fallbackActorId?{fallbackActorId:input.fallbackActorId,bodyTint:input.bodyTint}:{})});
+    clipTimeSeconds:['idle','run'].includes(pose.state)?seconds%1:Math.min(1,seconds),pixelsPerMetre:bodyHeight/2.1});
   return Object.freeze([Object.freeze({descriptor,originals:Object.freeze([original])})]);
 }

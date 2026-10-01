@@ -1,0 +1,1288 @@
+{
+  "url": "http://127.0.0.1:63927/dist/hmh-world-v2-local/index.html?mode=free&world=world-v2-local",
+  "captures": [
+    {
+      "scene": "river-center",
+      "areaId": "hashwood-river",
+      "file": "desktop-river-center.png",
+      "walk": [],
+      "snapshot": {
+        "actor": {
+          "x": 7500,
+          "y": 11600
+        },
+        "areaArt": [
+          {
+            "areaId": "rugpull-woods",
+            "counts": {
+              "zones": 3,
+              "trails": 30,
+              "decals": 0,
+              "roads": 0,
+              "props": 381,
+              "solids": 10
+            },
+            "pages": [
+              "tripo-props-hd-plants-00.webp",
+              "tripo-props-hd-structures-01.webp",
+              "tripo-props-hd-props-00.webp"
+            ],
+            "visible": null,
+            "state": null
+          },
+          {
+            "areaId": "mweb-meadows",
+            "counts": {
+              "zones": 7,
+              "trails": 14,
+              "decals": 144,
+              "roads": 0,
+              "props": 84,
+              "solids": 10
+            },
+            "pages": [
+              "tripo-props-hd-plants-00.webp",
+              "tripo-props-hd-structures-00.webp",
+              "tripo-props-hd-props-00.webp"
+            ],
+            "visible": null,
+            "state": null
+          },
+          {
+            "areaId": "hashwood-river",
+            "counts": {
+              "zones": 4,
+              "trails": 28,
+              "decals": 0,
+              "roads": 0,
+              "props": 352,
+              "solids": 7
+            },
+            "pages": [
+              "tripo-props-hd-plants-00.webp",
+              "tripo-props-hd-structures-01.webp",
+              "tripo-props-hd-props-00.webp"
+            ],
+            "visible": null,
+            "state": null
+          },
+          {
+            "areaId": "hollow-pines",
+            "counts": {
+              "zones": 6,
+              "trails": 22,
+              "decals": 0,
+              "roads": 0,
+              "props": 426,
+              "solids": 14
+            },
+            "pages": [
+              "tripo-props-hd-plants-00.webp",
+              "tripo-props-hd-structures-01.webp",
+              "tripo-props-hd-props-00.webp"
+            ],
+            "visible": null,
+            "state": null
+          },
+          {
+            "areaId": "ledger-ridge",
+            "counts": {
+              "zones": 5,
+              "trails": 18,
+              "decals": 0,
+              "roads": 0,
+              "props": 283,
+              "solids": 9
+            },
+            "pages": [
+              "tripo-props-hd-plants-00.webp",
+              "tripo-props-hd-structures-01.webp",
+              "tripo-props-hd-props-00.webp"
+            ],
+            "visible": null,
+            "state": null
+          },
+          {
+            "areaId": "fork-fortress",
+            "counts": {
+              "zones": 4,
+              "trails": 23,
+              "decals": 0,
+              "roads": 0,
+              "props": 201,
+              "solids": 9
+            },
+            "pages": [
+              "tripo-props-hd-structures-00.webp",
+              "tripo-props-hd-structures-01.webp",
+              "tripo-props-hd-props-00.webp"
+            ],
+            "visible": null,
+            "state": null
+          },
+          {
+            "areaId": "halving-farms",
+            "counts": {
+              "zones": 7,
+              "trails": 30,
+              "decals": 68,
+              "roads": 0,
+              "props": 343,
+              "solids": 11
+            },
+            "pages": [
+              "tripo-props-hd-plants-00.webp",
+              "tripo-props-hd-structures-01.webp",
+              "tripo-props-hd-props-00.webp"
+            ],
+            "visible": null,
+            "state": null
+          },
+          {
+            "areaId": "world-roads",
+            "counts": {
+              "zones": 0,
+              "trails": 0,
+              "decals": 0,
+              "roads": 14,
+              "props": 63,
+              "solids": 0
+            },
+            "pages": [
+              "tripo-props-hd-props-00.webp"
+            ],
+            "visible": null,
+            "state": null
+          }
+        ]
+      }
+    },
+    {
+      "scene": "river-city-crossing",
+      "areaId": "hashwood-river",
+      "file": "desktop-river-city-crossing.png",
+      "walk": [
+        [
+          "ArrowUp",
+          1500
+        ]
+      ],
+      "snapshot": {
+        "actor": {
+          "x": 7500,
+          "y": 11243.028820867223
+        },
+        "areaArt": [
+          {
+            "areaId": "rugpull-woods",
+            "counts": {
+              "zones": 3,
+              "trails": 30,
+              "decals": 0,
+              "roads": 0,
+              "props": 381,
+              "solids": 10
+            },
+            "pages": [
+              "tripo-props-hd-plants-00.webp",
+              "tripo-props-hd-structures-01.webp",
+              "tripo-props-hd-props-00.webp"
+            ],
+            "visible": null,
+            "state": null
+          },
+          {
+            "areaId": "mweb-meadows",
+            "counts": {
+              "zones": 7,
+              "trails": 14,
+              "decals": 144,
+              "roads": 0,
+              "props": 84,
+              "solids": 10
+            },
+            "pages": [
+              "tripo-props-hd-plants-00.webp",
+              "tripo-props-hd-structures-00.webp",
+              "tripo-props-hd-props-00.webp"
+            ],
+            "visible": null,
+            "state": null
+          },
+          {
+            "areaId": "hashwood-river",
+            "counts": {
+              "zones": 4,
+              "trails": 28,
+              "decals": 0,
+              "roads": 0,
+              "props": 352,
+              "solids": 7
+            },
+            "pages": [
+              "tripo-props-hd-plants-00.webp",
+              "tripo-props-hd-structures-01.webp",
+              "tripo-props-hd-props-00.webp"
+            ],
+            "visible": null,
+            "state": null
+          },
+          {
+            "areaId": "hollow-pines",
+            "counts": {
+              "zones": 6,
+              "trails": 22,
+              "decals": 0,
+              "roads": 0,
+              "props": 426,
+              "solids": 14
+            },
+            "pages": [
+              "tripo-props-hd-plants-00.webp",
+              "tripo-props-hd-structures-01.webp",
+              "tripo-props-hd-props-00.webp"
+            ],
+            "visible": null,
+            "state": null
+          },
+          {
+            "areaId": "ledger-ridge",
+            "counts": {
+              "zones": 5,
+              "trails": 18,
+              "decals": 0,
+              "roads": 0,
+              "props": 283,
+              "solids": 9
+            },
+            "pages": [
+              "tripo-props-hd-plants-00.webp",
+              "tripo-props-hd-structures-01.webp",
+              "tripo-props-hd-props-00.webp"
+            ],
+            "visible": null,
+            "state": null
+          },
+          {
+            "areaId": "fork-fortress",
+            "counts": {
+              "zones": 4,
+              "trails": 23,
+              "decals": 0,
+              "roads": 0,
+              "props": 201,
+              "solids": 9
+            },
+            "pages": [
+              "tripo-props-hd-structures-00.webp",
+              "tripo-props-hd-structures-01.webp",
+              "tripo-props-hd-props-00.webp"
+            ],
+            "visible": null,
+            "state": null
+          },
+          {
+            "areaId": "halving-farms",
+            "counts": {
+              "zones": 7,
+              "trails": 30,
+              "decals": 68,
+              "roads": 0,
+              "props": 343,
+              "solids": 11
+            },
+            "pages": [
+              "tripo-props-hd-plants-00.webp",
+              "tripo-props-hd-structures-01.webp",
+              "tripo-props-hd-props-00.webp"
+            ],
+            "visible": null,
+            "state": null
+          },
+          {
+            "areaId": "world-roads",
+            "counts": {
+              "zones": 0,
+              "trails": 0,
+              "decals": 0,
+              "roads": 14,
+              "props": 63,
+              "solids": 0
+            },
+            "pages": [
+              "tripo-props-hd-props-00.webp"
+            ],
+            "visible": null,
+            "state": null
+          }
+        ]
+      }
+    },
+    {
+      "scene": "pines-center",
+      "areaId": "hollow-pines",
+      "file": "desktop-pines-center.png",
+      "walk": [],
+      "snapshot": {
+        "actor": {
+          "x": 12500,
+          "y": 11600
+        },
+        "areaArt": [
+          {
+            "areaId": "rugpull-woods",
+            "counts": {
+              "zones": 3,
+              "trails": 30,
+              "decals": 0,
+              "roads": 0,
+              "props": 381,
+              "solids": 10
+            },
+            "pages": [
+              "tripo-props-hd-plants-00.webp",
+              "tripo-props-hd-structures-01.webp",
+              "tripo-props-hd-props-00.webp"
+            ],
+            "visible": null,
+            "state": null
+          },
+          {
+            "areaId": "mweb-meadows",
+            "counts": {
+              "zones": 7,
+              "trails": 14,
+              "decals": 144,
+              "roads": 0,
+              "props": 84,
+              "solids": 10
+            },
+            "pages": [
+              "tripo-props-hd-plants-00.webp",
+              "tripo-props-hd-structures-00.webp",
+              "tripo-props-hd-props-00.webp"
+            ],
+            "visible": null,
+            "state": null
+          },
+          {
+            "areaId": "hashwood-river",
+            "counts": {
+              "zones": 4,
+              "trails": 28,
+              "decals": 0,
+              "roads": 0,
+              "props": 352,
+              "solids": 7
+            },
+            "pages": [
+              "tripo-props-hd-plants-00.webp",
+              "tripo-props-hd-structures-01.webp",
+              "tripo-props-hd-props-00.webp"
+            ],
+            "visible": null,
+            "state": null
+          },
+          {
+            "areaId": "hollow-pines",
+            "counts": {
+              "zones": 6,
+              "trails": 22,
+              "decals": 0,
+              "roads": 0,
+              "props": 426,
+              "solids": 14
+            },
+            "pages": [
+              "tripo-props-hd-plants-00.webp",
+              "tripo-props-hd-structures-01.webp",
+              "tripo-props-hd-props-00.webp"
+            ],
+            "visible": null,
+            "state": null
+          },
+          {
+            "areaId": "ledger-ridge",
+            "counts": {
+              "zones": 5,
+              "trails": 18,
+              "decals": 0,
+              "roads": 0,
+              "props": 283,
+              "solids": 9
+            },
+            "pages": [
+              "tripo-props-hd-plants-00.webp",
+              "tripo-props-hd-structures-01.webp",
+              "tripo-props-hd-props-00.webp"
+            ],
+            "visible": null,
+            "state": null
+          },
+          {
+            "areaId": "fork-fortress",
+            "counts": {
+              "zones": 4,
+              "trails": 23,
+              "decals": 0,
+              "roads": 0,
+              "props": 201,
+              "solids": 9
+            },
+            "pages": [
+              "tripo-props-hd-structures-00.webp",
+              "tripo-props-hd-structures-01.webp",
+              "tripo-props-hd-props-00.webp"
+            ],
+            "visible": null,
+            "state": null
+          },
+          {
+            "areaId": "halving-farms",
+            "counts": {
+              "zones": 7,
+              "trails": 30,
+              "decals": 68,
+              "roads": 0,
+              "props": 343,
+              "solids": 11
+            },
+            "pages": [
+              "tripo-props-hd-plants-00.webp",
+              "tripo-props-hd-structures-01.webp",
+              "tripo-props-hd-props-00.webp"
+            ],
+            "visible": null,
+            "state": null
+          },
+          {
+            "areaId": "world-roads",
+            "counts": {
+              "zones": 0,
+              "trails": 0,
+              "decals": 0,
+              "roads": 14,
+              "props": 63,
+              "solids": 0
+            },
+            "pages": [
+              "tripo-props-hd-props-00.webp"
+            ],
+            "visible": null,
+            "state": null
+          }
+        ]
+      }
+    },
+    {
+      "scene": "pines-dead-tree",
+      "areaId": "hollow-pines",
+      "file": "desktop-pines-dead-tree.png",
+      "walk": [
+        [
+          "ArrowUp",
+          3600
+        ]
+      ],
+      "snapshot": {
+        "actor": {
+          "x": 12500,
+          "y": 10746.333333333334
+        },
+        "areaArt": [
+          {
+            "areaId": "rugpull-woods",
+            "counts": {
+              "zones": 3,
+              "trails": 30,
+              "decals": 0,
+              "roads": 0,
+              "props": 381,
+              "solids": 10
+            },
+            "pages": [
+              "tripo-props-hd-plants-00.webp",
+              "tripo-props-hd-structures-01.webp",
+              "tripo-props-hd-props-00.webp"
+            ],
+            "visible": null,
+            "state": null
+          },
+          {
+            "areaId": "mweb-meadows",
+            "counts": {
+              "zones": 7,
+              "trails": 14,
+              "decals": 144,
+              "roads": 0,
+              "props": 84,
+              "solids": 10
+            },
+            "pages": [
+              "tripo-props-hd-plants-00.webp",
+              "tripo-props-hd-structures-00.webp",
+              "tripo-props-hd-props-00.webp"
+            ],
+            "visible": null,
+            "state": null
+          },
+          {
+            "areaId": "hashwood-river",
+            "counts": {
+              "zones": 4,
+              "trails": 28,
+              "decals": 0,
+              "roads": 0,
+              "props": 352,
+              "solids": 7
+            },
+            "pages": [
+              "tripo-props-hd-plants-00.webp",
+              "tripo-props-hd-structures-01.webp",
+              "tripo-props-hd-props-00.webp"
+            ],
+            "visible": null,
+            "state": null
+          },
+          {
+            "areaId": "hollow-pines",
+            "counts": {
+              "zones": 6,
+              "trails": 22,
+              "decals": 0,
+              "roads": 0,
+              "props": 426,
+              "solids": 14
+            },
+            "pages": [
+              "tripo-props-hd-plants-00.webp",
+              "tripo-props-hd-structures-01.webp",
+              "tripo-props-hd-props-00.webp"
+            ],
+            "visible": null,
+            "state": null
+          },
+          {
+            "areaId": "ledger-ridge",
+            "counts": {
+              "zones": 5,
+              "trails": 18,
+              "decals": 0,
+              "roads": 0,
+              "props": 283,
+              "solids": 9
+            },
+            "pages": [
+              "tripo-props-hd-plants-00.webp",
+              "tripo-props-hd-structures-01.webp",
+              "tripo-props-hd-props-00.webp"
+            ],
+            "visible": null,
+            "state": null
+          },
+          {
+            "areaId": "fork-fortress",
+            "counts": {
+              "zones": 4,
+              "trails": 23,
+              "decals": 0,
+              "roads": 0,
+              "props": 201,
+              "solids": 9
+            },
+            "pages": [
+              "tripo-props-hd-structures-00.webp",
+              "tripo-props-hd-structures-01.webp",
+              "tripo-props-hd-props-00.webp"
+            ],
+            "visible": null,
+            "state": null
+          },
+          {
+            "areaId": "halving-farms",
+            "counts": {
+              "zones": 7,
+              "trails": 30,
+              "decals": 68,
+              "roads": 0,
+              "props": 343,
+              "solids": 11
+            },
+            "pages": [
+              "tripo-props-hd-plants-00.webp",
+              "tripo-props-hd-structures-01.webp",
+              "tripo-props-hd-props-00.webp"
+            ],
+            "visible": null,
+            "state": null
+          },
+          {
+            "areaId": "world-roads",
+            "counts": {
+              "zones": 0,
+              "trails": 0,
+              "decals": 0,
+              "roads": 14,
+              "props": 63,
+              "solids": 0
+            },
+            "pages": [
+              "tripo-props-hd-props-00.webp"
+            ],
+            "visible": null,
+            "state": null
+          }
+        ]
+      }
+    },
+    {
+      "scene": "ridge-center",
+      "areaId": "ledger-ridge",
+      "file": "desktop-ridge-center.png",
+      "walk": [],
+      "snapshot": {
+        "actor": {
+          "x": 7500,
+          "y": 2500
+        },
+        "areaArt": [
+          {
+            "areaId": "rugpull-woods",
+            "counts": {
+              "zones": 3,
+              "trails": 30,
+              "decals": 0,
+              "roads": 0,
+              "props": 381,
+              "solids": 10
+            },
+            "pages": [
+              "tripo-props-hd-plants-00.webp",
+              "tripo-props-hd-structures-01.webp",
+              "tripo-props-hd-props-00.webp"
+            ],
+            "visible": null,
+            "state": null
+          },
+          {
+            "areaId": "mweb-meadows",
+            "counts": {
+              "zones": 7,
+              "trails": 14,
+              "decals": 144,
+              "roads": 0,
+              "props": 84,
+              "solids": 10
+            },
+            "pages": [
+              "tripo-props-hd-plants-00.webp",
+              "tripo-props-hd-structures-00.webp",
+              "tripo-props-hd-props-00.webp"
+            ],
+            "visible": null,
+            "state": null
+          },
+          {
+            "areaId": "hashwood-river",
+            "counts": {
+              "zones": 4,
+              "trails": 28,
+              "decals": 0,
+              "roads": 0,
+              "props": 352,
+              "solids": 7
+            },
+            "pages": [
+              "tripo-props-hd-plants-00.webp",
+              "tripo-props-hd-structures-01.webp",
+              "tripo-props-hd-props-00.webp"
+            ],
+            "visible": null,
+            "state": null
+          },
+          {
+            "areaId": "hollow-pines",
+            "counts": {
+              "zones": 6,
+              "trails": 22,
+              "decals": 0,
+              "roads": 0,
+              "props": 426,
+              "solids": 14
+            },
+            "pages": [
+              "tripo-props-hd-plants-00.webp",
+              "tripo-props-hd-structures-01.webp",
+              "tripo-props-hd-props-00.webp"
+            ],
+            "visible": null,
+            "state": null
+          },
+          {
+            "areaId": "ledger-ridge",
+            "counts": {
+              "zones": 5,
+              "trails": 18,
+              "decals": 0,
+              "roads": 0,
+              "props": 283,
+              "solids": 9
+            },
+            "pages": [
+              "tripo-props-hd-plants-00.webp",
+              "tripo-props-hd-structures-01.webp",
+              "tripo-props-hd-props-00.webp"
+            ],
+            "visible": null,
+            "state": null
+          },
+          {
+            "areaId": "fork-fortress",
+            "counts": {
+              "zones": 4,
+              "trails": 23,
+              "decals": 0,
+              "roads": 0,
+              "props": 201,
+              "solids": 9
+            },
+            "pages": [
+              "tripo-props-hd-structures-00.webp",
+              "tripo-props-hd-structures-01.webp",
+              "tripo-props-hd-props-00.webp"
+            ],
+            "visible": null,
+            "state": null
+          },
+          {
+            "areaId": "halving-farms",
+            "counts": {
+              "zones": 7,
+              "trails": 30,
+              "decals": 68,
+              "roads": 0,
+              "props": 343,
+              "solids": 11
+            },
+            "pages": [
+              "tripo-props-hd-plants-00.webp",
+              "tripo-props-hd-structures-01.webp",
+              "tripo-props-hd-props-00.webp"
+            ],
+            "visible": null,
+            "state": null
+          },
+          {
+            "areaId": "world-roads",
+            "counts": {
+              "zones": 0,
+              "trails": 0,
+              "decals": 0,
+              "roads": 14,
+              "props": 63,
+              "solids": 0
+            },
+            "pages": [
+              "tripo-props-hd-props-00.webp"
+            ],
+            "visible": null,
+            "state": null
+          }
+        ]
+      }
+    },
+    {
+      "scene": "ridge-headframe",
+      "areaId": "ledger-ridge",
+      "file": "desktop-ridge-headframe.png",
+      "walk": [
+        [
+          "ArrowLeft",
+          4000
+        ],
+        [
+          "ArrowUp",
+          3600
+        ],
+        [
+          "ArrowRight",
+          3800
+        ]
+      ],
+      "snapshot": {
+        "actor": {
+          "x": 7436.906781742006,
+          "y": 1631.9999999999998
+        },
+        "areaArt": [
+          {
+            "areaId": "rugpull-woods",
+            "counts": {
+              "zones": 3,
+              "trails": 30,
+              "decals": 0,
+              "roads": 0,
+              "props": 381,
+              "solids": 10
+            },
+            "pages": [
+              "tripo-props-hd-plants-00.webp",
+              "tripo-props-hd-structures-01.webp",
+              "tripo-props-hd-props-00.webp"
+            ],
+            "visible": null,
+            "state": null
+          },
+          {
+            "areaId": "mweb-meadows",
+            "counts": {
+              "zones": 7,
+              "trails": 14,
+              "decals": 144,
+              "roads": 0,
+              "props": 84,
+              "solids": 10
+            },
+            "pages": [
+              "tripo-props-hd-plants-00.webp",
+              "tripo-props-hd-structures-00.webp",
+              "tripo-props-hd-props-00.webp"
+            ],
+            "visible": null,
+            "state": null
+          },
+          {
+            "areaId": "hashwood-river",
+            "counts": {
+              "zones": 4,
+              "trails": 28,
+              "decals": 0,
+              "roads": 0,
+              "props": 352,
+              "solids": 7
+            },
+            "pages": [
+              "tripo-props-hd-plants-00.webp",
+              "tripo-props-hd-structures-01.webp",
+              "tripo-props-hd-props-00.webp"
+            ],
+            "visible": null,
+            "state": null
+          },
+          {
+            "areaId": "hollow-pines",
+            "counts": {
+              "zones": 6,
+              "trails": 22,
+              "decals": 0,
+              "roads": 0,
+              "props": 426,
+              "solids": 14
+            },
+            "pages": [
+              "tripo-props-hd-plants-00.webp",
+              "tripo-props-hd-structures-01.webp",
+              "tripo-props-hd-props-00.webp"
+            ],
+            "visible": null,
+            "state": null
+          },
+          {
+            "areaId": "ledger-ridge",
+            "counts": {
+              "zones": 5,
+              "trails": 18,
+              "decals": 0,
+              "roads": 0,
+              "props": 283,
+              "solids": 9
+            },
+            "pages": [
+              "tripo-props-hd-plants-00.webp",
+              "tripo-props-hd-structures-01.webp",
+              "tripo-props-hd-props-00.webp"
+            ],
+            "visible": null,
+            "state": null
+          },
+          {
+            "areaId": "fork-fortress",
+            "counts": {
+              "zones": 4,
+              "trails": 23,
+              "decals": 0,
+              "roads": 0,
+              "props": 201,
+              "solids": 9
+            },
+            "pages": [
+              "tripo-props-hd-structures-00.webp",
+              "tripo-props-hd-structures-01.webp",
+              "tripo-props-hd-props-00.webp"
+            ],
+            "visible": null,
+            "state": null
+          },
+          {
+            "areaId": "halving-farms",
+            "counts": {
+              "zones": 7,
+              "trails": 30,
+              "decals": 68,
+              "roads": 0,
+              "props": 343,
+              "solids": 11
+            },
+            "pages": [
+              "tripo-props-hd-plants-00.webp",
+              "tripo-props-hd-structures-01.webp",
+              "tripo-props-hd-props-00.webp"
+            ],
+            "visible": null,
+            "state": null
+          },
+          {
+            "areaId": "world-roads",
+            "counts": {
+              "zones": 0,
+              "trails": 0,
+              "decals": 0,
+              "roads": 14,
+              "props": 63,
+              "solids": 0
+            },
+            "pages": [
+              "tripo-props-hd-props-00.webp"
+            ],
+            "visible": null,
+            "state": null
+          }
+        ]
+      }
+    },
+    {
+      "scene": "fortress-center",
+      "areaId": "fork-fortress",
+      "file": "desktop-fortress-center.png",
+      "walk": [],
+      "snapshot": {
+        "actor": {
+          "x": 12500,
+          "y": 2500
+        },
+        "areaArt": [
+          {
+            "areaId": "rugpull-woods",
+            "counts": {
+              "zones": 3,
+              "trails": 30,
+              "decals": 0,
+              "roads": 0,
+              "props": 381,
+              "solids": 10
+            },
+            "pages": [
+              "tripo-props-hd-plants-00.webp",
+              "tripo-props-hd-structures-01.webp",
+              "tripo-props-hd-props-00.webp"
+            ],
+            "visible": null,
+            "state": null
+          },
+          {
+            "areaId": "mweb-meadows",
+            "counts": {
+              "zones": 7,
+              "trails": 14,
+              "decals": 144,
+              "roads": 0,
+              "props": 84,
+              "solids": 10
+            },
+            "pages": [
+              "tripo-props-hd-plants-00.webp",
+              "tripo-props-hd-structures-00.webp",
+              "tripo-props-hd-props-00.webp"
+            ],
+            "visible": null,
+            "state": null
+          },
+          {
+            "areaId": "hashwood-river",
+            "counts": {
+              "zones": 4,
+              "trails": 28,
+              "decals": 0,
+              "roads": 0,
+              "props": 352,
+              "solids": 7
+            },
+            "pages": [
+              "tripo-props-hd-plants-00.webp",
+              "tripo-props-hd-structures-01.webp",
+              "tripo-props-hd-props-00.webp"
+            ],
+            "visible": null,
+            "state": null
+          },
+          {
+            "areaId": "hollow-pines",
+            "counts": {
+              "zones": 6,
+              "trails": 22,
+              "decals": 0,
+              "roads": 0,
+              "props": 426,
+              "solids": 14
+            },
+            "pages": [
+              "tripo-props-hd-plants-00.webp",
+              "tripo-props-hd-structures-01.webp",
+              "tripo-props-hd-props-00.webp"
+            ],
+            "visible": null,
+            "state": null
+          },
+          {
+            "areaId": "ledger-ridge",
+            "counts": {
+              "zones": 5,
+              "trails": 18,
+              "decals": 0,
+              "roads": 0,
+              "props": 283,
+              "solids": 9
+            },
+            "pages": [
+              "tripo-props-hd-plants-00.webp",
+              "tripo-props-hd-structures-01.webp",
+              "tripo-props-hd-props-00.webp"
+            ],
+            "visible": null,
+            "state": null
+          },
+          {
+            "areaId": "fork-fortress",
+            "counts": {
+              "zones": 4,
+              "trails": 23,
+              "decals": 0,
+              "roads": 0,
+              "props": 201,
+              "solids": 9
+            },
+            "pages": [
+              "tripo-props-hd-structures-00.webp",
+              "tripo-props-hd-structures-01.webp",
+              "tripo-props-hd-props-00.webp"
+            ],
+            "visible": null,
+            "state": null
+          },
+          {
+            "areaId": "halving-farms",
+            "counts": {
+              "zones": 7,
+              "trails": 30,
+              "decals": 68,
+              "roads": 0,
+              "props": 343,
+              "solids": 11
+            },
+            "pages": [
+              "tripo-props-hd-plants-00.webp",
+              "tripo-props-hd-structures-01.webp",
+              "tripo-props-hd-props-00.webp"
+            ],
+            "visible": null,
+            "state": null
+          },
+          {
+            "areaId": "world-roads",
+            "counts": {
+              "zones": 0,
+              "trails": 0,
+              "decals": 0,
+              "roads": 14,
+              "props": 63,
+              "solids": 0
+            },
+            "pages": [
+              "tripo-props-hd-props-00.webp"
+            ],
+            "visible": null,
+            "state": null
+          }
+        ]
+      }
+    },
+    {
+      "scene": "fortress-keep",
+      "areaId": "fork-fortress",
+      "file": "desktop-fortress-keep.png",
+      "walk": [
+        [
+          "ArrowRight",
+          400
+        ],
+        [
+          "ArrowUp",
+          4000
+        ]
+      ],
+      "snapshot": {
+        "actor": {
+          "x": 12601.950896095139,
+          "y": 1548.2842294284728
+        },
+        "areaArt": [
+          {
+            "areaId": "rugpull-woods",
+            "counts": {
+              "zones": 3,
+              "trails": 30,
+              "decals": 0,
+              "roads": 0,
+              "props": 381,
+              "solids": 10
+            },
+            "pages": [
+              "tripo-props-hd-plants-00.webp",
+              "tripo-props-hd-structures-01.webp",
+              "tripo-props-hd-props-00.webp"
+            ],
+            "visible": null,
+            "state": null
+          },
+          {
+            "areaId": "mweb-meadows",
+            "counts": {
+              "zones": 7,
+              "trails": 14,
+              "decals": 144,
+              "roads": 0,
+              "props": 84,
+              "solids": 10
+            },
+            "pages": [
+              "tripo-props-hd-plants-00.webp",
+              "tripo-props-hd-structures-00.webp",
+              "tripo-props-hd-props-00.webp"
+            ],
+            "visible": null,
+            "state": null
+          },
+          {
+            "areaId": "hashwood-river",
+            "counts": {
+              "zones": 4,
+              "trails": 28,
+              "decals": 0,
+              "roads": 0,
+              "props": 352,
+              "solids": 7
+            },
+            "pages": [
+              "tripo-props-hd-plants-00.webp",
+              "tripo-props-hd-structures-01.webp",
+              "tripo-props-hd-props-00.webp"
+            ],
+            "visible": null,
+            "state": null
+          },
+          {
+            "areaId": "hollow-pines",
+            "counts": {
+              "zones": 6,
+              "trails": 22,
+              "decals": 0,
+              "roads": 0,
+              "props": 426,
+              "solids": 14
+            },
+            "pages": [
+              "tripo-props-hd-plants-00.webp",
+              "tripo-props-hd-structures-01.webp",
+              "tripo-props-hd-props-00.webp"
+            ],
+            "visible": null,
+            "state": null
+          },
+          {
+            "areaId": "ledger-ridge",
+            "counts": {
+              "zones": 5,
+              "trails": 18,
+              "decals": 0,
+              "roads": 0,
+              "props": 283,
+              "solids": 9
+            },
+            "pages": [
+              "tripo-props-hd-plants-00.webp",
+              "tripo-props-hd-structures-01.webp",
+              "tripo-props-hd-props-00.webp"
+            ],
+            "visible": null,
+            "state": null
+          },
+          {
+            "areaId": "fork-fortress",
+            "counts": {
+              "zones": 4,
+              "trails": 23,
+              "decals": 0,
+              "roads": 0,
+              "props": 201,
+              "solids": 9
+            },
+            "pages": [
+              "tripo-props-hd-structures-00.webp",
+              "tripo-props-hd-structures-01.webp",
+              "tripo-props-hd-props-00.webp"
+            ],
+            "visible": null,
+            "state": null
+          },
+          {
+            "areaId": "halving-farms",
+            "counts": {
+              "zones": 7,
+              "trails": 30,
+              "decals": 68,
+              "roads": 0,
+              "props": 343,
+              "solids": 11
+            },
+            "pages": [
+              "tripo-props-hd-plants-00.webp",
+              "tripo-props-hd-structures-01.webp",
+              "tripo-props-hd-props-00.webp"
+            ],
+            "visible": null,
+            "state": null
+          },
+          {
+            "areaId": "world-roads",
+            "counts": {
+              "zones": 0,
+              "trails": 0,
+              "decals": 0,
+              "roads": 14,
+              "props": 63,
+              "solids": 0
+            },
+            "pages": [
+              "tripo-props-hd-props-00.webp"
+            ],
+            "visible": null,
+            "state": null
+          }
+        ]
+      }
+    }
+  ],
+  "console": [
+    "river-center: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ]
+}

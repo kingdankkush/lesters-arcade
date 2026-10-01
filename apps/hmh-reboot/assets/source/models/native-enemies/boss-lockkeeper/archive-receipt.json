@@ -1,0 +1,11 @@
+{
+  "schema": 1,
+  "actorId": "boss-lockkeeper",
+  "sourceInGit": false,
+  "source": "boss-lockkeeper.blend",
+  "sourceSha256": "3197722d04ae0cd2ba933e5d213e7f278a6541576d4acca607fc0f4a8e36dd28",
+  "sourceBytes": 4580894,
+  "archivedTo": "~/Desktop/Projects/LestersArcade-Assets/2.0/Source/Legacy-Integration-04366747/apps/hmh-reboot/assets/source/models/native-enemies/boss-lockkeeper/boss-lockkeeper.blend",
+  "archivedSha256": "3197722d04ae0cd2ba933e5d213e7f278a6541576d4acca607fc0f4a8e36dd28",
+  "archivedUnchanged": true
+}

@@ -107,6 +107,28 @@ function districtBossPose(kit, { boss, player, tick, lastAttack, hitUntil, death
   return { state, tick: poseTick, phaseTick, direction, phase: boss.phaseId, elite: true };
 }
 
+// The district boss GLBs carry ten clips (idle, run, tell, attack, attack-2,
+// super-tell, super, hit, stagger, death); the simulation state picks one.
+export function districtBoss3dPose(kit, { boss, player, tick, lastAttack, hitUntil, deathUntil }) {
+  const pending = boss.pendingAttacks[0];
+  const target = pending?.target ?? player;
+  const direction = (Math.round(Math.atan2(target.y - boss.y, target.x - boss.x) / (Math.PI / 4)) + 8) % 8;
+  const attacks = kit.definition.attacks;
+  let state = 'idle', phaseTick = tick;
+  if (!boss.active) { state = 'death'; phaseTick = Math.max(0, tick - (deathUntil - 45)); }
+  else if (tick <= hitUntil) { state = 'hit'; phaseTick = Math.max(0, tick - (hitUntil - 6)); }
+  else if (tick <= boss.staggerUntil) { state = 'stagger'; phaseTick = Math.max(0, tick - (boss.staggerUntil - 90)); }
+  else if (pending) {
+    state = attacks[pending.attackId]?.tier === 'super' ? 'super-tell' : 'tell';
+    phaseTick = Math.max(0, tick - pending.tellStartTick);
+  } else if (lastAttack && tick >= lastAttack.tick && tick - lastAttack.tick < 30) {
+    const clip = attacks[lastAttack.attackId]?.clip;
+    state = clip === 'attack-2' || clip === 'super' ? clip : 'attack';
+    phaseTick = tick - lastAttack.tick;
+  } else if (boss.motion) state = 'run';
+  return { state, direction, phaseTick };
+}
+
 // Wraps main.mjs's Liquidator bindings so the one boss code path steps,
 // damages, targets and poses whichever boss is live. A Liquidator call goes to
 // the original function with the original arguments.
@@ -450,11 +472,15 @@ export function createWorldV2Combat({ world, gameplay, queryGround }) {
       display.tint = look ? look.tint : 0xffffff;
       if (look) display.scale.set(display.scale.x * look.scale);
     },
-    // Presentation: the 3D boss entry prefers the boss's own GLB once it is
-    // published, else the Liquidator body tinted.
-    boss3d(boss) {
+    // Presentation: the 3D row for a live district boss (its own GLB through
+    // the controller's district-boss list), or null for the Liquidator, who
+    // keeps his own entry. A boss whose GLB is not resident keeps its sprite.
+    districtBoss3d(boss, frame) {
       const look = boss && Object.hasOwn(DISTRICT_BOSS_LOOK, boss.bossId) ? DISTRICT_BOSS_LOOK[boss.bossId] : null;
-      return look ? { actorId: look.actorId, fallbackActorId: 'the-liquidator', bodyTint: look.tint, scale: look.scale, id: `boss:${boss.bossId}` } : null;
+      if (!look) return null;
+      const pose = districtBoss3dPose(DISTRICT_BOSS_KITS[boss.bossId], { boss, ...frame });
+      return [{ actorId: look.actorId, active: boss.active || frame.tick < frame.deathUntil, visible: frame.visible, alpha: boss.active ? frame.alpha : 1,
+        x: frame.x, y: frame.y, z: boss.groundZ, bodyHeight: frame.bodyHeight * look.scale, pose, originals: frame.originals }];
     },
   });
 }

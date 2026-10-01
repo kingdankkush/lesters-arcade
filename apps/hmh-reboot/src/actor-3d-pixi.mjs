@@ -223,7 +223,7 @@ export async function createActor3dPixiBackend({ renderer, signal, maxActors = 2
     prepareActor(id) {
       if (disposed) return false;
       if (ready.has(id)) return true;
-      if ((!ACTOR3D_ENEMY_IDS.includes(id) && !ACTOR3D_BOSS_IDS.includes(id)) || pending.has(id) || failed.has(id)) return false;
+      if (!(ACTOR3D_ENEMY_IDS.includes(id) || ACTOR3D_BOSS_IDS.includes(id)) || pending.has(id) || failed.has(id)) return false;
       pending.add(id);
       // One decode/upload at a time. A failed optional archetype retains its
       // original sprites; it cannot retire already working hero/boss assets.

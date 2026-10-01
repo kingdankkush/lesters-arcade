@@ -1,0 +1,153 @@
+{
+  "schema": 1,
+  "classification": "unapproved-runtime-boss-export",
+  "activeRuntimeIntegration": false,
+  "cameraDegreesFromVertical": 55,
+  "groundPivot": "existing-world-foot-position",
+  "simulationAuthority": "none",
+  "actors": {
+    "boss-51-foreman": {
+      "file": "boss-51-foreman.glb",
+      "sha256": "9bc1223b279317c6e915a66bcecb636d4c0d77871124e7e607d8ff68758d6114",
+      "sourceSha256": "50b81baddb755b931cd0a2c72644c1eb5b38bfdf466629f7059762cb5b0360b0",
+      "sourceBytes": 4572212,
+      "sourceTriangles": 155166,
+      "ownerSource": "armored soldier 3d model.glb",
+      "ownerSourceSha256": "10c589cbc64d8ad295c214054298e072e59ad7f00dd59b651e689ddc6f35509c",
+      "height": 2.5,
+      "heroHeightRatio": 1.19,
+      "identityForm": "human",
+      "requiredClips": [
+        "idle",
+        "run",
+        "tell",
+        "attack",
+        "attack-2",
+        "super-tell",
+        "super",
+        "hit",
+        "stagger",
+        "death"
+      ],
+      "inspection": {
+        "bytes": 5331840,
+        "vertices": 20880,
+        "triangles": 21319,
+        "skinnedMeshes": 2,
+        "joints": 19,
+        "clips": [
+          {
+            "name": "attack",
+            "durationSeconds": 1,
+            "channels": 63
+          },
+          {
+            "name": "attack-2",
+            "durationSeconds": 1,
+            "channels": 63
+          },
+          {
+            "name": "death",
+            "durationSeconds": 1,
+            "channels": 63
+          },
+          {
+            "name": "hit",
+            "durationSeconds": 1,
+            "channels": 63
+          },
+          {
+            "name": "idle",
+            "durationSeconds": 1,
+            "channels": 63
+          },
+          {
+            "name": "run",
+            "durationSeconds": 1,
+            "channels": 63
+          },
+          {
+            "name": "stagger",
+            "durationSeconds": 1,
+            "channels": 63
+          },
+          {
+            "name": "super",
+            "durationSeconds": 1,
+            "channels": 63
+          },
+          {
+            "name": "super-tell",
+            "durationSeconds": 1,
+            "channels": 63
+          },
+          {
+            "name": "tell",
+            "durationSeconds": 1,
+            "channels": 63
+          }
+        ],
+        "bounds": {
+          "min": [
+            -0.8921830654144287,
+            -0.018504317849874496,
+            -0.6342858076095581
+          ],
+          "max": [
+            1.334067702293396,
+            2.9181573390960693,
+            0.4528316855430603
+          ]
+        },
+        "embeddedImages": 6,
+        "images": [
+          {
+            "name": "armored+soldier+3d+model_normal",
+            "format": "png",
+            "width": 1024,
+            "height": 1024,
+            "bytes": 1171455
+          },
+          {
+            "name": "armored+soldier+3d+model_basecolor",
+            "format": "png",
+            "width": 1024,
+            "height": 1024,
+            "bytes": 1743999
+          },
+          {
+            "name": "armored+soldier+3d+model_rm",
+            "format": "png",
+            "width": 1024,
+            "height": 1024,
+            "bytes": 568808
+          },
+          {
+            "name": "boss-51-foreman-palette-emission",
+            "format": "png",
+            "width": 64,
+            "height": 64,
+            "bytes": 381
+          },
+          {
+            "name": "boss-51-foreman-palette-baseColor",
+            "format": "png",
+            "width": 64,
+            "height": 64,
+            "bytes": 405
+          },
+          {
+            "name": "boss-51-foreman-palette-metallicRoughness",
+            "format": "png",
+            "width": 64,
+            "height": 64,
+            "bytes": 390
+          }
+        ],
+        "textureBytesRgba8": 12632064,
+        "textureBytesRgba8Mipmaps": 16842744
+      },
+      "maximumNativeFootResidualMetres": 5.563779268413782e-7
+    }
+  }
+}

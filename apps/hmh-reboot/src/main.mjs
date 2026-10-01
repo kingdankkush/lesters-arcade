@@ -3170,7 +3170,13 @@ async function boot() {
             z: (Number.isFinite(enemy.previousGroundZ) ? enemy.previousGroundZ + ((enemy.groundZ ?? 0) - enemy.previousGroundZ) * renderAlpha : enemy.groundZ ?? 0) + (enemy.visualLiftZ ?? 0),
             pose: body.worldDesignPoseInput, originals: [body] });
         }
-        const boss3d = liquidatorBoss ? {
+        // A ten-area district boss goes to the controller's district-boss list
+        // (its own GLB and clips); the Liquidator keeps his own entry.
+        const districtBoss3d = liquidatorBoss ? TEN_AREA_COMBAT?.districtBoss3d(liquidatorBoss, {
+          x: interpolateStep(bossPreviousX, liquidatorBoss.x, renderAlpha), y: interpolateStep(bossPreviousY, liquidatorBoss.y, renderAlpha),
+          visible: bossVisual.visible, alpha: bossVisual.alpha, bodyHeight: productionHeroDisplay?.minimumBodyHeight ?? 84, originals: [bossVisual],
+          player: actor, tick: bossVisualTick, lastAttack: lastBossResolvedAttack, hitUntil: bossHitVisualUntilTick, deathUntil: bossDeathVisualUntilTick }) ?? null : null;
+        const boss3d = liquidatorBoss && !districtBoss3d ? {
           active: liquidatorBoss.active, visible: bossVisual.visible, alpha: bossVisual.alpha,
           x: interpolateStep(bossPreviousX, liquidatorBoss.x, renderAlpha),
           y: interpolateStep(bossPreviousY, liquidatorBoss.y, renderAlpha), z: liquidatorBoss.groundZ,
@@ -3178,7 +3184,6 @@ async function boot() {
           pose: liquidatorPose({ boss: liquidatorBoss, player: actor, tick: bossVisualTick,
             lastAttack: lastBossResolvedAttack, hitUntil: bossHitVisualUntilTick, deathUntil: bossDeathVisualUntilTick }),
           original: bossVisual,
-          ...TEN_AREA_COMBAT?.boss3d(liquidatorBoss),
         } : null;
         actor3dPilot.updateGame(productionHeroDisplay ? { actorId: productionHeroId, weaponId: heldWeapon?.id,
           x: renderState.x, y: renderState.y, z: renderState.z, heading: Math.atan2(heldAim.y, heldAim.x),
@@ -3186,7 +3191,7 @@ async function boot() {
           ...tenAreaRun?.heroClip(bossVisualTick),
           bodyTint: actor3dHeroFlash !== 0xffffff ? actor3dHeroFlash : settings.cosmetics?.heroTint,
           weaponTint: actor3dHeroFlash !== 0xffffff ? actor3dHeroFlash : settings.cosmetics?.weaponTint,
-          bodyHeight: productionHeroDisplay.minimumBodyHeight, originals: [actorVisual, heldWeaponLayer] } : null, enemy3d, camera, view, boss3d);
+          bodyHeight: productionHeroDisplay.minimumBodyHeight, originals: [actorVisual, heldWeaponLayer] } : null, enemy3d, camera, view, boss3d, ...(districtBoss3d ? [districtBoss3d] : []));
         // The replaced atlas owns a baked shadow; supply its ground contact
         // only while the 3D hero hides that atlas, using the existing pool.
         if (actor3dPilot.ownsOriginal(actorVisual, 'hero')) contactShadowPool?.place({

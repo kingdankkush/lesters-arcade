@@ -27,7 +27,9 @@ import {
   createWorldV2Combat,
   heroClipForPose,
 } from '../apps/hmh-reboot/src/world-v2-combat.mjs';
-import { createBossSlots, defeatBossSlot, stepBossSlots } from '../apps/hmh-reboot/src/boss-slots.mjs';
+import { ACTOR3D_BOSS_CLIPS, ACTOR3D_BOSS_IDS, createDistrictBoss3dEntries } from '../apps/hmh-reboot/src/actor-3d-controller.mjs';
+import { districtBoss3dPose } from '../apps/hmh-reboot/src/world-v2-combat.mjs';
+import { DISTRICT_BOSS_KITS, createBossSlots, defeatBossSlot, stepBossSlots } from '../apps/hmh-reboot/src/boss-slots.mjs';
 import { createBossDrops, dropGenesisSeal } from '../apps/hmh-reboot/src/boss-drops.mjs';
 import { pastCourtThreshold } from '../apps/hmh-reboot/src/boss-courts-world-v1.mjs';
 import { HMH_V7_BOSSES } from '../sdk/hmh-run-contract-v7.mjs';
@@ -190,10 +192,15 @@ function fightDistrictBoss(bossId, seed = 2026) {
   let tells = 0;
   let resolved = 0;
   let defeated = null;
+  let lastAttack = null;
+  const clips = new Set();
   while (tick < readyTick + 40_000 && !defeated) {
     tick += 1;
     stepBossSlots(slots, { tick, player: { ...hero, radius: 24 }, level: 12 });
     const report = api.stepLiquidatorBoss({ boss, tick, player: hero, blockers: [], addsAlive: 0 });
+    const resolvedNow = report.events.find((event) => event.type === 'attack');
+    if (resolvedNow) lastAttack = { attackId: resolvedNow.attackId, tick };
+    clips.add(districtBoss3dPose(DISTRICT_BOSS_KITS[bossId], { boss, player: hero, tick, lastAttack, hitUntil: -1, deathUntil: -1 }).state);
     for (const event of report.events) {
       if (event.type === 'tell') tells += 1;
       if (event.type === 'attack') resolved += 1;
@@ -206,7 +213,7 @@ function fightDistrictBoss(bossId, seed = 2026) {
       if (damage.runEvent) defeated = damage;
     }
   }
-  return { slots, boss, court, defeated, phases, staggered, tells, resolved, tick, log, api };
+  return { slots, boss, court, defeated, phases, staggered, tells, resolved, tick, log, api, clips };
 }
 
 for (const bossId of DISTRICT_BOSSES) {
@@ -219,6 +226,10 @@ for (const bossId of DISTRICT_BOSSES) {
     assert.deepEqual(phases, gameplay.bossDefinitions[bossId] && DISTRICT_PHASES[bossId]);
     assert.equal(phases.length, 2, 'both v7 thresholds crossed');
     assert.ok(fight.tells > 0 && fight.resolved > 0, 'tells were issued and resolved');
+    // The 3D pose walks the GLB's clip set: tells, the super's tell, strikes.
+    for (const clip of fight.clips) assert.ok(ACTOR3D_BOSS_CLIPS.includes(clip), clip);
+    for (const clip of ['idle', 'tell', 'super-tell']) assert.ok(fight.clips.has(clip), `${bossId} ${clip}`);
+    assert.ok(fight.clips.has('attack') || fight.clips.has('attack-2'), `${bossId} strikes`);
     // The court sealed during the fight.
     assert.equal(slots.slots[bossId].locked, true);
     assert.deepEqual([...slots.slots[bossId].closedWalls].sort(), court.walls.map((wall) => wall.id).sort());
@@ -250,15 +261,19 @@ test('district fights are seed-deterministic and the presentation look is per bo
     const b = fightDistrictBoss(bossId, 77);
     assert.deepEqual(a.log, b.log, bossId);
     assert.equal(a.tick, b.tick);
-    const look = combat.boss3d(a.boss);
-    assert.equal(look.actorId, DISTRICT_BOSS_LOOK[bossId].actorId);
-    assert.equal(look.fallbackActorId, 'the-liquidator');
+    const frame = { x: a.boss.x, y: a.boss.y, visible: true, alpha: 1, bodyHeight: 84, originals: [], player: { x: 0, y: 0 }, tick: a.tick, lastAttack: null, hitUntil: -1, deathUntil: a.tick + 45 };
+    const [row] = combat.districtBoss3d(a.boss, frame);
+    assert.equal(row.actorId, DISTRICT_BOSS_LOOK[bossId].actorId);
+    assert.equal(row.pose.state, 'death', 'a defeated boss plays its death clip');
+    const [entry] = createDistrictBoss3dEntries([row]);
+    assert.equal(entry.descriptor.actorId, DISTRICT_BOSS_LOOK[bossId].actorId);
+    assert.ok(ACTOR3D_BOSS_IDS.includes(row.actorId));
     const display = { tint: 0, scale: { x: 2, set(value) { this.x = value; } } };
     combat.styleBoss(display, a.boss);
     assert.equal(display.tint, DISTRICT_BOSS_LOOK[bossId].tint);
     assert.equal(display.scale.x, 2 * DISTRICT_BOSS_LOOK[bossId].scale);
   }
-  assert.equal(combat.boss3d({ bossId: 'liquidator' }), null);
+  assert.equal(combat.districtBoss3d({ bossId: 'liquidator' }, {}), null);
 });
 
 test('the dispatch hands the Liquidator to the original functions with the original arguments', () => {

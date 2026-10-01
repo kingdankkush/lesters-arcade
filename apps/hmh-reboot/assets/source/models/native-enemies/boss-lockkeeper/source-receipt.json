@@ -1,0 +1,137 @@
+{
+  "schema": 1,
+  "status": "editable-native-boss-candidate",
+  "actorId": "boss-lockkeeper",
+  "name": "The Lockkeeper",
+  "identityForm": "zombie",
+  "boss": true,
+  "ownerSource": "armored soldier 3d model (1).glb",
+  "ownerSourceSha256": "2aa5a15c66588dcdfc4e98863a9497e1cf7ef86209a94e6a3c25e9c6b299ef47",
+  "ownerSourceUnchanged": true,
+  "ownerProp": null,
+  "figureSelection": {
+    "strayVertices": 0,
+    "sourceFaces": 485447,
+    "keptFaces": 102116,
+    "region": {
+      "maxX": -0.225,
+      "minZ": 0.155
+    }
+  },
+  "sourceTriangles": 102116,
+  "bodyTriangles": 14999,
+  "normalisationScale": 5.665155786071334,
+  "height": 2.3,
+  "heroHeightRatio": 1.095,
+  "landmarks": {
+    "L": {
+      "shoulderWidth": 0.4046575129032135,
+      "armTip": [
+        0.6940451264381409,
+        -0.01148180104792118,
+        1.1614999771118164
+      ],
+      "legX": 0.25909674167633057
+    },
+    "R": {
+      "shoulderWidth": 0.4315420985221863,
+      "armTip": [
+        -0.6940449476242065,
+        -0.0830649733543396,
+        1.0924999713897705
+      ],
+      "legX": -0.30003026127815247
+    }
+  },
+  "skinning": {
+    "method": "voxel-proxy-bone-heat-transfer",
+    "proxyVertices": 12120,
+    "proxyTriangles": 24236,
+    "nearestBoneFilled": 0,
+    "blended": 9608,
+    "vertices": 10346
+  },
+  "restCorrectionDegrees": {
+    "upper_arm.L": 36.44,
+    "forearm.L": 49.11,
+    "hand.L": 28.97,
+    "upper_arm.R": 42.22,
+    "forearm.R": 71.53,
+    "hand.R": 41.41,
+    "thigh.L": 1.53,
+    "shin.L": 3.91,
+    "thigh.R": 2.22,
+    "shin.R": 2.22
+  },
+  "source": "boss-lockkeeper.blend",
+  "sourceSha256": "3197722d04ae0cd2ba933e5d213e7f278a6541576d4acca607fc0f4a8e36dd28",
+  "sourceBytes": 4580894,
+  "armature": "boss-lockkeeper Native Rig",
+  "bones": 19,
+  "nativeBodyVertices": 10346,
+  "costumeMeshes": 1,
+  "gearMeshes": 24,
+  "gearTriangles": 3698,
+  "textures": [
+    {
+      "image": "armored+soldier+3d+model_basecolor.jpg",
+      "sourceSize": [
+        4096,
+        4096
+      ],
+      "size": [
+        1024,
+        1024
+      ]
+    },
+    {
+      "image": "armored+soldier+3d+model_normal.jpg",
+      "sourceSize": [
+        4096,
+        4096
+      ],
+      "size": [
+        1024,
+        1024
+      ]
+    },
+    {
+      "image": "armored+soldier+3d+model_rm.jpg",
+      "sourceSize": [
+        4096,
+        4096
+      ],
+      "size": [
+        1024,
+        1024
+      ]
+    }
+  ],
+  "clipActions": {
+    "idle": "HMH_boss-lockkeeper_idle",
+    "run": "HMH_boss-lockkeeper_run",
+    "tell": "HMH_boss-lockkeeper_tell",
+    "attack": "HMH_boss-lockkeeper_attack",
+    "attack-2": "HMH_boss-lockkeeper_attack-2",
+    "super-tell": "HMH_boss-lockkeeper_super-tell",
+    "super": "HMH_boss-lockkeeper_super",
+    "hit": "HMH_boss-lockkeeper_hit",
+    "stagger": "HMH_boss-lockkeeper_stagger",
+    "death": "HMH_boss-lockkeeper_death"
+  },
+  "clipFrames": {
+    "idle": 2,
+    "run": 24,
+    "tell": 2,
+    "attack": 3,
+    "attack-2": 3,
+    "super-tell": 3,
+    "super": 4,
+    "hit": 2,
+    "stagger": 3,
+    "death": 4
+  },
+  "runtimeAuthority": "projection-only",
+  "builderSha256": "fd2f4b5bbd6c7f13e4a30c229351cf4ef94f1cd85c5dab3cab3fe05403c5c74e",
+  "poseAuthorSha256": "128097aa2019f002086100671339742dcc349fbc3754738b226102c4a73271d1"
+}

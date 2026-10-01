@@ -31,17 +31,12 @@ export function createHashwoodRiverArtPlan(world) {
   plan.ground.base = { surfaceId: `${area.id}-floor`, material: 'forest' };
   plan.ground.terrain = { ...DISTRICT_TERRAIN[area.id] };
   // Damp bank edges either side of the channel, exposed stone at the shelf foot,
-  // compacted traffic on the bridge approaches, gravel at the capstan and the
-  // trodden marquee clearing.
+  // and the trodden marquee clearing. Bridge approaches and the capstan apron
+  // are carried by the route trails (pass-1 rectangles read as hard patches).
   plan.ground.zones.push(
     { id: 'north-bank', material: 'marsh', feather: 70, alpha: 0.6, vertices: [point(-2000, -830), point(-1400, -800), point(-1000, -730), point(1700, -730), point(2000, -830), point(2000, -720), point(1700, -620), point(-1000, -620), point(-1400, -690), point(-2000, -720)] },
     { id: 'south-bank', material: 'marsh', feather: 70, alpha: 0.6, vertices: [point(-2000, -390), point(-1400, -340), point(-1000, -280), point(1700, -280), point(2000, -360), point(2000, -250), point(1700, -170), point(-1000, -170), point(-1400, -230), point(-2000, -280)] },
     { id: 'shelf-foot', material: 'rock', feather: 80, alpha: 0.7, vertices: [point(-2000, -1380), point(-1420, -1330), point(-1280, -960), point(-1560, -760), point(-2000, -880)] },
-    { id: 'city-north-apron', material: 'earth', feather: 60, alpha: 0.6, vertices: [point(-230, -1150), point(230, -1150), point(230, -900), point(-230, -900)] },
-    { id: 'city-south-apron', material: 'earth', feather: 60, alpha: 0.6, vertices: [point(-230, 0), point(230, 0), point(230, 200), point(-230, 200)] },
-    { id: 'woods-north-apron', material: 'earth', feather: 60, alpha: 0.6, vertices: [point(1170, -1150), point(1630, -1150), point(1630, -900), point(1170, -900)] },
-    { id: 'woods-south-apron', material: 'earth', feather: 60, alpha: 0.6, vertices: [point(1170, 0), point(1630, 0), point(1630, 200), point(1170, 200)] },
-    { id: 'capstan-apron', material: 'earth', feather: 50, alpha: 0.55, vertices: [point(360, -110), point(820, -110), point(820, 60), point(360, 60)] },
     { id: 'marquee-ground', material: 'dirt', feather: 120, alpha: 0.45, vertices: [point(-1500, 500), point(-300, 500), point(-250, 1500), point(-700, 1800), point(-1300, 1800), point(-1550, 1400)] },
   );
   for (const segment of routeSegments) plan.ground.trails.push({ id: `trail-${plan.ground.trails.length}`, material: 'earth', points: [segment.a, segment.b], width: segment.kind === 'main' ? 52 : 40, halo: 16 });
