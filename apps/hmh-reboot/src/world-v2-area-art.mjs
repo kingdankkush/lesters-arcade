@@ -357,6 +357,10 @@ export function createAreaArt({ world, areaId, plan, kit = null, loadTexture, te
   // each) for the other side of the world.
   const surfaceNodes = [];
   const trackSurface = (node, b) => { surfaceNodes.push({ node, b }); return node; };
+  // Program warm-up: for the first frames after bind every surface node (and
+  // one degenerate rock mesh) is drawn, so the water, raised and rock
+  // programs compile while the area loads instead of on first sight mid-run.
+  let warmFrames = 3; const warmNodes = [];
   let waterFrame = 0, waterStatic = true, occlusion = null;
   const tileFile = (tile, suffix = '') => ratio === 0.5 ? `${tile}${suffix}@0.5x.webp` : `${tile}${suffix}.png`;
   const acquire = async url => { const texture = await cache.acquire(url); owned.push(url); if (disposed) { cache.release(url); owned.pop(); return null; } return texture; };
@@ -758,6 +762,12 @@ export function createAreaArt({ world, areaId, plan, kit = null, loadTexture, te
     // Low pieces first so a ramp's foot never overdraws the deck it climbs to.
     const records = buildRaisedSurfaces(raisedPieces, areaId).sort((a, b) => a.bounds.maxY - b.bounds.maxY || a.maxZ - b.maxZ);
     for (const record of records) paintRaised(target, record);
+    const rockFace = overlays.get('rock-face') ?? null, sample = summary.solids.find(solid => solid.style === 'bank' || (solid.style === 'mass' && !solid.wall));
+    if (rockFace && sample) {
+      const b = summary.bounds, dot = [{ x: b.minX, y: b.minY }, { x: b.minX, y: b.minY }, { x: b.minX, y: b.minY }];
+      const warm = rockSolidMesh(dot, dot, sample.roof ?? 'rock', sample.tint, [{ a: dot[0], c: dot[0], ra: dot[0], rc: dot[0], lit: 1 }], 1, rockFace);
+      if (warm) { warm.label = 'area-warmup-rock'; target.addChild(warm); painted.push(warm); warmNodes.push(warm); }
+    }
   }
 
   // ---- solids ----
@@ -1096,12 +1106,13 @@ export function createAreaArt({ world, areaId, plan, kit = null, loadTexture, te
       if (waterFrame++ % 60 === 0) waterStatic = ratio === 0.5 || Boolean(reducedMotion());
       if (!waterStatic) for (const group of waterMeshes) { group.uniforms.uWater[0] = waterFrame / 60; group.update?.(); }
     }
+    if (warmFrames > 0 && --warmFrames === 0) { for (const node of warmNodes) node.visible = false; gateZoom = NaN; }
     const zoom = camera.zoom || 1;
     if (Math.abs(camera.x - gateX) >= GATE || Math.abs(camera.y - gateY) >= GATE || zoom !== gateZoom || view.width !== gateW || view.height !== gateH) {
       gateX = camera.x; gateY = camera.y; gateZoom = zoom; gateW = view.width; gateH = view.height;
       paddedView.width = view.width + 2 * GATE * zoom; paddedView.height = view.height + 2 * GATE * zoom;
       gateVisible = residency.update({ camera, view: paddedView });
-      if (surfaceNodes.length) {
+      if (surfaceNodes.length && warmFrames <= 0) {
         const hw = view.width / 2 / zoom + 120 + GATE, hh = view.height / 2 / zoom + 120 + GATE;
         for (const { node, b } of surfaceNodes) { const on = !(b.maxX < camera.x - hw || b.minX > camera.x + hw || b.maxY < camera.y - hh || b.minY > camera.y + hh); if (node.visible !== on) node.visible = on; }
       }

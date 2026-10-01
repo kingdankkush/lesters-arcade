@@ -437,7 +437,9 @@ test('water and raised-surface nodes leave the draw list while they are off view
   const surfaces = ground.children.filter(c => /^area-(water|raised)-/.test(c.label ?? ''));
   assert.ok(surfaces.length > 6);
   art.update({ x: 1000, y: 1000, zoom: 1 }, { width: 800, height: 600 });
-  assert.ok(surfaces.every(c => c.visible === false), 'far from the river nothing is drawn');
+  assert.ok(surfaces.every(c => c.visible === true), 'warm-up frames draw every surface once so their programs compile at load');
+  art.update({ x: 1000, y: 1000, zoom: 1 }, { width: 800, height: 600 }); art.update({ x: 1000, y: 1000, zoom: 1 }, { width: 800, height: 600 });
+  assert.ok(surfaces.every(c => c.visible === false), 'after warm-up, far from the river nothing is drawn');
   const bridge = world.pieces.find(p => p.id === 'hashwood-river-city-bridge').visible.bounds;
   art.update({ x: (bridge.minX + bridge.maxX) / 2, y: (bridge.minY + bridge.maxY) / 2, zoom: 1 }, { width: 800, height: 600 });
   assert.equal(ground.children.find(c => c.label === 'area-raised-hashwood-river-city-bridge').visible, true);
