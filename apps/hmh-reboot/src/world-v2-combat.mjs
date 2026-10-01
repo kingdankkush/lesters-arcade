@@ -134,7 +134,7 @@ export function districtBoss3dPose(kit, { boss, player, tick, lastAttack, hitUnt
 // Wraps main.mjs's Liquidator bindings so the one boss code path steps,
 // damages, targets and poses whichever boss is live. A Liquidator call goes to
 // the original function with the original arguments.
-export function createWorldV2BossDispatch(api, gameplay) {
+export function createWorldV2BossDispatch(api, gameplay, sightBlockers = []) {
   const sealArena = (bossId, arenaId) => {
     const court = gameplay.districtCourts[bossId];
     if (court?.id === arenaId) return court;
@@ -152,7 +152,13 @@ export function createWorldV2BossDispatch(api, gameplay) {
       defeated = { bossId: slot.bossId, arena: slot.arena };
       return api.defeatBossSlot(slots, { bossId: slot.bossId, tick });
     },
-    stepLiquidatorBoss: (options) => (kitOf(options.boss) ? kitOf(options.boss).step(options) : api.stepLiquidatorBoss(options)),
+    // A district boss also reads the world's collision list: he walks around
+    // court props instead of through them (a boss parked inside a tall screen
+    // could not be shot), retreats to marks the hero can see, and closes in
+    // when screened.
+    stepLiquidatorBoss: (options) => (kitOf(options.boss)
+      ? kitOf(options.boss).step({ ...options, blockers: [...(options.blockers ?? []), ...sightBlockers], sightBlockers })
+      : api.stepLiquidatorBoss(options)),
     applyLiquidatorDamage: (options) => (kitOf(options.boss) ? kitOf(options.boss).applyDamage(options) : api.applyLiquidatorDamage(options)),
     isLiquidatorTargetable: (boss, tick) => (kitOf(boss) ? kitOf(boss).isTargetable(boss, tick) : api.isLiquidatorTargetable(boss, tick)),
     getLiquidatorVulnerability: (boss, tick) => (kitOf(boss) ? kitOf(boss).vulnerability(boss, tick) : api.getLiquidatorVulnerability(boss, tick)),
@@ -479,7 +485,7 @@ export function createWorldV2Combat({ world, gameplay, queryGround }) {
     traversalMarkers: traversalMarkers.markers,
     rejectedTraversalMarkers: traversalMarkers.rejected,
     spriteFallback: worldV2SpriteFallback,
-    bossDispatch: (api) => createWorldV2BossDispatch(api, gameplay),
+    bossDispatch: (api) => createWorldV2BossDispatch(api, gameplay, world.collisionBlockers),
     activeBoss: activeWorldV2Boss,
     closedBossWalls: closedWorldV2BossWalls,
     createRun: () => createWorldV2MovementRun({ faces, markers: traversalMarkers.markers }),

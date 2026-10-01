@@ -15,6 +15,7 @@
 // changing this timeline. Loaded lazily with the boss modules.
 import { finite, freezeDeep } from './value-guards.mjs';
 import { createCollisionBody, resolveSweptCircleMotion } from './collision.mjs';
+import { traceHeightAwareLineOfSight } from './elevation.mjs';
 import { seededUnit } from './deterministic-hash.mjs';
 import { createBossShape } from './boss-geometry.mjs';
 import { bossArenaInterior } from './boss-arenas.mjs';
@@ -30,6 +31,29 @@ export const DISTRICT_BOSS_ROLE_CHECK_MULTIPLIER = 1.15;
 export const DISTRICT_BOSS_MAX_DAMAGE_MULTIPLIER = 1.25;
 export const DISTRICT_BOSS_WALK_MAX_TICKS = 180;
 export const DISTRICT_BOSS_STEER_STOP_DISTANCE = 220;
+// A district court is 1,800 square while the hero's automatic aim reaches 720:
+// the boss never retreats to a mark beyond this distance from the hero, and
+// when an action comes due farther away than this plus a margin, he closes
+// in to DISTRICT_BOSS_CLOSE_STOP_DISTANCE first. Without it a boss parked on a
+// far mark (or behind a court prop) stayed out of reach of an auto-firing hero
+// for the rest of the fight.
+export const DISTRICT_BOSS_ENGAGE_RANGE = 600;
+export const DISTRICT_BOSS_CLOSE_MARGIN = 60;
+export const DISTRICT_BOSS_CLOSE_STOP_DISTANCE = 480;
+// Shot height for the sight checks (the runtime's projectile flight height).
+const SIGHT_HEIGHT = 34;
+
+// Whether the hero has a clear shot at a point. `sightBlockers` is the world's
+// collision list (the ten-area dispatch passes it); with none, every point is
+// in sight and the boss behaves as before.
+function inSight(sightBlockers, player, point, groundZ) {
+  if (!sightBlockers.length) return true;
+  return traceHeightAwareLineOfSight({
+    from: { x: player.x, y: player.y, z: player.groundZ + SIGHT_HEIGHT },
+    to: { x: point.x, y: point.y, z: groundZ + SIGHT_HEIGHT },
+    blockers: sightBlockers,
+  }).clear;
+}
 
 const nonNegativeInteger = (value, name) => {
   if (!Number.isInteger(value) || value < 0) throw new TypeError(`${name} must be a non-negative integer`);
@@ -264,7 +288,7 @@ function collisionBody(definition) {
   return collisionBodies.get(definition.bossId);
 }
 
-function stepMotion(definition, boss, { tick, player, blockers }) {
+function stepMotion(definition, boss, { tick, player, blockers, sightBlockers = [] }) {
   const motion = boss.motion;
   if (!motion) return;
   const body = definition.body;
@@ -284,14 +308,20 @@ function stepMotion(definition, boss, { tick, player, blockers }) {
     const step = Math.min(body.walkUnitsPerTick, distance);
     delta = { x: (dx / distance) * step, y: (dy / distance) * step };
   } else {
+    // 'steer' (last phase) and 'close' (back into engage range) both walk at
+    // the hero; they differ only in where they stop.
+    // A close stops once he is in range and in the hero's sight, else keeps
+    // coming down to the steer distance.
     const dx = player.x - boss.x;
     const dy = player.y - boss.y;
     const distance = Math.hypot(dx, dy);
-    if (distance <= DISTRICT_BOSS_STEER_STOP_DISTANCE) {
+    const stop = motion.kind === 'close' && (distance > DISTRICT_BOSS_CLOSE_STOP_DISTANCE || inSight(sightBlockers, player, boss, boss.groundZ))
+      ? DISTRICT_BOSS_CLOSE_STOP_DISTANCE : DISTRICT_BOSS_STEER_STOP_DISTANCE;
+    if (distance <= stop || (motion.kind === 'close' && tick >= motion.untilTick)) {
       boss.motion = null;
       return;
     }
-    const step = Math.min(body.steerUnitsPerTick, distance - DISTRICT_BOSS_STEER_STOP_DISTANCE);
+    const step = Math.min(motion.kind === 'close' ? body.walkUnitsPerTick : body.steerUnitsPerTick, distance - stop);
     delta = { x: (dx / distance) * step, y: (dy / distance) * step };
   }
   const sweep = resolveSweptCircleMotion({ body: collisionBody(definition), start: { x: boss.x, y: boss.y, z: boss.groundZ }, delta, blockers, bounds: boss.motionBounds });
@@ -309,16 +339,52 @@ function stepMotion(definition, boss, { tick, player, blockers }) {
   }
 }
 
-function farthestMark(boss, player) {
+// The retreat mark: the farthest mark from the hero that is within the engage
+// range and in the hero's sight; else the farthest one in range; else the
+// mark nearest the hero.
+function retreatMark(boss, player, sightBlockers) {
+  let seen = null;
   let best = null;
+  let nearest = null;
+  const farther = (candidate, current) => !current || candidate.distance > current.distance + 1e-9 || (Math.abs(candidate.distance - current.distance) <= 1e-9 && candidate.mark.id < current.mark.id);
   for (const mark of boss.arena.marks) {
     const distance = Math.hypot(mark.x - player.x, mark.y - player.y);
-    if (!best || distance > best.distance + 1e-9 || (Math.abs(distance - best.distance) <= 1e-9 && mark.id < best.mark.id)) best = { mark, distance };
+    const row = { mark, distance };
+    if (!nearest || distance < nearest.distance - 1e-9 || (Math.abs(distance - nearest.distance) <= 1e-9 && mark.id < nearest.mark.id)) nearest = row;
+    if (distance > DISTRICT_BOSS_ENGAGE_RANGE) continue;
+    if (farther(row, best)) best = row;
+    if (farther(row, seen) && inSight(sightBlockers, player, mark, boss.groundZ)) seen = row;
   }
-  return best?.mark ?? null;
+  return (seen ?? best ?? nearest)?.mark ?? null;
 }
 
-export function stepDistrictBoss(definition, { boss, tick, player, blockers = [] } = {}) {
+// Where to close in from: the nearest point (to the boss) on two rings around
+// the hero that is inside the court, clear of every blocker for his body and
+// in the hero's sight, preferring one he can walk to in a straight line.
+// Null when nothing qualifies (he then walks straight at the hero).
+const VANTAGE_RINGS = Object.freeze([360, 240]);
+const VANTAGE_ANGLES = 16;
+function vantagePoint(definition, boss, player, blockers, sightBlockers) {
+  const interior = bossArenaInterior(boss.arena, definition.body.radius);
+  const body = collisionBody(definition);
+  let best = null;
+  for (const ring of VANTAGE_RINGS) {
+    for (let index = 0; index < VANTAGE_ANGLES; index += 1) {
+      const angle = (index / VANTAGE_ANGLES) * Math.PI * 2;
+      const point = { x: player.x + Math.cos(angle) * ring, y: player.y + Math.sin(angle) * ring };
+      if (point.x < interior.minX || point.x > interior.maxX || point.y < interior.minY || point.y > interior.maxY) continue;
+      const rest = resolveSweptCircleMotion({ body, start: { x: point.x, y: point.y, z: boss.groundZ }, delta: { x: 0, y: 0 }, blockers, bounds: boss.motionBounds });
+      if (rest.contacts.length || rest.depenetrations.length) continue;
+      if (!inSight(sightBlockers, player, point, boss.groundZ)) continue;
+      const straight = traceHeightAwareLineOfSight({ from: { x: boss.x, y: boss.y, z: boss.groundZ + SIGHT_HEIGHT }, to: { x: point.x, y: point.y, z: boss.groundZ + SIGHT_HEIGHT }, radius: definition.body.radius, blockers }).clear;
+      const distance = Math.hypot(point.x - boss.x, point.y - boss.y);
+      if (!best || (straight && !best.straight) || (straight === best.straight && distance < best.distance - 1e-9)) best = { point, distance, straight };
+    }
+  }
+  return best?.point ?? null;
+}
+
+export function stepDistrictBoss(definition, { boss, tick, player, blockers = [], sightBlockers = [] } = {}) {
   if (!boss || !Array.isArray(boss.pendingAttacks) || boss.bossId !== definition.bossId) throw new TypeError('matching boss state is required');
   nonNegativeInteger(tick, 'tick');
   finite(player?.x, 'player.x');
@@ -372,17 +438,27 @@ export function stepDistrictBoss(definition, { boss, tick, player, blockers = []
     const loopTick = (elapsedTick - definition.stallTicks) % definition.endlessCycleTicks;
     const entry = definition.endlessCycle.find((candidate) => candidate.offset === loopTick);
     if (entry) issueTell(definition, boss, entry.attackId, { tick, player, events });
-  } else if (idle && tick >= boss.nextActionTick && boss.motion?.kind !== 'walk') {
+  } else if (idle && tick >= boss.nextActionTick && boss.motion?.kind !== 'walk' && boss.motion?.kind !== 'close') {
     const superDue = boss.opener || tick >= boss.superNextTick;
-    const mark = !superDue && boss.attacksSinceWalk >= 3 && boss.phaseIndex < definition.phases.length - 1 ? farthestMark(boss, player) : null;
+    const mark = !superDue && boss.attacksSinceWalk >= 3 && boss.phaseIndex < definition.phases.length - 1 ? retreatMark(boss, player, sightBlockers) : null;
+    const gap = Math.hypot(player.x - boss.x, player.y - boss.y);
+    const far = gap > DISTRICT_BOSS_ENGAGE_RANGE + DISTRICT_BOSS_CLOSE_MARGIN
+      || (gap > DISTRICT_BOSS_STEER_STOP_DISTANCE + DISTRICT_BOSS_CLOSE_MARGIN && !inSight(sightBlockers, player, boss, boss.groundZ));
     if (mark) {
       boss.attacksSinceWalk = 0;
       boss.motion = { kind: 'walk', target: { x: mark.x, y: mark.y }, untilTick: tick + DISTRICT_BOSS_WALK_MAX_TICKS };
+    } else if (far && !superDue) {
+      // With the world in hand (the ten-area dispatch), he walks to a spot
+      // the hero can see; otherwise straight at the hero.
+      const target = sightBlockers.length ? vantagePoint(definition, boss, player, blockers, sightBlockers) : null;
+      boss.motion = target
+        ? { kind: 'walk', target, untilTick: tick + DISTRICT_BOSS_WALK_MAX_TICKS * 2, closing: true }
+        : { kind: 'close', untilTick: tick + DISTRICT_BOSS_WALK_MAX_TICKS };
     } else if (!chooseAttack(definition, boss, { tick, player, events })) boss.nextActionTick = tick + 30;
   } else if (idle && boss.phaseIndex === definition.phases.length - 1 && !boss.motion) {
     boss.motion = { kind: 'steer' };
   }
-  if (!staggered && (boss.pendingAttacks.length === 0 || boss.motion?.kind === 'dash')) stepMotion(definition, boss, { tick, player, blockers });
+  if (!staggered && (boss.pendingAttacks.length === 0 || boss.motion?.kind === 'dash')) stepMotion(definition, boss, { tick, player, blockers, sightBlockers });
   else if (boss.motion?.kind !== 'dash') boss.motion = null;
   return report(staggered ? 'stagger' : 'combat');
 }

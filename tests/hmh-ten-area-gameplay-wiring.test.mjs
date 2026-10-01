@@ -19,6 +19,7 @@ import { NEW_ENEMY_ARCHETYPES, NEW_ENEMY_ARCHETYPE_IDS } from '../apps/hmh-reboo
 import { attemptScheduledEnemyInsertion, createEnemyPopulation, stepEnemyPopulation } from '../apps/hmh-reboot/src/enemy-simulation.mjs';
 import { resolveEnemyAttackAgainstPlayer, stepEnemyAttacks } from '../apps/hmh-reboot/src/enemy-combat.mjs';
 import { createWorldV2GroundQuery, createWorldV2RuntimeWorld, isWorldV2PointClear } from '../apps/hmh-reboot/src/world-v2-runtime-world.mjs';
+import { traceHeightAwareLineOfSight } from '../apps/hmh-reboot/src/elevation.mjs';
 import { createWorldV2Gameplay } from '../apps/hmh-reboot/src/world-v2-gameplay.mjs';
 import {
   DISTRICT_BOSS_LOOK,
@@ -207,7 +208,7 @@ function fightDistrictBoss(bossId, seed = 2026) {
       if (event.type === 'stagger') staggered = true;
       log.push(`${tick}:${event.type}:${event.attackId ?? event.phaseId ?? ''}`);
     }
-    if (api.isLiquidatorTargetable(boss, tick) && tick % 10 === 0) {
+    if (api.isLiquidatorTargetable(boss, tick) && tick % 30 === 0) {
       const damage = api.applyLiquidatorDamage({ boss, amount: 40, tick, roleMultiplier: 1 });
       if (damage.phaseCrossed) phases.push(damage.phaseCrossed);
       if (damage.runEvent) defeated = damage;
@@ -440,4 +441,40 @@ test('evidence spawns stand the hero beside a court threshold or a tall cover fa
   assert.equal(combat.evidenceSpawn('nope', world.player.spawn), null);
   assert.equal(combat.evidenceReady('cover', slots), false);
   assert.match(source('main.mjs'), /evidenceGameplayEnabled && TEN_AREA_COMBAT/);
+});
+
+// Regression (pre-release bug): a district boss retreated to the court mark
+// farthest from the hero (up to ~1,300 away in an 1,800 court) and stood there,
+// beyond the hero's 720 automatic aim and often behind a court prop, so a hero
+// holding one spot (in cover, or pinned on a low stack) could never finish
+// him. Now he retreats only to marks within 600 of the hero and closes in when
+// an action comes due farther away.
+test('a district boss never stays out of the hero\'s reach: a stationary hero anywhere in each court gets a clear shot within 15 s', () => {
+  const AIM_RANGE = 720;
+  const dispatch = combat.bossDispatch(failingLiquidatorApi);
+  for (const bossId of DISTRICT_BOSSES) {
+    const court = gameplay.districtCourts[bossId];
+    const b = court.bounds;
+    const spots = [court.centre, { x: b.minX + 160, y: b.minY + 160 }, { x: b.maxX - 160, y: b.minY + 160 }, { x: b.minX + 160, y: b.maxY - 160 }, { x: b.maxX - 160, y: b.maxY - 160 }]
+      .filter((spot) => isWorldV2PointClear(world, queryGround, spot));
+    assert.ok(spots.length >= 3, bossId);
+    for (const spot of spots) {
+      const slots = createBossSlots({ seed: 31, definitions: gameplay.bossDefinitions });
+      const readyTick = HMH_V7_BOSSES[bossId].readyTick;
+      stepBossSlots(slots, { tick: readyTick, player: { x: court.threshold.x, y: court.threshold.y, radius: 24 }, level: 12 });
+      const boss = slots.slots[bossId].boss;
+      const hero = { x: spot.x, y: spot.y, groundZ: queryGround(spot.x, spot.y).groundZ, vx: 0, vy: 0 };
+      let streak = 0, worst = 0, reachable = 0, total = 0;
+      for (let tick = readyTick + 1; tick <= readyTick + boss.introTicks + 6_000; tick += 1) {
+        dispatch.stepLiquidatorBoss({ boss, tick, player: hero, blockers: [], addsAlive: 0 });
+        if (tick < readyTick + boss.introTicks) continue;
+        total += 1;
+        const inRange = Math.hypot(boss.x - hero.x, boss.y - hero.y) <= AIM_RANGE
+          && traceHeightAwareLineOfSight({ from: { x: hero.x, y: hero.y, z: hero.groundZ + 34 }, to: { x: boss.x, y: boss.y, z: boss.groundZ + 34 }, blockers: world.collisionBlockers }).clear;
+        if (inRange) { reachable += 1; streak = 0; } else worst = Math.max(worst, ++streak);
+      }
+      assert.ok(worst <= 900, `${bossId} from ${spot.x},${spot.y}: ${worst} ticks out of reach`);
+      assert.ok(reachable / total >= 0.5, `${bossId} from ${spot.x},${spot.y}: reachable ${reachable}/${total}`);
+    }
+  }
 });
