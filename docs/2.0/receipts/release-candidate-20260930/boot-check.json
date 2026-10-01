@@ -1,0 +1,56 @@
+[
+  {
+    "label": "desktop",
+    "world": "legacy",
+    "readyMs": 1931,
+    "state": {
+      "worldId": "forked-frontier",
+      "nav": "437.8",
+      "sim": "active",
+      "startupArt": "ready",
+      "status": "Standalone session ready"
+    },
+    "errors": []
+  },
+  {
+    "label": "desktop",
+    "world": "ten-area",
+    "readyMs": 2907,
+    "state": {
+      "worldId": "ten-area-frontier",
+      "nav": "0.2",
+      "sim": "active",
+      "startupArt": "ready",
+      "areaArt": "ready",
+      "status": "Standalone session ready"
+    },
+    "errors": []
+  },
+  {
+    "label": "phone",
+    "world": "legacy",
+    "readyMs": 771,
+    "state": {
+      "worldId": "forked-frontier",
+      "nav": "441.9",
+      "sim": "active",
+      "startupArt": "ready",
+      "status": "Standalone session ready"
+    },
+    "errors": []
+  },
+  {
+    "label": "phone",
+    "world": "ten-area",
+    "readyMs": 1008,
+    "state": {
+      "worldId": "ten-area-frontier",
+      "nav": "0.3",
+      "sim": "active",
+      "startupArt": "ready",
+      "areaArt": "ready",
+      "status": "Standalone session ready"
+    },
+    "errors": []
+  }
+]
