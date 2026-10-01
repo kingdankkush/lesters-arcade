@@ -7,27 +7,35 @@ const NODE_STATE_LABELS = Object.freeze({ done: 'complete', locked: 'locked', st
 // Presentation of existing discovery state, read only and constructed on pause.
 // Objective nodes come from the mission's discovery (the logical view of the
 // simulated actor, design package §3.3), never from the camera.
-export function buildWorldDesignFieldMap({ world, player, reveal, mission = null, collectibles = null, tick = 0 }) {
-  const b = world.bounds, sx = 600 / (b.maxX - b.minX), sy = 240 / (b.maxY - b.minY);
+//
+// The map keeps the world's aspect at 600 units wide (the legacy 12,000 x 4,800
+// map is exactly 600 x 240). Legacy-only overlays (the authored exploration
+// paths and objective rewards) are drawn only on the legacy world; another
+// world (the ten-area Free world) labels its discovered areas instead.
+export function buildWorldDesignFieldMap({ world, player, reveal, mission = null, collectibles = null, tick = 0, legacy = true }) {
+  const b = world.bounds, width = 600, sx = width / (b.maxX - b.minX), sy = sx, height = Math.round((b.maxY - b.minY) * sy);
   const project = p => ({ x: (p.x - b.minX) * sx, y: (p.y - b.minY) * sy });
   const seen = new Set(reveal.revealedCellIds), size = reveal.cellSize;
   const discovered = p => seen.has(`${Math.floor((p.x-b.minX)/size)}:${Math.floor((p.y-b.minY)/size)}`);
   const nodes = new Map(world.routeGraph.nodes.map(n => [n.id, n]));
   const missionNodes = mission ? missionFieldMapNodes(mission) : [];
   const machineSeen = id => missionNodes.some(node => node.id === id);
+  const seenIn = area => [...seen].some(id => { const [c,r]=id.split(':').map(Number), x=b.minX+(c+0.5)*size, y=b.minY+(r+0.5)*size; return x>=area.minX&&x<=area.maxX&&y>=area.minY&&y<=area.maxY; });
   return {
+    width, height,
+    areas: legacy ? [] : (world.districts ?? []).filter(d => d.area && seenIn(d.area)).map(d => ({ id: d.id, name: d.name, ...project({ x: (d.area.minX + d.area.maxX) / 2, y: d.area.minY + (d.area.maxY - d.area.minY) * 0.12 }) })),
     player: project(player),
     lore: missionNodes.filter(node => node.objectiveClass === 'secret').map(node => node.lore),
     cells: [...seen].map(id => { const [c,r]=id.split(':').map(Number); return {x:c*size*sx,y:r*size*sy,width:size*sx,height:size*sy}; }),
     paths: [...world.routes.map(r => ({id:r.id,points:r.nodeIds.map(id=>project(nodes.get(id)))})),
-      ...WORLD_DESIGN_EXPLORATION_PATHS.map(p=>({id:p.id,points:p.points.map(project)}))],
+      ...(legacy ? WORLD_DESIGN_EXPLORATION_PATHS.map(p=>({id:p.id,points:p.points.map(project)})) : [])],
     water: world.surfaces.filter(s=>s.kind==='water').map(s=>({id:s.id,points:(s.area.type==='polygon'?s.area.vertices:[{x:s.area.minX,y:s.area.minY},{x:s.area.maxX,y:s.area.minY},{x:s.area.maxX,y:s.area.maxY},{x:s.area.minX,y:s.area.maxY}]).map(project)})),
     // Discovered objective nodes by state: machines, gates and items.
     sites: missionNodes.filter(node => node.objectiveClass !== 'secret').map(node => ({
       id: node.id, name: node.name, objectiveClass: node.objectiveClass, ...project(node),
       state: node.state, complete: node.state === 'done', status: NODE_STATE_LABELS[node.state], needs: node.needs, task: node.task,
     })),
-    objectives: OBJECTIVE_REWARDS.filter(r=>discovered(r)||machineSeen(r.objectiveId)||collectibles?.unlockedObjectives.has(r.objectiveId)).map(r=>({
+    objectives: (legacy ? OBJECTIVE_REWARDS : []).filter(r=>discovered(r)||machineSeen(r.objectiveId)||collectibles?.unlockedObjectives.has(r.objectiveId)).map(r=>({
       id:r.id,name:r.name,reward:r.rewardName,task:r.task,...project(r),
       state:objectiveRewardState(collectibles,r.id,{tick,discovered:true}).state,
       status:objectiveRewardStatus(collectibles,r.id,tick),
@@ -40,12 +48,14 @@ export function renderWorldDesignFieldMap(mount, model) {
   if (!mount) return;
   const doc=mount.ownerDocument, ns='http://www.w3.org/2000/svg';
   const make=(tag,attrs,parent)=>{const el=doc.createElementNS(ns,tag);for(const [k,v]of Object.entries(attrs))el.setAttribute(k,String(v));parent?.append(el);return el;};
-  const svg=make('svg',{viewBox:'0 0 600 240',role:'img','aria-label':'Field map: explored routes, discovered places and your position'});
+  const W=model.width??600, H=model.height??240;
+  const svg=make('svg',{viewBox:`0 0 ${W} ${H}`,role:'img','aria-label':'Field map: explored routes, discovered places and your position'});
+  if(H>240)svg.setAttribute('class','hmh-field-map-tall');
   const defs=make('defs',{},svg), clip=make('clipPath',{id:'hmh-field-explored'},defs);
   for(const cell of model.cells) make('rect',cell,clip);
-  make('rect',{width:600,height:240,rx:5,fill:'#0d161b',stroke:'#699087'},svg);
+  make('rect',{width:W,height:H,rx:5,fill:'#0d161b',stroke:'#699087'},svg);
   const explored=make('g',{'clip-path':'url(#hmh-field-explored)'},svg);
-  make('rect',{width:600,height:240,fill:'#344b3e'},explored);
+  make('rect',{width:W,height:H,fill:'#344b3e'},explored);
   for(const water of model.water)make('polygon',{points:water.points.map(p=>`${p.x},${p.y}`).join(' '),fill:'#327887'},explored);
   for(const path of model.paths)make('polyline',{points:path.points.map(p=>`${p.x},${p.y}`).join(' '),fill:'none',stroke:'#cbb581','stroke-width':1.5,'stroke-linejoin':'round'},explored);
   // Shape and colour together: circle done, square available, cross locked.
@@ -56,6 +66,7 @@ export function renderWorldDesignFieldMap(mount, model) {
     else make('rect',{x:s.x-3,y:s.y-3,width:6,height:6,fill:'#fff4d6'},g);
     const t=make('title',{},g);t.textContent=`${s.name} · ${s.status}${s.needs?` · needs ${s.needs}`:''}`;
   }
+  for(const a of model.areas??[]){const t=make('text',{x:a.x,y:a.y,'text-anchor':'middle','dominant-baseline':'hanging','font-size':11,'font-weight':700,fill:'#e9f2df',stroke:'#08181b','stroke-width':3,'paint-order':'stroke'},svg);t.textContent=a.name;}
   make('circle',{cx:model.player.x,cy:model.player.y,r:5,fill:'#fff',stroke:'#08181b','stroke-width':2},svg);
   const list=doc.createElement('p');list.className='hmh-field-map-key';list.textContent='White ring: you · Square: task available · Cross: locked · Circle: complete. '+(model.sites.map(s=>`${s.name}${s.complete?' ✓':s.needs?` (needs ${s.needs})`:''}`).join(' · ')||'Follow the paths to discover places.');
   const objectives=doc.createElement('ul');objectives.className='hmh-field-map-key';

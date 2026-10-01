@@ -5692,7 +5692,7 @@ async function boot() {
     // The map is used only in the pause menu; gameplay never waits for it.
     void import('./world-design-field-map.mjs').then(({ buildWorldDesignFieldMap, renderWorldDesignFieldMap }) => {
       if (simulation?.state !== 'paused') return;
-      renderWorldDesignFieldMap(fieldMapMount, buildWorldDesignFieldMap({ world: LEVEL_ONE_WORLD, player: actor, reveal: revealSnapshot, mission: missionState, collectibles: collectibleState, tick: simulation.tick }));
+      renderWorldDesignFieldMap(fieldMapMount, buildWorldDesignFieldMap({ world: LEVEL_ONE_WORLD, player: actor, reveal: revealSnapshot, mission: missionState, collectibles: collectibleState, tick: simulation.tick, legacy: HMH_WORLD_CONTEXT.legacy }));
     }).catch(() => {
       if (simulation?.state === 'paused' && fieldMapMount) fieldMapMount.textContent = 'Field map unavailable. You can still resume your run.';
     });
