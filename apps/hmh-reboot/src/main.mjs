@@ -10,6 +10,7 @@ import { stepWorldExplosions } from './world-explosives.mjs';
 import { createStartupArtGate } from './startup-art.mjs';
 import { Application, Assets, Container, Graphics, Rectangle, RenderLayer, Sprite, Text, Texture, TilingSprite } from 'pixi.js';
 import { deterministicUnit } from './deterministic-hash.mjs';
+import { prewarmTexture, prewarmTextures } from '../../portal/src/feel/texture-prewarm.mjs';
 import { WORLD_DESIGN_SITE_PROPS, WORLD_DESIGN_ORCHARD } from './world-design-encounters.mjs';
 import { WORLD_ENVIRONMENT_WEAPON_IDS, worldHazardField, buildWorldHazardHits, withholdLethalHazardHits } from './world-hazards.mjs';
 import { createCorpseClock, corpsePresentation, pruneCorpseCapacity } from './corpse-presentation.mjs';
@@ -401,9 +402,8 @@ const PLAYER_HURT_POSE_TICKS = 14;
 // low-health vignette starts bleeding in.
 const PLAYER_DAMAGE_FLASH_TICKS = 10;
 const LOW_HEALTH_VIGNETTE_THRESHOLD = 0.35;
-// Camera shake is projection-only: it offsets rendering and the inverse
-// screen-to-ground transform, never simulation state.
-const SHAKE_DECAY_TICKS = 9;
+// Camera shake is projection-only: it offsets the world render container,
+// never simulation state. 2.1: trauma-squared (hmh-feel.mjs, shared module).
 const MAX_ACTIVE_GRENADES = 16;
 const MAX_COMBAT_VISUAL_EVENTS = RUNTIME_MAX_COMBAT_VISUAL_EVENTS;
 const PROJECTILE_GRID_THRESHOLD = 64;
@@ -1295,6 +1295,9 @@ async function boot() {
 
   const enemyRosterIndexes = new Map();
   const enemyRosterTextures = new Map();
+  // 2.1 (§2.9): GPU sources already uploaded by the prewarm, so a late atlas
+  // (the boss) is uploaded once, on load, before its first draw.
+  const prewarmedSources = new WeakSet();
   const enemyRosterRequested = new Set();
   const enemyRosterFailed = new Set();
   let enemyRosterLoadError = null;
@@ -1328,6 +1331,7 @@ async function boot() {
       }).destroy({ children: true });
       enemyRosterIndexes.set(archetypeId, index);
       enemyRosterTextures.set(archetypeId, texture);
+      prewarmTexture(app.renderer, texture, prewarmedSources);
       // Rebuild live bodies so the authored art appears without a restart.
       syncEnemyMarkers(grayboxEnemies, true);
       if (archetypeId === 'the-liquidator') {
@@ -1604,7 +1608,7 @@ async function boot() {
     ? (await import('./debug-grid-overlay.mjs')).buildDebugGridOverlay({ bounds: WORLD_BOUNDS, spacing: 512, queryGround })
     : null;
 
-  let settings = { musicEnabled: true, screenShake: true, gore: false, reduceMotion: false, reduceFlash: false, colorblindTags: false };
+  let settings = { musicEnabled: true, screenShake: true, gore: false, reduceMotion: false, reduceFlash: false, colorblindTags: false, hitstop: true, damageNumbers: true };
   // The bridge shell is already ready; load the audio player during asset
   // preparation, before accepting a run, instead of delaying the first paint.
   const { createCombatAudio } = await import('./combat-audio.mjs');
@@ -1670,6 +1674,8 @@ async function boot() {
     dataset.settingReduceMotion = String(settings.reduceMotion);
     dataset.settingReduceFlash = String(settings.reduceFlash);
     dataset.settingGoreLevel = settings.goreLevel;
+    dataset.settingHitstop = String(settings.hitstop !== false);
+    dataset.settingDamageNumbers = String(settings.damageNumbers !== false);
     if (notify && bridge?.initialized) {
       bridge.send('game:settings', { settings: { ...settings } });
       bridge.send('game:state', statePayload());
@@ -1699,6 +1705,13 @@ async function boot() {
     const level = normalizeGoreLevel(value, settings.goreLevel);
     syncRuntimeSettings({ ...settings, goreLevel: level }, { notify: true });
     combatAudio.play('menu-click', { volume: 0.08 });
+  };
+  // 2.1 feel toggles: their own path, like the gore choice, so the pinned
+  // boolean path above stays byte-identical. Projection-only.
+  const PAUSE_FEEL_KEYS = new Set(['hitstop', 'damageNumbers']);
+  const applyPauseFeel = (key, enabled) => {
+    if (!PAUSE_FEEL_KEYS.has(key)) throw new TypeError(`unsupported pause feel setting ${String(key)}`);
+    syncRuntimeSettings({ ...settings, [key]: Boolean(enabled) }, { notify: true });
   };
   let maxPlayerHealth = 100;
   // The session hero's starting stats and perk (hero-loadout.mjs).
@@ -1894,18 +1907,32 @@ async function boot() {
   // stamped on the resume path. Both are render-side only.
   let framingState = createEncounterFramingState();
   let lastLevelUpBeat = null;
-  let shakeStartTick = -1;
-  let shakeMagnitude = 0;
+  // 2.1 feel layer (lazy chunk): trauma-squared shake. Every impulse adds
+  // trauma; the frame loop reads the decayed offset. Presentation only.
+  let hmhFeel = null;
+  void import('./hmh-feel.mjs').then((module) => {
+    hmhFeel = module.createHmhFeel({ pixi: { documentRef: document, ContainerClass: Container, SpriteClass: Sprite, TextureClass: Texture, RectangleClass: Rectangle } });
+    // Damage numbers sit on the stage under the HUD overlay, offset by the
+    // world shake like the health pips.
+    if (hmhFeel.damageLayer) app.stage.addChildAt(hmhFeel.damageLayer, app.stage.getChildIndex(overlayVisuals));
+    prewarmTexture(app.renderer, hmhFeel.damageTexture, prewarmedSources);
+    dataset.damageNumbersView = hmhFeel.damageLayer ? 'ready' : 'unavailable';
+  }).catch(() => { dataset.feelStatus = 'unavailable'; });
+  // Damage-number projection: one scratch point, the frame's viewport.
+  const damageNumberPoint = { x: 0, y: 0, z: 0 };
+  let damageNumberViewport = null;
+  const projectDamageNumber = (x, y, z, out) => {
+    damageNumberPoint.x = x; damageNumberPoint.y = y; damageNumberPoint.z = z;
+    return worldToScreenInto(out, damageNumberPoint, camera, damageNumberViewport);
+  };
+  let damageNumbersSpawnedSeen = 0;
+  let damageNumbersLiveSeen = 0;
   // Combat sparks and debris inherit the active quality tier, so the
   // reduced-motion profile (0 particles per hazard) emits none.
   const particleScale = performanceProfile.particlesPerHazard;
-  const triggerCameraShake = (tick, magnitude) => {
-    // A stronger impulse overrides a weaker one still decaying.
-    if (tick === shakeStartTick && magnitude <= shakeMagnitude) return;
-    if (tick - shakeStartTick < SHAKE_DECAY_TICKS && magnitude < shakeMagnitude) return;
-    shakeStartTick = tick;
-    shakeMagnitude = magnitude;
-  };
+  const triggerCameraShake = (tick, magnitude) => { hmhFeel?.addShake(tick, magnitude); };
+  let bossMusicDuckWanted = false;
+  let musicDuckActive = false;
   let lastMeleeAttack = null;
   let lastGrenadeThrow = null;
   let lastGrenadeDetonation = null;
@@ -3220,6 +3247,7 @@ async function boot() {
       // S1.5: the bar names the live boss and carries its phase markers.
       const bossHud = bossSlots ? bossHudState(bossSlots, simulation?.tick ?? 0) : null;
       const bossEngaged = Boolean(bossHud?.active);
+      bossMusicDuckWanted = bossEngaged;
       const bossHealthRatio = bossEngaged ? bossHud.ratio : 0;
       hud?.setBoss(bossEngaged, bossHealthRatio, bossHud?.phaseId ?? '', { bossId: bossHud?.bossId, name: bossHud?.name, markers: bossHud?.markers });
       // The Golden Parachute (a Dark Pool win): a gold pip until it is spent.
@@ -3456,8 +3484,8 @@ async function boot() {
     lastTickManualDodge = false;
     framingState = createEncounterFramingState();
     lastLevelUpBeat = null;
-    shakeStartTick = -1;
-    shakeMagnitude = 0;
+    hmhFeel?.reset();
+    bossMusicDuckWanted = false;
     world.position.set(0, 0);
     overlayVisuals.clear();
     lastMeleeAttack = null;
@@ -5359,6 +5387,13 @@ async function boot() {
             // "no direction" and falls back to a full circle.
             direction: damageEvent.knockback,
           });
+          // 2.1 feel (presentation-only): hitstop request for this resolved
+          // hit. Primitive copies after the fact; the simulation never reads it.
+          if (damageEvent.targetId !== 'player' && (!bossHit || bossDamage.damageApplied > 0)) {
+            hmhFeel?.enemyHit(damageEvent.critical === true, damageEvent.killed === true, damageEvent.weaponId, bossHit, Boolean(bossHit && bossDamage.runEvent),
+              damageEvent.targetId, bossHit ? bossDamage.damageApplied : damageEvent.damageApplied,
+              damageEvent.point?.x, damageEvent.point?.y, damageEvent.point?.z, tick, settings.damageNumbers !== false);
+          }
           if (damageEvent.targetId === 'player') {
             if (settings.captionCriticalAudio) setAccessibleCombatStatus('Critical audio: player hit.');
             // `heavy` is presentation only: a heavy hit ends the mission clip.
@@ -5626,7 +5661,18 @@ async function boot() {
       xp: runSnapshot?.xp ?? 0,
       level: runSnapshot?.level ?? 1,
       paused: status === 'paused',
+      // 2.1: optional, only while a boss is engaged (parent ducks its jukebox).
+      ...(musicDuckActive && status === 'running' ? { musicDuck: true } : {}),
     };
+  };
+  // 2.1 music duck (-3 dB under boss). Standalone: the child's own music gain.
+  // Embedded: the parent owns the shared jukebox, so the change rides one
+  // game:state. Projection-only: read from the boss HUD state after the fact.
+  const syncMusicDuck = (active) => {
+    if (active === musicDuckActive) return;
+    musicDuckActive = active;
+    combatAudio.setMusicDuck(active);
+    if (bridge?.initialized) bridge.send('game:state', statePayload('running'));
   };
 
   // Weapon wheel (owner direction 2026-09-16). The wheel is a lazy
@@ -5839,6 +5885,7 @@ async function boot() {
     onSettingToggle: (key, enabled) => applyPauseSetting(key, enabled),
     onSettingLevel: applyPauseLevel,
     onSettingChoice: applyPauseChoice,
+    onSettingFeel: applyPauseFeel,
     onBindingChange: (actionId, code) => {
       const keyboardBindings = rebindKeyboardAction(settings.keyboardBindings, actionId, code, {
         rankedActive: sessionPayload?.mode === 'ranked',
@@ -5928,7 +5975,13 @@ async function boot() {
         progress?.setAttribute('aria-valuenow', String(percent));
         if (progress?.firstElementChild) progress.firstElementChild.style.width = `${percent}%`;
         startupPanel.setAttribute('aria-busy', String(!ready));
-        if (ready && entryButton.disabled) { renderWorld(); entryButton.focus({preventScroll:true}); }
+        if (ready && entryButton.disabled) {
+          renderWorld();
+          // 2.1 (§2.9): upload every loaded enemy atlas before the player
+          // enters. Textures only: no display object, no actor is created.
+          dataset.texturePrewarm = String(prewarmTextures(app.renderer, enemyRosterTextures.values(), prewarmedSources));
+          entryButton.focus({preventScroll:true});
+        }
         entryButton.disabled = !ready;
         entryButton.textContent = ready ? 'Enter Level 1' : 'Preparing Level 1…';
         if (ready && startupCopy) startupCopy.textContent = 'Ready when you are. Take a moment to plan your run.';
@@ -5967,7 +6020,10 @@ async function boot() {
       for (const id of ['whale-enforcer', 'gas-bomber', 'validator-cultist']) requestEnemyRosterAtlas(id);
     }
     const nowMs = performance.now();
-    const gamepad = [...(navigator.getGamepads?.() ?? [])].find(Boolean);
+    // 2.1 (§2.8): first connected pad without spreading the list every frame.
+    const gamepads = navigator.getGamepads?.() ?? null;
+    let gamepad = null;
+    if (gamepads) for (let index = 0; index < gamepads.length; index += 1) if (gamepads[index]) { gamepad = gamepads[index]; break; }
     if (gamepad) {
       const mapped = mapGamepadSnapshot(gamepad, {
         deadzone: settings.gamepadDeadzone ?? 0.2,
@@ -6049,14 +6105,12 @@ async function boot() {
     // camera would feed a jittered pointer position into aim resolution and
     // let a cosmetic accessibility setting change which shots hit. Offsetting
     // the container keeps the shake strictly in projection.
-    const shakeAge = simulation.tick - shakeStartTick;
-    if (settings.screenShake && !settings.reduceMotion && shakeMagnitude > 0 && shakeAge >= 0 && shakeAge < SHAKE_DECAY_TICKS) {
-      const decay = 1 - shakeAge / SHAKE_DECAY_TICKS;
-      const swing = shakeMagnitude * decay;
-      world.position.set(
-        (deterministicUnit(`shake-x:${simulation.tick}:${shakeStartTick}`) - 0.5) * 2 * swing,
-        (deterministicUnit(`shake-y:${simulation.tick}:${shakeStartTick}`) - 0.5) * 2 * swing,
-      );
+    // 2.1: trauma-squared; settings.screenShake && !settings.reduceMotion
+    // gate it inside shakeOffset, reduceFlash halves it. Integer-hashed
+    // direction into one reused offset object: no per-frame allocation.
+    const shakeOffset = hmhFeel?.shakeOffset(simulation.tick, settings);
+    if (shakeOffset && (shakeOffset.x !== 0 || shakeOffset.y !== 0)) {
+      world.position.set(shakeOffset.x, shakeOffset.y);
     } else if (world.position.x !== 0 || world.position.y !== 0) {
       world.position.set(0, 0);
     }
@@ -6065,7 +6119,33 @@ async function boot() {
     // an active shake, so per-weapon recoil could regress to zero silently.
     dataset.cameraShake = String(Number(Math.hypot(world.position.x, world.position.y).toFixed(3)));
     dataset.cameraZoom = camera.zoom.toFixed(3);
+    // 2.1 hitstop, presentation-only (owner decision, every mode). The
+    // simulation already stepped this frame; the renderer keeps the last
+    // presented pose for N frames and catches up when the hold ends.
+    if (hmhFeel) {
+      if (hmhFeel.commitHitstop(nowMs, settings)) {
+        dataset.hitstopStarted = String(hmhFeel.hitstop.stats.started);
+        dataset.hitstopMaxPerSecond = String(hmhFeel.hitstop.stats.peakPerSecond);
+      }
+      if (hmhFeel.holding(nowMs, settings)) {
+        dataset.hitstopHeldFrames = String(hmhFeel.hitstop.stats.heldFrames);
+        dataset.hitstopIgnored = String(hmhFeel.hitstop.stats.ignoredActive + hmhFeel.hitstop.stats.ignoredRate);
+        return;
+      }
+    }
     renderWorld(renderActor);
+    syncMusicDuck(bossMusicDuckWanted);
+    if (hmhFeel) {
+      damageNumberViewport = viewport();
+      const liveDamageNumbers = hmhFeel.drawDamageNumbers((simulation.tick + frame.alpha) * simulation.fixedStepMs, settings, projectDamageNumber, world.position.x, world.position.y);
+      if (liveDamageNumbers !== damageNumbersLiveSeen) dataset.damageNumbersLive = String(damageNumbersLiveSeen = liveDamageNumbers);
+      if (hmhFeel.damage.stats.spawned !== damageNumbersSpawnedSeen) {
+        damageNumbersSpawnedSeen = hmhFeel.damage.stats.spawned;
+        dataset.damageNumbersSpawned = String(damageNumbersSpawnedSeen);
+        dataset.damageNumbersPeak = String(hmhFeel.damage.stats.peak);
+        dataset.damageNumbersAggregated = String(hmhFeel.damage.stats.aggregated);
+      }
+    }
     const locomotionPulse = actor.locomotion === 'dash'
       ? 0.18
       : motion?.locomotion === 'run' ? Math.sin(elapsedMs * 0.012) * 0.07 : 0;

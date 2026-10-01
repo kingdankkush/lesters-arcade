@@ -23,7 +23,7 @@ omit(`app world backdrop worldDepthLayer worldProduction worldLife worldDecalLay
   enemyRenderPass debugOverlay combatAudio cockpit upgradePanel hud silverPresentation pickupBanner pickupPresentation
   pendingPickupAnnouncements weaponWheel weaponWheelLoading hudWeaponCard focusPoints focusPool focusWorld
   worldArtReport nativeBlockers worldDecals lastAccessibleCombatStatus combatVisualEvents grenadeFxEvents
-  lastImpactSurface suppressedGroundImpacts shakeStartTick shakeMagnitude deathCamera bombletFeedback
+  lastImpactSurface suppressedGroundImpacts hmhFeel deathCamera bombletFeedback
   actor3dPilot actor3dDisposed actor3dHeroAction actor3dHeroTick`, 'presentation displays, effects, resource caches or UI only');
 omit(`inputController touchController previousActor renderActor renderAlpha bossPreviousX bossPreviousY
   pointerReticleScreen bossHitVisualUntilTick bossDeathVisualUntilTick lastReloadComplete reloadPresentation

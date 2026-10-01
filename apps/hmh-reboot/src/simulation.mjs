@@ -76,6 +76,11 @@ export class DeterministicSimulation {
     this.stepCallbacks = new Set();
     this.replayCallbacks = new Set();
     this.projectionCallbacks = new Set();
+    // 2.1 (upgrade guide §2.8): each set iterates a stable snapshot array that
+    // is rebuilt only after an add or remove, instead of `[...set]` every tick.
+    // A callback added during a tick first runs next tick and one removed
+    // during a tick still finishes this tick -- the same order as the spread.
+    this.callbackLists = new Map();
     this.projectionFaults = 0;
     this.randomStates = new Map([
       ['encounters', hashStreamSeed(this.seed, 'encounters')],
@@ -182,18 +187,23 @@ export class DeterministicSimulation {
         dtSeconds: this.fixedStepMs / 1000,
         input: steps === 1 ? input : continuation,
       });
-      for (const callback of [...this.stepCallbacks]) callback(step);
+      const stepList = this.callbackList(this.stepCallbacks);
+      for (let index = 0; index < stepList.length; index += 1) stepList[index](step);
 
-      const replayEvent = Object.freeze({ type: 'tick', ...step });
-      for (const callback of [...this.replayCallbacks]) callback(replayEvent);
+      const replayList = this.callbackList(this.replayCallbacks);
+      if (replayList.length > 0) {
+        const replayEvent = Object.freeze({ type: 'tick', ...step });
+        for (let index = 0; index < replayList.length; index += 1) replayList[index](replayEvent);
+      }
 
       // Projection observers (design package 7.9) are stepped once per tick,
       // catch-up included, after the simulation. They hold presentation state
       // only (leg distance, aim hysteresis, facing), so a fault is counted and
       // swallowed: art can never stop or change a run.
-      for (const callback of [...this.projectionCallbacks]) {
+      const projectionList = this.callbackList(this.projectionCallbacks);
+      for (let index = 0; index < projectionList.length; index += 1) {
         try {
-          callback(step);
+          projectionList[index](step);
         } catch {
           this.projectionFaults += 1;
         }
@@ -229,22 +239,40 @@ export class DeterministicSimulation {
     return measured;
   }
 
+  // The snapshot array for one callback set. A new array replaces the old on
+  // change, so a loop already holding the old array is never disturbed.
+  callbackList(set) {
+    let list = this.callbackLists.get(set);
+    if (!list) {
+      list = Object.freeze([...set]);
+      this.callbackLists.set(set, list);
+    }
+    return list;
+  }
+
+  subscribe(set, callback) {
+    set.add(callback);
+    this.callbackLists.delete(set);
+    return () => {
+      const removed = set.delete(callback);
+      if (removed) this.callbackLists.delete(set);
+      return removed;
+    };
+  }
+
   onStep(callback) {
     if (typeof callback !== 'function') throw new TypeError('step callback must be a function');
-    this.stepCallbacks.add(callback);
-    return () => this.stepCallbacks.delete(callback);
+    return this.subscribe(this.stepCallbacks, callback);
   }
 
   onReplayEvent(callback) {
     if (typeof callback !== 'function') throw new TypeError('replay callback must be a function');
-    this.replayCallbacks.add(callback);
-    return () => this.replayCallbacks.delete(callback);
+    return this.subscribe(this.replayCallbacks, callback);
   }
 
   onProjectionStep(callback) {
     if (typeof callback !== 'function') throw new TypeError('projection callback must be a function');
-    this.projectionCallbacks.add(callback);
-    return () => this.projectionCallbacks.delete(callback);
+    return this.subscribe(this.projectionCallbacks, callback);
   }
 
   getProjectionFaultCount() {

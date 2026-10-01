@@ -35,6 +35,10 @@ export const HMH_PLAYER_SETTINGS_DEFAULTS = freeze({
     screenShake: true,
     gore: true,
     goreLevel: 'full',
+    // 2.1 feel: presentation-only hitstop, its own toggle (default on).
+    hitstop: true,
+    // 2.1 feel: pooled damage numbers, their own toggle (default on).
+    damageNumbers: true,
     autoEnterFullscreen: true,
     autoAimAssist: true,
   },
@@ -79,6 +83,8 @@ export function normalizeHmhPlayerSettings(input = {}) {
       screenShake: bool(gameplay.screenShake, true),
       gore: bool(gameplay.gore, true),
       goreLevel: goreLevel(gameplay.goreLevel, 'full'),
+      hitstop: bool(gameplay.hitstop, true),
+      damageNumbers: bool(gameplay.damageNumbers, true),
       autoEnterFullscreen: bool(gameplay.autoEnterFullscreen, true),
       autoAimAssist: bool(gameplay.autoAimAssist, true),
     },
@@ -134,6 +140,8 @@ export function mergeHmhRuntimeSettings(settings, runtime, { rankedActive = fals
       // both are stored so the legacy toggle view stays coherent.
       gore: value.gore ?? current.gameplay.gore,
       goreLevel: value.goreLevel ?? current.gameplay.goreLevel,
+      hitstop: value.hitstop ?? current.gameplay.hitstop,
+      damageNumbers: value.damageNumbers ?? current.gameplay.damageNumbers,
       autoAimAssist: value.autoAimAssist ?? current.gameplay.autoAimAssist,
     },
     audio: {
@@ -167,6 +175,8 @@ export function projectHmhRuntimeSettings(settings) {
     // action wins and the run gets Full.
     gore: value.gameplay.gore,
     goreLevel: !value.gameplay.gore ? 'off' : value.gameplay.goreLevel === 'off' ? 'full' : value.gameplay.goreLevel,
+    hitstop: value.gameplay.hitstop,
+    damageNumbers: value.gameplay.damageNumbers,
     reduceMotion: value.accessibility.reduceMotion,
     reduceFlash: value.accessibility.reduceFlash,
     colorblindTags: value.accessibility.colorblindTags,

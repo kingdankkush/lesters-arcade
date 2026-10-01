@@ -787,12 +787,26 @@ export const TERRAIN_TILE_REPEAT_WORLD = 399.36;
  * Reuses tiling sprites across frames so terrain costs no per-frame allocation.
  * Returns a placer that positions one sprite per surface and hides the rest.
  */
+// 2.1 (upgrade guide §2.8): the poolable sprites of a container, cached
+// across placers and frames and rebuilt only when the child list changes
+// (its length or its first or last child). The filter used to run on
+// every place() call, an array per terrain surface per frame.
+const POOLABLE_SPRITES = new WeakMap();
+export function poolableSprites(container) {
+  const children = container.children;
+  const cached = POOLABLE_SPRITES.get(container);
+  if (cached && cached.childCount === children.length && cached.first === children[0] && cached.last === children[children.length - 1]) return cached.sprites;
+  // The road container also holds its mask, which must never be pooled or
+  // hidden as if it were a terrain sprite.
+  const sprites = children.filter((child) => child.label !== 'world-road-mask' && child.label !== 'world-path-mask');
+  POOLABLE_SPRITES.set(container, { childCount: children.length, first: children[0], last: children[children.length - 1], sprites });
+  return sprites;
+}
+
 function createTerrainSpritePlacer({ container, terrainTiles, camera, view }) {
   if (!container || !terrainTiles?.ready) return null;
   let cursor = 0;
-  // The road container also holds its mask, which must never be pooled or
-  // hidden as if it were a terrain sprite.
-  const poolable = () => container.children.filter((child) => child.label !== 'world-road-mask' && child.label !== 'world-path-mask');
+  const poolable = () => poolableSprites(container);
   const scale = (TERRAIN_TILE_REPEAT_WORLD / (terrainTiles.tileSize || 256)) * camera.zoom;
   // World-locked so the pattern does not swim under a moving camera.
   const originX = view.width / 2 - camera.x * camera.zoom;

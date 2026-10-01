@@ -51,7 +51,7 @@ function validateSettings(value) {
   // goreLevel (2.0 gore setting: off / reduced / full) is optional so an older
   // parent without it stays valid; the child then derives the level from the
   // required `gore` boolean. Projection-only either way.
-  const optionalFields = ['keyboardBindings', 'gamepadDeadzone', 'gamepadSensitivity', 'touchSensitivity', 'touchScale', 'touchLeftHanded', 'aimAssistStrength', 'autoAimAssist', 'musicVolume', 'sfxVolume', 'uiVolume', 'dynamicRange', 'hudScale', 'captionCriticalAudio', 'cosmetics', 'goreLevel'];
+  const optionalFields = ['keyboardBindings', 'gamepadDeadzone', 'gamepadSensitivity', 'touchSensitivity', 'touchScale', 'touchLeftHanded', 'aimAssistStrength', 'autoAimAssist', 'musicVolume', 'sfxVolume', 'uiVolume', 'dynamicRange', 'hudScale', 'captionCriticalAudio', 'cosmetics', 'goreLevel', 'hitstop', 'damageNumbers'];
   if (!isPlainRecord(value)) return 'settings must be a plain object';
   const allowed = new Set([...booleanFields, ...optionalFields]);
   for (const key of Object.keys(value)) if (!allowed.has(key)) return `settings has unexpected field: ${key}`;
@@ -59,7 +59,9 @@ function validateSettings(value) {
     if (!Object.hasOwn(value, field)) return `settings is missing field: ${field}`;
     if (typeof value[field] !== 'boolean') return `settings.${field} must be boolean`;
   }
-  for (const field of ['touchLeftHanded', 'autoAimAssist', 'captionCriticalAudio']) {
+  // 2.1 feel: hitstop and damageNumbers are optional presentation booleans
+  // (default on).
+  for (const field of ['touchLeftHanded', 'autoAimAssist', 'captionCriticalAudio', 'hitstop', 'damageNumbers']) {
     if (Object.hasOwn(value, field) && typeof value[field] !== 'boolean') return `settings.${field} must be boolean`;
   }
   for (const [field, min, max] of [
@@ -158,8 +160,13 @@ function validateSettingsPayload(payload) {
 
 function validateGameState(payload) {
   const fields = ['status', 'score', 'kills', 'elapsedMs', 'health', 'maxHealth', 'xp', 'level', 'paused'];
-  const keyError = exactKeys(payload, fields, 'game:state payload');
+  // 2.1 music duck: optional and only ever `true`. The child adds it while a
+  // boss is engaged so the parent can duck the shared jukebox 3 dB; absent
+  // means no duck, so an older child's state stays valid. Projection-only.
+  const duck = isPlainRecord(payload) && Object.hasOwn(payload, 'musicDuck');
+  const keyError = exactKeys(payload, duck ? [...fields, 'musicDuck'] : fields, 'game:state payload');
   if (keyError) return keyError;
+  if (duck && payload.musicDuck !== true) return 'game:state musicDuck must be true when present';
   if (!new Set(['booting', 'ready', 'running', 'paused', 'game-over']).has(payload.status)) return 'game:state status is invalid';
   if (!integerInRange(payload.score, 0, 1_000_000_000_000)) return 'game:state score is invalid';
   if (!integerInRange(payload.kills, 0, 10_000_000)) return 'game:state kills is invalid';

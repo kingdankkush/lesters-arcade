@@ -45,7 +45,7 @@ export function captureAuthority(state, required) {
   const normalized = { ...state };
   if (normalized.simulation) {
     normalized.simulation = { ...normalized.simulation };
-    for (const name of ['stepCallbacks', 'replayCallbacks', 'projectionCallbacks']) delete normalized.simulation[name];
+    for (const name of ['stepCallbacks', 'replayCallbacks', 'projectionCallbacks', 'callbackLists']) delete normalized.simulation[name];
   }
   if (normalized.navGridAuthority) normalized.navGridAuthority = { ready: state.navGridAuthority.ready, grid: state.navGridAuthority.grid };
   if (normalized.playerDefeatController) normalized.playerDefeatController = { announced: state.playerDefeatController.announced };

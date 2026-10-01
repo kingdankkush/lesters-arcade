@@ -24,7 +24,9 @@ function traceRow(spies, tick, pad) {
 
 // `search` and `mode` default to the corpus's Ranked page; an unofficial
 // Free probe passes its own query and mode: 'free' (unranked session).
-export async function runChild({ seed, buildHash, seasonId, heroId = 'lit-commando', pilot, maxFrames = 400_000, log = () => {}, trace = null, search = '', mode = 'ranked', connectBeforeBoot = false }) {
+// `settingsOverride` (2.1 feel parity) replaces presentation settings on the
+// parent's portal:init, e.g. hitstop on/off with reduced motion off.
+export async function runChild({ seed, buildHash, seasonId, heroId = 'lit-commando', pilot, maxFrames = 400_000, log = () => {}, trace = null, search = '', mode = 'ranked', connectBeforeBoot = false, settingsOverride = {} }) {
   const gamepadRef = { current: null };
   const headless = installHeadlessEnvironment({ gamepadRef, search });
   const origin = new URL(PAGE_URL).origin;
@@ -60,6 +62,7 @@ export async function runChild({ seed, buildHash, seasonId, heroId = 'lit-comman
     gore: false,
     reduceMotion: true,
     reduceFlash: true,
+    ...settingsOverride,
   };
   // A real MessagePort queues portal:init until the child listens on it.
   for (let guard = 0; guard < 200_000 && typeof port.onmessage !== 'function'; guard += 1) { headless.clock.nowMs += 1; await tickYield(); }

@@ -38,9 +38,13 @@ test('kills, impacts, and player damage each have a distinct visual response', a
 
 test('camera shake is wired, bounded, and honours accessibility settings', async () => {
   const source = await readMain();
-  assert.match(source, /world\.position\.set\(/, 'shake must actually be applied');
-  assert.match(source, /settings\.screenShake && !settings\.reduceMotion/, 'shake respects both settings');
-  assert.match(source, /SHAKE_DECAY_TICKS/, 'shake must decay on a bounded window');
+  assert.match(source, /world\.position\.set\(shakeOffset\.x, shakeOffset\.y\)/, 'shake must actually be applied');
+  // 2.1: the trauma-squared shake lives in the lazy feel chunk; the gate and
+  // the bounded decay (trauma reaches zero HMH_SHAKE_SETTLE_TICKS after the
+  // last full impulse) are proved behaviourally in hmh-feel-trauma-shake.test.mjs.
+  const feel = await readFile(new URL('../apps/hmh-reboot/src/hmh-feel.mjs', import.meta.url), 'utf8');
+  assert.match(feel, /settings\.screenShake && !settings\.reduceMotion/, 'shake respects both settings');
+  assert.match(feel, /HMH_SHAKE_SETTLE_TICKS/, 'shake must decay on a bounded window');
   // Shake must NOT touch camera.shakeX/Y: screenToGround reads those back for
   // pointer aim, so a shaking camera would let a cosmetic accessibility
   // setting change which shots hit. It offsets the render container instead.
@@ -64,7 +68,9 @@ test('shake and spark randomness is deterministic, never Math.random', async () 
   // instead of four); the runtime imports it rather than redefining it.
   assert.match(source, /import \{[^}]*\bdeterministicUnit\b[^}]*\} from '\.\/deterministic-hash\.mjs'/, 'effects use the shared seeded hash');
   assert.doesNotMatch(source, /function deterministicUnit\(/, 'the runtime must not keep a private hash copy');
-  assert.match(source, /deterministicUnit\(`shake-x:/, 'shake offsets are seeded from the tick');
+  // 2.1: shake offsets are seeded from the tick through an integer hash in
+  // the shared trauma module (no per-frame template strings).
+  assert.match(source, /hmhFeel\?\.shakeOffset\(simulation\.tick, settings\)/, 'shake offsets are seeded from the tick');
 });
 
 test('visual effects respect the active performance profile', async () => {

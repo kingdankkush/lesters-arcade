@@ -5,6 +5,23 @@ import {
 } from '../../portal/src/hmh-audio-system.mjs';
 
 import { HMH_WEAPON_SFX } from './weapon-audio.mjs';
+import { MASTER_BUS_COMPRESSOR, SFX_BUS_COMPRESSOR, createBusCompressor, dbToGain } from '../../portal/src/feel/audio-bus.mjs';
+
+// 2.1 audio mix (upgrade guide §2.4.1, §2.4.4). The SFX bus runs through a
+// gentle compressor, then SFX and UI share a master compressor with STACKED's
+// values (shared feel module) before the destination. Music is not mastered
+// with the SFX, so gunfire never pumps the soundtrack.
+// The "duck music 3 dB under boss" mix rule (portal arcade-core mixRules):
+// standalone, the child's own music element is routed through
+// createMediaElementSource -> music gain and the gain ramps; embedded, the
+// parent owns the one jukebox element shared by every cabinet, so the child
+// only reports the duck and the parent applies it through that element's
+// existing volume path (apps/portal/main.js applyArcadeMusicVolume).
+export const HMH_MUSIC_DUCK_DB = -3;
+export const HMH_MUSIC_DUCK_GAIN = dbToGain(HMH_MUSIC_DUCK_DB);
+// Smoothing time constant for the duck ramp, seconds.
+export const HMH_MUSIC_DUCK_TIME_CONSTANT = 0.12;
+export { MASTER_BUS_COMPRESSOR as HMH_MASTER_COMPRESSOR, SFX_BUS_COMPRESSOR as HMH_SFX_BUS_COMPRESSOR };
 
 // SFX run on Web Audio (perf step 5/8). Every cue used to construct a new
 // HTMLAudioElement(url): a media element, a revalidation of a max-age=0 asset
@@ -151,6 +168,11 @@ export function createCombatAudio({
   let context = null;
   let sfxBus = null;
   let uiBus = null;
+  let sfxCompressor = null;
+  let masterBus = null;
+  let musicSource = null;
+  let musicGain = null;
+  let musicDuck = false;
   let loading = null;
   const queue = [];
   // path -> AudioBuffer once decoded, null when the fetch or decode failed.
@@ -205,10 +227,58 @@ export function createCombatAudio({
     }
     sfxBus = context.createGain();
     uiBus = context.createGain();
-    sfxBus.connect(context.destination);
-    uiBus.connect(context.destination);
+    // sfx bus -> gentle sfx compressor -> master compressor -> destination;
+    // ui bus -> master. A context without compressors wires straight through.
+    masterBus = createBusCompressor(context, MASTER_BUS_COMPRESSOR);
+    sfxCompressor = createBusCompressor(context, SFX_BUS_COMPRESSOR);
+    const out = masterBus ?? context.destination;
+    if (masterBus) masterBus.connect(context.destination);
+    if (sfxCompressor) {
+      sfxBus.connect(sfxCompressor);
+      sfxCompressor.connect(out);
+    } else {
+      sfxBus.connect(out);
+    }
+    uiBus.connect(out);
     applyBuses();
+    routeMusic();
     return context;
+  };
+
+  const musicTarget = () => 0.4 * musicLevel * (musicDuck ? HMH_MUSIC_DUCK_GAIN : 1);
+  // Standalone music: once both the element and the context exist, the
+  // element is routed through a music gain so the boss duck can ramp. A
+  // context without createMediaElementSource keeps the element path and the
+  // duck lands on element.volume instead.
+  function routeMusic() {
+    if (!music || !context || musicSource || typeof context.createMediaElementSource !== 'function') return;
+    try {
+      musicSource = context.createMediaElementSource(music);
+      musicGain = context.createGain();
+      musicGain.gain.value = musicTarget();
+      musicSource.connect(musicGain);
+      musicGain.connect(context.destination);
+      // The gain node now carries the level; the element plays at unity.
+      music.volume = 1;
+    } catch {
+      musicSource = null;
+      musicGain = null;
+    }
+  }
+
+  const applyMusicLevel = () => {
+    if (!music) return;
+    if (musicGain) {
+      const param = musicGain.gain;
+      if (typeof param.setTargetAtTime === 'function' && Number.isFinite(context?.currentTime)) {
+        param.cancelScheduledValues?.(context.currentTime);
+        param.setTargetAtTime(musicTarget(), context.currentTime, HMH_MUSIC_DUCK_TIME_CONSTANT);
+      } else {
+        param.value = musicTarget();
+      }
+    } else {
+      music.volume = musicTarget();
+    }
   };
 
   // Every sample a cue can reach in this mode, fetched and decoded once.
@@ -258,7 +328,8 @@ export function createCombatAudio({
       music = new AudioCtor(MUSIC_PATH);
       music.loop = true;
       music.preload = 'auto';
-      music.volume = 0.4 * musicLevel;
+      music.volume = musicTarget();
+      routeMusic();
     }
     try { await music.play(); } catch {}
   };
@@ -377,6 +448,14 @@ export function createCombatAudio({
       voices.length = 0;
       void ensureMusic();
     },
+    // 2.1 boss duck: -3 dB on the child's own (standalone) music. Embedded
+    // runs have no child music; main.mjs reports the duck to the parent.
+    setMusicDuck(active) {
+      const next = Boolean(active);
+      if (next === musicDuck) return;
+      musicDuck = next;
+      applyMusicLevel();
+    },
     setMusicEnabled(enabled) {
       allowMusic = Boolean(enabled);
       if (!allowMusic && music) music.pause();
@@ -395,7 +474,7 @@ export function createCombatAudio({
       dynamicRange = nextRange;
       reduceMotion = Boolean(nextReduceMotion);
       applyBuses();
-      if (music) music.volume = 0.4 * musicLevel;
+      applyMusicLevel();
     },
     status() {
       cleanup();
@@ -408,6 +487,10 @@ export function createCombatAudio({
         unlocked,
         musicEnabled: allowMusic,
         musicActive: Boolean(music && !music.paused),
+        musicDuck,
+        musicRoute: musicGain ? 'graph' : music ? 'element' : 'none',
+        master: masterBus ? 'compressor' : context ? 'direct' : 'none',
+        sfxCompressor: Boolean(sfxCompressor),
         contextState: unsupported ? 'unsupported' : context?.state ?? 'locked',
         samplesReady,
         samplesFailed,
@@ -427,7 +510,9 @@ export function createCombatAudio({
       }
       music = null;
       if (context) quiet(context.close?.());
-      context = sfxBus = uiBus = null;
+      musicSource?.disconnect?.();
+      musicGain?.disconnect?.();
+      context = sfxBus = uiBus = sfxCompressor = masterBus = musicSource = musicGain = null;
     },
   });
   return api;

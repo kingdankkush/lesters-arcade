@@ -232,6 +232,7 @@ const COCKPIT_IDS = [
   'hmhSettingMusic', 'hmhSettingScreenShake', 'hmhSettingReduceMotion', 'hmhSettingReduceFlash',
   'hmhSettingSfxVolume', 'hmhSettingSfxVolumeValue',
   'hmhSettingGoreOff', 'hmhSettingGoreReduced', 'hmhSettingGoreFull',
+  'hmhSettingHitstop',
   'hmhBuildEmpty', 'hmhBuildSummary', 'hmhControlsCard', 'hmhUpgradePanel', 'hmhUpgradeQueue', 'hmhUpgradeChoices',
 ];
 
@@ -700,6 +701,28 @@ test('the gore radio group reflects the host level, defaults to full, and notifi
   ui.destroy();
   off.checked = false; off.checked = true; off.dispatch('change');
   assert.equal(choices.length, 2, 'destroy() removes the listeners');
+});
+
+// 2.1 feel toggles: own ids, own callback, default on, optional markup.
+test('the hitstop toggle mirrors the host setting (default on) and reports through onSettingFeel only', () => {
+  const { documentRef, elements } = fakeCockpitDocument();
+  const feel = [];
+  const toggles = [];
+  const ui = createCockpitUi({ documentRef, onSettingFeel: (key, value) => feel.push([key, value]), onSettingToggle: (key, value) => toggles.push([key, value]) });
+  const input = elements.get('hmhSettingHitstop');
+  ui.setSettings({ musicEnabled: true });
+  assert.equal(input.checked, true, 'a host without the key shows the default (on)');
+  ui.setSettings({ musicEnabled: true, hitstop: false });
+  assert.equal(input.checked, false);
+  input.checked = true;
+  input.dispatch('change');
+  assert.deepEqual(feel, [['hitstop', true]]);
+  assert.deepEqual(toggles, [], 'never the pinned boolean path');
+  ui.destroy();
+  input.dispatch('change');
+  assert.equal(feel.length, 1, 'destroy() removes the listener');
+  elements.delete('hmhSettingHitstop');
+  assert.doesNotThrow(() => createCockpitUi({ documentRef }).setSettings({ hitstop: false }), 'optional markup');
 });
 
 test('the gore radio group is optional markup: a shell without it still boots and setSettings ignores it', () => {

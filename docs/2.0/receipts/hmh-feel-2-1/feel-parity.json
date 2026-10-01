@@ -1,0 +1,114 @@
+{
+  "probe": "scripts/hmh-honest-corpus/feel-parity.mjs",
+  "pilot": "brawler",
+  "seed": 424242,
+  "tickCap": 2400,
+  "mode": "ranked",
+  "runs": [
+    {
+      "name": "feel-on (hitstop + damage numbers)",
+      "spec": {
+        "seed": 424242,
+        "tickCap": 2400,
+        "hitstop": true,
+        "damageNumbers": true
+      },
+      "finalTick": 9033,
+      "finalState": "game-over",
+      "errors": 0,
+      "messages": 90,
+      "evidenceSha256": "7ebe2d6139b90dc020c9de91d5249b6e76638e5874de31fd3cd6441a6329ceea",
+      "streamDigest": 3637027350,
+      "streamSha256": "ccec8d35968d9b2ff573232802d1fd4b367b96890d9fd2c64dca3f50bc1875d4",
+      "maxLiveEnemies": 9,
+      "feel": {
+        "hitstopStarted": 84,
+        "hitstopHeldFrames": 172,
+        "hitstopIgnored": 2,
+        "hitstopMaxPerSecond": 3,
+        "damageNumbersSpawned": 168,
+        "damageNumbersPeak": 4,
+        "settingHitstop": "true"
+      }
+    },
+    {
+      "name": "feel-off",
+      "spec": {
+        "seed": 424242,
+        "tickCap": 2400,
+        "hitstop": false,
+        "damageNumbers": false
+      },
+      "finalTick": 9033,
+      "finalState": "game-over",
+      "errors": 0,
+      "messages": 90,
+      "evidenceSha256": "7ebe2d6139b90dc020c9de91d5249b6e76638e5874de31fd3cd6441a6329ceea",
+      "streamDigest": 3637027350,
+      "streamSha256": "ccec8d35968d9b2ff573232802d1fd4b367b96890d9fd2c64dca3f50bc1875d4",
+      "maxLiveEnemies": 9,
+      "feel": {
+        "hitstopStarted": 0,
+        "hitstopHeldFrames": 0,
+        "hitstopIgnored": 0,
+        "hitstopMaxPerSecond": 0,
+        "damageNumbersSpawned": 0,
+        "damageNumbersPeak": 0,
+        "settingHitstop": "false"
+      }
+    },
+    {
+      "name": "2.0.0 base child f044868ff (defaults)",
+      "spec": {
+        "seed": 424242,
+        "tickCap": 2400,
+        "hitstop": null,
+        "damageNumbers": null
+      },
+      "finalTick": 9033,
+      "finalState": "game-over",
+      "errors": 0,
+      "messages": 90,
+      "evidenceSha256": "7ebe2d6139b90dc020c9de91d5249b6e76638e5874de31fd3cd6441a6329ceea",
+      "streamDigest": 3637027350,
+      "streamSha256": "ccec8d35968d9b2ff573232802d1fd4b367b96890d9fd2c64dca3f50bc1875d4",
+      "maxLiveEnemies": 9,
+      "feel": {
+        "hitstopStarted": 0,
+        "hitstopHeldFrames": 0,
+        "hitstopIgnored": 0,
+        "hitstopMaxPerSecond": 0,
+        "damageNumbersSpawned": 0,
+        "damageNumbersPeak": 0,
+        "settingHitstop": null
+      }
+    },
+    {
+      "name": "this branch (defaults, feel on)",
+      "spec": {
+        "seed": 424242,
+        "tickCap": 2400,
+        "hitstop": null,
+        "damageNumbers": null
+      },
+      "finalTick": 9033,
+      "finalState": "game-over",
+      "errors": 0,
+      "messages": 90,
+      "evidenceSha256": "7ebe2d6139b90dc020c9de91d5249b6e76638e5874de31fd3cd6441a6329ceea",
+      "streamDigest": 3637027350,
+      "streamSha256": "ccec8d35968d9b2ff573232802d1fd4b367b96890d9fd2c64dca3f50bc1875d4",
+      "maxLiveEnemies": 9,
+      "feel": {
+        "hitstopStarted": 84,
+        "hitstopHeldFrames": 172,
+        "hitstopIgnored": 2,
+        "hitstopMaxPerSecond": 3,
+        "damageNumbersSpawned": 168,
+        "damageNumbersPeak": 4,
+        "settingHitstop": "true"
+      }
+    }
+  ],
+  "identical": true
+}
