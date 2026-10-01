@@ -12,6 +12,7 @@ import { resolveLevelBriefing } from '../apps/hmh-reboot/src/level-briefing.mjs'
 import { HMH_V7_BOSSES } from '../sdk/hmh-run-contract-v7.mjs';
 import { createWorldV2GroundQuery, createWorldV2RuntimeWorld, getWorldV2DistrictAt, isWorldV2PointClear } from '../apps/hmh-reboot/src/world-v2-runtime-world.mjs';
 import { createWorldV2Gameplay, selectWorldV2Entry } from '../apps/hmh-reboot/src/world-v2-gameplay.mjs';
+import { WORLD_V2_EXTRA_ROLES } from '../apps/hmh-reboot/src/world-v2-combat.mjs';
 
 const world = createWorldV2RuntimeWorld();
 const queryGround = createWorldV2GroundQuery(world);
@@ -27,9 +28,13 @@ test('every ten-area district has a conservative role gate drawn from the legacy
   assert.equal(gameplay.roleGates['fork-fortress'].length, 6);
   for (const roles of Object.values(gameplay.roleGates)) for (const role of roles) assert.ok(LEGACY_ROLES.has(role), role);
   const byTier = new Map(world.districts.map((district) => [district.id, district.tier]));
-  for (const [id, roles] of Object.entries(gameplay.roleGates)) for (const [otherId, otherRoles] of Object.entries(gameplay.roleGates)) {
-    if (byTier.get(id) <= byTier.get(otherId)) assert.ok(roles.length <= otherRoles.length, `${id} <= ${otherId}`);
+  // The tier gates grow with the tier; an area hosting a 2.0 enemy adds only
+  // that enemy's role (HMH-TEN-AREA-GAMEPLAY-WIRING).
+  const tierRoles = (id) => gameplay.roleGates[id].filter((role) => !(WORLD_V2_EXTRA_ROLES[id] ?? []).includes(role));
+  for (const id of Object.keys(gameplay.roleGates)) for (const otherId of Object.keys(gameplay.roleGates)) {
+    if (byTier.get(id) <= byTier.get(otherId)) assert.ok(tierRoles(id).length <= tierRoles(otherId).length, `${id} <= ${otherId}`);
   }
+  for (const [id, extra] of Object.entries(WORLD_V2_EXTRA_ROLES)) for (const role of extra) assert.ok(gameplay.roleGates[id].includes(role), `${id} hosts ${role}`);
   assert.deepEqual(Object.keys(DISTRICT_ROLE_GATES), ['frontier-relay', 'rugpull-ravine', 'liquidity-crossing', 'hashwood', 'mining-camp', 'liquidation-yard']);
   const meadows = selectEncounterArchetype({ districtId: 'mweb-meadows', bandId: 'opening', spawnOrdinal: 3, seed: 9, roleGates: gameplay.roleGates });
   assert.ok(['rusher', 'flanker'].includes(getEnemyArchetype(meadows.archetypeId).role));

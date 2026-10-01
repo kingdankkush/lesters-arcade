@@ -134,9 +134,19 @@ export const ENEMY_ARCHETYPES = freezeDeep({
 
 export const ENEMY_ARCHETYPE_IDS = Object.freeze(Object.keys(ENEMY_ARCHETYPES));
 
+// An unofficial world (the ten-area Free world, lazily) may register extra
+// archetypes for its own page; the legacy table above never changes.
+const EXTENSION_ARCHETYPES = new Map();
+export function registerEnemyArchetypes(table) {
+  for (const [id, archetype] of Object.entries(table)) if (!Object.hasOwn(ENEMY_ARCHETYPES, id)) EXTENSION_ARCHETYPES.set(id, archetype);
+}
+
+export function findEnemyArchetype(id) {
+  return typeof id === 'string' && Object.hasOwn(ENEMY_ARCHETYPES, id) ? ENEMY_ARCHETYPES[id] : EXTENSION_ARCHETYPES.get(id);
+}
+
 export function getEnemyArchetype(id) {
-  if (typeof id !== 'string' || !Object.hasOwn(ENEMY_ARCHETYPES, id)) {
-    throw new TypeError(`Unknown enemy archetype: ${String(id)}`);
-  }
-  return ENEMY_ARCHETYPES[id];
+  const archetype = findEnemyArchetype(id);
+  if (!archetype) throw new TypeError(`Unknown enemy archetype: ${String(id)}`);
+  return archetype;
 }

@@ -21,6 +21,7 @@ import { createDistrictCourt } from './boss-courts-world-v1.mjs';
 import { MISSION_RULES } from './mission-objectives.mjs';
 import { HMH_V7_BOSSES, HMH_V7_BOSS_RULES, HMH_V7_RUN_RULES } from '../../../sdk/hmh-run-contract-v7.mjs';
 import { WORLD_V2_RUNTIME_ID } from './world-v2-runtime-world.mjs';
+import { WORLD_V2_DISTRICT_ARCHETYPES, WORLD_V2_EXTRA_ROLES } from './world-v2-combat.mjs';
 
 export const WORLD_V2_DEFAULT_DISTRICT_ID = 'mweb-meadows';
 
@@ -134,7 +135,13 @@ function bossZoneRow({ id, kind, arena, position, mode, clip, fillTicks, readyTi
 
 export function createWorldV2Gameplay(world) {
   if (world?.id !== WORLD_V2_RUNTIME_ID || world.officialRun !== false || world.rankedEligible !== false) throw new TypeError('ten-area gameplay requires the unofficial ten-area world');
-  const roleGates = Object.fromEntries(world.districts.map((district) => [district.id, TIER_ROLES[district.tier] ?? TIER_ROLES[5]]));
+  // Slice HMH-TEN-AREA-GAMEPLAY-WIRING: an area hosting a 2.0 enemy whose
+  // role its tier lacks gains that role; the bands still gate it by time.
+  const roleGates = Object.fromEntries(world.districts.map((district) => {
+    const roles = TIER_ROLES[district.tier] ?? TIER_ROLES[5];
+    const extra = (WORLD_V2_EXTRA_ROLES[district.id] ?? []).filter((role) => !roles.includes(role));
+    return [district.id, [...roles, ...extra]];
+  }));
   if (!roleGates[WORLD_V2_DEFAULT_DISTRICT_ID]) throw new TypeError('ten-area default district has no role gate');
 
   const floor = createWorldV2LiquidatorFloor(world);
@@ -206,6 +213,7 @@ export function createWorldV2Gameplay(world) {
     rankedEligible: false,
     defaultDistrictId: WORLD_V2_DEFAULT_DISTRICT_ID,
     roleGates,
+    districtArchetypes: WORLD_V2_DISTRICT_ARCHETYPES,
     missionObjectives,
     missionBossZones,
     bossDefinitions,

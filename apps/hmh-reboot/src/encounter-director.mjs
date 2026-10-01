@@ -103,15 +103,18 @@ export function createEncounterDirector({ nextSpawnTick = 0, seed = 0 } = {}) {
 // to Agents while the Liquidator lives). Off by default.
 // `roleGates` is the district role table for the run's world (W4a); the
 // legacy table is the default.
-export function selectEncounterArchetype({ districtId, bandId, spawnOrdinal, seed = 0, requestedRole = null, leanRole = null, roleGates = DISTRICT_ROLE_GATES } = {}) {
+// `districtArchetypes` (an unofficial world's per-district role pools) stands
+// in for ROLE_ARCHETYPES in the districts it lists; null by default.
+export function selectEncounterArchetype({ districtId, bandId, spawnOrdinal, seed = 0, requestedRole = null, leanRole = null, roleGates = DISTRICT_ROLE_GATES, districtArchetypes = null } = {}) {
+  const roleArchetypes = districtArchetypes?.[districtId] ? { ...ROLE_ARCHETYPES, ...districtArchetypes[districtId] } : ROLE_ARCHETYPES;
   const districtRoles = roleGates[districtId];
   if (!districtRoles) throw new TypeError('districtId must identify an authored district');
   const band = ENCOUNTER_BANDS.find((entry) => entry.id === bandId);
   if (!band) throw new TypeError('bandId must identify an encounter band');
   nonNegativeInteger(spawnOrdinal, 'spawnOrdinal');
   nonNegativeInteger(seed, 'seed');
-  const eligibleRoles = districtRoles.filter((role) => band.allowedRoles.includes(role) && ROLE_ARCHETYPES[role]?.length > 0);
-  const roles = eligibleRoles.length > 0 ? eligibleRoles : districtRoles.filter((role) => ROLE_ARCHETYPES[role]?.length > 0);
+  const eligibleRoles = districtRoles.filter((role) => band.allowedRoles.includes(role) && roleArchetypes[role]?.length > 0);
+  const roles = eligibleRoles.length > 0 ? eligibleRoles : districtRoles.filter((role) => roleArchetypes[role]?.length > 0);
   if (roles.length === 0) throw new Error(`district ${districtId} has no eligible enemy roles`);
   const weightedRoles = roles.flatMap((role) => Array.from({ length: (band.roleWeights[role] ?? 1) * (role === leanRole && eligibleRoles.includes(role) ? 2 : 1) }, () => role));
   const requestedIsEligible = requestedRole === null || eligibleRoles.includes(requestedRole);
@@ -119,7 +122,7 @@ export function selectEncounterArchetype({ districtId, bandId, spawnOrdinal, see
     ? requestedRole
     : weightedRoles[(spawnOrdinal + seed) % weightedRoles.length];
   const resolvedRequestedRole = requestedRole ?? selectedRole;
-  const candidates = ROLE_ARCHETYPES[selectedRole];
+  const candidates = roleArchetypes[selectedRole];
   const archetypeId = candidates[Math.floor(spawnOrdinal / weightedRoles.length) % candidates.length];
   getEnemyArchetype(archetypeId);
   return freezeDeep({ archetypeId, requestedRole: resolvedRequestedRole, roleApplied: requestedIsEligible, fallbackReason: requestedIsEligible ? null : 'band-gated-role' });
@@ -185,6 +188,7 @@ export function stepEncounterDirector({
   visualMode = 'normal',
   leanRole = null,
   roleGates = DISTRICT_ROLE_GATES,
+  districtArchetypes = null,
 } = {}) {
   if (!state?.schedule || !population?.active || !(population.seenIds instanceof Set)) throw new TypeError('director state and enemy population are required');
   nonNegativeInteger(tick, 'tick');
@@ -197,7 +201,7 @@ export function stepEncounterDirector({
   if (nearRewardPoi && isEncounterRestWindow(tick)) return reject(state, tick, band, 'reward-rest-window');
   if (population.active.length >= snapshot.ordinaryBodyCap) return reject(state, tick, band, 'reserved-body-cap');
 
-  const selection = selectEncounterArchetype({ districtId, bandId: band.id, spawnOrdinal: state.spawnOrdinal, seed: state.seed, leanRole, roleGates });
+  const selection = selectEncounterArchetype({ districtId, bandId: band.id, spawnOrdinal: state.spawnOrdinal, seed: state.seed, leanRole, roleGates, districtArchetypes });
   const selectedRole = getEnemyArchetype(selection.archetypeId).role;
   const rangedCount = population.active.reduce((count, enemy) => count + (RANGED_ROLES.has(getEnemyArchetype(enemy.archetypeId).role) ? 1 : 0), 0);
   if (RANGED_ROLES.has(selectedRole) && rangedCount >= band.budgets.rangedCap) {

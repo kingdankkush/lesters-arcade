@@ -1,4 +1,4 @@
-import { ENEMY_ARCHETYPES } from './enemy-archetypes.mjs';
+import { findEnemyArchetype } from './enemy-archetypes.mjs';
 import { resolveSweptCircleMotion } from './collision.mjs';
 import { traceHeightAwareLineOfSight } from './elevation.mjs';
 
@@ -33,7 +33,7 @@ export function automaticDodgeIntent({tick,actor,move,state,body,bounds,blockers
   const end={x:actor.x+direction.x*state.distance,y:actor.y+direction.y*state.distance};
   const danger=[];
   for(const enemy of enemies) {
-    const attack=ENEMY_ARCHETYPES[enemy.archetypeId]?.attack;
+    const attack=findEnemyArchetype(enemy.archetypeId)?.attack;
     if(!attack || enemy.active===false || enemy.health<=0 || enemy.attackPhase!=='tell'
       || enemy.attackPhaseUntilTick<tick || enemy.attackPhaseUntilTick-tick>6
       || Math.abs((enemy.groundZ??0)-actor.groundZ)>8 || attack.tokenFamily==='support') continue;

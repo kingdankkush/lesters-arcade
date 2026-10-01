@@ -42,7 +42,9 @@ test('the 2.0 table is reachable only through its own lazy module: no initial-bu
   const directory = new URL('../apps/hmh-reboot/src/', import.meta.url);
   const importers = readdirSync(directory).filter((name) => name.endsWith('.mjs') && name !== 'enemy-archetypes-2.mjs')
     .filter((name) => /enemy-archetypes-2/.test(readFileSync(new URL(name, directory), 'utf8')));
-  assert.deepEqual(importers, []);
+  // Slice HMH-TEN-AREA-GAMEPLAY-WIRING: the ten-area combat module (itself
+  // lazy, reached only from world-v2-runtime-context.mjs) is the one importer.
+  assert.deepEqual(importers, ['world-v2-combat.mjs']);
 });
 
 test('every 2.0 enemy copies a named legacy balance source verbatim, is balance-pending and reads as human or zombie', () => {

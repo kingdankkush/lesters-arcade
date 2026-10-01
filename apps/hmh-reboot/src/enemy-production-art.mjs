@@ -1,6 +1,6 @@
 import { freezeDeep } from './value-guards.mjs';
 import { ENEMY_STRIKE_TICKS } from './enemy-combat.mjs';
-import { ENEMY_ARCHETYPES } from './enemy-archetypes.mjs';
+import { findEnemyArchetype } from './enemy-archetypes.mjs';
 const REQUIRED_STATES = Object.freeze(['idle', 'run', 'tell', 'attack', 'hit', 'death']);
 
 
@@ -119,7 +119,7 @@ export function resolveEnemyRuntimeVisualState(enemy, tick) {
 function strikeStartTick(enemy) {
   // The strike is carved out of the front of recovery, so recovery's end tick
   // minus the archetype's recovery length is the tick the strike opened on.
-  const recoveryTicks = ENEMY_ARCHETYPES[enemy.archetypeId]?.attack?.recoveryTicks;
+  const recoveryTicks = findEnemyArchetype(enemy.archetypeId)?.attack?.recoveryTicks;
   if (Number.isInteger(enemy.attackRecoveryUntilTick) && Number.isInteger(recoveryTicks)) {
     return enemy.attackRecoveryUntilTick - recoveryTicks;
   }
