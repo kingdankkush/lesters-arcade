@@ -9,7 +9,7 @@ import { createDistrictTerrainArtPlan, createWorldMassesArtPlan } from '../apps/
 import { createMwebMeadowsArtPlan } from '../apps/hmh-reboot/src/world-v2-area-plans/mweb-meadows.mjs';
 import { createRugpullWoodsArtPlan } from '../apps/hmh-reboot/src/world-v2-area-plans/rugpull-woods.mjs';
 import { createAreaArt, createAreaArtTextureCache, triangulatePolygon } from '../apps/hmh-reboot/src/world-v2-area-art.mjs';
-import { rockFaceVariant, buildShoreField, buildRaisedSurfaces, WATER_PALETTES, RAISED_KIT_BY_AREA } from '../apps/hmh-reboot/src/world-v2-area-surfaces.mjs';
+import { rockFaceVariant, buildShoreField, buildRaisedSurfaces, WATER_PALETTES, RAISED_KIT_BY_AREA, createWalkwayPropFilter } from '../apps/hmh-reboot/src/world-v2-area-surfaces.mjs';
 import { createWorldRoadsArtPlan } from '../apps/hmh-reboot/src/world-v2-area-plans/world-roads.mjs';
 import { ROAD_RECIPES } from '../apps/hmh-reboot/src/world-v2-area-art-schema.mjs';
 
@@ -450,4 +450,26 @@ test('water and raised-surface nodes leave the draw list while they are off view
   assert.equal(ground.children.find(c => c.label === 'area-water-hashwood-river-channel').visible, true);
   assert.equal(ground.children.find(c => c.label === 'area-raised-hashwood-river-woods-bridge').visible, false, 'the other crossing, 1,400 units away, stays off');
   art.dispose();
+});
+
+test('no decorative plant or clutter prop stands on a deck, ramp, bridge or in deep water in any area (blocking cards keep their collider art)', async () => {
+  const { WORLD_V2_AREA_ART_HOOKS, WORLD_V2_ROAD_ART_HOOK } = await import('../apps/hmh-reboot/src/world-v2-runtime-world.mjs');
+  const filter = createWalkwayPropFilter(world.pieces, kit.classes), clutter = new Set(['plants', 'props'].flatMap(name => kit.classes[name].items));
+  let dropped = 0, checked = 0;
+  const hooks = [...Object.entries(WORLD_V2_AREA_ART_HOOKS).map(([areaId, hook]) => [areaId, hook]), [WORLD_V2_ROAD_ART_HOOK.planId, WORLD_V2_ROAD_ART_HOOK]];
+  for (const [areaId, hook] of hooks) {
+    const plan = (await hook.load())(world);
+    if (!plan) continue;
+    const art = createAreaArt({ world, areaId, plan, kit, textureCache: createAreaArtTextureCache({ loadTexture: loader([]) }), terrainFieldSize: 16, createControlTexture: () => null, createProgram: kind => ({ name: `test-${kind}` }), createShoreTexture: () => null });
+    await art.ready;
+    for (const prop of art.summary.props) { checked++; const onIt = clutter.has(prop.source) && filter.onSurface(prop.x, prop.y); assert.ok(!onIt || world.pieces.some(piece => piece.blocker && piece.visible.artProp?.source === prop.source && Math.abs(piece.visible.artProp.x - prop.x) < 0.1 && Math.abs(piece.visible.artProp.y - prop.y) < 0.1), `${areaId} ${prop.id} (${prop.source}) is decorative clutter on a walkway or in water`); }
+    dropped += art.snapshot().droppedProps;
+    art.dispose();
+  }
+  assert.ok(checked > 500, `${checked} props checked`);
+  assert.ok(dropped > 0, 'the bayou iris and shrubs on the lock crossing are dropped');
+  // Structures are never dropped, even on a deck.
+  const deck = world.pieces.find(p => p.id === 'mweb-meadows-deck').visible.bounds;
+  assert.equal(filter.keep({ source: 'b2-45', x: (deck.minX + deck.maxX) / 2, y: (deck.minY + deck.maxY) / 2 }), true);
+  assert.equal(filter.keep({ source: 'b1-09', x: (deck.minX + deck.maxX) / 2, y: (deck.minY + deck.maxY) / 2 }), false);
 });

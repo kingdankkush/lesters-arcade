@@ -122,6 +122,23 @@ export function buildRaisedSurfaces(pieces, areaId) {
   });
 }
 
+// Decorative plants and clutter whose base lies on a deck, ramp or bridge
+// (8-unit margin) or in deep water are not drawn: several plans scattered
+// iris, shrubs and crates before the walkways and water were rendered.
+// `classes` is the kit manifest's class table; structures and cards with
+// their own collider are never dropped.
+export const CLUTTER_CLASSES = Object.freeze(['plants', 'props']);
+export function createWalkwayPropFilter(pieces, classes = {}) {
+  const clutter = new Set(CLUTTER_CLASSES.flatMap(name => classes[name]?.items ?? []));
+  const decks = pieces.filter(isRaisedPiece).map(piece => piece.visible.bounds);
+  const water = pieces.filter(piece => piece.kind === 'water').map(waterOutline);
+  const onSurface = (x, y) => decks.some(b => insideBounds(b, x, y, 8)) || water.some(v => pointInPolygon(x, y, v));
+  // A card with its own collider (a blocking prop) is collision art: kept.
+  const key = (source, x, y) => `${source}:${Math.round(x * 10)}:${Math.round(y * 10)}`;
+  const blocking = new Set(pieces.flatMap(piece => piece.blocker && piece.visible?.artProp ? [key(piece.visible.artProp.source, piece.visible.artProp.x, piece.visible.artProp.y)] : []));
+  return Object.freeze({ onSurface, keep: prop => blocking.has(key(prop.source, prop.x, prop.y)) || !(clutter.has(prop.source) && onSurface(prop.x, prop.y)) });
+}
+
 // Cliff-face variant weights at a world x: three samplings of the rock-face
 // strip at incommensurate periods, blended by low-frequency hash noise, so the
 // 260-unit repeat never lines up. Returns [wA, wB, wC] summing to 1.

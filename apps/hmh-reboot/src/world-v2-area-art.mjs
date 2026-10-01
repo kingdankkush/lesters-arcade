@@ -10,7 +10,7 @@ import { Container, Graphics, Sprite, Texture, Rectangle, Mesh, Shader, GlProgra
 import { createGreyboxPropResidency } from './dev/greybox-prop-residency.mjs';
 import { AREA_ART_KIT_ROOT, AREA_ART_KIT_MANIFEST, AREA_ART_TILE_ROOT, AREA_ART_DETAIL_ROOT, AREA_ART_DETAIL_PAGE, AREA_ART_MATERIALS, AREA_ART_TILE_MEANS, ROAD_RECIPES, FOLIAGE_TINT_RULES, validateAreaArtPlan, resolveKitItem, seatCardAnchorY, seatSolidCardY, ribbonPolygon, offsetPolygon, polygonBounds, rectVertices, pointInPolygon, stableUnit } from './world-v2-area-art-schema.mjs';
 import { buildTerrainFieldAsync, TERRAIN_LIGHT_RANGE, valueNoise } from './world-v2-terrain-field.mjs';
-import { WATER_PALETTES, RAISED_KITS, RAISED_KIT_BY_AREA, WATER_FRAGMENT, RAISED_VERTEX, RAISED_FRAGMENT, buildShoreField, buildRaisedSurfaces, waterOutline, isRaisedPiece, rockFaceVariant, createSolidOcclusionIndex } from './world-v2-area-surfaces.mjs';
+import { WATER_PALETTES, RAISED_KITS, RAISED_KIT_BY_AREA, WATER_FRAGMENT, RAISED_VERTEX, RAISED_FRAGMENT, buildShoreField, buildRaisedSurfaces, waterOutline, isRaisedPiece, rockFaceVariant, createSolidOcclusionIndex, createWalkwayPropFilter } from './world-v2-area-surfaces.mjs';
 export { validateAreaArtPlan, createPlacementGuard, AREA_ART_SCHEMA, AREA_ART_MATERIALS } from './world-v2-area-art-schema.mjs';
 
 export const AREA_ART_ID = 'world-v2-area-art/v1';
@@ -361,7 +361,7 @@ export function createAreaArt({ world, areaId, plan, kit = null, loadTexture, te
   // one degenerate rock mesh) is drawn, so the water, raised and rock
   // programs compile while the area loads instead of on first sight mid-run.
   let warmFrames = 3; const warmNodes = [];
-  let waterFrame = 0, waterStatic = true, occlusion = null;
+  let waterFrame = 0, waterStatic = true, occlusion = null, droppedProps = 0;
   const tileFile = (tile, suffix = '') => ratio === 0.5 ? `${tile}${suffix}@0.5x.webp` : `${tile}${suffix}.png`;
   const acquire = async url => { const texture = await cache.acquire(url); owned.push(url); if (disposed) { cache.release(url); owned.pop(); return null; } return texture; };
 
@@ -386,6 +386,8 @@ export function createAreaArt({ world, areaId, plan, kit = null, loadTexture, te
       }
       if (disposed) return;
       summary = validateAreaArtPlan(plan, manifest);
+      // Plants and clutter never stand on a deck, ramp, bridge or in the water.
+      { const keep = createWalkwayPropFilter(world.pieces ?? [], manifest.classes ?? {}).keep, props = summary.props.filter(keep); droppedProps = summary.props.length - props.length; if (droppedProps) summary = { ...summary, props }; }
       const jobs = [];
       for (const image of summary.pages) {
         const page = manifest.pages.find(entry => entry.image === image);
@@ -1177,6 +1179,6 @@ export function createAreaArt({ world, areaId, plan, kit = null, loadTexture, te
     try { controlTexture?.control.destroy(true); if (controlTexture && controlTexture.light !== controlTexture.control) controlTexture.light.destroy(true); } catch {} controlTexture = null; terrainMesh = null;
     if (ownsCache) cache.dispose();
   }
-  const snapshot = () => Object.freeze({ artId: AREA_ART_ID, areaId, resolution, disposed, mounted, pages: summary?.pages ?? null, tiles: summary?.tiles ?? null, counts: summary?.counts ?? null, budget: summary?.budget ?? null, terrain: summary?.terrain ? Object.freeze({ materials: summary.terrain.materials, field: terrainField ? `${terrainField.width}x${terrainField.height}` : null, fieldBytes: terrainField ? terrainField.fieldBytes ?? terrainField.data.length : 0, splat: Boolean(terrainMesh), counts: terrainField?.counts ?? null }) : null, water: Object.freeze(waterBodies.map(body => Object.freeze({ id: body.piece.id, field: `${body.field.width}x${body.field.height}`, bytes: body.field.bytes, shader: Boolean(body.texture) }))), raised: raisedPieces.length, ownedUrls: Object.freeze([...owned].sort()), painted: painted.length, residency: residency?.snapshot() ?? null, runtimeAuthority: 'projection-only' });
+  const snapshot = () => Object.freeze({ artId: AREA_ART_ID, areaId, resolution, disposed, mounted, pages: summary?.pages ?? null, tiles: summary?.tiles ?? null, counts: summary?.counts ?? null, budget: summary?.budget ?? null, terrain: summary?.terrain ? Object.freeze({ materials: summary.terrain.materials, field: terrainField ? `${terrainField.width}x${terrainField.height}` : null, fieldBytes: terrainField ? terrainField.fieldBytes ?? terrainField.data.length : 0, splat: Boolean(terrainMesh), counts: terrainField?.counts ?? null }) : null, water: Object.freeze(waterBodies.map(body => Object.freeze({ id: body.piece.id, field: `${body.field.width}x${body.field.height}`, bytes: body.field.bytes, shader: Boolean(body.texture) }))), raised: raisedPieces.length, droppedProps, ownedUrls: Object.freeze([...owned].sort()), painted: painted.length, residency: residency?.snapshot() ?? null, runtimeAuthority: 'projection-only' });
   return Object.freeze({ artId: AREA_ART_ID, ready, plan, get summary() { return summary; }, claimsSurface, paintSurface, paintGround, paintSurfaces, createSolid, mountSolids, mount, update, dispose, snapshot, textureCache: cache });
 }
