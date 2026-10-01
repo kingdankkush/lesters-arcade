@@ -540,7 +540,19 @@ const arcadeMusic = {
   expanded: false,
   shuffle: false,
   renderQueued: false,
+  // 2.1: the HMH child reports a boss-engaged duck on game:state.
+  duck: false,
 };
+// 2.1 "duck music 3 dB under boss" (arcade-core mixRules). The jukebox is one
+// element shared by every cabinet (STACKED samples it through its own media
+// element source), so the duck rides this element's existing volume path.
+const ARCADE_MUSIC_BOSS_DUCK_GAIN = 10 ** (-3 / 20);
+function setArcadeMusicDuck(active) {
+  const next = Boolean(active);
+  if (arcadeMusic.duck === next) return;
+  arcadeMusic.duck = next;
+  applyArcadeMusicVolume();
+}
 // The pending silent unlock (blessArcadeMusicElement); any real play claims it.
 let arcadeMusicBlessToken = null;
 
@@ -803,7 +815,8 @@ function arcadeMusicRuntimeContext() {
 function applyArcadeMusicVolume(reason = arcadeMusicRuntimeContext()) {
   const audio = arcadeMusicAudio();
   if (!audio) return 0;
-  audio.volume = arcadeMusicVolume(arcadeMusic.volume) * arcadeMusicContextGain(reason);
+  const duck = arcadeMusic.duck && reason === 'gameplay' ? ARCADE_MUSIC_BOSS_DUCK_GAIN : 1;
+  audio.volume = arcadeMusicVolume(arcadeMusic.volume) * arcadeMusicContextGain(reason) * duck;
   return audio.volume;
 }
 
@@ -4671,6 +4684,7 @@ function destroyHmhRebootSession() {
   gameAdapter = null;
   hmhRebootActive = false;
   hmhFrontierPreviewActive = false;
+  setArcadeMusicDuck(false);
 }
 
 function finalizeHmhRebootFreeGameOver(runSummary) {
@@ -4713,6 +4727,7 @@ function mountHmhRebootSession() {
       finalizeRanked: ({ runSummary }) => submitCombatGameOver(runSummary),
       finalizeFree: ({ runSummary }) => finalizeHmhRebootFreeGameOver(runSummary),
       syncUi: () => syncCombatOverlay(),
+      onMusicDuck: (active) => setArcadeMusicDuck(active),
       onError: (error) => {
         console.error('[HMH reboot lifecycle]', error);
         if (dom.officialGameStateCopy) dom.officialGameStateCopy.textContent = `Reboot lifecycle error: ${error.message}`;

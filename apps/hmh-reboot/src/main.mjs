@@ -1886,6 +1886,8 @@ async function boot() {
   // reduced-motion profile (0 particles per hazard) emits none.
   const particleScale = performanceProfile.particlesPerHazard;
   const triggerCameraShake = (tick, magnitude) => { hmhFeel?.addShake(tick, magnitude); };
+  let bossMusicDuckWanted = false;
+  let musicDuckActive = false;
   let lastMeleeAttack = null;
   let lastGrenadeThrow = null;
   let lastGrenadeDetonation = null;
@@ -3200,6 +3202,7 @@ async function boot() {
       // S1.5: the bar names the live boss and carries its phase markers.
       const bossHud = bossSlots ? bossHudState(bossSlots, simulation?.tick ?? 0) : null;
       const bossEngaged = Boolean(bossHud?.active);
+      bossMusicDuckWanted = bossEngaged;
       const bossHealthRatio = bossEngaged ? bossHud.ratio : 0;
       hud?.setBoss(bossEngaged, bossHealthRatio, bossHud?.phaseId ?? '', { bossId: bossHud?.bossId, name: bossHud?.name, markers: bossHud?.markers });
       // The Golden Parachute (a Dark Pool win): a gold pip until it is spent.
@@ -3437,6 +3440,7 @@ async function boot() {
     framingState = createEncounterFramingState();
     lastLevelUpBeat = null;
     hmhFeel?.reset();
+    bossMusicDuckWanted = false;
     world.position.set(0, 0);
     overlayVisuals.clear();
     lastMeleeAttack = null;
@@ -5596,7 +5600,18 @@ async function boot() {
       xp: runSnapshot?.xp ?? 0,
       level: runSnapshot?.level ?? 1,
       paused: status === 'paused',
+      // 2.1: optional, only while a boss is engaged (parent ducks its jukebox).
+      ...(musicDuckActive && status === 'running' ? { musicDuck: true } : {}),
     };
+  };
+  // 2.1 music duck (-3 dB under boss). Standalone: the child's own music gain.
+  // Embedded: the parent owns the shared jukebox, so the change rides one
+  // game:state. Projection-only: read from the boss HUD state after the fact.
+  const syncMusicDuck = (active) => {
+    if (active === musicDuckActive) return;
+    musicDuckActive = active;
+    combatAudio.setMusicDuck(active);
+    if (bridge?.initialized) bridge.send('game:state', statePayload('running'));
   };
 
   // Weapon wheel (owner direction 2026-09-16). The wheel is a lazy
@@ -6034,6 +6049,7 @@ async function boot() {
     dataset.cameraShake = String(Number(Math.hypot(world.position.x, world.position.y).toFixed(3)));
     dataset.cameraZoom = camera.zoom.toFixed(3);
     renderWorld(renderActor);
+    syncMusicDuck(bossMusicDuckWanted);
     const locomotionPulse = actor.locomotion === 'dash'
       ? 0.18
       : motion?.locomotion === 'run' ? Math.sin(elapsedMs * 0.012) * 0.07 : 0;

@@ -20,6 +20,12 @@ const root = fileURLToPath(new URL('..', import.meta.url));
 
 // Every .mjs / .js module that must parse cleanly (node --check).
 const NODE_CHECK_FILES = [
+  // 2.1 HMH-FEEL: shared feel modules and the lazy HMH feel chunk.
+  'apps/portal/src/feel/trauma-shake.mjs',
+  'apps/portal/src/feel/audio-bus.mjs',
+  'apps/hmh-reboot/src/hmh-feel.mjs',
+  'tests/hmh-feel-trauma-shake.test.mjs',
+  'tests/hmh-feel-audio-mix.test.mjs',
   'apps/chikun/src/course-v2-art.mjs',
   'apps/chikun/src/course-v2-view.mjs',
   'tests/chikun-course-two-art.test.mjs',

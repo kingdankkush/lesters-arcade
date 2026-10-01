@@ -23,6 +23,9 @@ export function createHmhRebootPortalLifecycle({
   finalizeFree = () => {},
   syncUi = () => {},
   onError = () => {},
+  // 2.1: the child reports a boss-engaged music duck on game:state; the
+  // parent owns the shared jukebox element and applies it there.
+  onMusicDuck = () => {},
 } = {}) {
   if (!combat || typeof combat !== 'object') throw new TypeError('combat state is required');
   let pendingScoreResult = null;
@@ -108,6 +111,7 @@ export function createHmhRebootPortalLifecycle({
       combat.paused = payload.paused;
       combat.runXp = payload.xp;
       combat.runLevel = payload.level;
+      onMusicDuck(payload.musicDuck === true);
       getAdapter()?.emitStatUpdate?.({
         score: payload.score,
         kills: payload.kills,

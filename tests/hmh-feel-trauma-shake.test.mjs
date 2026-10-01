@@ -144,7 +144,7 @@ test('main.mjs routes every impulse through the feel layer and keeps shake on th
   assert.match(main, /import\('\.\/hmh-feel\.mjs'\)/, 'the feel layer is a lazy chunk');
   assert.doesNotMatch(main, /from '\.\/hmh-feel\.mjs'/, 'never a static import');
   assert.doesNotMatch(main, /SHAKE_DECAY_TICKS|shakeStartTick|shakeMagnitude/, 'the linear 9-tick model is gone');
-  assert.match(main, /hmhFeel\?\.reset\(\);\n\s*world\.position\.set\(0, 0\);/, 'restart clears trauma');
+  assert.match(main, /hmhFeel\?\.reset\(\);[^]{0,80}world\.position\.set\(0, 0\);/, 'restart clears trauma');
   // Aim safety: the camera is never shaken.
   assert.doesNotMatch(main, /camera\.shake[XY]\s*=/);
 });
