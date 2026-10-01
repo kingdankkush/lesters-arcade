@@ -102,14 +102,44 @@ function checkHistory(game, gameId, history) {
 // the game's own entries, then the parent-owned ones (arcade.mjs). The history
 // lists parent-owned unlocks from every cabinet (historyFieldsFor shared ids),
 // so a parent-owned entry is earned once per wallet, not once per cabinet.
-export function deriveEarnedAchievements(gameId, verifiedRun, history) {
+//
+// Review hold (owner-approved hardening, HMH-RANKED-V8-TEN-AREA review): an HMH
+// run whose plausibility carries a soft near-ceiling flag (any
+// `*-near-ceiling`, any `*-above-selected-upgrades`, or `kills-near-capacity`)
+// earns no HMH NFT trophy (every `nft: true` HMH entry: Full Roster Run, Boss
+// Rush Fifty and the run-count mythics). Those ids are pending review instead
+// (pendingReviewAchievements); every other achievement is unchanged. A run with
+// no plausibility (the browser's own runs, Chikun, STACKED) is never held.
+export const HMH_REVIEW_HOLD_FLAG = /^(?:[a-z0-9-]+-near-ceiling|[a-z0-9-]+-above-selected-upgrades|kills-near-capacity)$/;
+export function achievementReviewFlags(gameId, verifiedRun) {
+  if (gameId !== 'lester-blaster') return Object.freeze([]);
+  const flags = Array.isArray(verifiedRun?.plausibility?.flags) ? verifiedRun.plausibility.flags : [];
+  return Object.freeze(flags.filter((flag) => flag?.severity === 'flag' && HMH_REVIEW_HOLD_FLAG.test(String(flag.id))).map((flag) => flag.id));
+}
+
+function deriveOutcome(gameId, verifiedRun, history) {
   const game = gameOf(gameId);
   if (!verifiedRun || verifiedRun.gameId !== gameId) throw new Error(`verified run gameId must be ${gameId}`);
   if (!verifiedRun.stats || typeof verifiedRun.stats !== 'object') throw new Error('verified run stats are required');
   checkHistory(game, gameId, history);
   const unlocked = new Set(history.unlockedIds);
   const earns = (entry) => entry.available && !unlocked.has(entry.id) && entry.criteria(verifiedRun, history);
-  return Object.freeze([...game.entries.filter(earns), ...PARENT.entries.filter(earns)]);
+  const candidates = [...game.entries.filter(earns), ...PARENT.entries.filter(earns)];
+  const held = achievementReviewFlags(gameId, verifiedRun).length > 0;
+  const isHeld = (entry) => held && entry.nft === true && game.entries.includes(entry);
+  return {
+    earned: Object.freeze(candidates.filter((entry) => !isHeld(entry))),
+    pendingReview: Object.freeze(candidates.filter(isHeld)),
+  };
+}
+
+export function deriveEarnedAchievements(gameId, verifiedRun, history) {
+  return deriveOutcome(gameId, verifiedRun, history).earned;
+}
+
+// The HMH NFT trophies this run would earn but holds for review (see above).
+export function pendingReviewAchievements(gameId, verifiedRun, history) {
+  return deriveOutcome(gameId, verifiedRun, history).pendingReview;
 }
 
 // keccak256 of the UTF-8 id, as AchievementRegistry keys achievements (§2.1 style).
