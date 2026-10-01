@@ -301,7 +301,7 @@ let refreshWorldDesignGateNavigation, buildWorldDesignHazardHits;
 let createMissionState, stepMissionObjectives, settleMissionObjective, missionDockStep, missionActiveBlockers, missionSealTargets,
   applyMissionSealDamage, missionHiddenSecretProps;
 let createWorldDesignLife, prepareWorldDesignEnemyPose, createWorldDesignPacing, stepWorldDesignPacing, loadWorldDesignAppearance;
-let resolveLevelBriefing, applyLevelBriefing, createUpgradePanel, RUN_UPGRADE_CONTENT, runUpgradeContent;
+let resolveLevelBriefing, applyLevelBriefing, applyLevelPresentation, createUpgradePanel, RUN_UPGRADE_CONTENT, runUpgradeContent;
 // Genesis Seals and wave-1 evolutions (design package 8.4/8.5, S1.7).
 let createBossDrops, dropGenesisSeal, collectGenesisSeals, resolveGenesisSeal, openRunEvolutionOffer, rerollRunEvolutionSlot,
   selectRunEvolution, evolveBankedSealOnMastery;
@@ -365,7 +365,7 @@ function loadLazyRuntimeModules() {
     ({ createWorldDesignLife, prepareWorldDesignEnemyPose } = life);
     ({ createWorldDesignPacing, stepWorldDesignPacing } = pacing);
     ({ loadWorldDesignAppearance } = nativeAssets);
-    ({ resolveLevelBriefing, applyLevelBriefing } = briefing);
+    ({ resolveLevelBriefing, applyLevelBriefing, applyLevelPresentation } = briefing);
     ({ createUpgradePanel } = panel);
     ({ RUN_UPGRADE_CONTENT, runUpgradeContent } = content);
     ({ createBossDrops, dropGenesisSeal, collectGenesisSeals, resolveGenesisSeal, openRunEvolutionOffer, rerollRunEvolutionSlot,
@@ -3512,6 +3512,7 @@ async function boot() {
     if (entryLabel) entryLabel.textContent = runtimePlayerSpawn.name ?? 'Frontier Relay';
     applyLevelBriefing(startupPanel, resolveLevelBriefing({ entryId: runtimePlayerSpawn.id, seed: payload.session.seed }));
     if (HMH_WORLD_CONTEXT.briefing) applyLevelBriefing(startupPanel, resolveLevelBriefing({ entryId: runtimePlayerSpawn.id, seed: payload.session.seed, briefing: HMH_WORLD_CONTEXT.briefing }));
+    if (HMH_WORLD_CONTEXT.briefing?.presentation) applyLevelPresentation(document, HMH_WORLD_CONTEXT.briefing.presentation);
     startupGate = createStartupArtGate(performance.now(), { requireEntry: !evidenceSafeEnabled });
     const entryButton = startupPanel?.querySelector?.('#hmhStartupEnter');
     if (entryButton) { entryButton.disabled = true; entryButton.textContent = 'Preparing Level 1…'; }
@@ -5107,7 +5108,7 @@ async function boot() {
         if (event.type === 'tell' || event.type === 'halt') {
           if (settings.captionCriticalAudio) {
             const warning = event.type === 'halt' ? `trading halt, ${event.phaseId.replaceAll('-', ' ')}` : event.tier === 'super' ? 'super attack' : event.attackId.replaceAll('-', ' ');
-            setAccessibleCombatStatus(`Liquidator: ${warning}.`);
+            setAccessibleCombatStatus(`${TEN_AREA_COMBAT?.bossCaptionName(event.bossId) ?? 'Liquidator'}: ${warning}.`);
           }
           continue;
         }

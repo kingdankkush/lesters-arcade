@@ -11,7 +11,30 @@ export const HMH_FRONTIER_PREVIEW_COPY = Object.freeze({
   title: 'New Frontier (preview)',
   gameplay: 'New Frontier preview: unfinished ten-area world, Free and unranked; no result, leaderboard or share card.',
   result: 'Preview run: New Frontier runs are unranked and have no result or share card.',
+  // The level intro the preview shows instead of the legacy Forked Frontier
+  // card (QA sweep 2026-10-01). The world's proposed name matches the child's
+  // loading panel (apps/hmh-reboot/src/world-v2-gameplay.mjs).
+  intro: Object.freeze({
+    eyebrow: 'Hard Money Heroes // New Frontier (preview)',
+    title: 'The Litecoin Frontier',
+    body: 'Ten areas joined by roads, from the MWEB Meadows to the Fork Fortress. Light the Meadows relay, find a cache in every area and take on the Liquidator, the Rug Pull Baron, the Lockkeeper and the 51% Foreman in their courts. This world is unfinished: runs are Free and unranked, with no result, leaderboard or share card.',
+  }),
 });
+
+// Swaps the level intro card's eyebrow, title and story for the preview and
+// restores the page's own copy for an ordinary run. Returns whether the
+// preview copy is showing.
+export function applyHmhFrontierPreviewIntro(section, active) {
+  const card = section?.querySelector?.('.level-intro-card');
+  if (!card) return false;
+  const slots = [['eyebrow', card.querySelector('.eyebrow')], ['title', card.querySelector('h2')], ['body', card.querySelector('h2 + p')]];
+  for (const [key, element] of slots) {
+    if (!element) continue;
+    if (element.dataset.legacyCopy === undefined) element.dataset.legacyCopy = element.textContent;
+    element.textContent = active ? HMH_FRONTIER_PREVIEW_COPY.intro[key] : element.dataset.legacyCopy;
+  }
+  return Boolean(active);
+}
 
 export function mountHmhFrontierPreviewOption({ documentRef = document, container, before = null, onStart } = {}) {
   if (!container?.append) throw new TypeError('HMH frontier preview needs the mode-select container');

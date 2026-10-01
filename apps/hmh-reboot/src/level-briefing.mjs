@@ -96,6 +96,38 @@ export function resolveLevelBriefing({ entryId, seed, briefing = LEVEL_ONE_BRIEF
   });
 }
 
+// A world other than the legacy map names itself on the loading panel and the
+// pause title (the static HTML carries the legacy Forked Frontier copy).
+// Projection only, like the briefing slots.
+export function applyLevelPresentation(root, presentation) {
+  if (!root?.querySelector || !presentation) return 0;
+  let applied = 0;
+  const set = (selector, text) => {
+    const node = root.querySelector(selector);
+    if (!node || typeof text !== 'string' || text.length === 0) return;
+    node.textContent = text;
+    applied += 1;
+  };
+  set('.hmh-startup-intro .hmh-panel-kicker span', presentation.kicker);
+  set('.hmh-startup-intro h1', presentation.title);
+  set('.hmh-startup-story', presentation.story);
+  set('#hmhPauseTitle', presentation.pauseTitle);
+  const route = root.querySelector('.hmh-startup-route');
+  const doc = typeof root.createElement === 'function' ? root : route?.ownerDocument;
+  if (route && typeof doc?.createElement === 'function' && Array.isArray(presentation.route) && presentation.route.length > 0) {
+    const nodes = [];
+    presentation.route.forEach((label, index) => {
+      if (index > 0) nodes.push(doc.createElement('i'));
+      const span = doc.createElement('span');
+      span.textContent = label;
+      nodes.push(span);
+    });
+    route.replaceChildren(...nodes);
+    applied += 1;
+  }
+  return applied;
+}
+
 // Fills the loading panel's briefing slots. A missing panel or slot is fine:
 // the static HTML copy stays as the truthful default.
 export function applyLevelBriefing(panel, briefing) {

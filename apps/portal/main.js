@@ -68,7 +68,7 @@ import { createOfficialAppRoutes } from './src/routes/official-app-routes.mjs';
 import { createLazyLeaderboardRoute, createLazyProfileRoute } from './src/routes/lazy-routes.mjs';
 import { buildHmhRunDetailsModel, buildHmhRunHistoryModel } from './src/hmh-run-history.mjs';
 import { wireHmhFreeQuickplay } from './src/hmh-free-quickplay.mjs';
-import { HMH_FRONTIER_PREVIEW_COPY, mountHmhFrontierPreviewOption } from './src/hmh-frontier-preview.mjs';
+import { HMH_FRONTIER_PREVIEW_COPY, applyHmhFrontierPreviewIntro, mountHmhFrontierPreviewOption } from './src/hmh-frontier-preview.mjs';
 import { createOfficialPlayRoutes } from './src/routes/official-play-routes.mjs';
 import {
   districtTemplateContextForCell,
@@ -5103,6 +5103,7 @@ let levelIntroArt = null;
 let levelIntroArtHero = null;
 let levelIntroArtLoading = false;
 function renderLevelIntroArt(active) {
+  if (active) applyHmhFrontierPreviewIntro(dom.officialLevelIntro, hmhFrontierPreviewRequested);
   const heroId = hmhRebootHeroId();
   if (levelIntroArt && (!active || levelIntroArtHero !== heroId)) { levelIntroArt.stop(); levelIntroArt = null; }
   if (!active || levelIntroArt || levelIntroArtLoading || !dom.officialLevelIntroArt) return;

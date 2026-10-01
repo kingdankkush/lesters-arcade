@@ -68,7 +68,7 @@ test('the option renders as a labelled second Free start with an honest note, HM
 test('every preview copy line says it is unranked and has no result', () => {
   for (const [key, copy] of Object.entries(HMH_FRONTIER_PREVIEW_COPY)) {
     if (key === 'button' || key === 'title') continue;
-    assert.match(copy, /unranked/i, key);
+    assert.match(key === 'intro' ? copy.body : copy, /unranked/i, key);
   }
   assert.match(HMH_FRONTIER_PREVIEW_COPY.result, /^Preview run/);
   assert.match(HMH_FRONTIER_PREVIEW_COPY.result, /no result or share card/);
@@ -111,4 +111,23 @@ test('main.js labels a preview run and offers it no Free share card', () => {
   const summary = main.slice(main.indexOf('function renderGameOverSummary()'), main.indexOf('const loopNote = el('));
   assert.match(summary, /if \(hmhFrontierPreviewActive\) appendText\(dom\.combatGameOverSummary, 'p', HMH_FRONTIER_PREVIEW_COPY\.result, 'game-over-summary-copy hmh-frontier-preview-label'\);\n  else if \(!win && \(currentSession\?\.mode \?\? officialSelectedMode \?\? 'free'\) === 'free'\) \{/);
   assert.equal((summary.match(/createShareRow\(/g) ?? []).length, 1, 'one Free share row, inside the non-preview branch');
+});
+
+// QA sweep 2026-10-01: the preview's level intro said "Level 1: The Forked
+// Frontier ... the Liquidator's yard". It shows the ten-area world's copy and
+// gives the page's own copy back for an ordinary Free or Ranked run.
+test('the level intro shows the preview copy only for a preview start', async () => {
+  const { applyHmhFrontierPreviewIntro } = await import('../apps/portal/src/hmh-frontier-preview.mjs');
+  const el = (text) => ({ textContent: text, dataset: {} });
+  const eyebrow = el('Hard Money Heroes // Level 1'), title = el('Level 1: The Forked Frontier'), body = el('The relay has gone silent.');
+  const card = { querySelector: (selector) => ({ '.eyebrow': eyebrow, h2: title, 'h2 + p': body })[selector] ?? null };
+  const section = { querySelector: (selector) => (selector === '.level-intro-card' ? card : null) };
+  assert.equal(applyHmhFrontierPreviewIntro(section, true), true);
+  assert.deepEqual([eyebrow.textContent, title.textContent, body.textContent], [HMH_FRONTIER_PREVIEW_COPY.intro.eyebrow, HMH_FRONTIER_PREVIEW_COPY.intro.title, HMH_FRONTIER_PREVIEW_COPY.intro.body]);
+  assert.doesNotMatch(`${title.textContent} ${body.textContent}`, /Forked|yard/);
+  assert.match(body.textContent, /unranked/);
+  assert.equal(applyHmhFrontierPreviewIntro(section, false), false);
+  assert.deepEqual([eyebrow.textContent, title.textContent, body.textContent], ['Hard Money Heroes // Level 1', 'Level 1: The Forked Frontier', 'The relay has gone silent.']);
+  assert.equal(applyHmhFrontierPreviewIntro(null, true), false);
+  assert.match(main, /if \(active\) applyHmhFrontierPreviewIntro\(dom\.officialLevelIntro, hmhFrontierPreviewRequested\);/);
 });

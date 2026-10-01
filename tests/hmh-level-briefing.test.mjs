@@ -7,7 +7,7 @@ import { WORLD_DESIGN_SITES } from '../apps/hmh-reboot/src/world-design-encounte
 import { buildAuthoredPointOfInterestPlacements } from '../apps/hmh-reboot/src/authored-prop-atlas.mjs';
 import { HMH_WEAPON_DEFINITIONS } from '../apps/hmh-reboot/src/weapon-system.mjs';
 import {
-  LEVEL_ONE_BRIEFING, BRIEFING_SLOTS, selectBriefingTip, resolveLevelBriefing, applyLevelBriefing,
+  LEVEL_ONE_BRIEFING, BRIEFING_SLOTS, selectBriefingTip, resolveLevelBriefing, applyLevelBriefing, applyLevelPresentation,
 } from '../apps/hmh-reboot/src/level-briefing.mjs';
 
 const OCTANTS = ['east', 'south-east', 'south', 'south-west', 'west', 'north-west', 'north', 'north-east'];
@@ -137,7 +137,7 @@ test('the loading panel carries the four briefing slots and the runtime fills th
   const source = readFileSync(new URL('../apps/hmh-reboot/src/main.mjs', import.meta.url), 'utf8');
   // S0.2: the briefing is a lazy runtime module, resident before any session starts.
   assert.match(source, /import\('\.\/level-briefing\.mjs'\)/);
-  assert.match(source, /\(\{ resolveLevelBriefing, applyLevelBriefing \} = briefing\);/);
+  assert.match(source, /\(\{ resolveLevelBriefing, applyLevelBriefing, applyLevelPresentation \} = briefing\);/);
   assert.match(source, /applyLevelBriefing\(startupPanel, resolveLevelBriefing\(\{ entryId: runtimePlayerSpawn\.id, seed: payload\.session\.seed \}\)\);/);
   const css = readFileSync(new URL('../apps/portal/hmh-reboot/styles.css', import.meta.url), 'utf8');
   assert.match(css, /\.hmh-startup-brief \{ display:grid;/);
@@ -160,4 +160,26 @@ test('briefings name the havens and the trap that their cited machinery opens', 
 test('the briefing tells the player that bosses drop Genesis Seals', () => {
   assert.ok(LEVEL_ONE_BRIEFING.tips.includes('Bosses drop Genesis Seals. A Seal evolves a gun you have mastered.'));
   assert.match(LEVEL_ONE_BRIEFING.entries.yard.supply, /Genesis Seal/);
+});
+
+// QA sweep 2026-10-01: the ten-area Free world kept the legacy "The Forked
+// Frontier" kicker, title, story, route chips and pause title.
+test('a non-legacy world replaces the legacy loading-panel title, story, route and pause title', async () => {
+  const { WORLD_V2_PRESENTATION } = await import('../apps/hmh-reboot/src/world-v2-gameplay.mjs');
+  const html = readFileSync(new URL('../apps/portal/hmh-reboot/index.html', import.meta.url), 'utf8');
+  assert.match(html, /<h1>The Forked Frontier<\/h1>/, 'legacy default stays in the static page');
+  const node = () => ({ textContent: '' });
+  const nodes = { '.hmh-startup-intro .hmh-panel-kicker span': node(), '.hmh-startup-intro h1': node(), '.hmh-startup-story': node(), '#hmhPauseTitle': node() };
+  const route = { children: [], ownerDocument: { createElement: (tag) => ({ tag, textContent: '' }) }, replaceChildren(...items) { this.children = items; } };
+  const root = { querySelector: (selector) => (selector === '.hmh-startup-route' ? route : nodes[selector] ?? null) };
+  assert.equal(applyLevelPresentation(root, WORLD_V2_PRESENTATION), 5);
+  const text = Object.values(nodes).map((entry) => entry.textContent).join(' ');
+  assert.doesNotMatch(text, /Forked|relay has gone quiet/);
+  assert.equal(nodes['.hmh-startup-intro h1'].textContent, WORLD_V2_PRESENTATION.title);
+  assert.deepEqual(route.children.filter((item) => item.tag === 'span').map((item) => item.textContent), WORLD_V2_PRESENTATION.route);
+  assert.equal(route.children.filter((item) => item.tag === 'i').length, WORLD_V2_PRESENTATION.route.length - 1);
+  assert.equal(applyLevelPresentation(null, WORLD_V2_PRESENTATION), 0);
+  assert.equal(applyLevelPresentation(root, null), 0);
+  const source = readFileSync(new URL('../apps/hmh-reboot/src/main.mjs', import.meta.url), 'utf8');
+  assert.match(source, /if \(HMH_WORLD_CONTEXT\.briefing\?\.presentation\) applyLevelPresentation\(document, HMH_WORLD_CONTEXT\.briefing\.presentation\);/);
 });
