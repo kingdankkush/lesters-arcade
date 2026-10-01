@@ -26,11 +26,11 @@ test('the binding reads the world hooks, loads every plan lazily, paints below t
   assert.equal(binding.id, AREA_ART_BINDING_ID);
   assert.equal(f.host.getChildIndex(binding.root), f.host.getChildIndex(f.before) - 1, 'area art root sits directly below the decal layer');
   const snapshot = binding.snapshot();
-  assert.deepEqual(snapshot.plans.map(p => p.areaId).sort(), ['mweb-meadows', 'rugpull-woods', 'world-roads']);
+  assert.deepEqual(snapshot.plans.map(p => p.areaId).sort(), ['hashwood-river', 'mweb-meadows', 'rugpull-woods', 'world-roads']);
   assert.ok(snapshot.blockerIds.includes('mweb-meadows-garden-home') && snapshot.blockerIds.includes('rugpull-woods-supply-tent'), 'decorated solids report their collision blocker ids');
   assert.ok(!snapshot.blockerIds.includes('mweb-meadows-relay-equipment'), 'the relay keeps its production drawing');
   const pages = [...new Set(f.loaded.filter(u => u.includes('tripo-props-hd-')))];
-  assert.equal(pages.length, 4, 'four distinct kit pages across the three plans');
+  assert.equal(pages.length, 4, 'four distinct kit pages across the four plans (River shares the Woods pages)');
   assert.ok(f.loaded.every(u => !u.includes('pickups')));
   assert.ok(f.attached.size >= snapshot.blockerIds.length, 'solids attached before any camera update');
   const camera = { x: 17500, y: 11600, zoom: 0.8, groundZ: 0, shakeX: 0, shakeY: 0 }, view = { width: 1440, height: 900 };

@@ -6,6 +6,8 @@ import { validateAreaArtPlan, pointInPolygon, distanceToPolyline, distanceToSegm
 import { createRugpullWoodsArtPlan, RUGPULL_WOODS_PAGES } from '../apps/hmh-reboot/src/world-v2-area-plans/rugpull-woods.mjs';
 import { createMwebMeadowsArtPlan, MWEB_MEADOWS_PAGES } from '../apps/hmh-reboot/src/world-v2-area-plans/mweb-meadows.mjs';
 import { createWorldRoadsArtPlan, ROAD_CLEARANCE_FRACTION } from '../apps/hmh-reboot/src/world-v2-area-plans/world-roads.mjs';
+// Lane B area plans (briefs 06-09).
+import { createHashwoodRiverArtPlan, HASHWOOD_RIVER_PAGES, RIVER_STONE_TINT } from '../apps/hmh-reboot/src/world-v2-area-plans/hashwood-river.mjs';
 
 const kit = JSON.parse(fs.readFileSync(new URL('../apps/portal/assets/generated/hmh-reboot-tripo-props-hd/hmh-tripo-props-hd.json', import.meta.url), 'utf8'));
 const world = createGreyboxWorld(), worldBefore = JSON.stringify(world);
@@ -16,7 +18,7 @@ const routeSegments = areaId => world.areas.find(a => a.id === areaId).inspectio
 const sites = areaId => world.sites.filter(s => s.areaId === areaId && ['objective', 'arena-exit', 'secret', 'height-option', 'area'].includes(s.kind));
 
 test('every authored plan validates against the HD kit, is deterministic and leaves the world untouched', () => {
-  for (const [make, expected] of [[createRugpullWoodsArtPlan, 'rugpull-woods'], [createMwebMeadowsArtPlan, 'mweb-meadows'], [createWorldRoadsArtPlan, 'world-roads']]) {
+  for (const [make, expected] of [[createRugpullWoodsArtPlan, 'rugpull-woods'], [createMwebMeadowsArtPlan, 'mweb-meadows'], [createWorldRoadsArtPlan, 'world-roads'], [createHashwoodRiverArtPlan, 'hashwood-river']]) {
     const plan = make(world), again = make(createGreyboxWorld());
     assert.equal(plan.areaId, expected);
     assert.ok(Object.isFrozen(plan) && Object.isFrozen(plan.props));
@@ -29,6 +31,7 @@ test('every authored plan validates against the HD kit, is deterministic and lea
   assert.equal(JSON.stringify(world), worldBefore);
   assert.equal(createRugpullWoodsArtPlan({ ...world, areas: [] }), null);
   assert.equal(createMwebMeadowsArtPlan({ ...world, areas: [] }), null);
+  assert.equal(createHashwoodRiverArtPlan({ ...world, areas: [] }), null);
 });
 
 test('Rugpull Woods roots trees on matching-height banks, keeps understory off trails and dresses every camp solid with HD cards', () => {
@@ -125,4 +128,55 @@ test('page budgets stay within two exclusive kit pages plus the shared road page
   }
   const resident = new Set(rows.flatMap(s => s.pages));
   assert.ok(resident.size <= 4, 'Meadows + Woods + roads together never exceed four distinct kit pages');
+});
+
+test('Hashwood River follows brief 06: conifers on closed banks, iris on the damp channel edges, stone arches on both north-south crossings, a rock shelf landmark and a worn marquee clearing', () => {
+  const plan = createHashwoodRiverArtPlan(world), summary = validateAreaArtPlan(plan, kit), river = world.areas.find(a => a.id === 'hashwood-river');
+  assert.deepEqual(plan.pages, HASHWOOD_RIVER_PAGES);
+  assert.equal(summary.budget.exclusiveKitPages, 2);
+  assert.equal(summary.budget.decodedBytes, 3 * 16777216);
+  assert.ok(summary.tiles.length <= 4, summary.tiles.join(','));
+  assert.ok(!summary.sources.includes('b2-42') && !summary.sources.includes('b2-44'), 'structures-00 bridge cards stay out of the two-page budget');
+  const water = world.pieces.filter(p => p.kind === 'water').map(p => p.visible.vertices);
+  const segments = routeSegments('hashwood-river'), areaSites = sites('hashwood-river');
+  // Both authored crossings run north-south, so the vertical-span stone arch stands on each deck.
+  const arches = summary.props.filter(p => p.source === 'b2-41');
+  assert.equal(arches.length, 2);
+  for (const [name, arch] of [['city', arches[0]], ['woods', arches[1]]]) {
+    const bridge = world.pieces.find(p => p.id === `hashwood-river-${name}-bridge`), b = bridge.visible.bounds;
+    const ramp = world.pieces.find(p => p.id === `hashwood-river-${name}-north-ramp`);
+    assert.equal(ramp.surface.axis, 'y', 'the crossing is authored north-south');
+    assert.equal(arch.x, (b.minX + b.maxX) / 2); assert.equal(arch.y, b.maxY + 10); assert.equal(arch.fade, true); assert.equal(arch.shadow, false);
+    assert.ok(arch.height >= 400 && arch.height <= 460);
+  }
+  const conifers = summary.props.filter(p => ['b2-72', 'b1-50'].includes(p.source)), iris = summary.props.filter(p => p.source === 'b1-09');
+  assert.ok(conifers.length >= 120 && conifers.length <= 220, `${conifers.length} conifers`);
+  assert.ok(conifers.every(p => p.source !== 'b2-72' || p.tint === 0xd6dcc0), 'conifer trio tinted toward the bible green through the plan');
+  assert.ok(iris.length >= 30, `${iris.length} iris`);
+  for (const plant of iris) assert.ok(water.some(vertices => vertices.some((a, i) => distanceToSegment(plant.x, plant.y, a, vertices[(i + 1) % vertices.length]) < 130)), `${plant.id} hugs the channel edge`);
+  const shelf = world.pieces.find(p => p.id === 'hashwood-river-waterfall-shelf');
+  const arch = summary.props.find(p => p.source === 'b2-76');
+  assert.ok(arch && pointInPolygon(arch.x, arch.y, shelf.blocker.shape.vertices) && arch.groundZ === shelf.visible.height && arch.tint === RIVER_STONE_TINT, 'the rock arch crowns the waterfall shelf');
+  assert.ok(summary.props.filter(p => p.source === 'b1-42').length >= 5, 'sandstone stacks');
+  const byPiece = Object.fromEntries(summary.solids.map(s => [s.pieceId.slice('hashwood-river-'.length), s]));
+  assert.equal(byPiece['marquee-backing'].card.source, 'b1-13'); assert.equal(byPiece['court-low-stack'].card.source, 'b2-79'); assert.equal(byPiece['capstan-house'].card.source, 'b2-67');
+  assert.equal(byPiece['waterfall-shelf'].style, 'bank'); assert.equal(byPiece['waterfall-shelf'].roof, 'rock');
+  for (const name of ['marquee-west-post', 'marquee-east-post', 'court-tall-screen']) assert.equal(byPiece[name].style, 'stakes', name);
+  assert.ok(summary.props.some(p => p.source === 'b2-79'), 'log piles frame the clearing');
+  assert.ok(summary.trails.length >= 20 && summary.zones.length >= 8);
+  // Every placement outside the two documented bridge silhouettes honours the guard.
+  for (const prop of summary.props) {
+    if (prop.source === 'b2-41') continue;
+    assert.ok(prop.x >= plan.bounds.minX && prop.x <= plan.bounds.maxX && prop.y >= plan.bounds.minY && prop.y <= plan.bounds.maxY);
+    const bank = inSolid(prop.x, prop.y);
+    if (prop.groundZ > 0) { assert.ok(bank && bank.visible.height === prop.groundZ, `${prop.id} roots on a matching-height bank`); continue; }
+    assert.equal(bank, null, `${prop.id} outside blockers`);
+    for (const vertices of water) assert.equal(pointInPolygon(prop.x, prop.y, vertices), false, `${prop.id} out of water`);
+    for (const { a, b } of segments) assert.ok(distanceToSegment(prop.x, prop.y, a, b) >= 64, `${prop.id} clears inspection routes`);
+    for (const road of world.roads) assert.ok(distanceToPolyline(prop.x, prop.y, road.points) >= road.width / 2, `${prop.id} clears the road`);
+    for (const site of areaSites) assert.ok(Math.hypot(site.x - prop.x, site.y - prop.y) >= 140, `${prop.id} clears ${site.id}`);
+    assert.ok(Math.hypot(prop.x - world.spawn.x, prop.y - world.spawn.y) >= world.protectedSpawnRadius);
+  }
+  const centre = summary.props.filter(p => Math.abs(p.x - river.center.x) < 700 && Math.abs(p.y - river.center.y) < 700 && p.source !== 'b2-41');
+  assert.ok(centre.every(p => p.height <= 60 || Math.abs(p.y - river.center.y) > 300), 'the lower bank centre keeps its sightlines');
 });
