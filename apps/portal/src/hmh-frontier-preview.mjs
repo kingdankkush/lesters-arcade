@@ -6,10 +6,11 @@
 // (hmh-reboot-host.mjs) for that session only. The 2.0.x child never records
 // a run summary, a score or an achievement on that world, so the copy says so.
 //
-// From game 2.1.0 the ten-area world is Level 1 for Free and Ranked, so the
-// option becomes "Original map (Free only)": the same second Free start, now
-// requesting the legacy six-district map, which the 2.1.0 child runs for an
-// unranked Free session only, with the usual Free result and share card.
+// From game 2.1.0 the ten-area world is Level 1 for Free and Ranked and the
+// mode select has no world option at all: the owner retired the "Play the
+// original map" start in 2.1.1, so a 2.1.x portal never requests a world.
+// The child still resolves a direct world=legacy&mode=free URL, which only
+// the visual-regression gate uses.
 // No wallet, chain, storage or network involvement either way.
 import { GAME_VERSION } from './version-tracking.mjs';
 import { isHmhV8GameVersion } from '../../../sdk/hmh-run-v8-build.mjs';
@@ -43,10 +44,9 @@ export const HMH_TEN_AREA_LEVEL_ONE_INTRO = Object.freeze({
 
 // Which level intro the card shows: before 2.1.0 the preview start gets the
 // preview copy and an ordinary run the page's own (legacy) card; from 2.1.0
-// an ordinary run gets the ten-area Level 1 copy and the original-map start
-// the page's own Forked Frontier card.
+// every run gets the ten-area Level 1 copy.
 export function hmhLevelIntroMode({ levelOne = HMH_TEN_AREA_LEVEL_ONE, optionRequested = false } = {}) {
-  if (levelOne) return optionRequested ? 'legacy' : 'level-one';
+  if (levelOne) return 'level-one';
   return optionRequested ? 'preview' : 'legacy';
 }
 
@@ -67,16 +67,11 @@ export function applyHmhFrontierPreviewIntro(section, mode) {
   return resolved;
 }
 
-export const HMH_ORIGINAL_MAP_COPY = Object.freeze({
-  button: 'Play the original map (Free only)',
-  note: 'The six-district Forked Frontier from before the ten-area world. Free Mode only, with the usual result and share card; Ranked runs play the ten-area world.',
-  title: 'Original map (Free only)',
-});
-
-// What the option requests for this portal's child, and how it reads.
+// What the option requests for this portal's child, and how it reads; null
+// from 2.1.0, where the mode select shows no world option.
 export function hmhWorldOption(levelOne = HMH_TEN_AREA_LEVEL_ONE) {
   return levelOne
-    ? Object.freeze({ world: 'legacy', copy: HMH_ORIGINAL_MAP_COPY, ids: Object.freeze({ root: 'hmhOriginalMapOption', button: 'hmhOriginalMapButton', note: 'hmhOriginalMapNote' }) })
+    ? null
     : Object.freeze({ world: 'ten-area', copy: HMH_FRONTIER_PREVIEW_COPY, ids: Object.freeze({ root: 'hmhFrontierPreviewOption', button: 'hmhFrontierPreviewButton', note: 'hmhFrontierPreviewNote' }) });
 }
 export const HMH_WORLD_OPTION = hmhWorldOption();
@@ -84,6 +79,7 @@ export const HMH_WORLD_OPTION = hmhWorldOption();
 export function mountHmhFrontierPreviewOption({ documentRef = document, container, before = null, onStart, option = HMH_WORLD_OPTION } = {}) {
   if (!container?.append) throw new TypeError('HMH frontier preview needs the mode-select container');
   if (typeof onStart !== 'function') throw new TypeError('HMH frontier preview needs a Free start authority');
+  if (!option) throw new TypeError('HMH frontier preview has no world option for this game version');
   const root = documentRef.createElement('div');
   root.id = option.ids.root;
   root.className = 'hmh-frontier-preview';

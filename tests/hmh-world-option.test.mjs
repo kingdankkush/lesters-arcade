@@ -1,15 +1,15 @@
 // The HMH mode-select world option across the 2.1.0 version gate
 // (docs/2.0/slices/HMH-RANKED-V8-TEN-AREA.md): before 2.1.0 it is the New
 // Frontier preview (tests/hmh-frontier-preview.test.mjs); from 2.1.0, where
-// the ten-area world is Level 1 for Free and Ranked, it is "Original map
-// (Free only)", which asks the host for the legacy map for an unranked Free
-// session, and the child honours exactly that request.
+// the ten-area world is Level 1 for Free and Ranked, there is no option: the
+// owner retired "Play the original map (Free only)" in 2.1.1, so the portal
+// never requests a world. The child still honours a direct world=legacy
+// request for an unranked Free session (the visual-regression gate's URL).
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { readFileSync } from 'node:fs';
 import {
   HMH_FRONTIER_PREVIEW_COPY,
-  HMH_ORIGINAL_MAP_COPY,
   HMH_TEN_AREA_LEVEL_ONE,
   HMH_WORLD_OPTION,
   hmhWorldOption,
@@ -53,25 +53,12 @@ test('the portal and the child read one gate: the game version', () => {
   assert.deepEqual(HMH_WORLD_OPTION, hmhWorldOption(HMH_TEN_AREA_LEVEL_ONE));
 });
 
-test('from 2.1.0 the option is "Original map (Free only)" and says the run is an ordinary Free run', () => {
-  const option = hmhWorldOption(true);
-  assert.equal(option.world, HMH_ORIGINAL_MAP_WORLD);
-  assert.equal(option.world, LEGACY_WORLD_VALUE);
-  assert.equal(option.copy, HMH_ORIGINAL_MAP_COPY);
-  assert.equal(option.copy.title, 'Original map (Free only)');
-  for (const text of Object.values(option.copy)) assert.doesNotMatch(text, /preview|unfinished|no result|no share card/i, text);
-  assert.match(option.copy.note, /Free Mode only/);
-  assert.match(option.copy.note, /result and share card/);
+test('from 2.1.0 the mode select has no world option, and mounting one is refused', () => {
+  assert.equal(hmhWorldOption(true), null);
   const container = node('section');
-  const starts = [];
-  const mounted = mountHmhFrontierPreviewOption({ documentRef: { createElement: node }, container, onStart: () => starts.push('free-original'), option });
-  assert.equal(mounted.root.id, 'hmhOriginalMapOption');
-  assert.equal(mounted.button.id, 'hmhOriginalMapButton');
-  assert.equal(mounted.button.textContent, 'Play the original map (Free only)');
-  assert.equal(mounted.button.attrs['aria-describedby'], 'hmhOriginalMapNote');
-  assert.equal(mounted.note.textContent, HMH_ORIGINAL_MAP_COPY.note);
-  mounted.button.click();
-  assert.deepEqual(starts, ['free-original']);
+  assert.throws(() => mountHmhFrontierPreviewOption({ documentRef: { createElement: node }, container, onStart: () => {}, option: null }), TypeError);
+  assert.equal(container.children.length, 0);
+  if (HMH_TEN_AREA_LEVEL_ONE) assert.equal(HMH_WORLD_OPTION, null);
   // Before 2.1.0 the slot keeps the preview.
   const preview = hmhWorldOption(false);
   assert.equal(preview.world, HMH_FRONTIER_PREVIEW_WORLD);
@@ -100,12 +87,13 @@ test('the host forwards a world request only for an unranked Free session, and t
   assert.equal(preview.dataset.world, TEN_AREA_WORLD_VALUE);
 });
 
-test('main.js labels an original-map run and treats every non-preview ten-area or legacy run as an ordinary Free run', () => {
+test('main.js mounts no option, requests no world and labels no original-map run from 2.1.0', () => {
+  assert.match(main, /if \(HMH_WORLD_OPTION && !hmhFrontierPreviewOption && dom\.officialModeSelect\) \{/);
+  assert.equal((main.match(/frontierPreview: true/g) ?? []).length, 1, 'only the unmounted option button asks for a world');
+  assert.match(main, /initContext\.rankedEligible === false && HMH_WORLD_OPTION \? HMH_WORLD_OPTION\.world : null;/);
   assert.match(main, /hmhFrontierPreviewActive = !HMH_TEN_AREA_LEVEL_ONE && frame\?\.dataset\?\.world === 'ten-area';/);
-  assert.match(main, /hmhOriginalMapActive = HMH_TEN_AREA_LEVEL_ONE && frame\?\.dataset\?\.world === 'legacy';/);
+  assert.doesNotMatch(main, /hmhOriginalMap|Play the original map/);
   // Only the preview (pre-2.1.0) suppresses the result and share card.
   const summary = main.slice(main.indexOf('function renderGameOverSummary()'), main.indexOf('const loopNote = el('));
   assert.match(summary, /if \(hmhFrontierPreviewActive\) appendText\(/);
-  assert.doesNotMatch(summary, /hmhOriginalMapActive/);
-  assert.match(main, /const suffix = ` \/\/ \$\{HMH_WORLD_OPTION\.copy\.title\}`;/);
 });

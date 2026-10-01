@@ -1531,10 +1531,11 @@ let hmhRebootActive = false;
 // The mode-select world option (hmh-frontier-preview.mjs): before 2.1.0 the
 // New Frontier preview, from 2.1.0 the original map (Free only). Requested by
 // its button for the next Free session only; active once the host actually
-// forwarded the world. Only the 2.0.x preview run has no result.
+// forwarded the world. Only the 2.0.x preview run has no result. From 2.1.0
+// there is no option (the ten-area world is Level 1 and the original map is
+// retired from the portal), so nothing requests a world.
 let hmhFrontierPreviewRequested = false;
 let hmhFrontierPreviewActive = false;
-let hmhOriginalMapActive = false;
 let hmhFrontierPreviewOption = null;
 // The canonical summary the lifecycle finalized for the run on screen. Cleared
 // on restart and teardown so a Free recap can never surface on a Ranked screen.
@@ -4688,7 +4689,6 @@ function destroyHmhRebootSession() {
   setArcadeMusicDuck(false);
   hmhRebootActive = false;
   hmhFrontierPreviewActive = false;
-  hmhOriginalMapActive = false;
 }
 
 function finalizeHmhRebootFreeGameOver(runSummary) {
@@ -4801,7 +4801,7 @@ function mountHmhRebootSession() {
   // The host forwards the option's world only for an unranked Free payload;
   // a Ranked session never asks (it plays the child's Level 1). What the
   // frame reports is what runs.
-  const frontierWorld = hmhFrontierPreviewRequested && !currentSession.isPaid && initContext.mode === 'free' && initContext.rankedEligible === false ? HMH_WORLD_OPTION.world : null;
+  const frontierWorld = hmhFrontierPreviewRequested && !currentSession.isPaid && initContext.mode === 'free' && initContext.rankedEligible === false && HMH_WORLD_OPTION ? HMH_WORLD_OPTION.world : null;
   const frame = hmhRebootHost.mountSession({
     sessionId: currentSession.urlSessionId ?? currentSession.sessionId,
     gameId: currentSession.gameId,
@@ -4820,7 +4820,6 @@ function mountHmhRebootSession() {
     settings: { ...hmhRebootSettings(), ...childCosmetics('lester-blaster') },
   }, { world: frontierWorld });
   hmhFrontierPreviewActive = !HMH_TEN_AREA_LEVEL_ONE && frame?.dataset?.world === 'ten-area';
-  hmhOriginalMapActive = HMH_TEN_AREA_LEVEL_ONE && frame?.dataset?.world === 'legacy';
   labelHmhFrontierPreviewTitle();
   return frame;
 }
@@ -5049,19 +5048,19 @@ const renderOfficialGameplay = () => {
   if (currentSession?.hmhChallenge) dom.officialGameModeTitle.textContent += ` // ${currentSession.hmhChallenge.label}`;
   labelHmhFrontierPreviewTitle();
 };
-// The gameplay title names a preview or original-map run; the view renders
+// The gameplay title names a preview run; the view renders
 // before the mount decides, so the mount labels it too, and a re-render never
 // doubles it.
 function labelHmhFrontierPreviewTitle() {
-  if (!(hmhFrontierPreviewActive || hmhOriginalMapActive) || !dom.officialGameModeTitle) return;
-  const suffix = ` // ${HMH_WORLD_OPTION.copy.title}`;
+  if (!hmhFrontierPreviewActive || !dom.officialGameModeTitle) return;
+  const suffix = ` // ${HMH_FRONTIER_PREVIEW_COPY.title}`;
   if (!dom.officialGameModeTitle.textContent.endsWith(suffix)) dom.officialGameModeTitle.textContent += suffix;
 }
 const renderOfficialModeSelect = () => {
   officialPlayRoutes.renderModeSelect();
   hmhChallengeUi.render(selectedGameId);
   startRankedPreflightInBackground();
-  if (!hmhFrontierPreviewOption && dom.officialModeSelect) {
+  if (HMH_WORLD_OPTION && !hmhFrontierPreviewOption && dom.officialModeSelect) {
     hmhFrontierPreviewOption = mountHmhFrontierPreviewOption({
       container: dom.officialModeSelect,
       before: dom.officialModeSelect.querySelector('.mode-guide-note'),
