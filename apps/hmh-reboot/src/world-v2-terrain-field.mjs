@@ -46,10 +46,10 @@ export function buildTerrainField({ summary, world, size = 512 } = {}) {
   if (!world?.pieces || !world.roads) throw new TypeError('authored world required');
   const { bounds, terrain } = summary, seed = seedFromString(terrain.seed);
   const width = size, unitsPerTexel = (bounds.maxX - bounds.minX) / size, height = Math.max(1, Math.round((bounds.maxY - bounds.minY) / unitsPerTexel));
-  const data = new Uint8ClampedArray(width * height * 4);
-  const slot = id => { const i = terrain.materials.indexOf(id); return i < 0 ? 1 : i; };
+  const data = new Uint8ClampedArray(width * height * 4), extra = new Uint8ClampedArray(width * height * 2);
+  const slot = id => terrain.slots?.[id] ?? Math.max(0, terrain.materials.indexOf(id));
   const reach = inflated(bounds, 320);
-  const zones = summary.zones.filter(zone => terrain.materials.includes(zone.material)).map(zone => ({ ...zone, slot: slot(zone.material), box: inflated(polygonBounds(zone.vertices), zone.feather * 2.2) }));
+  const zones = summary.zones.map(zone => ({ ...zone, slot: slot(zone.material), box: inflated(polygonBounds(zone.vertices), zone.feather * 2.2) }));
   const trails = summary.trails.map(trail => ({ ...trail, slot: slot(trail.material), box: inflated(polygonBounds(trail.points), trail.width + trail.halo * 2 + 80) }));
   const roads = world.roads.map(road => ({ points: road.points, half: road.width / 2, box: inflated(polygonBounds(road.points), road.width / 2 + 260) }));
   const blockers = world.pieces.filter(piece => piece.blocker && piece.visible.height > 30).map(piece => { const vertices = piece.blocker.shape.vertices, h = piece.visible.height; return { vertices, h, radius: Math.max(24, Math.min(110, h * 0.45)), box: inflated(polygonBounds(vertices), Math.max(140, h * 0.8)) }; }).filter(entry => !(entry.box.maxX < reach.minX || entry.box.minX > reach.maxX || entry.box.maxY < reach.minY || entry.box.minY > reach.maxY));
@@ -61,7 +61,7 @@ export function buildTerrainField({ summary, world, size = 512 } = {}) {
     for (let i = 0; i < width; i++, o += 4) {
       const x = bounds.minX + (i + 0.5) * unitsPerTexel;
       const wobble = fbm(x, y, 140, 2, seed + 7) - 0.5;
-      const w = [0, 0, 0];
+      const w = [0, 0, 0, 0, 0];
       // Macro patches of the secondary material, organic at the patch scale.
       w[1] = smooth(blendEdge - 0.1, blendEdge + 0.1, fbm(x, y, terrain.patch, 3, seed));
       let value = (fbm(x, y, 1500, 2, seed + 3) - 0.5) * 2 * terrain.value, ao = 0, dust = 0;
@@ -69,7 +69,7 @@ export function buildTerrainField({ summary, world, size = 512 } = {}) {
         if (!contains(zone.box, x, y)) continue;
         const sd = signedDistance(x, y, zone.vertices), wz = smooth(zone.feather, -zone.feather * 0.4, sd + wobble * zone.feather * 1.6) * zone.alpha;
         if (wz <= 0) continue;
-        if (zone.slot === 0) { w[1] *= 1 - wz; w[2] *= 1 - wz; } else w[zone.slot] += (1 - w[zone.slot]) * wz;
+        if (zone.slot === 0) { for (let k = 1; k < 5; k++) w[k] *= 1 - wz; } else { w[zone.slot] += (1 - w[zone.slot]) * wz; for (let k = zone.slot + 1; k < 5; k++) w[k] *= 1 - wz; }
       }
       for (const trail of trails) {
         if (!contains(trail.box, x, y)) continue;
@@ -80,14 +80,14 @@ export function buildTerrainField({ summary, world, size = 512 } = {}) {
         const wear = 0.55 + 0.45 * smooth(0.3, 0.7, fbm(x, y, 260, 2, seed + 17));
         const wt = smooth(e + trail.halo, e * 0.3, d + wobble * e * 2.2) * wear;
         if (wt <= 0) continue;
-        if (trail.slot === 0) { w[1] *= 1 - wt; w[2] *= 1 - wt; } else w[trail.slot] += (1 - w[trail.slot]) * wt;
+        if (trail.slot === 0) { for (let k = 1; k < 5; k++) w[k] *= 1 - wt; } else { w[trail.slot] += (1 - w[trail.slot]) * wt; for (let k = trail.slot + 1; k < 5; k++) w[k] *= 1 - wt; }
         value -= wt * 0.06;
       }
       for (const road of roads) {
         if (!contains(road.box, x, y)) continue;
         const d = distanceToPolyline(x, y, road.points);
         const verge = smooth(road.half + 150, road.half + 10, d + wobble * 70) * 0.8;
-        w[1] += (1 - w[1]) * verge; w[2] *= 1 - verge;
+        w[1] += (1 - w[1]) * verge; w[2] *= 1 - verge; w[3] *= 1 - verge * 0.5; w[4] *= 1 - verge * 0.5;
         dust = Math.max(dust, smooth(road.half + 240, road.half, d) * 0.1);
       }
       for (const blocker of blockers) {
@@ -109,9 +109,10 @@ export function buildTerrainField({ summary, world, size = 512 } = {}) {
       data[o + 1] = Math.round(clamp01(w[2]) * 255);
       data[o + 2] = Math.round(clamp01(0.5 + value) * 255);
       data[o + 3] = Math.round(light * 255);
+      extra[o / 2] = Math.round(clamp01(w[3]) * 255); extra[o / 2 + 1] = Math.round(clamp01(w[4]) * 255);
     }
   }
-  return Object.freeze({ id: TERRAIN_FIELD_ID, width, height, unitsPerTexel, minX: bounds.minX, minY: bounds.minY, maxX: bounds.maxX, maxY: bounds.minY + height * unitsPerTexel, data, neutralLight: Math.round(LIGHT_NEUTRAL * 255), counts: Object.freeze({ zones: zones.length, trails: trails.length, roads: roads.length, blockers: blockers.length, trees: trees.length }) });
+  return Object.freeze({ id: TERRAIN_FIELD_ID, width, height, unitsPerTexel, minX: bounds.minX, minY: bounds.minY, maxX: bounds.maxX, maxY: bounds.minY + height * unitsPerTexel, data, extra, neutralLight: Math.round(LIGHT_NEUTRAL * 255), counts: Object.freeze({ zones: zones.length, trails: trails.length, roads: roads.length, blockers: blockers.length, trees: trees.length }) });
 }
 
 export { rectVertices };

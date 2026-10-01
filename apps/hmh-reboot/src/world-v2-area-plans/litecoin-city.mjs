@@ -14,7 +14,7 @@ import { freezeDeep } from '../value-guards.mjs';
 import { stableUnit, DISTRICT_TERRAIN } from '../world-v2-area-art-schema.mjs';
 import { createAreaPlanContext } from './plan-support.mjs';
 import { placeEdgeWoodland, placeLine } from './plan-lines.mjs';
-import { CITY_BRAND_SLOTS, CITY_SIGN_PREFIX } from './city-branding.mjs';
+import { CITY_BRAND_SLOTS, CITY_SIGN_PREFIX, CITY_SIGN_STYLE, signForProp, signForPiece } from './city-branding.mjs';
 
 export const LITECOIN_CITY_PAGES = Object.freeze(['tripo-props-hd-structures-00.webp', 'tripo-props-hd-structures-01.webp', 'tripo-props-hd-props-00.webp']);
 const EDGE_BUILDINGS = ['b1-52', 'b1-12', 'b2-63', 'b1-51', 'b1-56', 'b2-68', 'b1-12'];
@@ -105,6 +105,14 @@ export function createLitecoinCityArtPlan(world) {
   for (const [x, y, source, height] of [[600, -1520 + 60, 'b1-12', 520], [1100, -1520 + 60, 'b1-52', 500], [1600, -1520 + 60, 'b1-12', 540]]) {
     const roof = supportAt(cx + x, cy + y);
     if (roof?.id === `${area.id}-north-commercial-block`) prop(source, cx + x, cy + y, height * (0.95 + 0.1 * stableUnit('roof', x)), { groundZ: roof.visible.height, tint: 0xc8cccc });
+  }
+  // Lettered panels for every placed carrier and decorated facade (renderer hook).
+  const SIGN_FIT = { tower: [0.72, 34, 220], gantry: [0.84, 30, 260], shelter: [0.96, 22, 150], stall: [0.94, 22, 170], kiosk: [1.04, 20, 120], facade: [0.62, 34, 340] };
+  for (const slot of CITY_BRAND_SLOTS) {
+    const sign = slot.pieceId ? (plan.solids.some(s => s.pieceId === slot.pieceId) ? signForPiece(slot.pieceId) : null) : (plan.props.some(p => p.id === `${CITY_SIGN_PREFIX}${slot.slot}`) ? signForProp(`${CITY_SIGN_PREFIX}${slot.slot}`) : null);
+    if (!sign) continue;
+    const [anchor, height, maxWidth] = SIGN_FIT[slot.carrier];
+    plan.signs.push({ id: `sign-${slot.slot}`, ...(slot.pieceId ? { pieceId: slot.pieceId } : { propId: `${CITY_SIGN_PREFIX}${slot.slot}` }), text: sign.text, anchor, height, maxWidth, panel: CITY_SIGN_STYLE.panel, ink: CITY_SIGN_STYLE.text });
   }
   return freezeDeep(plan);
 }

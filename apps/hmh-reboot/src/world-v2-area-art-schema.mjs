@@ -209,6 +209,20 @@ export function validateAreaArtPlan(plan, kit) {
     return { id: trail.id, material: trail.material, points, width, halo: trail.halo === undefined ? 18 : positive(trail.halo, `${name}.halo`) };
   });
   unique(trails, 'ground.trails');
+  // Splat slots for every zone/trail material: the area's three, up to two
+  // extras (largest painted area first), the rest folded onto the nearest
+  // colour. Nothing is left for a straight-edged polygon fill.
+  if (terrain) {
+    const coverage = new Map(), add = (id, n) => coverage.set(id, (coverage.get(id) ?? 0) + n);
+    for (const zone of zones) { const v = zone.vertices; let a = 0; for (let i = 0; i < v.length; i++) { const q = v[(i + 1) % v.length]; a += v[i].x * q.y - q.x * v[i].y; } add(zone.material, Math.abs(a) / 2); }
+    for (const trail of trails) { let l = 0; for (let i = 1; i < trail.points.length; i++) l += Math.hypot(trail.points[i].x - trail.points[i - 1].x, trail.points[i].y - trail.points[i - 1].y); add(trail.material, l * trail.width); }
+    const extras = [...coverage].filter(([id]) => !terrain.materials.includes(id)).sort((a, b) => b[1] - a[1] || (a[0] < b[0] ? -1 : 1)).slice(0, 2).map(([id]) => id);
+    const palette = [...terrain.materials, ...[0, 1].map(i => extras[i] ?? null)];
+    const near = id => { const c = AREA_ART_MATERIALS[id].color; let best = 0, dist = Infinity; palette.forEach((m, i) => { if (!m) return; const d = AREA_ART_MATERIALS[m].color, e = ((c >> 16) - (d >> 16)) ** 2 + ((c >> 8 & 255) - (d >> 8 & 255)) ** 2 + ((c & 255) - (d & 255)) ** 2; if (e < dist) { dist = e; best = i; } }); return best; };
+    const slots = Object.fromEntries([...coverage.keys()].sort().map(id => [id, palette.indexOf(id) >= 0 ? palette.indexOf(id) : near(id)]));
+    terrain = { ...terrain, extras, slots };
+    extras.forEach(id => materials.add(id));
+  }
   const decals = (ground.decals ?? []).map((decal, i) => {
     const name = `ground.decals[${i}]`;
     if (!['detail:grass', 'detail:aggregate'].includes(decal.source)) fail(`${name}.source must be a ground detail frame`);
@@ -265,20 +279,41 @@ export function validateAreaArtPlan(plan, kit) {
   });
   unique(solids, 'solids');
 
+  // Lettered sign panels on carrier props or decorated solids (names only).
+  const propIds = new Set(props.map(p => p.id)), solidIds = new Set(solids.map(s => s.pieceId));
+  const signs = (plan.signs ?? []).map((sign, i) => {
+    const name = `signs[${i}]`;
+    if ((sign.propId === undefined) === (sign.pieceId === undefined)) fail(`${name} needs exactly one of propId or pieceId`);
+    if (sign.propId !== undefined && !propIds.has(sign.propId)) fail(`${name}.propId ${sign.propId} is not a plan prop`);
+    if (sign.pieceId !== undefined && !solidIds.has(sign.pieceId)) fail(`${name}.pieceId ${sign.pieceId} is not a decorated solid`);
+    if (typeof sign.text !== 'string' || !/^[A-Za-z0-9][A-Za-z0-9 '&.-]{0,27}$/.test(sign.text)) fail(`${name}.text must be 1-28 plain characters`);
+    return { id: sign.id, propId: sign.propId ?? null, pieceId: sign.pieceId ?? null, text: sign.text, anchor: sign.anchor === undefined ? 0.8 : clampRange(sign.anchor, 0, 1.3, `${name}.anchor`), height: clampRange(sign.height ?? 26, 8, 80, `${name}.height`), maxWidth: clampRange(sign.maxWidth ?? 220, 40, 600, `${name}.maxWidth`), panel: assertDecorativeTint(sign.panel ?? 0x4e5e62, `${name}.panel`), ink: assertDecorativeTint(sign.ink ?? 0xd8d5c6, `${name}.ink`) };
+  });
+  unique(signs, 'signs');
+  if (signs.length > 64) fail('signs exceeds 64 panels');
+  // Low ground fog cards: presentation only, faint, inside the plan bounds.
+  const fog = (ground.fog ?? []).map((card, i) => {
+    const name = `ground.fog[${i}]`, at = point(card, name); inside(at, name);
+    return { id: card.id, ...at, rx: clampRange(card.rx, 40, 900, `${name}.rx`), ry: clampRange(card.ry, 20, 400, `${name}.ry`), alpha: clampRange(card.alpha ?? 0.2, 0.02, 0.4, `${name}.alpha`), tint: optionalTint(card.tint, `${name}.tint`) };
+  });
+  unique(fog, 'ground.fog');
+  if (fog.length > 96) fail('ground.fog exceeds 96 cards');
+
   for (const page of plan.pages) if (!usedPages.has(page)) fail(`plan loads unused kit page ${page}`);
   const pages = plan.pages.map(image => kit.pages.find(entry => entry.image === image));
   const encodedBytes = pages.reduce((n, page) => n + page.encodedBytes, 0), decodedBytes = pages.reduce((n, page) => n + page.decodedBytes, 0);
   const halfEncodedBytes = pages.reduce((n, page) => n + page.halfRes.encodedBytes, 0), halfDecodedBytes = pages.reduce((n, page) => n + page.halfRes.decodedBytes, 0);
-  const grainMaterials = new Set([...(terrain?.materials ?? []), ...solids.flatMap(solid => [solid.roof, solid.wall].filter(Boolean)), ...roads.flatMap(road => [ROAD_RECIPES[road.kind].core, ROAD_RECIPES[road.kind].shoulder])]);
+  const grainMaterials = new Set([...(terrain?.materials ?? []), ...(terrain?.extras ?? []), ...solids.flatMap(solid => [solid.roof, solid.wall].filter(Boolean)), ...roads.flatMap(road => [ROAD_RECIPES[road.kind].core, ROAD_RECIPES[road.kind].shoulder])]);
   const tiles = [...new Set([...materials].flatMap(id => grainMaterials.has(id) ? AREA_ART_MATERIALS[id].grain.map(layer => layer.tile) : [AREA_ART_MATERIALS[id].tile]))].sort();
   const overlays = solids.some(solid => ['bank', 'mass'].includes(solid.style)) ? [AREA_ART_ROCK_FACE] : [];
   return freezeDeep({
     schema: AREA_ART_SCHEMA, areaId: plan.areaId, roadsPlan, bounds, pages: plan.pages.slice(), sources: [...sources].sort(), materials: [...materials].sort(), tiles,
-    detailPage: decals.length > 0, base, terrain, overlays, zones, trails, decals, roads, props, solids,
-    counts: { zones: zones.length, trails: trails.length, decals: decals.length, roads: roads.length, props: props.length, solids: solids.length },
-    budget: { kitPages: plan.pages.length, exclusiveKitPages: exclusivePages.length, kitPageBudget: budget, encodedBytes, decodedBytes, halfEncodedBytes, halfDecodedBytes, tilePages: tiles.length * 2 + overlays.length + (decals.length ? 1 : 0) + (terrain ? 1 : 0), tileDecodedBytes: tiles.length * (512 * 512 * 4 + 512 * 128 * 4) + overlays.length * 512 * 128 * 4 + (decals.length ? 256 * 256 * 4 : 0) + (terrain ? 512 * 512 * 4 : 0) },
+    detailPage: decals.length > 0, base, terrain, overlays, signs, fog, zones, trails, decals, roads, props, solids,
+    counts: { zones: zones.length, trails: trails.length, decals: decals.length, roads: roads.length, props: props.length, solids: solids.length, signs: signs.length, fog: fog.length },
+    budget: { kitPages: plan.pages.length, exclusiveKitPages: exclusivePages.length, kitPageBudget: budget, encodedBytes, decodedBytes, halfEncodedBytes, halfDecodedBytes, tilePages: tiles.length * 2 + overlays.length + (decals.length ? 1 : 0) + (terrain ? 1 : 0), tileDecodedBytes: tiles.length * (512 * 512 * 4 + 512 * 128 * 4) + overlays.length * 512 * 128 * 4 + (decals.length ? 256 * 256 * 4 : 0) + (terrain ? 2 * 384 * 384 * 4 : 0) },
   });
 }
+function clampRange(value, min, max, name) { finite(value, name); if (value < min || value > max) fail(`${name} must be within ${min}..${max}`); return value; }
 function clampUnit(value, name) { finite(value, name); if (value < 0 || value > 1) fail(`${name} must be within 0..1`); return value; }
 
 // ---- pure geometry used by plans, tests and the renderer ----
@@ -368,5 +403,5 @@ export function createPlacementGuard({ world, areaId = null, roadClearance = 1, 
 }
 
 export function createAreaArtPlanShell({ areaId, bounds, pages }) {
-  return { schema: AREA_ART_SCHEMA, areaId, runtimeAuthority: 'projection-only', artAccepted: false, bounds: { ...bounds }, pages: [...pages], ground: { base: null, zones: [], trails: [], decals: [] }, roads: [], props: [], solids: [] };
+  return { schema: AREA_ART_SCHEMA, areaId, runtimeAuthority: 'projection-only', artAccepted: false, bounds: { ...bounds }, pages: [...pages], ground: { base: null, zones: [], trails: [], decals: [], fog: [] }, roads: [], props: [], solids: [], signs: [] };
 }

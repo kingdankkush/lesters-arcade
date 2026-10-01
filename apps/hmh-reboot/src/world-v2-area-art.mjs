@@ -9,7 +9,7 @@
 import { Container, Graphics, Sprite, Texture, Rectangle, Mesh, Shader, GlProgram, Geometry, UniformGroup } from 'pixi.js';
 import { createGreyboxPropResidency } from './dev/greybox-prop-residency.mjs';
 import { AREA_ART_KIT_ROOT, AREA_ART_KIT_MANIFEST, AREA_ART_TILE_ROOT, AREA_ART_DETAIL_ROOT, AREA_ART_DETAIL_PAGE, AREA_ART_MATERIALS, AREA_ART_TILE_MEANS, ROAD_RECIPES, FOLIAGE_TINT_RULES, validateAreaArtPlan, resolveKitItem, ribbonPolygon, offsetPolygon, polygonBounds, rectVertices, pointInPolygon, stableUnit } from './world-v2-area-art-schema.mjs';
-import { buildTerrainField, TERRAIN_LIGHT_RANGE } from './world-v2-terrain-field.mjs';
+import { buildTerrainField, TERRAIN_LIGHT_RANGE, valueNoise } from './world-v2-terrain-field.mjs';
 export { validateAreaArtPlan, createPlacementGuard, AREA_ART_SCHEMA, AREA_ART_MATERIALS } from './world-v2-area-art-schema.mjs';
 
 export const AREA_ART_ID = 'world-v2-area-art/v1';
@@ -34,10 +34,10 @@ const TERRAIN_FRAGMENT = `#version 300 es
 precision highp float;
 in vec2 vWorld;
 out vec4 finalColor;
-uniform sampler2D uT0; uniform sampler2D uT1; uniform sampler2D uT2; uniform sampler2D uT3; uniform sampler2D uT4; uniform sampler2D uT5; uniform sampler2D uControl; uniform sampler2D uLight;
-uniform vec4 uL0; uniform vec4 uL1; uniform vec4 uL2; uniform vec4 uL3; uniform vec4 uL4; uniform vec4 uL5;
-uniform vec3 uM0; uniform vec3 uM1; uniform vec3 uM2; uniform vec3 uM3; uniform vec3 uM4; uniform vec3 uM5;
-uniform vec3 uC0; uniform vec3 uC1; uniform vec3 uC2;
+uniform sampler2D uT0; uniform sampler2D uT1; uniform sampler2D uT2; uniform sampler2D uT3; uniform sampler2D uT4; uniform sampler2D uT5; uniform sampler2D uT6; uniform sampler2D uT7; uniform sampler2D uT8; uniform sampler2D uT9; uniform sampler2D uControl; uniform sampler2D uLight;
+uniform vec4 uL0; uniform vec4 uL1; uniform vec4 uL2; uniform vec4 uL3; uniform vec4 uL4; uniform vec4 uL5; uniform vec4 uL6; uniform vec4 uL7; uniform vec4 uL8; uniform vec4 uL9;
+uniform vec3 uM0; uniform vec3 uM1; uniform vec3 uM2; uniform vec3 uM3; uniform vec3 uM4; uniform vec3 uM5; uniform vec3 uM6; uniform vec3 uM7; uniform vec3 uM8; uniform vec3 uM9;
+uniform vec3 uC0; uniform vec3 uC1; uniform vec3 uC2; uniform vec3 uC3; uniform vec3 uC4;
 uniform vec4 uField; uniform vec4 uParams;
 uniform vec4 uColor; uniform vec4 uWorldColorAlpha;
 vec3 grain(sampler2D t, vec4 p, vec3 mean) {
@@ -48,11 +48,14 @@ vec3 grain(sampler2D t, vec4 p, vec3 mean) {
 }
 void main() {
   vec2 cuv = (vWorld - uField.xy) * uField.zw;
-  vec4 c = vec4(texture(uControl, cuv).rgb, texture(uLight, cuv).r);
+  vec3 lx = texture(uLight, cuv).rgb;
+  vec4 c = vec4(texture(uControl, cuv).rgb, lx.r);
   vec3 g0 = grain(uT0, uL0, uM0), g1 = grain(uT1, uL1, uM1), g2 = grain(uT2, uL2, uM2), g3 = grain(uT3, uL3, uM3), g4 = grain(uT4, uL4, uM4), g5 = grain(uT5, uL5, uM5);
   float w1 = smoothstep(0.22, 0.78, c.r + (dot(g2, vec3(0.3333)) - 1.0) * uParams.w);
   float w2 = smoothstep(0.22, 0.78, c.g + (dot(g4, vec3(0.3333)) - 1.0) * uParams.w);
   vec3 ground = mix(mix(uC0 * g0 * g1, uC1 * g2 * g3, w1), uC2 * g4 * g5, w2);
+  if (lx.g > 0.004) { vec3 g6 = grain(uT6, uL6, uM6), g7 = grain(uT7, uL7, uM7); ground = mix(ground, uC3 * g6 * g7, smoothstep(0.22, 0.78, lx.g + (dot(g6, vec3(0.3333)) - 1.0) * uParams.w)); }
+  if (lx.b > 0.004) { vec3 g8 = grain(uT8, uL8, uM8), g9 = grain(uT9, uL9, uM9); ground = mix(ground, uC4 * g8 * g9, smoothstep(0.22, 0.78, lx.b + (dot(g8, vec3(0.3333)) - 1.0) * uParams.w)); }
   ground *= 1.0 + (c.b - 0.5) * 2.0 * uParams.x;
   ground *= mix(uParams.y, uParams.z, c.a);
   finalColor = vec4(clamp(ground, 0.0, 1.0), 1.0) * uColor * uWorldColorAlpha;
@@ -174,7 +177,7 @@ function opaqueCanvas(field, pick) {
 }
 function defaultControlTexture(field) {
   if (typeof document === 'undefined') return null;
-  return { control: opaqueCanvas(field, (src, o, out) => { out[o] = src[o]; out[o + 1] = src[o + 1]; out[o + 2] = src[o + 2]; }), light: opaqueCanvas(field, (src, o, out) => { out[o] = src[o + 3]; out[o + 1] = src[o + 3]; out[o + 2] = src[o + 3]; }) };
+  return { control: opaqueCanvas(field, (src, o, out) => { out[o] = src[o]; out[o + 1] = src[o + 1]; out[o + 2] = src[o + 2]; }), light: opaqueCanvas(field, (src, o, out) => { out[o] = src[o + 3]; out[o + 1] = field.extra ? field.extra[o / 2] : 0; out[o + 2] = field.extra ? field.extra[o / 2 + 1] : 0; }) };
 }
 export function multiplyTint(a, b) {
   const channel = shift => Math.round(((a >> shift & 255) * (b >> shift & 255)) / 255);
@@ -224,7 +227,37 @@ function destroyTexture(url, entry) {
   }, () => {});
 }
 
-export function createAreaArt({ world, areaId, plan, kit = null, loadTexture, textureCache = null, container = null, signal, resolution = 'full', fetchImpl = typeof fetch === 'function' ? fetch : null, createControlTexture = defaultControlTexture, terrainFieldSize = null, createTerrainProgram = defaultTerrainProgram, createProgram = createTerrainProgram } = {}) {
+// Sign panel texture: chalk condensed capitals on a slate panel with a thin
+// darker frame; baked once per text at 4 px per world unit of panel height.
+function defaultSignTexture(text, sign) {
+  if (typeof document === 'undefined') return null;
+  const scale = 4, h = Math.round(sign.height * scale), font = `700 ${Math.round(h * 0.56)}px "Arial Narrow", "Roboto Condensed", "Helvetica Neue", Arial, sans-serif`;
+  const canvas = document.createElement('canvas'), measure = canvas.getContext('2d');
+  measure.font = font;
+  const label = text.toUpperCase(), w = Math.min(Math.round(sign.maxWidth * scale), Math.ceil(measure.measureText(label).width + h * 0.9));
+  canvas.width = w; canvas.height = h;
+  const g = canvas.getContext('2d'), hex = c => `#${c.toString(16).padStart(6, '0')}`;
+  g.fillStyle = hex(multiplyTint(sign.panel, 0x9a9a9a)); g.fillRect(0, 0, w, h);
+  g.fillStyle = hex(sign.panel); g.fillRect(h * 0.06, h * 0.06, w - h * 0.12, h - h * 0.12);
+  g.fillStyle = 'rgba(255,255,255,0.08)'; g.fillRect(h * 0.06, h * 0.06, w - h * 0.12, h * 0.18);
+  g.font = font; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillStyle = hex(sign.ink);
+  g.fillText(label, w / 2, h * 0.54, w - h * 0.5);
+  const texture = Texture.from(canvas);
+  texture.areaArtWorldScale = 1 / scale;
+  return texture;
+}
+// One shared soft ellipse for fog cards.
+function defaultFogTexture() {
+  if (typeof document === 'undefined') return null;
+  const canvas = document.createElement('canvas'); canvas.width = canvas.height = 128;
+  const g = canvas.getContext('2d'), gradient = g.createRadialGradient(64, 64, 0, 64, 64, 64);
+  gradient.addColorStop(0, 'rgba(255,255,255,0.9)'); gradient.addColorStop(0.55, 'rgba(255,255,255,0.45)'); gradient.addColorStop(1, 'rgba(255,255,255,0)');
+  g.fillStyle = gradient; g.fillRect(0, 0, 128, 128);
+  return Texture.from(canvas);
+}
+const defaultReducedMotion = () => { try { return document.querySelector('#hmhRebootStage')?.dataset.settingReduceMotion === 'true' || matchMedia('(prefers-reduced-motion: reduce)').matches; } catch { return true; } };
+
+export function createAreaArt({ world, areaId, plan, kit = null, loadTexture, textureCache = null, container = null, signal, resolution = 'full', fetchImpl = typeof fetch === 'function' ? fetch : null, createControlTexture = defaultControlTexture, terrainFieldSize = null, createTerrainProgram = defaultTerrainProgram, createProgram = createTerrainProgram, createSignTexture = defaultSignTexture, createFogTexture = defaultFogTexture, reducedMotion = defaultReducedMotion } = {}) {
   if (!world || typeof areaId !== 'string' || !plan) throw new TypeError('world, areaId and plan required');
   if (plan.areaId !== areaId) throw new TypeError(`plan ${plan.areaId} does not dress ${areaId}`);
   if (!['full', 'half'].includes(resolution)) throw new TypeError('resolution must be full or half');
@@ -236,6 +269,8 @@ export function createAreaArt({ world, areaId, plan, kit = null, loadTexture, te
   let host = null, depthKey = y => y;
   let detailTexture = null, pageTextures = new Map(), controlTexture = null, terrainField = null, terrainMesh = null;
   const overlays = new Map();
+  const signTextures = new Map(), fogCards = [];
+  let fogTexture = null, fogFrame = 0, fogStatic = true;
   const tileFile = (tile, suffix = '') => ratio === 0.5 ? `${tile}${suffix}@0.5x.webp` : `${tile}${suffix}.png`;
   const acquire = async url => { const texture = await cache.acquire(url); owned.push(url); if (disposed) { cache.release(url); owned.pop(); return null; } return texture; };
 
@@ -266,7 +301,7 @@ export function createAreaArt({ world, areaId, plan, kit = null, loadTexture, te
       }
       for (const overlay of summary.overlays) jobs.push(acquire(AREA_ART_TILE_ROOT + tileFile(overlay)).then(texture => { if (texture) { texture.source.style.addressMode = 'repeat'; texture.source.style.update(); overlays.set(overlay, texture); } }));
       if (summary.terrain) {
-        terrainField = buildTerrainField({ summary, world, size: terrainFieldSize ?? (ratio === 0.5 ? 256 : 512) });
+        terrainField = buildTerrainField({ summary, world, size: terrainFieldSize ?? (ratio === 0.5 ? 256 : 384) });
         jobs.push(Promise.resolve(createControlTexture(terrainField)).then(result => { const pair = result && result.control ? result : result ? { control: result, light: result } : null; if (disposed) { pair?.control.destroy(true); if (pair && pair.light !== pair.control) pair.light.destroy(true); return; } controlTexture = pair; }));
       }
       if (summary.detailPage) jobs.push(acquire(AREA_ART_DETAIL_ROOT + AREA_ART_DETAIL_PAGE).then(texture => { detailTexture = texture; }));
@@ -449,7 +484,7 @@ export function createAreaArt({ world, areaId, plan, kit = null, loadTexture, te
   function paintTerrain(target) {
     const t = summary.terrain;
     if (!t || !controlTexture || !terrainField) return false;
-    const materials = [0, 1, 2].map(i => AREA_ART_MATERIALS[t.materials[Math.min(i, t.materials.length - 1)]]);
+    const materials = [0, 1, 2].map(i => AREA_ART_MATERIALS[t.materials[Math.min(i, t.materials.length - 1)]]).concat([0, 1].map(i => AREA_ART_MATERIALS[t.extras?.[i] ?? t.materials[0]]));
     const layers = materials.flatMap(m => [m.grain[0], m.grain[1] ?? { ...m.grain[0], gain: 0 }]);
     if (layers.some(layer => !tiles.get(layer.tile))) return false;
     let glProgram = null;
@@ -467,6 +502,7 @@ export function createAreaArt({ world, areaId, plan, kit = null, loadTexture, te
     // The accent slot is empty when a plan lists two materials: its weight
     // channel stays zero in the field, so the duplicate never shows.
     if (t.materials.length < 3) uniforms.uC2 = uniforms.uC1;
+    // Unused extra slots keep a zero weight channel, so their duplicate grain never shows.
     resources.terrainUniforms = new UniformGroup(uniforms);
     const b = summary.bounds;
     const geometry = new Geometry({ attributes: { aPosition: { buffer: new Float32Array([b.minX, b.minY, b.maxX, b.minY, b.maxX, b.maxY, b.minX, b.maxY]), format: 'float32x2' } }, indexBuffer: new Uint16Array([0, 1, 2, 0, 2, 3]) });
@@ -476,12 +512,33 @@ export function createAreaArt({ world, areaId, plan, kit = null, loadTexture, te
     target.addChild(terrainMesh); painted.push(terrainMesh);
     return true;
   }
+  function signPanel(sign) {
+    let texture = signTextures.get(sign.id);
+    if (texture === undefined) { try { texture = createSignTexture(sign.text, sign) ?? null; } catch { texture = null; } signTextures.set(sign.id, texture); }
+    if (!texture) return null;
+    const sprite = new Sprite({ texture }), unit = texture.areaArtWorldScale ?? sign.height / (texture.height || 1);
+    sprite.anchor.set(0.5, 1); sprite.scale.set(unit); sprite.label = `area-sign-${sign.id}`;
+    return sprite;
+  }
+  function paintFog(target) {
+    if (!summary.fog?.length) return;
+    if (!fogTexture) { try { fogTexture = createFogTexture() ?? null; } catch { fogTexture = null; } }
+    if (!fogTexture) return;
+    for (const card of summary.fog) {
+      const sprite = new Sprite({ texture: fogTexture });
+      sprite.anchor.set(0.5); sprite.position.set(card.x, card.y);
+      sprite.scale.set(card.rx * 2 / (fogTexture.width || 128), card.ry * 2 / (fogTexture.height || 128));
+      sprite.alpha = card.alpha; sprite.tint = card.tint; sprite.label = `area-fog-${card.id}`;
+      target.addChild(sprite); painted.push(sprite); fogCards.push({ sprite, card, phase: stableUnit(card.id) * Math.PI * 2 });
+    }
+  }
   function paintAreaGround(target) {
     const splat = paintTerrain(target);
     if (!splat && summary.base) { const g = new Graphics(); materialFill(g, rectVertices(summary.bounds), summary.base.material, summary.base); target.addChild(g); painted.push(g); }
-    for (const zone of summary.zones) if (!splat || !summary.terrain.materials.includes(zone.material)) paintZone(target, zone);
+    if (!splat) for (const zone of summary.zones) paintZone(target, zone);
     if (!splat) paintTrails(target, summary.trails);
     paintDecals(target, summary.decals);
+    paintFog(target);
   }
   const claimsSurface = surfaceId => Boolean(summary) && (summary.base?.surfaceId === surfaceId || summary.roads.some(road => road.surfaceIds.includes(surfaceId)));
   // Scene hook: the ground painter walks surfaces in priority order and hands
@@ -499,18 +556,24 @@ export function createAreaArt({ world, areaId, plan, kit = null, loadTexture, te
 
   // ---- solids ----
   const surfaceShaders = new Map();
-  function raggedOutline(vertices, key) {
+  // Ragged rock edge from world-space noise, so the many thin closed-mass
+  // strips that share a straight run break it up continuously. Mostly
+  // outward (-8..+26 units) so the art never sits well inside the collider.
+  const rockPush = (x, y) => -8 + 34 * (0.7 * valueNoise(x, y, 95, 9173) + 0.3 * valueNoise(x, y, 31, 9181));
+  function raggedOutline(vertices) {
     const n = vertices.length, out = [], starts = [];
     let area = 0; for (let i = 0; i < n; i++) { const p = vertices[i], q = vertices[(i + 1) % n]; area += p.x * q.y - q.x * p.y; }
     const sign = area >= 0 ? 1 : -1;
+    const normal = (a, c) => { const dx = c.x - a.x, dy = c.y - a.y, len = Math.hypot(dx, dy) || 1; return { x: dy / len * sign, y: -dx / len * sign }; };
     for (let i = 0; i < n; i++) {
-      const a = vertices[i], c = vertices[(i + 1) % n], dx = c.x - a.x, dy = c.y - a.y, len = Math.hypot(dx, dy);
-      // Outward normal for this winding (y down): (dy, -dx) * sign.
-      const nx = dy / (len || 1) * sign, ny = -dx / (len || 1) * sign, steps = Math.max(1, Math.round(len / 70));
-      starts.push(out.length); out.push({ x: a.x, y: a.y });
+      const prev = vertices[(i + n - 1) % n], a = vertices[i], c = vertices[(i + 1) % n], n0 = normal(prev, a), n1 = normal(a, c);
+      let bx = n0.x + n1.x, by = n0.y + n1.y; const bl = Math.hypot(bx, by) || 1; bx /= bl; by /= bl;
+      const corner = rockPush(a.x, a.y);
+      starts.push(out.length); out.push({ x: a.x + bx * corner, y: a.y + by * corner });
+      const dx = c.x - a.x, dy = c.y - a.y, steps = Math.max(1, Math.round(Math.hypot(dx, dy) / 40));
       for (let k = 1; k < steps; k++) {
-        const t = k / steps, u = stableUnit(key, i, k), v = stableUnit(key, i, k, 'b'), push = -10 + 34 * (0.65 * u + 0.35 * v);
-        out.push({ x: a.x + dx * t + nx * push, y: a.y + dy * t + ny * push });
+        const t = k / steps, px = a.x + dx * t, py = a.y + dy * t, push = rockPush(px, py);
+        out.push({ x: px + n1.x * push, y: py + n1.y * push });
       }
     }
     out.starts = starts;
@@ -560,7 +623,7 @@ export function createAreaArt({ world, areaId, plan, kit = null, loadTexture, te
     const rockyOutline = ['bank'].includes(solid.style) || (solid.style === 'mass' && !solid.wall);
     // Rock outlines are authored as straight runs; break them into a ragged
     // edge (mostly outward, so art never sits well inside the collider).
-    const vertices = rockyOutline ? raggedOutline(outline, piece.id) : outline, roof = vertices.map(p => ({ x: p.x, y: p.y - h }));
+    const vertices = rockyOutline ? raggedOutline(outline) : outline, roof = vertices.map(p => ({ x: p.x, y: p.y - h }));
     const node = new Container(); node.areaArtDecorated = true;
     const timber = multiplyTint(0x6b5c48, solid.tint), dark = multiplyTint(0x3f3629, solid.tint), pale = multiplyTint(0xd8d5c6, solid.tint);
     if (solid.style !== 'hedge' && solid.style !== 'pickets') contactShadow(node, { x: cx, y: b.maxY - d * 0.5, width: w * 0.9, depth: d * 0.9, alpha: 0.16, ao: false });
@@ -597,6 +660,7 @@ export function createAreaArt({ world, areaId, plan, kit = null, loadTexture, te
       mass.addChild(faces, lips);
       mass.alpha = solid.massAlpha; node.addChild(mass);
     }
+    const facadeSign = summary.signs?.find(entry => entry.pieceId === piece.id);
     if (solid.style === 'card') {
       const entry = frameFor(solid.card.source);
       const scale = solid.card.fit === 'width' ? w / entry.alphaWidth : solid.card.fit === 'depth' ? d / entry.alphaWidth : (h + d * 0.45) / entry.alphaHeight;
@@ -642,6 +706,7 @@ export function createAreaArt({ world, areaId, plan, kit = null, loadTexture, te
       }
       node.addChild(g);
     }
+    if (facadeSign) { const panel = signPanel(facadeSign); if (panel) { panel.position.set(cx, b.maxY - Math.min(h, 260) * facadeSign.anchor); node.addChild(panel); } }
     return node;
   }
 
@@ -655,6 +720,8 @@ export function createAreaArt({ world, areaId, plan, kit = null, loadTexture, te
     const { node: sprite, width } = card(prop.source, prop);
     if (prop.shadow) contactShadow(node, { x: prop.x, y: prop.y - prop.groundZ, width: Math.min(width, prop.height * 1.6), alpha: prop.height > 150 ? 0.36 : 0.26, ao: prop.height > 150 });
     node.addChild(sprite); node.label = record.id;
+    const sign = summary.signs?.find(entry => entry.propId === prop.id);
+    if (sign) { const panel = signPanel(sign); if (panel) { panel.position.set(prop.x, prop.y - prop.groundZ - prop.height * sign.anchor); node.addChild(panel); } }
     admit(node, prop.y); live.set(record.id, { node, prop, width });
     return node;
   }
@@ -684,6 +751,9 @@ export function createAreaArt({ world, areaId, plan, kit = null, loadTexture, te
   }
   function update(camera, view, actor = null) {
     if (!residency || disposed) return 0;
+    // Fog drifts slowly side to side; reduced motion keeps every card still.
+    if (fogCards.length && (fogFrame++ % 60 === 0)) fogStatic = Boolean(reducedMotion());
+    for (const { sprite, card, phase } of fogCards) sprite.x = card.x + (fogStatic ? 0 : Math.sin(fogFrame * 0.004 + phase) * Math.min(40, card.rx * 0.12));
     const visible = residency.update({ camera, view });
     // Solids are static depth nodes; hide the ones outside the view so the
     // hundreds of closed masses cost nothing off screen.
@@ -702,6 +772,7 @@ export function createAreaArt({ world, areaId, plan, kit = null, loadTexture, te
     for (const node of painted) { try { node.removeFromParent?.(); node.destroy?.({ children: true }); } catch {} } painted.length = 0;
     for (const entry of frames.values()) entry.texture.destroy(false); frames.clear(); live.clear();
     for (const url of owned) cache.release(url); owned.length = 0; tiles.clear(); overlays.clear(); pageTextures.clear(); detailTexture = null;
+    for (const texture of signTextures.values()) { try { texture?.destroy(true); } catch {} } signTextures.clear(); fogCards.length = 0; try { fogTexture?.destroy(true); } catch {} fogTexture = null;
     try { controlTexture?.control.destroy(true); if (controlTexture && controlTexture.light !== controlTexture.control) controlTexture.light.destroy(true); } catch {} controlTexture = null; terrainMesh = null;
     if (ownsCache) cache.dispose();
   }
