@@ -93,7 +93,7 @@ function fixture({appGate,decodeGate,navGates=[],metadataFailure=null,partialIni
       navigationAt(){return Object.freeze({returnDistance:0});}};
     runtimes.push(runtime);return runtime;
   }
-  const imports={createAreaArt:()=>{throw new Error('area art must not be constructed without a plan');},createAreaArtTextureCache:()=>({dispose(){},snapshot:()=>null}),createRugpullWoodsArtPlan:()=>null,createMwebMeadowsArtPlan:()=>null,createHashwoodRiverArtPlan:()=>null,createHalvingFarmsArtPlan:()=>null,createWorldRoadsArtPlan:()=>null,Application,Container:Display,Graphics:Graphic,Sprite:Display,Texture,Rectangle:class{},
+  const imports={createAreaArt:()=>{throw new Error('area art must not be constructed without a plan');},createAreaArtTextureCache:()=>({dispose(){},snapshot:()=>null}),createRugpullWoodsArtPlan:()=>null,createMwebMeadowsArtPlan:()=>null,createHashwoodRiverArtPlan:()=>null,createHalvingFarmsArtPlan:()=>null,createScryptBayouArtPlan:()=>null,createSilverCoastArtPlan:()=>null,createLitecoinCityArtPlan:()=>null,createWorldRoadsArtPlan:()=>null,Application,Container:Display,Graphics:Graphic,Sprite:Display,Texture,Rectangle:class{},
     createGreyboxWorld:()=>testWorld,createGreyboxGroundPaint,createWorldV2Geometry,createWorldV2LocalRuntime:createRuntime,
     createGreyboxPropResidency:residencyModule.createGreyboxPropResidency,
     createLocalMeadowsRelayPlan:world=>{assert.equal(world,testWorld);return relayPlan;},
@@ -101,7 +101,7 @@ function fixture({appGate,decodeGate,navGates=[],metadataFailure=null,partialIni
     PRODUCTION_HERO_ASSETS:{'lit-commando':{actorId:'lit-commando',metadataUrl:'/human.json',imageUrl:'/human.webp'}},PRODUCTION_HERO_RUNTIME_SCALE:.58,
     createProductionHeroAtlasIndex:()=>({}),createProductionHeroDisplay:()=>({container:new Display(),artSource:'packed-textured-blend',applyPose(pose){poses.push(pose);},setLayerVisible(layer,visible){layers.push({layer,visible});}})};
   const allowed=new Set(['pixi.js','./greybox-world-v1.mjs','./greybox-ground-presentation.mjs','../world-v2-geometry.mjs','./world-v2-local-runtime.mjs',
-    '../input.mjs','../touch-controls.mjs','../world-space.mjs','../elevation.mjs','../production-hero-atlas.mjs','../production-hero-assets.mjs','./greybox-prop-residency.mjs','./world-v2-local-relay.mjs','../movement.mjs','../world-v2-area-art.mjs','../world-v2-area-plans/rugpull-woods.mjs','../world-v2-area-plans/mweb-meadows.mjs','../world-v2-area-plans/halving-farms.mjs','../world-v2-area-plans/world-roads.mjs','../world-v2-area-plans/hashwood-river.mjs']);
+    '../input.mjs','../touch-controls.mjs','../world-space.mjs','../elevation.mjs','../production-hero-atlas.mjs','../production-hero-assets.mjs','./greybox-prop-residency.mjs','./world-v2-local-relay.mjs','../movement.mjs','../world-v2-area-art.mjs','../world-v2-area-plans/rugpull-woods.mjs','../world-v2-area-plans/mweb-meadows.mjs','../world-v2-area-plans/halving-farms.mjs','../world-v2-area-plans/scrypt-bayou.mjs','../world-v2-area-plans/silver-coast.mjs','../world-v2-area-plans/litecoin-city.mjs','../world-v2-area-plans/world-roads.mjs','../world-v2-area-plans/hashwood-river.mjs']);
   const executable=source.replace(/^import\s*\{([^}]+)\}\s*from\s*['"]([^'"]+)['"];?\s*$/gm,(_line,names,specifier)=>{
     assert.ok(allowed.has(specifier),specifier);for(const name of names.split(',').map(x=>x.trim()).filter(Boolean))assert.ok(Object.hasOwn(imports,name),name);return '';
   }).replace('export function mountGreyboxPlaytest','function mountGreyboxPlaytest');
@@ -272,10 +272,13 @@ test('area art plans mount through the scene seams and every plan disposes with 
   const {createRugpullWoodsArtPlan}=await import('../apps/hmh-reboot/src/world-v2-area-plans/rugpull-woods.mjs');
   const {createMwebMeadowsArtPlan}=await import('../apps/hmh-reboot/src/world-v2-area-plans/mweb-meadows.mjs');
   const {createHalvingFarmsArtPlan}=await import('../apps/hmh-reboot/src/world-v2-area-plans/halving-farms.mjs');
+  const {createLitecoinCityArtPlan}=await import('../apps/hmh-reboot/src/world-v2-area-plans/litecoin-city.mjs');
+  const {createSilverCoastArtPlan}=await import('../apps/hmh-reboot/src/world-v2-area-plans/silver-coast.mjs');
+  const {createScryptBayouArtPlan}=await import('../apps/hmh-reboot/src/world-v2-area-plans/scrypt-bayou.mjs');
   const {createWorldRoadsArtPlan}=await import('../apps/hmh-reboot/src/world-v2-area-plans/world-roads.mjs');
   const world=createGreyboxWorld(),before=JSON.stringify(world);
-  const plans=[createRugpullWoodsArtPlan(world),createMwebMeadowsArtPlan(world),createHalvingFarmsArtPlan(world),createWorldRoadsArtPlan(world)];
-  assert.deepEqual(plans.map(plan=>plan.areaId),['rugpull-woods','mweb-meadows','halving-farms','world-roads']);
+  const plans=[createRugpullWoodsArtPlan(world),createMwebMeadowsArtPlan(world),createHalvingFarmsArtPlan(world),createScryptBayouArtPlan(world),createSilverCoastArtPlan(world),createLitecoinCityArtPlan(world),createWorldRoadsArtPlan(world)];
+  assert.deepEqual(plans.map(plan=>plan.areaId),['rugpull-woods','mweb-meadows','halving-farms','scrypt-bayou','silver-coast','litecoin-city','world-roads']);
   assert.ok(plans.every(plan=>Object.isFrozen(plan)&&plan.runtimeAuthority==='projection-only'&&plan.artAccepted===false));
   assert.equal(JSON.stringify(world),before,'art planning does not mutate the gameplay world');
   const source=read(sceneUrl);
