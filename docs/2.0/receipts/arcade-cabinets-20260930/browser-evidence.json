@@ -1,0 +1,147 @@
+{
+  "origin": "local static apps/portal",
+  "capturedAt": "2026-10-01T03:39:49.986Z",
+  "runs": [
+    {
+      "view": "games-desktop-1440x900",
+      "motion": "running",
+      "paused": {
+        "motion": "paused",
+        "playState": "paused"
+      },
+      "overflow": false,
+      "errors": [],
+      "cabinets": [
+        {
+          "slug": "hard-money-heroes",
+          "frames": 16,
+          "rest": 2,
+          "visible": [
+            2
+          ],
+          "media": [
+            409,
+            340
+          ]
+        },
+        {
+          "slug": "chikun",
+          "frames": 16,
+          "rest": 2,
+          "visible": [
+            2
+          ],
+          "media": [
+            409,
+            340
+          ]
+        },
+        {
+          "slug": "stacked",
+          "frames": 16,
+          "rest": 2,
+          "visible": [
+            2
+          ],
+          "media": [
+            409,
+            340
+          ]
+        }
+      ]
+    },
+    {
+      "view": "games-phone-414x896@3",
+      "motion": "running",
+      "paused": {
+        "motion": "paused",
+        "playState": "paused"
+      },
+      "overflow": false,
+      "errors": [],
+      "cabinets": [
+        {
+          "slug": "hard-money-heroes",
+          "frames": 16,
+          "rest": 2,
+          "visible": [
+            2
+          ],
+          "media": [
+            372,
+            310
+          ]
+        },
+        {
+          "slug": "chikun",
+          "frames": 16,
+          "rest": 2,
+          "visible": [
+            2
+          ],
+          "media": [
+            372,
+            310
+          ]
+        },
+        {
+          "slug": "stacked",
+          "frames": 16,
+          "rest": 2,
+          "visible": [
+            2
+          ],
+          "media": [
+            372,
+            310
+          ]
+        }
+      ]
+    },
+    {
+      "view": "games-desktop-reduced-motion",
+      "motion": "paused",
+      "paused": null,
+      "overflow": false,
+      "errors": [],
+      "cabinets": [
+        {
+          "slug": "hard-money-heroes",
+          "frames": 16,
+          "rest": 2,
+          "visible": [
+            2
+          ],
+          "media": [
+            409,
+            340
+          ]
+        },
+        {
+          "slug": "chikun",
+          "frames": 16,
+          "rest": 2,
+          "visible": [
+            2
+          ],
+          "media": [
+            409,
+            340
+          ]
+        },
+        {
+          "slug": "stacked",
+          "frames": 16,
+          "rest": 2,
+          "visible": [
+            2
+          ],
+          "media": [
+            409,
+            340
+          ]
+        }
+      ]
+    }
+  ]
+}

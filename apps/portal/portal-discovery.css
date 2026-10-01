@@ -163,9 +163,9 @@ html:not([data-ingame="true"]) #officialApp #arcadeMusicPlayer:not([hidden]) { p
 #officialApp #officialCabinetGrid .official-cabinet-card.locked .cabinet-card-copy { z-index:1; }
 #officialApp #officialCabinetGrid .official-cabinet-card.locked .cabinet-card-copy h2 { font-size:22px; }
 #officialApp #officialCabinetGrid .catalog-static-cabinet { display:block; width:270px; height:270px; background-repeat:no-repeat; }
-.catalog-static-cabinet.hard-money-heroes { background-image:url('/assets/hard-money-heroes/cabinet/rotation/hmh-cabinet-rotation-00-front.png'); background-size:259.36px 283.68px; background-position:5.57px -12.66px; }
-.catalog-static-cabinet.chikun { background-image:url('/assets/generated/chikun-cabinet/chikun-cabinet-front.png?v=transparent-v2'); background-size:283.46px 376.30px; background-position:-3.9px -41.81px; }
-.catalog-static-cabinet.stacked { background-image:url('/assets/stacked-cabinet/stacked-cabinet-turnaround-v1.png'); background-size:865.85px 577.20px; background-position:-23.68px -6.76px; mix-blend-mode:screen; }
+.catalog-static-cabinet.hard-money-heroes { background-image:url('/assets/generated/arcade-cabinets-3d/hard-money-heroes/hard-money-heroes-cabinet-poster.webp?v=0a5b48d5c8b9'); background-size:261.82px 286.36px; background-position:4.09px -8.18px; }
+.catalog-static-cabinet.chikun { background-image:url('/assets/generated/arcade-cabinets-3d/chikun/chikun-cabinet-poster.webp?v=573c252e1b8f'); background-size:261.82px 286.36px; background-position:4.09px -8.18px; }
+.catalog-static-cabinet.stacked { background-image:url('/assets/generated/arcade-cabinets-3d/stacked/stacked-cabinet-poster.webp?v=f480d9775590'); background-size:261.82px 286.36px; background-position:4.09px -8.18px; }
 #officialApp .game-detail-story { padding:24px 8px; color:var(--portal-paper); display:grid; grid-template-columns:1fr 1.2fr; gap:32px; }
 #officialApp .game-detail-story h2 { font:800 28px/1.2 var(--font-display); text-transform:none; margin:0 0 16px; }
 #officialApp .game-detail-story p, #officialApp .game-detail-story dd { color:var(--portal-muted); line-height:1.7; }

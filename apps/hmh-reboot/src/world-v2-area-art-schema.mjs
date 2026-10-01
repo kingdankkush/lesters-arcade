@@ -45,8 +45,8 @@ export const AREA_ART_MATERIALS = freezeDeep({
   sand: defineMaterial(0xb8ac8f, [{ tile: 'packed-earth', size: 150, gain: 2 }, { tile: 'crushed-ore', size: 600, gain: 0.35, lum: true, rot: true }]),
   wetsand: defineMaterial(0x9b957b, [{ tile: 'packed-earth', size: 150, gain: 2 }, { tile: 'crushed-ore', size: 500, gain: 0.42, lum: true, rot: true }]),
   shallows: defineMaterial(0x406764, [{ tile: 'shallow-water', size: 200, gain: 0.8 }, { tile: 'shallow-water', size: 560, gain: 0.5, rot: true }]),
-  rock: defineMaterial(0x7e817a, [{ tile: 'ledge-top', size: 160, gain: 1.1 }, { tile: 'ledge-top', size: 480, gain: 0.6, rot: true }], { alpha: 0.8 }),
-  scree: defineMaterial(0x8b8d88, [{ tile: 'crushed-ore', size: 140, gain: 1.2 }, { tile: 'ledge-top', size: 400, gain: 0.7, lum: true, rot: true }]),
+  rock: defineMaterial(0x767970, [{ tile: 'ledge-top', size: 160, gain: 0.62 }, { tile: 'ledge-top', size: 480, gain: 0.34, rot: true }], { alpha: 0.8 }),
+  scree: defineMaterial(0x84867f, [{ tile: 'crushed-ore', size: 140, gain: 0.8 }, { tile: 'ledge-top', size: 400, gain: 0.4, lum: true, rot: true }]),
   marsh: defineMaterial(0x586451, [{ tile: 'wet-bank', size: 160, gain: 2.8 }, { tile: 'forest-floor', size: 520, gain: 3, rot: true }], { alpha: 0.7 }),
   peat: defineMaterial(0x494d3f, [{ tile: 'wet-bank', size: 150, gain: 2.8 }, { tile: 'ledge-top', size: 460, gain: 0.38, lum: true, rot: true }]),
   moss: defineMaterial(0x4f5f47, [{ tile: 'wet-bank', size: 160, gain: 2.8 }, { tile: 'forest-floor', size: 480, gain: 3, rot: true }]),
@@ -54,7 +54,9 @@ export const AREA_ART_MATERIALS = freezeDeep({
   needles: defineMaterial(0x575466, [{ tile: 'packed-earth', size: 150, gain: 2.4 }, { tile: 'ledge-top', size: 500, gain: 0.42, lum: true, rot: true }]),
   paving: defineMaterial(0x91948c, [{ tile: 'industrial-slab', size: 220, gain: 1.6 }, { tile: 'crushed-ore', size: 600, gain: 0.4, lum: true, rot: true }], { alpha: 0.8 }),
   masonry: defineMaterial(0x7b7c70, [{ tile: 'industrial-slab', size: 180, gain: 1.6 }, { tile: 'ledge-top', size: 460, gain: 0.38, lum: true, rot: true }], { alpha: 0.8 }),
-  asphalt: defineMaterial(0x4a4f4d, [{ tile: 'road', size: 160, gain: 2.8 }, { tile: 'crushed-ore', size: 520, gain: 0.38, lum: true, rot: true }], { alpha: 0.85 }),
+  asphalt: defineMaterial(0x474c4a, [{ tile: 'road', size: 160, gain: 2.8 }, { tile: 'crushed-ore', size: 520, gain: 0.22, lum: true, rot: true }], { alpha: 0.85 }),
+  // Compacted, dusty wheel track for dirt roads: lighter than the earth verge.
+  track: defineMaterial(0x8d7b5c, [{ tile: 'packed-earth', size: 150, gain: 2.2 }, { tile: 'crushed-ore', size: 480, gain: 0.32, lum: true, rot: true }], { alpha: 0.8 }),
   soil: defineMaterial(0x625a47, [{ tile: 'packed-earth', size: 150, gain: 2.4 }, { tile: 'crushed-ore', size: 520, gain: 0.45, lum: true, rot: true }]),
   crop: defineMaterial(0x8c8760, [{ tile: 'forest-floor', size: 120, gain: 2.4 }, { tile: 'packed-earth', size: 440, gain: 2.5, rot: true }]),
   campearth: defineMaterial(0x635948, [{ tile: 'packed-earth', size: 150, gain: 2.4 }, { tile: 'ledge-top', size: 500, gain: 0.4, lum: true, rot: true }]),
@@ -67,7 +69,7 @@ export const AREA_ART_MATERIALS = freezeDeep({
 // macro noise cell in world units, `value` the broad light/dark variation.
 export const DISTRICT_TERRAIN = freezeDeep({
   'mweb-meadows': { materials: ['meadow', 'earth', 'gravel'], blend: 0.3, patch: 900, value: 0.14 },
-  'litecoin-city': { materials: ['paving', 'asphalt', 'gravel'], blend: 0.35, patch: 700, value: 0.1 },
+  'litecoin-city': { materials: ['paving', 'asphalt', 'gravel'], blend: 0.2, patch: 1200, value: 0.1 },
   'halving-farms': { materials: ['soil', 'crop', 'earth'], blend: 0.42, patch: 1100, value: 0.14 },
   'silver-coast': { materials: ['sand', 'wetsand', 'shallows'], blend: 0.3, patch: 800, value: 0.12 },
   'scrypt-bayou': { materials: ['marsh', 'peat', 'boardwalk'], blend: 0.4, patch: 700, value: 0.16 },
@@ -82,10 +84,15 @@ export const AREA_ART_MATERIAL_IDS = Object.freeze(Object.keys(AREA_ART_MATERIAL
 
 // Road material recipe by authored kind. `core` carries the tread, `shoulder`
 // the verge, `halo` the worn edge feathered into the surrounding ground.
+// The mesh path paints an opaque core `coreFraction` of the authored width
+// with a noise-eroded edge, a shoulder fading out `shoulderOut` units beyond
+// the authored half width, tyre ruts at `rutOffset` of the core half width,
+// and a worn chalk centre line on paved roads. `rank` orders overlaps:
+// dirt under gravel under paved. The Graphics fields keep the fallback.
 export const ROAD_RECIPES = freezeDeep({
-  paved: { core: 'asphalt', shoulder: 'gravel', shoulderWidth: 56, haloWidth: 70, haloAlpha: 0.5, tracks: 0.16, ruts: false, cracks: true },
-  gravel: { core: 'gravel', shoulder: 'earth', shoulderWidth: 44, haloWidth: 80, haloAlpha: 0.55, tracks: 0.1, ruts: false, cracks: false },
-  dirt: { core: 'dirt', shoulder: 'earth', shoulderWidth: 24, haloWidth: 90, haloAlpha: 0.6, tracks: 0, ruts: true, cracks: false },
+  paved: { core: 'asphalt', shoulder: 'gravel', rank: 2, coreFraction: 0.78, shoulderOut: 60, shoulderAlpha: 0.9, rutOffset: 0.5, rutAlpha: 0.12, centreLine: true, shoulderWidth: 56, haloWidth: 70, haloAlpha: 0.5, tracks: 0.16, ruts: false, cracks: true },
+  gravel: { core: 'gravel', shoulder: 'earth', rank: 1, coreFraction: 0.62, shoulderOut: 40, shoulderAlpha: 0.75, rutOffset: 0.5, rutAlpha: 0.2, centreLine: false, shoulderWidth: 44, haloWidth: 80, haloAlpha: 0.55, tracks: 0.1, ruts: false, cracks: false },
+  dirt: { core: 'track', shoulder: 'earth', rank: 0, coreFraction: 0.5, shoulderOut: 30, shoulderAlpha: 0.7, rutOffset: 0.42, rutAlpha: 0.26, centreLine: false, shoulderWidth: 24, haloWidth: 90, haloAlpha: 0.6, tracks: 0, ruts: true, cracks: false },
 });
 
 // The bible's restrained foliage green is 0x65735a. The three teal fantasy
@@ -202,6 +209,20 @@ export function validateAreaArtPlan(plan, kit) {
     return { id: trail.id, material: trail.material, points, width, halo: trail.halo === undefined ? 18 : positive(trail.halo, `${name}.halo`) };
   });
   unique(trails, 'ground.trails');
+  // Splat slots for every zone/trail material: the area's three, up to two
+  // extras (largest painted area first), the rest folded onto the nearest
+  // colour. Nothing is left for a straight-edged polygon fill.
+  if (terrain) {
+    const coverage = new Map(), add = (id, n) => coverage.set(id, (coverage.get(id) ?? 0) + n);
+    for (const zone of zones) { const v = zone.vertices; let a = 0; for (let i = 0; i < v.length; i++) { const q = v[(i + 1) % v.length]; a += v[i].x * q.y - q.x * v[i].y; } add(zone.material, Math.abs(a) / 2); }
+    for (const trail of trails) { let l = 0; for (let i = 1; i < trail.points.length; i++) l += Math.hypot(trail.points[i].x - trail.points[i - 1].x, trail.points[i].y - trail.points[i - 1].y); add(trail.material, l * trail.width); }
+    const extras = [...coverage].filter(([id]) => !terrain.materials.includes(id)).sort((a, b) => b[1] - a[1] || (a[0] < b[0] ? -1 : 1)).slice(0, 2).map(([id]) => id);
+    const palette = [...terrain.materials, ...[0, 1].map(i => extras[i] ?? null)];
+    const near = id => { const c = AREA_ART_MATERIALS[id].color; let best = 0, dist = Infinity; palette.forEach((m, i) => { if (!m) return; const d = AREA_ART_MATERIALS[m].color, e = ((c >> 16) - (d >> 16)) ** 2 + ((c >> 8 & 255) - (d >> 8 & 255)) ** 2 + ((c & 255) - (d & 255)) ** 2; if (e < dist) { dist = e; best = i; } }); return best; };
+    const slots = Object.fromEntries([...coverage.keys()].sort().map(id => [id, palette.indexOf(id) >= 0 ? palette.indexOf(id) : near(id)]));
+    terrain = { ...terrain, extras, slots };
+    extras.forEach(id => materials.add(id));
+  }
   const decals = (ground.decals ?? []).map((decal, i) => {
     const name = `ground.decals[${i}]`;
     if (!['detail:grass', 'detail:aggregate'].includes(decal.source)) fail(`${name}.source must be a ground detail frame`);
@@ -248,28 +269,51 @@ export function validateAreaArtPlan(plan, kit) {
       card = { source: solid.source, fit: solid.fit === undefined ? 'width' : solid.fit, lift: solid.lift === undefined ? 0 : finite(solid.lift, `${name}.lift`) };
       if (!['width', 'height', 'depth'].includes(card.fit)) fail(`${name}.fit must be width, height or depth`);
     }
-    const roof = solid.roof === undefined ? null : material(solid.roof, `${name}.roof`);
+    const massAlpha = solid.massAlpha === undefined ? (style === 'card' ? 0.32 : ['bank', 'mass'].includes(style) ? 1 : 0) : clampUnit(solid.massAlpha, `${name}.massAlpha`);
+    // A drawn mass always has a roof material; banks and bare masses default to rock.
+    const roof = solid.roof === undefined ? (massAlpha > 0 ? (style === 'bank' || (style === 'mass' && solid.wall === undefined) ? 'rock' : style === 'mass' ? 'slate' : terrain?.materials[0] ?? 'earth') : null) : material(solid.roof, `${name}.roof`);
     if (roof) materials.add(roof);
     const wall = solid.wall === undefined ? null : material(solid.wall, `${name}.wall`);
     if (wall) materials.add(wall);
-    return { id: solid.pieceId, pieceId: solid.pieceId, style, card, roof, wall, tint: optionalTint(solid.tint, `${name}.tint`), massAlpha: solid.massAlpha === undefined ? (style === 'card' ? 0.32 : ['bank', 'mass'].includes(style) ? 1 : 0) : clampUnit(solid.massAlpha, `${name}.massAlpha`), spacing: solid.spacing === undefined ? 0 : positive(solid.spacing, `${name}.spacing`), height: solid.height === undefined ? null : positive(solid.height, `${name}.height`) };
+    return { id: solid.pieceId, pieceId: solid.pieceId, style, card, roof, wall, tint: optionalTint(solid.tint, `${name}.tint`), massAlpha, spacing: solid.spacing === undefined ? 0 : positive(solid.spacing, `${name}.spacing`), height: solid.height === undefined ? null : positive(solid.height, `${name}.height`) };
   });
   unique(solids, 'solids');
+
+  // Lettered sign panels on carrier props or decorated solids (names only).
+  const propIds = new Set(props.map(p => p.id)), solidIds = new Set(solids.map(s => s.pieceId));
+  const signs = (plan.signs ?? []).map((sign, i) => {
+    const name = `signs[${i}]`;
+    if ((sign.propId === undefined) === (sign.pieceId === undefined)) fail(`${name} needs exactly one of propId or pieceId`);
+    if (sign.propId !== undefined && !propIds.has(sign.propId)) fail(`${name}.propId ${sign.propId} is not a plan prop`);
+    if (sign.pieceId !== undefined && !solidIds.has(sign.pieceId)) fail(`${name}.pieceId ${sign.pieceId} is not a decorated solid`);
+    if (typeof sign.text !== 'string' || !/^[A-Za-z0-9][A-Za-z0-9 '&.-]{0,27}$/.test(sign.text)) fail(`${name}.text must be 1-28 plain characters`);
+    return { id: sign.id, propId: sign.propId ?? null, pieceId: sign.pieceId ?? null, text: sign.text, anchor: sign.anchor === undefined ? 0.8 : clampRange(sign.anchor, 0, 1.3, `${name}.anchor`), height: clampRange(sign.height ?? 26, 8, 80, `${name}.height`), maxWidth: clampRange(sign.maxWidth ?? 220, 40, 600, `${name}.maxWidth`), panel: assertDecorativeTint(sign.panel ?? 0x4e5e62, `${name}.panel`), ink: assertDecorativeTint(sign.ink ?? 0xd8d5c6, `${name}.ink`) };
+  });
+  unique(signs, 'signs');
+  if (signs.length > 64) fail('signs exceeds 64 panels');
+  // Low ground fog cards: presentation only, faint, inside the plan bounds.
+  const fog = (ground.fog ?? []).map((card, i) => {
+    const name = `ground.fog[${i}]`, at = point(card, name); inside(at, name);
+    return { id: card.id, ...at, rx: clampRange(card.rx, 40, 900, `${name}.rx`), ry: clampRange(card.ry, 20, 400, `${name}.ry`), alpha: clampRange(card.alpha ?? 0.2, 0.02, 0.4, `${name}.alpha`), tint: optionalTint(card.tint, `${name}.tint`) };
+  });
+  unique(fog, 'ground.fog');
+  if (fog.length > 96) fail('ground.fog exceeds 96 cards');
 
   for (const page of plan.pages) if (!usedPages.has(page)) fail(`plan loads unused kit page ${page}`);
   const pages = plan.pages.map(image => kit.pages.find(entry => entry.image === image));
   const encodedBytes = pages.reduce((n, page) => n + page.encodedBytes, 0), decodedBytes = pages.reduce((n, page) => n + page.decodedBytes, 0);
   const halfEncodedBytes = pages.reduce((n, page) => n + page.halfRes.encodedBytes, 0), halfDecodedBytes = pages.reduce((n, page) => n + page.halfRes.decodedBytes, 0);
-  const grainMaterials = new Set([...(terrain?.materials ?? []), ...solids.flatMap(solid => [solid.roof, solid.wall].filter(Boolean))]);
+  const grainMaterials = new Set([...(terrain?.materials ?? []), ...(terrain?.extras ?? []), ...solids.flatMap(solid => [solid.roof, solid.wall].filter(Boolean)), ...roads.flatMap(road => [ROAD_RECIPES[road.kind].core, ROAD_RECIPES[road.kind].shoulder])]);
   const tiles = [...new Set([...materials].flatMap(id => grainMaterials.has(id) ? AREA_ART_MATERIALS[id].grain.map(layer => layer.tile) : [AREA_ART_MATERIALS[id].tile]))].sort();
   const overlays = solids.some(solid => ['bank', 'mass'].includes(solid.style)) ? [AREA_ART_ROCK_FACE] : [];
   return freezeDeep({
     schema: AREA_ART_SCHEMA, areaId: plan.areaId, roadsPlan, bounds, pages: plan.pages.slice(), sources: [...sources].sort(), materials: [...materials].sort(), tiles,
-    detailPage: decals.length > 0, base, terrain, overlays, zones, trails, decals, roads, props, solids,
-    counts: { zones: zones.length, trails: trails.length, decals: decals.length, roads: roads.length, props: props.length, solids: solids.length },
-    budget: { kitPages: plan.pages.length, exclusiveKitPages: exclusivePages.length, kitPageBudget: budget, encodedBytes, decodedBytes, halfEncodedBytes, halfDecodedBytes, tilePages: tiles.length * 2 + overlays.length + (decals.length ? 1 : 0) + (terrain ? 1 : 0), tileDecodedBytes: tiles.length * (512 * 512 * 4 + 512 * 128 * 4) + overlays.length * 512 * 128 * 4 + (decals.length ? 256 * 256 * 4 : 0) + (terrain ? 512 * 512 * 4 : 0) },
+    detailPage: decals.length > 0, base, terrain, overlays, signs, fog, zones, trails, decals, roads, props, solids,
+    counts: { zones: zones.length, trails: trails.length, decals: decals.length, roads: roads.length, props: props.length, solids: solids.length, signs: signs.length, fog: fog.length },
+    budget: { kitPages: plan.pages.length, exclusiveKitPages: exclusivePages.length, kitPageBudget: budget, encodedBytes, decodedBytes, halfEncodedBytes, halfDecodedBytes, tilePages: tiles.length * 2 + overlays.length + (decals.length ? 1 : 0) + (terrain ? 1 : 0), tileDecodedBytes: tiles.length * (512 * 512 * 4 + 512 * 128 * 4) + overlays.length * 512 * 128 * 4 + (decals.length ? 256 * 256 * 4 : 0) + (terrain ? 2 * 384 * 384 * 4 : 0) },
   });
 }
+function clampRange(value, min, max, name) { finite(value, name); if (value < min || value > max) fail(`${name} must be within ${min}..${max}`); return value; }
 function clampUnit(value, name) { finite(value, name); if (value < 0 || value > 1) fail(`${name} must be within 0..1`); return value; }
 
 // ---- pure geometry used by plans, tests and the renderer ----
@@ -359,5 +403,5 @@ export function createPlacementGuard({ world, areaId = null, roadClearance = 1, 
 }
 
 export function createAreaArtPlanShell({ areaId, bounds, pages }) {
-  return { schema: AREA_ART_SCHEMA, areaId, runtimeAuthority: 'projection-only', artAccepted: false, bounds: { ...bounds }, pages: [...pages], ground: { base: null, zones: [], trails: [], decals: [] }, roads: [], props: [], solids: [] };
+  return { schema: AREA_ART_SCHEMA, areaId, runtimeAuthority: 'projection-only', artAccepted: false, bounds: { ...bounds }, pages: [...pages], ground: { base: null, zones: [], trails: [], decals: [], fog: [] }, roads: [], props: [], solids: [], signs: [] };
 }

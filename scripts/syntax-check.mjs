@@ -563,6 +563,9 @@ const NODE_CHECK_FILES = [
   'tests/hmh-world-destructibles.test.mjs',
   'tests/hmh-world-explosives.test.mjs',
   'apps/portal/assets/stacked-cabinet/stacked-cabinet-manifest.mjs',
+  'apps/portal/assets/generated/arcade-cabinets-3d/arcade-cabinets-3d-manifest.mjs',
+  'tests/arcade-cabinets-3d.test.mjs',
+  'scripts/arcade-cabinets-browser-evidence.mjs',
   'apps/portal/src/cabinet-motion.mjs',
   'tests/stacked-cabinet-art.test.mjs',
   'scripts/stacked-cabinet-browser-smoke.mjs',
@@ -1413,6 +1416,8 @@ const NODE_CHECK_FILES = [
 // Every Python script that must compile (python -m py_compile).
 const PY_COMPILE_FILES = [
   'scripts/build-chikun-course-two-art.py',
+  'scripts/run-arcade-cabinets.py',
+  'scripts/hmh-blender/build-arcade-cabinets.py',
   'scripts/chikun-blender/render-chikun-eagle-loop.py',
   'scripts/lib/chikun_native_transforms.py',
   'scripts/lib/chikun_obstacle_loop_pack.py',

@@ -7,7 +7,6 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import { readFileSync, existsSync } from 'node:fs';
-import { execFileSync } from 'node:child_process';
 import { inspectActorGlb } from '../scripts/lib/hmh-actor-glb.mjs';
 import { decodeActor3dGlb } from '../apps/hmh-reboot/src/actor-3d-model.mjs';
 import { ACTOR3D_BOSS_CLIPS, ACTOR3D_BOSS_IDS, ACTOR3D_ENEMY_IDS, createActor3dPresentationEntries, createDistrictBoss3dEntries } from '../apps/hmh-reboot/src/actor-3d-controller.mjs';
@@ -67,8 +66,9 @@ for (const id of BOSSES) {
     assert.equal(archive.archivedSha256, source.sourceSha256);
     assert.equal(manifest.sourceSha256, source.sourceSha256);
     assert.equal(existsSync(new URL(source.source, base)), false, 'no .blend beside the receipts');
-    const tracked = execFileSync('git', ['ls-files', `apps/hmh-reboot/assets/source/models/native-enemies/${id}`], { cwd: new URL('..', import.meta.url), encoding: 'utf8' });
-    assert.doesNotMatch(tracked, /\.blend/);
+    // Git-free: the repository ignores the editable source, so it can never be committed.
+    const ignored = readFileSync(new URL('../.gitignore', import.meta.url), 'utf8');
+    assert.ok(ignored.split(/\r?\n/).includes(`/apps/hmh-reboot/assets/source/models/native-enemies/${id}/*.blend`), `${id} .blend is gitignored`);
   });
 }
 

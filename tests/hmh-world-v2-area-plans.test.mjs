@@ -316,7 +316,7 @@ test('Hashwood River follows brief 06: conifers on closed banks, iris on the dam
   assert.deepEqual(plan.pages, HASHWOOD_RIVER_PAGES);
   assert.equal(summary.budget.exclusiveKitPages, 2);
   assert.equal(summary.budget.decodedBytes, 3 * 16777216);
-  assert.ok(summary.tiles.length <= 4, summary.tiles.join(','));
+  assert.ok(summary.tiles.length <= 5 && summary.budget.tileDecodedBytes <= 8 * 1024 * 1024, summary.tiles.join(',')); // terrain extras add at most one tile pair
   assert.ok(!summary.sources.includes('b2-42') && !summary.sources.includes('b2-44'), 'structures-00 bridge cards stay out of the two-page budget');
   const water = world.pieces.filter(p => p.kind === 'water').map(p => p.visible.vertices);
   const segments = routeSegments('hashwood-river'), areaSites = sites('hashwood-river');

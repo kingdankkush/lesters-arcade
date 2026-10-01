@@ -79,7 +79,8 @@ test('the shared cache reference-counts pages between Meadows, Woods and roads a
   assert.equal(roads.paintSurface({ target: ground, surface: { id: 'meadows-woods-join-1' } }), true);
   assert.equal(ground.children.length, 0, 'claimed joins never paint twice');
   assert.equal(roads.paintSurface({ target: ground, surface: { id: 'meadows-woods-segment-1' } }), true);
-  assert.ok(ground.children.length >= 2, 'ribbon and wear painted once per road');
+  // One road mesh where a GL program can be built, else the Graphics ribbon + wear fallback.
+  assert.ok(ground.children.length === 1 ? ground.children[0].label === 'area-road-meadows-woods' : ground.children.length >= 2, 'road painted once');
   arts[0].dispose();
   assert.ok(cache.snapshot().urls.some(u => u.includes('plants-00@0.5x')), 'Meadows still holds the plants page');
   arts[1].dispose(); arts[2].dispose();

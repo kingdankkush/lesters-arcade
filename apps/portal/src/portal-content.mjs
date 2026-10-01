@@ -7,6 +7,7 @@ import { SETTLEMENT_LIVE, HOSTED_PROFILE_SYNC } from './settlement.mjs';
 import { JACKPOT_LIVE } from './jackpot-config.mjs';
 import { RANKED_ENTRY_FEE_ZKLTC, RANKED_ENTRY_TOTAL_ZKLTC, RANKED_SETTLEMENT_GAS_RESERVE_ZKLTC } from './arcade-core.mjs';
 import { RANKED_FACTS, RANKED_WORDING } from './ranked-facts.mjs';
+import { ARCADE_CABINETS_3D } from '../assets/generated/arcade-cabinets-3d/arcade-cabinets-3d-manifest.mjs';
 import { HMH_BANNER_ART, HMH_FREE_SHARE_OG, hmhBannerSrc, hmhBannerSrcset } from './generated/hmh-banner-art.mjs';
 
 export const PORTAL_ORIGIN = 'https://lestersarcade.io';
@@ -24,8 +25,8 @@ export const PORTAL_GAMES = Object.freeze([
     freeArt: Object.freeze({ src: hmhBannerSrc(HMH_BANNER_ART.free.id, 960), srcset: hmhBannerSrcset(HMH_BANNER_ART.free.id), alt: HMH_BANNER_ART.free.alt }),
     rankedArt: Object.freeze({ src: hmhBannerSrc(HMH_BANNER_ART.ranked.id, 960), srcset: hmhBannerSrcset(HMH_BANNER_ART.ranked.id), alt: HMH_BANNER_ART.ranked.alt }),
     ogImage: Object.freeze({ src: HMH_FREE_SHARE_OG.src, width: HMH_FREE_SHARE_OG.width, height: HMH_FREE_SHARE_OG.height, alt: HMH_FREE_SHARE_OG.alt }),
-    cabinet: '/assets/hard-money-heroes/cabinet/rotation/hmh-cabinet-rotation-00-front.png',
-    sprite: 'hard-money-heroes-arcade-cabinet-rotation',
+    cabinet: ARCADE_CABINETS_3D['hard-money-heroes'].poster,
+    sprite: ARCADE_CABINETS_3D['hard-money-heroes'].id,
   }),
   Object.freeze({
     id: 'chikun', slug: 'chikun', title: "Chikun's Escape", genre: 'Run & fly',
@@ -35,8 +36,8 @@ export const PORTAL_GAMES = Object.freeze([
     goal: 'Travel farther, collect coins, and compare your daily best on this device.',
     art: '/assets/generated/chikun-mode-select/chikuns-escape-free-mode.webp',
     ogImage: Object.freeze({ src: '/assets/generated/chikun-mode-select/chikuns-escape-free-mode.webp', width: 1672, height: 941, alt: "Chikun flying through a bright blue sky between green pipes" }),
-    cabinet: '/assets/generated/chikun-cabinet/chikun-cabinet-front.png?v=transparent-v2',
-    sprite: 'chikun-cabinet',
+    cabinet: ARCADE_CABINETS_3D.chikun.poster,
+    sprite: ARCADE_CABINETS_3D.chikun.id,
   }),
   Object.freeze({
     id: 'stacked', slug: 'stacked', title: 'STACKED', genre: 'Falling-block puzzle',
@@ -46,8 +47,8 @@ export const PORTAL_GAMES = Object.freeze([
     goal: 'Build clean rows, keep the board under control, and improve your score.',
     art: '/assets/stacked-mode-select/stacked-free-v1.png',
     ogImage: Object.freeze({ src: '/assets/stacked-mode-select/stacked-free-v1.png', width: 1672, height: 941, alt: "Glowing falling blocks in a STACKED music world" }),
-    cabinet: '/assets/stacked-cabinet/stacked-cabinet-turnaround-v1.png',
-    sprite: 'stacked-cabinet',
+    cabinet: ARCADE_CABINETS_3D.stacked.poster,
+    sprite: ARCADE_CABINETS_3D.stacked.id,
   }),
 ]);
 
