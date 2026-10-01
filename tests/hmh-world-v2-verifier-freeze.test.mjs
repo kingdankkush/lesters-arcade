@@ -64,11 +64,14 @@ test('the ten-area selection is unofficial in every session shape the child can 
   assert.throws(() => createWorldV2RuntimeContext({ selection: { ...selection, rankedEligible: true } }), /unranked/);
 });
 
-test('the portal never forwards a world parameter to the embedded child, so a Ranked frame cannot select it', () => {
+test('the portal forwards the ten-area world only for explicit unranked Free sessions, so a Ranked frame cannot select it', () => {
   const host = read('../apps/portal/src/hmh-reboot-host.mjs');
+  // The portal URL's own query still forwards only the two QA switches.
   const forwarded = [...host.matchAll(/runtimeParams\.set\('([^']+)'/g)].map((match) => match[1]).sort();
   assert.deepEqual(forwarded, ['evidenceSafe', 'terminalPilot']);
-  assert.doesNotMatch(host, /world=ten-area|'world'/);
+  // The New Frontier preview adds world=ten-area behind one guard: Free mode and rankedEligible === false.
+  assert.match(host, /if \(world === HMH_FRONTIER_PREVIEW_WORLD && session\.mode === 'free' && session\.session\?\.rankedEligible === false\) \{/);
+  assert.equal((host.match(/HMH_FRONTIER_PREVIEW_WORLD_PARAM, HMH_FRONTIER_PREVIEW_WORLD\)/g) ?? []).length <= 1, true);
   const main = read('../apps/hmh-reboot/src/main.mjs');
   assert.match(main, /RUN_SUMMARY_ENABLED = context\.official === true;/);
   assert.match(main, /if \(bridge\?\.initialized && RUN_SUMMARY_ENABLED\) \{/);
