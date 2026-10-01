@@ -4,7 +4,7 @@
 // landmark, a rutted track ending at the barn threshold and woodland beyond the
 // field edges. Frozen data only; no blocker, surface, objective or rule is added.
 import { freezeDeep } from '../value-guards.mjs';
-import { stableUnit } from '../world-v2-area-art-schema.mjs';
+import { stableUnit, DISTRICT_TERRAIN } from '../world-v2-area-art-schema.mjs';
 import { createAreaPlanContext, CANOPY_HEIGHTS } from './plan-support.mjs';
 import { placeLine, placeEdgeWoodland } from './plan-lines.mjs';
 
@@ -30,6 +30,7 @@ export function createHalvingFarmsArtPlan(world) {
   const { area, plan, point, prop, solid, scatter, guard, routeSegments } = context;
   const { x: cx, y: cy } = area.center;
   plan.ground.base = { surfaceId: `${area.id}-floor`, material: 'grass', tint: 0xe0dcbc };
+  plan.ground.terrain = { ...DISTRICT_TERRAIN[area.id] };
   // Tilled fields, the trodden working yard and two fallow straw meadows.
   const rect = (minX, minY, maxX, maxY) => [point(minX, minY), point(maxX, minY), point(maxX, maxY), point(minX, maxY)];
   plan.ground.zones.push(

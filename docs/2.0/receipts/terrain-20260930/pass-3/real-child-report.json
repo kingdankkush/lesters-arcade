@@ -1,0 +1,45 @@
+{
+  "url": "http://127.0.0.1:60930/hmh-reboot/index.html?mode=free&world=ten-area&evidenceSafe=1",
+  "viewports": [
+    {
+      "name": "desktop",
+      "captures": [
+        {
+          "scene": "meadows-spawn",
+          "file": "desktop-meadows-spawn.png",
+          "readyMs": 3150,
+          "data": {
+            "worldId": "ten-area-frontier",
+            "worldSelection": "explicit-unranked-free-ten-area",
+            "areaArtStatus": "ready",
+            "status": "Standalone session ready"
+          }
+        },
+        {
+          "scene": "meadows-woods-road",
+          "file": "desktop-meadows-woods-road.png",
+          "readyMs": 2789,
+          "data": {
+            "worldId": "ten-area-frontier",
+            "worldSelection": "explicit-unranked-free-ten-area",
+            "areaArtStatus": "ready",
+            "status": "Standalone session ready"
+          }
+        },
+        {
+          "scene": "woods-camp",
+          "file": "desktop-woods-camp.png",
+          "readyMs": 2752,
+          "data": {
+            "worldId": "ten-area-frontier",
+            "worldSelection": "explicit-unranked-free-ten-area",
+            "areaArtStatus": "ready",
+            "status": "Standalone session ready"
+          }
+        }
+      ],
+      "consoleErrors": []
+    }
+  ],
+  "errors": []
+}

@@ -6,9 +6,10 @@
 // private scene and from the real game's area hook with the same factory.
 // Only symbols the child's pixi vendor chunk re-exports may be imported here;
 // fill matrices are plain {a,b,c,d,tx,ty} objects for that reason.
-import { Container, Graphics, Sprite, Texture, Rectangle } from 'pixi.js';
+import { Container, Graphics, Sprite, Texture, Rectangle, Mesh, Shader, GlProgram, Geometry, UniformGroup } from 'pixi.js';
 import { createGreyboxPropResidency } from './dev/greybox-prop-residency.mjs';
-import { AREA_ART_KIT_ROOT, AREA_ART_KIT_MANIFEST, AREA_ART_TILE_ROOT, AREA_ART_DETAIL_ROOT, AREA_ART_DETAIL_PAGE, AREA_ART_MATERIALS, ROAD_RECIPES, FOLIAGE_TINT_RULES, validateAreaArtPlan, resolveKitItem, ribbonPolygon, offsetPolygon, polygonBounds, rectVertices } from './world-v2-area-art-schema.mjs';
+import { AREA_ART_KIT_ROOT, AREA_ART_KIT_MANIFEST, AREA_ART_TILE_ROOT, AREA_ART_DETAIL_ROOT, AREA_ART_DETAIL_PAGE, AREA_ART_MATERIALS, AREA_ART_TILE_MEANS, ROAD_RECIPES, FOLIAGE_TINT_RULES, validateAreaArtPlan, resolveKitItem, ribbonPolygon, offsetPolygon, polygonBounds, rectVertices } from './world-v2-area-art-schema.mjs';
+import { buildTerrainField, TERRAIN_LIGHT_RANGE } from './world-v2-terrain-field.mjs';
 export { validateAreaArtPlan, createPlacementGuard, AREA_ART_SCHEMA, AREA_ART_MATERIALS } from './world-v2-area-art-schema.mjs';
 
 export const AREA_ART_ID = 'world-v2-area-art/v1';
@@ -18,7 +19,63 @@ const SHADOW_LEAN = Object.freeze({ x: 0.1, y: 0.05 });
 const DETAIL_FRAMES = Object.freeze({ 'detail:grass': { x: 0, y: 0, w: 180, h: 122, anchor: { x: 0.53, y: 0.73 }, scale: 0.34 }, 'detail:aggregate': { x: 0, y: 160, w: 224, h: 96, anchor: { x: 0.5, y: 0.5 }, scale: 0.42 } });
 
 const scaleMatrix = s => ({ a: s, b: 0, c: 0, d: s, tx: 0, ty: 0 });
+// Tiles decode at 512 px (full) or 256 px (@0.5x); fills map world units per
+// 512-texel repeat whatever the decoded size.
+const tileScale = (texture, scale) => scale * 512 / (texture?.source.pixelWidth || 512);
 
+// ---- splat shader: palette colour x amplified tile grain, blended per pixel by the control field ----
+const TERRAIN_VERTEX = `#version 300 es
+precision highp float;
+in vec2 aPosition;
+uniform mat3 uProjectionMatrix; uniform mat3 uWorldTransformMatrix; uniform mat3 uTransformMatrix;
+out vec2 vWorld;
+void main() { vWorld = aPosition; vec3 p = uProjectionMatrix * uWorldTransformMatrix * uTransformMatrix * vec3(aPosition, 1.0); gl_Position = vec4(p.xy, 0.0, 1.0); }`;
+const TERRAIN_FRAGMENT = `#version 300 es
+precision mediump float;
+in vec2 vWorld;
+out vec4 finalColor;
+uniform sampler2D uT0; uniform sampler2D uT1; uniform sampler2D uT2; uniform sampler2D uT3; uniform sampler2D uT4; uniform sampler2D uT5; uniform sampler2D uControl; uniform sampler2D uLight;
+uniform vec4 uL0; uniform vec4 uL1; uniform vec4 uL2; uniform vec4 uL3; uniform vec4 uL4; uniform vec4 uL5;
+uniform vec3 uM0; uniform vec3 uM1; uniform vec3 uM2; uniform vec3 uM3; uniform vec3 uM4; uniform vec3 uM5;
+uniform vec3 uC0; uniform vec3 uC1; uniform vec3 uC2;
+uniform vec4 uField; uniform vec4 uParams;
+uniform vec4 uColor; uniform vec4 uWorldColorAlpha;
+vec3 grain(sampler2D t, vec4 p, vec3 mean) {
+  vec2 uv = p.w > 0.5 ? vec2(-vWorld.y, vWorld.x) * p.x + vec2(0.37, 0.19) : vWorld * p.x;
+  vec3 s = texture(t, uv).rgb / mean;
+  if (p.z > 0.5) s = vec3(dot(s, vec3(0.299, 0.587, 0.114)));
+  return max(vec3(0.0), 1.0 + (s - 1.0) * p.y);
+}
+void main() {
+  vec2 cuv = (vWorld - uField.xy) * uField.zw;
+  vec4 c = vec4(texture(uControl, cuv).rgb, texture(uLight, cuv).r);
+  vec3 g0 = grain(uT0, uL0, uM0), g1 = grain(uT1, uL1, uM1), g2 = grain(uT2, uL2, uM2), g3 = grain(uT3, uL3, uM3), g4 = grain(uT4, uL4, uM4), g5 = grain(uT5, uL5, uM5);
+  float w1 = smoothstep(0.22, 0.78, c.r + (dot(g2, vec3(0.3333)) - 1.0) * uParams.w);
+  float w2 = smoothstep(0.22, 0.78, c.g + (dot(g4, vec3(0.3333)) - 1.0) * uParams.w);
+  vec3 ground = mix(mix(uC0 * g0 * g1, uC1 * g2 * g3, w1), uC2 * g4 * g5, w2);
+  ground *= 1.0 + (c.b - 0.5) * 2.0 * uParams.x;
+  ground *= mix(uParams.y, uParams.z, c.a);
+  finalColor = vec4(clamp(ground, 0.0, 1.0), 1.0) * uColor * uWorldColorAlpha;
+}`;
+let terrainProgram = null;
+const defaultTerrainProgram = () => terrainProgram ??= GlProgram.from({ name: 'hmh-area-terrain', vertex: TERRAIN_VERTEX, fragment: TERRAIN_FRAGMENT });
+const rgb = color => [(color >> 16 & 255) / 255, (color >> 8 & 255) / 255, (color & 255) / 255];
+
+// Control textures from a field: two opaque canvases (weights/value and
+// light) so no data channel passes through alpha premultiplication.
+function opaqueCanvas(field, pick) {
+  const canvas = document.createElement('canvas'); canvas.width = field.width; canvas.height = field.height;
+  const context = canvas.getContext('2d'), image = context.createImageData(field.width, field.height), out = image.data, src = field.data;
+  for (let o = 0; o < src.length; o += 4) { pick(src, o, out); out[o + 3] = 255; }
+  context.putImageData(image, 0, 0);
+  const texture = Texture.from(canvas);
+  texture.source.style.addressMode = 'clamp-to-edge'; texture.source.style.update();
+  return texture;
+}
+function defaultControlTexture(field) {
+  if (typeof document === 'undefined') return null;
+  return { control: opaqueCanvas(field, (src, o, out) => { out[o] = src[o]; out[o + 1] = src[o + 1]; out[o + 2] = src[o + 2]; }), light: opaqueCanvas(field, (src, o, out) => { out[o] = src[o + 3]; out[o + 1] = src[o + 3]; out[o + 2] = src[o + 3]; }) };
+}
 export function multiplyTint(a, b) {
   const channel = shift => Math.round(((a >> shift & 255) * (b >> shift & 255)) / 255);
   return channel(16) << 16 | channel(8) << 8 | channel(0);
@@ -67,7 +124,7 @@ function destroyTexture(url, entry) {
   }, () => {});
 }
 
-export function createAreaArt({ world, areaId, plan, kit = null, loadTexture, textureCache = null, container = null, signal, resolution = 'full', fetchImpl = typeof fetch === 'function' ? fetch : null } = {}) {
+export function createAreaArt({ world, areaId, plan, kit = null, loadTexture, textureCache = null, container = null, signal, resolution = 'full', fetchImpl = typeof fetch === 'function' ? fetch : null, createControlTexture = defaultControlTexture, terrainFieldSize = null, createTerrainProgram = defaultTerrainProgram } = {}) {
   if (!world || typeof areaId !== 'string' || !plan) throw new TypeError('world, areaId and plan required');
   if (plan.areaId !== areaId) throw new TypeError(`plan ${plan.areaId} does not dress ${areaId}`);
   if (!['full', 'half'].includes(resolution)) throw new TypeError('resolution must be full or half');
@@ -77,7 +134,9 @@ export function createAreaArt({ world, areaId, plan, kit = null, loadTexture, te
   let disposed = false, mounted = false, summary = null, manifest = kit, residency = null, depthLayer = container, groundLayer = null, shadowLayer = null;
   const owned = [], painted = [], frames = new Map(), tiles = new Map(), live = new Map(), solidNodes = [];
   let host = null, depthKey = y => y;
-  let detailTexture = null, pageTextures = new Map();
+  let detailTexture = null, pageTextures = new Map(), controlTexture = null, terrainField = null, terrainMesh = null;
+  const overlays = new Map();
+  const tileFile = (tile, suffix = '') => ratio === 0.5 ? `${tile}${suffix}@0.5x.webp` : `${tile}${suffix}.png`;
   const acquire = async url => { const texture = await cache.acquire(url); owned.push(url); if (disposed) { cache.release(url); owned.pop(); return null; } return texture; };
 
   const ready = (async () => {
@@ -102,8 +161,13 @@ export function createAreaArt({ world, areaId, plan, kit = null, loadTexture, te
         }));
       }
       for (const tile of summary.tiles) {
-        jobs.push(acquire(`${AREA_ART_TILE_ROOT}${tile}.png`).then(texture => { if (texture) { texture.source.style.addressMode = 'repeat'; texture.source.style.update(); tiles.set(tile, texture); } }));
-        jobs.push(acquire(`${AREA_ART_TILE_ROOT}${tile}-fringe.png`).then(texture => { if (texture) { texture.source.style.addressMode = 'repeat'; texture.source.style.update(); tiles.set(`${tile}-fringe`, texture); } }));
+        jobs.push(acquire(AREA_ART_TILE_ROOT + tileFile(tile)).then(texture => { if (texture) { texture.source.style.addressMode = 'repeat'; texture.source.style.update(); tiles.set(tile, texture); } }));
+        jobs.push(acquire(AREA_ART_TILE_ROOT + tileFile(tile, '-fringe')).then(texture => { if (texture) { texture.source.style.addressMode = 'repeat'; texture.source.style.update(); tiles.set(`${tile}-fringe`, texture); } }));
+      }
+      for (const overlay of summary.overlays) jobs.push(acquire(AREA_ART_TILE_ROOT + tileFile(overlay)).then(texture => { if (texture) { texture.source.style.addressMode = 'repeat'; texture.source.style.update(); overlays.set(overlay, texture); } }));
+      if (summary.terrain) {
+        terrainField = buildTerrainField({ summary, world, size: terrainFieldSize ?? (ratio === 0.5 ? 256 : 512) });
+        jobs.push(Promise.resolve(createControlTexture(terrainField)).then(result => { const pair = result && result.control ? result : result ? { control: result, light: result } : null; if (disposed) { pair?.control.destroy(true); if (pair && pair.light !== pair.control) pair.light.destroy(true); return; } controlTexture = pair; }));
       }
       if (summary.detailPage) jobs.push(acquire(AREA_ART_DETAIL_ROOT + AREA_ART_DETAIL_PAGE).then(texture => { detailTexture = texture; }));
       const results = await Promise.allSettled(jobs);
@@ -152,7 +216,7 @@ export function createAreaArt({ world, areaId, plan, kit = null, loadTexture, te
     const m = AREA_ART_MATERIALS[materialId], texture = tiles.get(m.tile);
     const flat = vertices.flatMap(p => [p.x, p.y]);
     g.poly(flat).fill({ color: multiplyTint(m.base, tint), alpha });
-    if (texture) g.poly(flat).fill({ texture, textureSpace: 'global', matrix: scaleMatrix(m.scale), color: multiplyTint(m.tint, tint), alpha: m.alpha * alpha });
+    if (texture) g.poly(flat).fill({ texture, textureSpace: 'global', matrix: scaleMatrix(tileScale(texture, m.scale)), color: multiplyTint(m.tint, tint), alpha: m.alpha * alpha });
   }
   // Fringe strips along every edge, outward by `feather`, using the tile's own
   // 512x128 gradient so the edge dissolves with the material's grain.
@@ -164,7 +228,7 @@ export function createAreaArt({ world, areaId, plan, kit = null, loadTexture, te
       const a = vertices[i], b = vertices[(i + 1) % n], oa = outer[i], ob = outer[(i + 1) % n];
       const dx = b.x - a.x, dy = b.y - a.y, len = Math.hypot(dx, dy) || 1, ux = dx / len, uy = dy / len;
       const nx = oa.x - a.x, ny = oa.y - a.y, nlen = Math.hypot(nx, ny) || 1;
-      const s = m.scale, matrix = { a: ux * s, b: uy * s, c: nx / nlen * (feather / 128), d: ny / nlen * (feather / 128), tx: a.x, ty: a.y };
+      const s = tileScale(texture, m.scale), fh = texture.source.pixelHeight || 128, matrix = { a: ux * s, b: uy * s, c: nx / nlen * (feather / fh), d: ny / nlen * (feather / fh), tx: a.x, ty: a.y };
       // Global texture space: the strip's own bounds must not rescale the gradient.
       g.poly([a.x, a.y, b.x, b.y, ob.x, ob.y, oa.x, oa.y]).fill({ texture, matrix, textureSpace: 'global', color: multiplyTint(m.tint, tint), alpha: Math.min(1, m.alpha + 0.15) * alpha });
     }
@@ -190,7 +254,7 @@ export function createAreaArt({ world, areaId, plan, kit = null, loadTexture, te
     halo.mask = mask;
     for (const trail of trails) {
       materialFill(core, ribbonPolygon(trail.points, trail.width), trail.material);
-      for (const p of trail.points.slice(1, -1)) { const m = AREA_ART_MATERIALS[trail.material]; core.circle(p.x, p.y, trail.width / 2).fill({ texture: tiles.get(m.tile), textureSpace: 'global', matrix: scaleMatrix(m.scale), color: m.tint, alpha: 1 }); }
+      for (const p of trail.points.slice(1, -1)) { const m = AREA_ART_MATERIALS[trail.material], texture = tiles.get(m.tile); core.circle(p.x, p.y, trail.width / 2).fill({ texture, textureSpace: 'global', matrix: scaleMatrix(tileScale(texture, m.scale)), color: m.tint, alpha: 1 }); }
     }
     target.addChild(halo, mask, core); painted.push(halo, mask, core);
   }
@@ -228,10 +292,46 @@ export function createAreaArt({ world, areaId, plan, kit = null, loadTexture, te
       target.addChild(sprite); painted.push(sprite);
     }
   }
+  // One quad per area through the splat shader: three materials blended by
+  // the control field, broad value variation and the light channel (AO under
+  // masses and canopies, dust along roads). Zones and trails whose material is
+  // one of the area's three are rasterised into the field, so no hard
+  // polygon edge is painted for them.
+  function paintTerrain(target) {
+    const t = summary.terrain;
+    if (!t || !controlTexture || !terrainField) return false;
+    const materials = [0, 1, 2].map(i => AREA_ART_MATERIALS[t.materials[Math.min(i, t.materials.length - 1)]]);
+    const layers = materials.flatMap(m => [m.grain[0], m.grain[1] ?? { ...m.grain[0], gain: 0 }]);
+    if (layers.some(layer => !tiles.get(layer.tile))) return false;
+    let glProgram = null;
+    try { glProgram = createTerrainProgram(); } catch { glProgram = null; }
+    if (!glProgram) return false;
+    const uniforms = { uField: { value: new Float32Array([terrainField.minX, terrainField.minY, 1 / (terrainField.maxX - terrainField.minX), 1 / (terrainField.maxY - terrainField.minY)]), type: 'vec4<f32>' }, uParams: { value: new Float32Array([t.value, TERRAIN_LIGHT_RANGE.low, TERRAIN_LIGHT_RANGE.high, t.materials.length > 1 ? 0.35 : 0]), type: 'vec4<f32>' } };
+    const resources = { terrainUniforms: null, uControl: controlTexture.control.source, uControlSampler: controlTexture.control.source.style, uLight: controlTexture.light.source, uLightSampler: controlTexture.light.source.style };
+    layers.forEach((layer, i) => {
+      const texture = tiles.get(layer.tile), mean = AREA_ART_TILE_MEANS[layer.tile] ?? [128, 128, 128];
+      uniforms[`uL${i}`] = { value: new Float32Array([1 / layer.size, layer.gain, layer.lum ? 1 : 0, layer.rot ? 1 : 0]), type: 'vec4<f32>' };
+      uniforms[`uM${i}`] = { value: new Float32Array(mean.map(v => v / 255)), type: 'vec3<f32>' };
+      resources[`uT${i}`] = texture.source; resources[`uT${i}Sampler`] = texture.source.style;
+    });
+    materials.forEach((m, i) => { uniforms[`uC${i}`] = { value: new Float32Array(rgb(m.color)), type: 'vec3<f32>' }; });
+    // The accent slot is empty when a plan lists two materials: its weight
+    // channel stays zero in the field, so the duplicate never shows.
+    if (t.materials.length < 3) uniforms.uC2 = uniforms.uC1;
+    resources.terrainUniforms = new UniformGroup(uniforms);
+    const b = summary.bounds;
+    const geometry = new Geometry({ attributes: { aPosition: { buffer: new Float32Array([b.minX, b.minY, b.maxX, b.minY, b.maxX, b.maxY, b.minX, b.maxY]), format: 'float32x2' } }, indexBuffer: new Uint16Array([0, 1, 2, 0, 2, 3]) });
+    const shader = new Shader({ glProgram, resources });
+    terrainMesh = new Mesh({ geometry, shader, texture: controlTexture.control });
+    terrainMesh.label = `area-terrain-${areaId}`;
+    target.addChild(terrainMesh); painted.push(terrainMesh);
+    return true;
+  }
   function paintAreaGround(target) {
-    if (summary.base) { const g = new Graphics(); materialFill(g, rectVertices(summary.bounds), summary.base.material, summary.base); target.addChild(g); painted.push(g); }
-    for (const zone of summary.zones) paintZone(target, zone);
-    paintTrails(target, summary.trails);
+    const splat = paintTerrain(target);
+    if (!splat && summary.base) { const g = new Graphics(); materialFill(g, rectVertices(summary.bounds), summary.base.material, summary.base); target.addChild(g); painted.push(g); }
+    for (const zone of summary.zones) if (!splat || !summary.terrain.materials.includes(zone.material)) paintZone(target, zone);
+    if (!splat) paintTrails(target, summary.trails);
     paintDecals(target, summary.decals);
   }
   const claimsSurface = surfaceId => Boolean(summary) && (summary.base?.surfaceId === surfaceId || summary.roads.some(road => road.surfaceIds.includes(surfaceId)));
@@ -259,10 +359,27 @@ export function createAreaArt({ world, areaId, plan, kit = null, loadTexture, te
     const timber = multiplyTint(0x6b5c48, solid.tint), dark = multiplyTint(0x3f3629, solid.tint), pale = multiplyTint(0xd8d5c6, solid.tint);
     if (solid.style !== 'hedge' && solid.style !== 'pickets') contactShadow(node, { x: cx, y: b.maxY - d * 0.5, width: w * 0.9, depth: d * 0.9, alpha: 0.16, ao: false });
     if (solid.massAlpha > 0) {
-      const mass = new Graphics();
-      const faceMaterial = solid.style === 'bank' ? 'earth' : 'dirt';
-      for (let i = 0; i < vertices.length; i++) { const j = (i + 1) % vertices.length; materialFill(mass, [vertices[i], vertices[j], roof[j], roof[i]], faceMaterial, { tint: solid.style === 'bank' ? 0x8d8a78 : 0x6a6558 }); }
-      materialFill(mass, roof, solid.roof ?? (solid.style === 'bank' ? 'forest' : 'earth'), { tint: solid.tint });
+      const mass = new Graphics(), rockFace = overlays.get('rock-face') ?? null, wallMaterial = solid.wall ?? null;
+      const rocky = solid.style === 'bank' || (solid.style === 'mass' && !wallMaterial);
+      for (let i = 0; i < vertices.length; i++) {
+        const j = (i + 1) % vertices.length, a = vertices[i], c = vertices[j], quad = [a, c, roof[j], roof[i]];
+        const dx = c.x - a.x, dy = c.y - a.y, len = Math.hypot(dx, dy) || 1, ux = dx / len, uy = dy / len;
+        // Faces whose outward side points down the screen catch the key light; the rest sit in shade.
+        const lit = 0.72 + 0.28 * Math.max(0, -ux);
+        if (rocky && rockFace) {
+          const s = 260 / (rockFace.source.pixelWidth || 512), fh = rockFace.source.pixelHeight || 128;
+          mass.poly(quad.flatMap(p => [p.x, p.y])).fill({ texture: rockFace, textureSpace: 'global', matrix: { a: ux * s, b: uy * s, c: 0, d: h / fh, tx: a.x, ty: a.y - h }, color: multiplyTint(solid.tint, Math.round(lit * 255) * 0x010101) });
+        } else materialFill(mass, quad, wallMaterial ?? 'dirt', { tint: multiplyTint(solid.tint, Math.round(lit * 255) * 0x010101) });
+        mass.poly(quad.flatMap(p => [p.x, p.y])).fill({ color: SHADOW_TINT, alpha: 0.18 });
+      }
+      const roofMaterial = solid.roof ?? (rocky ? 'rock' : 'slate');
+      materialFill(mass, roof, roofMaterial, { tint: solid.tint });
+      // Top-lit lip from the upper left, shaded lip toward the lower right.
+      for (let i = 0; i < roof.length; i++) {
+        const a = roof[i], c = roof[(i + 1) % roof.length], nx = c.y - a.y, ny = -(c.x - a.x), len = Math.hypot(nx, ny) || 1, key = (-nx - ny) / len;
+        if (Math.abs(key) < 0.2) continue;
+        mass.moveTo(a.x, a.y).lineTo(c.x, c.y).stroke({ color: key > 0 ? 0xd8d5c6 : SHADOW_TINT, width: rocky ? 6 : 4, alpha: Math.abs(key) * (key > 0 ? 0.28 : 0.4) });
+      }
       mass.alpha = solid.massAlpha; node.addChild(mass);
     }
     if (solid.style === 'card') {
@@ -336,6 +453,7 @@ export function createAreaArt({ world, areaId, plan, kit = null, loadTexture, te
       if (!piece?.blocker) continue;
       const node = createSolid(piece);
       if (!node) continue;
+      const sb = piece.visible.bounds; node.terrainBounds = { minX: sb.minX - 40, minY: sb.minY - (solid.height ?? piece.visible.height) - 40, maxX: sb.maxX + 40, maxY: sb.maxY + 40 };
       node.label = `area-art-solid-${piece.id}`; admit(node, piece.visible.bounds.maxY); solidNodes.push(node); ids.push(piece.blocker.id);
     }
     return ids;
@@ -352,6 +470,13 @@ export function createAreaArt({ world, areaId, plan, kit = null, loadTexture, te
   function update(camera, view, actor = null) {
     if (!residency || disposed) return 0;
     const visible = residency.update({ camera, view });
+    // Solids are static depth nodes; hide the ones outside the view so the
+    // hundreds of closed masses cost nothing off screen.
+    if (solidNodes.length && camera && view) {
+      const zoom = camera.zoom || 1, hw = view.width / 2 / zoom + 120, hh = view.height / 2 / zoom + 120;
+      const minX = camera.x - hw, maxX = camera.x + hw, minY = camera.y - hh, maxY = camera.y + hh;
+      for (const node of solidNodes) { const b = node.terrainBounds; if (b) node.visible = !(b.maxX < minX || b.minX > maxX || b.maxY < minY || b.minY > maxY); }
+    }
     if (actor) for (const { node, prop, width } of live.values()) node.alpha = prop.fade && Math.abs(actor.x - prop.x) < width * 0.42 && actor.y < prop.y && actor.y > prop.y - prop.height - prop.groundZ ? 0.38 : 1;
     return visible;
   }
@@ -361,9 +486,10 @@ export function createAreaArt({ world, areaId, plan, kit = null, loadTexture, te
     for (const node of solidNodes) { try { evict(node); } catch {} } solidNodes.length = 0;
     for (const node of painted) { try { node.removeFromParent?.(); node.destroy?.({ children: true }); } catch {} } painted.length = 0;
     for (const entry of frames.values()) entry.texture.destroy(false); frames.clear(); live.clear();
-    for (const url of owned) cache.release(url); owned.length = 0; tiles.clear(); pageTextures.clear(); detailTexture = null;
+    for (const url of owned) cache.release(url); owned.length = 0; tiles.clear(); overlays.clear(); pageTextures.clear(); detailTexture = null;
+    try { controlTexture?.control.destroy(true); if (controlTexture && controlTexture.light !== controlTexture.control) controlTexture.light.destroy(true); } catch {} controlTexture = null; terrainMesh = null;
     if (ownsCache) cache.dispose();
   }
-  const snapshot = () => Object.freeze({ artId: AREA_ART_ID, areaId, resolution, disposed, mounted, pages: summary?.pages ?? null, tiles: summary?.tiles ?? null, counts: summary?.counts ?? null, budget: summary?.budget ?? null, ownedUrls: Object.freeze([...owned].sort()), painted: painted.length, residency: residency?.snapshot() ?? null, runtimeAuthority: 'projection-only' });
+  const snapshot = () => Object.freeze({ artId: AREA_ART_ID, areaId, resolution, disposed, mounted, pages: summary?.pages ?? null, tiles: summary?.tiles ?? null, counts: summary?.counts ?? null, budget: summary?.budget ?? null, terrain: summary?.terrain ? Object.freeze({ materials: summary.terrain.materials, field: terrainField ? `${terrainField.width}x${terrainField.height}` : null, fieldBytes: terrainField ? terrainField.data.length : 0, splat: Boolean(terrainMesh), counts: terrainField?.counts ?? null }) : null, ownedUrls: Object.freeze([...owned].sort()), painted: painted.length, residency: residency?.snapshot() ?? null, runtimeAuthority: 'projection-only' });
   return Object.freeze({ artId: AREA_ART_ID, ready, plan, get summary() { return summary; }, claimsSurface, paintSurface, paintGround, createSolid, mountSolids, mount, update, dispose, snapshot, textureCache: cache });
 }

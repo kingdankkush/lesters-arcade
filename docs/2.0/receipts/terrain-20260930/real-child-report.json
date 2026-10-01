@@ -1,0 +1,128 @@
+{
+  "url": "http://127.0.0.1:52393/hmh-reboot/index.html?mode=free&world=ten-area&evidenceSafe=1",
+  "viewports": [
+    {
+      "name": "desktop",
+      "captures": [
+        {
+          "scene": "meadows-spawn",
+          "file": "desktop-meadows-spawn.png",
+          "readyMs": 5670,
+          "data": {
+            "worldId": "ten-area-frontier",
+            "worldSelection": "explicit-unranked-free-ten-area",
+            "areaArtStatus": "ready",
+            "status": "Standalone session ready"
+          }
+        },
+        {
+          "scene": "meadows-relay-court",
+          "file": "desktop-meadows-relay-court.png",
+          "readyMs": 2793,
+          "data": {
+            "worldId": "ten-area-frontier",
+            "worldSelection": "explicit-unranked-free-ten-area",
+            "areaArtStatus": "ready",
+            "status": "Standalone session ready"
+          }
+        },
+        {
+          "scene": "meadows-woods-road",
+          "file": "desktop-meadows-woods-road.png",
+          "readyMs": 2849,
+          "data": {
+            "worldId": "ten-area-frontier",
+            "worldSelection": "explicit-unranked-free-ten-area",
+            "areaArtStatus": "ready",
+            "status": "Standalone session ready"
+          }
+        },
+        {
+          "scene": "halving-farms",
+          "file": "desktop-halving-farms.png",
+          "readyMs": 2726,
+          "data": {
+            "worldId": "ten-area-frontier",
+            "worldSelection": "explicit-unranked-free-ten-area",
+            "areaArtStatus": "ready",
+            "status": "Standalone session ready"
+          }
+        },
+        {
+          "scene": "woods-camp",
+          "file": "desktop-woods-camp.png",
+          "readyMs": 2765,
+          "data": {
+            "worldId": "ten-area-frontier",
+            "worldSelection": "explicit-unranked-free-ten-area",
+            "areaArtStatus": "ready",
+            "status": "Standalone session ready"
+          }
+        }
+      ],
+      "consoleErrors": []
+    },
+    {
+      "name": "phone",
+      "captures": [
+        {
+          "scene": "meadows-spawn",
+          "file": "phone-meadows-spawn.png",
+          "readyMs": 1321,
+          "data": {
+            "worldId": "ten-area-frontier",
+            "worldSelection": "explicit-unranked-free-ten-area",
+            "areaArtStatus": "ready",
+            "status": "Standalone session ready"
+          }
+        },
+        {
+          "scene": "meadows-relay-court",
+          "file": "phone-meadows-relay-court.png",
+          "readyMs": 1259,
+          "data": {
+            "worldId": "ten-area-frontier",
+            "worldSelection": "explicit-unranked-free-ten-area",
+            "areaArtStatus": "ready",
+            "status": "Standalone session ready"
+          }
+        },
+        {
+          "scene": "meadows-woods-road",
+          "file": "phone-meadows-woods-road.png",
+          "readyMs": 1402,
+          "data": {
+            "worldId": "ten-area-frontier",
+            "worldSelection": "explicit-unranked-free-ten-area",
+            "areaArtStatus": "ready",
+            "status": "Standalone session ready"
+          }
+        },
+        {
+          "scene": "halving-farms",
+          "file": "phone-halving-farms.png",
+          "readyMs": 1338,
+          "data": {
+            "worldId": "ten-area-frontier",
+            "worldSelection": "explicit-unranked-free-ten-area",
+            "areaArtStatus": "ready",
+            "status": "Standalone session ready"
+          }
+        },
+        {
+          "scene": "woods-camp",
+          "file": "phone-woods-camp.png",
+          "readyMs": 1280,
+          "data": {
+            "worldId": "ten-area-frontier",
+            "worldSelection": "explicit-unranked-free-ten-area",
+            "areaArtStatus": "ready",
+            "status": "Standalone session ready"
+          }
+        }
+      ],
+      "consoleErrors": []
+    }
+  ],
+  "errors": []
+}

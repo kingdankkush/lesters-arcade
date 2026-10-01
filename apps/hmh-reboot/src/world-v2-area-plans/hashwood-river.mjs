@@ -8,7 +8,7 @@
 // trestle (b2-42) and rope span (b2-44) live on structures-00, which would be a
 // third exclusive page, so the stone arch (b2-41) stands on both crossings.
 import { freezeDeep } from '../value-guards.mjs';
-import { pointInPolygon, stableUnit } from '../world-v2-area-art-schema.mjs';
+import { pointInPolygon, stableUnit, DISTRICT_TERRAIN } from '../world-v2-area-art-schema.mjs';
 import { createAreaPlanContext, CANOPY_HEIGHTS } from './plan-support.mjs';
 
 export const HASHWOOD_RIVER_PAGES = Object.freeze(['tripo-props-hd-plants-00.webp', 'tripo-props-hd-structures-01.webp', 'tripo-props-hd-props-00.webp']);
@@ -29,6 +29,7 @@ export function createHashwoodRiverArtPlan(world) {
   const { area, plan, point, prop, solid, scatter, guard, supportAt, insideWorld, routeSegments } = context;
   const { x: cx, y: cy } = area.center;
   plan.ground.base = { surfaceId: `${area.id}-floor`, material: 'forest' };
+  plan.ground.terrain = { ...DISTRICT_TERRAIN[area.id] };
   // Damp bank edges either side of the channel, exposed stone at the shelf foot,
   // compacted traffic on the bridge approaches, gravel at the capstan and the
   // trodden marquee clearing.
