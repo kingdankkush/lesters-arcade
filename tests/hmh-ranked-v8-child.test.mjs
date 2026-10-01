@@ -18,7 +18,9 @@ import { HMH_RUN_SUMMARY_CATALOGS_V8 as C8, validateRunSummaryPayload } from '..
 import { validateV8RunPlausibility } from '../server/verify/hmh-plausibility-v8.mjs';
 import { createStandaloneInitPayload } from '../apps/hmh-reboot/src/standalone-session.mjs';
 import {
+  CLIENT_OUTDATED_MESSAGE,
   LEGACY_WORLD_VALUE,
+  sessionClientOutdated,
   TEN_AREA_WORLD_ID,
   resolveHmhWorldContext,
   resolveHmhWorldSelection,
@@ -96,6 +98,24 @@ test('the official ten-area context records schema 8; the legacy Free-only conte
   assert.equal(loaded.world.id, TEN_AREA_WORLD_ID);
   assert.equal(loaded.official, true);
   await assert.rejects(resolveHmhWorldContext({ params: '', tenAreaLevelOne: true, loadTenArea: async () => ({ createWorldV2RuntimeContext: () => ({ official: false, rankedEligible: false, world: { id: TEN_AREA_WORLD_ID } }) }) }), /official Level 1/);
+});
+
+test('a stale pre-2.1.0 portal tab is told to reload before it plays a run its bridge could not record', async () => {
+  const standalone = createStandaloneInitPayload();
+  const withBuild = (mode, buildHash) => ({ ...standalone, mode, session: { ...standalone.session, buildHash, rankedEligible: mode === 'ranked' } });
+  for (const mode of ['free', 'ranked']) {
+    assert.equal(sessionClientOutdated(officialContext, withBuild(mode, V7_BUILD)), true, mode);
+    assert.equal(sessionClientOutdated(officialContext, withBuild(mode, V8_BUILD)), false, mode);
+  }
+  assert.equal(sessionClientOutdated(officialContext, standalone), false, 'a build hash with no game version (the standalone page) is not refused');
+  const legacy = await resolveHmhWorldContext({ params: 'mode=free&world=legacy', tenAreaLevelOne: true });
+  assert.equal(sessionClientOutdated(legacy, withBuild('free', V7_BUILD)), false, 'the original map records schema 7, which any 1.9.0+ portal carries');
+  const preview = createWorldV2RuntimeContext({ selection: resolveHmhWorldSelection({ params: 'mode=free&world=ten-area', tenAreaLevelOne: false }) });
+  assert.equal(sessionClientOutdated(preview, withBuild('free', V7_BUILD)), false, 'the 2.0.x preview records nothing');
+  assert.match(CLIENT_OUTDATED_MESSAGE, /Reload/);
+  const refusal = MAIN.indexOf('if (sessionClientOutdated(HMH_WORLD_CONTEXT, payload)) {');
+  assert.ok(refusal > 0 && refusal < MAIN.indexOf('if (!sessionAllowedForWorld(HMH_WORLD_CONTEXT, payload)) {'));
+  assert.match(MAIN, /bridge\?\.send\('game:error', \{ code: 'client-outdated', message: CLIENT_OUTDATED_MESSAGE \}\)/);
 });
 
 test('the schema-8 accumulator: areas from the hero’s position, every boss kill on its own role, the movement row', () => {

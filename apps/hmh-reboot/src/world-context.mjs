@@ -91,6 +91,18 @@ export function sessionAllowedForWorld(context, payload) {
   return payload?.mode === 'free' && payload?.session?.rankedEligible === false;
 }
 
+// A portal tab older than this child's Level 1 (a stale 2.0.x tab that
+// loaded the 2.1.0 child) cannot carry a schema-8 summary through its bridge,
+// so its run would be lost at game over. The child refuses such a session up
+// front, Free or Ranked, with a reload message the old portal shows. A build
+// hash that names no game version (the standalone page) is not refused.
+export const CLIENT_OUTDATED_MESSAGE = 'A new version of the arcade is live. Reload the page to play.';
+export function sessionClientOutdated(context, payload) {
+  if (context?.official !== true || context.legacy !== false) return false;
+  const match = /(?:^|:)game-(\d{1,9}\.\d{1,9}\.\d{1,9})(?=$|:)/.exec(typeof payload?.session?.buildHash === 'string' ? payload.session.buildHash : '');
+  return Boolean(match) && !isHmhV8GameVersion(match[1]);
+}
+
 export async function resolveHmhWorldContext({ params, tenAreaLevelOne: levelOne = HMH_TEN_AREA_LEVEL_ONE, loadTenArea = () => import('./world-v2-runtime-context.mjs') } = {}) {
   const selection = resolveHmhWorldSelection({ params, tenAreaLevelOne: levelOne });
   if (selection.legacy) return createLegacyWorldContext(selection);

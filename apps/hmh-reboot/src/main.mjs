@@ -248,7 +248,7 @@ import {
   revealLevelOneAt,
 } from './level-one-world.mjs';
 import { selectLevelEntry as selectLegacyLevelEntry } from './level-entry.mjs';
-import { resolveHmhWorldContext, sessionAllowedForWorld } from './world-context.mjs';
+import { CLIENT_OUTDATED_MESSAGE, resolveHmhWorldContext, sessionAllowedForWorld, sessionClientOutdated } from './world-context.mjs';
 import {
   HMH_CRITICAL_HELD_WEAPON_IDS,
   HMH_WEAPON_DEFINITIONS,
@@ -3495,6 +3495,12 @@ async function boot() {
     const navGrid = navGridAuthority.require();
     // W4a: an unofficial world accepts only an explicitly unranked Free
     // session; a Ranked or rankedEligible payload never gets a run here.
+    // 2.1.0: a stale portal tab is told to reload before it plays a run it could not record.
+    if (sessionClientOutdated(HMH_WORLD_CONTEXT, payload)) {
+      setStatus('Update required', CLIENT_OUTDATED_MESSAGE);
+      try { bridge?.send('game:error', { code: 'client-outdated', message: CLIENT_OUTDATED_MESSAGE }); } catch { /* the parent is told or already gone */ }
+      return;
+    }
     if (!sessionAllowedForWorld(HMH_WORLD_CONTEXT, payload)) {
       setStatus('Unofficial world refused', `${LEVEL_ONE_WORLD.id} accepts only explicit unranked Free sessions`);
       try { bridge?.send('game:error', { code: 'unofficial-world-session', message: 'This world accepts only unranked Free sessions' }); } catch { /* the parent is told or already gone */ }
