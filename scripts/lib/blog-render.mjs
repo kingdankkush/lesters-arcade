@@ -86,7 +86,7 @@ export function renderBlogArticle(post,{preview=false,index}={}){
 <meta name="description" content="${escape(checked.summary)}" /><meta name="robots" content="${preview?'noindex, nofollow':'index, follow'}" />
 ${preview?'':`<link rel="canonical" href="${canonical}" /><link rel="alternate" type="application/atom+xml" title="Lester’s Arcade journal" href="/blog/feed.xml" /><meta property="og:type" content="article" /><meta property="og:url" content="${canonical}" /><meta property="og:title" content="${escape(title)}" /><meta property="og:description" content="${escape(checked.summary)}" />`}
 <meta property="og:image" content="${ORIGIN+art.src}" /><meta property="og:image:alt" content="${escape(art.alt)}" />${art.width?`<meta property="og:image:width" content="${art.width}" /><meta property="og:image:height" content="${art.height}" />`:''}<meta name="twitter:card" content="summary_large_image" /><meta name="twitter:image" content="${ORIGIN+art.src}" />
-<link rel="icon" type="image/svg+xml" href="/assets/favicon.svg" />
+<link rel="icon" type="image/svg+xml" href="/assets/favicon.svg" /><link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/favicon-32.png" /><link rel="icon" type="image/png" sizes="16x16" href="/assets/icons/favicon-16.png" /><link rel="apple-touch-icon" sizes="180x180" href="/assets/icons/apple-touch-icon.png" />
 <link rel="stylesheet" href="/src/design-tokens.css" /><link rel="stylesheet" href="/how-ranked-works.css" /><link rel="stylesheet" href="/blog/article.css" />
 </head><body>
 <a class="skip-link" href="#main">Skip to article</a>
