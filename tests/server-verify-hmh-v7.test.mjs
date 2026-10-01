@@ -225,7 +225,8 @@ test('schema 7: district bosses unlock no boss achievement, on the device or the
       assert.equal(remote.includes(id), expected, `${name}: ${id} on the server`);
     }
     // Full Roster Run (2.0 trophy): only the run that defeated all four schema-7 bosses, and only on the server.
-    assert.equal(remote.includes('full-roster-run'), name === 'four bosses', `${name}: full-roster-run on the server`);
+    // Full Roster Run is always held for review (verifier review hardening), so it is never earned outright.
+    assert.ok(!remote.includes('full-roster-run'), `${name}: full-roster-run is held for review on the server`);
     assert.ok(!local.includes('full-roster-run'), `${name}: the device-local resolver never grants a 2.0 trophy`);
   }
   // All six districts visited without the Liquidator is not a Getaway Clear.

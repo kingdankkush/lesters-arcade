@@ -21,7 +21,7 @@ test('U9/X2 projected accessibility and audio settings have real runtime consume
   assert.match(child, /captionCriticalAudio/);
   // S1.5 owner audio ruling: boss tells and halts are silent; the caption
   // setting still names them.
-  assert.match(child, /event\.type === 'tell' \|\| event\.type === 'halt'[\s\S]*?settings\.captionCriticalAudio[\s\S]*?Liquidator: \$\{warning\}/);
+  assert.match(child, /event\.type === 'tell' \|\| event\.type === 'halt'[\s\S]*?settings\.captionCriticalAudio[\s\S]*?bossCaptionName\(event\.bossId\) \?\? 'Liquidator'\}: \$\{warning\}/);
   assert.doesNotMatch(child, /combatAudio\.play\('boss-phase'/);
 });
 

@@ -28,7 +28,7 @@ function fixture(loadModule) {
     const left=node.start-loader.start,right=node.end-loader.start;
     body=body.slice(0,left)+`loadModule(${JSON.stringify(node.source.value)})`+body.slice(right);
   }
-  return runInNewContext(`let ${[...names].join(',')};${body};({load:loadLazyRuntimeModules,read:()=>createCockpitUi})`, { loadModule, Promise });
+  return runInNewContext(`let ${[...names].join(',')};${body};({load:loadLazyRuntimeModules,read:()=>createCockpitUi})`, { loadModule, Promise, HMH_WORLD_CONTEXT: { legacy: true, official: true } });
 }
 
 test('the real startup loader requests cockpit lazily, joins it once and waits for the original factory', async () => {
