@@ -224,8 +224,14 @@ from the authored geometry: 10 area centres, 28 road mid-points and mouths,
 11 water views (every bridge, three bank views per channel, the waterfall
 shelf), 8 decks + the City gantry ramp, 14 named cliffs (standing below the
 camera-facing foot) and 10 frontier seams. Receipts:
-`docs/2.0/receipts/world-visuals-20261001/` (`before/`, `after/` contact
-sheets and full-resolution shots, JPEG, `survey-*.json`).
+`docs/2.0/receipts/world-visuals-20261001/` (JPEG, 5.1 MB): `before/` and
+`after/` hold the same labelled 4-up contact sheets (water, bridges, decks,
+seams, cliffs, phone) from the full 166-shot surveys of the live 2.0.0 build
+and of the fixed build before the integration merge, plus full-resolution
+singles; `after-merged/` holds both channels and crossings re-shot on the
+merged build (`aed85e132` geometry: decks spanning the channel, rails along
+the ramps); `survey-*.json` list every capture (all `areaArtStatus: ready`,
+no page or console errors) and `waypoints.json` the survey points.
 
 | # | Class | Sev | Finding (before) | Status |
 | --- | --- | --- | --- | --- |
@@ -321,6 +327,7 @@ the integration merge).
 | steady 2 | 68.1 | 62.1 | 69.4 ms | 14.6 ms |
 | given probe 1 | 53.8 | 65.1 | 69.6 ms | 13.7 ms |
 | given probe 2 | 69.8 | — (timeout; legacy fell to 33 fps under outside load in the same run) | 69.6 ms | 20.9 ms |
+| given probe, merged build `8c5e1df01` (single run, heavy outside load) | — | 40.7 (legacy 41.5 in the same run) | — | 820 ms |
 
 Desktop ten-area holds ~143–144 fps on both. The earlier runs without the
 culling and warm-up measured 46–60 fps on phone-4x and a 170–740 ms

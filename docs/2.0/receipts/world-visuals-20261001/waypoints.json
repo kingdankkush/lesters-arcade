@@ -1,0 +1,500 @@
+[
+ {
+  "name": "centre-mweb-meadows",
+  "cat": "centre",
+  "x": 12500,
+  "y": 6700
+ },
+ {
+  "name": "centre-litecoin-city",
+  "cat": "centre",
+  "x": 7500,
+  "y": 6700
+ },
+ {
+  "name": "centre-halving-farms",
+  "cat": "centre",
+  "x": 17500,
+  "y": 6700
+ },
+ {
+  "name": "centre-silver-coast",
+  "cat": "centre",
+  "x": 2500,
+  "y": 6700
+ },
+ {
+  "name": "centre-scrypt-bayou",
+  "cat": "centre",
+  "x": 2500,
+  "y": 11600
+ },
+ {
+  "name": "centre-hashwood-river",
+  "cat": "centre",
+  "x": 7500,
+  "y": 11600
+ },
+ {
+  "name": "centre-hollow-pines",
+  "cat": "centre",
+  "x": 12500,
+  "y": 11600
+ },
+ {
+  "name": "centre-ledger-ridge",
+  "cat": "centre",
+  "x": 7500,
+  "y": 2500
+ },
+ {
+  "name": "centre-fork-fortress",
+  "cat": "centre",
+  "x": 12500,
+  "y": 2500
+ },
+ {
+  "name": "centre-rugpull-woods",
+  "cat": "centre",
+  "x": 17500,
+  "y": 11600
+ },
+ {
+  "name": "road-coast-city-mid",
+  "cat": "road",
+  "x": 6600,
+  "y": 6700
+ },
+ {
+  "name": "road-coast-city-in",
+  "cat": "junction",
+  "x": 6600,
+  "y": 6700
+ },
+ {
+  "name": "road-city-meadows-mid",
+  "cat": "road",
+  "x": 11600,
+  "y": 6700
+ },
+ {
+  "name": "road-city-meadows-in",
+  "cat": "junction",
+  "x": 11600,
+  "y": 6700
+ },
+ {
+  "name": "road-meadows-farms-mid",
+  "cat": "road",
+  "x": 16600,
+  "y": 6700
+ },
+ {
+  "name": "road-meadows-farms-in",
+  "cat": "junction",
+  "x": 16600,
+  "y": 6700
+ },
+ {
+  "name": "road-coast-bayou-mid",
+  "cat": "road",
+  "x": 2500,
+  "y": 10700
+ },
+ {
+  "name": "road-coast-bayou-in",
+  "cat": "junction",
+  "x": 2500,
+  "y": 10700
+ },
+ {
+  "name": "road-city-river-mid",
+  "cat": "road",
+  "x": 7500,
+  "y": 10700
+ },
+ {
+  "name": "road-city-river-in",
+  "cat": "junction",
+  "x": 7500,
+  "y": 10700
+ },
+ {
+  "name": "road-meadows-woods-mid",
+  "cat": "road",
+  "x": 15000,
+  "y": 9000
+ },
+ {
+  "name": "road-meadows-woods-in",
+  "cat": "junction",
+  "x": 16600,
+  "y": 10650
+ },
+ {
+  "name": "road-farms-woods-mid",
+  "cat": "road",
+  "x": 17500,
+  "y": 10700
+ },
+ {
+  "name": "road-farms-woods-in",
+  "cat": "junction",
+  "x": 17500,
+  "y": 10700
+ },
+ {
+  "name": "road-bayou-river-mid",
+  "cat": "road",
+  "x": 6600,
+  "y": 11600
+ },
+ {
+  "name": "road-bayou-river-in",
+  "cat": "junction",
+  "x": 6600,
+  "y": 11600
+ },
+ {
+  "name": "road-river-pines-mid",
+  "cat": "road",
+  "x": 11600,
+  "y": 11600
+ },
+ {
+  "name": "road-river-pines-in",
+  "cat": "junction",
+  "x": 11600,
+  "y": 11600
+ },
+ {
+  "name": "road-pines-woods-mid",
+  "cat": "road",
+  "x": 16600,
+  "y": 11600
+ },
+ {
+  "name": "road-pines-woods-in",
+  "cat": "junction",
+  "x": 16600,
+  "y": 11600
+ },
+ {
+  "name": "road-river-woods-mid",
+  "cat": "road",
+  "x": 15000,
+  "y": 9200
+ },
+ {
+  "name": "road-river-woods-in",
+  "cat": "junction",
+  "x": 15900,
+  "y": 10650
+ },
+ {
+  "name": "road-city-ridge-mid",
+  "cat": "road",
+  "x": 7500,
+  "y": 3400
+ },
+ {
+  "name": "road-city-ridge-in",
+  "cat": "junction",
+  "x": 7500,
+  "y": 3400
+ },
+ {
+  "name": "road-ridge-fortress-mid",
+  "cat": "road",
+  "x": 10400,
+  "y": 1700
+ },
+ {
+  "name": "road-ridge-fortress-in",
+  "cat": "junction",
+  "x": 11600,
+  "y": 2500
+ },
+ {
+  "name": "road-fortress-service-mid",
+  "cat": "road",
+  "x": 14600,
+  "y": 5200
+ },
+ {
+  "name": "road-fortress-service-in",
+  "cat": "junction",
+  "x": 14000,
+  "y": 5750
+ },
+ {
+  "name": "bridge-scrypt-bayou-lock-bridge",
+  "cat": "water",
+  "x": 2860,
+  "y": 12250
+ },
+ {
+  "name": "bridge-scrypt-bayou-north-bridge",
+  "cat": "water",
+  "x": 2860,
+  "y": 10950
+ },
+ {
+  "name": "bridge-hashwood-river-city-bridge",
+  "cat": "water",
+  "x": 7500,
+  "y": 11150
+ },
+ {
+  "name": "bridge-hashwood-river-woods-bridge",
+  "cat": "water",
+  "x": 8900,
+  "y": 11150
+ },
+ {
+  "name": "water-bayou-north",
+  "cat": "water",
+  "x": 2540,
+  "y": 10100
+ },
+ {
+  "name": "water-bayou-mid",
+  "cat": "water",
+  "x": 2540,
+  "y": 11600
+ },
+ {
+  "name": "water-bayou-south",
+  "cat": "water",
+  "x": 2540,
+  "y": 13200
+ },
+ {
+  "name": "water-river-west",
+  "cat": "water",
+  "x": 6100,
+  "y": 11480
+ },
+ {
+  "name": "water-river-mid",
+  "cat": "water",
+  "x": 8200,
+  "y": 11480
+ },
+ {
+  "name": "water-river-east",
+  "cat": "water",
+  "x": 9100,
+  "y": 11480
+ },
+ {
+  "name": "water-river-waterfall",
+  "cat": "water",
+  "x": 6100,
+  "y": 10900
+ },
+ {
+  "name": "coast-shore",
+  "cat": "water",
+  "x": 1500,
+  "y": 7400
+ },
+ {
+  "name": "deck-mweb-meadows-deck",
+  "cat": "elevation",
+  "x": 11700,
+  "y": 6900
+ },
+ {
+  "name": "deck-litecoin-city-gantry-deck",
+  "cat": "elevation",
+  "x": 9275,
+  "y": 7625
+ },
+ {
+  "name": "deck-halving-farms-loading-deck",
+  "cat": "elevation",
+  "x": 17000,
+  "y": 6150
+ },
+ {
+  "name": "deck-silver-coast-overlook-deck",
+  "cat": "elevation",
+  "x": 1450,
+  "y": 6250
+ },
+ {
+  "name": "deck-hollow-pines-maintenance-bank",
+  "cat": "elevation",
+  "x": 13500,
+  "y": 12650
+ },
+ {
+  "name": "deck-ledger-ridge-maintenance-shelf",
+  "cat": "elevation",
+  "x": 7425,
+  "y": 1650
+ },
+ {
+  "name": "deck-fork-fortress-maintenance-platform",
+  "cat": "elevation",
+  "x": 13600,
+  "y": 3600
+ },
+ {
+  "name": "deck-rugpull-woods-lookout-bank",
+  "cat": "elevation",
+  "x": 18150,
+  "y": 10350
+ },
+ {
+  "name": "ramp-litecoin-city-gantry-ramp",
+  "cat": "elevation",
+  "x": 9275,
+  "y": 7200
+ },
+ {
+  "name": "cliff-silver-coast-headland-cliff",
+  "cat": "cliff",
+  "x": 1125,
+  "y": 6340
+ },
+ {
+  "name": "cliff-silver-coast-shore-cliff",
+  "cat": "cliff",
+  "x": 950,
+  "y": 8540
+ },
+ {
+  "name": "cliff-scrypt-bayou-northwest-root-bank",
+  "cat": "cliff",
+  "x": 900,
+  "y": 10480
+ },
+ {
+  "name": "cliff-scrypt-bayou-southwest-root-foot",
+  "cat": "cliff",
+  "x": 630,
+  "y": 13575
+ },
+ {
+  "name": "cliff-hashwood-river-waterfall-shelf",
+  "cat": "cliff",
+  "x": 5832,
+  "y": 10892
+ },
+ {
+  "name": "cliff-ledger-ridge-west-buttress",
+  "cat": "cliff",
+  "x": 5940,
+  "y": 4390
+ },
+ {
+  "name": "cliff-ledger-ridge-lower-cut",
+  "cat": "cliff",
+  "x": 7450,
+  "y": 3290
+ },
+ {
+  "name": "cliff-ledger-ridge-upper-cut",
+  "cat": "cliff",
+  "x": 7475,
+  "y": 2440
+ },
+ {
+  "name": "cliff-ledger-ridge-north-cap",
+  "cat": "cliff",
+  "x": 7875,
+  "y": 1540
+ },
+ {
+  "name": "cliff-ledger-ridge-east-buttress",
+  "cat": "cliff",
+  "x": 9175,
+  "y": 1640
+ },
+ {
+  "name": "cliff-fork-fortress-ridge-foot",
+  "cat": "cliff",
+  "x": 10875,
+  "y": 1590
+ },
+ {
+  "name": "cliff-rugpull-woods-northwest-root-bank",
+  "cat": "cliff",
+  "x": 16075,
+  "y": 10440
+ },
+ {
+  "name": "cliff-rugpull-woods-western-woodland-edge",
+  "cat": "cliff",
+  "x": 15840,
+  "y": 13560
+ },
+ {
+  "name": "cliff-rugpull-woods-southeast-bank",
+  "cat": "cliff",
+  "x": 18948,
+  "y": 13575
+ },
+ {
+  "name": "seam-meadows-city",
+  "cat": "seam",
+  "x": 10000,
+  "y": 6440
+ },
+ {
+  "name": "seam-meadows-farms",
+  "cat": "seam",
+  "x": 14778,
+  "y": 5908
+ },
+ {
+  "name": "seam-coast-city",
+  "cat": "seam",
+  "x": 5000,
+  "y": 6440
+ },
+ {
+  "name": "seam-bayou-river",
+  "cat": "seam",
+  "x": 5000,
+  "y": 11480
+ },
+ {
+  "name": "seam-river-pines",
+  "cat": "seam",
+  "x": 9802,
+  "y": 10802
+ },
+ {
+  "name": "seam-pines-woods",
+  "cat": "seam",
+  "x": 15170,
+  "y": 10830
+ },
+ {
+  "name": "seam-ridge-fortress",
+  "cat": "seam",
+  "x": 10560,
+  "y": 2500
+ },
+ {
+  "name": "seam-meadows-pines",
+  "cat": "seam",
+  "x": 12000,
+  "y": 9100
+ },
+ {
+  "name": "seam-city-ridge",
+  "cat": "seam",
+  "x": 7061,
+  "y": 4748
+ },
+ {
+  "name": "seam-meadows-fortress",
+  "cat": "seam",
+  "x": 12061,
+  "y": 4748
+ }
+]
