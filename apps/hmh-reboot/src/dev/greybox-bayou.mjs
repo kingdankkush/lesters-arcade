@@ -17,7 +17,7 @@ export function authorBayouKit(area,{pieces,sites,arenas},roads){
   // The working apron faces the lock bridge; the quiet court is on dry west bank.
   add('control-house','mass',-350,300,340,260,220);
   add('wheel-tower','mass',-50,250,150,220,300);
-  add('court-low-stack','cover-short',-1300,1000,260,80,48);
+  add('court-low-stack','cover-short',-1300,1017.5,260,45,48);
   add('court-tall-screen','cover-tall',-1550,50,100,260,128);
   for(const[name,y]of [['lock',650],['north',-650]]){
     add(`${name}-west-ramp`,'ramp',40,y,280,360,0,{fromZ:0,toZ:24,priority:40});

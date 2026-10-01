@@ -75,7 +75,7 @@ export const WORLD_V2_AREA_ART_HOOKS = Object.freeze({
 });
 export const WORLD_V2_ROAD_ART_HOOK = Object.freeze({ kind: 'area-art-plan', planId: 'world-roads', load: () => import('./world-v2-area-plans/world-roads.mjs').then((module) => module.createWorldRoadsArtPlan) });
 
-const PIECE_VISUAL_KIND = Object.freeze({ mass: 'building', cliff: 'cliff', 'cover-tall': 'containers', 'cover-short': 'fence' });
+const PIECE_VISUAL_KIND = Object.freeze({ mass: 'building', cliff: 'cliff', 'cover-tall': 'containers', 'cover-short': 'fence', 'prop-solid': 'machinery' });
 const ROAD_ROUTE_KIND = Object.freeze({ paved: 'main', gravel: 'street', path: 'loop' });
 
 const point = (x, y) => Object.freeze({ x, y });
@@ -171,7 +171,10 @@ function buildCrossings(authored) {
   return { crossings, legalAscents };
 }
 
-export function createWorldV2RuntimeWorld({ authored = createGreyboxWorld() } = {}) {
+// `official`: the 2.1.0 Level 1 (Free and Ranked, schema-8 run summaries);
+// false is the 2.0.x unofficial Free preview. The world data is the same.
+export function createWorldV2RuntimeWorld({ authored = createGreyboxWorld(), official = false } = {}) {
+  if (typeof official !== 'boolean') throw new TypeError('ten-area world official must be a boolean');
   const geometry = createWorldV2Geometry(authored);
   const areaById = new Map(geometry.areas.map((area) => [area.id, area]));
   const authoredAreaById = new Map(authored.areas.map((area) => [area.id, area]));
@@ -244,8 +247,8 @@ export function createWorldV2RuntimeWorld({ authored = createGreyboxWorld() } = 
     id: WORLD_V2_RUNTIME_ID,
     displayName: 'Crypto Wasteland: The Litecoin Frontier',
     version: WORLD_V2_RUNTIME_VERSION,
-    officialRun: false,
-    rankedEligible: false,
+    officialRun: official,
+    rankedEligible: official,
     sourceMapId: geometry.sourceMapId,
     bounds,
     traversalTargetSeconds: { minimum: 10, maximum: 25 },

@@ -68,7 +68,7 @@ import { createOfficialAppRoutes } from './src/routes/official-app-routes.mjs';
 import { createLazyLeaderboardRoute, createLazyProfileRoute } from './src/routes/lazy-routes.mjs';
 import { buildHmhRunDetailsModel, buildHmhRunHistoryModel } from './src/hmh-run-history.mjs';
 import { wireHmhFreeQuickplay } from './src/hmh-free-quickplay.mjs';
-import { HMH_FRONTIER_PREVIEW_COPY, applyHmhFrontierPreviewIntro, mountHmhFrontierPreviewOption } from './src/hmh-frontier-preview.mjs';
+import { HMH_FRONTIER_PREVIEW_COPY, HMH_TEN_AREA_LEVEL_ONE, HMH_WORLD_OPTION, applyHmhFrontierPreviewIntro, hmhLevelIntroMode, mountHmhFrontierPreviewOption } from './src/hmh-frontier-preview.mjs';
 import { createOfficialPlayRoutes } from './src/routes/official-play-routes.mjs';
 import {
   districtTemplateContextForCell,
@@ -1515,10 +1515,13 @@ const stackedLocalEnabled = stackedLocalChoices.length === 0 || (stackedLocalCho
 let hmhRebootHost = null;
 let hmhRebootLifecycle = null;
 let hmhRebootActive = false;
-// New Frontier (preview): requested by its mode-select button for the next
-// Free session only; active once the host actually forwarded the world.
+// The mode-select world option (hmh-frontier-preview.mjs): before 2.1.0 the
+// New Frontier preview, from 2.1.0 the original map (Free only). Requested by
+// its button for the next Free session only; active once the host actually
+// forwarded the world. Only the 2.0.x preview run has no result.
 let hmhFrontierPreviewRequested = false;
 let hmhFrontierPreviewActive = false;
+let hmhOriginalMapActive = false;
 let hmhFrontierPreviewOption = null;
 // The canonical summary the lifecycle finalized for the run on screen. Cleared
 // on restart and teardown so a Free recap can never surface on a Ranked screen.
@@ -4671,6 +4674,7 @@ function destroyHmhRebootSession() {
   gameAdapter = null;
   hmhRebootActive = false;
   hmhFrontierPreviewActive = false;
+  hmhOriginalMapActive = false;
 }
 
 function finalizeHmhRebootFreeGameOver(runSummary) {
@@ -4779,9 +4783,10 @@ function mountHmhRebootSession() {
     reducedMotion: Boolean(gameSettings.reduceMotion),
   });
   hmhRebootActive = true;
-  // The host forwards the preview world only for an unranked Free payload;
-  // a Ranked session never asks. What the frame reports is what runs.
-  const frontierWorld = hmhFrontierPreviewRequested && !currentSession.isPaid && initContext.mode === 'free' && initContext.rankedEligible === false ? 'ten-area' : null;
+  // The host forwards the option's world only for an unranked Free payload;
+  // a Ranked session never asks (it plays the child's Level 1). What the
+  // frame reports is what runs.
+  const frontierWorld = hmhFrontierPreviewRequested && !currentSession.isPaid && initContext.mode === 'free' && initContext.rankedEligible === false ? HMH_WORLD_OPTION.world : null;
   const frame = hmhRebootHost.mountSession({
     sessionId: currentSession.urlSessionId ?? currentSession.sessionId,
     gameId: currentSession.gameId,
@@ -4799,7 +4804,8 @@ function mountHmhRebootSession() {
     },
     settings: { ...hmhRebootSettings(), ...childCosmetics('lester-blaster') },
   }, { world: frontierWorld });
-  hmhFrontierPreviewActive = frame?.dataset?.world === 'ten-area';
+  hmhFrontierPreviewActive = !HMH_TEN_AREA_LEVEL_ONE && frame?.dataset?.world === 'ten-area';
+  hmhOriginalMapActive = HMH_TEN_AREA_LEVEL_ONE && frame?.dataset?.world === 'legacy';
   labelHmhFrontierPreviewTitle();
   return frame;
 }
@@ -5028,11 +5034,12 @@ const renderOfficialGameplay = () => {
   if (currentSession?.hmhChallenge) dom.officialGameModeTitle.textContent += ` // ${currentSession.hmhChallenge.label}`;
   labelHmhFrontierPreviewTitle();
 };
-// The gameplay title names a preview run; the view renders before the mount
-// decides, so the mount labels it too, and a re-render never doubles it.
+// The gameplay title names a preview or original-map run; the view renders
+// before the mount decides, so the mount labels it too, and a re-render never
+// doubles it.
 function labelHmhFrontierPreviewTitle() {
-  if (!hmhFrontierPreviewActive || !dom.officialGameModeTitle) return;
-  const suffix = ` // ${HMH_FRONTIER_PREVIEW_COPY.title}`;
+  if (!(hmhFrontierPreviewActive || hmhOriginalMapActive) || !dom.officialGameModeTitle) return;
+  const suffix = ` // ${HMH_WORLD_OPTION.copy.title}`;
   if (!dom.officialGameModeTitle.textContent.endsWith(suffix)) dom.officialGameModeTitle.textContent += suffix;
 }
 const renderOfficialModeSelect = () => {
@@ -5103,7 +5110,7 @@ let levelIntroArt = null;
 let levelIntroArtHero = null;
 let levelIntroArtLoading = false;
 function renderLevelIntroArt(active) {
-  if (active) applyHmhFrontierPreviewIntro(dom.officialLevelIntro, hmhFrontierPreviewRequested);
+  if (active) applyHmhFrontierPreviewIntro(dom.officialLevelIntro, hmhLevelIntroMode({ levelOne: HMH_TEN_AREA_LEVEL_ONE, optionRequested: hmhFrontierPreviewRequested }));
   const heroId = hmhRebootHeroId();
   if (levelIntroArt && (!active || levelIntroArtHero !== heroId)) { levelIntroArt.stop(); levelIntroArt = null; }
   if (!active || levelIntroArt || levelIntroArtLoading || !dom.officialLevelIntroArt) return;
@@ -5164,7 +5171,7 @@ function showRankedTooltip(title, detail) {
 
 async function startOfficialMode(mode, { frontierPreview = false } = {}) {
   playSfxCue('menu-click');
-  // Only the preview button asks for the ten-area world, and only for Free.
+  // Only the world-option button asks for a world, and only for Free.
   hmhFrontierPreviewRequested = mode === 'free' && frontierPreview === true && selectedGameId === 'lester-blaster';
   try { hmhChallengeUi.requestFor(selectedGameId, mode); }
   catch { setOfficialView('mode-select'); return; }

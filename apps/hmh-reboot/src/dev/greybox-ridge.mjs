@@ -21,7 +21,7 @@ export function authorRidgeKit(area,{pieces,sites,arenas},roads){
   // with its control face toward the shallow maintenance shelf below it.
   add('quarry-store','mass',-1510,-1235,380,270,170);
   add('headframe','mass',0,-1095,180,150,360);
-  add('landing-barrier','cover-short',850,1700,240,80,48);
+  add('landing-barrier','cover-short',850,1717.5,240,45,48);
   add('landing-wall','cover-tall',1650,600,120,240,128);
   add('shelf-west-ramp','ramp',-500,-850,400,300,0,{fromZ:0,toZ:24,priority:40});
   add('maintenance-shelf','deck',-75,-850,450,300,24,{visibleStepId:true,priority:41});

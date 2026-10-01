@@ -532,6 +532,11 @@ export async function settleRequest({ headers = {}, body = null, ip = 'unknown' 
   // 14. Achievements: all earned ids are recorded; only current-catalog NFT
   //     candidates ride on chain, at most 32 (A20).
   const earned = await deps.catalog.deriveEarnedAchievements(gameId, run, history);
+  // HMH NFT trophies held for review (a soft near-ceiling flag) are not
+  // earned; their ids ride with the stored, non-public plausibility record.
+  const pendingReview = typeof deps.catalog.pendingReviewAchievements === 'function'
+    ? (await deps.catalog.pendingReviewAchievements(gameId, run, history)).map((entry) => entry.id)
+    : [];
   const nftSet = new Set(await deps.catalog.nftAchievementIds(gameId));
   const unlocks = [...earned].map((entry) => ({ id: entry.id, tier: entry.tier, nft: nftSet.has(entry.id) }));
   const nftIds = unlocks.filter((unlock) => unlock.nft).map((unlock) => unlock.id).slice(0, MAX_NFT_ACHIEVEMENTS);
@@ -543,7 +548,7 @@ export async function settleRequest({ headers = {}, body = null, ip = 'unknown' 
     openedAtMs,
     amountWei: paid.amountWei,
     clientClaim: body.claim ? { score: body.claim.score } : null,
-    plausibility: run.plausibility ?? null,
+    plausibility: run.plausibility && pendingReview.length ? { ...run.plausibility, pendingReviewAchievementIds: pendingReview } : run.plausibility ?? null,
     unlocks,
     nftIds,
     periodKeys: periodKeysFor(openedAtMs),
@@ -639,7 +644,7 @@ export async function loadVerifyModule(load = () => import('../verify/index.mjs'
 // The achievements registry (§6.2), resolved at request time; null when it
 // cannot load (the endpoint then fails closed).
 export async function loadAchievementRegistry(load = () => import('../../apps/portal/src/achievements/index.mjs')) {
-  return pickFunctions(await optionalImport(load, 'achievements'), ['deriveEarnedAchievements', 'historyFieldsFor', 'nftAchievementIds', 'achievementById', 'catalogFor']);
+  return pickFunctions(await optionalImport(load, 'achievements'), ['deriveEarnedAchievements', 'pendingReviewAchievements', 'historyFieldsFor', 'nftAchievementIds', 'achievementById', 'catalogFor']);
 }
 
 // HMH_HERO_GATES and HMH_FREE_HEROES (server/verify/hmh.mjs), loaded only for

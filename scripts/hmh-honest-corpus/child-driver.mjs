@@ -5,9 +5,10 @@ import './register-hooks.mjs';
 import { installHeadlessEnvironment, makeEvent, PAGE_URL } from './dom-env.mjs';
 import { createBridgeEnvelope, validateChildMessage } from '../../sdk/hmh-bridge-protocol.mjs';
 import { projectHmhRuntimeSettings } from '../../apps/portal/src/hmh-player-settings.mjs';
-// The 1.9.0 child emits run summary schema 7; the portal bridge validates
-// with the v7 schema module (schema 1-7), and so does this parent.
-import { validateRunSummaryPayload as validateRunSummary } from '../../sdk/hmh-run-summary-schema-v7.mjs';
+// The 1.9.0 child emits run summary schema 7 and a 2.1.0 child on the
+// ten-area Level 1 schema 8; the portal bridge validates
+// with the v8 schema module (schema 1-8), and so does this parent.
+import { validateRunSummaryPayload as validateRunSummary } from '../../sdk/hmh-run-summary-schema-v8.mjs';
 
 const FRAME_MS = 1000 / 60;
 const tickYield = () => new Promise((resolve) => setImmediate(resolve));

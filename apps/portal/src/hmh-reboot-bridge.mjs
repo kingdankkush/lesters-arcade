@@ -5,9 +5,10 @@ import {
   validateConnectMessage,
   validateParentMessage,
 } from '../../../sdk/hmh-bridge-protocol.mjs';
-// A 1.9.0 child sends schema 7; a cached 1.8.x child still sends schema 6. The
-// v7 module's validator answers schema 1-6 exactly as the base module.
-import { validateRunSummaryPayload as validateRunSummary } from '../../../sdk/hmh-run-summary-schema-v7.mjs';
+// A 1.9.0 child sends schema 7; a cached 1.8.x child still sends schema 6.
+// Schema 1-8 (the v8 module answers 1-7 exactly as the v7 module): a 2.1.0
+// child on the ten-area Level 1 sends schema 8, a cached or legacy-map child 6 or 7.
+import { validateRunSummaryPayload as validateRunSummary } from '../../../sdk/hmh-run-summary-schema-v8.mjs';
 
 function normalizeOrigin(value) {
   const url = new URL(value);

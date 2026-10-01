@@ -79,8 +79,11 @@ export function selectLightningLedgerChain({ origin, targets, lineOfSight = () =
     from = selected;
     range = policy.jumpRange;
   }
-  // Each link is a shallow copy of a live target (an enemy or a boss): freeze
-  // the copies, never the target's nested simulation state they still share.
+  // Each link is a shallow copy of its target, so freeze the copies only: a
+  // deep freeze reached through them froze the live target's own arrays (a
+  // boss's pendingEvents and pendingAttacks), and the boss's next step threw.
+  // freezeDeep stops at an already frozen object, so the results that wrap
+  // the chain keep the targets' state writable too.
   return Object.freeze(chain.map((target) => Object.freeze(target)));
 }
 

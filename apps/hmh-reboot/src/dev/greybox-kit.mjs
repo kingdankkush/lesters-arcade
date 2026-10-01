@@ -2,7 +2,10 @@
 import { createStaticBlocker } from '../collision.mjs';
 import { createElevationSurface } from '../elevation.mjs';
 import { freezeDeep } from '../value-guards.mjs';
-const solidKinds = new Set(['mass', 'cliff', 'cover-tall', 'cover-short']);
+// `prop-solid`: the collider authored under a plan's own blocking kit card (a
+// car, barrier, transformer, rock or tree trunk). It carries its cover flags
+// explicitly and names the card it stands under (`artPlanId`, `artProp`).
+const solidKinds = new Set(['mass', 'cliff', 'cover-tall', 'cover-short', 'prop-solid']);
 const floorKinds = new Set(['road', 'deck', 'ramp', 'ledge', 'water', 'bridge']);
 const polygonEpsilon=1e-8;
 const cross=(a,b,c)=>(b.x-a.x)*(c.y-a.y)-(b.y-a.y)*(c.x-a.x);
@@ -38,9 +41,11 @@ export function createGreyboxPiece(spec = {}) {
     if(Math.abs(signed)<=polygonEpsilon)throw new TypeError('polygon must have positive area');
     if(signed<0)vertices.reverse(); // Same geometry, canonical winding for the unchanged nav narrow phase.
   }
-  const visible = { id: `greybox-${spec.id}`, kind: spec.kind, bounds, height, ...(spec.vertices!==undefined?{vertices}:{}), areaId: spec.areaId ?? null, annotation: ['climb-marker', 'drop-marker'].includes(spec.kind) ? 'Future traversal annotation; no new control or movement permission' : null };
+  const prop = spec.kind === 'prop-solid';
+  if (prop && (typeof spec.artPlanId !== 'string' || typeof spec.artProp?.source !== 'string' || !Number.isFinite(spec.artProp?.x) || !Number.isFinite(spec.artProp?.y) || typeof spec.combatCover !== 'boolean' || !['tall', 'short', 'none'].includes(spec.coverKind))) throw new TypeError('prop solid requires its art plan, card and explicit cover flags');
+  const visible = { id: `greybox-${spec.id}`, kind: spec.kind, bounds, height, ...(spec.vertices!==undefined?{vertices}:{}), areaId: spec.areaId ?? null, annotation: ['climb-marker', 'drop-marker'].includes(spec.kind) ? 'Future traversal annotation; no new control or movement permission' : null, ...(prop ? { artPlanId: spec.artPlanId, artProp: { source: spec.artProp.source, x: spec.artProp.x, y: spec.artProp.y } } : {}) };
   const shape = { type: 'polygon', vertices };
-  const blocker = solidKinds.has(spec.kind) ? createStaticBlocker({ id: spec.id, shape, minZ: 0, maxZ: height, visibleAssetId: visible.id, combatCover: spec.kind.startsWith('cover-'), coverKind: spec.kind === 'cover-tall' ? 'tall' : spec.kind === 'cover-short' ? 'short' : null }) : null;
+  const blocker = solidKinds.has(spec.kind) ? createStaticBlocker({ id: spec.id, shape, minZ: 0, maxZ: height, visibleAssetId: visible.id, combatCover: prop ? spec.combatCover : spec.kind.startsWith('cover-'), coverKind: prop ? spec.coverKind : spec.kind === 'cover-tall' ? 'tall' : spec.kind === 'cover-short' ? 'short' : null }) : null;
   const surfaceKind = water ? 'water' : spec.kind === 'bridge' ? 'bridge' : spec.kind === 'ramp' ? 'ramp' : spec.kind === 'ledge' ? 'ledge' : 'ground';
   const surface = floorKinds.has(spec.kind) ? createElevationSurface({
     id: spec.id, kind: surfaceKind, area: water && spec.vertices !== undefined ? shape : { type: 'rect', ...bounds },

@@ -183,3 +183,21 @@ test('a non-legacy world replaces the legacy loading-panel title, story, route a
   const source = readFileSync(new URL('../apps/hmh-reboot/src/main.mjs', import.meta.url), 'utf8');
   assert.match(source, /if \(HMH_WORLD_CONTEXT\.briefing\?\.presentation\) applyLevelPresentation\(document, HMH_WORLD_CONTEXT\.briefing\.presentation\);/);
 });
+
+// Merge with Ranked v8: from game 2.1.0 the ten-area world is the official
+// Level 1, so its loading panel says LEVEL 01 with no preview wording; the
+// 2.0.x preview keeps "FREE PREVIEW". Same name and route either way.
+test('the ten-area presentation says Level 1 when the world is official and Free preview otherwise', async () => {
+  const { createWorldV2RuntimeWorld } = await import('../apps/hmh-reboot/src/world-v2-runtime-world.mjs');
+  const { createWorldV2Gameplay, WORLD_V2_PRESENTATION, WORLD_V2_LEVEL_ONE_PRESENTATION } = await import('../apps/hmh-reboot/src/world-v2-gameplay.mjs');
+  const official = createWorldV2Gameplay(createWorldV2RuntimeWorld({ official: true })).briefing.presentation;
+  const preview = createWorldV2Gameplay(createWorldV2RuntimeWorld({ official: false })).briefing.presentation;
+  assert.equal(official, WORLD_V2_LEVEL_ONE_PRESENTATION);
+  assert.equal(preview, WORLD_V2_PRESENTATION);
+  assert.equal(official.kicker, ' / LEVEL 01');
+  assert.equal(preview.kicker, ' / FREE PREVIEW');
+  assert.doesNotMatch(Object.values(official).flat().join(' '), /preview|Forked/i);
+  assert.doesNotMatch(official.route.join(' '), /RELAY|RAVINE|HASHWOOD|THE YARD/);
+  assert.equal(official.title, 'The Litecoin Frontier');
+  assert.deepEqual(official.route, preview.route);
+});

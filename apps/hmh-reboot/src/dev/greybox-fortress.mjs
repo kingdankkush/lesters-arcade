@@ -19,7 +19,7 @@ export function authorFortressKit(area,{pieces,sites,arenas},roads){
   add('east-curtain','cover-tall',1100,-1000,180,700,160);
   // Supplies arrive by the outer loading track, away from the keep threshold.
   add('service-store','mass',-1050,1550,460,320,180);
-  add('yard-low-barrier','cover-short',-500,600,300,70,48);
+  add('yard-low-barrier','cover-short',-500,612.5,300,45,48);
   add('yard-tall-wall','cover-tall',700,350,100,220,128);
   add('platform-west-ramp','ramp',800,1100,300,320,0,{fromZ:0,toZ:24,priority:40});
   add('maintenance-platform','deck',1100,1100,300,320,24,{visibleStepId:true,priority:41});
