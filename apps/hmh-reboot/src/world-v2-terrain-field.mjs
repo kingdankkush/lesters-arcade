@@ -73,7 +73,12 @@ export function buildTerrainField({ summary, world, size = 512 } = {}) {
       }
       for (const trail of trails) {
         if (!contains(trail.box, x, y)) continue;
-        const d = distanceToPolyline(x, y, trail.points), e = trail.width / 2, wt = smooth(e + trail.halo, e * 0.45, d + wobble * e * 1.4);
+        // Authored routes are axis-aligned; a low-frequency meander and a
+        // patchy wear factor keep the worn path from reading as a ruled stripe.
+        const mx = (fbm(x, y, 460, 2, seed + 11) - 0.5) * 110, my = (fbm(x, y, 460, 2, seed + 13) - 0.5) * 110;
+        const d = distanceToPolyline(x + mx, y + my, trail.points), e = trail.width / 2;
+        const wear = 0.55 + 0.45 * smooth(0.3, 0.7, fbm(x, y, 260, 2, seed + 17));
+        const wt = smooth(e + trail.halo, e * 0.3, d + wobble * e * 2.2) * wear;
         if (wt <= 0) continue;
         if (trail.slot === 0) { w[1] *= 1 - wt; w[2] *= 1 - wt; } else w[trail.slot] += (1 - w[trail.slot]) * wt;
         value -= wt * 0.06;

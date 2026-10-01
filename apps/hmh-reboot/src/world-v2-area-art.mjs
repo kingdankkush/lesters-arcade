@@ -8,7 +8,7 @@
 // fill matrices are plain {a,b,c,d,tx,ty} objects for that reason.
 import { Container, Graphics, Sprite, Texture, Rectangle, Mesh, Shader, GlProgram, Geometry, UniformGroup } from 'pixi.js';
 import { createGreyboxPropResidency } from './dev/greybox-prop-residency.mjs';
-import { AREA_ART_KIT_ROOT, AREA_ART_KIT_MANIFEST, AREA_ART_TILE_ROOT, AREA_ART_DETAIL_ROOT, AREA_ART_DETAIL_PAGE, AREA_ART_MATERIALS, AREA_ART_TILE_MEANS, ROAD_RECIPES, FOLIAGE_TINT_RULES, validateAreaArtPlan, resolveKitItem, ribbonPolygon, offsetPolygon, polygonBounds, rectVertices } from './world-v2-area-art-schema.mjs';
+import { AREA_ART_KIT_ROOT, AREA_ART_KIT_MANIFEST, AREA_ART_TILE_ROOT, AREA_ART_DETAIL_ROOT, AREA_ART_DETAIL_PAGE, AREA_ART_MATERIALS, AREA_ART_TILE_MEANS, ROAD_RECIPES, FOLIAGE_TINT_RULES, validateAreaArtPlan, resolveKitItem, ribbonPolygon, offsetPolygon, polygonBounds, rectVertices, pointInPolygon, stableUnit } from './world-v2-area-art-schema.mjs';
 import { buildTerrainField, TERRAIN_LIGHT_RANGE } from './world-v2-terrain-field.mjs';
 export { validateAreaArtPlan, createPlacementGuard, AREA_ART_SCHEMA, AREA_ART_MATERIALS } from './world-v2-area-art-schema.mjs';
 
@@ -31,7 +31,7 @@ uniform mat3 uProjectionMatrix; uniform mat3 uWorldTransformMatrix; uniform mat3
 out vec2 vWorld;
 void main() { vWorld = aPosition; vec3 p = uProjectionMatrix * uWorldTransformMatrix * uTransformMatrix * vec3(aPosition, 1.0); gl_Position = vec4(p.xy, 0.0, 1.0); }`;
 const TERRAIN_FRAGMENT = `#version 300 es
-precision mediump float;
+precision highp float;
 in vec2 vWorld;
 out vec4 finalColor;
 uniform sampler2D uT0; uniform sampler2D uT1; uniform sampler2D uT2; uniform sampler2D uT3; uniform sampler2D uT4; uniform sampler2D uT5; uniform sampler2D uControl; uniform sampler2D uLight;
@@ -57,8 +57,108 @@ void main() {
   ground *= mix(uParams.y, uParams.z, c.a);
   finalColor = vec4(clamp(ground, 0.0, 1.0), 1.0) * uColor * uWorldColorAlpha;
 }`;
-let terrainProgram = null;
-const defaultTerrainProgram = () => terrainProgram ??= GlProgram.from({ name: 'hmh-area-terrain', vertex: TERRAIN_VERTEX, fragment: TERRAIN_FRAGMENT });
+// Shared GLSL: amplified tile grain and a sine-free lattice hash noise
+// (presentation only; the simulation never sees it).
+const GRAIN_GLSL = `
+vec3 grain(sampler2D t, vec4 p, vec3 mean) {
+  vec2 uv = p.w > 0.5 ? vec2(-vWorld.y, vWorld.x) * p.x + vec2(0.37, 0.19) : vWorld * p.x;
+  vec3 s = texture(t, uv).rgb / mean;
+  if (p.z > 0.5) s = vec3(dot(s, vec3(0.299, 0.587, 0.114)));
+  return max(vec3(0.0), 1.0 + (s - 1.0) * p.y);
+}
+float hash2(vec2 p) { vec3 q = fract(vec3(p.xyx) * 0.1031); q += dot(q, q.yzx + 33.33); return fract((q.x + q.y) * q.z); }
+float vnoise(vec2 p) { vec2 i = floor(p), f = fract(p), u = f * f * (3.0 - 2.0 * f);
+  return mix(mix(hash2(i), hash2(i + vec2(1.0, 0.0)), u.x), mix(hash2(i + vec2(0.0, 1.0)), hash2(i + vec2(1.0, 1.0)), u.x), u.y); }
+float fbm2(vec2 p) { return vnoise(p) * 0.62 + vnoise(p * 2.13 + 17.0) * 0.38; }`;
+const ROAD_VERTEX = `#version 300 es
+precision highp float;
+in vec2 aPosition; in vec2 aRoad;
+uniform mat3 uProjectionMatrix; uniform mat3 uWorldTransformMatrix; uniform mat3 uTransformMatrix;
+out vec2 vWorld; out vec2 vRoad;
+void main() { vWorld = aPosition; vRoad = aRoad; vec3 p = uProjectionMatrix * uWorldTransformMatrix * uTransformMatrix * vec3(aPosition, 1.0); gl_Position = vec4(p.xy, 0.0, 1.0); }`;
+// Opaque core with a noise-eroded edge, shoulder fading into the splat
+// ground, tyre ruts, worn chalk centre line, faded ends. Premultiplied out.
+const ROAD_FRAGMENT = `#version 300 es
+precision highp float;
+in vec2 vWorld; in vec2 vRoad;
+out vec4 finalColor;
+uniform sampler2D uT0; uniform sampler2D uT1; uniform sampler2D uT2; uniform sampler2D uT3;
+uniform vec4 uL0; uniform vec4 uL1; uniform vec4 uL2; uniform vec4 uL3;
+uniform vec3 uM0; uniform vec3 uM1; uniform vec3 uM2; uniform vec3 uM3;
+uniform vec3 uCore; uniform vec3 uShoulder;
+uniform vec4 uShape; uniform vec4 uWear;
+uniform vec4 uColor; uniform vec4 uWorldColorAlpha;
+${GRAIN_GLSL}
+void main() {
+  float lat = abs(vRoad.x), along = vRoad.y;
+  float n = fbm2(vWorld / 70.0) - 0.5, m = fbm2(vWorld / 520.0 + 5.0) - 0.5, n2 = fbm2(vWorld / 24.0 + 11.0) - 0.5;
+  float edge = uShape.x * (1.0 + m * 0.16) + n * 30.0 + n2 * 18.0;
+  float core = 1.0 - smoothstep(edge - 5.0, edge + 5.0, lat);
+  float outer = uShape.y + n * 70.0 + m * 60.0;
+  float shoulder = (1.0 - smoothstep(edge, outer, lat)) * uWear.w;
+  float endFade = 220.0 + n * 120.0;
+  float ends = smoothstep(0.0, endFade, along) * smoothstep(0.0, endFade, uShape.z - along);
+  core *= smoothstep(0.35, 0.65, ends + n * 0.3); shoulder *= ends;
+  vec3 coreCol = uCore * grain(uT0, uL0, uM0) * grain(uT1, uL1, uM1);
+  vec3 shCol = uShoulder * grain(uT2, uL2, uM2) * grain(uT3, uL3, uM3);
+  coreCol *= 1.0 + m * 0.22;
+  float rutWidth = 6.0 + 5.0 * fbm2(vec2(along / 90.0, sign(vRoad.x) * 7.0));
+  float rut = exp(-pow((lat - uWear.x * uShape.x) / rutWidth, 2.0)) * uWear.y * (0.45 + 0.9 * fbm2(vec2(along / 210.0, sign(vRoad.x) * 3.0 + 1.0)));
+  coreCol *= 1.0 - rut;
+  if (uWear.z > 0.5) {
+    float dash = smoothstep(0.38, 0.42, fract(along / 260.0)) * (1.0 - smoothstep(0.92, 0.96, fract(along / 260.0)));
+    float line = 1.0 - smoothstep(4.0, 7.5, abs(vRoad.x + n * 3.0));
+    float worn = smoothstep(0.3, 0.62, fbm2(vWorld / 34.0 + 3.0));
+    coreCol = mix(coreCol, vec3(0.80, 0.78, 0.72) * (0.9 + n * 0.3), line * dash * worn * 0.55);
+  }
+  coreCol *= 1.0 - 0.1 * smoothstep(edge - 40.0, edge, lat);
+  // Loose dust thrown onto the verge just outside the worn edge.
+  shCol *= 1.0 + 0.12 * (1.0 - smoothstep(edge, edge + 70.0, lat));
+  vec3 col = mix(shCol, coreCol, core);
+  float alpha = clamp(max(core, shoulder), 0.0, 1.0);
+  finalColor = vec4(clamp(col, 0.0, 1.0) * alpha, alpha) * uColor * uWorldColorAlpha;
+}`;
+// A single material over a polygon: roofs and cliff tops through the same
+// grain as the ground, with broad value variation instead of a flat tile.
+const SURFACE_FRAGMENT = `#version 300 es
+precision highp float;
+in vec2 vWorld;
+out vec4 finalColor;
+uniform sampler2D uT0; uniform sampler2D uT1;
+uniform vec4 uL0; uniform vec4 uL1; uniform vec3 uM0; uniform vec3 uM1;
+uniform vec3 uBase; uniform vec4 uSurface; uniform vec3 uMoss;
+uniform vec4 uColor; uniform vec4 uWorldColorAlpha;
+${GRAIN_GLSL}
+void main() {
+  vec3 col = uBase * grain(uT0, uL0, uM0) * grain(uT1, uL1, uM1);
+  col *= 1.0 + (fbm2(vWorld / 520.0) - 0.5) * uSurface.x + (fbm2(vWorld / 90.0 + 9.0) - 0.5) * uSurface.y;
+  col = mix(col, uMoss * grain(uT1, uL1, uM1), smoothstep(0.52, 0.72, fbm2(vWorld / 380.0 + 4.0)) * uSurface.z);
+  finalColor = vec4(clamp(col, 0.0, 1.0), 1.0) * uColor * uWorldColorAlpha;
+}`;
+const TERRAIN_PROGRAMS = { terrain: [TERRAIN_VERTEX, TERRAIN_FRAGMENT], road: [ROAD_VERTEX, ROAD_FRAGMENT], surface: [TERRAIN_VERTEX, SURFACE_FRAGMENT] };
+const programs = new Map();
+const defaultTerrainProgram = (kind = 'terrain') => { let program = programs.get(kind); if (!program) { const [vertex, fragment] = TERRAIN_PROGRAMS[kind]; program = GlProgram.from({ name: `hmh-area-${kind}`, vertex, fragment }); programs.set(kind, program); } return program; };
+// Ear clipping for the small authored solid outlines (no earcut in the vendor chunk).
+export function triangulatePolygon(vertices) {
+  const n = vertices.length; if (n < 3) return [];
+  const area = vertices.reduce((sum, p, i) => { const q = vertices[(i + 1) % n]; return sum + p.x * q.y - q.x * p.y; }, 0), sign = area >= 0 ? 1 : -1;
+  const idx = vertices.map((_, i) => i), out = [];
+  const cross = (a, b, c) => ((b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x)) * sign;
+  const inside = (p, a, b, c) => cross(a, b, p) >= 0 && cross(b, c, p) >= 0 && cross(c, a, p) >= 0;
+  let guard = n * n;
+  while (idx.length > 3 && guard-- > 0) {
+    let clipped = false;
+    for (let k = 0; k < idx.length; k++) {
+      const i0 = idx[(k + idx.length - 1) % idx.length], i1 = idx[k], i2 = idx[(k + 1) % idx.length], a = vertices[i0], b = vertices[i1], c = vertices[i2];
+      if (cross(a, b, c) <= 0) continue;
+      if (idx.some(j => j !== i0 && j !== i1 && j !== i2 && inside(vertices[j], a, b, c))) continue;
+      out.push(i0, i1, i2); idx.splice(k, 1); clipped = true; break;
+    }
+    if (!clipped) break;
+  }
+  if (idx.length === 3) out.push(idx[0], idx[1], idx[2]);
+  return out;
+}
 const rgb = color => [(color >> 16 & 255) / 255, (color >> 8 & 255) / 255, (color & 255) / 255];
 
 // Control textures from a field: two opaque canvases (weights/value and
@@ -124,7 +224,7 @@ function destroyTexture(url, entry) {
   }, () => {});
 }
 
-export function createAreaArt({ world, areaId, plan, kit = null, loadTexture, textureCache = null, container = null, signal, resolution = 'full', fetchImpl = typeof fetch === 'function' ? fetch : null, createControlTexture = defaultControlTexture, terrainFieldSize = null, createTerrainProgram = defaultTerrainProgram } = {}) {
+export function createAreaArt({ world, areaId, plan, kit = null, loadTexture, textureCache = null, container = null, signal, resolution = 'full', fetchImpl = typeof fetch === 'function' ? fetch : null, createControlTexture = defaultControlTexture, terrainFieldSize = null, createTerrainProgram = defaultTerrainProgram, createProgram = createTerrainProgram } = {}) {
   if (!world || typeof areaId !== 'string' || !plan) throw new TypeError('world, areaId and plan required');
   if (plan.areaId !== areaId) throw new TypeError(`plan ${plan.areaId} does not dress ${areaId}`);
   if (!['full', 'half'].includes(resolution)) throw new TypeError('resolution must be full or half');
@@ -263,7 +363,57 @@ export function createAreaArt({ world, areaId, plan, kit = null, loadTexture, te
     const ribbon = ribbonPolygon(points, Math.abs(distance) * 2);
     return distance >= 0 ? ribbon.slice(0, points.length) : ribbon.slice(points.length).reverse();
   }
-  function paintRoad(target, road) {
+  const programFor = kind => { try { return createProgram(kind) ?? null; } catch { return null; } };
+  const grainUniforms = (materialId, uniforms, resources, first) => {
+    const m = AREA_ART_MATERIALS[materialId];
+    const layers = [m.grain[0], m.grain[1] ?? { ...m.grain[0], gain: 0 }];
+    for (let k = 0; k < 2; k++) {
+      const layer = layers[k], texture = tiles.get(layer.tile), i = first + k;
+      if (!texture) return false;
+      uniforms[`uL${i}`] = { value: new Float32Array([1 / layer.size, layer.gain, layer.lum ? 1 : 0, layer.rot ? 1 : 0]), type: 'vec4<f32>' };
+      uniforms[`uM${i}`] = { value: new Float32Array((AREA_ART_TILE_MEANS[layer.tile] ?? [128, 128, 128]).map(v => v / 255)), type: 'vec3<f32>' };
+      resources[`uT${i}`] = texture.source; resources[`uT${i}Sampler`] = texture.source.style;
+    }
+    return true;
+  };
+  // Mitered strip around the polyline with (lateral, along) per vertex.
+  function roadGeometry(points, half) {
+    const ribbon = ribbonPolygon(points, half * 2), n = points.length, left = ribbon.slice(0, n), right = ribbon.slice(n).reverse();
+    const position = new Float32Array(n * 4), road = new Float32Array(n * 4), index = new Uint32Array((n - 1) * 6);
+    let along = 0;
+    for (let i = 0; i < n; i++) {
+      if (i > 0) along += Math.hypot(points[i].x - points[i - 1].x, points[i].y - points[i - 1].y);
+      position.set([left[i].x, left[i].y, right[i].x, right[i].y], i * 4); road.set([half, along, -half, along], i * 4);
+      if (i < n - 1) index.set([i * 2, i * 2 + 1, i * 2 + 2, i * 2 + 1, i * 2 + 3, i * 2 + 2], i * 6);
+    }
+    return { geometry: new Geometry({ attributes: { aPosition: { buffer: position, format: 'float32x2' }, aRoad: { buffer: road, format: 'float32x2' } }, indexBuffer: index }), length: along };
+  }
+  function paintRoadMesh(target, road) {
+    const recipe = ROAD_RECIPES[road.kind], glProgram = programFor('road');
+    if (!glProgram) return false;
+    const uniforms = {}, resources = {};
+    if (!grainUniforms(recipe.core, uniforms, resources, 0) || !grainUniforms(recipe.shoulder, uniforms, resources, 2)) return false;
+    const half = road.width / 2, coreHalf = half * recipe.coreFraction, outer = half + recipe.shoulderOut;
+    const { geometry, length } = roadGeometry(road.points, outer + 80);
+    uniforms.uCore = { value: new Float32Array(rgb(AREA_ART_MATERIALS[recipe.core].color)), type: 'vec3<f32>' };
+    uniforms.uShoulder = { value: new Float32Array(rgb(AREA_ART_MATERIALS[recipe.shoulder].color)), type: 'vec3<f32>' };
+    uniforms.uShape = { value: new Float32Array([coreHalf, outer, length, recipe.rank]), type: 'vec4<f32>' };
+    uniforms.uWear = { value: new Float32Array([recipe.rutOffset, recipe.rutAlpha, recipe.centreLine ? 1 : 0, recipe.shoulderAlpha]), type: 'vec4<f32>' };
+    resources.roadUniforms = new UniformGroup(uniforms);
+    const mesh = new Mesh({ geometry, shader: new Shader({ glProgram, resources }), texture: tiles.get(AREA_ART_MATERIALS[recipe.core].grain[0].tile) });
+    mesh.label = `area-road-${road.roadId}`;
+    target.addChild(mesh); painted.push(mesh);
+    return true;
+  }
+  function paintRoadCracks(target, road) {
+    const recipe = ROAD_RECIPES[road.kind];
+    if (recipe.cracks && road.cracks.length) for (const crack of road.cracks) {
+      const { node } = card('b2-47', { x: crack.x, y: crack.y, height: road.width * 0.24 * crack.scale, tint: 0x8e918d, flip: crack.flip });
+      node.alpha = 0.38; target.addChild(node); painted.push(node);
+    }
+  }
+  function paintRoad(target, road, cracks = true) {
+    if (paintRoadMesh(target, road)) { if (cracks) paintRoadCracks(target, road); return; }
     const recipe = ROAD_RECIPES[road.kind], g = new Graphics();
     const haloWidth = road.width + recipe.shoulderWidth * 2 + recipe.haloWidth * 2;
     materialFill(g, ribbonPolygon(road.points, haloWidth), recipe.shoulder, { alpha: recipe.haloAlpha * 0.5 });
@@ -274,11 +424,10 @@ export function createAreaArt({ world, areaId, plan, kit = null, loadTexture, te
     if (recipe.tracks > 0) for (const side of [-0.22, 0.22]) wear.poly(ribbonPolygon(offsetPolyline(road.points, road.width * side), road.width * 0.13).flatMap(p => [p.x, p.y])).fill({ color: 0x1a1d1c, alpha: recipe.tracks });
     if (recipe.ruts) for (const side of [-0.18, 0.18]) wear.poly(ribbonPolygon(offsetPolyline(road.points, road.width * side), Math.max(10, road.width * 0.05)).flatMap(p => [p.x, p.y])).fill({ color: 0x2b2216, alpha: 0.26 });
     target.addChild(g, wear); painted.push(g, wear);
-    if (recipe.cracks && road.cracks.length) for (const crack of road.cracks) {
-      const { node } = card('b2-47', { x: crack.x, y: crack.y, height: road.width * 0.24 * crack.scale, tint: 0xb9bcb8, flip: crack.flip });
-      node.alpha = 0.42; target.addChild(node); painted.push(node);
-    }
+    if (cracks) paintRoadCracks(target, road);
   }
+  // Overlaps resolve dirt under gravel under paved; cracks go on top of all cores.
+  const roadsByRank = () => [...summary.roads].sort((a, b) => ROAD_RECIPES[a.kind].rank - ROAD_RECIPES[b.kind].rank);
   function paintDecals(target, decals) {
     if (!decals.length || !detailTexture) return;
     const textures = new Map();
@@ -304,7 +453,7 @@ export function createAreaArt({ world, areaId, plan, kit = null, loadTexture, te
     const layers = materials.flatMap(m => [m.grain[0], m.grain[1] ?? { ...m.grain[0], gain: 0 }]);
     if (layers.some(layer => !tiles.get(layer.tile))) return false;
     let glProgram = null;
-    try { glProgram = createTerrainProgram(); } catch { glProgram = null; }
+    try { glProgram = createProgram('terrain'); } catch { glProgram = null; }
     if (!glProgram) return false;
     const uniforms = { uField: { value: new Float32Array([terrainField.minX, terrainField.minY, 1 / (terrainField.maxX - terrainField.minX), 1 / (terrainField.maxY - terrainField.minY)]), type: 'vec4<f32>' }, uParams: { value: new Float32Array([t.value, TERRAIN_LIGHT_RANGE.low, TERRAIN_LIGHT_RANGE.high, t.materials.length > 1 ? 0.35 : 0]), type: 'vec4<f32>' } };
     const resources = { terrainUniforms: null, uControl: controlTexture.control.source, uControlSampler: controlTexture.control.source.style, uLight: controlTexture.light.source, uLightSampler: controlTexture.light.source.style };
@@ -346,40 +495,106 @@ export function createAreaArt({ world, areaId, plan, kit = null, loadTexture, te
     if (road) paintRoad(target, road);
     return true;
   }
-  function paintGround(target) { if (disposed || !summary) return; groundLayer = target; paintAreaGround(target); for (const road of summary.roads) paintRoad(target, road); }
+  function paintGround(target) { if (disposed || !summary) return; groundLayer = target; paintAreaGround(target); const roads = roadsByRank(); for (const road of roads) paintRoad(target, road, false); for (const road of roads) paintRoadCracks(target, road); }
 
   // ---- solids ----
+  const surfaceShaders = new Map();
+  function raggedOutline(vertices, key) {
+    const n = vertices.length, out = [], starts = [];
+    let area = 0; for (let i = 0; i < n; i++) { const p = vertices[i], q = vertices[(i + 1) % n]; area += p.x * q.y - q.x * p.y; }
+    const sign = area >= 0 ? 1 : -1;
+    for (let i = 0; i < n; i++) {
+      const a = vertices[i], c = vertices[(i + 1) % n], dx = c.x - a.x, dy = c.y - a.y, len = Math.hypot(dx, dy);
+      // Outward normal for this winding (y down): (dy, -dx) * sign.
+      const nx = dy / (len || 1) * sign, ny = -dx / (len || 1) * sign, steps = Math.max(1, Math.round(len / 70));
+      starts.push(out.length); out.push({ x: a.x, y: a.y });
+      for (let k = 1; k < steps; k++) {
+        const t = k / steps, u = stableUnit(key, i, k), v = stableUnit(key, i, k, 'b'), push = -10 + 34 * (0.65 * u + 0.35 * v);
+        out.push({ x: a.x + dx * t + nx * push, y: a.y + dy * t + ny * push });
+      }
+    }
+    out.starts = starts;
+    return out;
+  }
+  // Roof triangles: the authored outline triangulated once, plus a fan from
+  // each authored corner to the ragged points along its edge (cheap for the
+  // long closed-mass runs, which carry hundreds of ragged points).
+  function roofIndices(outline, ragged) {
+    const base = triangulatePolygon(outline);
+    if (!ragged.starts) return { positions: outline, indices: base };
+    const n = outline.length, offset = n, indices = [...base];
+    for (let i = 0; i < n; i++) {
+      const from = ragged.starts[i], to = i + 1 < n ? ragged.starts[i + 1] : ragged.length;
+      const run = []; for (let k = from; k < to; k++) run.push(offset + k); run.push(offset + (i + 1 < n ? ragged.starts[i + 1] : ragged.starts[0]));
+      for (let k = 0; k + 1 < run.length; k++) indices.push(i, run[k], run[k + 1]);
+    }
+    return { positions: [...outline, ...ragged], indices };
+  }
+  function surfaceMesh(outline, ragged, materialId, tint, rocky) {
+    const glProgram = programFor('surface');
+    if (!glProgram) return null;
+    const { positions: vertices, indices } = roofIndices(outline, ragged);
+    if (!indices.length) return null;
+    const key = `${materialId}:${tint}:${rocky}`;
+    let shader = surfaceShaders.get(key);
+    if (!shader) {
+      const uniforms = {}, resources = {};
+      if (!grainUniforms(materialId, uniforms, resources, 0)) return null;
+      uniforms.uBase = { value: new Float32Array(rgb(multiplyTint(AREA_ART_MATERIALS[materialId].color, tint))), type: 'vec3<f32>' };
+      uniforms.uSurface = { value: new Float32Array([rocky ? 0.34 : 0.18, rocky ? 0.22 : 0.08, rocky && materialId === 'rock' ? 0.55 : 0, 0]), type: 'vec4<f32>' };
+      uniforms.uMoss = { value: new Float32Array(rgb(0x5b6650)), type: 'vec3<f32>' };
+      resources.surfaceUniforms = new UniformGroup(uniforms);
+      shader = new Shader({ glProgram, resources }); surfaceShaders.set(key, shader);
+    }
+    const geometry = new Geometry({ attributes: { aPosition: { buffer: new Float32Array(vertices.flatMap(p => [p.x, p.y])), format: 'float32x2' } }, indexBuffer: new Uint32Array(indices) });
+    const mesh = new Mesh({ geometry, shader, texture: tiles.get(AREA_ART_MATERIALS[materialId].grain[0].tile) });
+    mesh.label = 'area-solid-roof';
+    return mesh;
+  }
   function createSolid(piece) {
     if (disposed || !summary) return null;
     const solid = summary.solids.find(entry => entry.pieceId === piece.id);
     if (!solid) return null;
     const b = piece.visible.bounds, w = b.maxX - b.minX, d = b.maxY - b.minY, h = solid.height ?? piece.visible.height, cx = (b.minX + b.maxX) / 2;
-    const vertices = piece.visible.vertices ?? rectVertices(b), roof = vertices.map(p => ({ x: p.x, y: p.y - h }));
+    const outline = piece.visible.vertices ?? rectVertices(b);
+    const rockyOutline = ['bank'].includes(solid.style) || (solid.style === 'mass' && !solid.wall);
+    // Rock outlines are authored as straight runs; break them into a ragged
+    // edge (mostly outward, so art never sits well inside the collider).
+    const vertices = rockyOutline ? raggedOutline(outline, piece.id) : outline, roof = vertices.map(p => ({ x: p.x, y: p.y - h }));
     const node = new Container(); node.areaArtDecorated = true;
     const timber = multiplyTint(0x6b5c48, solid.tint), dark = multiplyTint(0x3f3629, solid.tint), pale = multiplyTint(0xd8d5c6, solid.tint);
     if (solid.style !== 'hedge' && solid.style !== 'pickets') contactShadow(node, { x: cx, y: b.maxY - d * 0.5, width: w * 0.9, depth: d * 0.9, alpha: 0.16, ao: false });
     if (solid.massAlpha > 0) {
-      const mass = new Graphics(), rockFace = overlays.get('rock-face') ?? null, wallMaterial = solid.wall ?? null;
+      const mass = new Container(), faces = new Graphics(), lips = new Graphics(), rockFace = overlays.get('rock-face') ?? null, wallMaterial = solid.wall ?? null;
       const rocky = solid.style === 'bank' || (solid.style === 'mass' && !wallMaterial);
+      const roofMaterial = solid.roof ?? (rocky ? 'rock' : 'slate');
+      // Roof through the grain shader (Graphics tile fill only as a fallback).
+      const roofOutline = outline.map(p => ({ x: p.x, y: p.y - h })), raggedRoof = roof; raggedRoof.starts = vertices.starts;
+      const roofMesh = surfaceMesh(roofOutline, vertices.starts ? raggedRoof : roofOutline, roofMaterial, solid.tint, rocky);
+      if (roofMesh) mass.addChild(roofMesh); else { const flat = new Graphics(); materialFill(flat, roof, roofMaterial, { tint: solid.tint }); mass.addChild(flat); }
+      // Faces only on edges whose outward normal points down the screen
+      // (toward the camera); back and side edges leave the roof's lip.
       for (let i = 0; i < vertices.length; i++) {
-        const j = (i + 1) % vertices.length, a = vertices[i], c = vertices[j], quad = [a, c, roof[j], roof[i]];
+        const j = (i + 1) % vertices.length, a = vertices[i], c = vertices[j];
         const dx = c.x - a.x, dy = c.y - a.y, len = Math.hypot(dx, dy) || 1, ux = dx / len, uy = dy / len;
-        // Faces whose outward side points down the screen catch the key light; the rest sit in shade.
-        const lit = 0.72 + 0.28 * Math.max(0, -ux);
+        let nx = uy, ny = -ux; const mx = (a.x + c.x) / 2, my = (a.y + c.y) / 2;
+        if (pointInPolygon(mx + nx * 2, my + ny * 2, vertices)) { nx = -nx; ny = -ny; }
+        const ra = roof[i], rc = roof[j];
+        if (ny <= 0.12) { if (ny < -0.3) lips.moveTo(ra.x, ra.y).lineTo(rc.x, rc.y).stroke({ color: SHADOW_TINT, width: 3, alpha: 0.3 }); continue; }
+        const quad = [a, c, rc, ra], flat = quad.flatMap(p => [p.x, p.y]);
+        // Upper-left key: faces turned toward the left catch more light.
+        const lit = Math.min(1, 0.78 + 0.22 * Math.max(0, -nx) + 0.1 * ny), shade = Math.round(lit * 255) * 0x010101;
         if (rocky && rockFace) {
           const s = 260 / (rockFace.source.pixelWidth || 512), fh = rockFace.source.pixelHeight || 128;
-          mass.poly(quad.flatMap(p => [p.x, p.y])).fill({ texture: rockFace, textureSpace: 'global', matrix: { a: ux * s, b: uy * s, c: 0, d: h / fh, tx: a.x, ty: a.y - h }, color: multiplyTint(solid.tint, Math.round(lit * 255) * 0x010101) });
-        } else materialFill(mass, quad, wallMaterial ?? 'dirt', { tint: multiplyTint(solid.tint, Math.round(lit * 255) * 0x010101) });
-        mass.poly(quad.flatMap(p => [p.x, p.y])).fill({ color: SHADOW_TINT, alpha: 0.18 });
+          faces.poly(flat).fill({ texture: rockFace, textureSpace: 'global', matrix: { a: ux * s, b: uy * s, c: 0, d: h / fh, tx: a.x, ty: a.y - h }, color: multiplyTint(solid.tint, shade) });
+        } else materialFill(faces, quad, wallMaterial ?? 'dirt', { tint: multiplyTint(solid.tint, shade) });
+        // Dark foot where the face meets the ground, lit lip along the top.
+        const foot = Math.min(h * 0.22, 40);
+        faces.poly([a.x, a.y - foot, c.x, c.y - foot, c.x, c.y, a.x, a.y]).fill({ color: SHADOW_TINT, alpha: 0.22 });
+        faces.poly([a.x, a.y - foot * 0.45, c.x, c.y - foot * 0.45, c.x, c.y, a.x, a.y]).fill({ color: SHADOW_TINT, alpha: 0.2 });
+        lips.moveTo(ra.x, ra.y).lineTo(rc.x, rc.y).stroke({ color: 0xd8d5c6, width: rocky ? 5 : 3, alpha: 0.22 + 0.2 * Math.max(0, -nx) });
       }
-      const roofMaterial = solid.roof ?? (rocky ? 'rock' : 'slate');
-      materialFill(mass, roof, roofMaterial, { tint: solid.tint });
-      // Top-lit lip from the upper left, shaded lip toward the lower right.
-      for (let i = 0; i < roof.length; i++) {
-        const a = roof[i], c = roof[(i + 1) % roof.length], nx = c.y - a.y, ny = -(c.x - a.x), len = Math.hypot(nx, ny) || 1, key = (-nx - ny) / len;
-        if (Math.abs(key) < 0.2) continue;
-        mass.moveTo(a.x, a.y).lineTo(c.x, c.y).stroke({ color: key > 0 ? 0xd8d5c6 : SHADOW_TINT, width: rocky ? 6 : 4, alpha: Math.abs(key) * (key > 0 ? 0.28 : 0.4) });
-      }
+      mass.addChild(faces, lips);
       mass.alpha = solid.massAlpha; node.addChild(mass);
     }
     if (solid.style === 'card') {

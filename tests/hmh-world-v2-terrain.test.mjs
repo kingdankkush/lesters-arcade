@@ -8,7 +8,9 @@ import { buildTerrainField, latticeHash, fbm, TERRAIN_FIELD_ID } from '../apps/h
 import { createDistrictTerrainArtPlan, createWorldMassesArtPlan } from '../apps/hmh-reboot/src/world-v2-area-plans/district-terrain.mjs';
 import { createMwebMeadowsArtPlan } from '../apps/hmh-reboot/src/world-v2-area-plans/mweb-meadows.mjs';
 import { createRugpullWoodsArtPlan } from '../apps/hmh-reboot/src/world-v2-area-plans/rugpull-woods.mjs';
-import { createAreaArt, createAreaArtTextureCache } from '../apps/hmh-reboot/src/world-v2-area-art.mjs';
+import { createAreaArt, createAreaArtTextureCache, triangulatePolygon } from '../apps/hmh-reboot/src/world-v2-area-art.mjs';
+import { createWorldRoadsArtPlan } from '../apps/hmh-reboot/src/world-v2-area-plans/world-roads.mjs';
+import { ROAD_RECIPES } from '../apps/hmh-reboot/src/world-v2-area-art-schema.mjs';
 
 const kit = JSON.parse(fs.readFileSync(new URL('../apps/portal/assets/generated/hmh-reboot-tripo-props-hd/hmh-tripo-props-hd.json', import.meta.url), 'utf8'));
 const tileManifest = JSON.parse(fs.readFileSync(new URL('../apps/portal/assets/generated/hmh-terrain-tiles/hmh-terrain-tiles.json', import.meta.url), 'utf8'));
@@ -121,4 +123,51 @@ test('the renderer builds one splat mesh per terrain plan from an injected contr
   art.dispose(); half.dispose();
   assert.equal(cache.snapshot().references, 0);
   assert.equal(JSON.stringify(world), JSON.stringify(createGreyboxWorld()));
+});
+
+test('roads paint as one mesh each in dirt, gravel, paved order with opaque eroded cores, shoulders, ruts and a chalk centre line on paved roads', async () => {
+  assert.ok(ROAD_RECIPES.dirt.rank < ROAD_RECIPES.gravel.rank && ROAD_RECIPES.gravel.rank < ROAD_RECIPES.paved.rank);
+  assert.equal(ROAD_RECIPES.paved.centreLine, true); assert.equal(ROAD_RECIPES.gravel.centreLine, false);
+  for (const recipe of Object.values(ROAD_RECIPES)) assert.ok(recipe.coreFraction > 0.4 && recipe.coreFraction < 0.9 && recipe.rutAlpha > 0 && recipe.shoulderOut > 0);
+  const urls = [], programs = [], cache = createAreaArtTextureCache({ loadTexture: loader(urls) });
+  const plan = createWorldRoadsArtPlan(world);
+  const art = createAreaArt({ world, areaId: 'world-roads', plan, kit, textureCache: cache, createProgram: kind => { programs.push(kind); return { name: `test-${kind}` }; } });
+  await art.ready;
+  const ground = new Container(); art.paintGround(ground);
+  const meshes = ground.children.filter(child => child.label?.startsWith('area-road-'));
+  assert.equal(meshes.length, 14, 'one mesh per authored road');
+  const kinds = meshes.map(mesh => plan.roads.find(road => `area-road-${road.roadId}` === mesh.label).kind);
+  for (let i = 1; i < kinds.length; i++) assert.ok(ROAD_RECIPES[kinds[i - 1]].rank <= ROAD_RECIPES[kinds[i]].rank, 'overlaps resolve dirt under gravel under paved');
+  const paved = meshes.find(mesh => mesh.label === 'area-road-city-meadows'), uniforms = paved.shader.resources.roadUniforms.uniforms;
+  assert.equal(uniforms.uWear[2], 1, 'paved roads carry the centre line');
+  assert.equal(uniforms.uShape[0], 300 * ROAD_RECIPES.paved.coreFraction);
+  assert.equal(uniforms.uShape[2], 3200, 'along coordinate spans the road length');
+  const crackCards = ground.children.filter(child => !child.label?.startsWith('area-road-'));
+  assert.equal(crackCards.length, plan.roads.reduce((n, road) => n + road.cracks.length, 0), 'b2-47 crack cards stay on the paved roads');
+  assert.ok(crackCards.every(card => ground.children.indexOf(card) > ground.children.indexOf(meshes.at(-1))), 'cracks draw over every road core');
+  assert.ok(programs.includes('road'));
+  art.dispose(); assert.equal(cache.snapshot().references, 0);
+});
+
+test('bank and mass solids roof through the grain shader and face only camera-facing edges', async () => {
+  assert.deepEqual(triangulatePolygon([{ x: 0, y: 0 }, { x: 10, y: 0 }, { x: 10, y: 10 }, { x: 0, y: 10 }]).length, 6);
+  const concave = [{ x: 0, y: 0 }, { x: 20, y: 0 }, { x: 20, y: 20 }, { x: 10, y: 8 }, { x: 0, y: 20 }];
+  assert.equal(triangulatePolygon(concave).length, 9, 'concave outlines triangulate fully');
+  const urls = [], cache = createAreaArtTextureCache({ loadTexture: loader(urls) });
+  const art = createAreaArt({ world, areaId: 'world-masses', plan: createWorldMassesArtPlan(world), kit, textureCache: cache, createProgram: kind => ({ name: `test-${kind}` }) });
+  await art.ready;
+  const piece = world.pieces.find(p => p.id === 'closed-mass-1'), node = art.createSolid(piece);
+  const mass = node.children.at(-1), roof = mass.children.find(child => child.label === 'area-solid-roof');
+  assert.ok(roof, 'roof is a grain-shaded mesh, not a plain tile rectangle');
+  const indices = roof.geometry.indexBuffer.data, b = piece.visible.bounds;
+  assert.ok(indices.length > 6 && indices.length % 3 === 0, 'authored outline plus ragged-edge fans');
+  // Ragged rock edge: roof points stay within -10..+24 units of the authored outline.
+  const positions = roof.geometry.getAttribute('aPosition').buffer.data, h = piece.visible.height;
+  for (let i = 0; i < positions.length; i += 2) assert.ok(positions[i] >= b.minX - 25 && positions[i] <= b.maxX + 25 && positions[i + 1] + h >= b.minY - 25 && positions[i + 1] + h <= b.maxY + 25);
+  // Faces only where the ragged edge turns toward the camera: the south run plus small jogs on the
+  // side runs, never the north run. Three fills (face + two foot bands) per facing segment.
+  const faces = mass.children[1], fills = faces.context.instructions.filter(i => i.action === 'fill').length, width = b.maxX - b.minX, height = b.maxY - b.minY;
+  const southSegments = Math.round(width / 70), allSegments = 2 * southSegments + 2 * Math.round(height / 70);
+  assert.ok(fills % 3 === 0 && fills / 3 >= southSegments && fills / 3 < allSegments / 2, `${fills / 3} facing segments of ${allSegments}`);
+  art.dispose(); assert.equal(cache.snapshot().references, 0);
 });

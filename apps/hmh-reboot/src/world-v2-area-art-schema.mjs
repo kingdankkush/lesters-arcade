@@ -54,7 +54,9 @@ export const AREA_ART_MATERIALS = freezeDeep({
   needles: defineMaterial(0x575466, [{ tile: 'packed-earth', size: 150, gain: 2.4 }, { tile: 'ledge-top', size: 500, gain: 0.42, lum: true, rot: true }]),
   paving: defineMaterial(0x91948c, [{ tile: 'industrial-slab', size: 220, gain: 1.6 }, { tile: 'crushed-ore', size: 600, gain: 0.4, lum: true, rot: true }], { alpha: 0.8 }),
   masonry: defineMaterial(0x7b7c70, [{ tile: 'industrial-slab', size: 180, gain: 1.6 }, { tile: 'ledge-top', size: 460, gain: 0.38, lum: true, rot: true }], { alpha: 0.8 }),
-  asphalt: defineMaterial(0x4a4f4d, [{ tile: 'road', size: 160, gain: 2.8 }, { tile: 'crushed-ore', size: 520, gain: 0.38, lum: true, rot: true }], { alpha: 0.85 }),
+  asphalt: defineMaterial(0x474c4a, [{ tile: 'road', size: 160, gain: 2.8 }, { tile: 'crushed-ore', size: 520, gain: 0.22, lum: true, rot: true }], { alpha: 0.85 }),
+  // Compacted, dusty wheel track for dirt roads: lighter than the earth verge.
+  track: defineMaterial(0x8d7b5c, [{ tile: 'packed-earth', size: 150, gain: 2.2 }, { tile: 'crushed-ore', size: 480, gain: 0.32, lum: true, rot: true }], { alpha: 0.8 }),
   soil: defineMaterial(0x625a47, [{ tile: 'packed-earth', size: 150, gain: 2.4 }, { tile: 'crushed-ore', size: 520, gain: 0.45, lum: true, rot: true }]),
   crop: defineMaterial(0x8c8760, [{ tile: 'forest-floor', size: 120, gain: 2.4 }, { tile: 'packed-earth', size: 440, gain: 2.5, rot: true }]),
   campearth: defineMaterial(0x635948, [{ tile: 'packed-earth', size: 150, gain: 2.4 }, { tile: 'ledge-top', size: 500, gain: 0.4, lum: true, rot: true }]),
@@ -67,7 +69,7 @@ export const AREA_ART_MATERIALS = freezeDeep({
 // macro noise cell in world units, `value` the broad light/dark variation.
 export const DISTRICT_TERRAIN = freezeDeep({
   'mweb-meadows': { materials: ['meadow', 'earth', 'gravel'], blend: 0.3, patch: 900, value: 0.14 },
-  'litecoin-city': { materials: ['paving', 'asphalt', 'gravel'], blend: 0.35, patch: 700, value: 0.1 },
+  'litecoin-city': { materials: ['paving', 'asphalt', 'gravel'], blend: 0.2, patch: 1200, value: 0.1 },
   'halving-farms': { materials: ['soil', 'crop', 'earth'], blend: 0.42, patch: 1100, value: 0.14 },
   'silver-coast': { materials: ['sand', 'wetsand', 'shallows'], blend: 0.3, patch: 800, value: 0.12 },
   'scrypt-bayou': { materials: ['marsh', 'peat', 'boardwalk'], blend: 0.4, patch: 700, value: 0.16 },
@@ -82,10 +84,15 @@ export const AREA_ART_MATERIAL_IDS = Object.freeze(Object.keys(AREA_ART_MATERIAL
 
 // Road material recipe by authored kind. `core` carries the tread, `shoulder`
 // the verge, `halo` the worn edge feathered into the surrounding ground.
+// The mesh path paints an opaque core `coreFraction` of the authored width
+// with a noise-eroded edge, a shoulder fading out `shoulderOut` units beyond
+// the authored half width, tyre ruts at `rutOffset` of the core half width,
+// and a worn chalk centre line on paved roads. `rank` orders overlaps:
+// dirt under gravel under paved. The Graphics fields keep the fallback.
 export const ROAD_RECIPES = freezeDeep({
-  paved: { core: 'asphalt', shoulder: 'gravel', shoulderWidth: 56, haloWidth: 70, haloAlpha: 0.5, tracks: 0.16, ruts: false, cracks: true },
-  gravel: { core: 'gravel', shoulder: 'earth', shoulderWidth: 44, haloWidth: 80, haloAlpha: 0.55, tracks: 0.1, ruts: false, cracks: false },
-  dirt: { core: 'dirt', shoulder: 'earth', shoulderWidth: 24, haloWidth: 90, haloAlpha: 0.6, tracks: 0, ruts: true, cracks: false },
+  paved: { core: 'asphalt', shoulder: 'gravel', rank: 2, coreFraction: 0.78, shoulderOut: 60, shoulderAlpha: 0.9, rutOffset: 0.5, rutAlpha: 0.12, centreLine: true, shoulderWidth: 56, haloWidth: 70, haloAlpha: 0.5, tracks: 0.16, ruts: false, cracks: true },
+  gravel: { core: 'gravel', shoulder: 'earth', rank: 1, coreFraction: 0.62, shoulderOut: 40, shoulderAlpha: 0.75, rutOffset: 0.5, rutAlpha: 0.2, centreLine: false, shoulderWidth: 44, haloWidth: 80, haloAlpha: 0.55, tracks: 0.1, ruts: false, cracks: false },
+  dirt: { core: 'track', shoulder: 'earth', rank: 0, coreFraction: 0.5, shoulderOut: 30, shoulderAlpha: 0.7, rutOffset: 0.42, rutAlpha: 0.26, centreLine: false, shoulderWidth: 24, haloWidth: 90, haloAlpha: 0.6, tracks: 0, ruts: true, cracks: false },
 });
 
 // The bible's restrained foliage green is 0x65735a. The three teal fantasy
@@ -248,11 +255,13 @@ export function validateAreaArtPlan(plan, kit) {
       card = { source: solid.source, fit: solid.fit === undefined ? 'width' : solid.fit, lift: solid.lift === undefined ? 0 : finite(solid.lift, `${name}.lift`) };
       if (!['width', 'height', 'depth'].includes(card.fit)) fail(`${name}.fit must be width, height or depth`);
     }
-    const roof = solid.roof === undefined ? null : material(solid.roof, `${name}.roof`);
+    const massAlpha = solid.massAlpha === undefined ? (style === 'card' ? 0.32 : ['bank', 'mass'].includes(style) ? 1 : 0) : clampUnit(solid.massAlpha, `${name}.massAlpha`);
+    // A drawn mass always has a roof material; banks and bare masses default to rock.
+    const roof = solid.roof === undefined ? (massAlpha > 0 ? (style === 'bank' || (style === 'mass' && solid.wall === undefined) ? 'rock' : style === 'mass' ? 'slate' : terrain?.materials[0] ?? 'earth') : null) : material(solid.roof, `${name}.roof`);
     if (roof) materials.add(roof);
     const wall = solid.wall === undefined ? null : material(solid.wall, `${name}.wall`);
     if (wall) materials.add(wall);
-    return { id: solid.pieceId, pieceId: solid.pieceId, style, card, roof, wall, tint: optionalTint(solid.tint, `${name}.tint`), massAlpha: solid.massAlpha === undefined ? (style === 'card' ? 0.32 : ['bank', 'mass'].includes(style) ? 1 : 0) : clampUnit(solid.massAlpha, `${name}.massAlpha`), spacing: solid.spacing === undefined ? 0 : positive(solid.spacing, `${name}.spacing`), height: solid.height === undefined ? null : positive(solid.height, `${name}.height`) };
+    return { id: solid.pieceId, pieceId: solid.pieceId, style, card, roof, wall, tint: optionalTint(solid.tint, `${name}.tint`), massAlpha, spacing: solid.spacing === undefined ? 0 : positive(solid.spacing, `${name}.spacing`), height: solid.height === undefined ? null : positive(solid.height, `${name}.height`) };
   });
   unique(solids, 'solids');
 
@@ -260,7 +269,7 @@ export function validateAreaArtPlan(plan, kit) {
   const pages = plan.pages.map(image => kit.pages.find(entry => entry.image === image));
   const encodedBytes = pages.reduce((n, page) => n + page.encodedBytes, 0), decodedBytes = pages.reduce((n, page) => n + page.decodedBytes, 0);
   const halfEncodedBytes = pages.reduce((n, page) => n + page.halfRes.encodedBytes, 0), halfDecodedBytes = pages.reduce((n, page) => n + page.halfRes.decodedBytes, 0);
-  const grainMaterials = new Set([...(terrain?.materials ?? []), ...solids.flatMap(solid => [solid.roof, solid.wall].filter(Boolean))]);
+  const grainMaterials = new Set([...(terrain?.materials ?? []), ...solids.flatMap(solid => [solid.roof, solid.wall].filter(Boolean)), ...roads.flatMap(road => [ROAD_RECIPES[road.kind].core, ROAD_RECIPES[road.kind].shoulder])]);
   const tiles = [...new Set([...materials].flatMap(id => grainMaterials.has(id) ? AREA_ART_MATERIALS[id].grain.map(layer => layer.tile) : [AREA_ART_MATERIALS[id].tile]))].sort();
   const overlays = solids.some(solid => ['bank', 'mass'].includes(solid.style)) ? [AREA_ART_ROCK_FACE] : [];
   return freezeDeep({
