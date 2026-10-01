@@ -9,6 +9,7 @@ import { createWorldRoadsArtPlan, ROAD_CLEARANCE_FRACTION } from '../apps/hmh-re
 // Lane B area plans (briefs 06-09).
 import { createHashwoodRiverArtPlan, HASHWOOD_RIVER_PAGES, RIVER_STONE_TINT } from '../apps/hmh-reboot/src/world-v2-area-plans/hashwood-river.mjs';
 import { createHalvingFarmsArtPlan, HALVING_FARMS_PAGES } from '../apps/hmh-reboot/src/world-v2-area-plans/halving-farms.mjs';
+import { createSilverCoastArtPlan, SILVER_COAST_PAGES } from '../apps/hmh-reboot/src/world-v2-area-plans/silver-coast.mjs';
 import { createLitecoinCityArtPlan, LITECOIN_CITY_PAGES } from '../apps/hmh-reboot/src/world-v2-area-plans/litecoin-city.mjs';
 import { CITY_BRAND_SLOTS, CITY_BRANDS, CITY_SIGN_PREFIX, CITY_SIGN_STYLE, signForProp, signForPiece } from '../apps/hmh-reboot/src/world-v2-area-plans/city-branding.mjs';
 
@@ -45,7 +46,7 @@ function assertAreaPlacements(areaId, summary, { routeClearance = 64, siteCleara
 }
 
 test('every authored plan validates against the HD kit, is deterministic and leaves the world untouched', () => {
-  for (const [make, expected] of [[createRugpullWoodsArtPlan, 'rugpull-woods'], [createMwebMeadowsArtPlan, 'mweb-meadows'], [createWorldRoadsArtPlan, 'world-roads'], [createHashwoodRiverArtPlan, 'hashwood-river'], [createHalvingFarmsArtPlan, 'halving-farms'], [createLitecoinCityArtPlan, 'litecoin-city']]) {
+  for (const [make, expected] of [[createRugpullWoodsArtPlan, 'rugpull-woods'], [createMwebMeadowsArtPlan, 'mweb-meadows'], [createWorldRoadsArtPlan, 'world-roads'], [createHashwoodRiverArtPlan, 'hashwood-river'], [createHalvingFarmsArtPlan, 'halving-farms'], [createSilverCoastArtPlan, 'silver-coast'], [createLitecoinCityArtPlan, 'litecoin-city']]) {
     const plan = make(world), again = make(createGreyboxWorld());
     assert.equal(plan.areaId, expected);
     assert.ok(Object.isFrozen(plan) && Object.isFrozen(plan.props));
@@ -60,6 +61,7 @@ test('every authored plan validates against the HD kit, is deterministic and lea
   assert.equal(createMwebMeadowsArtPlan({ ...world, areas: [] }), null);
   assert.equal(createHashwoodRiverArtPlan({ ...world, areas: [] }), null);
   assert.equal(createHalvingFarmsArtPlan({ ...world, areas: [] }), null);
+  assert.equal(createSilverCoastArtPlan({ ...world, areas: [] }), null);
   assert.equal(createLitecoinCityArtPlan({ ...world, areas: [] }), null);
 });
 
@@ -204,6 +206,33 @@ test('Litecoin City follows brief 02: asphalt streets, a stone exchange plaza, a
   }
   assert.equal(signForProp('litecoin-city-art-0'), null);
   assert.ok(!summary.sources.some(source => resolveKitItem(kit, source).class === 'plants'), 'City loads no foliage page');
+});
+
+test('Silver Coast follows brief 04: chalk banks with sandstone and driftwood, the rock arch landmark on the headland, cliff-foot rubble, beached jetties, beach grass and villas beyond the edges', () => {
+  const plan = createSilverCoastArtPlan(world), summary = validateAreaArtPlan(plan, kit);
+  assert.deepEqual(plan.pages, SILVER_COAST_PAGES);
+  assertAreaPlacements('silver-coast', summary);
+  const byPiece = Object.fromEntries(summary.solids.map(s => [s.pieceId.slice('silver-coast-'.length), s]));
+  for (const name of ['headland-cliff', 'shore-cliff']) assert.equal(byPiece[name].style, 'bank');
+  assert.equal(byPiece.lighthouse.card.source, 'b2-67'); assert.equal(byPiece.lighthouse.card.fit, 'height');
+  for (const name of Object.keys(byPiece).filter(n => n.startsWith('mansion-'))) assert.equal(byPiece[name].style, 'mass');
+  assert.equal(Object.keys(byPiece).filter(n => n.startsWith('mansion-')).length, 6);
+  assert.equal(byPiece['terrace-wall'].card.source, 'b1-42');
+  assert.equal(byPiece['overlook-deck'], undefined);
+  const headland = world.pieces.find(p => p.id === 'silver-coast-headland-cliff');
+  const arch = summary.props.filter(p => p.source === 'b2-76');
+  assert.equal(arch.length, 1);
+  assert.ok(pointInPolygon(arch[0].x, arch[0].y, headland.blocker.shape.vertices) && arch[0].groundZ === headland.visible.height && arch[0].height >= 400, 'the rock arch stands on the headland top');
+  const bankProps = summary.props.filter(p => p.groundZ > 0 && inSolid(p.x, p.y).visible.areaId === 'silver-coast');
+  assert.ok(bankProps.filter(p => p.source === 'b1-42').length >= 15 && bankProps.some(p => p.source === 'b1-53'), 'layered sandstone and driftwood on the banks');
+  assert.ok(summary.props.filter(p => p.source === 'b2-46').length >= 2, 'jetty sections');
+  assert.ok(summary.props.filter(p => ['b1-09', 'b1-10'].includes(p.source) && p.groundZ === 0).length >= 120, 'beach grass');
+  assert.ok(summary.props.every(p => p.groundZ > 0 || p.height < 150 || ['b2-71', 'b1-53'].includes(p.source)), 'planting stays low on the shelf');
+  const view = world.sites.find(s => s.id === 'silver-coast-landmark-view');
+  assert.equal(summary.props.filter(p => p.groundZ === 0 && p.height >= 150 && Math.hypot(p.x - view.x, p.y - view.y) < 700).length, 0, 'nothing tall blocks the lighthouse view');
+  const villas = summary.props.filter(p => p.source === 'b2-64');
+  assert.ok(villas.length >= 4 && villas.every(p => p.groundZ > 0 && !inSolid(p.x, p.y).visible.areaId), 'villas stand on closed land beyond the edges');
+  assert.ok(!summary.trails.some(t => t.material === 'shallows'), 'no water is painted on walkable ground');
 });
 
 test('the world roads plan ribbons all fourteen authored roads by kind and keeps road-side props on the shoulders', () => {
