@@ -214,6 +214,8 @@ test('settings and wiring: bridge optional boolean, portal persistence, standalo
   assert.match(main, /const PAUSE_FEEL_KEYS = new Set\(\['hitstop', 'damageNumbers'\]\);/);
   assert.match(main, /damageEvent\.point\?\.x, damageEvent\.point\?\.y, damageEvent\.point\?\.z, tick, settings\.damageNumbers !== false\);/);
   assert.match(main, /app\.stage\.addChildAt\(hmhFeel\.damageLayer, app\.stage\.getChildIndex\(overlayVisuals\)\)/);
+  // Telemetry: live count on change only (captures and soak checks read it).
+  assert.match(main, /if \(liveDamageNumbers !== damageNumbersLiveSeen\) dataset\.damageNumbersLive = String\(damageNumbersLiveSeen = liveDamageNumbers\);/);
   // No Text, no BitmapText: numbers never re-rasterise.
   const numbers = read('../apps/hmh-reboot/src/damage-numbers.mjs');
   assert.doesNotMatch(numbers, /new (?:Bitmap)?Text\b|from 'pixi\.js'/);

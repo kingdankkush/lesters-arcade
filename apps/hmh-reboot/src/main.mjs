@@ -1910,6 +1910,7 @@ async function boot() {
     return worldToScreenInto(out, damageNumberPoint, camera, damageNumberViewport);
   };
   let damageNumbersSpawnedSeen = 0;
+  let damageNumbersLiveSeen = 0;
   // Combat sparks and debris inherit the active quality tier, so the
   // reduced-motion profile (0 particles per hazard) emits none.
   const particleScale = performanceProfile.particlesPerHazard;
@@ -6111,7 +6112,8 @@ async function boot() {
     syncMusicDuck(bossMusicDuckWanted);
     if (hmhFeel) {
       damageNumberViewport = viewport();
-      hmhFeel.drawDamageNumbers((simulation.tick + frame.alpha) * simulation.fixedStepMs, settings, projectDamageNumber, world.position.x, world.position.y);
+      const liveDamageNumbers = hmhFeel.drawDamageNumbers((simulation.tick + frame.alpha) * simulation.fixedStepMs, settings, projectDamageNumber, world.position.x, world.position.y);
+      if (liveDamageNumbers !== damageNumbersLiveSeen) dataset.damageNumbersLive = String(damageNumbersLiveSeen = liveDamageNumbers);
       if (hmhFeel.damage.stats.spawned !== damageNumbersSpawnedSeen) {
         damageNumbersSpawnedSeen = hmhFeel.damage.stats.spawned;
         dataset.damageNumbersSpawned = String(damageNumbersSpawnedSeen);
