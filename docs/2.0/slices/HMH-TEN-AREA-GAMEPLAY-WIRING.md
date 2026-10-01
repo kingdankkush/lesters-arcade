@@ -125,7 +125,8 @@ with the same arguments; §6 is the proof.
   `cover-blind-fire`, `cover-reload`, `cover-hit`, `cover-leave-step/run/roll`,
   `mantle`, `drop`, `land`; enter, leave and drop are held as one-shots.
 - **Prompt ring:** a small pulsing ground ring (cyan for cover, gold for a
-  ledge) on the cover spot within 72 units or the ledge strip within 64 units.
+  ledge) on the cover spot within 72 units of any enterable face, or on the
+  ledge strip within 64 units; nothing while in cover or mid-transition.
 
 ## 5. Tests and evidence
 
@@ -153,15 +154,24 @@ with the same arguments; §6 is the proof.
 | field-cover | Free entry, no evidence: walked to the Meadows court wall, 18 open-side hits unreduced (rule) |
 | ledge | Meadows climb: 1 mantle (18 ticks), 1 drop (6 landing ticks) |
 
-- Browser (headless Chrome, heavy lock): `scripts/hmh-ten-area-wiring-browser.mjs`;
-  screenshots and `browser-receipt.json` in the same folder (§7).
+- Browser (headless Chrome, under the heavy lock, built child):
+  `scripts/hmh-ten-area-wiring-browser.mjs`, receipt `browser-receipt.json`, no
+  page errors in any scenario:
+
+| Screenshot | Shows |
+|---|---|
+| `court-rug-pull-baron-3d-fight.jpg`, `-fight-later.jpg` | walked into the Hashwood River court: bar "RUG PULL BARON // GRAND OPENING", the Baron's own GLB (top hat, cane) in his tell with the Cane Thrust lane on the hero (`actor3dPilot=1`, 2 actors) |
+| `court-rug-pull-baron-sprite-fight.jpg` | the same fight on the sprite path: the Liquidator body tinted red |
+| `court-51-foreman-sprite-fight.jpg` | "THE 51% FOREMAN // SHIFT START", Hash Cannon lane, orange-tinted body |
+| `cover-tall-prompt-ring.jpg` | the cyan prompt ring at the Meadows court wall |
+| `cover-tall-entered-in-cover.jpg` | the hero in tall cover, back to the wall (`cover-idle-r`, 3D hero clip `cover-idle-tall-r`) |
 
 ## 6. Legacy identity proof
 
 1. **Real child, 128 runs.** `scripts/hmh-honest-corpus` full plan (all
    styles, entries, heroes; 1,933,648 ticks, longest 41,960) on the base
    `b682f6074` and again on this branch after the main wiring and after the
-   harness change: 128 / 128 runs identical in every emitted field (frames,
+   harness change, and again on the final head: 128 / 128 runs identical in every emitted field (frames,
    final tick, run events, run summary, score result, game-over, upgrade log,
    pilot statistics, health, errors). Corpus digest
    `e6464972404f07e22acce6859163b55cfe72fc7efe618515a90f713d330cb101` both times.
@@ -183,9 +193,12 @@ with the same arguments; §6 is the proof.
 
 ## 7. Bytes
 
-`node build.mjs`: HMH initial + shared 996,009 B against the 1,048,576 B cap
-(base 993,366 B before the slice). See the final report for the measured
-delta against the merged integration.
+`node build.mjs`: HMH initial + shared **996,019 B** against the 1,048,576 B cap
+(52,557 B headroom). The merged integration base (`3b2028079`, built from an
+archive) is 993,366 B, so the slice adds **2,653 B** (entry +2,373, shared
++280): the null-guarded call sites in `main.mjs` and the small default-off
+seams. Everything else (bosses dispatch, archetype rows, markers, cover and
+traversal rules, clips, prompts) is in the lazy ten-area chunk.
 
 ## 8. Open items
 
