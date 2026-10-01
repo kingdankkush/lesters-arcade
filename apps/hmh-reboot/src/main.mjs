@@ -550,6 +550,14 @@ async function boot() {
   // S0.2: the lazy runtime chunks download while the renderer initialises.
   const lazyRuntimeModules = loadLazyRuntimeModules();
   lazyRuntimeModules.catch(() => {});
+  // The portal sends its one handshake on the iframe's load event, which can
+  // land while the world context is still loading (the ten-area chunk always
+  // could; the portal then timed out waiting for READY). Hold any window
+  // message that arrives before the bridge listens and hand it over once it
+  // does (QA sweep 2026-10-01).
+  const earlyWindowMessages = [];
+  const holdEarlyWindowMessage = (event) => { earlyWindowMessages.push(event); };
+  window.addEventListener('message', holdEarlyWindowMessage);
   // W4a: one world per page, decided before the bridge, renderer or session.
   adoptWorldContext(await resolveHmhWorldContext({ params: new URLSearchParams(window.location.search) }));
   const dataset = stageElement.dataset;
@@ -670,8 +678,13 @@ async function boot() {
       },
       onProtocolError: (error) => handleBridgeProtocolError(error),
     });
+    window.removeEventListener('message', holdEarlyWindowMessage);
     bridge.start();
+    // Re-dispatch the same events (origin, source, data and ports intact).
+    for (const event of earlyWindowMessages.splice(0)) window.dispatchEvent(event);
   }
+  window.removeEventListener('message', holdEarlyWindowMessage);
+  earlyWindowMessages.length = 0;
   await app.init({
     resizeTo: stageElement,
     background: '#071522',
