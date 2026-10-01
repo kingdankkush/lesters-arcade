@@ -66,9 +66,13 @@ for (const id of BOSSES) {
     assert.equal(archive.archivedSha256, source.sourceSha256);
     assert.equal(manifest.sourceSha256, source.sourceSha256);
     assert.equal(existsSync(new URL(source.source, base)), false, 'no .blend beside the receipts');
-    // Git-free: the repository ignores the editable source, so it can never be committed.
-    const ignored = readFileSync(new URL('../.gitignore', import.meta.url), 'utf8');
-    assert.ok(ignored.split(/\r?\n/).includes(`/apps/hmh-reboot/assets/source/models/native-enemies/${id}/*.blend`), `${id} .blend is gitignored`);
+    // Git-free: where the checkout carries .gitignore (Vercel uploads omit it), the
+    // repository must ignore the editable source; the receipts above prove the rest.
+    const gitignore = new URL('../.gitignore', import.meta.url);
+    if (existsSync(gitignore)) {
+      const ignored = readFileSync(gitignore, 'utf8');
+      assert.ok(ignored.split(/\r?\n/).includes(`/apps/hmh-reboot/assets/source/models/native-enemies/${id}/*.blend`), `${id} .blend is gitignored`);
+    }
   });
 }
 
