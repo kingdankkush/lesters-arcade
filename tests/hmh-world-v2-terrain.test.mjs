@@ -237,3 +237,17 @@ test('every zone and trail material lands in a splat slot, so no straight-edged 
   assert.equal(ground.children.filter(c => c.constructor.name === 'Graphics').length, 0, 'no Graphics zone fills when the splat paints');
   art.dispose();
 });
+
+test('Litecoin City keeps tall cards off the walked street centrelines and masts at human-relative height', async () => {
+  const { createLitecoinCityArtPlan, TALL_CARD_HEIGHT, TALL_STREET_CLEARANCE, MAST_MAX_HEIGHT, CITY_STREET_CENTRELINES } = await import('../apps/hmh-reboot/src/world-v2-area-plans/litecoin-city.mjs');
+  const { distanceToPolyline } = await import('../apps/hmh-reboot/src/world-v2-area-art-schema.mjs');
+  const plan = createLitecoinCityArtPlan(world), summary = validateAreaArtPlan(plan, kit), city = world.areas.find(a => a.id === 'litecoin-city');
+  assert.ok(MAST_MAX_HEIGHT <= 180 && TALL_STREET_CLEARANCE >= 120 && TALL_CARD_HEIGHT <= 100);
+  const streets = [...world.roads.map(r => r.points), ...CITY_STREET_CENTRELINES.map(line => line.map(p => ({ x: city.center.x + p.x, y: city.center.y + p.y })))];
+  const tall = summary.props.filter(p => p.height > TALL_CARD_HEIGHT && p.groundZ === 0);
+  assert.ok(tall.length > 0);
+  for (const prop of tall) for (const line of streets) assert.ok(distanceToPolyline(prop.x, prop.y, line) >= TALL_STREET_CLEARANCE, `${prop.id} (${prop.source}, ${prop.height}) clears the street centreline`);
+  const masts = summary.props.filter(p => p.source === 'b2-52');
+  assert.ok(masts.length >= 4 && masts.every(p => p.height <= MAST_MAX_HEIGHT && p.fade), 'masts are human-relative and fade over the hero');
+  assert.ok(summary.signs.length >= 15, 'sign carriers survive the rule');
+});
