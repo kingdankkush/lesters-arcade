@@ -399,9 +399,8 @@ const PLAYER_HURT_POSE_TICKS = 14;
 // low-health vignette starts bleeding in.
 const PLAYER_DAMAGE_FLASH_TICKS = 10;
 const LOW_HEALTH_VIGNETTE_THRESHOLD = 0.35;
-// Camera shake is projection-only: it offsets rendering and the inverse
-// screen-to-ground transform, never simulation state.
-const SHAKE_DECAY_TICKS = 9;
+// Camera shake is projection-only: it offsets the world render container,
+// never simulation state. 2.1: trauma-squared (hmh-feel.mjs, shared module).
 const MAX_ACTIVE_GRENADES = 16;
 const MAX_COMBAT_VISUAL_EVENTS = RUNTIME_MAX_COMBAT_VISUAL_EVENTS;
 const PROJECTILE_GRID_THRESHOLD = 64;
@@ -1878,18 +1877,15 @@ async function boot() {
   // stamped on the resume path. Both are render-side only.
   let framingState = createEncounterFramingState();
   let lastLevelUpBeat = null;
-  let shakeStartTick = -1;
-  let shakeMagnitude = 0;
+  // 2.1 feel layer (lazy chunk): trauma-squared shake. Every impulse adds
+  // trauma; the frame loop reads the decayed offset. Presentation only.
+  let hmhFeel = null;
+  void import('./hmh-feel.mjs').then((module) => { hmhFeel = module.createHmhFeel(); })
+    .catch(() => { dataset.feelStatus = 'unavailable'; });
   // Combat sparks and debris inherit the active quality tier, so the
   // reduced-motion profile (0 particles per hazard) emits none.
   const particleScale = performanceProfile.particlesPerHazard;
-  const triggerCameraShake = (tick, magnitude) => {
-    // A stronger impulse overrides a weaker one still decaying.
-    if (tick === shakeStartTick && magnitude <= shakeMagnitude) return;
-    if (tick - shakeStartTick < SHAKE_DECAY_TICKS && magnitude < shakeMagnitude) return;
-    shakeStartTick = tick;
-    shakeMagnitude = magnitude;
-  };
+  const triggerCameraShake = (tick, magnitude) => { hmhFeel?.addShake(tick, magnitude); };
   let lastMeleeAttack = null;
   let lastGrenadeThrow = null;
   let lastGrenadeDetonation = null;
@@ -3440,8 +3436,7 @@ async function boot() {
     lastTickManualDodge = false;
     framingState = createEncounterFramingState();
     lastLevelUpBeat = null;
-    shakeStartTick = -1;
-    shakeMagnitude = 0;
+    hmhFeel?.reset();
     world.position.set(0, 0);
     overlayVisuals.clear();
     lastMeleeAttack = null;
@@ -6024,14 +6019,12 @@ async function boot() {
     // camera would feed a jittered pointer position into aim resolution and
     // let a cosmetic accessibility setting change which shots hit. Offsetting
     // the container keeps the shake strictly in projection.
-    const shakeAge = simulation.tick - shakeStartTick;
-    if (settings.screenShake && !settings.reduceMotion && shakeMagnitude > 0 && shakeAge >= 0 && shakeAge < SHAKE_DECAY_TICKS) {
-      const decay = 1 - shakeAge / SHAKE_DECAY_TICKS;
-      const swing = shakeMagnitude * decay;
-      world.position.set(
-        (deterministicUnit(`shake-x:${simulation.tick}:${shakeStartTick}`) - 0.5) * 2 * swing,
-        (deterministicUnit(`shake-y:${simulation.tick}:${shakeStartTick}`) - 0.5) * 2 * swing,
-      );
+    // 2.1: trauma-squared; settings.screenShake && !settings.reduceMotion
+    // gate it inside shakeOffset, reduceFlash halves it. Integer-hashed
+    // direction into one reused offset object: no per-frame allocation.
+    const shakeOffset = hmhFeel?.shakeOffset(simulation.tick, settings);
+    if (shakeOffset && (shakeOffset.x !== 0 || shakeOffset.y !== 0)) {
+      world.position.set(shakeOffset.x, shakeOffset.y);
     } else if (world.position.x !== 0 || world.position.y !== 0) {
       world.position.set(0, 0);
     }
