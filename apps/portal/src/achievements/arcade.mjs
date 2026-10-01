@@ -19,11 +19,11 @@ const specs = [
   { id: EARLY_SUPPORTER_ID, title: 'Early Supporter', tier: 'gold', category: 'founder', description: 'Finished a server-verified Ranked run in any cabinet before the 2.0 launch cutoff.', rule: verifiedBefore(EARLY_SUPPORTER_CUTOFF_ISO) },
 ];
 
-// PLACEHOLDER ART: the Cabinet Pioneer badge stands in until the Early
-// Supporter badge is drawn under the 2.0 badge theme (plan track G1).
-const catalog = defineCatalog(ARCADE_ACHIEVEMENT_GAME_ID, specs, () => ({
-  image: '/assets/generated/achievement-badges/cabinet-pioneer.png',
-  lockedImage: '/assets/generated/achievement-badges/locked-cabinet-pioneer.png',
+// Badge art: the gold founder badge from scripts/generate-trophy-achievement-badges.py
+// (a lit marquee Ł over a dawn horizon), in the shared tier-frame style.
+const catalog = defineCatalog(ARCADE_ACHIEVEMENT_GAME_ID, specs, ({ id }) => ({
+  image: `/assets/generated/achievement-badges/${id}.png`,
+  lockedImage: `/assets/generated/achievement-badges/locked-${id}.png`,
 }));
 export const ARCADE_ACHIEVEMENTS = catalog.entries;
 export const ARCADE_HISTORY_FIELDS = catalog.historyFields;

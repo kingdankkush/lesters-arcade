@@ -118,12 +118,11 @@ const specs = [
   { id: 'world-escape', title: 'World Escape', tier: 'mythic', category: 'level-clear', description: 'Escaped the ten-area world in one Ranked run. Coming with the 2.0 world exit.', rule: soon },
 ];
 
-// PLACEHOLDER ART for the 2.0 trophy entries: an existing badge stands in until
-// the trophy posters and models land (plan track G3).
-const PLACEHOLDER_BADGES = Object.freeze({ 'full-roster-run': 'boss-breaker', 'boss-rush-fifty': 'boss-rush-ten', 'world-escape': 'getaway-clear' });
+// Badge art: the 2.0 trophy entries have their own mythic badges from
+// scripts/generate-trophy-achievement-badges.py; every other badge keeps its id.
 const imagesFor = ({ id }) => (id.startsWith('l2-')
   ? { image: `/assets/generated/hmh-achievement-atlas/achievement-${id}.png`, lockedImage: `/assets/generated/hmh-achievement-atlas/locked-achievement-${id}.png` }
-  : { image: `/assets/generated/achievement-badges/${PLACEHOLDER_BADGES[id] ?? id}.png`, lockedImage: `/assets/generated/achievement-badges/locked-${PLACEHOLDER_BADGES[id] ?? id}.png` });
+  : { image: `/assets/generated/achievement-badges/${id}.png`, lockedImage: `/assets/generated/achievement-badges/locked-${id}.png` });
 
 const catalog = defineCatalog('lester-blaster', specs, imagesFor);
 export const HMH_ACHIEVEMENTS = catalog.entries;

@@ -68,11 +68,9 @@ const specs = [
 export const STACKED_2_0_TROPHY_IDS = Object.freeze(['stacked-final-zone']);
 
 // The generated STACKED tier badges stop at platinum; the mythic completion
-// trophy borrows the platinum badge as a PLACEHOLDER until its poster lands.
-const badgeTier = (tier) => (tier === 'mythic' ? 'platinum' : tier);
-const catalog = defineCatalog('stacked', specs, ({ tier }) => ({
-  image: `/assets/generated/achievement-badges/stacked/${badgeTier(tier)}.png`,
-  lockedImage: `/assets/generated/achievement-badges/stacked/locked-${badgeTier(tier)}.png`,
-}));
+// trophy has its own badge (scripts/generate-trophy-achievement-badges.py).
+const catalog = defineCatalog('stacked', specs, ({ id, tier }) => (STACKED_2_0_TROPHY_IDS.includes(id)
+  ? { image: `/assets/generated/achievement-badges/${id}.png`, lockedImage: `/assets/generated/achievement-badges/locked-${id}.png` }
+  : { image: `/assets/generated/achievement-badges/stacked/${tier}.png`, lockedImage: `/assets/generated/achievement-badges/stacked/locked-${tier}.png` }));
 export const STACKED_ACHIEVEMENTS = catalog.entries;
 export const STACKED_HISTORY_FIELDS = catalog.historyFields;
