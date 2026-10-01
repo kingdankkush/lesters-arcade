@@ -12,6 +12,7 @@ import { BOSS_LABELS, HEROES, LEVEL_ENTRIES, MELEE_LABELS, PLAN, SAMPLE_LABELS, 
 import { STYLE_DEFAULTS } from '../scripts/hmh-honest-corpus/pilot.mjs';
 import { CORPUS_SCHEMA, serializeCorpus } from '../scripts/hmh-honest-corpus/corpus.mjs';
 import { runChild } from '../scripts/hmh-honest-corpus/child-driver.mjs';
+import { HMH_TEN_AREA_LEVEL_ONE } from '../apps/hmh-reboot/src/world-context.mjs';
 import { RANKED_GAMES, validateRankedIdentity } from '../apps/portal/src/ranked-identity.mjs';
 import { checkSeedTicket } from '../server/verify/seed-ticket.mjs';
 import { hmhV6LevelEntry } from '../server/verify/hmh-plausibility.mjs';
@@ -103,7 +104,9 @@ test('the harness boots this checkout\'s child headless: the bridge handshake co
   assert.ok(types.includes('game:ready'), types.join(' '));
   assert.ok(types.includes('game:state'), types.join(' '));
   assert.ok(result.outbox.every((entry) => entry.valid), 'every child message is a valid hmh-bridge/v1 message');
-  const entry = hmhV6LevelEntry(seed);
+  // From game 2.1.0 the Ranked Level 1 is the ten-area world, entered at the
+  // Meadows (docs/2.0/slices/HMH-RANKED-V8-TEN-AREA.md).
+  const entry = HMH_TEN_AREA_LEVEL_ONE ? { id: 'meadows', x: 12_500, y: 6_700 } : hmhV6LevelEntry(seed);
   assert.ok(Math.hypot(result.spies.motion.x - entry.x, result.spies.motion.y - entry.y) < 400, `spawned at ${entry.id}`);
   assert.equal(result.spies.accumulator?.identity?.buildHash ?? HARNESS_BUILD_HASH, HARNESS_BUILD_HASH);
 });

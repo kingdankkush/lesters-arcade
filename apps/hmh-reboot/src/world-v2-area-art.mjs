@@ -8,7 +8,7 @@
 // fill matrices are plain {a,b,c,d,tx,ty} objects for that reason.
 import { Container, Graphics, Sprite, Texture, Rectangle, Mesh, Shader, GlProgram, Geometry, UniformGroup } from 'pixi.js';
 import { createGreyboxPropResidency } from './dev/greybox-prop-residency.mjs';
-import { AREA_ART_KIT_ROOT, AREA_ART_KIT_MANIFEST, AREA_ART_TILE_ROOT, AREA_ART_DETAIL_ROOT, AREA_ART_DETAIL_PAGE, AREA_ART_MATERIALS, AREA_ART_TILE_MEANS, ROAD_RECIPES, FOLIAGE_TINT_RULES, validateAreaArtPlan, resolveKitItem, ribbonPolygon, offsetPolygon, polygonBounds, rectVertices, pointInPolygon, stableUnit } from './world-v2-area-art-schema.mjs';
+import { AREA_ART_KIT_ROOT, AREA_ART_KIT_MANIFEST, AREA_ART_TILE_ROOT, AREA_ART_DETAIL_ROOT, AREA_ART_DETAIL_PAGE, AREA_ART_MATERIALS, AREA_ART_TILE_MEANS, ROAD_RECIPES, FOLIAGE_TINT_RULES, validateAreaArtPlan, resolveKitItem, seatCardAnchorY, seatSolidCardY, ribbonPolygon, offsetPolygon, polygonBounds, rectVertices, pointInPolygon, stableUnit } from './world-v2-area-art-schema.mjs';
 import { buildTerrainField, TERRAIN_LIGHT_RANGE, valueNoise } from './world-v2-terrain-field.mjs';
 export { validateAreaArtPlan, createPlacementGuard, AREA_ART_SCHEMA, AREA_ART_MATERIALS } from './world-v2-area-art-schema.mjs';
 
@@ -682,14 +682,18 @@ export function createAreaArt({ world, areaId, plan, kit = null, loadTexture, te
     if (solid.style === 'card') {
       const entry = frameFor(solid.card.source);
       const scale = solid.card.fit === 'width' ? w / entry.alphaWidth : solid.card.fit === 'depth' ? d / entry.alphaWidth : (h + d * 0.45) / entry.alphaHeight;
-      const { node: sprite } = card(solid.card.source, { x: cx, y: b.maxY, height: entry.alphaHeight * scale, groundZ: solid.card.lift, tint: solid.tint });
+      // Seat the card in its collider: a structure's painted footprint front on
+      // the collider front edge, a tree's trunk at the collider centre.
+      const height = entry.alphaHeight * scale, y = seatSolidCardY(entry.item, b, height / entry.item.alphaBounds.h);
+      const { node: sprite } = card(solid.card.source, { x: cx, y, height, groundZ: solid.card.lift, tint: solid.tint });
       node.addChild(sprite);
     } else if (solid.style === 'hedge') {
       const vertical = d > w, length = vertical ? d : w, spacing = solid.spacing || 120, count = Math.max(1, Math.ceil(length / spacing)), step = length / count;
       for (let i = 0; i < count; i++) {
         const x = vertical ? cx : b.minX + (i + 0.5) * step, y = vertical ? b.minY + (i + 1) * step : b.maxY;
         const entry = frameFor(solid.card.source), widthScale = (vertical ? Math.max(w, step * 0.9) : step * 1.12) / entry.alphaWidth;
-        const { node: sprite } = card(solid.card.source, { x, y: Math.min(y, b.maxY), height: h + (vertical ? step * 0.35 : 0), tint: solid.tint, flip: i % 2 === 1, widthScale });
+        const height = h + (vertical ? step * 0.35 : 0), seat = seatCardAnchorY(entry.item, Math.min(y, b.maxY), height / entry.item.alphaBounds.h);
+        const { node: sprite } = card(solid.card.source, { x, y: seat, height, tint: solid.tint, flip: i % 2 === 1, widthScale });
         contactShadow(node, { x, y: Math.min(y, b.maxY) - 4, width: vertical ? w : step, depth: vertical ? step * 0.4 : 30, alpha: 0.28 });
         node.addChild(sprite);
       }
@@ -763,6 +767,18 @@ export function createAreaArt({ world, areaId, plan, kit = null, loadTexture, te
       solidRecords.push({ piece, bounds: { minX: sb.minX - 40, minY: sb.minY - (solid.height ?? piece.visible.height) - 40, maxX: sb.maxX + 40, maxY: sb.maxY + 40 }, node: null });
       ids.push(piece.blocker.id);
     }
+    // Prop blockers stand under this plan's own blocking cards: the card is
+    // their art, so the host never draws a slab for them. One whose card the
+    // plan no longer places stays unclaimed and visible.
+    const placed = new Set(summary.props.map(prop => `${prop.source}:${Math.round(prop.x * 10)}:${Math.round(prop.y * 10)}`));
+    for (const piece of pieces) {
+      const art = piece.visible?.artProp;
+      if (piece.blocker && piece.visible.artPlanId === summary.areaId && placed.has(`${art.source}:${Math.round(art.x * 10)}:${Math.round(art.y * 10)}`)) ids.push(piece.blocker.id);
+    }
+    // Edge guards follow the water banks and bridge sides of this area: the
+    // water and deck edges are their art, so no slab is drawn for them.
+    const areaOf = new Map(pieces.map(piece => [piece.id, piece.visible?.areaId ?? null]));
+    for (const piece of pieces) if (piece.blocker && piece.visible?.guardOf && areaOf.get(piece.visible.guardOf) === summary.areaId) ids.push(piece.blocker.id);
     return ids;
   }
   function mount(layer = depthLayer, ground = groundLayer, options = {}) {

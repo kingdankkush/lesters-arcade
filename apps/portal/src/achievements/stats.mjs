@@ -6,7 +6,7 @@
 // checks, so a throw there is a server-side inconsistency, not the player's
 // fault: it propagates and settle answers a retryable 500, never a 422 that
 // rejects the paid run (verify's policy, server/verify/verified-run.mjs).
-import { hmhRunSummaryCatalogs } from '../../../../sdk/hmh-run-summary-schema-v7.mjs';
+import { hmhRunSummaryCatalogs } from '../../../../sdk/hmh-run-summary-schema-v8.mjs';
 import { distanceAtTick } from '../chikun-ground-course.mjs';
 import { CHIKUN_REGIONS } from '../chikun-course-regions.mjs';
 import { zoneForTick } from '../stacked-sim.mjs';

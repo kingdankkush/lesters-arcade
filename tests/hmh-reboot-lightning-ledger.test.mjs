@@ -149,3 +149,22 @@ test('W8 Lightning Ledger reset clears channel history and permits a clean resta
   assert.equal(restarted.events[0].type, 'ledger:channel-start');
   assert.equal(restarted.cellsRemaining, 6);
 });
+
+// QA sweep 2026-10-01: a district boss is a channel target, and the chain is a
+// shallow copy of it. Deep-freezing that copy froze the live boss's own
+// pendingEvents/pendingAttacks arrays, so the next boss step threw on every
+// tick (the ten-area Foreman fight stopped the ticker). The chain stays frozen;
+// the targets' nested simulation state does not.
+test('Lightning Ledger chain never freezes the nested state of a live target', () => {
+  const boss = { id: 'boss-foreman', x: 100, y: 0, active: true, pendingEvents: [], pendingAttacks: [], cooldownUntil: {} };
+  const chain = selectLightningLedgerChain({ origin: { x: 0, y: 0 }, targets: [boss] });
+  assert.equal(Object.isFrozen(chain), true);
+  assert.equal(Object.isFrozen(chain[0]), true);
+  assert.equal(Object.isFrozen(boss.pendingEvents), false);
+  const state = createLightningLedgerState();
+  const frame = stepLightningLedger(state, { tick: 1, fire: true, validPrimary: true, targets: [boss] });
+  assert.equal(frame.events[0].type, 'ledger:channel-start');
+  stepLightningLedger(state, { tick: 61, fire: true, validPrimary: true, targets: [boss] });
+  for (const key of ['pendingEvents', 'pendingAttacks', 'cooldownUntil']) assert.equal(Object.isFrozen(boss[key]), false, key);
+  boss.pendingEvents.splice(0);
+});

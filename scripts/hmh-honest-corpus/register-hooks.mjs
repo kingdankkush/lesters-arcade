@@ -25,9 +25,30 @@ const SPIES = {
   './cockpit-ui.mjs': 'cockpit-ui.mjs',
   '../../../sdk/hmh-run-summary.mjs': 'hmh-run-summary.mjs',
 };
+// HMH_HARNESS_RELEASE labels a child ahead of this checkout's version files
+// (identity.mjs). From 2.1.0 the child's own game version also decides its
+// Level 1 (world-context.mjs reads version-tracking.mjs), so under that label
+// the child reads the labelled version too; without it nothing is redirected.
+const versionTracking = pathToFileURL(path.join(HERE, '..', '..', 'apps', 'portal', 'src', 'version-tracking.mjs')).href;
+const release = process.env.HMH_HARNESS_RELEASE;
+const labelledVersion = release && /^\d+\.\d+\.\d+$/.test(release)
+  ? `data:text/javascript,${encodeURIComponent(`export * from ${JSON.stringify(versionTracking)};
+export const SITE_VERSION = ${JSON.stringify(release)};
+export const GAME_VERSION = ${JSON.stringify(release)};
+`)}`
+  : null;
+// The ten-area combat handle (cover faces, traversal markers, the session's
+// cover + traversal run), remembered read-only for the ten-area pilots.
+const tenAreaCombat = pathToFileURL(path.join(HERE, 'spies', 'world-v2-combat.mjs')).href;
 registerHooks({
   resolve(specifier, context, nextResolve) {
     if (specifier === 'pixi.js') return { url: stub, shortCircuit: true, format: 'module' };
+    if (labelledVersion && specifier === '../../portal/src/version-tracking.mjs' && /\/apps\/hmh-reboot\/src\/world-context\.mjs$/.test(context.parentURL ?? '')) {
+      return { url: labelledVersion, shortCircuit: true, format: 'module' };
+    }
+    if (specifier === './world-v2-combat.mjs' && /\/apps\/hmh-reboot\/src\/world-v2-runtime-context\.mjs$/.test(context.parentURL ?? '')) {
+      return { url: tenAreaCombat, shortCircuit: true, format: 'module' };
+    }
     if (context.parentURL && /\/apps\/hmh-reboot\/src\/main\.mjs$/.test(context.parentURL) && Object.hasOwn(SPIES, specifier)) {
       return { url: pathToFileURL(path.join(HERE, 'spies', SPIES[specifier])).href, shortCircuit: true, format: 'module' };
     }

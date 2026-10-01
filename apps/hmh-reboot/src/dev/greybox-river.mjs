@@ -14,15 +14,17 @@ export function authorRiverKit(area,{pieces,sites,arenas},roads){
   polygon('channel','water',[[-2000,-720],[-1400,-690],[-1000,-620],[1700,-620],[2000,-720],[2000,-360],[1700,-280],[-1000,-280],[-1400,-340],[-2000,-390]],0,{priority:30});
   polygon('waterfall-shelf','cliff',[[-1900,-1300],[-1500,-1250],[-1380,-950],[-1630,-820],[-1900,-930]],190);
   for(const[name,x]of [['city',0],['woods',1400]]){
-    add(`${name}-north-ramp`,'ramp',x,-770,420,260,0,{axis:'y',fromZ:0,toZ:24,priority:40});
-    add(`${name}-bridge`,'bridge',x,-450,420,380,24,{visibleStepId:true,priority:41});
-    add(`${name}-south-ramp`,'ramp',x,-130,420,260,0,{axis:'y',fromZ:24,toZ:0,priority:40});
+    // The deck spans exactly the channel (y -620..-280); ramp feet stay put
+    // (2.1 QA pin beside the City bridge's south end).
+    add(`${name}-north-ramp`,'ramp',x,-760,420,280,0,{axis:'y',fromZ:0,toZ:24,priority:40});
+    add(`${name}-bridge`,'bridge',x,-450,420,340,24,{visibleStepId:true,priority:41});
+    add(`${name}-south-ramp`,'ramp',x,-140,420,280,0,{axis:'y',fromZ:24,toZ:0,priority:40});
   }
-  add('capstan-house','mass',480,-180,180,120,180);
+  add('capstan-house','mass',480,-210,180,180,180);
   add('marquee-backing','mass',-1000,1650,350,180,240);
   add('marquee-west-post','mass',-550,600,70,90,160);
   add('marquee-east-post','mass',-50,600,70,90,160);
-  add('court-low-stack','cover-short',-1600,1300,160,70,48);
+  add('court-low-stack','cover-short',-1600,1312.5,160,45,48);
   add('court-tall-screen','cover-tall',-300,1400,80,160,128);
   add('climb-intent','climb-marker',210,-450,40,120,24);
   add('drop-intent','drop-marker',1400,-260,120,40,24);

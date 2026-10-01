@@ -1,10 +1,13 @@
 // New Frontier (preview): a second Free start on the HMH mode select that
 // asks the host for the W4a ten-area world. Free and unranked only; a Ranked
 // session never gets it, and a preview run offers no result or share card.
+// This is the 2.0.x option (the version gate off); from 2.1.0 the same slot is
+// the original map (tests/hmh-world-option.test.mjs).
+const PREVIEW = hmhWorldOption(false);
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { readFileSync } from 'node:fs';
-import { HMH_FRONTIER_PREVIEW_COPY, mountHmhFrontierPreviewOption } from '../apps/portal/src/hmh-frontier-preview.mjs';
+import { HMH_FRONTIER_PREVIEW_COPY, hmhWorldOption, mountHmhFrontierPreviewOption } from '../apps/portal/src/hmh-frontier-preview.mjs';
 import { HMH_FRONTIER_PREVIEW_WORLD } from '../apps/portal/src/hmh-reboot-host.mjs';
 import { TEN_AREA_WORLD_VALUE, resolveHmhWorldSelection } from '../apps/hmh-reboot/src/world-context.mjs';
 
@@ -38,7 +41,7 @@ test('the option renders as a labelled second Free start with an honest note, HM
   const guide = node('p');
   container.append(grid, guide);
   const starts = [];
-  const option = mountHmhFrontierPreviewOption({ documentRef, container, before: guide, onStart: () => starts.push('free-preview') });
+  const option = mountHmhFrontierPreviewOption({ documentRef, container, before: guide, onStart: () => starts.push('free-preview'), option: PREVIEW });
   assert.equal(option.root.id, 'hmhFrontierPreviewOption');
   assert.deepEqual(container.children.map((child) => child), [grid, option.root, guide], 'sits between the mode cards and the Ranked guide note');
   assert.equal(option.button.tag, 'button');
@@ -59,7 +62,7 @@ test('the option renders as a labelled second Free start with an honest note, HM
   }
   // Without an anchor the option is appended to the container.
   const plain = node('section');
-  const appended = mountHmhFrontierPreviewOption({ documentRef, container: plain, onStart: () => {} });
+  const appended = mountHmhFrontierPreviewOption({ documentRef, container: plain, onStart: () => {}, option: PREVIEW });
   assert.deepEqual(plain.children, [appended.root]);
   assert.throws(() => mountHmhFrontierPreviewOption({ documentRef, container: plain }), TypeError);
   assert.throws(() => mountHmhFrontierPreviewOption({ documentRef, onStart: () => {} }), TypeError);
@@ -68,7 +71,7 @@ test('the option renders as a labelled second Free start with an honest note, HM
 test('every preview copy line says it is unranked and has no result', () => {
   for (const [key, copy] of Object.entries(HMH_FRONTIER_PREVIEW_COPY)) {
     if (key === 'button' || key === 'title') continue;
-    assert.match(copy, /unranked/i, key);
+    assert.match(key === 'intro' ? copy.body : copy, /unranked/i, key);
   }
   assert.match(HMH_FRONTIER_PREVIEW_COPY.result, /^Preview run/);
   assert.match(HMH_FRONTIER_PREVIEW_COPY.result, /no result or share card/);
@@ -77,7 +80,8 @@ test('every preview copy line says it is unranked and has no result', () => {
 
 test('the host requests exactly the child selection the world-context rule accepts', () => {
   assert.equal(HMH_FRONTIER_PREVIEW_WORLD, TEN_AREA_WORLD_VALUE);
-  const selection = resolveHmhWorldSelection({ params: `mode=free&world=${HMH_FRONTIER_PREVIEW_WORLD}` });
+  assert.equal(PREVIEW.world, HMH_FRONTIER_PREVIEW_WORLD);
+  const selection = resolveHmhWorldSelection({ params: `mode=free&world=${HMH_FRONTIER_PREVIEW_WORLD}`, tenAreaLevelOne: false });
   assert.equal(selection.legacy, false);
   assert.equal(selection.rankedEligible, false);
   assert.equal(selection.official, false);
@@ -92,11 +96,12 @@ test('main.js starts the preview only from its button, for Free, and asks the ho
   assert.match(main, /dom\.officialFreeModeButton\.addEventListener\('click', \(\) => startOfficialMode\('free'\)\);/);
   assert.match(main, /dom\.officialRankedModeButton\.addEventListener\('click', \(\) => startOfficialMode\('ranked'\)\);/);
   // The mount asks only for an unranked Free payload and trusts the frame's answer.
-  assert.match(main, /const frontierWorld = hmhFrontierPreviewRequested && !currentSession\.isPaid && initContext\.mode === 'free' && initContext\.rankedEligible === false \? 'ten-area' : null;\n  const frame = hmhRebootHost\.mountSession\(\{/);
-  assert.match(main, /\}, \{ world: frontierWorld \}\);\n  hmhFrontierPreviewActive = frame\?\.dataset\?\.world === 'ten-area';\n  labelHmhFrontierPreviewTitle\(\);\n  return frame;\n\}/);
+  // The option's world: the ten-area preview before 2.1.0, the original map from it (hmh-world-option.test.mjs).
+  assert.match(main, /const frontierWorld = hmhFrontierPreviewRequested && !currentSession\.isPaid && initContext\.mode === 'free' && initContext\.rankedEligible === false \? HMH_WORLD_OPTION\.world : null;\n  const frame = hmhRebootHost\.mountSession\(\{/);
+  assert.match(main, /\}, \{ world: frontierWorld \}\);\n  hmhFrontierPreviewActive = !HMH_TEN_AREA_LEVEL_ONE && frame\?\.dataset\?\.world === 'ten-area';\n  hmhOriginalMapActive = HMH_TEN_AREA_LEVEL_ONE && frame\?\.dataset\?\.world === 'legacy';\n  labelHmhFrontierPreviewTitle\(\);\n  return frame;\n\}/);
   assert.equal((main.match(/hmhRebootHost\.mountSession\(/g) ?? []).length, 1);
   // Teardown clears the active flag; the Chikun and STACKED hosts never see it.
-  assert.match(main, /hmhRebootActive = false;\n  hmhFrontierPreviewActive = false;\n\}/);
+  assert.match(main, /hmhRebootActive = false;\n  hmhFrontierPreviewActive = false;\n  hmhOriginalMapActive = false;\n\}/);
   assert.doesNotMatch(main.slice(main.indexOf('function mountChikunSession'), main.indexOf('const hmhChallengeUi = ')), /frontierWorld|hmhFrontierPreview/);
   const stackedMount = main.indexOf('async function mountStackedSession');
   assert.doesNotMatch(main.slice(stackedMount, main.indexOf('\n}\n', stackedMount)), /frontierWorld|hmhFrontierPreview/);
@@ -106,9 +111,40 @@ test('main.js labels a preview run and offers it no Free share card', () => {
   assert.match(main, /const modeCopy = hmhFrontierPreviewActive \? HMH_FRONTIER_PREVIEW_COPY\.gameplay : officialSelectedMode === 'ranked'/);
   // The gameplay title is labelled by the renderer and by the mount (the view renders first), never twice.
   assert.match(main, /const renderOfficialGameplay = \(\) => \{\n  officialPlayRoutes\.renderGameplay\(\);\n[^\n]*\n  labelHmhFrontierPreviewTitle\(\);\n\};/);
-  assert.match(main, /function labelHmhFrontierPreviewTitle\(\) \{\n  if \(!hmhFrontierPreviewActive \|\| !dom\.officialGameModeTitle\) return;\n  const suffix = ` \/\/ \$\{HMH_FRONTIER_PREVIEW_COPY\.title\}`;\n  if \(!dom\.officialGameModeTitle\.textContent\.endsWith\(suffix\)\) dom\.officialGameModeTitle\.textContent \+= suffix;\n\}/);
+  assert.match(main, /function labelHmhFrontierPreviewTitle\(\) \{\n  if \(!\(hmhFrontierPreviewActive \|\| hmhOriginalMapActive\) \|\| !dom\.officialGameModeTitle\) return;\n  const suffix = ` \/\/ \$\{HMH_WORLD_OPTION\.copy\.title\}`;\n  if \(!dom\.officialGameModeTitle\.textContent\.endsWith\(suffix\)\) dom\.officialGameModeTitle\.textContent \+= suffix;\n\}/);
   assert.match(main, /textContent = hmhFrontierPreviewActive \? HMH_FRONTIER_PREVIEW_COPY\.gameplay : 'Top-down reboot runtime connected\./);
   const summary = main.slice(main.indexOf('function renderGameOverSummary()'), main.indexOf('const loopNote = el('));
   assert.match(summary, /if \(hmhFrontierPreviewActive\) appendText\(dom\.combatGameOverSummary, 'p', HMH_FRONTIER_PREVIEW_COPY\.result, 'game-over-summary-copy hmh-frontier-preview-label'\);\n  else if \(!win && \(currentSession\?\.mode \?\? officialSelectedMode \?\? 'free'\) === 'free'\) \{/);
   assert.equal((summary.match(/createShareRow\(/g) ?? []).length, 1, 'one Free share row, inside the non-preview branch');
+});
+
+// QA sweep 2026-10-01: the preview's level intro said "Level 1: The Forked
+// Frontier ... the Liquidator's yard". Before 2.1.0 the preview start shows
+// the preview copy; from 2.1.0 an ordinary run shows the ten-area Level 1
+// copy (no preview wording) and the original-map start the legacy card.
+test('the level intro copy follows the version gate and the world option', async () => {
+  const { applyHmhFrontierPreviewIntro, hmhLevelIntroMode, HMH_TEN_AREA_LEVEL_ONE_INTRO } = await import('../apps/portal/src/hmh-frontier-preview.mjs');
+  assert.equal(hmhLevelIntroMode({ levelOne: false, optionRequested: true }), 'preview');
+  assert.equal(hmhLevelIntroMode({ levelOne: false, optionRequested: false }), 'legacy');
+  assert.equal(hmhLevelIntroMode({ levelOne: true, optionRequested: false }), 'level-one');
+  assert.equal(hmhLevelIntroMode({ levelOne: true, optionRequested: true }), 'legacy');
+  const el = (text) => ({ textContent: text, dataset: {} });
+  const eyebrow = el('Hard Money Heroes // Level 1'), title = el('Level 1: The Forked Frontier'), body = el('The relay has gone silent.');
+  const card = { querySelector: (selector) => ({ '.eyebrow': eyebrow, h2: title, 'h2 + p': body })[selector] ?? null };
+  const section = { querySelector: (selector) => (selector === '.level-intro-card' ? card : null) };
+  const shown = () => [eyebrow.textContent, title.textContent, body.textContent];
+  assert.equal(applyHmhFrontierPreviewIntro(section, 'preview'), 'preview');
+  assert.deepEqual(shown(), [HMH_FRONTIER_PREVIEW_COPY.intro.eyebrow, HMH_FRONTIER_PREVIEW_COPY.intro.title, HMH_FRONTIER_PREVIEW_COPY.intro.body]);
+  assert.doesNotMatch(`${title.textContent} ${body.textContent}`, /Forked|yard/);
+  assert.match(body.textContent, /unranked/);
+  assert.equal(applyHmhFrontierPreviewIntro(section, 'level-one'), 'level-one');
+  assert.deepEqual(shown(), [HMH_TEN_AREA_LEVEL_ONE_INTRO.eyebrow, HMH_TEN_AREA_LEVEL_ONE_INTRO.title, HMH_TEN_AREA_LEVEL_ONE_INTRO.body]);
+  assert.match(title.textContent, /The Litecoin Frontier/);
+  assert.doesNotMatch(shown().join(' '), /preview|unfinished|unranked|Forked/i);
+  assert.doesNotMatch(shown().join(' '), /RELAY|RAVINE|HASHWOOD|THE YARD/);
+  assert.equal(applyHmhFrontierPreviewIntro(section, 'legacy'), 'legacy');
+  assert.deepEqual(shown(), ['Hard Money Heroes // Level 1', 'Level 1: The Forked Frontier', 'The relay has gone silent.']);
+  assert.equal(applyHmhFrontierPreviewIntro(section, true), 'preview', 'true still means the preview');
+  assert.equal(applyHmhFrontierPreviewIntro(null, 'preview'), null);
+  assert.match(main, /if \(active\) applyHmhFrontierPreviewIntro\(dom\.officialLevelIntro, hmhLevelIntroMode\(\{ levelOne: HMH_TEN_AREA_LEVEL_ONE, optionRequested: hmhFrontierPreviewRequested \}\)\);/);
 });

@@ -1,5 +1,5 @@
-// Schema 1-7: the v7 module answers schema 1-6 exactly as the base module.
-import { validateRunSummaryPayload } from '../../../sdk/hmh-run-summary-schema-v7.mjs';
+// Schema 1-8: the v8 module answers schema 1-7 exactly as the v7 module.
+import { validateRunSummaryPayload } from '../../../sdk/hmh-run-summary-schema-v8.mjs';
 import { resolveComboPresentation } from '../../hmh-reboot/src/combo-feedback.mjs';
 
 export const HMH_RUN_HISTORY_FILTER_DEFAULTS = Object.freeze({

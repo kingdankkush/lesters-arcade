@@ -110,7 +110,8 @@ test('Ranked verifies a schema-7 body from game 1.9.0 or later, and refuses one 
   const summary = fixtures['hmh-v7-liquidator'].body.evidence.runSummary;
   assert.equal(hmhRankedSchemaError(summary), '');
   assert.equal(hmhRankedSchemaError({ ...summary, identity: { ...summary.identity, buildHash: 'site-1.9.0' } }), 'run summary schema 7 requires game 1.9.0 or later', 'no game version');
-  assert.equal(hmhRankedSchemaError({ ...summary, schemaVersion: 5 }), 'Ranked requires run summary schema 6 or 7');
+  // 2.1.0 adds schema 8 (the ten-area Level 1; server-verify-hmh-v8.test.mjs).
+  assert.equal(hmhRankedSchemaError({ ...summary, schemaVersion: 5 }), 'Ranked requires run summary schema 6, 7 or 8');
 });
 
 test('a cached 1.8.x child schema-6 summary still verifies, under a 1.8.x or a 1.9.0 build hash', async () => {

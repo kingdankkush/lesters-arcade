@@ -15,13 +15,19 @@ export function authorRidgeKit(area,{pieces,sites,arenas},roads){
   rock('lower-cut',[[-650,180],[420,180],[550,300],[550,650],[-450,650],[-650,500]],180);
   rock('upper-cut',[[-600,-450],[-450,-600],[550,-600],[550,-200],[-600,-200]],240);
   rock('north-cap',[[-500,-1850],[1100,-1850],[1250,-1400],[500,-1100],[-500,-1100]],420);
+  // The cap foot fills the strip between the cap and the maintenance shelf's
+  // north lip, between the two mine entrances: open, it was a pocket only a
+  // 32-drop enemy could fall into from the shelf and never leave (2.1 QA).
+  // Its south face stops 5 short of the shelf lip (no body fits) and keeps the
+  // switchback's 300-unit moving band clear.
+  rock('cap-foot',[[-300,-1100],[610,-1100],[610,-1005],[-300,-1005]],160);
   // Leave the fixed diagonal Fortress road below this northeastern rock shelf.
   rock('east-buttress',[[1400,-1850],[1950,-1850],[1950,-1000],[1700,-1000],[1400,-1300]],300);
   // The store faces its side track. Headframe equipment sits against the rock,
   // with its control face toward the shallow maintenance shelf below it.
   add('quarry-store','mass',-1510,-1235,380,270,170);
   add('headframe','mass',0,-1095,180,150,360);
-  add('landing-barrier','cover-short',850,1700,240,80,48);
+  add('landing-barrier','cover-short',850,1717.5,240,45,48);
   add('landing-wall','cover-tall',1650,600,120,240,128);
   add('shelf-west-ramp','ramp',-500,-850,400,300,0,{fromZ:0,toZ:24,priority:40});
   add('maintenance-shelf','deck',-75,-850,450,300,24,{visibleStepId:true,priority:41});

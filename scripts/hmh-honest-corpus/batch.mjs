@@ -5,6 +5,8 @@
 //
 //   node scripts/hmh-honest-corpus/batch.mjs plan
 //   node scripts/hmh-honest-corpus/batch.mjs run [--only=label,..|--sample|--melee|--boss] [--concurrency=4] [--runs=dir]
+//   HMH_HARNESS_RELEASE=2.1.0 node scripts/hmh-honest-corpus/batch.mjs <command> --ten-area [...]
+//                                    the ten-area plan (plan-ten-area.mjs) on the 2.1.0 child's Level 1
 //   node scripts/hmh-honest-corpus/batch.mjs verify [--runs=dir] [--out=file]
 //   node scripts/hmh-honest-corpus/batch.mjs report [--results=file]
 //   node scripts/hmh-honest-corpus/batch.mjs export --commit=<sha> --out=file [--runs=dir] [--merge]
@@ -18,7 +20,8 @@ import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { HARNESS_BUILD_HASH, HARNESS_RELEASE, SEASON_ID } from './identity.mjs';
-import { BOSS_LABELS, MELEE_LABELS, PLAN, SAMPLE_LABELS, identityFor } from './plan.mjs';
+import { BOSS_LABELS, MELEE_LABELS, PLAN as LEGACY_PLAN, SAMPLE_LABELS, identityFor as legacyIdentityFor } from './plan.mjs';
+import { TEN_AREA_PLAN, tenAreaIdentityFor } from './plan-ten-area.mjs';
 import { verifyAll } from './verify.mjs';
 import { buildCorpus, mergeCorpus, serializeCorpus } from './corpus.mjs';
 import { printReport } from './report.mjs';
@@ -57,7 +60,7 @@ async function runAll({ only, concurrency, runsDir }) {
       while (active < concurrency && cursor < queue.length) {
         const { run, id } = queue[cursor++];
         active += 1;
-        const spec = { label: run.label, seed: id.seed, style: run.style, tickCap: run.tickCap, surrenderFrames: run.surrenderFrames ?? 30_000, heroId: run.heroId, buildHash: HARNESS_BUILD_HASH, seasonId: SEASON_ID, out: path.join(runsDir, `${run.label}.run.json`) };
+        const spec = { label: run.label, seed: id.seed, style: run.style, tickCap: run.tickCap, surrenderFrames: run.surrenderFrames ?? 30_000, heroId: run.heroId, buildHash: HARNESS_BUILD_HASH, seasonId: SEASON_ID, out: path.join(runsDir, `${run.label}.run.json`), ...(run.world ? { world: run.world } : {}) };
         const started = Date.now();
         runProcess(spec).then((result) => {
           active -= 1;
@@ -74,6 +77,8 @@ async function runAll({ only, concurrency, runsDir }) {
 
 const [command = 'plan', ...args] = process.argv.slice(2);
 const opts = Object.fromEntries(args.map((arg) => { const [k, v] = arg.replace(/^--/, '').split('='); return [k, v ?? true]; }));
+const PLAN = opts['ten-area'] ? TEN_AREA_PLAN : LEGACY_PLAN;
+const identityFor = opts['ten-area'] ? tenAreaIdentityFor : legacyIdentityFor;
 const runsDir = path.resolve(opts.runs ? String(opts.runs) : path.join(HERE, 'runs'));
 
 if (command === 'plan') {

@@ -47,3 +47,24 @@ test('the field map lists every discovered haven and trap with its task, reward 
  const hidden=buildWorldDesignFieldMap({world:LEVEL_ONE_WORLD,player:{x:6000,y:2400},reveal:getLevelOneRevealSnapshot(createLevelOneRevealState()),mission:createMissionState(1),collectibles:supplies(),tick:1});
  assert.equal(hidden.objectives.length,0,'unexplored destinations stay off the map');
 });
+
+// QA sweep 2026-10-01: the ten-area Free world's pause map squashed its
+// 20,000 x 14,000 bounds into the legacy 600 x 240 box, drew the legacy
+// exploration paths and objective rewards at legacy coordinates, and named
+// no area. It keeps its aspect, draws only its own routes, and labels the
+// areas the hero has explored.
+test('the ten-area field map keeps its aspect, drops legacy overlays and labels explored areas', async () => {
+ const { createWorldV2RuntimeContext } = await import('../apps/hmh-reboot/src/world-v2-runtime-context.mjs');
+ const context = createWorldV2RuntimeContext({ selection: { official: false, rankedEligible: false } });
+ const world = context.world, reveal = context.reveal.create();
+ context.reveal.at(reveal, world.player.spawn);
+ const model = buildWorldDesignFieldMap({ world, player: world.player.spawn, reveal: context.reveal.snapshot(reveal), mission: null, legacy: false });
+ assert.deepEqual([model.width, model.height], [600, 420]);
+ assert.equal(model.player.x / model.player.y, world.player.spawn.x / world.player.spawn.y, 'uniform scale');
+ const routeIds = new Set(world.routes.map((route) => route.id));
+ assert.ok(model.paths.length > 0 && model.paths.every((path) => routeIds.has(path.id)));
+ assert.deepEqual(model.objectives, []);
+ assert.deepEqual(model.areas.map((area) => area.name), ['MWEB Meadows']);
+ const legacyModel = buildWorldDesignFieldMap({ world: LEVEL_ONE_WORLD, player: { x: 6000, y: 2400 }, reveal: getLevelOneRevealSnapshot(createLevelOneRevealState()) });
+ assert.deepEqual([legacyModel.width, legacyModel.height, legacyModel.areas.length], [600, 240, 0]);
+});

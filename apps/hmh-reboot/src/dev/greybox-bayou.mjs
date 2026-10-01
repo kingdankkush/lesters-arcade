@@ -17,16 +17,19 @@ export function authorBayouKit(area,{pieces,sites,arenas},roads){
   // The working apron faces the lock bridge; the quiet court is on dry west bank.
   add('control-house','mass',-350,300,340,260,220);
   add('wheel-tower','mass',-50,250,150,220,300);
-  add('court-low-stack','cover-short',-1300,1000,260,80,48);
+  add('court-low-stack','cover-short',-1300,1017.5,260,45,48);
   add('court-tall-screen','cover-tall',-1550,50,100,260,128);
   for(const[name,y]of [['lock',650],['north',-650]]){
-    add(`${name}-west-ramp`,'ramp',40,y,280,360,0,{fromZ:0,toZ:24,priority:40});
-    add(`${name}-bridge`,'bridge',360,y,360,360,24,{visibleStepId:true,priority:41});
-    add(`${name}-east-ramp`,'ramp',680,y,280,360,0,{fromZ:24,toZ:0,priority:40});
+    // The deck spans exactly the channel (x 200..520); each ramp foot stays put
+    // and the ramp meets the deck at the water's edge, so no ground strip lies
+    // under a deck end beside the bank (2.1 QA pin at the lock bridge's west end).
+    add(`${name}-west-ramp`,'ramp',50,y,300,360,0,{fromZ:0,toZ:24,priority:40});
+    add(`${name}-bridge`,'bridge',360,y,320,360,24,{visibleStepId:true,priority:41});
+    add(`${name}-east-ramp`,'ramp',670,y,300,360,0,{fromZ:24,toZ:0,priority:40});
   }
   add('stilt-store','mass',1300,1450,320,280,180);
   add('climb-intent','climb-marker',360,830,120,40,24);
-  add('drop-intent','drop-marker',540,650,40,120,24);
+  add('drop-intent','drop-marker',520,650,40,120,24);
 
   area.landmark='Lock wheel tower';
   area.flowLabels=[{label:'North crossing',...point(360,-650)}];
