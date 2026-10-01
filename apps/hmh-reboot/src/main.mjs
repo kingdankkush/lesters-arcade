@@ -2283,7 +2283,7 @@ async function boot() {
       }
       // Ten-area contextual prompts (presentation only): a small pulsing ring
       // on the cover spot or ledge the hero could take from here.
-      tenAreaRun?.drawPrompts(bossTelegraphs, { hero: actor, radius: playerBody?.radius, project: (point) => worldToScreen(point, camera, view), zoom: camera.zoom, tick: bossVisualTick });
+      tenAreaRun?.drawPrompts(bossTelegraphs, { hero: actor, radius: playerBody?.radius, project: (point) => worldToScreen(point, camera, view), zoom: camera.zoom, tick: bossVisualTick, dataset });
     if (liquidatorBoss && (liquidatorBoss.active || bossVisualTick < bossDeathVisualUntilTick)) {
         const bossY = interpolateStep(bossPreviousY, liquidatorBoss.y, renderAlpha);
         const bossScreen = worldToScreen({ x: interpolateStep(bossPreviousX, liquidatorBoss.x, renderAlpha), y: bossY, z: liquidatorBoss.groundZ }, camera, view);

@@ -362,8 +362,11 @@ export function createWorldV2MovementRun({ faces, markers }) {
     },
     // Presentation: a small pulsing ground ring per prompt, drawn into the
     // caller's per-frame graphics.
-    drawPrompts(graphics, { hero, radius, project, zoom, tick }) {
-      for (const ring of run.prompts(hero, radius)) {
+    drawPrompts(graphics, { hero, radius, project, zoom, tick, dataset = null }) {
+      const rings = run.prompts(hero, radius);
+      // Read-only telemetry for browser evidence.
+      if (dataset) Object.assign(dataset, { tenAreaCover: cover.pose, tenAreaTraversal: traversal.pose, tenAreaPrompts: rings.map((ring) => ring.kind).join(','), tenAreaHero: `${Math.round(hero.x)},${Math.round(hero.y)}` });
+      for (const ring of rings) {
         const at = project(ring);
         const pulse = 0.55 + 0.45 * Math.sin(((tick % 60) / 60) * Math.PI * 2);
         const r = 15 * zoom;
@@ -385,13 +388,15 @@ export function createWorldV2MovementRun({ faces, markers }) {
         const gap = outward - radius;
         if (outward < 0 || gap > 72) continue;
         const along = rx * face.tangent.x + ry * face.tangent.y;
-        if (along < radius || along > face.length - radius) continue;
+        // The same span stepCover accepts (entry clamps the hero inside the face).
+        if (along < 0 || along > face.length) continue;
         if (!best || gap < best.gap) best = { gap, face, along };
       }
       if (best) {
         const { face, along } = best;
+        const at = Math.min(Math.max(along, Math.ceil(radius)), face.length - Math.ceil(radius));
         rings.push({ kind: face.kind === 'tall' ? 'cover-tall' : 'cover-short',
-          x: face.a.x + face.tangent.x * along + face.normal.x * (radius + 1), y: face.a.y + face.tangent.y * along + face.normal.y * (radius + 1), z: hero.groundZ });
+          x: face.a.x + face.tangent.x * at + face.normal.x * (radius + 1), y: face.a.y + face.tangent.y * at + face.normal.y * (radius + 1), z: hero.groundZ });
       }
       for (const marker of markers) {
         const z = marker.zone;
