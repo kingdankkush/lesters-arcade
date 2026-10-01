@@ -42,7 +42,7 @@ const contains = (b, x, y) => x >= b.minX && x <= b.maxX && y >= b.minY && y <= 
 
 // `summary` is a validated plan summary with `terrain`; `world` the authored
 // greybox (pieces/roads). `size` texels across the plan bounds' width.
-export function buildTerrainField({ summary, world, size = 512 } = {}) {
+function* terrainFieldSteps({ summary, world, size = 512 } = {}, rowsPerStep = Infinity) {
   if (!summary?.terrain || !summary.bounds) throw new TypeError('terrain summary required');
   if (!world?.pieces || !world.roads) throw new TypeError('authored world required');
   const { bounds, terrain } = summary, seed = seedFromString(terrain.seed);
@@ -59,6 +59,9 @@ export function buildTerrainField({ summary, world, size = 512 } = {}) {
   let o = 0;
   for (let j = 0; j < height; j++) {
     const y = bounds.minY + (j + 0.5) * unitsPerTexel;
+    // Row bands: only the features whose box spans this row (same order, same result).
+    const inRow = entry => y >= entry.box.minY && y <= entry.box.maxY;
+    const rowZones = zones.filter(inRow), rowTrails = trails.filter(inRow), rowRoads = roads.filter(inRow), rowBlockers = blockers.filter(inRow), rowTrees = trees.filter(inRow);
     for (let i = 0; i < width; i++, o += 4) {
       const x = bounds.minX + (i + 0.5) * unitsPerTexel;
       const wobble = fbm(x, y, 140, 2, seed + 7) - 0.5;
@@ -66,14 +69,14 @@ export function buildTerrainField({ summary, world, size = 512 } = {}) {
       // Macro patches of the secondary material, organic at the patch scale.
       w[1] = smooth(blendEdge - 0.1, blendEdge + 0.1, fbm(x, y, terrain.patch, 3, seed));
       let value = (fbm(x, y, 1500, 2, seed + 3) - 0.5) * 2 * terrain.value, ao = 0, dust = 0;
-      for (const zone of zones) {
+      for (const zone of rowZones) {
         if (!contains(zone.box, x, y)) continue;
         // Built surfaces keep a near-straight kerb; natural ground wanders.
         const sd = signedDistance(x, y, zone.vertices), wz = smooth(zone.feather, -zone.feather * 0.4, sd + wobble * zone.feather * (HARD_MATERIALS.has(zone.material) ? 0.25 : 1.6)) * zone.alpha;
         if (wz <= 0) continue;
         if (zone.slot === 0) { for (let k = 1; k < 5; k++) w[k] *= 1 - wz; } else { w[zone.slot] += (1 - w[zone.slot]) * wz; for (let k = zone.slot + 1; k < 5; k++) w[k] *= 1 - wz; }
       }
-      for (const trail of trails) {
+      for (const trail of rowTrails) {
         if (!contains(trail.box, x, y)) continue;
         // Authored routes are axis-aligned; a low-frequency meander and a
         // patchy wear factor keep the worn path from reading as a ruled stripe.
@@ -87,14 +90,14 @@ export function buildTerrainField({ summary, world, size = 512 } = {}) {
         if (trail.slot === 0) { for (let k = 1; k < 5; k++) w[k] *= 1 - wt; } else { w[trail.slot] += (1 - w[trail.slot]) * wt; for (let k = trail.slot + 1; k < 5; k++) w[k] *= 1 - wt; }
         value -= wt * 0.06;
       }
-      for (const road of roads) {
+      for (const road of rowRoads) {
         if (!contains(road.box, x, y)) continue;
         const d = distanceToPolyline(x, y, road.points);
         const verge = smooth(road.half + 150, road.half + 10, d + wobble * 70) * 0.8;
         w[1] += (1 - w[1]) * verge; w[2] *= 1 - verge; w[3] *= 1 - verge * 0.5; w[4] *= 1 - verge * 0.5;
         dust = Math.max(dust, smooth(road.half + 240, road.half, d) * 0.1);
       }
-      for (const blocker of blockers) {
+      for (const blocker of rowBlockers) {
         if (!contains(blocker.box, x, y)) continue;
         if (pointInPolygon(x, y, blocker.vertices)) continue;
         const d = signedDistance(x, y, blocker.vertices);
@@ -103,7 +106,7 @@ export function buildTerrainField({ summary, world, size = 512 } = {}) {
         if (pointInPolygon(sx, sy, blocker.vertices)) cast = 1; else cast = Math.exp(-signedDistance(sx, sy, blocker.vertices) / (blocker.h * 0.35));
         ao += 0.5 * Math.exp(-d / blocker.radius) + 0.28 * cast;
       }
-      for (const tree of trees) {
+      for (const tree of rowTrees) {
         if (!contains(tree.box, x, y)) continue;
         ao += 0.3 * smooth(tree.r, tree.r * 0.25, Math.hypot(x - tree.cx, y - tree.cy));
       }
@@ -115,8 +118,24 @@ export function buildTerrainField({ summary, world, size = 512 } = {}) {
       data[o + 3] = Math.round(light * 255);
       extra[o / 2] = Math.round(clamp01(w[3]) * 255); extra[o / 2 + 1] = Math.round(clamp01(w[4]) * 255);
     }
+    if ((j + 1) % rowsPerStep === 0 && j + 1 < height) yield j + 1;
   }
   return Object.freeze({ id: TERRAIN_FIELD_ID, width, height, unitsPerTexel, minX: bounds.minX, minY: bounds.minY, maxX: bounds.maxX, maxY: bounds.minY + height * unitsPerTexel, data, extra, neutralLight: Math.round(LIGHT_NEUTRAL * 255), counts: Object.freeze({ zones: zones.length, trails: trails.length, roads: roads.length, blockers: blockers.length, trees: trees.length }) });
+}
+
+export function buildTerrainField(options = {}) {
+  const steps = terrainFieldSteps(options);
+  let step = steps.next();
+  while (!step.done) step = steps.next();
+  return step.value;
+}
+// Same bytes as buildTerrainField, built in row slices that yield to the
+// event loop between slices so a field never lands as one long frame.
+export async function buildTerrainFieldAsync(options = {}, { rowsPerStep = 24, pause = () => new Promise(resolve => setTimeout(resolve, 0)), signal = null } = {}) {
+  const steps = terrainFieldSteps(options, rowsPerStep);
+  let step = steps.next();
+  while (!step.done) { await pause(); if (signal?.aborted) return null; step = steps.next(); }
+  return step.value;
 }
 
 export { rectVertices };

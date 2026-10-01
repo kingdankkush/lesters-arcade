@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import { Container, Texture, TextureSource } from 'pixi.js';
 import { createGreyboxWorld } from '../apps/hmh-reboot/src/dev/greybox-world-v1.mjs';
 import { AREA_ART_MATERIALS, AREA_ART_TILE_MEANS, DISTRICT_TERRAIN, AREA_ART_GRAIN_SIZE, validateAreaArtPlan, createAreaArtPlanShell, assertDecorativeTint } from '../apps/hmh-reboot/src/world-v2-area-art-schema.mjs';
-import { buildTerrainField, latticeHash, fbm, TERRAIN_FIELD_ID } from '../apps/hmh-reboot/src/world-v2-terrain-field.mjs';
+import { buildTerrainField, buildTerrainFieldAsync, latticeHash, fbm, TERRAIN_FIELD_ID } from '../apps/hmh-reboot/src/world-v2-terrain-field.mjs';
 import { createDistrictTerrainArtPlan, createWorldMassesArtPlan } from '../apps/hmh-reboot/src/world-v2-area-plans/district-terrain.mjs';
 import { createMwebMeadowsArtPlan } from '../apps/hmh-reboot/src/world-v2-area-plans/mweb-meadows.mjs';
 import { createRugpullWoodsArtPlan } from '../apps/hmh-reboot/src/world-v2-area-plans/rugpull-woods.mjs';
@@ -416,4 +416,15 @@ test('district splat quads reach into the gaps between areas and feather out, so
     assert.equal(fields[0].minX, pos[0], 'the control field covers the whole quad');
     art.dispose();
   }
+});
+
+test('the sliced terrain field build yields between row slices and produces the same bytes as the one-shot build', async () => {
+  const summary = validateAreaArtPlan(createDistrictTerrainArtPlan(world, 'hollow-pines'), kit);
+  const sync = buildTerrainField({ summary, world, size: 64 });
+  let pauses = 0;
+  const sliced = await buildTerrainFieldAsync({ summary, world, size: 64 }, { rowsPerStep: 8, pause: async () => { pauses++; } });
+  assert.deepEqual(sliced.data, sync.data); assert.deepEqual(sliced.extra, sync.extra);
+  assert.equal(pauses, Math.ceil(sync.height / 8) - 1, 'one pause between each slice of 8 rows');
+  const aborted = new AbortController(); aborted.abort();
+  assert.equal(await buildTerrainFieldAsync({ summary, world, size: 64 }, { rowsPerStep: 8, pause: async () => {}, signal: aborted.signal }), null, 'an aborted bind stops building');
 });

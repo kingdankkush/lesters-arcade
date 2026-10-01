@@ -9,7 +9,7 @@
 import { Container, Graphics, Sprite, Texture, Rectangle, Mesh, Shader, GlProgram, Geometry, UniformGroup } from 'pixi.js';
 import { createGreyboxPropResidency } from './dev/greybox-prop-residency.mjs';
 import { AREA_ART_KIT_ROOT, AREA_ART_KIT_MANIFEST, AREA_ART_TILE_ROOT, AREA_ART_DETAIL_ROOT, AREA_ART_DETAIL_PAGE, AREA_ART_MATERIALS, AREA_ART_TILE_MEANS, ROAD_RECIPES, FOLIAGE_TINT_RULES, validateAreaArtPlan, resolveKitItem, ribbonPolygon, offsetPolygon, polygonBounds, rectVertices, pointInPolygon, stableUnit } from './world-v2-area-art-schema.mjs';
-import { buildTerrainField, TERRAIN_LIGHT_RANGE, valueNoise } from './world-v2-terrain-field.mjs';
+import { buildTerrainFieldAsync, TERRAIN_LIGHT_RANGE, valueNoise } from './world-v2-terrain-field.mjs';
 import { WATER_PALETTES, RAISED_KITS, RAISED_KIT_BY_AREA, WATER_FRAGMENT, RAISED_VERTEX, RAISED_FRAGMENT, buildShoreField, buildRaisedSurfaces, waterOutline, isRaisedPiece, rockFaceVariant, createSolidOcclusionIndex } from './world-v2-area-surfaces.mjs';
 export { validateAreaArtPlan, createPlacementGuard, AREA_ART_SCHEMA, AREA_ART_MATERIALS } from './world-v2-area-art-schema.mjs';
 
@@ -404,8 +404,8 @@ export function createAreaArt({ world, areaId, plan, kit = null, loadTexture, te
       }
       for (const overlay of summary.overlays) jobs.push(acquire(AREA_ART_TILE_ROOT + tileFile(overlay)).then(texture => { if (texture) { texture.source.style.addressMode = 'repeat'; texture.source.style.update(); overlays.set(overlay, texture); } }));
       if (summary.terrain) {
-        terrainField = buildTerrainField({ summary: { ...summary, bounds: terrainBounds() }, world, size: terrainFieldSize ?? (ratio === 0.5 ? 256 : 384) });
-        jobs.push(Promise.resolve(createControlTexture(terrainField)).then(result => { const pair = result && result.control ? result : result ? { control: result, light: result } : null; if (disposed) { pair?.control.destroy(true); if (pair && pair.light !== pair.control) pair.light.destroy(true); return; } controlTexture = pair; if (pair) terrainField = { ...terrainField, fieldBytes: terrainField.data.length + (terrainField.extra?.length ?? 0), data: null, extra: null }; }));
+        // Built in row slices between frames (no single long task at bind).
+        jobs.push(buildTerrainFieldAsync({ summary: { ...summary, bounds: terrainBounds() }, world, size: terrainFieldSize ?? (ratio === 0.5 ? 256 : 384) }, { signal }).then(field => { if (!field || disposed) return null; terrainField = field; return createControlTexture(field); }).then(result => { const pair = result && result.control ? result : result ? { control: result, light: result } : null; if (disposed) { pair?.control.destroy(true); if (pair && pair.light !== pair.control) pair.light.destroy(true); return; } controlTexture = pair; if (pair) terrainField = { ...terrainField, fieldBytes: terrainField.data.length + (terrainField.extra?.length ?? 0), data: null, extra: null }; }));
       }
       if (summary.detailPage) jobs.push(acquire(AREA_ART_DETAIL_ROOT + AREA_ART_DETAIL_PAGE).then(texture => { detailTexture = texture; }));
       const results = await Promise.allSettled(jobs);
