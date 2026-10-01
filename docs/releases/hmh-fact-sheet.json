@@ -1,7 +1,7 @@
 {
   "schema": "hmh-release-facts/v1",
   "scope": "Offline source snapshot; not a release certificate or public-byte verification",
-  "sourceSnapshotSha256": "dc53e576e8c3459c1ce5d02dacdce7d0983d50e61d5914d22f2ce6ade88b9410",
+  "sourceSnapshotSha256": "a5d3aa25934d3ea6630f56a50a0d94fdf79accd6bfa8b54f4b087cbf9b2b443f",
   "sourceInputs": [
     {
       "path": "apps/portal/games/chikun/game.manifest.json",
@@ -15,18 +15,18 @@
     },
     {
       "path": "apps/portal/index.html",
-      "sha256": "383838a87cbbf4b94c02de9d3818943fbff3acd298b921845179a6dc9ac1c146",
-      "bytes": 43554
+      "sha256": "5cf74ce079d5b7650ba286b65ac2285a694a6d0dac8f26887fbf396e88e3f475",
+      "bytes": 43695
     },
     {
       "path": "apps/portal/main.js",
-      "sha256": "55076772fb1157511f6d3ddce3b3e7a3a8085247351fb806b42394d2ccaf7e55",
-      "bytes": 455645
+      "sha256": "b91f36b17d886b68d9ded23eb7e1a5caf470d02cee90b423f0528dbb4ae0a102",
+      "bytes": 457041
     },
     {
       "path": "apps/portal/src/arcade-core.mjs",
-      "sha256": "9780be6ac53a2798fef661071d0d56b03be307337ee7202df21d05fa7b5cb658",
-      "bytes": 367182
+      "sha256": "c8ffd8e958f71a52fd4427c7e925b0e72e4506fc7b84291dd8153bf0a9869fa5",
+      "bytes": 365415
     },
     {
       "path": "apps/portal/src/hmh-challenge-ui.mjs",
@@ -90,8 +90,8 @@
     },
     {
       "path": "README.md",
-      "sha256": "08b1feb8844a2a674f3462eb6456ae3ec5e2e54f2d18fcc5bff1728fb766352e",
-      "bytes": 66838
+      "sha256": "bc3a1f600afe74cd090fdde4b79dfe613cbc3a1683beffb28332e68a8958267b",
+      "bytes": 68517
     },
     {
       "path": "scripts/hmh-release-facts.mjs",
@@ -100,13 +100,13 @@
     },
     {
       "path": "scripts/syntax-check.mjs",
-      "sha256": "f221032ceed5151ff1f5bcc7b4aeb8aac36b4a426742d980002ce255ca528e48",
-      "bytes": 71416
+      "sha256": "75ce5f21fea51afd02abbb4f14891c4570e8575fc2f8d7388078ce5c0114644d",
+      "bytes": 74078
     },
     {
       "path": "tests/arcade-core.test.mjs",
-      "sha256": "3be5608edafbaeb1de3f5327bb9ecd1411c0a4f7075f1064690c612c78e5cc59",
-      "bytes": 194223
+      "sha256": "524b9fbafb9de4d5ef785508ca47e7061842e1b2c17188de7cee8d77f9878bb7",
+      "bytes": 193913
     },
     {
       "path": "tests/hmh-challenge-session.test.mjs",
@@ -140,7 +140,7 @@
     }
   ],
   "productionPromotionAuthorized": false,
-  "recordedProductionMarker": "lesters-arcade-v64-share-warm",
+  "recordedProductionMarker": "lesters-arcade-v66-litecoin-frontier",
   "cabinets": [
     {
       "manifestId": "hard-money-heroes",

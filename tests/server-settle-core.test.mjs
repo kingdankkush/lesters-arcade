@@ -797,7 +797,7 @@ test('a paused or unready service answers 503 before the body is read', async ()
 test('the seed endpoint stops before payment whenever E3 could not settle the run', async () => scenario(async (ctx) => {
   const uuid = '33333333-3333-4333-8333-333333333333';
   const chikun = { gameId: 'chikun', sessionId: `game-session-${uuid}`, seasonId: 'chikun-season-preview-1', buildHash: 'site-1.7.0:game-1.7.0:cabinet-0.9.0' };
-  const hmh = { gameId: 'lester-blaster', sessionId: `game-session-${uuid}`, seasonId: 'hmh-season-1-2026', buildHash: 'site-1.9.0:game-1.9.0' };
+  const hmh = { gameId: 'lester-blaster', sessionId: `game-session-${uuid}`, seasonId: 'hmh-season-1-2026', buildHash: 'site-2.1.0:game-2.1.0' };
   const call = (handler, body) => invoke(handler, { method: 'POST', url: '/api/ranked-seed', headers: { authorization: bearer(local.chain.wallets.player1.address), 'x-forwarded-for': IP }, body });
   for (const [wrap, detail] of [
     [(deps) => ({ ...deps, verify: null }), 'verify-unavailable'],
@@ -917,10 +917,10 @@ test('the seed endpoint issues tickets only to signed-in wallets and stops when 
     // eslint-disable-next-line no-await-in-loop
     assert.deepEqual((await call(bad)).body, { ok: false, error: 'invalid-body' }, JSON.stringify(bad));
   }
-  const hmh = await call({ gameId: 'lester-blaster', sessionId: request.sessionId, seasonId: 'hmh-season-1-2026', buildHash: 'site-1.9.0:game-1.9.0' });
+  const hmh = await call({ gameId: 'lester-blaster', sessionId: request.sessionId, seasonId: 'hmh-season-1-2026', buildHash: 'site-2.1.0:game-2.1.0' });
   assert.equal(hmh.status, 200);
   // The HMH cabinet segment is optional (version-column, 2026-09-25).
-  const hmhCabinet = await call({ gameId: 'lester-blaster', sessionId: request.sessionId, seasonId: 'hmh-season-1-2026', buildHash: 'site-1.9.0:game-1.9.0:cabinet-0.6.0' });
+  const hmhCabinet = await call({ gameId: 'lester-blaster', sessionId: request.sessionId, seasonId: 'hmh-season-1-2026', buildHash: 'site-2.1.0:game-2.1.0:cabinet-0.6.0' });
   assert.equal(hmhCabinet.status, 200);
   assert.deepEqual((await call({ ...request, pad: 'x'.repeat(2100) })).body, { ok: false, error: 'body-too-large' });
   const unavailable = await invoke(seedHandler(ctx, { issue: null }), { method: 'POST', url: '/api/ranked-seed', headers: { authorization: bearer(player.address) }, body: request });

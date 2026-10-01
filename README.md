@@ -1,19 +1,18 @@
-# Lester's Arcade — 2.0.0: the visual overhaul, first drop
+# Lester's Arcade — 2.1.0: The Litecoin Frontier is Level 1
 
-The first live drop of the 2.0 overhaul. It ships everything that was complete and verified on the overhaul branch; the remaining 2.0 work (final area art for all ten areas, the three new bosses, the six new enemies in play, weapon models on the hero by default, cover and traversal in the simulation, Chikun course two as an official course) continues in the next update.
+Hard Money Heroes now plays its new ten-area world as Level 1 in both Free Mode and Ranked. The original six-district map stays available as "Play the original map (Free only)".
 
-What players see:
+What changed for players:
 
-- **Hard Money Heroes:** a three-level **Gore** setting (Off / Reduced / Full, default Full) in the pause menu; share cards stay gore-free. The four heroes carry a new 80-clip animation library (movement, evasion, cover, traversal, weapon, melee, damage, death, ceremony and four idle fidgets each) behind the optional 3D character mode. A **New Frontier (preview)** button in the Free Mode start opens the new ten-area 20,000 × 14,000 world in the real game: unranked, no leaderboard, no result and no share card. It is an unfinished preview so the owner and players can playtest layout and routes; its art is still the greybox pass except where area plans have landed.
-- **Chikun's Escape:** the course-two preview (shield, magnet, held-feather glide, fork lanes and seeded chases) is playable in Free Mode from `/play/chikun?course=2`. Official Ranked verification stays on course one; the course-two dispatch is code-complete but gated closed pending certification.
-- **STACKED:** the worst-case legal replay (432,000 ticks, 1,296,028 bytes) is now a committed fixture and verifies under the 250 ms budget locally.
-- **Achievements and rewards:** the parent-owned **Early Supporter** badge (awarded for any server-verified Ranked run before the cutoff), optional device-tilt on the focused badge (off by default), five new trophy catalog entries (two live only when their stats exist), and the twelve replacement rewards from the previous batch.
+- **The Litecoin Frontier is the default level.** Ten connected areas on a 20,000 × 14,000 map: MWEB Meadows, Litecoin City, Halving Farms, Silver Coast, Scrypt Bayou, Hashwood River, Hollow Pines, Ledger Ridge, Fork Fortress and Rugpull Woods. Four bosses (the Liquidator plus the Rug Pull Baron, the 51% Foreman and the Lockkeeper), six new enemy types, cover and climbing.
+- **Solid buildings.** Every building, vehicle, wall and large prop now blocks movement where it is drawn; bank guards and bridge rails stop players and enemies getting pinned at water edges.
+- **Fixes.** The Arc Rifle no longer freezes a boss fight; the level no longer waits forever for the portal on a slow start; the pause map shows the new world; boss fights stay within reach.
+- **Ranked on the new world.** Ten-area Ranked runs are checked by a new verifier version (run summary schema 8, map version 2). Runs from earlier versions keep verifying exactly as before. A stale tab from 2.0 is asked to reload before it can start a run.
+- **Trophy review.** Full Roster Run and other HMH trophy-class achievements are held for review where the server cannot fully prove a run.
 
-Under the hood: the 96-model HD prop kit rendered from the owner's Tripo batches, the ten-area runtime world contract with a precomputed navigation grid, cover-v1 and traversal-v1 rule modules (not yet wired into the tick), six rigged 2.0 enemy models registered in a lazy table (not yet spawnable), the gated Chikun course-two verifier dispatch, and the exporter tooling reconciled so every hero and enemy GLB is reproducible.
+Not changed: contracts, fees, settlement and jackpot configuration. Testnet verification is not real-money settlement.
 
-Not in this drop: nothing here changes contracts, fees, settlement, jackpot configuration or Ranked verification of existing runs. Testnet verification is not real-money settlement.
-
-Site/game version `2.0.0`; cache marker `lesters-arcade-v65-frontier-preview`. Continue on `codex/visual-overhaul-200-20260929`.
+Site/game version `2.1.0`; cache marker `lesters-arcade-v66-litecoin-frontier`. Continue on `fable/master-list-20260916`.
 
 ## How to play
 
@@ -131,6 +130,23 @@ The homepage and game browser redesign, HMH mobile optimization and world presen
 
 Runtime source `a0e6b2a5866f13c5cf3ee2a78070e9281d679b71`; deployment `dpl_Gnf2tetZUqK5fsfH7Pgcy4gERe7B`; site/game version `1.5.1`. The hosted gate passes 3,760 of 3,811 tests with exactly 51 unchanged retired exceptions. All 98 public file and route hashes match. Public desktop and 414×896 touch-layout checks cover all three collision types, exact replay results, retries and action audio with zero looping sources or runtime errors. Returning-cache migration from v49 to v50 passes. [Release receipt](docs/qa/chikun-fixes-release-20260914.json). Retained rollback: `dpl_14Wqtwjo1XZbCb6ne13cgovTd7hF`. Continue on `codex/mobile-worlds-aquatic-20260914`. Physical-device acceptance and the broader roadmap remain open.
 
+## 2.0.0: the visual overhaul, first drop — live predecessor
+
+The first live drop of the 2.0 overhaul. It ships everything that was complete and verified on the overhaul branch; the remaining 2.0 work (final area art for all ten areas, the three new bosses, the six new enemies in play, weapon models on the hero by default, cover and traversal in the simulation, Chikun course two as an official course) continues in the next update.
+
+What players see:
+
+- **Hard Money Heroes:** a three-level **Gore** setting (Off / Reduced / Full, default Full) in the pause menu; share cards stay gore-free. The four heroes carry a new 80-clip animation library (movement, evasion, cover, traversal, weapon, melee, damage, death, ceremony and four idle fidgets each) behind the optional 3D character mode. A **New Frontier (preview)** button in the Free Mode start opens the new ten-area 20,000 × 14,000 world in the real game: unranked, no leaderboard, no result and no share card. It is an unfinished preview so the owner and players can playtest layout and routes; its art is still the greybox pass except where area plans have landed.
+- **Chikun's Escape:** the course-two preview (shield, magnet, held-feather glide, fork lanes and seeded chases) is playable in Free Mode from `/play/chikun?course=2`. Official Ranked verification stays on course one; the course-two dispatch is code-complete but gated closed pending certification.
+- **STACKED:** the worst-case legal replay (432,000 ticks, 1,296,028 bytes) is now a committed fixture and verifies under the 250 ms budget locally.
+- **Achievements and rewards:** the parent-owned **Early Supporter** badge (awarded for any server-verified Ranked run before the cutoff), optional device-tilt on the focused badge (off by default), five new trophy catalog entries (two live only when their stats exist), and the twelve replacement rewards from the previous batch.
+
+Under the hood: the 96-model HD prop kit rendered from the owner's Tripo batches, the ten-area runtime world contract with a precomputed navigation grid, cover-v1 and traversal-v1 rule modules (not yet wired into the tick), six rigged 2.0 enemy models registered in a lazy table (not yet spawnable), the gated Chikun course-two verifier dispatch, and the exporter tooling reconciled so every hero and enemy GLB is reproducible.
+
+Not in this drop: nothing here changes contracts, fees, settlement, jackpot configuration or Ranked verification of existing runs. Testnet verification is not real-money settlement.
+
+Site/game version `2.0.0`; cache marker `lesters-arcade-v65-frontier-preview`. Continue on `codex/visual-overhaul-200-20260929`.
+
 ## 1.9.4: faster share previews on X — live predecessor
 
 Owner-reported follow-up to 1.9.3. Every run's share link is new to X, and X's post composer shows the card image only after X has fetched the page and its image; a fresh card took about 2 seconds to draw the first time, so the composer often opened without a picture. The results screen now fetches its own share page and card in the background once it has been on screen for about a second, so both are already cached when X asks. X still decides when it fetches, so a composer can occasionally open before the picture; the published post fetches the card again. No game runtime or Ranked verification change.
@@ -143,7 +159,7 @@ The redesigned [homepage](https://lestersarcade.io) and [cabinet browser](https:
 
 Runtime source `6fe83eb693bda5c36cb77f995b88d244515365f8`; deployment `dpl_6bgHFQsaZ6smUdqFNRzhc7FrsenJ`. The local and cloud release gates pass 3,742 tests with exactly 51 unchanged retirement exceptions. All 107 private/public file and route hashes match. Twenty discovery checks and seven accessibility scans pass in each environment; all three games and the returning-cache transition pass. [Release receipt](docs/qa/arcade-discovery-release-20260914.json) · [Design and verification](docs/qa/arcade-discovery-design-20260914.md). Retained rollback: `dpl_HVFN3wwuWmveoWa4CVk8b1dAnovU`. Continue on `codex/arcade-home-catalog-20260914`.
 
-**Production cache marker:** `lesters-arcade-v65-frontier-preview`
+**Production cache marker:** `lesters-arcade-v66-litecoin-frontier`
 
 # Lester's Arcade
 
