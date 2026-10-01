@@ -41,6 +41,6 @@ The remaining 2.0 work continues in the next update: final area art for all ten 
 
 ## What has not changed
 
-Free previews are unranked and never publish a score. Ranked still runs on the LitVM LiteForge testnet, and testnet verification is not real-money settlement. Nothing in this drop changes contracts, fees, settlement, jackpot configuration or the Ranked verification of existing runs.
+Free previews are unranked and never publish a score. Ranked still runs on the LitVM LiteForge testnet, and testnet verification is not real-money settlement. Nothing in this drop changes contracts, fees, settlement or the Ranked verification of existing runs.
 
 For the current entry steps, see [How Ranked works](/how-ranked-works). To try the new work without a wallet, [start a Free run](/games).
