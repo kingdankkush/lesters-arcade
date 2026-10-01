@@ -173,6 +173,18 @@ let ghostTrack = null;
 let replayPlayback = null;
 let replayPlaying = false;
 let positiveCoinFeedback = null;
+// Course-two art is projection only and loads lazily, only while course two is active.
+let courseTwoArt = null;
+function loadCourseTwoArt() {
+  if (disposed || courseTwoArt || !courseTwoActive()) return;
+  shell.dataset.courseTwoArt = 'loading';
+  import('./course-v2-art.mjs').then(module => {
+    if (disposed || !courseTwoActive()) return;
+    const density = window.devicePixelRatio || 1;
+    courseTwoArt = module.createCourseTwoArt({ tier: module.courseTwoArtTier({ density, phone: flightViewport.portrait || window.innerWidth < 700 }), eagleTier: obstacleOptions.tier });
+    courseTwoArt.load().then(ok => { if (!disposed) shell.dataset.courseTwoArt = ok ? 'ready' : 'fallback'; });
+  }).catch(() => { if (!disposed) shell.dataset.courseTwoArt = 'fallback'; });
+}
 const obstacleOptions = chikunObstaclePresentationOptions(window.location.search, window.devicePixelRatio || 1);
 shell.dataset.obstacleLoops = 'disabled';
 const obstaclePresentation = startChikunObstaclePresentation({
@@ -538,7 +550,7 @@ function finishRun() {
   terminalAge = 0;
   paused = false;
   const result = runtime.result();
-  if(result.crashed)ragdoll=createChikunRagdoll({...latestSnapshot.chikun,...latestSnapshot.impact,kind:result.finalState.terminalReason,tick:latestSnapshot.tick,grounded:latestSnapshot.chikun.y>610,reduceMotion:reduceMotion(),gore:goreEnabled});
+  if(result.crashed)ragdoll=createChikunRagdoll({...latestSnapshot.chikun,...latestSnapshot.impact,...(latestSnapshot.impact?.kind==='tractor'?{speed:6.5}:latestSnapshot.impact?.kind==='hawk'?{speed:4}:{}),kind:result.finalState.terminalReason,tick:latestSnapshot.tick,grounded:latestSnapshot.chikun.y>610,reduceMotion:reduceMotion(),gore:goreEnabled});
   lastCompletedResult = result;
   let ghostComparison = null;
   if (!courseTwoActive() && ghostTrack && ghostTrack.seed === result.seed) {
@@ -582,7 +594,7 @@ function finishRun() {
       : 'Practice score only. Nothing was written to Ranked progress or leaderboards.';
   resultStats.replaceChildren();
   if(courseTwoActive()){resultEyebrow.textContent='Course two preview';resultCopy.textContent='Local course test only. Shield, magnet, glide and route rules are separate from the released course. Nothing was submitted or saved to daily bests.';}
-  const cause = {ground:'Reached the ground',ceiling:'Reached the flight ceiling',fork:'Hit a gate',tree:'Hit a tree',drone:'Decapitated by a drone',rock:'Hit a boulder',log:'Hit a fallen log',thorn:'Caught in thorns',hurdle:'Hit a hurdle',crate:'Hit a crate',shiba:'Caught by a Shiba',pit:'Fell into a gap',waterfall:'Fell into the waterfall',forest:'Crashed into the forest',town:{city:'Crashed into a city block',suburb:'Crashed into a suburban home'}[latestSnapshot?.impact?.variant]??'Crashed into town',canopy:'Hit a low canopy',hawk:'Hit a hawk',eagle:'Hit an eagle',pelican:'Hit a pelican',plane:'Hit a plane',storm:'Caught in a storm',pipe:'Hit an industrial pipe','run-complete':'Course complete'}[result.finalState?.terminalReason ?? latestSnapshot?.terminalReason];
+  const cause = {ground:'Reached the ground',ceiling:'Reached the flight ceiling',fork:'Hit a gate',tree:'Hit a tree',drone:'Decapitated by a drone',rock:'Hit a boulder',log:'Hit a fallen log',thorn:'Caught in thorns',hurdle:'Hit a hurdle',crate:'Hit a crate',shiba:'Caught by a Shiba',pit:'Fell into a gap',waterfall:'Fell into the waterfall',forest:'Crashed into the forest',town:{city:'Crashed into a city block',suburb:'Crashed into a suburban home'}[latestSnapshot?.impact?.variant]??'Crashed into town',canopy:'Hit a low canopy',hawk:'Caught by the hawk',tractor:'Run down by the tractor',eagle:'Hit an eagle',pelican:'Hit a pelican',plane:'Hit a plane',storm:'Caught in a storm',pipe:'Hit an industrial pipe','run-complete':'Course complete'}[result.finalState?.terminalReason ?? latestSnapshot?.terminalReason];
   const statLabels = [`Ł ${result.coinsCollected} coins`, `${result.forksPassed} obstacles`, `${result.nearMisses} near misses`, `${result.bestCombo} best combo`, `${result.survivalTime.toFixed(1)} seconds`];
   if(cause)statLabels.unshift(cause);
   if(latestSnapshot.distancePixels)statLabels.push(Math.floor(latestSnapshot.distancePixels/10)+' m travelled');
@@ -641,7 +653,7 @@ function drawSky(snapshot) {
 }
 
 function drawFork(fork) {
-  if(drawCourseV2Obstacle(ctx,fork))return;
+  if(drawCourseV2Obstacle(ctx,fork,courseTwoArt))return;
   if(fork.family)drawGroundObstacle(ctx, fork, latestSnapshot?.tick ?? 0, reduceMotion(), obstaclePresentation);
   else drawChikunObstacle(ctx, fork, latestSnapshot?.tick ?? 0, reduceMotion());
 }
@@ -715,7 +727,7 @@ function draw(snapshot = latestSnapshot) {
     drawChikun(snapshot);
   }
   drawVfx(snapshot);
-  drawCourseV2(ctx,snapshot,{reduced:reduceMotion(),left:flightViewport.left});
+  drawCourseV2(ctx,snapshot,{reduced:reduceMotion(),left:flightViewport.left,art:courseTwoArt});
   positiveCoinFeedback?.overlay.render(renderDt, flightViewport, { reduceMotion: reduceMotion() });
   const approaching = phase === 'running' ? upcomingChikunObstacle(snapshot?.forks ?? [], flightViewport, snapshot?.difficulty?.speedMultiplier??1) : null;
   if (approaching) {
@@ -854,6 +866,7 @@ function handleParentMessage(event) {
     initPayload = message.payload;
     mode = initPayload.mode;
     setModePresentation();
+    loadCourseTwoArt();
     syncAudioControl();
     syncFullscreenControl();
     prepareRun();
@@ -885,6 +898,7 @@ function handleParentMessage(event) {
     window.removeEventListener('resize', resizeFlightViewport);
     positiveCoinFeedback?.overlay.dispose();
     obstaclePresentation.dispose();
+    courseTwoArt?.dispose();
     flightAudio.dispose();
     audioContext?.close?.();
     audioContext = null;

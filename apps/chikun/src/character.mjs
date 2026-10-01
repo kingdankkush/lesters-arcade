@@ -4,7 +4,7 @@ export const GROUND_CLIPS = Object.freeze(['walk','run','jump','hurdle_jump','hi
 export const CHIKUN_HIT_CLIPS = Object.freeze(['hit_tree','hit_storm','hit_drone','hit_bird','hit_wall']);
 export const CHIKUN_HIT_FAMILIES = Object.freeze({
   tree:'hit_tree',willow:'hit_tree',cherry:'hit_tree',maple:'hit_tree',oak:'hit_tree',forest:'hit_tree',canopy:'hit_tree',
-  storm:'hit_storm',drone:'hit_drone',plane:'hit_drone',hawk:'hit_bird',eagle:'hit_bird',pelican:'hit_bird',
+  storm:'hit_storm',drone:'hit_drone',plane:'hit_drone',hawk:'hit_bird',eagle:'hit_bird',pelican:'hit_bird',tractor:'hit_wall',
   pipe:'hit_wall',town:'hit_wall',crate:'hit_wall',hurdle:'hit_wall',
 });
 const names = [...GROUND_CLIPS,'ready','takeoff','cruise','accelerate','climb','crest','descend','dive','brake','recover','squeeze','dodge_high','dodge_low','collect','barrel_roll','impact','tumble','fall','reverse_roll','corkscrew','victory_twirl','steep_climb','steep_dive',...CHIKUN_HIT_CLIPS];
