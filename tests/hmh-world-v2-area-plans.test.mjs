@@ -9,6 +9,7 @@ import { createWorldRoadsArtPlan, ROAD_CLEARANCE_FRACTION } from '../apps/hmh-re
 // Lane B area plans (briefs 06-09).
 import { createHashwoodRiverArtPlan, HASHWOOD_RIVER_PAGES, RIVER_STONE_TINT } from '../apps/hmh-reboot/src/world-v2-area-plans/hashwood-river.mjs';
 import { createHalvingFarmsArtPlan, HALVING_FARMS_PAGES } from '../apps/hmh-reboot/src/world-v2-area-plans/halving-farms.mjs';
+import { createScryptBayouArtPlan, SCRYPT_BAYOU_PAGES, BAYOU_STILT_TOWER_HEIGHT } from '../apps/hmh-reboot/src/world-v2-area-plans/scrypt-bayou.mjs';
 import { createSilverCoastArtPlan, SILVER_COAST_PAGES } from '../apps/hmh-reboot/src/world-v2-area-plans/silver-coast.mjs';
 import { createLitecoinCityArtPlan, LITECOIN_CITY_PAGES } from '../apps/hmh-reboot/src/world-v2-area-plans/litecoin-city.mjs';
 import { CITY_BRAND_SLOTS, CITY_BRANDS, CITY_SIGN_PREFIX, CITY_SIGN_STYLE, signForProp, signForPiece } from '../apps/hmh-reboot/src/world-v2-area-plans/city-branding.mjs';
@@ -46,7 +47,7 @@ function assertAreaPlacements(areaId, summary, { routeClearance = 64, siteCleara
 }
 
 test('every authored plan validates against the HD kit, is deterministic and leaves the world untouched', () => {
-  for (const [make, expected] of [[createRugpullWoodsArtPlan, 'rugpull-woods'], [createMwebMeadowsArtPlan, 'mweb-meadows'], [createWorldRoadsArtPlan, 'world-roads'], [createHashwoodRiverArtPlan, 'hashwood-river'], [createHalvingFarmsArtPlan, 'halving-farms'], [createSilverCoastArtPlan, 'silver-coast'], [createLitecoinCityArtPlan, 'litecoin-city']]) {
+  for (const [make, expected] of [[createRugpullWoodsArtPlan, 'rugpull-woods'], [createMwebMeadowsArtPlan, 'mweb-meadows'], [createWorldRoadsArtPlan, 'world-roads'], [createHashwoodRiverArtPlan, 'hashwood-river'], [createHalvingFarmsArtPlan, 'halving-farms'], [createScryptBayouArtPlan, 'scrypt-bayou'], [createSilverCoastArtPlan, 'silver-coast'], [createLitecoinCityArtPlan, 'litecoin-city']]) {
     const plan = make(world), again = make(createGreyboxWorld());
     assert.equal(plan.areaId, expected);
     assert.ok(Object.isFrozen(plan) && Object.isFrozen(plan.props));
@@ -61,6 +62,7 @@ test('every authored plan validates against the HD kit, is deterministic and lea
   assert.equal(createMwebMeadowsArtPlan({ ...world, areas: [] }), null);
   assert.equal(createHashwoodRiverArtPlan({ ...world, areas: [] }), null);
   assert.equal(createHalvingFarmsArtPlan({ ...world, areas: [] }), null);
+  assert.equal(createScryptBayouArtPlan({ ...world, areas: [] }), null);
   assert.equal(createSilverCoastArtPlan({ ...world, areas: [] }), null);
   assert.equal(createLitecoinCityArtPlan({ ...world, areas: [] }), null);
 });
@@ -233,6 +235,30 @@ test('Silver Coast follows brief 04: chalk banks with sandstone and driftwood, t
   const villas = summary.props.filter(p => p.source === 'b2-64');
   assert.ok(villas.length >= 4 && villas.every(p => p.groundZ > 0 && !inSolid(p.x, p.y).visible.areaId), 'villas stand on closed land beyond the edges');
   assert.ok(!summary.trails.some(t => t.material === 'shallows'), 'no water is painted on walkable ground');
+});
+
+test('Scrypt Bayou follows brief 05: reeds on both channel banks, cypress on the root banks and beyond the edges, plank walks on the crossings, a timber lock apron and the stilted guard tower landmark', () => {
+  const plan = createScryptBayouArtPlan(world), summary = validateAreaArtPlan(plan, kit), bayou = world.areas.find(a => a.id === 'scrypt-bayou');
+  assert.deepEqual(plan.pages, SCRYPT_BAYOU_PAGES);
+  assertAreaPlacements('scrypt-bayou', summary);
+  const byPiece = Object.fromEntries(summary.solids.map(s => [s.pieceId.slice('scrypt-bayou-'.length), s]));
+  assert.equal(byPiece['stilt-store'].card.source, 'b1-15'); assert.equal(byPiece['stilt-store'].height, BAYOU_STILT_TOWER_HEIGHT);
+  assert.equal(byPiece['wheel-tower'].card.source, 'b1-47'); assert.equal(byPiece['control-house'].card.source, 'b2-45');
+  for (const name of ['northwest-root-bank', 'southwest-root-foot']) { assert.equal(byPiece[name].style, 'bank'); assert.equal(byPiece[name].roof, 'moss'); }
+  assert.equal(byPiece['lock-bridge'], undefined, 'bridges keep their greybox deck');
+  const channel = world.pieces.find(p => p.id === 'scrypt-bayou-channel');
+  const reeds = summary.props.filter(p => p.source === 'b1-09');
+  assert.ok(reeds.length >= 120, `${reeds.length} reeds`);
+  const banked = reeds.filter(p => distanceToPolyline(p.x, p.y, [...channel.visible.vertices, channel.visible.vertices[0]]) < 120);
+  assert.ok(banked.filter(p => p.x < bayou.center.x + 450).length >= 20 && banked.filter(p => p.x > bayou.center.x + 450).length >= 20, 'reeds line both banks');
+  const cypress = summary.props.filter(p => ['b2-70', 'b2-71', 'b1-53'].includes(p.source));
+  assert.ok(cypress.length >= 80 && cypress.filter(p => p.groundZ > 0).length >= 60, `${cypress.length} cypress`);
+  const plank = summary.trails.filter(t => t.material === 'boardwalk');
+  assert.ok(plank.length >= 8 && summary.zones.some(z => z.id === 'lock-apron' && z.material === 'boardwalk'), 'plank walks and the lock apron');
+  const court = world.sites.find(s => s.id === 'scrypt-bayou-area'), arena = { x: bayou.center.x - 950, y: bayou.center.y + 650 };
+  assert.equal(summary.props.filter(p => p.groundZ === 0 && Math.hypot(p.x - arena.x, p.y - arena.y) < 400).length, 0, 'the Lockkeeper court centre stays calm');
+  assert.ok(court);
+  assert.ok(summary.props.filter(p => p.groundZ === 0 && p.height < 150).length >= 250, 'marsh understory density');
 });
 
 test('the world roads plan ribbons all fourteen authored roads by kind and keeps road-side props on the shoulders', () => {

@@ -9,6 +9,7 @@ import { createAreaArt, createAreaArtTextureCache } from '../world-v2-area-art.m
 import { createRugpullWoodsArtPlan } from '../world-v2-area-plans/rugpull-woods.mjs';
 import { createMwebMeadowsArtPlan } from '../world-v2-area-plans/mweb-meadows.mjs';
 import { createHalvingFarmsArtPlan } from '../world-v2-area-plans/halving-farms.mjs';
+import { createScryptBayouArtPlan } from '../world-v2-area-plans/scrypt-bayou.mjs';
 import { createSilverCoastArtPlan } from '../world-v2-area-plans/silver-coast.mjs';
 import { createLitecoinCityArtPlan } from '../world-v2-area-plans/litecoin-city.mjs';
 import { createWorldRoadsArtPlan } from '../world-v2-area-plans/world-roads.mjs';
@@ -32,7 +33,7 @@ export function mountGreyboxPlaytest(root,{areaArt=true}={}){
   const authored=createGreyboxWorld(),abort=new AbortController(),input=new InputState(),touch=new TouchControlState({stickRadius:64});
   const relayPlan=createLocalMeadowsRelayPlan(authored);
   const textureCache=areaArt?createAreaArtTextureCache():null;
-  const arts=areaArt?[['rugpull-woods',createRugpullWoodsArtPlan],['mweb-meadows',createMwebMeadowsArtPlan],['hashwood-river',createHashwoodRiverArtPlan],['halving-farms',createHalvingFarmsArtPlan],['silver-coast',createSilverCoastArtPlan],['litecoin-city',createLitecoinCityArtPlan],['world-roads',createWorldRoadsArtPlan]].flatMap(([areaId,make])=>{const plan=make(authored);return plan?[createAreaArt({world:authored,areaId,plan,textureCache,signal:abort.signal,resolution:window.innerWidth<768?'half':'full'})]:[];}):[];
+  const arts=areaArt?[['rugpull-woods',createRugpullWoodsArtPlan],['mweb-meadows',createMwebMeadowsArtPlan],['hashwood-river',createHashwoodRiverArtPlan],['halving-farms',createHalvingFarmsArtPlan],['scrypt-bayou',createScryptBayouArtPlan],['silver-coast',createSilverCoastArtPlan],['litecoin-city',createLitecoinCityArtPlan],['world-roads',createWorldRoadsArtPlan]].flatMap(([areaId,make])=>{const plan=make(authored);return plan?[createAreaArt({world:authored,areaId,plan,textureCache,signal:abort.signal,resolution:window.innerWidth<768?'half':'full'})]:[];}):[];
   let geometry=createWorldV2Geometry(authored),runtime=createWorldV2LocalRuntime({geometry,relayPlan});
   let disposed=false,failure=null,initialized=false,initSettled=false,appDestroyed=false,atlasTexture=null,image=null,hero=null,inputController=null;
   let frameId=null,lastTime=null,generation=0,inspectionJumps=0,renderFrames=0,nativeEvents=0,navWaitMs=null,width=1,height=1,shown=false;
