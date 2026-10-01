@@ -51,13 +51,15 @@ BOSSES = {
     'boss-51-foreman': {
         'name': 'The 51% Foreman', 'identityForm': 'human', 'height': 2.5,
         'source': 'armored soldier 3d model.glb', 'sha256': '10c589cbc64d8ad295c214054298e072e59ad7f00dd59b651e689ddc6f35509c',
-        'figure': 0.36, 'bodyTriangles': 15000, 'accent': '#ff7a1a', 'primary': '#3b3430', 'trim': '#c98b2c',
+        # Front figure of the Whiteout sheet: imported x < -0.12 (measured on a gridded front render).
+        'figure': {'maxX': -0.12, 'minZ': -1.0}, 'bodyTriangles': 15000, 'accent': '#ff7a1a', 'primary': '#3b3430', 'trim': '#c98b2c',
         'prop': {'source': 'military minigun 3d model.glb', 'sha256': 'a9b386542d97b2d7a4cdec2ee8ae9596ff4bae273a68c093cd47fad97fb25188', 'triangles': 1600},
     },
     'boss-lockkeeper': {
         'name': 'The Lockkeeper', 'identityForm': 'zombie', 'height': 2.3,
         'source': 'armored soldier 3d model (1).glb', 'sha256': '2aa5a15c66588dcdfc4e98863a9497e1cf7ef86209a94e6a3c25e9c6b299ef47',
-        'figure': 0.36, 'bodyTriangles': 15000, 'accent': '#7fe08a', 'primary': '#3f4a2c', 'trim': '#8b7a4a',
+        # Front figure of the Riot Enforcer sheet: x < -0.225, above the prop row (boot soles 0.157, shield top 0.153).
+        'figure': {'maxX': -0.225, 'minZ': 0.155}, 'bodyTriangles': 15000, 'accent': '#7fe08a', 'primary': '#3f4a2c', 'trim': '#8b7a4a',
         'coatScale': 1.2,
     },
 }
@@ -102,30 +104,34 @@ def bounds_of(obj):
     return Vector([min(p[i] for p in pts) for i in range(3)]), Vector([max(p[i] for p in pts) for i in range(3)])
 
 
-def keep_front_figure(body, fraction):
-    """Split a turnaround-sheet mesh into loose parts and keep the standing front figure."""
-    select_only([body])
-    bpy.ops.object.mode_set(mode='EDIT'); bpy.ops.mesh.select_all(action='SELECT')
-    bpy.ops.mesh.separate(type='LOOSE'); bpy.ops.object.mode_set(mode='OBJECT')
-    parts = [obj for obj in bpy.context.selected_objects if obj.type == 'MESH']
-    lows = [bounds_of(p) for p in parts]
-    lo = Vector([min(b[0][i] for b in lows) for i in range(3)]); hi = Vector([max(b[1][i] for b in lows) for i in range(3)])
-    width, height = hi.x - lo.x, hi.z - lo.z
-    kept, dropped = [], []
-    for part, (plo, phi) in zip(parts, lows):
-        centre_x = (plo.x + phi.x) / 2
-        standing = plo.z < lo.z + 0.12 * height and (phi.z - plo.z) > 0.25 * height
-        if centre_x < lo.x + width * fraction and standing: kept.append(part)
-        else: dropped.append(part)
-    if not kept: raise RuntimeError('No standing front figure found in the sheet model')
-    # Small loose detail (buckles, straps) that belongs to the figure sits inside its column.
-    klo = Vector([min(bounds_of(p)[0][i] for p in kept) for i in range(3)]); khi = Vector([max(bounds_of(p)[1][i] for p in kept) for i in range(3)])
-    for part in list(dropped):
-        plo, phi = bounds_of(part)
-        if plo.x >= klo.x - 0.01 * width and phi.x <= khi.x + 0.01 * width and plo.z >= klo.z - 0.01 * height and phi.z <= khi.z + 0.01 * height:
-            kept.append(part); dropped.remove(part)
-    for part in dropped: bpy.data.objects.remove(part, do_unlink=True)
-    return join(kept, body.name), {'parts': len(parts), 'kept': len(kept), 'dropped': len(dropped)}
+def keep_front_figure(body, region):
+    """Keep the standing front figure of a turnaround-sheet mesh.
+
+    The sheets are hundreds of loose fragments, so the figure is cut by a
+    measured region (face centroids in imported metres), then loose specks
+    under 1 percent of the kept height are removed.
+    """
+    bm = bmesh.new(); bm.from_mesh(body.data)
+    doomed = [face for face in bm.faces if not (face.calc_center_median().x < region['maxX'] and face.calc_center_median().z > region['minZ'])]
+    before = len(bm.faces)
+    bmesh.ops.delete(bm, geom=doomed, context='FACES')
+    loose = [v for v in bm.verts if not v.link_faces]
+    bmesh.ops.delete(bm, geom=loose, context='VERTS')
+    # Drop stray islands that sit wholly in the strip just above the cut (a
+    # shield rim fragment grounded the first Lockkeeper export in mid-air).
+    bm.verts.ensure_lookup_table(); seen = set(); stray = []
+    for start in bm.verts:
+        if start in seen: continue
+        island = []; stack = [start]; seen.add(start)
+        while stack:
+            vert = stack.pop(); island.append(vert)
+            for edge in vert.link_edges:
+                other = edge.other_vert(vert)
+                if other not in seen: seen.add(other); stack.append(other)
+        if max(v.co.z for v in island) < region['minZ'] + 0.02 and len(island) < 400: stray.extend(island)
+    if stray: bmesh.ops.delete(bm, geom=stray, context='VERTS')
+    bm.to_mesh(body.data); bm.free(); body.data.update()
+    return body, {'strayVertices': len(stray), 'sourceFaces': before, 'keptFaces': len(body.data.polygons), 'region': region}
 
 
 def decimate(obj, target):
@@ -226,50 +232,64 @@ def build_rig(name, joints):
     return rig
 
 
-LIMB_GROUPS = {
-    'arm.L': ('upper_arm.L', 'forearm.L', 'hand.L'), 'arm.R': ('upper_arm.R', 'forearm.R', 'hand.R'),
-    'leg.L': ('thigh.L', 'shin.L', 'foot.L'), 'leg.R': ('thigh.R', 'shin.R', 'foot.R'),
-    'torso': ('pelvis', 'spine', 'chest', 'neck', 'head'),
-}
+def nearest_segment_fill(body, rig):
+    """Give any vertex the proxy transfer left unweighted its nearest deform bone."""
+    V = vertices_array(body)
+    segments = [(b.name, np.array(b.head_local, dtype=np.float32), np.array(b.tail_local, dtype=np.float32)) for b in rig.data.bones if b.use_deform]
+    filled = 0
+    for vertex in body.data.vertices:
+        if any(g.weight > 1e-4 for g in vertex.groups): continue
+        point = V[vertex.index]; best = None
+        for name, a, b in segments:
+            ab = b - a; t = float(np.clip(np.dot(point - a, ab) / max(float(np.dot(ab, ab)), 1e-9), 0, 1))
+            d = float(np.linalg.norm(point - (a + ab * t)))
+            if best is None or d < best[0]: best = (d, name)
+        (body.vertex_groups.get(best[1]) or body.vertex_groups.new(name=best[1])).add([vertex.index], 1.0, 'REPLACE'); filled += 1
+    return filled
 
 
 def bind(body, rig, height, measured):
-    """Gated nearest-segment skinning with a soft blend between the two closest bones.
+    """Bone-heat weights solved on a watertight voxel proxy, transferred to the body.
 
-    Blender's bone-heat solver fails outright on decimated Tripo shells, so the
-    body is weighted directly: a vertex outside the shoulder line belongs to that
-    arm, a low vertex inside it to that leg, everything else to the torso chain;
-    inside its limb it blends the two nearest bone segments across a 5 percent
-    height margin so elbows, knees and the waist bend instead of tearing.
+    Tripo shells are hundreds of open, overlapping fragments, so Blender's bone
+    heat fails on them directly and a gated nearest-bone rule tears the torso
+    whenever an arm moves. A voxel remesh of the same shape is one manifold
+    surface that bone heat solves cleanly; its weights then transfer to the
+    textured body by nearest face interpolation, keeping the body's UVs.
     """
-    V = vertices_array(body); H = height
-    segments = {bone.name: (np.array(bone.head_local, dtype=np.float32), np.array(bone.tail_local, dtype=np.float32)) for bone in rig.data.bones if bone.use_deform}
-    def distance(point, name):
-        a, b = segments[name]; ab = b - a
-        t = float(np.clip(np.dot(point - a, ab) / max(float(np.dot(ab, ab)), 1e-9), 0, 1))
-        return float(np.linalg.norm(point - (a + ab * t)))
-    shoulder = {side: segments[f'upper_arm.{side}'][0] for side in ('L', 'R')}
-    weights = {name: {} for name in segments}
-    blend = 0.05 * H
-    for index, point in enumerate(V):
-        side = 'L' if point[0] >= 0 else 'R'
-        if abs(point[0]) > abs(shoulder[side][0]) and point[2] < shoulder[side][2] + 0.08 * H: candidates = LIMB_GROUPS['arm.' + side]
-        elif point[2] < 0.52 * H and abs(point[0]) > 0.015 * H: candidates = LIMB_GROUPS['leg.' + side]
-        elif point[2] < 0.52 * H: candidates = LIMB_GROUPS['leg.' + side] + ('pelvis',)
-        else: candidates = LIMB_GROUPS['torso']
-        ranked = sorted((distance(point, name), name) for name in candidates)
-        (d1, first), (d2, second) = ranked[0], (ranked[1] if len(ranked) > 1 else ranked[0])
-        share = 0.5 * max(0.0, 1 - (d2 - d1) / blend) if second != first else 0.0
-        weights[first][index] = 1 - share
-        if share > 0: weights[second][index] = share
-    for name, table in weights.items():
-        if not table: continue
-        group = body.vertex_groups.new(name=name)
-        for index, weight in table.items(): group.add([index], weight, 'REPLACE')
+    proxy = body.copy(); proxy.data = body.data.copy(); proxy.name = body.name + ' Weight Proxy'
+    bpy.context.scene.collection.objects.link(proxy)
+    for group in list(proxy.vertex_groups): proxy.vertex_groups.remove(group)
+    select_only([proxy])
+    remesh = proxy.modifiers.new('Weight proxy remesh', 'REMESH'); remesh.mode = 'VOXEL'; remesh.voxel_size = 0.012 * height; remesh.adaptivity = 0
+    bpy.ops.object.modifier_apply(modifier=remesh.name)
+    proxy_triangles = sum(len(p.vertices) - 2 for p in proxy.data.polygons)
+    if proxy_triangles > 120_000:
+        decimate_proxy = proxy.modifiers.new('Weight proxy decimate', 'DECIMATE'); decimate_proxy.ratio = 120_000 / proxy_triangles
+        bpy.ops.object.modifier_apply(modifier=decimate_proxy.name)
+    select_only([proxy, rig], active=rig)
+    bpy.ops.object.parent_set(type='ARMATURE_AUTO')
+    for name in NON_DEFORM:
+        if proxy.vertex_groups.get(name): proxy.vertex_groups.remove(proxy.vertex_groups[name])
+    for bone in rig.data.bones:
+        if bone.use_deform and not body.vertex_groups.get(bone.name): body.vertex_groups.new(name=bone.name)
+    select_only([body])
+    transfer = body.modifiers.new('Proxy weights', 'DATA_TRANSFER'); transfer.object = proxy
+    transfer.use_vert_data = True; transfer.data_types_verts = {'VGROUP_WEIGHTS'}; transfer.vert_mapping = 'POLYINTERP_NEAREST'
+    transfer.layers_vgroup_select_src = 'ALL'; transfer.layers_vgroup_select_dst = 'NAME'
+    bpy.ops.object.modifier_apply(modifier=transfer.name)
+    proxy_vertices = len(proxy.data.vertices)
+    bpy.data.objects.remove(proxy, do_unlink=True)
+    filled = nearest_segment_fill(body, rig)
+    # A failed heat solve leaves the proxy unweighted and every body vertex on
+    # the rigid nearest-bone fallback; refuse that rather than ship it (a
+    # 0.6 percent voxel proxy did exactly this; 1.2 percent solves).
+    if filled > 0.02 * len(body.data.vertices): raise RuntimeError(f'bone heat failed on the weight proxy: {filled} vertices unweighted')
+    select_only([body]); bpy.ops.object.vertex_group_limit_total(limit=4); bpy.ops.object.vertex_group_normalize_all(lock_active=False)
     modifier = body.modifiers.new('Native skinning', 'ARMATURE'); modifier.object = rig
     body.parent = rig; body.matrix_parent_inverse = Matrix.Identity(4)
-    select_only([body]); bpy.ops.object.vertex_group_limit_total(limit=4); bpy.ops.object.vertex_group_normalize_all(lock_active=False)
-    return {'blended': sum(1 for v in body.data.vertices if len(v.groups) > 1), 'vertices': len(V)}
+    return {'method': 'voxel-proxy-bone-heat-transfer', 'proxyVertices': proxy_vertices, 'proxyTriangles': proxy_triangles,
+            'nearestBoneFilled': filled, 'blended': sum(1 for v in body.data.vertices if len(v.groups) > 1), 'vertices': len(body.data.vertices)}
 
 
 def re_rest(body, rig):
@@ -353,7 +373,7 @@ class Gear:
         data = self.rig.data.bones[bone]
         return (data.head_local.lerp(data.tail_local, at)) / self.unit
 
-    def garment(self, name, bands, mat=None, scale=1.0, thickness=.012):
+    def garment(self, name, bands, mat=None, scale=1.0, thickness=.012, open_front=0):
         """A skinned coat/cloak: rings of vertices weighted between pelvis, chest and thighs."""
         vertices, faces, segments = [], [], 32
         for z, rx, ry in bands:
@@ -363,6 +383,8 @@ class Gear:
                 vertices.append((rx * scale * math.cos(angle) * fold * self.unit, ry * scale * math.sin(angle) * fold * self.unit, z * self.unit))
         for band in range(len(bands) - 1):
             for i in range(segments):
+                # The actor faces -Y: skip `open_front` segments either side of it.
+                if open_front and min(abs(i + .5 - 24), 32 - abs(i + .5 - 24)) < open_front: continue
                 a = band * segments + i; b = band * segments + (i + 1) % segments
                 faces.append((a, b, b + segments, a + segments))
         mesh = bpy.data.meshes.new(name); mesh.from_pydata(vertices, [], faces); mesh.update()
@@ -395,8 +417,7 @@ def baron_gear(g):
     g.cyl('HatCrown', (head.x, head.y + .01, head.z + .09), .13, .22, g.dark, 'head')
     g.cyl('HatBrim', (head.x, head.y + .01, head.z - .015), .21, .018, g.dark, 'head')
     g.ring('HatBand', (head.x, head.y + .01, head.z + .01), .132, .014, g.trim, 'head')
-    g.garment(g.id + ' Weighted Coat', [(.22, .27, .19), (.55, .25, .17), (.85, .22, .16), (1.12, .24, .17), (1.34, .27, .16), (1.42, .13, .10)], scale=g.spec['coatScale'])
-    for z in (.28, .58): g.ring('HemTrim' + str(z), (0, 0, z), .26 * g.spec['coatScale'], .012, g.trim, 'pelvis')
+    g.garment(g.id + ' Weighted Coat', [(.22, .27, .19), (.55, .25, .17), (.85, .22, .16), (1.12, .24, .17), (1.34, .27, .16), (1.42, .13, .10)], scale=g.spec['coatScale'], open_front=3)
     for side in (-1, 1):
         bone = 'upper_arm.L' if side > 0 else 'upper_arm.R'; p = g.bone_point(bone, 0.0)
         g.box('Epaulette' + str(side), (p.x + side * .02, p.y, p.z + .05), (.14, .12, .035), g.trim, bone)
@@ -407,7 +428,7 @@ def baron_gear(g):
     for x in (-.2, .2): g.box('Holster' + str(x), (x, -.18, .78), (.055, .06, .16), g.dark, 'pelvis'); g.box('Pistol' + str(x), (x, -.20, .70), (.03, .025, .09), g.metal, 'pelvis')
     wrist = g.bone_point('hand.R', 0.2)
     g.cyl('Cane', (wrist.x, wrist.y, wrist.z - .38), .016, .95, g.dark, 'hand.R'); g.sphere('CaneKnob', (wrist.x, wrist.y, wrist.z + .10), (.045, .045, .045), g.trim, 'hand.R')
-    g.ring('WhipCoil', (.26, -.02, .82), .09, .022, g.rust, 'pelvis', rotation=(0, math.pi / 2, 0))
+    g.ring('WhipCoil', (.25, -.06, .80), .06, .016, g.rust, 'pelvis', rotation=(0, math.pi / 2, 0))
     g.box('ChestSeal', (0, -.25, 1.15), (.07, .025, .09), g.accent, 'chest')
 
 
@@ -415,9 +436,11 @@ def foreman_gear(g, prop_glb, prop_spec):
     # Site boss: hard hat with lamp, furnace backpack with vent, hazard plates, the
     # steam hammer in the right hand and the owner's minigun slung on the left forearm.
     head = g.bone_point('head', 1.0)
-    g.sphere('HardHat', (head.x, head.y, head.z - .02), (.17, .19, .12), g.trim, 'head')
-    g.cyl('HatBrim', (head.x, head.y, head.z - .08), .2, .016, g.trim, 'head')
-    g.cyl('Lamp', (head.x, head.y - .17, head.z - .02), .03, .04, g.accent, 'head', rotation=(math.pi / 2, 0, 0))
+    # A shallow shell over the crown, face left clear (the first fit read as a diving helmet).
+    # props.sphere scales are radii: a crown shell about head width, face clear.
+    g.sphere('HardHat', (head.x, head.y + .005, head.z - .025), (.078, .088, .05), g.trim, 'head')
+    g.cyl('HatBrim', (head.x, head.y - .005, head.z - .05), .1, .01, g.trim, 'head')
+    g.cyl('Lamp', (head.x, head.y - .085, head.z - .02), .02, .03, g.accent, 'head', rotation=(math.pi / 2, 0, 0))
     g.box('PackFrame', (0, .27, 1.16), (.36, .08, .34), g.dark)
     for side in (-1, 1): g.cyl('Boiler' + str(side), (side * .13, .33, 1.14), .1, .42, g.rust); g.cyl('Stack' + str(side), (side * .13, .33, 1.44), .035, .2, g.metal)
     g.box('FurnaceWindow', (0, .375, 1.06), (.14, .02, .09), g.accent)
@@ -458,7 +481,7 @@ def lockkeeper_gear(g):
     head = g.bone_point('head', 1.0)
     g.cone('HatCrown', (head.x, head.y, head.z + .05), .14, .2, g.dark, 'head')
     g.cyl('HatBrim', (head.x, head.y, head.z - .04), .29, .014, g.dark, 'head')
-    g.garment(g.id + ' Weighted Cloak', [(.2, .3, .22), (.5, .28, .2), (.8, .26, .19), (1.1, .27, .19), (1.34, .29, .17), (1.45, .14, .11)], scale=g.spec['coatScale'], thickness=.014)
+    g.garment(g.id + ' Weighted Cloak', [(.45, .29, .21), (.7, .27, .2), (.95, .26, .19), (1.15, .27, .19), (1.34, .29, .17), (1.45, .14, .11)], scale=g.spec['coatScale'], thickness=.014, open_front=4)
     for i, x in enumerate((-.16, -.05, .06, .17)):
         g.ring('ChainLink' + str(i), (x, -.25, 1.2 - .03 * (i % 2)), .04, .011, g.rust, 'chest', rotation=(math.pi / 2, 0, .4 * (i % 2)))
     for x in (-.12, .11):

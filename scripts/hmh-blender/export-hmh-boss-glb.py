@@ -127,7 +127,9 @@ def palette_uvs(obj, material_index_of):
     uv = bm.loops.layers.uv.new('HMH_BossPalette'); cell = 1 / PALETTE_CELLS
     for face in bm.faces:
         index = material_index_of[obj.material_slots[face.material_index].material.name]
-        u = (index % PALETTE_CELLS + .5) * cell; v = 1 - (index // PALETTE_CELLS + .5) * cell
+        # Blender UV v and image rows both count up from the bottom (the first
+        # export sampled the empty top rows and rendered every gear piece black).
+        u = (index % PALETTE_CELLS + .5) * cell; v = (index // PALETTE_CELLS + .5) * cell
         for loop in face.loops: loop[uv].uv = (u, v)
     bm.to_mesh(obj.data); bm.free(); obj.data.update()
 
@@ -173,8 +175,10 @@ def limit_textures(maximum=1024):
         if image.type != 'IMAGE' or not image.size[0]: continue
         before = list(image.size)
         if max(before) > maximum:
-            ratio = maximum / max(before); image.scale(round(before[0] * ratio), round(before[1] * ratio)); image.pack()
-        records.append({'image': image.name, 'sourceSize': before, 'exportSize': list(image.size)})
+            ratio = maximum / max(before); image.scale(round(before[0] * ratio), round(before[1] * ratio))
+        # The runtime decoder accepts embedded PNG only; Tripo maps arrive as JPEG.
+        image.file_format = 'PNG'; image.pack()
+        records.append({'image': image.name, 'sourceSize': before, 'exportSize': list(image.size), 'format': 'png'})
     return records
 
 
