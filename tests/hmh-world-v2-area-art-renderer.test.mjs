@@ -50,7 +50,7 @@ test('the renderer loads only the pages and tiles its plan needs, paints, mounts
   art.mount(depth, ground);
   const visible = art.update(camera, view, { x: camera.x, y: camera.y });
   assert.ok(visible > 20, `${visible} props visible at the Woods centre`);
-  assert.equal(depth.children.length, art.snapshot().residency.liveCount);
+  assert.equal(depth.children.length, art.snapshot().residency.visibleCount, 'only on-screen props stay in the scene graph');
   assert.ok(depth.children.every(child => Number.isFinite(child.zIndex)));
   const snapshot = art.snapshot();
   assert.equal(snapshot.runtimeAuthority, 'projection-only');

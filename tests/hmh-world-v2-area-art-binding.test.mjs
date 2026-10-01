@@ -40,9 +40,12 @@ test('the binding reads the world hooks, loads every plan lazily, paints below t
   const pages = [...new Set(f.loaded.filter(u => u.includes('tripo-props-hd-')))];
   assert.equal(pages.length, 4, 'four distinct kit pages across the three plans');
   assert.ok(f.loaded.every(u => !u.includes('pickups')));
-  assert.ok(f.attached.size >= snapshot.blockerIds.length, 'solids attached before any camera update');
+  assert.equal(f.attached.size, 0, 'solids build lazily: nothing is attached before the first camera update');
   const camera = { x: 17500, y: 11600, zoom: 0.8, groundZ: 0, shakeX: 0, shakeY: 0 }, view = { width: 1440, height: 900 };
   const visible = binding.update(camera, view, { x: 17500, y: 11600 });
+  assert.ok(f.attached.size > 0 && f.attached.size < snapshot.blockerIds.length + 400, `${f.attached.size} depth nodes attached: only what is in view`);
+  assert.ok([...f.attached].some(node => node.label?.startsWith('area-art-solid-rugpull-woods')), 'Woods solids in view are attached');
+  assert.ok(![...f.attached].some(node => node.label === 'area-art-solid-closed-mass-0'), 'far closed masses stay out of the scene graph');
   assert.ok(visible > 5, `${visible} props visible at the Woods centre`);
   assert.equal(binding.root.scale.x, 0.8);
   const origin = worldToScreen({ x: 0, y: 0, z: 0 }, camera, view);
