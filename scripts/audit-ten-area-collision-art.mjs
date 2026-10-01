@@ -172,6 +172,8 @@ export async function collectTenAreaCards({ authored = createGreyboxWorld(), kit
 // its own shape.
 function blockerArt(blocker, piece, solidStyles, cardsByPiece, cardsByBlocker) {
   const style = solidStyles.get(blocker.id);
+  // An edge guard lies on the drawn water bank or deck edge it follows.
+  if (piece?.visible?.guardOf) return { kind: 'surface-edge', regions: [], full: true };
   if (piece?.visible?.artPlanId) return { kind: 'prop-card', regions: (cardsByBlocker.get(blocker.id) ?? []).map(card => card.silhouette), full: false };
   if (!style) return { kind: 'production-slab', regions: [], full: true };
   if (['mass', 'bank', 'stakes', 'crates', 'pickets'].includes(style.style)) return { kind: `solid-${style.style}`, regions: [], full: true };
@@ -319,7 +321,7 @@ export function propCover(source, height) {
 }
 export function propBlockerRows(collected) {
   const { authored, cards } = collected;
-  const rows = authored.pieces.filter(piece => piece.blocker && !piece.visible.artPlanId).map(piece => { const vertices = piece.blocker.shape.vertices; return { id: piece.id, vertices, bounds: boundsOf(vertices) }; });
+  const rows = authored.pieces.filter(piece => piece.blocker && !piece.visible.artPlanId && !piece.visible.guardOf).map(piece => { const vertices = piece.blocker.shape.vertices; return { id: piece.id, vertices, bounds: boundsOf(vertices) }; });
   const index = createPolygonIndex(rows);
   const out = [];
   for (const card of cards) {

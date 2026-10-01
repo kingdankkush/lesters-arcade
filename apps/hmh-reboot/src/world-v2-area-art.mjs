@@ -775,6 +775,10 @@ export function createAreaArt({ world, areaId, plan, kit = null, loadTexture, te
       const art = piece.visible?.artProp;
       if (piece.blocker && piece.visible.artPlanId === summary.areaId && placed.has(`${art.source}:${Math.round(art.x * 10)}:${Math.round(art.y * 10)}`)) ids.push(piece.blocker.id);
     }
+    // Edge guards follow the water banks and bridge sides of this area: the
+    // water and deck edges are their art, so no slab is drawn for them.
+    const areaOf = new Map(pieces.map(piece => [piece.id, piece.visible?.areaId ?? null]));
+    for (const piece of pieces) if (piece.blocker && piece.visible?.guardOf && areaOf.get(piece.visible.guardOf) === summary.areaId) ids.push(piece.blocker.id);
     return ids;
   }
   function mount(layer = depthLayer, ground = groundLayer, options = {}) {

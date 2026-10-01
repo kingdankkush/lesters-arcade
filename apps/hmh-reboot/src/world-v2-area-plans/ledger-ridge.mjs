@@ -34,7 +34,7 @@ export function createLedgerRidgeArtPlan(world) {
     { id: 'cut-scree', material: 'scree', feather: 80, alpha: 0.55, vertices: [point(-650, 650), point(550, 650), point(550, 760), point(-650, 760)] },
   );
   for (const segment of routeSegments) plan.ground.trails.push({ id: `trail-${plan.ground.trails.length}`, material: segment.kind === 'main' ? 'gravel' : 'dirt', points: [segment.a, segment.b], width: segment.kind === 'main' ? 56 : 40, halo: 18 });
-  for (const name of RIDGE_CLIFFS) solid(name, 'bank', { roof: 'rock', tint: 0xd0d2cc });
+  for (const name of [...RIDGE_CLIFFS, 'cap-foot']) solid(name, 'bank', { roof: 'rock', tint: 0xd0d2cc });
   solid('headframe', 'card', { source: 'b1-11', fit: 'height', tint: 0xc8c8c4 });
   solid('quarry-store', 'card', { source: 'b2-68', fit: 'width', tint: 0xc8c6be });
   solid('landing-barrier', 'hedge', { source: 'b2-49', spacing: 120, tint: 0xc8cac6 });
@@ -63,8 +63,9 @@ export function createLedgerRidgeArtPlan(world) {
     placeAlongPolygonEdges(context, context.piece(name).blocker.shape.vertices, { key: `${name}-foot`, spacing: 150, offset: 40, radius: 16, jitter: 12, place: (px, py, n, v) => {
       // Small sandstone cards read as rusty barrels at gameplay zoom (pass-1), so
       // spoil is timber, stumps and dry scrub, with full-height strata only.
+      // Timber and stumps stay walk-over height (<= 48); the strata block.
       const source = n % 5 === 4 ? 'b2-79' : n % 5 === 2 ? 'b1-49' : n % 3 === 0 ? 'b1-42' : 'b1-05';
-      prop(source, px, py, source === 'b2-79' ? 50 : source === 'b1-49' ? 70 : source === 'b1-05' ? 40 : 96 + n % 3 * 12, { flip: v > 0.5, tint: source === 'b1-42' ? RIDGE_STONE_TINT : 0xc8c2b4, shadow: source !== 'b1-05' });
+      prop(source, px, py, source === 'b2-79' ? 46 : source === 'b1-49' ? 46 : source === 'b1-05' ? 40 : 96 + n % 3 * 12, { flip: v > 0.5, tint: source === 'b1-42' ? RIDGE_STONE_TINT : 0xc8c2b4, shadow: source !== 'b1-05' });
     } });
   }
   for (const [x, y] of [[-1080, 900], [-830, 900], [-1080, 250], [-830, 300], [-1080, -400], [-830, -500], [-450, -700], [500, -700], [-150, 1000], [600, 1000]]) {

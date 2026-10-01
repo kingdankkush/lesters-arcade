@@ -1,0 +1,4 @@
+{"name":"bayou-lock-west-ne","start":[2614,11993],"end":[2692,12034],"travelled":88,"longestStillMs":2000}
+{"name":"bayou-lock-west-se","start":[2611,12504],"end":[2692,12466],"travelled":89,"longestStillMs":2500}
+{"name":"river-city-south-ne","start":[7175,11400],"end":[7254,11328],"travelled":107,"longestStillMs":2300}
+{"name":"river-city-south-nw","start":[7796,11399],"end":[7746,11328],"travelled":87,"longestStillMs":2300}

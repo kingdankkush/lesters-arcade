@@ -404,8 +404,9 @@ export function stableUnit(...keys) {
 // objective / arena-exit clearance. Returns `clear(x, y, radius)`.
 export function createPlacementGuard({ world, areaId = null, roadClearance = 1, routeClearance = 64, siteClearance = 140, spawnClearance = null } = {}) {
   if (!world?.pieces || !world.roads || !world.sites) throw new TypeError('authored world required');
-  // Prop blockers stand under the plan's own cards, so they never push a card away.
-  const blockers = world.pieces.filter(piece => piece.blocker && !piece.visible.artPlanId).map(piece => ({ vertices: piece.blocker.shape.vertices, bounds: piece.visible.bounds }));
+  // Prop blockers stand under the plan's own cards, and edge guards follow
+  // water and deck edges, so neither pushes a card away.
+  const blockers = world.pieces.filter(piece => piece.blocker && !piece.visible.artPlanId && !piece.visible.guardOf).map(piece => ({ vertices: piece.blocker.shape.vertices, bounds: piece.visible.bounds }));
   const water = world.pieces.filter(piece => piece.kind === 'water').map(piece => piece.visible.vertices ?? rectVertices(piece.visible.bounds));
   const roads = world.roads.map(road => ({ points: road.points, half: road.width / 2 }));
   const routes = world.areas.filter(area => !areaId || area.id === areaId).flatMap(area => area.inspectionRoutes ?? []).map(route => route.points);

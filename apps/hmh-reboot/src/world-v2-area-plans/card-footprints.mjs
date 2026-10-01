@@ -26,7 +26,7 @@ export const CARD_COLLISION_CLASSES = freezeDeep({
   'b1-16': 'vehicle', 'b1-45': 'vehicle', 'b2-54': 'vehicle', 'b2-55': 'vehicle', 'b2-56': 'vehicle', 'b2-57': 'vehicle',
   'b2-58': 'vehicle', 'b2-59': 'vehicle', 'b2-60': 'vehicle', 'b2-61': 'exempt',
   // Barriers and walls from knee height: jersey barriers, guardrails, barricades, sandbags, hedgerows.
-  'b2-49': 'barrier', 'b2-48': 'barrier', 'b1-18': 'barrier', 'b1-17': 'barrier', 'b2-75': 'barrier',
+  'b2-49': 'barrier', 'b1-18': 'barrier', 'b1-17': 'barrier', 'b2-75': 'barrier',
   // Large props and rocks (block only above the blocking height).
   'b1-19': 'large-prop', 'b1-20': 'large-prop', 'b1-41': 'large-prop', 'b1-44': 'large-prop', 'b2-79': 'large-prop',
   'b2-80': 'large-prop', 'b2-74': 'large-prop', 'b2-73': 'large-prop', 'b1-49': 'large-prop', 'b1-42': 'rock',
@@ -36,6 +36,9 @@ export const CARD_COLLISION_CLASSES = freezeDeep({
   'b1-01': 'exempt', 'b1-02': 'exempt', 'b1-04': 'exempt', 'b1-05': 'exempt', 'b1-06': 'exempt', 'b1-07': 'exempt', 'b1-08': 'exempt',
   'b1-09': 'exempt', 'b1-10': 'exempt', 'b2-47': 'exempt', 'b2-78': 'exempt', 'b2-41': 'exempt', 'b2-46': 'exempt', 'b2-51': 'exempt',
   'b2-42': 'exempt', 'b2-43': 'exempt', 'b2-44': 'exempt',
+  // A road guardrail stands only on a verge backed by the corridor's closed
+  // land (world-roads.mjs), which holds a body; the rail itself never blocks.
+  'b2-48': 'exempt',
 });
 const ALWAYS_BLOCK = new Set(['building', 'container', 'vehicle']);
 const HEIGHT_GATED = new Set(['large-prop', 'rock', 'tree', 'pole']);
@@ -68,7 +71,7 @@ export function cardBlocks(source, height) {
   return ALWAYS_BLOCK.has(kind) || (kind === 'barrier' && height >= CARD_BARRIER_MIN_HEIGHT) || (HEIGHT_GATED.has(kind) && height > CARD_BLOCKING_HEIGHT);
 }
 // Trunk or pole half-width in world units.
-export const trunkHalfWidth = (kind, height) => kind === 'pole' ? 8 : Math.max(10, Math.min(20, height * 0.045));
+export const trunkHalfWidth = (kind, height) => kind === 'pole' ? 8 : Math.max(10, Math.min(16, height * 0.04));
 // The painted ground footprint of a card standing at (x, y), `height` tall.
 export function cardGroundFootprint(source, x, y, height, flip = false) {
   const extents = CARD_GROUND_EXTENTS[source];

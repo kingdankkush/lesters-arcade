@@ -66,7 +66,11 @@ export function createWorldRoadsArtPlan(world) {
       const start = 260 + run * (length - 520) / 3, count = 4;
       for (let i = 0; i < count; i++) {
         const at = alongPolyline(road.points, start + i * 206, side * edge);
-        if (at && shoulderClear(road, at.x, at.y, 8)) prop('b2-48', at.x, at.y, 40, { flip: side > 0, tint: 0xd8dad6, shadow: false, fade: false });
+        // A verge rail stands only where the corridor's closed land is right
+        // behind it (24 units out): that land holds a body, so the 1 m rail
+        // needs no collider of its own and is never a walk-over on open ground.
+        const behind = at && { x: at.x - at.uy * side * 24, y: at.y + at.ux * side * 24 };
+        if (at && shoulderClear(road, at.x, at.y, 8) && world.queryGround && !world.queryGround(behind.x, behind.y).walkable) prop('b2-48', at.x, at.y, 40, { flip: side > 0, tint: 0xd8dad6, shadow: false, fade: false });
       }
     }
     for (const [along, side] of [[150, -1], [330, 1], [length - 150, 1], [length - 330, -1]]) {
