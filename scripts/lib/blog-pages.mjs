@@ -12,7 +12,7 @@ export function renderBlogListing(index,{category=null}={}){
  const selected=category===null?null:index.categories.find(item=>item.id===category);
  if(category!==null&&!selected)throw new TypeError('Unknown blog category');
  const title=selected?selected.label:'Arcade journal',url=ORIGIN+route(category);
- const summary=selected?{news:'The latest from Lester’s Arcade.',guides:'Find your next cabinet. Make your next run count.','dev-notes':'Art, design and the work behind the games.'}[category]:'Guides, updates and stories from the arcade.';
+ const summary=selected?{news:'The latest from Lester’s Arcade: release notes, new cabinets and what changed.',guides:'Find your next cabinet. Make your next run count.','dev-notes':'Art, design and the work behind the games.'}[category]:'Guides, updates and stories from the arcade.';
  const posts=selected?index.posts.filter(post=>post.category===category):index.posts;
  const tabs=[{id:null,label:'All articles',count:index.posts.length},...index.categories].map(item=>`<a href="${route(item.id)}"${item.id===category?' aria-current="page"':''}>${escape(item.label)} <span class="blog-count">${item.count}</span></a>`).join('');
  const cards=posts.map(post=>`<li><article><a href="/blog/${post.slug}" tabindex="-1" aria-hidden="true"><img class="blog-card-art" src="${blogArtwork(post).src}" alt="" loading="lazy" decoding="async" /></a><p class="blog-card-meta">${escape(index.categories.find(item=>item.id===post.category).label)} <span aria-hidden="true">·</span> <time datetime="${post.date}">${post.date}</time></p><h2><a href="/blog/${post.slug}">${escape(post.title)}</a></h2><p>${escape(post.summary)}</p><p class="blog-card-author">${escape(post.author)}</p></article></li>`).join('\n');
