@@ -16,10 +16,10 @@ test('native cliff sampling joins unequal image edges continuously at every hori
   const source=fs.readFileSync(new URL('../apps/hmh-reboot/src/world-v2-area-art.mjs',import.meta.url),'utf8');
   const expression=source.match(/float ridgeMirror\(float u\)\s*\{\s*return ([^;]+);/);
   assert.ok(expression,'native horizontal sampling must mirror instead of jumping from the right edge to the left');
-  // Evaluate the actual scalar GLSL expression: this deliberately uses a
-  // synthetic image whose opposite edges differ, just as the native bakes do.
-  const sample=new Function('u','fract','abs',`return ${expression[1]};`);
-  const mirror=u=>sample(u,v=>v-Math.floor(v),Math.abs);
+  // Pin the shader formula, then check its scalar equivalent against an
+  // image with unequal opposite edges without evaluating source as code.
+  assert.equal(expression[1].replace(/\s+/g,' ').trim(),'1.0 - abs(fract(u * 0.5) * 2.0 - 1.0)');
+  const mirror=u=>1-Math.abs((u*.5-Math.floor(u*.5))*2-1);
   const edgeImage=u=>0.1+u*0.8;
   for(const boundary of [-8,-3,-1,0,1,2,7]) {
     assert.ok(Math.abs(edgeImage(mirror(boundary-1e-7))-edgeImage(mirror(boundary+1e-7)))<1e-6,`continuous native texture at turn ${boundary}`);

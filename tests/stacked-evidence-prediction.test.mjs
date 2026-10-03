@@ -42,8 +42,12 @@ test('real-run SIC1 size matches the simulation predictor at every tick and reac
 test('size coupling rejects a deliberately broken predictor in an isolated source copy', async () => {
   const directory = await mkdtemp(join(tmpdir(), 'stacked-size-mutant-'));
   try {
-    for (const name of ['seeded-rng.mjs', 'stacked-contracts.mjs']) await copyFile(new URL(name, sourceDir), join(directory, name));
+    // The current simulation's full relative import closure. Ledger rules
+    // import contracts already present here, so the mutant remains isolated.
+    for (const name of ['seeded-rng.mjs', 'stacked-contracts.mjs','stacked-ledger-rules.mjs']) await copyFile(new URL(name, sourceDir), join(directory, name));
     const source = await readFile(new URL('stacked-sim.mjs', sourceDir), 'utf8');
+    await writeFile(join(directory,'stacked-control.mjs'),source);
+    assertSizeAgreement(await import(pathToFileURL(join(directory,'stacked-control.mjs'))));
     const needle = 'if (sicSingleBit(previousMask ^ mask) && gap <= 16) return 1;';
     assert.equal(source.split(needle).length, 2);
     await writeFile(join(directory, 'stacked-sim.mjs'), source.replace(needle, 'if (sicSingleBit(previousMask ^ mask) && gap <= 16) return 2;'));

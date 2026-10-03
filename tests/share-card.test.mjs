@@ -289,7 +289,10 @@ test('the committed backgrounds are 1200x630 PNGs under 300 KB and the builder s
     assert.ok((await stat(path)).size < 300_000, `${gameId} under 300 KB`);
   }
   const check = await readFile(new URL('../scripts/syntax-check.mjs', import.meta.url), 'utf8');
-  assert.match(check, /'scripts\/build-chikun-ground-props\.py',\n\s*'scripts\/build-share-card-backgrounds\.py',/);
+  for(const builder of ['build-chikun-ground-props','build-share-card-backgrounds']) {
+    const entries=[...check.matchAll(new RegExp(`^\\s*'scripts/${builder}\\.py',\\s*$`,'gm'))];
+    assert.equal(entries.length,1,`${builder} is registered exactly once; unrelated builders may sit between entries`);
+  }
 });
 
 test('the card reads badge art from byte copies inside the traced share-cards directory', async () => {

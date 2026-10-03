@@ -676,6 +676,21 @@ test('the share row wires its native button, refresh and nativeButton: false thr
   assert.equal(await bare.native.share(), 'text');
 });
 
+test('preview warming stays on the serving origin while public share links remain canonical', async () => {
+  const page = `https://lestersarcade.io/s/${'b'.repeat(64)}`;
+  const calls = [], payloads = [];
+  const native = createNativeShare({
+    navigatorRef: { share: async value => payloads.push(value) },
+    links: buildShareLinks({ text: 'verified run', url: page }), idleMs: 1,
+    pageOrigin: 'http://127.0.0.1:4444',
+    fetchRef: async url => { calls.push(url); return { ok: true, text: async () => '<meta property="og:image" content="https://lestersarcade.io/api/share-card/test.png?v=2">' }; },
+  });
+  await new Promise(resolve => setTimeout(resolve, 25));
+  assert.deepEqual(calls, [`/s/${'b'.repeat(64)}`, '/api/share-card/test.png?v=2']);
+  await native.share();
+  assert.equal(payloads[0].url, page, 'only prefetch routing changes; the shared public URL stays canonical');
+});
+
 test('a shown results row warms its share page and the og:image that page names, once per link', async () => {
   const calls = [];
   const page = `https://lestersarcade.io/s/${'cd'.repeat(32)}`;

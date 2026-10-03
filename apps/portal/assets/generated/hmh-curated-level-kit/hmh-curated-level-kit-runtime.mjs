@@ -237,6 +237,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
     "apps/portal/src/stacked-evidence-transport.mjs",
     "apps/portal/src/stacked-host.mjs",
     "apps/portal/src/stacked-layout.mjs",
+    "apps/portal/src/stacked-ledger-rules.mjs",
     "apps/portal/src/stacked-match.mjs",
     "apps/portal/src/stacked-persistence.mjs",
     "apps/portal/src/stacked-player-settings.mjs",

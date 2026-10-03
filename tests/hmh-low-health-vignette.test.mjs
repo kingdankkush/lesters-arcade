@@ -27,7 +27,7 @@ test('one small radial texture serves phone/desktop resizing and is owned until 
   assert.ok(stops.filter(([, color]) => color.endsWith(',0)')).length >= 2, 'clear play area');
   assert.ok(stops.length >= 5, 'soft multi-stop falloff');
   assert.equal(ctx.fillStyle, gradient);
-  assert.equal(layer.display.eventMode, 'none');
+  assert.equal(Object.hasOwn(layer.display, 'eventMode'), false, 'the trimmed renderer has no pointer-event subsystem');
   layer.update({ healthRatio: .1, width: 414, height: 896 });
   assert.equal(layer.display.visible, true);
   assert.equal(layer.display.width, 414);

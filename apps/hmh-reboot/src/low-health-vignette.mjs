@@ -23,7 +23,6 @@ export function createLowHealthVignette({ SpriteClass, TextureClass, createCanva
     texture = TextureClass.from(canvas);
     display = new SpriteClass(texture);
     display.visible = false;
-    display.eventMode = 'none';
   } catch {
     display?.destroy();
     texture?.destroy(true);

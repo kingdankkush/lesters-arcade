@@ -1,4 +1,4 @@
-import { mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { pathToFileURL } from 'node:url';
@@ -126,13 +126,10 @@ export function verifyRetirementGate({ ledger, events, repoRoot = process.cwd() 
 export function runRetirementGate({ repoRoot = process.cwd() } = {}) {
   const ledgerPath = path.join(repoRoot, 'docs', 'hmh-reboot', 'LEGACY-TEST-RETIREMENT.json');
   const ledger = JSON.parse(readFileSync(ledgerPath, 'utf8'));
-  const testsDir = path.join(repoRoot, 'tests');
-  const testFiles = readdirSync(testsDir)
-    .filter((name) => name.endsWith('.test.mjs'))
-    .sort()
-    .map((name) => path.join('tests', name));
   const reporter = './scripts/hmh-reboot-test-retirement-reporter.mjs';
-  const child = spawnSync(process.execPath, ['--test', '--test-concurrency=1', `--test-reporter=${reporter}`, ...testFiles], {
+  // Node resolves this same flat roster. Passing each filename separately
+  // exceeded Windows' command length as the suite grew; keep all checks.
+  const child = spawnSync(process.execPath, ['--test', '--test-concurrency=1', `--test-reporter=${reporter}`, 'tests/*.test.mjs'], {
     cwd: repoRoot,
     encoding: 'utf8',
     maxBuffer: 64 * 1024 * 1024,

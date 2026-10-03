@@ -1,10 +1,12 @@
-# Lester's Arcade — 2.1.1: one Level 1 for every run
+# Lester's Arcade — 2.2.0: completed visual refresh (release candidate)
 
-Hard Money Heroes plays the ten-area Litecoin Frontier as Level 1 in Free Mode and Ranked. The "Play the original map (Free only)" start is gone from the mode select, so every player starts on the same world.
+Hard Money Heroes renders its native 3D heroes, enemies and district bosses by default, with lighter phone hero geometry and sprite fallback. Movement and cover transitions blend; native enemy hits/corpses, a Bagholder side-fall, boss edge warnings and cover cues improve readability. Ground materials, forest-floor detail, Ridge cliffs, River/Bayou water and four timber/canvas structures replace selected older treatments. A Liquidated recap gives standalone Free play a clear ending.
 
-Not changed: gameplay, scoring, Ranked verification, contracts, fees, settlement and jackpot configuration. Runs recorded on the original map keep verifying exactly as before. Testnet verification is not real-money settlement.
+Chikun's Escape gains native 3D-rendered rock, log, thorn, crate, Shiba, hurdle, bird and plane art with bounded animation pages, plus standard-controller jump/glide/pause support and audio fixes. STACKED gains eight modern shader visualizer worlds, portal transitions, luminous blocks and bounded clear effects; its phone music controls are reachable. New solo runs delay the first hard row to 108 seconds and ease pressure gradually. Historical replays retain their original pacing.
 
-Site/game version `2.1.1`; cache marker `lesters-arcade-v67-level-one-only`. Continue on `fable/master-list-20260916`.
+This bundles completed features from the ongoing overhaul. Full district composition, remaining character content, course additions and physical iPhone XS Max performance/soaks remain open in [the progress guide](docs/2.2/PROGRESS.md). It is not completion of the full master overhaul or a claim of final AAA acceptance.
+
+Site/game version `2.2.0`; candidate cache marker `lesters-arcade-v68-visual-refresh`. Release checks and deployment are pending. HMH retains schema 8/map v2; previous runs keep their existing verification. No contract, fee, settlement or jackpot configuration changes. Continue on `fable/master-list-20260916` after verified publication.
 
 ## How to play
 
@@ -23,6 +25,14 @@ Every game at [lestersarcade.io](https://lestersarcade.io) has two modes. Free p
 Ranked costs 0.012 testnet zkLTC per run: 0.01 entry + 0.002 to publish your score on chain. The entry is split 85% to the game's developer and 15% to the arcade. Testnet zkLTC has no monetary value. The player guide at [lestersarcade.io/how-ranked-works](https://lestersarcade.io/how-ranked-works) covers every step, what is checked for each game, the Weekly, Monthly and All-time boards, the FAQ and fixes for common problems.
 
 For maintainers: the fee lives in one place, `RANKED_ENTRY_FEE_WEI` in [`apps/portal/src/ranked-fee.mjs`](apps/portal/src/ranked-fee.mjs), which `arcade-core.mjs` re-exports; `tests/ranked-fee-source-of-truth.test.mjs` ties it to the deploy config and the server settle floor. Every other static Ranked fact on the site (faucet, boards, achievements, the guide URL and the canonical wording) comes from [`apps/portal/src/ranked-facts.mjs`](apps/portal/src/ranked-facts.mjs), which reads the fee from ranked-fee.mjs (`tests/ranked-facts.test.mjs` ties it to the faucet, the boards and the achievement catalogs); the guide page is generated from [`apps/portal/src/ranked-guide-content.mjs`](apps/portal/src/ranked-guide-content.mjs) by `node scripts/build-portal-pages.mjs`.
+
+# Lester's Arcade — 2.1.1: one Level 1 for every run
+
+Hard Money Heroes plays the ten-area Litecoin Frontier as Level 1 in Free Mode and Ranked. The "Play the original map (Free only)" start is gone from the mode select, so every player starts on the same world.
+
+Not changed: gameplay, scoring, Ranked verification, contracts, fees, settlement and jackpot configuration. Runs recorded on the original map keep verifying exactly as before. Testnet verification is not real-money settlement.
+
+Site/game version `2.1.1`; cache marker `lesters-arcade-v67-level-one-only`. Continue on `fable/master-list-20260916`.
 
 # Lester's Arcade — 1.9.3 verified live: custom avatars and X share images
 
@@ -167,7 +177,10 @@ The redesigned [homepage](https://lestersarcade.io) and [cabinet browser](https:
 
 Runtime source `6fe83eb693bda5c36cb77f995b88d244515365f8`; deployment `dpl_6bgHFQsaZ6smUdqFNRzhc7FrsenJ`. The local and cloud release gates pass 3,742 tests with exactly 51 unchanged retirement exceptions. All 107 private/public file and route hashes match. Twenty discovery checks and seven accessibility scans pass in each environment; all three games and the returning-cache transition pass. [Release receipt](docs/qa/arcade-discovery-release-20260914.json) · [Design and verification](docs/qa/arcade-discovery-design-20260914.md). Retained rollback: `dpl_HVFN3wwuWmveoWa4CVk8b1dAnovU`. Continue on `codex/arcade-home-catalog-20260914`.
 
-**Production cache marker:** `lesters-arcade-v67-level-one-only`
+**Production cache marker:** `lesters-arcade-v68-visual-refresh`
+
+This release target is pending promotion. The last verified public marker is
+`lesters-arcade-v67-level-one-only`; live verification will replace this note.
 
 # Lester's Arcade
 

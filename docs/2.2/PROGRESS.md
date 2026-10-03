@@ -449,6 +449,23 @@ canonical build hash; historical replay rules stay unchanged.
 
 ## Release readiness (current)
 
+Release certification update, 2026-10-03: the first complete suite recorded
+6,933 tests, 6,868 passing, 65 failures (the 51 retired exceptions plus 14
+new failures), with no cancelled/skipped/todo tests. No deployment followed
+that failure. Narrow assertion/fixture repairs retain their original
+contracts; the low-health layer no longer sets an unavailable Pixi event
+property and the Ridge test no longer evaluates source as code. Security
+checks pass. The canonical README marker now names the pending 2.2 release
+target and explicitly retains the last verified public marker in its note.
+Local Ranked then exposed production-origin preview warming in Chikun and
+STACKED. A failing regression reproduced it; warming now uses the serving
+backend while sharing still uses canonical public URLs. Independent review
+and 41 focused checks pass. The rerun passes all three games, 23/23 each,
+on the local chain only. Required visual comparison passes all 12 legacy
+scenes with zero signature delta and no runtime errors. Fresh budgets:
+HMH 1,006,947 / 1,048,576 B; STACKED 583,383 / 607,000 B. Final full gate
+is pending; no production or physical-phone acceptance is claimed.
+
 No release commit, push, deployment or promotion yet. Full release gate,
 three-game local Ranked end-to-end checks, required visual comparison and live
 verification remain required for the completed-scope release. New HMH ruleset
@@ -485,3 +502,7 @@ Latest art browser checks pass, but Chrome's first shutdown observation timed
 out. A subsequent exact-PID/descendant audit confirmed all owned processes
 absent and released only its owned lock; both receipts are preserved in
 `outputs/22-first-wave/review.json` and `outputs/22-art-review-closure-followup.json`.
+
+## 2.2.0 completed-bundle certification
+
+Final full gate passes: 6934 tests, 6883 passing, exactly 51 retired exceptions, zero unexpected/cancelled/skipped/todo. Syntax, assets, contract checks and build complete in the same gate. Local Ranked passes 23/23 per game; all 12 legacy visual comparisons pass. Initial JavaScript: HMH 1,006,947 / 1,048,576 B; STACKED 583,383 / 607,000 B. Owned children closed before lock release. Certificate: docs/qa/completed-bundle-release-20261003-2.2.0.json. Deployment and public verification are pending. Physical XS Max performance, full world/character/courses/reward scope and all 34 master items remain open as documented above.

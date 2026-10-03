@@ -367,7 +367,12 @@ test('the runtime emits a dash-land visual from the existing dash stop and rende
 test('the runtime retains the knockback on the player hit and draws the smear plus body tint from it', async () => {
   const source = await readFile(mainUrl, 'utf8');
   // S1.4 adds a presentation-only `heavy` flag (a heavy hit ends the mission clip).
-  assert.match(source, /lastPlayerHit = \{ tick, sourceId: damageEvent\.sourceId, knockback: damageEvent\.knockback,\n\s+heavy: /);
+  const hitRecord = /lastPlayerHit = \{([^;]+)\};/.exec(source)?.[1];
+  assert.ok(hitRecord, 'the hit presentation retains its authoritative event fields');
+  assert.match(hitRecord, /^ tick, sourceId: damageEvent\.sourceId, knockback: damageEvent\.knockback,/);
+  assert.match(hitRecord, /damage:\s*damageEvent\.damageApplied,/);
+  assert.match(hitRecord, /killer:\s*String\(damageEvent\.weaponId\)/);
+  assert.match(hitRecord, /heavy: damageEvent\.damageApplied >= 20 \|\| String\(damageEvent\.weaponId\)\.startsWith\('boss-'\) \|\| damageEvent\.weaponId === 'world-fuel' \|\| damageEvent\.weaponId === 'satoshi-frag'/);
   assert.match(source, /resolveHeroHitSmear\(\{/);
   assert.match(source, /productionHeroDisplay\.setTint\(/);
   // Simulation-side recoil stays exactly as it was.

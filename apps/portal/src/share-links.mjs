@@ -232,15 +232,19 @@ const wait = (ms) => new Promise((resolve) => { setTimeout(() => resolve(null), 
 // fetch its share page (what X reads) and the og:image that page names, so
 // the CDN already holds both when X asks. Once per link; errors are ignored.
 const warmedPages = new Set();
-function warmSharePreview(url, fetchRef) {
+function warmSharePreview(url, fetchRef, pageOrigin) {
   const page = String(url ?? '');
-  if (typeof fetchRef !== 'function' || !/^https:\/\/[^/]+\/(?:s|f)\//.test(page) || warmedPages.has(page)) return;
-  warmedPages.add(page);
-  fetchRef(page, { credentials: 'omit' })
+  const key = `${pageOrigin ?? ''}|${page}`;
+  if (typeof fetchRef !== 'function' || !page.startsWith(`${SHARE_ORIGIN}/`) || !/^https:\/\/[^/]+\/(?:s|f)\//.test(page) || warmedPages.has(key)) return;
+  // A preview/local run exists on its serving backend. Warm that backend,
+  // while keeping the public link and social metadata canonical.
+  const fetchUrl = value => pageOrigin && pageOrigin !== SHARE_ORIGIN && value.startsWith(`${SHARE_ORIGIN}/`) ? value.slice(SHARE_ORIGIN.length) : value;
+  warmedPages.add(key);
+  fetchRef(fetchUrl(page), { credentials: 'omit' })
     .then((response) => (response.ok ? response.text() : ''))
     .then((html) => {
       const image = /<meta property="og:image" content="([^"]+)"/.exec(html)?.[1]?.replace(/&amp;/g, '&');
-      return image && image.startsWith('https://') ? fetchRef(image, { credentials: 'omit' }) : null;
+      return image && (image.startsWith(`${SHARE_ORIGIN}/`) || /^\/api\/(?:share-card|free-card)\//.test(image)) ? fetchRef(fetchUrl(image), { credentials: 'omit' }) : null;
     })
     .catch(() => {});
 }
@@ -252,7 +256,7 @@ function warmSharePreview(url, fetchRef) {
 // nothing), or at the latest on the tap; share() waits at most 700 ms for it,
 // so the tap keeps its transient activation, and falls back to text on any
 // failure but a cancel. prepare(links) re-arms it for the next run.
-export function createNativeShare({ navigatorRef = globalThis.navigator, title = "Lester's Arcade", links, loadShareFile = () => import('./share-file.mjs'), idleMs = 1_200, stillShown = () => true, fetchRef = typeof window === 'object' ? globalThis.fetch?.bind(globalThis) : undefined } = {}) {
+export function createNativeShare({ navigatorRef = globalThis.navigator, title = "Lester's Arcade", links, loadShareFile = () => import('./share-file.mjs'), idleMs = 1_200, stillShown = () => true, fetchRef = typeof window === 'object' ? globalThis.fetch?.bind(globalThis) : undefined, pageOrigin = globalThis.location?.origin } = {}) {
   let current = links;
   let prepared = null;
   let timer = null;
@@ -272,7 +276,7 @@ export function createNativeShare({ navigatorRef = globalThis.navigator, title =
       // results after the death animation), so an unseen row keeps checking,
       // for up to 30 checks, until it has been on screen for idleMs.
       let checks = 30;
-      const arm = () => { timer = setTimeout(() => { if (stillShown()) { fetchCard(); warmSharePreview(current?.url, fetchRef); } else if (--checks) arm(); }, idleMs); };
+      const arm = () => { timer = setTimeout(() => { if (stillShown()) { fetchCard(); warmSharePreview(current?.url, fetchRef, pageOrigin); } else if (--checks) arm(); }, idleMs); };
       arm();
     },
     async share() {

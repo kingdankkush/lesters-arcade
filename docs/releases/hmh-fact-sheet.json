@@ -1,7 +1,7 @@
 {
   "schema": "hmh-release-facts/v1",
   "scope": "Offline source snapshot; not a release certificate or public-byte verification",
-  "sourceSnapshotSha256": "258a26ab04a79b95da99cecdff363f4d2a9e2cd1200df8cfbb1eb7d1ba517a67",
+  "sourceSnapshotSha256": "6932fd04bed4e9ef3729daecc170ca74af5232d96a3d8305fe038b4f3fb3a1ca",
   "sourceInputs": [
     {
       "path": "apps/portal/games/chikun/game.manifest.json",
@@ -20,8 +20,8 @@
     },
     {
       "path": "apps/portal/main.js",
-      "sha256": "2831fd6c6d0fe9096b038c7cfa69fd7ec1b11637d60a455149860ab95789e203",
-      "bytes": 457036
+      "sha256": "5043ff24c2f16cbc613d41b51b66e0e9d46e0086006391912256bd75bcb05045",
+      "bytes": 457502
     },
     {
       "path": "apps/portal/src/arcade-core.mjs",
@@ -90,8 +90,8 @@
     },
     {
       "path": "README.md",
-      "sha256": "e7adb46dc573323ffb9a34e580bdd5c76b445ac47ca225cac81780b07934c9e8",
-      "bytes": 69130
+      "sha256": "cf0cc0d1fd98097d1ca5f8e3ac80d8c998aa0fbeacaa1f2ee896edeb5c8aaf49",
+      "bytes": 70998
     },
     {
       "path": "scripts/hmh-release-facts.mjs",
@@ -100,12 +100,12 @@
     },
     {
       "path": "scripts/syntax-check.mjs",
-      "sha256": "75ce5f21fea51afd02abbb4f14891c4570e8575fc2f8d7388078ce5c0114644d",
-      "bytes": 74078
+      "sha256": "30a12dd2a07e08734902ba2d156e3a5fa29c26acf7d9804a922f656df5d47a7c",
+      "bytes": 77280
     },
     {
       "path": "tests/arcade-core.test.mjs",
-      "sha256": "0080162ff9f08482ca7b5df6510638bd9bf9cf34c013e42ea4dd83da42d1e6e2",
+      "sha256": "ad6565c7597da36c482e5757b54eeb7131044c8ea47bcaefdd765c7835875993",
       "bytes": 193913
     },
     {
@@ -140,7 +140,7 @@
     }
   ],
   "productionPromotionAuthorized": false,
-  "recordedProductionMarker": "lesters-arcade-v67-level-one-only",
+  "recordedProductionMarker": "lesters-arcade-v68-visual-refresh",
   "cabinets": [
     {
       "manifestId": "hard-money-heroes",

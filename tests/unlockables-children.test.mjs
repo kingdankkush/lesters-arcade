@@ -226,12 +226,15 @@ test('the Chikun child applies its looks: coat filter, trail bursts, hat, and th
   // The child wires them in: the character draw, the burst spawner and the ragdoll.
   const main = read('apps/chikun/src/main.mjs');
   assert.match(main, /function cosmetics\(\) \{\n\s+return initPayload\?\.settings\?\.cosmetics \?\? null;\n\}/, 'looks come from the parent settings');
-  assert.match(main, /const characterOptions = \{[^\n]*, cosmetics: cosmetics\(\) \};/, 'the character draw receives the looks');
+  const characterOptions=main.match(/const characterOptions = (\{[^\n]+\});/)?.[1];
+  assert.ok(characterOptions,'the character options are built in the actual painter');
+  assert.match(characterOptions,/\bcosmetics:\s*cosmetics\(\)\s*[,}]/,'the character draw receives looks beside optional lighting');
+  assert.match(main,/flightCharacter\.draw\(ctx,\s*snapshot,\s*renderDt,\s*characterOptions\)/,'the actual painter forwards these options');
   assert.match(main, /const particles = chikunTrailParticles\(plan\.particles, event, cosmetics\(\)\)\.map\(/, 'every burst goes through the trail look');
   assert.match(main, /ctx\.filter = chikunCoatFilter\(characterOptions\.cosmetics\);\n\s+drawChikunRagdoll\(/, 'the coat follows Chikun into the ragdoll');
   assert.equal((main.match(/cosmetics/g) ?? []).length, 6, 'no other code in the child reads looks');
   const character = read('apps/chikun/src/character.mjs');
-  assert.match(character, /ctx\.filter=chikunCoatFilter\(options\.cosmetics\);\n\s+ctx\.drawImage\(composite/);
+  assert.match(character,/ctx\.filter=chikunCoatFilter\(options\.cosmetics\);\s*lighting\.draw\(ctx,composite,[^;]+;\s*ctx\.filter='none';/,'the coat wraps the lit composite draw and resets before the hat');
   assert.match(character, /const hat=chikunHatRects\(options\.cosmetics\);/);
 });
 

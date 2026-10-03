@@ -421,7 +421,11 @@ test('main.mjs draws the atmosphere above every body and below every HUD element
   // The colour grade sits on the stage, above the shaking world container and
   // under the retained on-canvas HUD (health pips, boss bar, damage flash).
   assert.match(source, /app\.stage\.addChild\(world, atmosphereTint, overlayVisuals, bossLabel\)/u);
-  assert.equal((source.match(/app\.stage\.addChild\(/gu) ?? []).length, 1);
+  assert.deepEqual(Array.from(source.matchAll(/app\.stage\.addChild\(([^)]*)\)/gu), match => match[1].trim()), [
+    'world, atmosphereTint, overlayVisuals, bossLabel',
+    'bossEdgeWarning.display',
+  ], 'the only appended screen overlay is the lazy boss warning; the atmosphere/HUD order stays unchanged');
+  assert.match(source, /if \(lowHealthVignette\.display\) app\.stage\.addChildAt\(lowHealthVignette\.display, app\.stage\.getChildIndex\(overlayVisuals\)\)/u, 'the low-health screen shade remains below the HUD');
   for (const pin of [
     /createAtmosphereTextures\(\{ renderer: app\.renderer, GraphicsClass: Graphics, antialias: performanceProfile\.antialias \}\)/u,
     /createAtmospherePool\(\{/u,

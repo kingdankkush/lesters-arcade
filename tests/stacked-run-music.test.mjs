@@ -112,7 +112,15 @@ test('the STACKED Free click starts the random track before any await; Ranked bl
   const mount = main.slice(main.indexOf('async function mountStackedSession() {'), main.indexOf('let chikunLifecycle = null;'));
   assert.match(mount, /stackedRunMusic = createStackedRunMusic\(/);
   assert.match(mount, /runMusic\.mount\(\);\n\}/);
-  assert.match(mount, /onState\(value\) \{ runMusic\.observe\(value\);/);
+  const stateBody=mount.match(/onState\(value\)\s*\{([\s\S]*?)\},\s*\n\s*onResult\(/)?.[1];
+  assert.ok(stateBody,'actual mounted lifecycle owns a state callback');
+  assert.equal((stateBody.match(/runMusic\.observe\(value\)/g)??[]).length,1,'the actual callback observes each state exactly once');
+  assert.match(stateBody,/^\s*const wasPaused\s*=\s*combat\.paused;\s*runMusic\.observe\(value\);/,'observation is unconditional after capturing the previous pause state');
+  assert.ok(stateBody.indexOf('runMusic.observe(value)')<stateBody.indexOf('combat.paused = value.paused'),'music sees the state before pause-overlay bookkeeping');
+  assert.match(stateBody,/combat\.paused\s*=\s*value\.paused;/);
+  assert.match(stateBody,/combat\.active\s*=\s*\['running',\s*'paused',\s*'ready'\]\.includes\(value\.status\);/);
+  assert.match(stateBody,/combat\.gameOver\s*=\s*value\.status\s*===\s*'terminal';\s*combat\.score\s*=\s*value\.score;/,'terminal and score handling remain alongside music');
+  assert.match(stateBody,/if\(wasPaused!==combat\.paused\)syncCombatOverlay\(\);/,'only pause transitions refresh the parent overlay');
   assert.match(main, /function destroyStackedSession\(\) \{[^\n]*stackedRunMusic\?\.dispose\(\)/);
   assert.equal(mount.includes("void startArcadeMusicForGame('stacked');\n}"), false, 'mount no longer fires a bare unobserved start');
 });

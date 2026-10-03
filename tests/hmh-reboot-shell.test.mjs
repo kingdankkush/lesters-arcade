@@ -130,7 +130,8 @@ test('child runtime uses Pixi and the validated bridge without wallet or settlem
   assert.match(runtimeTelemetrySource, /(?:stageElement\.dataset|dataset)\.grenadeCount/);
   assert.match(runtimeTelemetrySource, /(?:stageElement\.dataset|dataset)\.dashReadyTick/);
   assert.doesNotMatch(source, /SETTLER_CALIBRATION/);
-  assert.match(source, /if \(debugGridEnabled \|\| releaseTelemetryEnabled\) \{\s*telemetryWriter\(\{/);
+  assert.match(source, /if \(debugGridEnabled \|\| releaseTelemetryEnabled\) \{\s*(?:dataset\.[A-Za-z0-9_]+\s*=\s*[^\n;]+;\s*)*telemetryWriter\(\{/);
+  assert.equal((source.match(/telemetryWriter\(\{/g) ?? []).length, 1, 'the full telemetry writer has one guarded callsite');
   assert.match(source, /label\.style\.fontSize/);
   assert.equal(/computeHudMinimapLayout/.test(source), false, 'runtime must not lay out a minimap');
   assert.match(source, /computeCombatStatusLayout/);
@@ -282,7 +283,7 @@ test('built child bundle exists after the project build', async () => {
 
 test('service worker versions both playable cabinet shells for offline startup', async () => {
   const source = await read('../apps/portal/sw.js');
-  assert.match(source, /CACHE_VERSION\s*=\s*'lesters-arcade-v67-level-one-only'/);
+  assert.match(source, /CACHE_VERSION\s*=\s*'lesters-arcade-v68-visual-refresh'/);
   const preCache = source.match(/const PRECACHE_URLS = \[([^\]]+)\]/s)?.[1] ?? '';
   for (const asset of [
     '/hmh-reboot/index.html',

@@ -64,11 +64,12 @@ const changeJson = (bytes, change) => {
 
 test('the bounded runtime loader reads real weighted geometry and clips from the embedded heroes and enemy', () => {
   assert.equal(typeof model.decodeActor3dGlb, 'function');
-  for (const [id, joints, clips] of [['lit-commando', 22, 80], ['lilly', 24, 80], ['lit-valkyrie', 22, 80], ['lester-original', 22, 80], ['bagholder-rusher', 19, 6], ['forkrunner', 24, 6], ['liquidator-agent', 22, 6], ['whale-enforcer', 19, 6], ['gas-bomber', 19, 6], ['validator-cultist', 19, 6], ...NEW_ENEMY_IDS.map(id => [id, 19, 6])]) {
+  for (const [id, joints, clips] of [['lit-commando', 22, 80], ['lilly', 24, 80], ['lit-valkyrie', 22, 80], ['lester-original', 22, 80], ['bagholder-rusher', 19, 7], ['forkrunner', 24, 6], ['liquidator-agent', 22, 6], ['whale-enforcer', 19, 6], ['gas-bomber', 19, 6], ['validator-cultist', 19, 6], ...NEW_ENEMY_IDS.map(id => [id, 19, 6])]) {
     const bytes = bytesFor(id), before = hash(bytes);
     const asset = model.decodeActor3dGlb(bytes);
     assert.equal(asset.skins[0].joints.length, joints);
     assert.equal(asset.clips.size, clips);
+    if (id === 'bagholder-rusher') assert.ok(asset.clips.has('death-side'), 'the seventh clip is the authored side fall');
     assert.ok(asset.primitives.length >= 2);
     assert.ok(asset.primitives.every(p => p.positions.length > 0 && p.joints.length === p.weights.length));
     assert.equal(hash(bytes), before);

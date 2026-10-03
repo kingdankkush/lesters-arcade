@@ -256,7 +256,10 @@ test('the runtime publishes the measured tell-to-strike and the zoom it was read
   assert.match(source, /^\s*lastEnemyStrike = event;$/m);
   assert.match(source, /lastEnemyStrike = null;/);
   assert.ok(source.indexOf('for (const event of lastEnemyAttack.events) {') < source.indexOf('lastEnemyStrike = event;'));
-  assert.match(source,/if \(debugGridEnabled \|\| releaseTelemetryEnabled\) \{\s*telemetryWriter\(/);
+  // Additional presentation metrics may precede the writer, but only dataset
+  // assignments may intervene: the writer remains inside the telemetry gate.
+  assert.match(source,/if \(debugGridEnabled \|\| releaseTelemetryEnabled\) \{\s*(?:dataset\.[A-Za-z0-9_]+\s*=\s*[^\n;]+;\s*)*telemetryWriter\(/);
+  assert.equal((source.match(/telemetryWriter\(\{/g) ?? []).length, 1);
 });
 
 // The browser gate must assert the frame its predicate accepted. The page

@@ -1,0 +1,94 @@
+{
+  "schema": "lesters-completed-bundle-release-v1",
+  "recordedAt": "2026-10-03T17:21:00.364Z",
+  "version": "2.2.0",
+  "marker": "lesters-arcade-v68-visual-refresh",
+  "scope": "Completed four-wave visual/polish delivery only; full 34-item master overhaul remains open",
+  "authorization": "Owner explicitly requested finishing testing/polish, committing and pushing the completed bundle live",
+  "featureCommits": [
+    "b7037ceaa",
+    "bad6844cc",
+    "463172365",
+    "9ea5143cf"
+  ],
+  "gate": {
+    "startedAt": "2026-10-03T17:04:26.770Z",
+    "normalExit": true,
+    "childClosureConfirmed": true,
+    "wholeChildWallMs": 984150.6932999999,
+    "stdoutSha256": "7790e636d366b05daa117780a950523b1f4fe6dc320abe8d1a98a39efe303dc8",
+    "retirement": {
+      "schemaVersion": 1,
+      "gate": "hmh-reboot-test-retirement",
+      "status": "PASS",
+      "counts": {
+        "tests": 6934,
+        "failed": 51,
+        "passed": 6883,
+        "cancelled": 0,
+        "skipped": 0,
+        "todo": 0,
+        "topLevel": 6867,
+        "suites": 8
+      },
+      "expectedFailureCount": 51,
+      "errors": []
+    }
+  },
+  "ranked": {
+    "startedAt": "2026-10-03T17:01:10.577Z",
+    "normalExit": true,
+    "childClosureConfirmed": true,
+    "wholeChildWallMs": 120908.658,
+    "stdoutSha256": "2b39fabfef38d3a5fac933f64c0cbb363bd44b534849b9be4d8971466eabb2f5",
+    "target": "local",
+    "localOnly": true,
+    "checks": {
+      "chikun": {
+        "passed": 23,
+        "total": 23
+      },
+      "stacked": {
+        "passed": 23,
+        "total": 23
+      },
+      "lester-blaster": {
+        "passed": 23,
+        "total": 23
+      }
+    }
+  },
+  "visual": {
+    "startedAt": "2026-10-03T17:03:21.382Z",
+    "normalExit": true,
+    "childClosureConfirmed": true,
+    "wholeChildWallMs": 44023.2939,
+    "stdoutSha256": "3ce4e4292c8b694ad629d0c552352b5a13525d8b913afbbe6f5eaf795b556c1c",
+    "legacyScenes": 12,
+    "phoneViewportOnly": true
+  },
+  "budgets": {
+    "hmh": {
+      "bytes": 1006947,
+      "cap": 1048576
+    },
+    "stacked": {
+      "bytes": 583383,
+      "cap": 607000
+    }
+  },
+  "compatibility": {
+    "hmh": "Existing schema 8/map v2; schemas 6/7 preserve historical dispatch",
+    "stacked": "2.2 schedule selected by canonical build hash; historical replay rules preserved",
+    "chikun": "Existing versioned exact replay retained"
+  },
+  "physicalPhoneAccepted": false,
+  "fullMasterAccepted": false,
+  "published": false,
+  "rollback": {
+    "url": "https://lesters-arcade-p379tvtiv-justin-agent-projects.vercel.app",
+    "deploymentId": "dpl_6zB942hwkanPYs6cwbhP6foMF5DW",
+    "version": "2.1.1"
+  },
+  "evidenceRoot": "C:/Users/just_/Documents/Codex/2026-09-29/you-are-taking-over-as-lead/outputs/22-release"
+}
