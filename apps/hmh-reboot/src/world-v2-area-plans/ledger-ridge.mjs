@@ -25,6 +25,7 @@ export function createLedgerRidgeArtPlan(world) {
   const { x: cx, y: cy } = area.center;
   plan.ground.base = { surfaceId: `${area.id}-floor`, material: 'rock' };
   plan.ground.terrain = { ...DISTRICT_TERRAIN[area.id] };
+  plan.ground.cliffKit = 'native-ridge-v1';
   // Compacted quarry road wear, spoil aprons at the cut feet, the store yard
   // and the worn working landing.
   plan.ground.zones.push(

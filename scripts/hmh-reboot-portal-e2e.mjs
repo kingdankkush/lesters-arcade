@@ -43,7 +43,7 @@ export const PORTAL_E2E_FLOWS = Object.freeze([
     id: 'pause-resume',
     status: 'implemented',
     covers: Object.freeze(['pause-resume']),
-    description: 'Portal-side pause freezes the child simulation tick and shows both pause surfaces; resume unfreezes the tick.',
+    description: 'The child pause freezes simulation and owns the sole pause panel while the parent soundtrack keeps playing; resume preserves manual music pause and unfreezes simulation.',
   }),
   Object.freeze({
     id: 'mid-run-restart',
@@ -363,8 +363,9 @@ if (isMain) {
   }
 
   async function openPauseMenu() {
-    await page.click('#combatMenuIconButton');
-    await page.waitForSelector('#combatMenuPanel[data-state="paused"]', { timeout: 10_000 });
+    await child.locator('#hmhMenuToggle').click();
+    await child.locator('#hmhPausePanel').waitFor({ state: 'visible', timeout: 10_000 });
+    assert.equal(await page.locator('#combatMenuPanel').isVisible(), false, 'the parent must not create a second HMH pause panel');
   }
 
   async function enterGuestFreeRun({ allowTerminal = false } = {}) {
@@ -445,11 +446,20 @@ if (isMain) {
     await runFlow('pause-resume', async () => {
       assert.ok(child, 'requires guest-free-run');
       assert.equal(await page.locator('#arcadeMusicPlayer').isVisible(), false, 'shared soundtrack deck must stay off the live combat canvas');
+      await page.waitForFunction(() => {
+        const audio=document.querySelector('#arcadeMusicAudio');
+        return audio&&!audio.paused&&audio.readyState>=3;
+      }, undefined, {timeout:15_000});
+      const soundtrackBeforePause=await page.locator('#arcadeMusicAudio').evaluate(audio=>({currentTime:audio.currentTime,currentSrc:audio.currentSrc}));
       await openPauseMenu();
       await child.waitForFunction(() => document.querySelector('#hmhRebootStatus')?.textContent === 'Portal session paused', undefined, { timeout: 10_000 });
       assert.equal(await page.locator('#officialCombatMount').getAttribute('data-paused'), 'true');
       await page.waitForSelector('#arcadeMusicPlayer[data-surface="pause-menu"]:not([hidden])', { timeout: 10_000 });
       await assertRendererFrozen('pause-resume');
+      const soundtrackWhilePaused=await page.locator('#arcadeMusicAudio').evaluate(audio=>({paused:audio.paused,currentTime:audio.currentTime,currentSrc:audio.currentSrc}));
+      assert.equal(soundtrackWhilePaused.paused,false,'game pause must leave the current soundtrack playing');
+      assert.equal(soundtrackWhilePaused.currentSrc,soundtrackBeforePause.currentSrc,'game pause must not replace the song');
+      assert.ok(soundtrackWhilePaused.currentTime>soundtrackBeforePause.currentTime,'soundtrack must advance while the simulation is paused');
       await page.click('#arcadeMusicExpandButton');
       const controls = await page.locator('#arcadeMusicPlayer button, #arcadeMusicPlayer input[type="range"]').evaluateAll((elements) => elements.map((element) => {
         const rect = element.getBoundingClientRect();
@@ -458,13 +468,15 @@ if (isMain) {
       const viewport = page.viewportSize();
       assert.ok(viewport, 'browser viewport unavailable');
       assert.ok(controls.every((rect) => rect.left >= 0 && rect.top >= 0 && rect.right <= viewport.width && rect.bottom <= viewport.height && rect.height >= 44 && rect.width >= 44), `pause soundtrack controls are clipped or below 44px: ${JSON.stringify(controls)}`);
-      const pauseSurfaceGeometry = await page.evaluate(() => {
+      const childMenuBox=await child.locator('#hmhPausePanel .hmh-menu-panel').boundingBox();
+      assert.ok(childMenuBox,'child pause card has no visible geometry');
+      const pauseSurfaceGeometry = await page.evaluate((childMenu) => {
         const rect = (selector) => {
           const bounds = document.querySelector(selector)?.getBoundingClientRect();
           return bounds ? { left: bounds.left, top: bounds.top, right: bounds.right, bottom: bounds.bottom } : null;
         };
         const deck = rect('#arcadeMusicPlayer');
-        const menu = rect('#combatMenuPanel');
+        const menu = {left:childMenu.x,top:childMenu.y,right:childMenu.x+childMenu.width,bottom:childMenu.y+childMenu.height};
         const overlapWidth = deck && menu ? Math.max(0, Math.min(deck.right, menu.right) - Math.max(deck.left, menu.left)) : 0;
         const overlapHeight = deck && menu ? Math.max(0, Math.min(deck.bottom, menu.bottom) - Math.max(deck.top, menu.top)) : 0;
         const icon = rect('#combatMenuIconButton');
@@ -473,7 +485,7 @@ if (isMain) {
         return { deck, menu, overlapArea: overlapWidth * overlapHeight, iconOverlap,
           position: getComputedStyle(document.querySelector('#arcadeMusicPlayer')).position,
           documentHeight: document.documentElement.scrollHeight };
-      });
+      },childMenuBox);
       if (browserProfile === 'desktop') {
         assert.equal(pauseSurfaceGeometry.overlapArea, 0, `pause soundtrack overlaps the primary pause menu: ${JSON.stringify(pauseSurfaceGeometry)}`);
       } else {
@@ -490,7 +502,6 @@ if (isMain) {
       assert.equal(volume.setting, 0.42, 'soundtrack volume did not persist through canonical HMH settings');
       assert.ok(Math.abs(volume.audio - (0.42 * 0.55)) < 0.0001, `pause soundtrack did not apply gameplay mix gain: ${JSON.stringify(volume)}`);
       const titleBefore = await page.locator('#arcadeMusicTitle').textContent();
-      await page.click('#arcadeMusicPlayButton');
       await page.waitForFunction(() => {
         const audio = document.querySelector('#arcadeMusicAudio');
         return Boolean(audio && !audio.paused && audio.readyState >= 3 && audio.seekable.length > 0
@@ -523,19 +534,29 @@ if (isMain) {
         assert.equal(await page.evaluate(() => document.documentElement.scrollHeight), pauseSurfaceGeometry.documentHeight, 'opening the phone soundtrack must not shift the page');
         await page.screenshot({ path: evidencePath('03b-paused-soundtrack-launcher'), fullPage: false });
       }
-      if (browserProfile === 'mobile') await page.click('#combatMenuActionGrid [data-action="resume"]');
-      else await page.click('#combatMenuIconButton');
+      // The player owns its transport. A manual pause must remain in effect
+      // after resuming the game; game pause/resume never forces music playback.
+      if(browserProfile==='mobile')await page.click('#arcadeMusicExpandButton');
+      await page.waitForFunction(()=>{
+        const audio=document.querySelector('#arcadeMusicAudio');
+        return audio&&!audio.paused&&audio.readyState>=3;
+      },undefined,{timeout:15_000});
+      await page.click('#arcadeMusicPlayButton');
+      await page.waitForFunction(()=>document.querySelector('#arcadeMusicAudio')?.paused===true,undefined,{timeout:10_000});
+      if(browserProfile==='mobile')await page.click('#arcadeMusicExpandButton');
+      await child.locator('#hmhResumeButton').click();
       await child.waitForFunction(() => document.querySelector('#hmhRebootStatus')?.textContent === 'Portal session connected', undefined, { timeout: 10_000 });
       assert.equal(await page.locator('#arcadeMusicPlayer').isVisible(), false, 'shared soundtrack deck must hide when combat resumes');
       await assertRendererAnimating('pause-resume');
-      return { pausedSurfaces: ['#combatMenuPanel', '#hmhPausePanel', '#arcadeMusicPlayer'], soundtrack: { controls: controls.length, geometry: pauseSurfaceGeometry, volume, playback, titleBefore, titleAfter } };
+      assert.equal(await page.locator('#arcadeMusicAudio').evaluate(audio=>audio.paused),true,'resuming the game must respect a manual soundtrack pause');
+      return { pausedSurfaces: ['#hmhPausePanel', '#arcadeMusicPlayer'], soundtrack: { controls: controls.length, geometry: pauseSurfaceGeometry, volume, playback, titleBefore, titleAfter, continuity:soundtrackWhilePaused,manualPausePreserved:true } };
     });
 
     await runFlow('mid-run-restart', async () => {
       assert.ok(child, 'requires guest-free-run');
       const sessionBefore = (await child.locator('#hmhRebootSession').textContent()).trim();
       await openPauseMenu();
-      await page.click('#combatMenuActionGrid [data-action="restart"]');
+      await child.locator('#hmhRestartButton').click();
       const restarted = await waitForConnectedChild({ differentFrom: sessionBefore });
       child = restarted.frame;
       const sessionAfter = restarted.session;
@@ -547,17 +568,17 @@ if (isMain) {
       return { sessionBefore, sessionAfter };
     });
 
-    let expectedGore = null;
+    let expectedGoreLevel = null;
     await runFlow('settings-persistence-reload', async () => {
       assert.ok(child, 'requires a live run');
       const before = await page.evaluate(() => JSON.parse(localStorage.getItem('hmh-settings') ?? '{}'));
       await openPauseMenu();
-      await page.click('#combatMenuActionGrid [data-action="toggle-settings"]');
-      await page.waitForSelector('#combatSettingsPanel:not([hidden])', { timeout: 10_000 });
-      await page.click('#combatSettingsPanel [data-action="gore"]');
+      const nextGoreLevel=(before.gameplay?.goreLevel??'full')==='off'?'full':'off';
+      await child.locator(nextGoreLevel==='off'?'#hmhSettingGoreOff':'#hmhSettingGoreFull').check();
+      await page.waitForFunction(level=>JSON.parse(localStorage.getItem('hmh-settings')??'{}').gameplay?.goreLevel===level,nextGoreLevel,{timeout:10_000});
       const after = await page.evaluate(() => JSON.parse(localStorage.getItem('hmh-settings') ?? '{}'));
-      assert.notEqual(after.gameplay?.gore, before.gameplay?.gore ?? true, 'gore toggle did not persist to hmh-settings');
-      expectedGore = after.gameplay?.gore;
+      assert.notEqual(after.gameplay?.goreLevel, before.gameplay?.goreLevel ?? 'full', 'gore choice did not persist to hmh-settings');
+      expectedGoreLevel = after.gameplay?.goreLevel;
       await page.evaluate(() => document.dispatchEvent(new Event('visibilitychange')));
       await page.waitForTimeout(400);
       await page.goto(`${origin}/`, { waitUntil: 'domcontentloaded' });
@@ -566,23 +587,20 @@ if (isMain) {
         settings: JSON.parse(localStorage.getItem('hmh-settings') ?? '{}'),
         save: JSON.parse(localStorage.getItem('lesters-arcade-save-v1') ?? 'null'),
       }));
-      assert.equal(persisted.settings.gameplay?.gore, expectedGore, 'hmh-settings did not survive reload');
+      assert.equal(persisted.settings.gameplay?.goreLevel, expectedGoreLevel, 'hmh-settings did not survive reload');
       assert.ok(persisted.save, 'arcade save missing after reload');
       assert.equal(persisted.save.version, 3);
       child = null;
-      return { gore: expectedGore, saveVersion: persisted.save.version };
+      return { goreLevel: expectedGoreLevel, saveVersion: persisted.save.version };
     });
 
     await runFlow('guest-exit-to-splash', async () => {
       child = await enterGuestFreeRun();
       await openPauseMenu();
-      await page.click('#combatMenuActionGrid [data-action="toggle-settings"]');
-      await page.waitForSelector('#combatSettingsPanel:not([hidden])', { timeout: 10_000 });
-      const goreLabel = await page.locator('#combatSettingsPanel [data-action="gore"]').textContent();
-      if (expectedGore !== null) {
-        assert.equal(goreLabel.includes('Gore Off'), expectedGore === false, `gore setting label "${goreLabel.trim()}" does not reflect persisted setting`);
+      if (expectedGoreLevel !== null) {
+        assert.equal(await child.locator(expectedGoreLevel==='off'?'#hmhSettingGoreOff':'#hmhSettingGoreFull').isChecked(),true,'child gore choice must reflect the persisted setting');
       }
-      await page.click('#combatMenuActionGrid [data-action="exit-to-arcade"]');
+      await child.locator('#hmhExitButton').click();
       await page.waitForSelector('#officialWalletSplash:not([hidden])', { timeout: 15_000 });
       assert.equal(await page.locator('#officialCombatMount iframe[data-runtime="hmh-reboot"]').count(), 0, 'exit must unmount the reboot iframe');
       await page.screenshot({ path: evidencePath('05-exit-splash'), fullPage: false });

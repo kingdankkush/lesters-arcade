@@ -1,0 +1,85 @@
+{
+  "schema": "native-ridge-cliff-kit/v1",
+  "source": "archived B1-42 sandstone packed colour image + native fractured geometry",
+  "sourceSha256": "968188146c68601fa4753d8c60f349e243ae31d672b4b3e93fbe6d8c4dececa1",
+  "scriptSha256": "cfd9e69bbebb4f0487c763af21f524718294ec6b220a5a981adf2df736da3b04",
+  "blender": "5.1.2",
+  "frames": [
+    {
+      "name": "fractured",
+      "rect": [
+        0,
+        0,
+        512,
+        192
+      ]
+    },
+    {
+      "name": "shelves",
+      "rect": [
+        512,
+        0,
+        512,
+        192
+      ]
+    },
+    {
+      "name": "weathered",
+      "rect": [
+        0,
+        192,
+        512,
+        192
+      ]
+    },
+    {
+      "name": "talus",
+      "rect": [
+        512,
+        192,
+        512,
+        192
+      ]
+    },
+    {
+      "name": "lip",
+      "rect": [
+        0,
+        384,
+        512,
+        128
+      ]
+    },
+    {
+      "name": "foot",
+      "rect": [
+        512,
+        384,
+        512,
+        128
+      ]
+    }
+  ],
+  "files": [
+    {
+      "file": "ridge-cliff-kit.webp",
+      "size": [
+        1024,
+        512
+      ],
+      "bytes": 104916,
+      "decodedBytes": 2097152,
+      "sha256": "ef3cd273e2253047796aa326928d1828e3de6606ea67d7c673e945fcfa220b96"
+    },
+    {
+      "file": "ridge-cliff-kit@0.5x.webp",
+      "size": [
+        512,
+        256
+      ],
+      "bytes": 46092,
+      "decodedBytes": 524288,
+      "sha256": "4adafe9837129a1e03f1a5d0950e957b6a27b0139cbabe7f0ba21b08611c4b09"
+    }
+  ]
+}

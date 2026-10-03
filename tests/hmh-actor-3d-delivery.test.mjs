@@ -73,3 +73,28 @@ test('standing turns use wrapped cumulative heading, and combat/cover/strafe alw
   assert.equal(observe(110,{heading:0}),null);
   assert.deepEqual(observe(111,{heading:Math.PI}),{clip:'pivot',tick:0});
 });
+
+test('native enemy recoil reaches its full authored clip during the existing six-tick hit window',()=>{
+  const enemy={id:'hit',actorId:'hodl-revenant',active:true,visible:true,alpha:1,x:0,y:0,z:0,originals:[]};
+  for(const [tick,expected] of [[0,0],[3,.5],[6,1],[15,1]]) {
+    const input=Object.freeze({...enemy,pose:Object.freeze({state:'hit',direction:2,tick})}),before=JSON.stringify(input);
+    const pose=controller.createActor3dPresentationEntries(null,[input])[0].descriptor;
+    assert.equal(pose.clipTimeSeconds,expected);assert.equal(JSON.stringify(input),before);
+  }
+  assert.equal(controller.createActor3dPresentationEntries(null,[{...enemy,pose:{state:'attack',direction:2,phaseTick:3}}])[0].descriptor.clipTimeSeconds,3/60);
+});
+
+test('opaque native corpses use only remaining slots after hero, bosses and living enemies',()=>{
+  const live={id:'live',actorId:'bagholder-rusher',active:true,visible:true,alpha:1,x:200,y:0,z:0,pose:{state:'run',direction:2,tick:4},originals:[]};
+  const corpse={id:'fallen',actorId:'hodl-revenant',visible:true,alpha:1,x:0,y:0,z:0,pose:{state:'death',direction:2,tick:30},originals:[]};
+  const boss={actorId:'boss-lockkeeper',active:true,visible:true,alpha:1,x:10,y:0,z:0,pose:{state:'idle',direction:0,tick:4},originals:[]};
+  const hero={actorId:'lilly',weaponId:'coin-blaster',x:0,y:0,z:0,heading:0,action:'idle',actionTick:0,originals:[]};
+  const input=Object.freeze({...corpse,pose:Object.freeze(corpse.pose)}),before=JSON.stringify(input);
+  const full=controller.createActor3dPresentationEntries(hero,[live],null,4,hero,[boss],[input]);
+  assert.deepEqual(full.map(row=>row.descriptor.id),['hero','boss:boss-lockkeeper','enemy:live','corpse:fallen']);
+  assert.equal(full.at(-1).descriptor.clip,'death');assert.equal(full.at(-1).descriptor.clipTimeSeconds,.5);
+  assert.equal(JSON.stringify(input),before);
+  assert.deepEqual(controller.createActor3dPresentationEntries(hero,[live],null,3,hero,[boss],[corpse]).map(row=>row.descriptor.id),['hero','boss:boss-lockkeeper','enemy:live']);
+  const invalid=[{...corpse,alpha:.99},{...corpse,visible:false},{...corpse,actorId:'creature'},{...corpse,pose:{state:'run',direction:2,tick:1}}];
+  assert.equal(controller.createActor3dPresentationEntries(null,[],null,8,null,null,invalid).length,0);
+});

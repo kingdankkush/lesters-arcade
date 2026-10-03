@@ -93,7 +93,7 @@ function supported(renderer, canvas) {
   finally { if (previous) { try { renderer.renderTarget.bind(previous, false); } catch { return false; } } }
 }
 
-export function createActor3dPresentationEntries(hero, enemies, boss = null, maxActors = ACTOR3D_QUALITY_LIMITS.medium, focus = hero, districtBosses = null) {
+export function createActor3dPresentationEntries(hero, enemies, boss = null, maxActors = ACTOR3D_QUALITY_LIMITS.medium, focus = hero, districtBosses = null, corpses = null) {
   actorLimit(maxActors);
   const entries = [], pixelsPerMetre = Number.isFinite(hero?.bodyHeight) && hero.bodyHeight > 0 ? hero.bodyHeight / 2.1 : 40;
   const authored = hero ? selectHeroActor3dClip(hero) : null;
@@ -118,10 +118,27 @@ export function createActor3dPresentationEntries(hero, enemies, boss = null, max
     .sort((a, b) => a.distance - b.distance || (a.id < b.id ? -1 : a.id > b.id ? 1 : 0));
   for (const { enemy } of candidates) {
     if (entries.length >= maxActors) break;
-    const pose = enemy.pose, time = Math.max(0, pose.phaseTick ?? pose.tick ?? 0) / 60;
+    // Native exports normalize every action to one second. The existing hit
+    // event lasts six ticks; /60 displayed only the first tenth of its pose.
+    const pose = enemy.pose, time = Math.max(0, pose.phaseTick ?? pose.tick ?? 0) / (pose.state === 'hit' ? 6 : 60);
     entries.push({ descriptor: { id: `enemy:${enemy.id}`, actorId: enemy.actorId, x: enemy.x, y: enemy.y, z: enemy.z,
       heading: (2 - (pose.direction ?? 0)) * Math.PI / 4, clip: pose.state,
       clipTimeSeconds: ['idle', 'run'].includes(pose.state) ? time % 1 : Math.min(1, time), pixelsPerMetre }, originals: enemy.originals });
+  }
+  // Retired bodies are presentation records, never living simulation actors.
+  // Live actors reserve their quality slots first; translucent fades retain
+  // the established sprite path because this depth pass is opaque-only.
+  const fallen = (Array.isArray(corpses) ? corpses : corpses ? [corpses] : []).filter(corpse =>
+    ACTOR3D_ENEMY_IDS.includes(corpse?.actorId) && corpse.visible === true && corpse.alpha === 1
+    && typeof corpse.id === 'string' && corpse.id.length > 0 && corpse.pose?.state === 'death'
+    && Number.isInteger(corpse.pose.direction) && corpse.pose.direction >= 0 && corpse.pose.direction < 8
+    && [corpse.x,corpse.y,corpse.z ?? 0,corpse.pose.tick].every(Number.isFinite) && corpse.pose.tick >= 0)
+    .map(corpse => ({corpse,distance:(corpse.x-originX)**2+(corpse.y-originY)**2}))
+    .sort((a,b)=>a.distance-b.distance || (a.corpse.id < b.corpse.id ? -1 : a.corpse.id > b.corpse.id ? 1 : 0));
+  for(const {corpse} of fallen) {
+    if(entries.length >= maxActors) break;
+    entries.push({descriptor:{id:`corpse:${corpse.id}`,actorId:corpse.actorId,x:corpse.x,y:corpse.y,z:corpse.z ?? 0,
+      heading:(2-corpse.pose.direction)*Math.PI/4,clip:'death',clipTimeSeconds:Math.min(1,corpse.pose.tick/60),pixelsPerMetre},originals:corpse.originals});
   }
   return entries;
 }
@@ -140,7 +157,7 @@ export function createActor3dPilotController({ renderer, canvas, qualityTier = '
   const hidden = new Map(); let disposed = false, backend = null;
   const restore = () => { for (const [display, record] of hidden) if (!display.destroyed) display.renderable = record.value; hidden.clear(); };
   const session = createActor3dPilotSession({ enabled: true, supported: supported(renderer, canvas), createBackend: async () => (backend = await backendFactory({ signal: abort.signal, maxActors, qualityTier:tier, heroActorId: selectedHero })), attachDisplay,
-    onFallback: reason => { abort.abort(); restore(); onTelemetry({ status: 'fallback', count: 0, reason }); } });
+    onFallback: reason => { abort.abort(); restore(); onTelemetry({ status: 'fallback', count: 0, corpseCount:0, enemyHitCount:0, reason }); } });
   const lost = () => session.handleContextLoss();
   canvas?.addEventListener('webglcontextlost', lost);
   const controller = {
@@ -149,7 +166,7 @@ export function createActor3dPilotController({ renderer, canvas, qualityTier = '
     // World-unit offset of the drawn hero's muzzle from its foot position for
     // the last rendered frame, or null while sprites own the hero.
     heroMuzzleOffset() { return !disposed && session.status === 'ready' && hidden.size > 0 ? backend?.heroMuzzle?.() ?? null : null; },
-    async start() { const status = await session.start(); if (!disposed && status !== 'fallback') onTelemetry({ status, count: 0 }); return status; },
+    async start() { const status = await session.start(); if (!disposed && status !== 'fallback') onTelemetry({ status, count: 0, corpseCount:0, enemyHitCount:0 }); return status; },
     update(entries, camera, viewport) {
       restore(); if (disposed || session.status !== 'ready') return false;
       try {
@@ -162,16 +179,18 @@ export function createActor3dPilotController({ renderer, canvas, qualityTier = '
           if (!hidden.has(display)) hidden.set(display, { value: display.renderable, id: entry.descriptor.id });
           display.renderable = false;
         }
-        onTelemetry({ status: session.status, count: frame.length, qualityTier: tier, maxActors }); return true;
+        let corpseCount=0,enemyHitCount=0;
+        for(const row of frame) { if(row.id.startsWith('corpse:')) corpseCount++; else if(row.id.startsWith('enemy:') && row.clip === 'hit') enemyHitCount++; }
+        onTelemetry({ status: session.status, count: frame.length, qualityTier: tier, maxActors,corpseCount,enemyHitCount }); return true;
       } catch { session.handleFailure(); return false; }
     },
-    updateGame(hero, enemies, camera, viewport, boss = null, districtBosses = null) {
+    updateGame(hero, enemies, camera, viewport, boss = null, districtBosses = null, corpses = null) {
       try {
         const accent = movement.observe(hero);
         const fidget = fidgets.observe({ tick: hero?.actionTick, idle: !accent && hero?.actorId === selectedHero && hero.action === 'idle' && !hero.moving && hero.clip === undefined && !selectHeroActor3dClip(hero) });
         const chosen = accent ?? fidget;
         const presented = chosen ? { ...hero, clip: chosen.clip, clipTick: chosen.tick } : hero;
-        return controller.update(createActor3dPresentationEntries(presented, enemies, boss, maxActors, hero ?? camera, districtBosses).filter(entry => entry.descriptor.id !== 'hero' || entry.descriptor.actorId === selectedHero), camera, viewport);
+        return controller.update(createActor3dPresentationEntries(presented, enemies, boss, maxActors, hero ?? camera, districtBosses, corpses).filter(entry => entry.descriptor.id !== 'hero' || entry.descriptor.actorId === selectedHero), camera, viewport);
       } catch { restore(); session.handleFailure(); return false; }
     },
     dispose() {

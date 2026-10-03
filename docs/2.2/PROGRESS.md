@@ -22,6 +22,73 @@ not a declaration that its 34 items are complete.
 
 ## Delivered slices and evidence
 
+The first visual delivery checkpoint is committed as **`b7037ceaa`** on the
+overhaul branch. It is a feature checkpoint, not a versioned release; nothing
+from this branch has been pushed, deployed or promoted.
+
+### Enemy clips, Ridge cliffs and HMH pause (second delivery batch)
+
+Ordinary enemy hit clips now span their complete authored animation in the
+existing six-tick hit window. Existing opaque corpse markers can use spare
+native actor slots after the hero, bosses and living enemies. Fading, unready
+models and failures restore sprites. No enemy health, RNG, evidence, corpse
+lifetime or cap changes. Evidence-only counters record successfully rendered
+native hits and corpses.
+
+Ledger Ridge has four native fractured face variants, cap trim and rubble
+footing, using the existing archived sandstone material. Runtime atlases are
+104,916 B full and 46,092 B half; Ridge ground decode is 7,471,104 B, below
+8 MiB. Other districts do not load this page. The source archive is unchanged.
+Independent review corrected double alpha multiplication and sprite fallback
+atlas insets. Actual screenshots exposed horizontal texture jumps; continuous
+mirrored sampling corrected them. Fresh desktop/phone captures were inspected
+and both native atlas requests returned 200. Other cliffs, ramps, seams and
+pillar variants remain open.
+
+HMH now owns its pause and upgrade surfaces without the parent legacy menu
+stacking on top. Parent completion and game-over recap remain reachable.
+Pause/resume leaves the soundtrack transport alone, preserving both ongoing
+music and a player's manual music pause. The map is collapsible so settings
+are easier to reach. Seven behavior checks plus actor/flow-contract checks
+pass (48 combined at that checkpoint). Actual desktop/phone-viewport checks
+passed for one child menu, settings above the fold, map expansion/collapse,
+music continuity and preserving manual soundtrack pause.
+
+Final focused regressions: **88/88 pass**. The 13 edited/new JavaScript modules
+and native Python generator parse. Required `visual:reboot` passes all 12
+legacy scenes unchanged, with zero frame-signature delta and no runtime
+errors; it still does not cover the ten-area world. Fresh build: HMH initial
+plus shared **1,004,517 / 1,048,576 B**; STACKED **583,177 / 607,000 B**.
+
+Native hit playback was observed in the existing full-health pressure scene
+(up to six native hit rows). Ordinary Free play separately showed a native
+corpse and sprite handoff during fade. The crowded scene prioritizes living
+actors, so it need not allocate native corpse slots. The initial combined
+checker incorrectly required both observations in the same scene, and the
+stationary roster test has automatic firing disabled. Those failed receipts
+remain preserved; the independent observations are summarized in the lead
+workspace's `outputs/22-hmh-second/animation-observations.json`. Original
+browser jobs confirmed owned Chrome/server closure. No frame-time or physical
+phone performance acceptance is claimed. Full new animation/art sets remain
+open despite these corrected clip-delivery paths.
+
+### Progression policy audit (item 15, not implemented)
+
+Preserve upgrade amounts, selectable ranks, XP multipliers and maximum power.
+The current catalogue has 36 upgrades and 167 selectable ranks, rather than
+the guide's historical 24 upgrades. Recommended new threshold for completing
+level L below 19: legacy cumulative XP plus
+`round(25 * L * (19 - L)^2 / 27)`; L >= 19 remains exactly legacy. This raises
+level-2 XP from 300 to 600, level-5 from 3,000 to 3,833, and rejoins the existing
+57,000 XP threshold at level 20. Later thresholds and eventual power stay
+unchanged. The 15–20 Liquidator level is a soft target: current evidence does
+not prove a universal fight-entry level, and high-income runs may exceed 20.
+
+Do not change the shared schema-6/7/8 helpers or verifiers. Implement this with
+the upcoming bound-version schema-9 ruleset, including XP bar floors, objective
+XP, OG Miner span and new verifier selection. Historical runs must retain their
+original curve. No curve code or version constants changed in this batch.
+
 ### Default HMH character delivery (item 1, partial)
 
 Default lazy 3D delivery, bounded low/medium/high actor counts, reduced texture
@@ -144,7 +211,7 @@ the preserve-power curve remain pending.
 | --- | --- |
 | 1 | Default 3D and all four low download tiers browser checked; mesh LOD, quality governor and phone performance open. |
 | 2 | New surface materials checked; full biome terrain/edge variation open. |
-| 3 | Cliff, ramp, pillar and deck kit pending. |
+| 3 | Ridge native face/lip/foot kit desktop/phone-viewport reviewed; other cliff, ramp, pillar and deck work pending. |
 | 4 | Ground shadow cutoff corrected; full light rig/local pools/fog pending. |
 | 5 | Flow/depth/foam water and sea coast rules pending. |
 | 6 | Centre identity composition in progress; all ten final kits pending. |
@@ -164,7 +231,7 @@ the preserve-power curve remain pending.
 | 20 | Area objective routes/tracker/rewards versioned rules pending. |
 | 21 | Compact HUD/active weapon layout browser checked (85 px desktop, 83 px phone); FOV/reticle checks open. |
 | 22 | Death beat/recap grade pending. |
-| 23 | Shared pause/music integration audit pending. |
+| 23 | HMH double pause, music continuity/manual pause and map disclosure corrected and browser checked; child transport bridge and gamepad/menu completion pending. |
 | 24 | Repeated-offer repaint corrected; new cards/briefing art and merged intro pending. |
 | 25 | Uniform three-cabinet menu/gamepad audit pending. |
 | 26 | Audio master + actor environment light delivered; haptics/controller/death polish pending. |

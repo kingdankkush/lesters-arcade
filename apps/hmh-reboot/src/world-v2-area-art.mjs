@@ -17,7 +17,7 @@ export const AREA_ART_ID = 'world-v2-area-art/v1';
 const SHADOW_TINT = 0x03070b;
 // Shared key from the screen upper left: contact shadows lean down-right.
 const SHADOW_LEAN = Object.freeze({ x: 0.1, y: 0.05 });
-import { MEADOW_DETAIL_FRAMES, AREA_ART_MEADOW_DETAIL_PAGE } from './world-v2-area-art-schema.mjs';
+import { MEADOW_DETAIL_FRAMES, AREA_ART_MEADOW_DETAIL_PAGE, AREA_ART_RIDGE_CLIFF_PAGE, RIDGE_CLIFF_FRAMES } from './world-v2-area-art-schema.mjs';
 const DETAIL_FRAMES = Object.freeze({ ...MEADOW_DETAIL_FRAMES, 'detail:grass': { x: 0, y: 0, w: 180, h: 122, anchor: { x: 0.53, y: 0.73 }, scale: 0.34 }, 'detail:aggregate': { x: 0, y: 160, w: 224, h: 96, anchor: { x: 0.5, y: 0.5 }, scale: 0.42 } });
 
 const scaleMatrix = s => ({ a: s, b: 0, c: 0, d: s, tx: 0, ty: 0 });
@@ -173,11 +173,28 @@ out vec4 finalColor;
 uniform sampler2D uT0; uniform sampler2D uT1; uniform sampler2D uRock;
 uniform vec4 uL0; uniform vec4 uL1; uniform vec3 uM0; uniform vec3 uM1;
 uniform vec3 uBase; uniform vec4 uSurface; uniform vec3 uMoss; uniform vec3 uFaceTint;
+uniform vec4 uCliffKit;
 uniform vec4 uColor; uniform vec4 uWorldColorAlpha;
 ${GRAIN_GLSL}
+// Ridge native atlas: four faces in the top 3/4, cap and rubble in the
+// bottom quarter. Inset by a physical texel at either tier to prevent bleed.
+float ridgeMirror(float u) {
+  return 1.0 - abs(fract(u * 0.5) * 2.0 - 1.0);
+}
+vec4 ridgeFrame(float frame, vec2 uv) {
+  vec2 origin = frame < 4.0 ? vec2(mod(frame, 2.0) * 0.5, floor(frame / 2.0) * 0.375) : vec2((frame - 4.0) * 0.5, 0.75);
+  vec2 size = vec2(0.5, frame < 4.0 ? 0.375 : 0.25);
+  vec2 inset = vec2(1.0 / 1024.0, 1.0 / 512.0) * uCliffKit.y;
+  return texture(uRock, origin + inset + clamp(uv, 0.0, 1.0) * (size - inset * 2.0));
+}
 void main() {
   vec3 col;
-  if (vFace.w < 0.01) {
+  if (vFace.w < -0.01) {
+    vec4 rubble = ridgeFrame(5.0, vec2(ridgeMirror(vFace.x / 180.0), vFace.y));
+    // Pixi uploads this atlas premultiplied; preserve its RGB coverage once.
+    finalColor = vec4(rubble.rgb * uFaceTint * abs(vFace.w), rubble.a) * uColor * uWorldColorAlpha;
+    return;
+  } else if (vFace.w < 0.01) {
     col = uBase * grain(uT0, uL0, uM0) * grain(uT1, uL1, uM1);
     col *= 1.0 + (fbm2(vWorld / 520.0) - 0.5) * uSurface.x + (fbm2(vWorld / 90.0 + 9.0) - 0.5) * uSurface.y;
     col = mix(col, uMoss * grain(uT1, uL1, uM1), smoothstep(0.52, 0.72, fbm2(vWorld / 380.0 + 4.0)) * uSurface.z);
@@ -188,12 +205,25 @@ void main() {
   } else {
     float u = vFace.x, lip = vFace.y, foot = vFace.z, t = lip / 110.0;
     float vA = 1.0 - abs(fract(t * 0.5) * 2.0 - 1.0), vC = 1.0 - abs(fract(t * 0.5 + 0.31) * 2.0 - 1.0);
-    vec3 a = texture(uRock, vec2(u / 260.0, vA)).rgb;
-    vec3 b = texture(uRock, vec2(-u / 337.0 + 0.41, vA * 0.92 + 0.04)).rgb;
-    vec3 c = texture(uRock, vec2(u / 211.0 + 0.73, vC)).rgb;
+    vec3 a, b, c;
+    if (uCliffKit.x > 0.5) {
+      // Each bake carries its own fracture depth. Sample its complete height
+      // instead of reflecting the same 110-unit rock band up a tall cliff.
+      float v = clamp(lip / max(lip + foot, 1.0), 0.0, 1.0);
+      a = ridgeFrame(0.0, vec2(ridgeMirror(u / 440.0), v)).rgb;
+      b = ridgeFrame(1.0, vec2(ridgeMirror(-u / 577.0 + 0.41), v)).rgb;
+      c = mix(ridgeFrame(2.0, vec2(ridgeMirror(u / 371.0 + 0.73), v)).rgb, ridgeFrame(3.0, vec2(ridgeMirror(u / 493.0 + 0.22), v)).rgb, 0.5 + 0.25 * sin(u / 480.0));
+    } else {
+      a = texture(uRock, vec2(u / 260.0, vA)).rgb;
+      b = texture(uRock, vec2(-u / 337.0 + 0.41, vA * 0.92 + 0.04)).rgb;
+      c = texture(uRock, vec2(u / 211.0 + 0.73, vC)).rgb;
+    }
     col = (a * (1.0 - vVariant.x - vVariant.y) + b * vVariant.x + c * vVariant.y) * uFaceTint * vFace.w;
     col *= 1.0 + (fbm2(vec2(u, lip * 1.6) / 170.0) - 0.5) * 0.3;
-    col = mix(col, col * 1.32 + 0.03, (1.0 - smoothstep(0.0, 7.0, lip)) * 0.6);
+    if (uCliffKit.x > 0.5 && lip < 22.0) {
+      vec4 rim = ridgeFrame(4.0, vec2(ridgeMirror(u / 180.0), lip / 22.0));
+      col = col * (1.0 - rim.a) + rim.rgb * uFaceTint * vFace.w;
+    } else if (uCliffKit.x < 0.5) col = mix(col, col * 1.32 + 0.03, (1.0 - smoothstep(0.0, 7.0, lip)) * 0.6);
     col *= mix(0.46, 1.0, smoothstep(0.0, min((lip + foot) * 0.22, 40.0), foot));
   }
   finalColor = vec4(clamp(col, 0.0, 1.0), 1.0) * uColor * uWorldColorAlpha;
@@ -343,7 +373,7 @@ export function createAreaArt({ world, areaId, plan, kit = null, loadTexture, te
   // should be on screen waits for the next gate.
   const GATE = 48; let gateX = NaN, gateY = NaN, gateZoom = NaN, gateW = NaN, gateH = NaN; const paddedView = { width: 0, height: 0 };
   let host = null, depthKey = y => y;
-  let detailTexture = null, meadowDetailTexture = null, pageTextures = new Map(), controlTexture = null, terrainField = null, terrainMesh = null;
+  let detailTexture = null, meadowDetailTexture = null, ridgeCliffTexture = null, pageTextures = new Map(), controlTexture = null, terrainField = null, terrainMesh = null;
   const overlays = new Map();
   const signTextures = new Map(), fogCards = [];
   let fogTexture = null, fogFrame = 0, fogStatic = true;
@@ -421,6 +451,11 @@ export function createAreaArt({ world, areaId, plan, kit = null, loadTexture, te
       }
       if (summary.detailPage) jobs.push(acquire(AREA_ART_DETAIL_ROOT + AREA_ART_DETAIL_PAGE).then(texture => { detailTexture = texture; }));
       if (summary.nativeMeadowDetails) jobs.push(acquire(AREA_ART_DETAIL_ROOT + (ratio===0.5 ? AREA_ART_MEADOW_DETAIL_PAGE.replace('.webp','@0.5x.webp') : AREA_ART_MEADOW_DETAIL_PAGE)).then(texture => { meadowDetailTexture=texture; }));
+      if(summary.nativeRidgeCliffs) jobs.push(acquire(AREA_ART_DETAIL_ROOT+(ratio===0.5?AREA_ART_RIDGE_CLIFF_PAGE.replace('.webp','@0.5x.webp'):AREA_ART_RIDGE_CLIFF_PAGE)).then(texture=>{
+        if(!texture)return;
+        if(texture.source.pixelWidth!==1024*ratio || texture.source.pixelHeight!==512*ratio) throw new Error('native Ridge cliff atlas decoded at the wrong size');
+        ridgeCliffTexture=texture;
+      }));
       const results = await Promise.allSettled(jobs);
       const failure = results.find(result => result.status === 'rejected');
       if (failure) throw failure.reason;
@@ -860,8 +895,9 @@ export function createAreaArt({ world, areaId, plan, kit = null, loadTexture, te
       uniforms.uSurface = { value: new Float32Array([0.34, 0.22, materialId === 'rock' ? 0.55 : 0, 0]), type: 'vec4<f32>' };
       uniforms.uMoss = { value: new Float32Array(rgb(0x5b6650)), type: 'vec3<f32>' };
       uniforms.uFaceTint = { value: new Float32Array(rgb(tint)), type: 'vec3<f32>' };
+      uniforms.uCliffKit = { value: new Float32Array([ridgeCliffTexture?1:0,1/ratio,0,0]), type: 'vec4<f32>' };
       resources.solidUniforms = new UniformGroup(uniforms);
-      resources.uRock = rockFace.source; resources.uRockSampler = rockFace.source.style;
+      resources.uRock = (ridgeCliffTexture??rockFace).source; resources.uRockSampler = (ridgeCliffTexture??rockFace).source.style;
       shader = new Shader({ glProgram, resources }); rockShaders.set(key, shader);
     }
     const positions = roofPoints.flatMap(p => [p.x, p.y]), face = new Array(roofPoints.length * 4).fill(0), variant = new Array(roofPoints.length * 2).fill(0), index = [...indices];
@@ -871,10 +907,19 @@ export function createAreaArt({ world, areaId, plan, kit = null, loadTexture, te
       face.push(a.x, h, 0, lit, c.x, h, 0, lit, c.x, 0, h, lit, a.x, 0, h, lit);
       variant.push(va[1], va[2], vc[1], vc[2], vc[1], vc[2], va[1], va[2]);
       index.push(base, base + 1, base + 2, base, base + 2, base + 3);
+      if(ridgeCliffTexture && h>1) {
+        // One narrow, walk-through rubble skirt on this already exposed edge.
+        // Same mesh and depth pivot; no new object, blocker or navigation data.
+        const footBase=positions.length/2;
+        positions.push(a.x,a.y,c.x,c.y,c.x,c.y+26,a.x,a.y+26);
+        face.push(a.x,0,0,-lit,c.x,0,0,-lit,c.x,1,0,-lit,a.x,1,0,-lit);
+        variant.push(0,0,0,0,0,0,0,0);
+        index.push(footBase,footBase+1,footBase+2,footBase,footBase+2,footBase+3);
+      }
     }
     const geometry = new Geometry({ attributes: { aPosition: { buffer: new Float32Array(positions), format: 'float32x2' }, aFace: { buffer: new Float32Array(face), format: 'float32x4' }, aVariant: { buffer: new Float32Array(variant), format: 'float32x2' } }, indexBuffer: new Uint32Array(index) });
     const mesh = new Mesh({ geometry, shader, texture: tiles.get(AREA_ART_MATERIALS[materialId].grain[0].tile) });
-    mesh.label = 'area-solid-rock';
+    mesh.label = ridgeCliffTexture?'area-solid-native-ridge-rock':'area-solid-rock';
     return mesh;
   }
   // Authored edges with their outward normal and whether another solid at
@@ -908,6 +953,23 @@ export function createAreaArt({ world, areaId, plan, kit = null, loadTexture, te
     if (clear >= h) return h;
     const closed = /^(closed-mass|world-guard)-/.test(piece.id);
     return Math.min(h, Math.max(56, clear, closed ? 0 : h * 0.55));
+  }
+  function ridgeBandSprite(name,a,c,yShift,height,tint) {
+    const key=`ridge:${name}`;let entry=frames.get(key);
+    if(!entry) {
+      const frame=RIDGE_CLIFF_FRAMES[name],physicalUnit=unitsPerPixel(ridgeCliffTexture),unit=ratio*physicalUnit;
+      // Match ridgeFrame's one-physical-texel inset at either tier. The
+      // projected band dimensions below compensate for this crop exactly.
+      entry={texture:new Texture({source:ridgeCliffTexture.source,frame:new Rectangle(frame.x*unit+physicalUnit,frame.y*unit+physicalUnit,frame.w*unit-2*physicalUnit,frame.h*unit-2*physicalUnit)})};frames.set(key,entry);
+    }
+    const sprite=new Sprite({texture:entry.texture}),dx=c.x-a.x,dy=c.y-a.y;
+    sprite.position.set(a.x,a.y+yShift);
+    sprite.scale.set(Math.hypot(dx,dy)/entry.texture.width,height/entry.texture.height);
+    // Affine face projection: the top follows its authored edge, while the
+    // height axis remains screen-vertical. No skewed/rotated end geometry.
+    sprite.skew.y=Math.atan2(dy,dx);sprite.tint=tint;
+    sprite.label=`area-native-ridge-${name==='lip'||name==='foot'?name:'face'}`;
+    return sprite;
   }
   function createSolid(piece) {
     if (disposed || !summary) return null;
@@ -977,6 +1039,11 @@ export function createAreaArt({ world, areaId, plan, kit = null, loadTexture, te
         if (roofMesh) mass.addChild(roofMesh); else { const flat = new Graphics(); materialFill(flat, roof, roofMaterial, { tint: solid.tint }); mass.addChild(flat); }
         for (const { a, c, ra, rc, dx, dy, len, ux, uy, nx, lit } of segments) {
           const quad = [a, c, rc, ra], flat = quad.flatMap(p => [p.x, p.y]), shade = Math.round(lit * 255) * 0x010101;
+          if(rocky && ridgeCliffTexture) {
+            const tint=multiplyTint(solid.tint,shade),variant=['fractured','shelves','weathered','talus'][Math.min(3,Math.floor(stableUnit('ridge-face',a.x,a.y)*4))];
+            mass.addChild(ridgeBandSprite(variant,a,c,-h,h,tint),ridgeBandSprite('lip',a,c,-h,22,tint),ridgeBandSprite('foot',a,c,0,26,tint));
+            continue;
+          }
           if (rocky && rockFace) {
             const sc = 260 / (rockFace.source.width || 512), fh = rockFace.source.height || 128;
             const slope = Math.abs(dx) > len * 0.3 ? dy / dx : null;
@@ -1179,7 +1246,7 @@ export function createAreaArt({ world, areaId, plan, kit = null, loadTexture, te
     for (const node of solidNodes) { try { evict(node); } catch {} } solidNodes.length = 0; for (const record of solidRecords) record.node = null; solidRecords.length = 0;
     for (const node of painted) { try { node.removeFromParent?.(); node.destroy?.({ children: true }); } catch {} } painted.length = 0;
     for (const entry of frames.values()) entry.texture.destroy(false); frames.clear(); live.clear();
-    for (const url of owned) cache.release(url); owned.length = 0; tiles.clear(); overlays.clear(); pageTextures.clear(); detailTexture = null; meadowDetailTexture = null;
+    for (const url of owned) cache.release(url); owned.length = 0; tiles.clear(); overlays.clear(); pageTextures.clear(); detailTexture = null; meadowDetailTexture = null; ridgeCliffTexture=null;
     for (const texture of signTextures.values()) { try { texture?.destroy(true); } catch {} } signTextures.clear(); fogCards.length = 0; try { fogTexture?.destroy(true); } catch {} fogTexture = null;
     for (const body of waterBodies) { try { body.texture?.destroy(true); } catch {} } waterBodies.length = 0; waterMeshes.length = 0; surfaceNodes.length = 0;
     try { controlTexture?.control.destroy(true); if (controlTexture && controlTexture.light !== controlTexture.control) controlTexture.light.destroy(true); } catch {} controlTexture = null; terrainMesh = null;

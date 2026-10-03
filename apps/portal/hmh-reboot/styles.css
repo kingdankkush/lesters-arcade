@@ -971,6 +971,11 @@ html[data-debug-hud="1"] .hmh-controls-hint { display: none !important; }
 }
 
 .hmh-field-map-section { grid-column: 1 / -1; min-width: 0; }
+#hmhFieldMapDisclosure > summary { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 44px; cursor: pointer; }
+#hmhFieldMapDisclosure > summary h2 { margin: 0; }
+#hmhFieldMapDisclosure > summary:focus-visible { outline: 2px solid var(--cyan); outline-offset: 4px; border-radius: 4px; }
+#hmhFieldMapDisclosure[open] .hmh-map-disclosure-hint { display: none; }
+.hmh-map-disclosure-hint { flex: 0 0 auto; font-size: 12px; color: var(--ink-muted); }
 #hmhFieldMap svg { display: block; width: 100%; height: auto; max-height: 250px; }
 #hmhFieldMap svg.hmh-field-map-tall { max-height: min(380px, 48vh); }
 .hmh-field-map-key { font-size: 12px; line-height: 1.5; color: #d1e1d7; }

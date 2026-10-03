@@ -20,6 +20,7 @@ const root = fileURLToPath(new URL('..', import.meta.url));
 
 // Every .mjs / .js module that must parse cleanly (node --check).
 const NODE_CHECK_FILES = [
+  'tests/hmh-ridge-native-cliff-kit.test.mjs',
   'apps/stacked/src/render/quiet-backdrop.mjs',
   'tests/stacked-quiet-backdrop.test.mjs',
   'apps/stacked/src/render/luminous-journey-state.mjs',
@@ -1481,6 +1482,7 @@ const NODE_CHECK_FILES = [
 
 // Every Python script that must compile (python -m py_compile).
 const PY_COMPILE_FILES = [
+  'scripts/build-hmh-ridge-cliff-kit.py',
   'scripts/build-chikun-course-two-art.py',
   'scripts/run-arcade-cabinets.py',
   'scripts/hmh-blender/build-arcade-cabinets.py',

@@ -12,6 +12,12 @@ export const AREA_ART_KIT_PIPELINE = 'hmh-tripo-static-props-hd/v1';
 export const AREA_ART_TILE_ROOT = '/assets/generated/hmh-terrain-tiles/';
 export const AREA_ART_DETAIL_ROOT = '/assets/generated/hmh-art-target/';
 export const AREA_ART_MEADOW_DETAIL_PAGE = 'meadow-ground-details.webp';
+export const AREA_ART_RIDGE_CLIFF_PAGE = 'ridge-cliff-kit.webp';
+export const RIDGE_CLIFF_FRAMES = freezeDeep({
+  fractured:{x:0,y:0,w:512,h:192}, shelves:{x:512,y:0,w:512,h:192},
+  weathered:{x:0,y:192,w:512,h:192}, talus:{x:512,y:192,w:512,h:192},
+  lip:{x:0,y:384,w:512,h:128}, foot:{x:512,y:384,w:512,h:128},
+});
 export const MEADOW_DETAIL_FRAMES = Object.freeze({
   'detail:meadow-grass': {x:0,y:0,w:256,h:256,anchor:{x:0.5,y:0.5},scale:0.32,nativeMeadow:true},
   'detail:meadow-clover': {x:256,y:0,w:256,h:256,anchor:{x:0.5,y:0.5},scale:0.32,nativeMeadow:true},
@@ -216,6 +222,9 @@ export function validateAreaArtPlan(plan, kit) {
 
   const ground = plan.ground ?? {};
   if (typeof ground !== 'object') fail('ground must be an object');
+  const nativeRidgeCliffs = ground.cliffKit === 'native-ridge-v1';
+  if(ground.cliffKit != null && !nativeRidgeCliffs) fail('ground.cliffKit must be native-ridge-v1');
+  if(nativeRidgeCliffs && plan.areaId !== 'ledger-ridge') fail('native cliffKit belongs only to ledger-ridge');
   let base = null;
   if (ground.base !== undefined && ground.base !== null) {
     base = { surfaceId: label(ground.base.surfaceId, 'ground.base.surfaceId'), material: material(ground.base.material, 'ground.base.material'), tint: optionalTint(ground.base.tint, 'ground.base.tint') };
@@ -349,9 +358,9 @@ export function validateAreaArtPlan(plan, kit) {
   const detailPage = decals.some(decal=>!Object.hasOwn(MEADOW_DETAIL_FRAMES,decal.source));
   return freezeDeep({
     schema: AREA_ART_SCHEMA, areaId: plan.areaId, roadsPlan, bounds, pages: plan.pages.slice(), sources: [...sources].sort(), materials: [...materials].sort(), tiles,
-    detailPage, nativeMeadowDetails, base, terrain, overlays, signs, fog, zones, trails, decals, roads, props, solids,
+    detailPage, nativeMeadowDetails, nativeRidgeCliffs, base, terrain, overlays, signs, fog, zones, trails, decals, roads, props, solids,
     counts: { zones: zones.length, trails: trails.length, decals: decals.length, roads: roads.length, props: props.length, solids: solids.length, signs: signs.length, fog: fog.length },
-    budget: { kitPages: plan.pages.length, exclusiveKitPages: exclusivePages.length, kitPageBudget: budget, encodedBytes, decodedBytes, halfEncodedBytes, halfDecodedBytes, tilePages: tiles.length * 2 + overlays.length + (detailPage ? 1 : 0) + (nativeMeadowDetails ? 1 : 0) + (terrain ? 1 : 0), tileDecodedBytes: tiles.length * (512 * 512 * 4 + 512 * 128 * 4) + overlays.length * 512 * 128 * 4 + (detailPage ? 256 * 256 * 4 : 0) + (nativeMeadowDetails ? 1024 * 256 * 4 : 0) + (terrain ? 2 * 384 * 384 * 4 : 0) },
+    budget: { kitPages: plan.pages.length, exclusiveKitPages: exclusivePages.length, kitPageBudget: budget, encodedBytes, decodedBytes, halfEncodedBytes, halfDecodedBytes, tilePages: tiles.length * 2 + overlays.length + (detailPage ? 1 : 0) + (nativeMeadowDetails ? 1 : 0) + (nativeRidgeCliffs ? 1 : 0) + (terrain ? 1 : 0), tileDecodedBytes: tiles.length * (512 * 512 * 4 + 512 * 128 * 4) + overlays.length * 512 * 128 * 4 + (detailPage ? 256 * 256 * 4 : 0) + (nativeMeadowDetails ? 1024 * 256 * 4 : 0) + (nativeRidgeCliffs ? 1024 * 512 * 4 : 0) + (terrain ? 2 * 384 * 384 * 4 : 0) },
   });
 }
 function clampRange(value, min, max, name) { finite(value, name); if (value < min || value > max) fail(`${name} must be within ${min}..${max}`); return value; }

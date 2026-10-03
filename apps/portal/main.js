@@ -3642,6 +3642,12 @@ function syncCombatOverlay() {
     dom.combatViewportButton.textContent = label;
   }
   if (clearInactiveCombatOverlay()) return;
+  // HMH renders its own pause and upgrade panels inside the cabinet. Keep the
+  // shared soundtrack controls above, and the existing game-over path intact.
+  if (hmhRebootActive && !combat.gameOver) {
+    if (dom.combatMenuPanel) dom.combatMenuPanel.hidden = true;
+    return;
+  }
   if (dom.combatMenuPanel) {
     // While the READY pre-start overlay is up (combat.pendingBegin) the run is
     // technically paused, but showing the pause menu UNDER the ready overlay
@@ -3687,10 +3693,8 @@ async function toggleCombatPause(forcePaused) {
     combat.paused = nextPaused;
     if (nextPaused) hmhRebootHost?.pause();
     else hmhRebootHost?.resume();
-    if (nextPaused) pauseCombatMusic();
-    else {
+    if (!nextPaused) {
       combat.menuSettingsOpen = false;
-      if (combat.musicEnabled) ensureCombatMusic('gameplay');
     }
     playSfxCue(nextPaused ? 'pause' : 'resume');
     syncCombatOverlay();

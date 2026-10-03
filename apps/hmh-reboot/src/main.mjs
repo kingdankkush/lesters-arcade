@@ -1059,7 +1059,12 @@ async function boot() {
         qualityTier: policy.qualityTier,
         heroActorId: productionHeroId,
         attachDisplay: display => { world.addChild(display); worldDepthLayer.attach(display); },
-        onTelemetry: report => { dataset.actor3dStatus = report.status; dataset.actor3dCount = String(report.count); dataset.actor3dReason = report.reason ?? ''; if (report.qualityTier) { dataset.actor3dQuality = report.qualityTier; dataset.actor3dLimit = String(report.maxActors); } },
+        onTelemetry: report => { dataset.actor3dStatus = report.status; dataset.actor3dCount = String(report.count); dataset.actor3dReason = report.reason ?? ''; if (report.qualityTier) { dataset.actor3dQuality = report.qualityTier; dataset.actor3dLimit = String(report.maxActors); }
+          // Startup precedes the later releaseTelemetryEnabled declaration.
+          if(runtimeParams.get('evidenceSafe') === '1' && runtimeParams.get('telemetry') === '1') {
+            dataset.actor3dCorpseCount=String(report.corpseCount ?? 0);dataset.actor3dHitCount=String(report.enemyHitCount ?? 0);
+          }
+        },
       });
       return actor3dPilot.start();
     }).catch(() => { dataset.actor3dStatus = 'fallback'; dataset.actor3dReason = 'chunk-failed'; });
@@ -1552,6 +1557,7 @@ async function boot() {
     graphic.zIndex = worldDepthKey(enemy.y);
     enemyDeathMarkers.set(enemy.id, {
       graphic,
+      actorId: enemy.archetypeId,
       x: enemy.x,
       y: enemy.y,
       groundZ: enemy.groundZ ?? 0,
@@ -2305,6 +2311,7 @@ async function boot() {
       });
       let bossTelegraphPrimitiveCount = 0;
       const corpseNowMs = performance.now();
+      const corpse3d = [];
       for (const [enemyId, death] of enemyDeathMarkers) {
         const corpse = corpsePresentation(death, simulation?.tick ?? 0, corpseNowMs);
         if (corpse.expired) {
@@ -2320,6 +2327,12 @@ async function boot() {
         death.graphic.scale.set((death.graphic.rosterScale ?? 1) * camera.zoom);
         // Fade the corpse out instead of hard-deleting it mid-frame.
         death.graphic.alpha = corpse.alpha;
+        if (actor3dPilot?.status === 'ready' && corpse.alpha === 1) corpse3d.push({
+          id: enemyId, actorId: death.actorId, visible: true, alpha: corpse.alpha,
+          x: death.x, y: death.y, z: death.groundZ,
+          pose: { state: 'death', direction: death.direction, tick: Math.max(0, (simulation?.tick ?? death.startTick) - death.startTick) },
+          originals: [death.graphic],
+        });
         // The corpse and its shadow fade together.
         if (death.graphic.contactShadowFootprint) {
           contactShadowPool?.place({
@@ -3260,7 +3273,7 @@ async function boot() {
           ...tenAreaRun?.heroClip(bossVisualTick),
           bodyTint: actor3dHeroFlash !== 0xffffff ? actor3dHeroFlash : settings.cosmetics?.heroTint,
           weaponTint: actor3dHeroFlash !== 0xffffff ? actor3dHeroFlash : settings.cosmetics?.weaponTint,
-          bodyHeight: productionHeroDisplay.minimumBodyHeight, originals: [actorVisual, heldWeaponLayer] } : null, enemy3d, camera, view, boss3d, ...(districtBoss3d ? [districtBoss3d] : []));
+          bodyHeight: productionHeroDisplay.minimumBodyHeight, originals: [actorVisual, heldWeaponLayer] } : null, enemy3d, camera, view, boss3d, districtBoss3d, corpse3d);
         // The replaced atlas owns a baked shadow; supply its ground contact
         // only while the 3D hero hides that atlas, using the existing pool.
         if (actor3dPilot.ownsOriginal(actorVisual, 'hero')) contactShadowPool?.place({

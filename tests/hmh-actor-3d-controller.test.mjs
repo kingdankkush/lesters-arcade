@@ -25,6 +25,48 @@ test('normal game updates deliver start/stop accents without obscuring authored 
   controller.dispose();
 });
 
+test('native corpses retain sprites until ready and restore them for fading, unknown identities and removal',async()=>{
+  const gpu=backend(),ready=new Set(),requests=[];
+  gpu.prepareActor=id=>{requests.push(id);return ready.has(id);};
+  const controller=module.createActor3dPilotController({renderer:renderer(),canvas:canvas(),backendFactory:()=>gpu});await controller.start();
+  const corpse={id:'fallen',actorId:'hodl-revenant',visible:true,alpha:1,x:0,y:0,z:0,pose:{state:'death',direction:2,tick:30},originals:[{renderable:true}]};
+  const draw=row=>controller.updateGame(null,[],camera,view,null,null,row?[row]:[]);
+  draw(corpse);assert.equal(corpse.originals[0].renderable,true);assert.equal(gpu.frames.at(-1).length,0);
+  ready.add('hodl-revenant');draw(corpse);assert.equal(corpse.originals[0].renderable,false);assert.equal(gpu.frames.at(-1)[0].id,'corpse:fallen');
+  draw({...corpse,alpha:.75});assert.equal(corpse.originals[0].renderable,true);assert.equal(gpu.frames.at(-1).length,0);
+  draw(corpse);draw({...corpse,actorId:'unknown-creature'});assert.equal(corpse.originals[0].renderable,true);assert.ok(!requests.includes('unknown-creature'));
+  draw(corpse);draw(null);assert.equal(corpse.originals[0].renderable,true);controller.dispose();
+});
+
+test('corpse originals recover after disposal, context loss or native draw failure',async()=>{
+  for(const cause of ['dispose','context','draw']) {
+    const gpu=backend(),surface=canvas(),controller=module.createActor3dPilotController({renderer:renderer(),canvas:surface,backendFactory:()=>gpu});await controller.start();
+    const corpse={id:'fallen',actorId:'tollkeeper',visible:true,alpha:1,x:0,y:0,z:0,pose:{state:'death',direction:2,tick:8},originals:[{renderable:true}]};
+    const draw=()=>controller.updateGame(null,[],camera,view,null,null,[corpse]);
+    draw();assert.equal(corpse.originals[0].renderable,false);
+    if(cause==='dispose')controller.dispose();
+    else if(cause==='context')surface.events.get('webglcontextlost')();
+    else {gpu.renderActor=()=>{throw Error('failed corpse draw');};assert.equal(draw(),false);}
+    assert.equal(corpse.originals[0].renderable,true);assert.equal(gpu.disposed,1);controller.dispose();assert.equal(gpu.disposed,1);
+  }
+});
+
+test('native hit/corpse telemetry counts only successfully rendered resident rows and clears on fallback',async()=>{
+  const gpu=backend(),reports=[],surface=canvas(),ready=new Set(['hodl-revenant']);
+  gpu.prepareActor=id=>ready.has(id);
+  const controller=module.createActor3dPilotController({renderer:renderer(),canvas:surface,backendFactory:()=>gpu,onTelemetry:report=>reports.push(report)});await controller.start();
+  const corpse={id:'fallen',actorId:'hodl-revenant',visible:true,alpha:1,x:0,y:0,z:0,pose:{state:'death',direction:2,tick:4},originals:[]};
+  const hit={id:'struck',actorId:'tollkeeper',active:true,visible:true,alpha:1,x:0,y:0,z:0,pose:{state:'hit',direction:2,tick:3},originals:[]};
+  controller.updateGame(null,[hit],camera,view,null,null,[corpse]);
+  assert.equal(reports.at(-1).corpseCount,1);assert.equal(reports.at(-1).enemyHitCount,0,'unready hits have no native ownership');
+  ready.add('tollkeeper');controller.updateGame(null,[hit],camera,view,null,null,[corpse]);
+  assert.equal(reports.at(-1).enemyHitCount,1);
+  controller.updateGame(null,[{...hit,actorId:'unknown'}],camera,view,null,null,[{...corpse,alpha:.9}]);
+  assert.equal(reports.at(-1).corpseCount,0);assert.equal(reports.at(-1).enemyHitCount,0);
+  controller.updateGame(null,[hit],camera,view,null,null,[corpse]);surface.events.get('webglcontextlost')();
+  assert.equal(reports.at(-1).status,'fallback');assert.equal(reports.at(-1).corpseCount,0);assert.equal(reports.at(-1).enemyHitCount,0);controller.dispose();
+});
+
 test('unsupported depth contexts fall back before assets or shader code are loaded', async () => {
   assert.equal(typeof module.createActor3dPilotController, 'function'); let loads = 0; const reports = [];
   const controller = module.createActor3dPilotController({ renderer: renderer(false), canvas: canvas(), onTelemetry: report => reports.push(report), backendFactory: () => { loads++; return backend(); } });
