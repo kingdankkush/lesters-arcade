@@ -17,7 +17,7 @@ export const AREA_ART_ID = 'world-v2-area-art/v1';
 const SHADOW_TINT = 0x03070b;
 // Shared key from the screen upper left: contact shadows lean down-right.
 const SHADOW_LEAN = Object.freeze({ x: 0.1, y: 0.05 });
-import { MEADOW_DETAIL_FRAMES, FOREST_DETAIL_FRAMES, AREA_ART_FOREST_DETAIL_PAGE, AREA_ART_MEADOW_DETAIL_PAGE, AREA_ART_RIDGE_CLIFF_PAGE, RIDGE_CLIFF_FRAMES } from './world-v2-area-art-schema.mjs';
+import { MEADOW_DETAIL_FRAMES, FOREST_DETAIL_FRAMES, AREA_ART_FOREST_DETAIL_PAGE, AREA_ART_MEADOW_DETAIL_PAGE, AREA_ART_RIDGE_CLIFF_PAGE, RIDGE_CLIFF_FRAMES, AREA_ART_TIMBER_SCREEN_PAGE, TIMBER_SCREEN_FRAMES } from './world-v2-area-art-schema.mjs';
 const DETAIL_FRAMES = Object.freeze({ ...MEADOW_DETAIL_FRAMES, ...FOREST_DETAIL_FRAMES, 'detail:grass': { x: 0, y: 0, w: 180, h: 122, anchor: { x: 0.53, y: 0.73 }, scale: 0.34 }, 'detail:aggregate': { x: 0, y: 160, w: 224, h: 96, anchor: { x: 0.5, y: 0.5 }, scale: 0.42 } });
 
 const scaleMatrix = s => ({ a: s, b: 0, c: 0, d: s, tx: 0, ty: 0 });
@@ -373,7 +373,7 @@ export function createAreaArt({ world, areaId, plan, kit = null, loadTexture, te
   // should be on screen waits for the next gate.
   const GATE = 48; let gateX = NaN, gateY = NaN, gateZoom = NaN, gateW = NaN, gateH = NaN; const paddedView = { width: 0, height: 0 };
   let host = null, depthKey = y => y;
-  let detailTexture = null, meadowDetailTexture = null, forestDetailTexture = null, ridgeCliffTexture = null, pageTextures = new Map(), controlTexture = null, terrainField = null, terrainMesh = null;
+  let detailTexture = null, meadowDetailTexture = null, forestDetailTexture = null, ridgeCliffTexture = null, timberScreenTexture=null, pageTextures = new Map(), controlTexture = null, terrainField = null, terrainMesh = null;
   const overlays = new Map();
   const signTextures = new Map(), fogCards = [];
   let fogTexture = null, fogFrame = 0, fogStatic = true;
@@ -461,6 +461,11 @@ export function createAreaArt({ world, areaId, plan, kit = null, loadTexture, te
         if(!texture)return;
         if(texture.source.pixelWidth!==1024*ratio || texture.source.pixelHeight!==512*ratio) throw new Error('native Ridge cliff atlas decoded at the wrong size');
         ridgeCliffTexture=texture;
+      }));
+      if(summary.nativeTimberScreens)jobs.push(acquire(AREA_ART_DETAIL_ROOT+(ratio===.5?AREA_ART_TIMBER_SCREEN_PAGE.replace('.webp','@0.5x.webp'):AREA_ART_TIMBER_SCREEN_PAGE)).then(texture=>{
+        if(!texture){if(disposed)return;throw new Error('native timber atlas unavailable');}
+        if(texture.source.pixelWidth!==512*ratio||texture.source.pixelHeight!==256*ratio)throw new Error('native timber atlas decoded at the wrong size');
+        timberScreenTexture=texture;
       }));
       const results = await Promise.allSettled(jobs);
       const failure = results.find(result => result.status === 'rejected');
@@ -1087,6 +1092,14 @@ export function createAreaArt({ world, areaId, plan, kit = null, loadTexture, te
       const height = entry.alphaHeight * scale, y = seatSolidCardY(entry.item, b, height / entry.item.alphaBounds.h);
       const { node: sprite } = card(solid.card.source, { x: cx, y, height, groundZ: solid.card.lift, tint: solid.tint });
       node.addChild(sprite); top = Math.max(top, height + (solid.card.lift ?? 0) - (y - b.minY));
+    } else if(solid.style==='native-timber'){
+      const frame=TIMBER_SCREEN_FRAMES[solid.nativeFrame];
+      if(!timberScreenTexture)return null;
+      if(frame.width!==w||frame.depth!==d||frame.height!==authoredH)throw new Error('native timber registration differs from authored solid');
+      const key=`native-timber:${solid.nativeFrame}`;let entry=frames.get(key);
+      if(!entry){const unit=ratio*unitsPerPixel(timberScreenTexture);entry={texture:new Texture({source:timberScreenTexture.source,frame:new Rectangle(frame.x*unit,frame.y*unit,frame.w*unit,frame.h*unit)})};frames.set(key,entry);}
+      const sprite=new Sprite(entry.texture);sprite.anchor.set(.5,1);sprite.position.set(cx,b.maxY);sprite.width=w;sprite.height=d+authoredH;sprite.tint=solid.tint;sprite.label=`native-timber-${solid.nativeFrame}`;
+      node.addChild(sprite);top=authoredH;
     } else if (solid.style === 'hedge') {
       const vertical = d > w, length = vertical ? d : w, spacing = solid.spacing || 120, count = Math.max(1, Math.ceil(length / spacing)), step = length / count;
       for (let i = 0; i < count; i++) {
@@ -1253,7 +1266,7 @@ export function createAreaArt({ world, areaId, plan, kit = null, loadTexture, te
     for (const node of solidNodes) { try { evict(node); } catch {} } solidNodes.length = 0; for (const record of solidRecords) record.node = null; solidRecords.length = 0;
     for (const node of painted) { try { node.removeFromParent?.(); node.destroy?.({ children: true }); } catch {} } painted.length = 0;
     for (const entry of frames.values()) entry.texture.destroy(false); frames.clear(); live.clear();
-    for (const url of owned) cache.release(url); owned.length = 0; tiles.clear(); overlays.clear(); pageTextures.clear(); detailTexture = null; meadowDetailTexture = null; forestDetailTexture=null; ridgeCliffTexture=null;
+    for (const url of owned) cache.release(url); owned.length = 0; tiles.clear(); overlays.clear(); pageTextures.clear(); detailTexture = null; meadowDetailTexture = null; forestDetailTexture=null; ridgeCliffTexture=null; timberScreenTexture=null;
     for (const texture of signTextures.values()) { try { texture?.destroy(true); } catch {} } signTextures.clear(); fogCards.length = 0; try { fogTexture?.destroy(true); } catch {} fogTexture = null;
     for (const body of waterBodies) { try { body.texture?.destroy(true); } catch {} } waterBodies.length = 0; waterMeshes.length = 0; surfaceNodes.length = 0;
     try { controlTexture?.control.destroy(true); if (controlTexture && controlTexture.light !== controlTexture.control) controlTexture.light.destroy(true); } catch {} controlTexture = null; terrainMesh = null;

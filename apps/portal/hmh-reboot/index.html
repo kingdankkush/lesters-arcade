@@ -288,6 +288,25 @@
         </div>
       </section>
 
+      <section id="hmhDeathRecap" class="hmh-death-recap" aria-labelledby="hmhDeathTitle" hidden>
+        <div class="hmh-death-panel">
+          <p class="hmh-death-eyebrow">FIELD REPORT · HARD MONEY HEROES</p>
+          <h1 id="hmhDeathTitle">LIQUIDATED</h1>
+          <p class="hmh-death-cause" data-cause role="status" aria-live="polite"></p>
+          <div class="hmh-death-report">
+            <div class="hmh-death-grade"><strong data-grade>D</strong><span>RUN GRADE</span></div>
+            <dl class="hmh-death-stats">
+              <div><dt>Survived</dt><dd data-clock>0:00</dd></div>
+              <div><dt>Enemies defeated</dt><dd data-kills>0</dd></div>
+              <div><dt>Level reached</dt><dd data-level>1</dd></div>
+              <div><dt>Run score</dt><dd data-score>0</dd></div>
+            </dl>
+          </div>
+          <p class="hmh-death-sources" data-sources></p>
+          <p class="hmh-death-note">Run rating · C: 20 kills · B: 75 kills · A: 1 boss · S: 2 bosses.</p>
+          <button id="hmhDeathRestart" class="hmh-command-button" type="button" hidden>Run it back</button>
+        </div>
+      </section>
       <output id="hmhRebootCombatStatus" class="hmh-sr-only" role="status" aria-live="polite" aria-atomic="true">Combat ready</output>
     </main>
     <script type="module" src="../dist/hmh-reboot/game.js"></script>

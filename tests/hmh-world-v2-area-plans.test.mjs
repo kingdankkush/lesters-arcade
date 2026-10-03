@@ -349,7 +349,7 @@ test('Hashwood River follows brief 06: conifers on closed banks, iris on the dam
   const byPiece = Object.fromEntries(summary.solids.map(s => [s.pieceId.slice('hashwood-river-'.length), s]));
   assert.equal(byPiece['marquee-backing'].card.source, 'b1-13'); assert.equal(byPiece['court-low-stack'].card.source, 'b2-79'); assert.equal(byPiece['capstan-house'].card.source, 'b2-67');
   assert.equal(byPiece['waterfall-shelf'].style, 'bank'); assert.equal(byPiece['waterfall-shelf'].roof, 'rock');
-  for (const name of ['marquee-west-post', 'marquee-east-post', 'court-tall-screen']) assert.equal(byPiece[name].style, 'stakes', name);
+  for (const name of ['marquee-west-post', 'marquee-east-post', 'court-tall-screen']) assert.equal(byPiece[name].style, 'native-timber', name);
   assert.ok(summary.props.some(p => p.source === 'b2-79'), 'log piles frame the clearing');
   assert.ok(summary.trails.length >= 20 && summary.zones.length >= 4);
   // Every placement outside the two documented bridge silhouettes honours the guard.

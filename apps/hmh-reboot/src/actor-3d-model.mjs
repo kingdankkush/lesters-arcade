@@ -194,6 +194,9 @@ function sample(track, time, out) {
 }
 
 function samplePose(asset, clipName, timeSeconds, workspace) {
+  // A cached pre-upgrade enemy may still have its original six native clips.
+  // Only the known optional variation falls back; unknown names still fail.
+  if (clipName === 'death-side' && !asset.clips.has(clipName)) clipName = 'death';
   const clip = asset.clips.get(clipName); requireValue(clip, 'unknown actor clip');
   requireValue(Number.isFinite(timeSeconds) && timeSeconds >= 0, 'finite pose time required');
   const time = Math.min(timeSeconds, clip.duration);

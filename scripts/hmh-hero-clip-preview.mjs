@@ -13,7 +13,7 @@ const options = (name) => args.flatMap((value, index) => value === name ? [args[
 const hero = option('--hero', 'lilly'), size = Number(option('--size', 200)), columns = Number(option('--columns', 4));
 const times = options('--time').map(Number); if (!times.length) times.push(.25, .5, .75);
 const root = new URL('../', import.meta.url);
-const manifest = JSON.parse(readFileSync(new URL(`apps/portal/assets/generated/hmh-actor-3d-pilot/${hero}-clips.json`, root)));
+const manifest = JSON.parse(readFileSync(new URL(option('--manifest',`apps/portal/assets/generated/hmh-actor-3d-pilot/${hero}-clips.json`), root)));
 const only = option('--clips', null)?.split(',');
 const clips = [...manifest.nativeClips,...manifest.libraryClips].map(clip => clip.name).filter(name => only ? only.includes(name) : manifest.libraryClips.some(clip=>clip.name===name));
 const input = new URL(option('--asset',`apps/portal/assets/generated/hmh-actor-3d-pilot/${hero}.glb`), root);
@@ -21,18 +21,18 @@ const packed = readFileSync(input), bytes=input.pathname.endsWith('.gz') ? gunzi
 const asset = decodeActor3dGlb(bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength));
 
 // Orthographic three-quarter view from front-right, 35 degrees above the ground (glTF Y up, -Z forward... hero faces +Z after export).
-const yaw = -35 * Math.PI / 180, pitch = 35 * Math.PI / 180, metresTall = 2.6;
+const yaw = -35 * Math.PI / 180, pitch = 35 * Math.PI / 180, metresTall = Number(option('--span',2.6)), groundY = Number(option('--ground-y',.92));
 const project = ([x, y, z]) => {
   const rx = x * Math.cos(yaw) + z * Math.sin(yaw), rz = -x * Math.sin(yaw) + z * Math.cos(yaw);
   const py = y * Math.cos(pitch) - rz * Math.sin(pitch), depth = y * Math.sin(pitch) + rz * Math.cos(pitch);
-  return [size / 2 + rx / metresTall * size, size * .92 - py / metresTall * size, depth];
+  return [size / 2 + rx / metresTall * size, size * groundY - py / metresTall * size, depth];
 };
 const light = (() => { const v = [-.4, .8, .45], n = Math.hypot(...v); return v.map(c => c / n); })();
 
 function renderFrame(clip, time) {
   const palette = evaluateActor3dPose(asset, clip, time)[0];
   const pixels = new Uint8ClampedArray(size * size * 3).fill(28), zbuffer = new Float32Array(size * size).fill(-Infinity);
-  for (let y = Math.floor(size * .92); y < size; y++) for (let x = 0; x < size; x++) { const at = (y * size + x) * 3; pixels[at] = 52; pixels[at + 1] = 48; pixels[at + 2] = 42; }
+  for (let y = Math.floor(size * groundY); y < size; y++) for (let x = 0; x < size; x++) { const at = (y * size + x) * 3; pixels[at] = 52; pixels[at + 1] = 48; pixels[at + 2] = 42; }
   for (const primitive of asset.primitives) {
     if (!actor3dPrimitiveVisible(primitive.nodeName, clip)) continue;
     const prop = /Coin Blaster|coin-blaster|Litecoin Knife|litecoin-knife|Satoshi Frag|satoshi-frag|Throw Release/.test(primitive.nodeName);

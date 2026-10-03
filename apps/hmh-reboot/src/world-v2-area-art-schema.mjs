@@ -15,6 +15,13 @@ export const AREA_ART_MEADOW_DETAIL_PAGE = 'meadow-ground-details.webp';
 export const AREA_ART_FOREST_DETAIL_PAGE = 'forest-ground-details.webp';
 export const FOREST_DETAIL_FRAMES = Object.freeze(Object.fromEntries(['leaf-litter','needle-bed','fern-bed','moss-root'].map((name,i)=>[`detail:forest-${name}`,{x:i*256,y:0,w:256,h:256,anchor:{x:.5,y:.5},scale:.32,nativeForest:true}])));
 export const AREA_ART_RIDGE_CLIFF_PAGE = 'ridge-cliff-kit.webp';
+export const AREA_ART_TIMBER_SCREEN_PAGE = 'native-timber-screens.webp';
+export const TIMBER_SCREEN_FRAMES = freezeDeep(Object.fromEntries([
+  ['garden-screen','mweb-meadows-court-wall',70,260,128],
+  ['marquee-west','hashwood-river-marquee-west-post',70,90,160],
+  ['marquee-east','hashwood-river-marquee-east-post',70,90,160],
+  ['court-screen','hashwood-river-court-tall-screen',80,160,128],
+].map(([name,pieceId,width,depth,height],i)=>[name,{x:i*128,y:0,w:128,h:256,pieceId,width,depth,height}])));
 export const RIDGE_CLIFF_FRAMES = freezeDeep({
   fractured:{x:0,y:0,w:512,h:192}, shelves:{x:512,y:0,w:512,h:192},
   weathered:{x:0,y:192,w:512,h:192}, talus:{x:512,y:192,w:512,h:192},
@@ -34,7 +41,7 @@ export const AREA_ART_KIT_PAGE_BUDGET = 2;
 export const AREA_ART_SHARED_KIT_PAGES = Object.freeze(['tripo-props-hd-props-00.webp']);
 export const WORLD_ROADS_PLAN_ID = 'world-roads';
 export const ROAD_KINDS = Object.freeze(['paved', 'gravel', 'dirt']);
-export const SOLID_STYLES = Object.freeze(['card', 'bank', 'stakes', 'crates', 'pickets', 'hedge', 'mass']);
+export const SOLID_STYLES = Object.freeze(['card', 'bank', 'stakes', 'crates', 'pickets', 'hedge', 'mass','native-timber']);
 
 // Every tileable ground material maps onto existing 512 px terrain tiles. The
 // splat shader paints `color` (the brief palette swatch) and multiplies in the
@@ -312,6 +319,8 @@ export function validateAreaArtPlan(plan, kit) {
     label(solid.pieceId, `${name}.pieceId`);
     const style = solid.style ?? 'card';
     if (!SOLID_STYLES.includes(style)) fail(`${name}.style must be one of ${SOLID_STYLES.join(', ')}`);
+    const nativeFrame=style==='native-timber'?solid.nativeFrame:null;
+    if(style==='native-timber'&&TIMBER_SCREEN_FRAMES[nativeFrame]?.pieceId!==solid.pieceId)fail(`${name}.nativeFrame must match its registered timber solid`);
     let card = null;
     if (['card', 'hedge'].includes(style)) {
       const item = source(solid.source, `${name}.source`);
@@ -325,7 +334,7 @@ export function validateAreaArtPlan(plan, kit) {
     if (roof) materials.add(roof);
     const wall = solid.wall === undefined ? null : material(solid.wall, `${name}.wall`);
     if (wall) materials.add(wall);
-    return { id: solid.pieceId, pieceId: solid.pieceId, style, card, roof, wall, tint: optionalTint(solid.tint, `${name}.tint`), massAlpha, spacing: solid.spacing === undefined ? 0 : positive(solid.spacing, `${name}.spacing`), height: solid.height === undefined ? null : positive(solid.height, `${name}.height`) };
+    return { id: solid.pieceId, pieceId: solid.pieceId, style, nativeFrame, card, roof, wall, tint: optionalTint(solid.tint, `${name}.tint`), massAlpha, spacing: solid.spacing === undefined ? 0 : positive(solid.spacing, `${name}.spacing`), height: solid.height === undefined ? null : positive(solid.height, `${name}.height`) };
   });
   unique(solids, 'solids');
 
@@ -358,12 +367,13 @@ export function validateAreaArtPlan(plan, kit) {
   const overlays = solids.some(solid => ['bank', 'mass'].includes(solid.style)) ? [AREA_ART_ROCK_FACE] : [];
   const nativeMeadowDetails = decals.some(decal=>Object.hasOwn(MEADOW_DETAIL_FRAMES,decal.source));
   const nativeForestDetails = decals.some(decal=>Object.hasOwn(FOREST_DETAIL_FRAMES,decal.source));
+  const nativeTimberScreens=solids.some(solid=>solid.style==='native-timber');
   const detailPage = decals.some(decal=>!Object.hasOwn(MEADOW_DETAIL_FRAMES,decal.source)&&!Object.hasOwn(FOREST_DETAIL_FRAMES,decal.source));
   return freezeDeep({
     schema: AREA_ART_SCHEMA, areaId: plan.areaId, roadsPlan, bounds, pages: plan.pages.slice(), sources: [...sources].sort(), materials: [...materials].sort(), tiles,
-    detailPage, nativeMeadowDetails, nativeForestDetails, nativeRidgeCliffs, base, terrain, overlays, signs, fog, zones, trails, decals, roads, props, solids,
+    detailPage, nativeMeadowDetails, nativeForestDetails, nativeRidgeCliffs, nativeTimberScreens, base, terrain, overlays, signs, fog, zones, trails, decals, roads, props, solids,
     counts: { zones: zones.length, trails: trails.length, decals: decals.length, roads: roads.length, props: props.length, solids: solids.length, signs: signs.length, fog: fog.length },
-    budget: { kitPages: plan.pages.length, exclusiveKitPages: exclusivePages.length, kitPageBudget: budget, encodedBytes, decodedBytes, halfEncodedBytes, halfDecodedBytes, tilePages: tiles.length * 2 + overlays.length + (detailPage ? 1 : 0) + (nativeMeadowDetails ? 1 : 0) + (nativeForestDetails ? 1 : 0) + (nativeRidgeCliffs ? 1 : 0) + (terrain ? 1 : 0), tileDecodedBytes: tiles.length * (512 * 512 * 4 + 512 * 128 * 4) + overlays.length * 512 * 128 * 4 + (detailPage ? 256 * 256 * 4 : 0) + (nativeMeadowDetails ? 1024 * 256 * 4 : 0) + (nativeForestDetails ? 1024 * 256 * 4 : 0) + (nativeRidgeCliffs ? 1024 * 512 * 4 : 0) + (terrain ? 2 * 384 * 384 * 4 : 0) },
+    budget: { kitPages: plan.pages.length, exclusiveKitPages: exclusivePages.length, kitPageBudget: budget, encodedBytes, decodedBytes, halfEncodedBytes, halfDecodedBytes, tilePages: tiles.length * 2 + overlays.length + (detailPage ? 1 : 0) + (nativeMeadowDetails ? 1 : 0) + (nativeForestDetails ? 1 : 0) + (nativeRidgeCliffs ? 1 : 0) + (nativeTimberScreens?1:0) + (terrain ? 1 : 0), tileDecodedBytes: tiles.length * (512 * 512 * 4 + 512 * 128 * 4) + overlays.length * 512 * 128 * 4 + (detailPage ? 256 * 256 * 4 : 0) + (nativeMeadowDetails ? 1024 * 256 * 4 : 0) + (nativeForestDetails ? 1024 * 256 * 4 : 0) + (nativeRidgeCliffs ? 1024 * 512 * 4 : 0) + (nativeTimberScreens?512*256*4:0) + (terrain ? 2 * 384 * 384 * 4 : 0) },
   });
 }
 function clampRange(value, min, max, name) { finite(value, name); if (value < min || value > max) fail(`${name} must be within ${min}..${max}`); return value; }

@@ -42,7 +42,7 @@ export function createMwebMeadowsArtPlan(world) {
   solid('garden-fence', 'pickets', { tint: 0xd4d0be, spacing: 16 });
   solid('old-oak-placeholder', 'card', { source: 'b1-55', fit: 'height', tint: 0xe8e4cf, massAlpha: 0 });
   solid('court-low-cover', 'card', { source: 'b2-49', fit: 'width', tint: 0xd2d0c8, massAlpha: 0 });
-  solid('court-wall', 'stakes', { tint: 0x9a978c, spacing: 24 });
+  solid('court-wall', 'native-timber', { nativeFrame:'garden-screen' });
   // Willows shade the green edges; birches and hedges break up the gardens.
   for (const [x, y, source, flip] of [[-760, -720, 'b2-71', false], [1120, 620, 'b2-71', true], [-1500, 1620, 'b2-71', false], [1720, -200, 'b1-03', false], [-330, -1560, 'b1-03', true], [-1650, 300, 'b1-03', false], [1560, 1500, 'b2-71', false], [520, 1500, 'b1-03', true], [-1550, -1650, 'b2-70', false], [1780, -1750, 'b1-03', false]]) {
     if (guard.clear(cx + x, cy + y, 40)) prop(source, cx + x, cy + y, CANOPY_HEIGHTS[source] * (0.86 + 0.2 * stableUnit('tree', x, y)), { flip, tint: source === 'b2-70' ? 0xcfc9bb : 0xe2e0cc });

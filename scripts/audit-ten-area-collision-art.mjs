@@ -176,7 +176,7 @@ function blockerArt(blocker, piece, solidStyles, cardsByPiece, cardsByBlocker) {
   if (piece?.visible?.guardOf) return { kind: 'surface-edge', regions: [], full: true };
   if (piece?.visible?.artPlanId) return { kind: 'prop-card', regions: (cardsByBlocker.get(blocker.id) ?? []).map(card => card.silhouette), full: false };
   if (!style) return { kind: 'production-slab', regions: [], full: true };
-  if (['mass', 'bank', 'stakes', 'crates', 'pickets'].includes(style.style)) return { kind: `solid-${style.style}`, regions: [], full: true };
+  if (['mass', 'bank', 'stakes', 'crates', 'pickets','native-timber'].includes(style.style)) return { kind: `solid-${style.style}`, regions: [], full: true };
   const regions = (cardsByPiece.get(piece.id) ?? []).map(card => card.silhouette);
   return { kind: `solid-${style.style}`, regions, full: style.massAlpha >= 0.3 };
 }

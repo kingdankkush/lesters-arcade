@@ -1,0 +1,140 @@
+{
+  "sourceUnchanged": true,
+  "source": "13 - Covered Market Stall Row - Textured Master.blend",
+  "sourceSha256": "37bd18ecfa6edd315b3c4b09612d46c5ccbbefd7958229aba3936134e34ec229",
+  "materialImage": "Color_71c83d18-c2f8-4745-98d2-5b31a44e090b",
+  "materialUse": "Packed market-stall texture luminance plus new muted timber/cloth palette; modeled fitted beams, panels, canvas and hardware",
+  "projection": "orthographic equal y/z scale, no camera/projection change",
+  "nativeRenders": [
+    {
+      "name": "garden-screen",
+      "sha256": "a257a9a0d51ea2596d0c143459d8d5e08c557787335da0f81a362b3ee817d662"
+    },
+    {
+      "name": "marquee-west",
+      "sha256": "ebd75106a95359da6f16e728873217d224937672c296158e5e5ed4e22161d812"
+    },
+    {
+      "name": "marquee-east",
+      "sha256": "b456cc62b36f1e41437fc5a562c4d36b8c1f68e43a33cb493912fdc86422e1e8"
+    },
+    {
+      "name": "court-screen",
+      "sha256": "e0969b50cbc13ba443ea67c504a1fc103570d2b00402e8d4fbcae02769a09e58"
+    }
+  ],
+  "schema": "native-timber-screens/v1",
+  "frames": [
+    {
+      "name": "garden-screen",
+      "pieceId": "mweb-meadows-court-wall",
+      "physicalWorldBounds": [
+        70,
+        260,
+        128
+      ],
+      "nativeCrop": [
+        68,
+        27,
+        188,
+        484
+      ],
+      "frame": [
+        0,
+        0,
+        128,
+        256
+      ],
+      "gutter": 2
+    },
+    {
+      "name": "marquee-west",
+      "pieceId": "hashwood-river-marquee-west-post",
+      "physicalWorldBounds": [
+        70,
+        90,
+        160
+      ],
+      "nativeCrop": [
+        36,
+        29,
+        220,
+        483
+      ],
+      "frame": [
+        128,
+        0,
+        128,
+        256
+      ],
+      "gutter": 2
+    },
+    {
+      "name": "marquee-east",
+      "pieceId": "hashwood-river-marquee-east-post",
+      "physicalWorldBounds": [
+        70,
+        90,
+        160
+      ],
+      "nativeCrop": [
+        36,
+        29,
+        220,
+        483
+      ],
+      "frame": [
+        256,
+        0,
+        128,
+        256
+      ],
+      "gutter": 2
+    },
+    {
+      "name": "court-screen",
+      "pieceId": "hashwood-river-court-tall-screen",
+      "physicalWorldBounds": [
+        80,
+        160,
+        128
+      ],
+      "nativeCrop": [
+        37,
+        27,
+        219,
+        484
+      ],
+      "frame": [
+        384,
+        0,
+        128,
+        256
+      ],
+      "gutter": 2
+    }
+  ],
+  "files": [
+    {
+      "file": "native-timber-screens.webp",
+      "size": [
+        512,
+        256
+      ],
+      "bytes": 28704,
+      "decodedBytes": 524288,
+      "sha256": "78494906e986559bb1723bf4b445f1039d2e35879589f6c2de63643e34e74dfb"
+    },
+    {
+      "file": "native-timber-screens@0.5x.webp",
+      "size": [
+        256,
+        128
+      ],
+      "bytes": 11216,
+      "decodedBytes": 131072,
+      "sha256": "e08a7f6e88382a2058c9a5d2dccd608da012abce46c68b2a4c6f0c9798e494af"
+    }
+  ],
+  "scriptSha256": "149f1a5563a9235d4603ad3c367a38d728ee4ebcdecbfb68e247be4d195d9f62"
+}

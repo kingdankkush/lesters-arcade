@@ -30,6 +30,11 @@ for (const [actorId, baseClips] of Object.entries(required)) {
   const library = HERO_IDS.includes(actorId) ? readJson(new URL(`${actorId}-clips.json`, directory)) : null;
   if (library && library.glbSha256 !== sha256) throw new Error(`${actorId}-clips.json does not describe the current GLB bytes`);
   const requiredClips = library ? [...baseClips, ...library.libraryClips.map(clip => clip.name)] : baseClips;
+  const deaths = readJson(new URL(`${actorId}-deaths.json`, directory));
+  if (deaths) {
+    if (deaths.glbSha256 !== sha256 || deaths.authority !== 'presentation-only') throw new Error('Native death receipt does not match runtime bytes');
+    for (const clip of deaths.requiredClips) if (!requiredClips.includes(clip)) requiredClips.push(clip);
+  }
   // The immutable .blend inspection only changes when the source changes; when
   // the scratch receipt is absent, carry the previously measured source identity.
   const previousManifest = readJson(new URL(HERO_IDS.includes(actorId) && actorId !== 'lit-commando' ? `${actorId}-manifest.json` : 'manifest.json', directory))?.actors?.[actorId];
@@ -44,7 +49,8 @@ for (const [actorId, baseClips] of Object.entries(required)) {
   actors[actorId] = { file: `${actorId}.glb`, sha256, sourceSha256: source.sourceSha256,
     sourceBytes: source.sourceBytes, sourceTriangles: source.meshes.reduce((sum, mesh) => sum + mesh.triangles, 0),
     requiredClips, inspection: inspectActorGlb(bytes, { requiredClips }),
-    ...(library ? { clipLibrary: { manifest: `${actorId}-clips.json`, nativeClips: baseClips.length, libraryClips: library.libraryClips.length, fidgets: library.fidgets, libraryBytes: library.libraryBytes } } : {}) };
+    ...(library ? { clipLibrary: { manifest: `${actorId}-clips.json`, nativeClips: baseClips.length, libraryClips: library.libraryClips.length, fidgets: library.fidgets, libraryBytes: library.libraryBytes } } : {}),
+    ...(deaths ? { deathVariants: { manifest:`${actorId}-deaths.json`,clips:['death',deaths.variant],selection:'stable-presentation-identity-fnv1a' } } : {}) };
   if (bossOnly) {
     if (source.phase !== 'market-open' || source.sourceSha256 !== '56a9e240a8cc053f09e2ef95046bf84520ffa65ec561c5dec5e1f46c6ebed574'
       || createHash('sha256').update(readFileSync(new URL(source.source,root))).digest('hex') !== source.sourceSha256) throw new Error('real opening-phase boss source identity mismatch');

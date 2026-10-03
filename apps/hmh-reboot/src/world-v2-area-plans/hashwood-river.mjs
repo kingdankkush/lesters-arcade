@@ -44,10 +44,10 @@ export function createHashwoodRiverArtPlan(world) {
   solid('waterfall-shelf', 'bank', { roof: 'rock', tint: 0xd6d8d2 });
   solid('capstan-house', 'card', { source: 'b2-67', fit: 'height', tint: 0xd2d4cc });
   solid('marquee-backing', 'card', { source: 'b1-13', fit: 'width', tint: 0xd6cfc4 });
-  solid('marquee-west-post', 'stakes', { tint: 0xcdbfae, spacing: 30 });
-  solid('marquee-east-post', 'stakes', { tint: 0xcdbfae, spacing: 30 });
+  solid('marquee-west-post', 'native-timber', { nativeFrame:'marquee-west' });
+  solid('marquee-east-post', 'native-timber', { nativeFrame:'marquee-east' });
   solid('court-low-stack', 'hedge', { source: 'b2-79', spacing: 80, tint: 0xd8cfbd });
-  solid('court-tall-screen', 'stakes', { tint: 0xc9bfae, spacing: 28 });
+  solid('court-tall-screen', 'native-timber', { nativeFrame:'court-screen' });
   // The two authored crossings are drawn by the renderer from their surfaces
   // (stone deck, rails, shadow over the water; world-v2-area-surfaces.mjs), so
   // no standing arch card stands in for them any more.

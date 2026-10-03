@@ -230,7 +230,7 @@ the preserve-power curve remain pending.
 | 19 | Seeded landing zones/parachute staging pending. |
 | 20 | Area objective routes/tracker/rewards versioned rules pending. |
 | 21 | Compact HUD/active weapon layout browser checked (85 px desktop, 83 px phone); FOV/reticle checks open. |
-| 22 | Death beat/recap grade pending. |
+| 22 | Liquidated recap, cosmetic grade, applied damage sources, standalone Free restart and short-screen scrolling delivered; desktop/phone-viewport parent result path checked. Natural long-run/device acceptance remains open. |
 | 23 | HMH double pause, music continuity/manual pause and map disclosure corrected and browser checked; child transport bridge and gamepad/menu completion pending. |
 | 24 | Repeated-offer repaint corrected; new cards/briefing art and merged intro pending. |
 | 25 | Uniform three-cabinet menu/gamepad audit pending. |
@@ -393,11 +393,67 @@ job). Next valuable art slice: replace the spawn/Baron brown placeholder bars
 without changing their authoritative blockers; then continue full district
 composition, missing character/death content and the remaining master items.
 
+## Fourth visual batch — native timber, enemy death and recap
+
+Four brown placeholder blockers now have registered native timber/canvas art.
+Their complete collision records and height/placement remain unchanged. One
+lazy shared page adds 524,288 B full / 131,072 B half decode; Meadows totals
+8,257,536 B and River 7,208,960 B within the 8 MiB area ground/material cap.
+The 72 focused native/renderer/placement checks pass. Actual full-tier and
+half-tier requests return 200; cover still enters at the same wall and shows
+60%. Desktop captures show both River posts, phone framing shows one at its
+ground contact. These are initial fitted replacements: sparse surrounding
+spaces, structural scale and full district composition remain open. Details:
+`HMH-NATIVE-TIMBER-SCREENS-SLICE.md`.
+
+Bagholder Rusher gains a distinct native side-fall death. The original mesh,
+rig, textures and six clips remain byte-identical. The additional clip adds
+33,868 B; the GLB is 1,780,176 B. Stable presentation identity selects the
+variation without consuming any random stream; an old cached asset lacking
+only this optional clip falls back to its original death. 53 focused checks
+pass. Native reimport checks all seven clips at five fractions with maximum
+ground residual 3.6e-7 m. The textured native final pose was inspected. Both
+variations in natural gameplay and other families' variations remain open;
+this is one bounded asset delivery, not completion of master item 9.
+
+The new lazy Liquidated recap reports existing kills, survival, level, score,
+final hit and bounded applied-damage sources. Its grade is cosmetic. The
+existing 72-tick presentation death camera, held result messages and backstop
+remain unchanged. Only unbridged Free has a local restart. Independent review
+found a cropped short-screen panel; scrolling and touch pan now make restart
+reachable in landscape. Inactive touch controls and the controls hint hide.
+All eight combined actual browser scenes pass with no page errors: timber,
+standalone recap/restart and parent Free result path at desktop/phone sizes;
+landscape scrolling also passes. Parent receives exactly one schema-8 summary
+with unchanged score/kills. These are evidence-only terminal fixture runs,
+not natural defeats, physical phone or Ranked acceptance. Initial helper
+failures (URL field, nonexistent tick field) and Commando armor surviving the
+fixture are retained in timestamped receipts. Valkyrie exercises the existing
+fixture without changing runtime gameplay or the fixture hit.
+
+Combined final focused suite: 115/115 passing. Latest pre-release build:
+HMH initial plus shared 1,006,947 / 1,048,576 B; STACKED 583,177 / 607,000 B.
+All owned native/browser children closed before token-owned lock release.
+Root evidence: `outputs/22-timber-death/` in the chat workspace.
+
+## Completed-scope release authorization — 2026-10-03
+
+The owner explicitly changed the immediate release scope: wrap up work already
+in progress, polish/test/optimize, and bundle completed work for commit and
+publication. The full master overhaul remains preserved above for later work.
+No claim of full AAA quality, all 34 items completed, final area approval or
+physical XS Max performance is made. Release target is 2.2.0. Independent
+review finds HMH retains schema 8/map v2 and legacy verification; no new HMH
+ruleset is activated. STACKED's already-tested 2.2 solo schedule activates by
+canonical build hash; historical replay rules stay unchanged.
+
 ## Release readiness (current)
 
 No release commit, push, deployment or promotion yet. Full release gate,
-three-game local Ranked end-to-end checks, new HMH ruleset corpus, real phone
-performance, final area/art acceptance and live verification remain required.
+three-game local Ranked end-to-end checks, required visual comparison and live
+verification remain required for the completed-scope release. New HMH ruleset
+corpus, real phone performance and final area/art acceptance remain requirements
+for the deferred full overhaul, not evidence already obtained by this bundle.
 Completed tests and browser evidence do not imply completion of this scope.
 All 34 master items remain partially delivered or open; none is declared
 fully accepted by this batch. Latest build budgets are recorded in the

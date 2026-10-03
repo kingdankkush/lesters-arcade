@@ -18,7 +18,8 @@ test('the optional GLB pilot assets are source-bound, embedded, weighted and gen
     assert.deepEqual(inspected, actor.inspection, actorId);
     assert.equal(inspected.joints, actorId === 'lit-commando' ? 22 : 19);
     // The Commando carries the nine native clips plus the authored clip library.
-    assert.equal(inspected.clips.length, actorId === 'lit-commando' ? 9 + actor.clipLibrary.libraryClips : 6);
+    assert.equal(inspected.clips.length, actorId === 'lit-commando' ? 9 + actor.clipLibrary.libraryClips : actorId === 'bagholder-rusher' ? 7 : 6);
+    if(actorId === 'bagholder-rusher')assert.deepEqual(actor.deathVariants.clips,['death','death-side']);
     if (actorId === 'lit-commando') assert.equal(actor.clipLibrary.libraryClips, 71);
     assert.ok(inspected.images.every(image => image.width <= 1024 && image.height <= 1024));
     assert.match(actor.sourceSha256, /^[0-9a-f]{64}$/);

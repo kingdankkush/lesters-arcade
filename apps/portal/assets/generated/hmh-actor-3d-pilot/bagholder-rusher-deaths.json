@@ -1,0 +1,319 @@
+{
+  "schema": 1,
+  "actorId": "bagholder-rusher",
+  "authority": "presentation-only",
+  "sourceSha256": "d71630544fb236ad3a165a3e9d3e3f7aa2f5bbd254311b6d8f9c7a1f92b85856",
+  "sourceUnchanged": true,
+  "nativeAction": "HMH_Enemy_Death_Side",
+  "authoringScriptSha256": "d8e08e53599a32f3cd52f3df45c26df1d8b734f345f2b92a8452ceecd84a4ece",
+  "packerSha256": "a4f48741a419c95613c05e9f849f6fb4a295c04b66ca3d74c89a942f24a77f2b",
+  "glbSha256": "107b0be93e9f65337a038f49679d6a3a34fa0532b0b9a921f2db9d993b776772",
+  "originalGlbSha256": "cb5b557b3aff2018af5bb88352219ec86212e35404a3cd442904bc161aa78d33",
+  "originalBinSha256": "d8a6ab9dda724208e83cfc7413d1c1f7bbb66e1a7f39a00e403660f7e90f1c5f",
+  "originalBinBytes": 1658196,
+  "originalClipBytesUnchanged": true,
+  "geometryRigTexturesUnchanged": true,
+  "assetDeltaBytes": 33868,
+  "variant": "death-side",
+  "durationSeconds": 1,
+  "requiredClips": [
+    "idle",
+    "run",
+    "tell",
+    "attack",
+    "hit",
+    "death",
+    "death-side"
+  ],
+  "inspection": {
+    "bytes": 1780176,
+    "vertices": 6968,
+    "triangles": 8274,
+    "skinnedMeshes": 2,
+    "joints": 19,
+    "clips": [
+      {
+        "name": "attack",
+        "durationSeconds": 1,
+        "channels": 63
+      },
+      {
+        "name": "death",
+        "durationSeconds": 1,
+        "channels": 63
+      },
+      {
+        "name": "death-side",
+        "durationSeconds": 1,
+        "channels": 63
+      },
+      {
+        "name": "hit",
+        "durationSeconds": 1,
+        "channels": 63
+      },
+      {
+        "name": "idle",
+        "durationSeconds": 1,
+        "channels": 63
+      },
+      {
+        "name": "run",
+        "durationSeconds": 1,
+        "channels": 63
+      },
+      {
+        "name": "tell",
+        "durationSeconds": 1,
+        "channels": 63
+      }
+    ],
+    "bounds": {
+      "min": [
+        -0.441074401140213,
+        0.0013017406454309821,
+        -0.4284604787826538
+      ],
+      "max": [
+        0.4400388300418854,
+        1.7216256856918335,
+        0.42899274826049805
+      ]
+    },
+    "embeddedImages": 7,
+    "images": [
+      {
+        "name": "bagholder-rusher Primary Authored | Authored PBR Bake",
+        "format": "png",
+        "width": 16,
+        "height": 16,
+        "bytes": 274
+      },
+      {
+        "name": "bagholder-rusher Accent Authored | Authored PBR Bake",
+        "format": "png",
+        "width": 16,
+        "height": 16,
+        "bytes": 274
+      },
+      {
+        "name": "bagholder-rusher Metal Authored | Authored PBR Bake",
+        "format": "png",
+        "width": 16,
+        "height": 16,
+        "bytes": 274
+      },
+      {
+        "name": "battered+zombie+warrior+3d+model_normal",
+        "format": "png",
+        "width": 512,
+        "height": 512,
+        "bytes": 298826
+      },
+      {
+        "name": "battered+zombie+warrior+3d+model_basecolor",
+        "format": "png",
+        "width": 512,
+        "height": 512,
+        "bytes": 474074
+      },
+      {
+        "name": "battered+zombie+warrior+3d+model_rm",
+        "format": "png",
+        "width": 512,
+        "height": 512,
+        "bytes": 368937
+      },
+      {
+        "name": "bagholder-rusher Secondary Authored | Authored PBR Bake",
+        "format": "png",
+        "width": 16,
+        "height": 16,
+        "bytes": 274
+      }
+    ],
+    "textureBytesRgba8": 3149824,
+    "textureBytesRgba8Mipmaps": 4199756
+  },
+  "sourceProof": {
+    "actorId": "bagholder-rusher",
+    "source": "apps/hmh-reboot/assets/source/models/native-enemies/bagholder-rusher/bagholder-rusher-packed.blend",
+    "sourceSha256": "d71630544fb236ad3a165a3e9d3e3f7aa2f5bbd254311b6d8f9c7a1f92b85856",
+    "sourceUnchanged": true,
+    "rig": "bagholder-rusher Rig",
+    "clip": "death-side",
+    "nativeAction": "HMH_Enemy_Death_Side",
+    "keyFrames": [
+      [
+        1,
+        0,
+        0
+      ],
+      [
+        5,
+        0.12,
+        0.1
+      ],
+      [
+        10,
+        0.38,
+        0.6
+      ],
+      [
+        16,
+        0.75,
+        1
+      ],
+      [
+        22,
+        0.97,
+        0.75
+      ],
+      [
+        25,
+        1,
+        0.65
+      ]
+    ],
+    "authoringScriptSha256": "d8e08e53599a32f3cd52f3df45c26df1d8b734f345f2b92a8452ceecd84a4ece",
+    "blenderVersion": "5.1.2",
+    "export": {
+      "output": ".tmp/hmh-bagholder-side-death-02/side-source.glb",
+      "sha256": "3c887296e029c7ffcb4c9d847f980283006371735fece03a53e60d2c92b1328a",
+      "bytes": 1601924,
+      "optimization": {
+        "meshes": [
+          {
+            "mesh": "Bagholder debt satchel",
+            "sourceTriangles": 276,
+            "targetTriangles": 8000,
+            "exportTriangles": 276,
+            "exportVertices": 144,
+            "repairedInvalidGeometry": false
+          },
+          {
+            "mesh": "bagholder-rusher Skinned Primary Body",
+            "sourceTriangles": 114146,
+            "targetTriangles": 8000,
+            "exportTriangles": 7998,
+            "exportVertices": 6441,
+            "repairedInvalidGeometry": true
+          }
+        ],
+        "textures": [
+          {
+            "image": "bagholder-rusher Accent Authored | Authored PBR Bake",
+            "sourceSize": [
+              16,
+              16
+            ],
+            "exportSize": [
+              16,
+              16
+            ]
+          },
+          {
+            "image": "bagholder-rusher Dark Authored | Authored PBR Bake",
+            "sourceSize": [
+              16,
+              16
+            ],
+            "exportSize": [
+              16,
+              16
+            ]
+          },
+          {
+            "image": "bagholder-rusher Metal Authored | Authored PBR Bake",
+            "sourceSize": [
+              16,
+              16
+            ],
+            "exportSize": [
+              16,
+              16
+            ]
+          },
+          {
+            "image": "bagholder-rusher Primary Authored | Authored PBR Bake",
+            "sourceSize": [
+              16,
+              16
+            ],
+            "exportSize": [
+              16,
+              16
+            ]
+          },
+          {
+            "image": "bagholder-rusher Secondary Authored | Authored PBR Bake",
+            "sourceSize": [
+              16,
+              16
+            ],
+            "exportSize": [
+              16,
+              16
+            ]
+          },
+          {
+            "image": "bagholder-rusher Skin Authored | Authored PBR Bake",
+            "sourceSize": [
+              16,
+              16
+            ],
+            "exportSize": [
+              16,
+              16
+            ]
+          },
+          {
+            "image": "bagholder-rusher Wound Authored | Authored PBR Bake",
+            "sourceSize": [
+              16,
+              16
+            ],
+            "exportSize": [
+              16,
+              16
+            ]
+          },
+          {
+            "image": "battered+zombie+warrior+3d+model_basecolor.jpg",
+            "sourceSize": [
+              4096,
+              4096
+            ],
+            "exportSize": [
+              512,
+              512
+            ]
+          },
+          {
+            "image": "battered+zombie+warrior+3d+model_normal.jpg",
+            "sourceSize": [
+              4096,
+              4096
+            ],
+            "exportSize": [
+              512,
+              512
+            ]
+          },
+          {
+            "image": "battered+zombie+warrior+3d+model_rm.jpg",
+            "sourceSize": [
+              4096,
+              4096
+            ],
+            "exportSize": [
+              512,
+              512
+            ]
+          }
+        ]
+      },
+      "sourceConstantPbrFallbacks": []
+    }
+  }
+}

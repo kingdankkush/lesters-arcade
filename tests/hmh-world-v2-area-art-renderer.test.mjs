@@ -13,6 +13,7 @@ const world = createGreyboxWorld();
 // Headless textures sized like the real files: kit pages 2048 (1024 at half), tiles 512, fringes 512x128, detail page 256.
 function sizeFor(url) {
   const file = url.split('/').at(-1);
+  if(file.startsWith('native-timber-screens'))return file.includes('@0.5x')?[256,128]:[512,256];
   if (file.startsWith('tripo-props-hd-')) return file.includes('@0.5x') ? [1024, 1024] : [2048, 2048];
   if (file.endsWith('-fringe.png')) return [512, 128];
   if (file === 'ground-details.webp') return [256, 256];

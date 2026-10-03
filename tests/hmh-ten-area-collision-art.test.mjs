@@ -83,7 +83,7 @@ test('the generated prop-blocker module is current and every row is a frozen aut
 });
 
 // Headless textures sized like the real files (as the renderer tests do).
-const sizeFor = url => { const file = url.split('/').at(-1); if (file.startsWith('tripo-props-hd-')) return file.includes('@0.5x') ? [1024, 1024] : [2048, 2048]; if (file.endsWith('-fringe.png')) return [512, 128]; if (file === 'ground-details.webp') return [256, 256]; return [512, 512]; };
+const sizeFor = url => { const file = url.split('/').at(-1); if(file.startsWith('native-timber-screens'))return file.includes('@0.5x')?[256,128]:[512,256]; if (file.startsWith('tripo-props-hd-')) return file.includes('@0.5x') ? [1024, 1024] : [2048, 2048]; if (file.endsWith('-fringe.png')) return [512, 128]; if (file === 'ground-details.webp') return [256, 256]; return [512, 512]; };
 const loadTexture = async url => { const [width, height] = sizeFor(url); return new Texture({ source: new TextureSource({ width, height }) }); };
 
 test('the renderer claims every prop collider its plan draws and seats solid cards inside their colliders', async () => {

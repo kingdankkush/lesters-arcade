@@ -313,7 +313,7 @@ let PRISONERS_LIVE_DEFAULT, PRISONER_TITLES, OG_MINER_XP_PER_LEVEL, prisonerMiss
 let summaryV7 = null;
 let createBombletPool, spawnBomblets, stepBomblets, bombletPosition, ventRingHits, critCandleHitChance, createBombletFeedbackBudget, takeBombletFeedback;
 // The unchanged cockpit joins the existing pre-session startup loader.
-let createCockpitUi;
+let createCockpitUi, createDeathRecapView;
 // Bundle diet (2.0): the world production renderer and the authored prop
 // layout tables are first read after the renderer initialises, so they join
 // the same awaited loader. Both are projection/placement data, not simulation.
@@ -346,7 +346,8 @@ function loadLazyRuntimeModules() {
     import('./world-production-art.mjs'),
     import('./authored-prop-layout.mjs'),
     import('./low-health-vignette.mjs'),
-  ]).then(([boss, creature, telegraph, interactions, life, pacing, nativeAssets, briefing, panel, content, mission, slots, arenas, geometry, drops, effects, prisoners, v7, cockpitUi, worldArt, propLayout, vignette]) => {
+    import('./death-recap-view.mjs'),
+  ]).then(([boss, creature, telegraph, interactions, life, pacing, nativeAssets, briefing, panel, content, mission, slots, arenas, geometry, drops, effects, prisoners, v7, cockpitUi, worldArt, propLayout, vignette, deathRecap]) => {
     // 2.1.0: the official ten-area Level 1 records schema 8 through the same
     // accumulator path; its lazy context hands the same API (run-summary-v8.mjs).
     summaryV7 = HMH_WORLD_CONTEXT?.runSummary ?? v7;
@@ -365,6 +366,7 @@ function loadLazyRuntimeModules() {
     ({ creatureAnimationTick, creatureIdPhase, liquidatorPose } = creature);
     ({ renderLiquidatorTelegraph, createBossTelegraphTexture } = telegraph);
     ({ createLowHealthVignette } = vignette);
+    ({ createDeathRecapView } = deathRecap);
     ({ refreshWorldDesignGateNavigation, buildWorldDesignHazardHits } = interactions);
     ({ createMissionState, stepMissionObjectives, settleMissionObjective, missionDockStep, missionActiveBlockers, missionSealTargets,
       applyMissionSealDamage, missionHiddenSecretProps } = mission);
@@ -698,6 +700,7 @@ async function boot() {
           upgradePanel?.destroy();
           hud?.destroy();
           lowHealthVignette.dispose();
+          deathRecapView.dispose();
           bossEdgeWarning?.dispose();
           bossTelegraphTexture?.destroy(true);
           stopCurrentSession();
@@ -898,6 +901,7 @@ async function boot() {
   const overlayVisuals = new Graphics();
   const lowHealthVignette = createLowHealthVignette({ SpriteClass: Sprite, TextureClass: Texture,
     createCanvas: () => document.createElement('canvas') });
+  const deathRecapView = createDeathRecapView({root:document.getElementById('hmhDeathRecap'),hud:document.getElementById('hmhHud'),actions:document.getElementById('hmhDeathRestart')});
   const enemyVisuals = new Container();
   // Enemies must sort by screen depth so a southern body draws in front.
   enemyVisuals.sortableChildren = true;
@@ -3484,6 +3488,7 @@ async function boot() {
   // held result at once; a backstop timer covers a page that draws nothing.
   const deathCamera = createDeathCamera({
     release: (resultMessages) => {
+      deathRecapView.complete();
       if (resultMessages && bridge?.initialized) {
         bridge.send('game:state', resultMessages.state);
         bridge.send('game:run-summary', resultMessages.runSummary);
@@ -3499,6 +3504,7 @@ async function boot() {
   const stopCurrentSession = () => {
     deathCamera.flush('session-end');
     deathCamera.reset();
+    deathRecapView.reset();
     touchController?.destroy();
     touchController = null;
     inputController?.destroy();
@@ -5491,7 +5497,9 @@ async function boot() {
             if (settings.captionCriticalAudio) setAccessibleCombatStatus('Critical audio: player hit.');
             // `heavy` is presentation only: a heavy hit ends the mission clip.
             lastPlayerHit = { tick, sourceId: damageEvent.sourceId, knockback: damageEvent.knockback,
+              damage:damageEvent.damageApplied,killer:String(damageEvent.weaponId).startsWith('boss-')?bossHudState(bossSlots,tick)?.name??'Boss attack':ENEMY_ARCHETYPES[String(damageEvent.weaponId).replace(/^enemy-/,'')]?.name??(damageEvent.weaponId==='satoshi-frag'?'Your grenade':damageEvent.weaponId==='world-steam'?'Steam vent':damageEvent.weaponId==='world-fuel'?'Burning fuel':'Unknown attack'),
               heavy: damageEvent.damageApplied >= 20 || String(damageEvent.weaponId).startsWith('boss-') || damageEvent.weaponId === 'world-fuel' || damageEvent.weaponId === 'satoshi-frag' };
+            deathRecapView.observeDamage(lastPlayerHit.killer,damageEvent.damageApplied);
             updateRunCombo(0);
             triggerCameraShake(tick, 5);
             const magnitude = Math.hypot(damageEvent.knockback.x, damageEvent.knockback.y);
@@ -5668,7 +5676,9 @@ async function boot() {
           simulation.gameOver();
           combatAudio.setMusicEnabled(false);
           combatAudio.play('game-over', { volume: 0.18 });
-          setStatus('Run ended', 'Defeated // restart from the portal or reload standalone mode');
+          setStatus('Liquidated', 'Your run has ended.');
+          const deathRun = getRunProgressionSnapshot(runProgression);
+          deathRecapView.begin({kills:runKills,bosses:bossSlots?.rows?Array.from(bossSlots.rows.values()).filter(row=>row.defeatedTick>0).length:0,level:deathRun.level,score:deathRun.score,elapsedMs:simulation.timeMs,killer:lastPlayerHit?.tick===tick?lastPlayerHit.killer:null,damage:lastPlayerHit?.damage??0},{standalone:!bridge?.initialized&&sessionPayload?.mode==='free'});
           let heldResult = null;
           // W4a: an unofficial world builds no summary and submits nothing.
           if (bridge?.initialized && RUN_SUMMARY_ENABLED) {
@@ -5966,6 +5976,12 @@ async function boot() {
   void import('./reload-presentation.mjs').then((module) => { reloadPresentation = module; })
     .catch(() => { dataset.reloadPresentationStatus = 'unavailable'; });
 
+  document.getElementById('hmhDeathRestart')?.addEventListener('click',()=>{
+    if (!bridge?.initialized && sessionPayload?.mode === 'free') {
+      initializeSession(sessionPayload);
+      marker.scale.set(1);
+    }
+  });
   cockpit = createCockpitUi({
     documentRef: document,
     touchUiEnabled,

@@ -20,6 +20,11 @@ const root = fileURLToPath(new URL('..', import.meta.url));
 
 // Every .mjs / .js module that must parse cleanly (node --check).
 const NODE_CHECK_FILES = [
+  'apps/hmh-reboot/src/death-recap-view.mjs',
+  'tests/hmh-death-recap-view.test.mjs',
+  'tests/hmh-enemy-death-variation.test.mjs',
+  'tests/hmh-native-timber-screens.test.mjs',
+  'scripts/pack-hmh-bagholder-side-death.mjs',
   'apps/chikun/src/ground-loop-kit.mjs',
   'tests/chikun-ground-loop-kit.test.mjs',
   'apps/hmh-reboot/src/boss-edge-warning.mjs',
@@ -1566,6 +1571,8 @@ const PY_COMPILE_FILES = [
   'scripts/adopt-hmh-native-roster.py',
   'scripts/build-hmh-hero-motion.py',
   'scripts/build-hmh-native-roster.py',
+  'scripts/build-hmh-native-timber-screens.py',
+  'scripts/hmh-blender/build-hmh-bagholder-side-death.py',
   'scripts/hmh-native-roster-image-report.py',
   'scripts/hmh_sfx_metrics.py',
   'scripts/hmh-blender/build-hmh-native-roster.py',

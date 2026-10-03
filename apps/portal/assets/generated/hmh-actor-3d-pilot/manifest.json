@@ -619,7 +619,7 @@
     },
     "bagholder-rusher": {
       "file": "bagholder-rusher.glb",
-      "sha256": "cb5b557b3aff2018af5bb88352219ec86212e35404a3cd442904bc161aa78d33",
+      "sha256": "107b0be93e9f65337a038f49679d6a3a34fa0532b0b9a921f2db9d993b776772",
       "sourceSha256": "d71630544fb236ad3a165a3e9d3e3f7aa2f5bbd254311b6d8f9c7a1f92b85856",
       "sourceBytes": 8599093,
       "sourceTriangles": 114422,
@@ -629,10 +629,11 @@
         "tell",
         "attack",
         "hit",
-        "death"
+        "death",
+        "death-side"
       ],
       "inspection": {
-        "bytes": 1746308,
+        "bytes": 1780176,
         "vertices": 6968,
         "triangles": 8274,
         "skinnedMeshes": 2,
@@ -645,6 +646,11 @@
           },
           {
             "name": "death",
+            "durationSeconds": 1,
+            "channels": 63
+          },
+          {
+            "name": "death-side",
             "durationSeconds": 1,
             "channels": 63
           },
@@ -735,6 +741,14 @@
         ],
         "textureBytesRgba8": 3149824,
         "textureBytesRgba8Mipmaps": 4199756
+      },
+      "deathVariants": {
+        "manifest": "bagholder-rusher-deaths.json",
+        "clips": [
+          "death",
+          "death-side"
+        ],
+        "selection": "stable-presentation-identity-fnv1a"
       }
     },
     "the-liquidator": {

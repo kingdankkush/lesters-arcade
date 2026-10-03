@@ -674,7 +674,9 @@ async function playStacked(page, { timeoutMs }) {
 
 async function playHmh(page, { timeoutMs }) {
   await page.locator('#officialCharacterSelect:not([hidden])').waitFor({ state: 'visible', timeout: timeoutMs });
-  await page.locator('#officialCharacterRoster .hero-card.active').first().click();
+  // Commando's armor survives the terminal fixture's max-health + 1 hit.
+  // Valkyrie is a starter and reaches the same real death/result pathway.
+  await page.locator('#officialCharacterRoster .hero-card').filter({ hasText: 'Lit Valkyrie' }).click();
   await page.locator('#officialLevelIntro:not([hidden])').waitFor({ state: 'visible', timeout: timeoutMs });
   await page.locator('#officialBeginLevelButton').click();
 }

@@ -109,10 +109,18 @@ def main():
     parser.add_argument("--actor", choices=list(exporter.ACTORS), required=True)
     parser.add_argument("--output-prefix", required=True)
     parser.add_argument("--preview", action="store_true")
+    parser.add_argument("--asset", help="A scratch candidate only; production source remains the default")
+    parser.add_argument("--extra-clips", default="")
+    parser.add_argument("--preview-clip", default="idle")
+    parser.add_argument("--preview-fraction", type=float, default=0)
     args = parser.parse_args(sys.argv[sys.argv.index("--") + 1:])
     output = exporter.validate_pilot_output(ROOT, args.actor, "verify", args.output_prefix)
     output.parent.mkdir(parents=True, exist_ok=True)
     source = ROOT / "apps/portal/assets/generated/hmh-actor-3d-pilot" / (args.actor + ".glb")
+    if args.asset:
+        source=(ROOT/args.asset).resolve()
+        if not source.is_relative_to(ROOT/'.tmp'):raise ValueError('Explicit candidate asset must stay in scratch')
+    if not 0 <= args.preview_fraction <= 1:raise ValueError('Preview fraction must be normalized')
     bpy.ops.wm.read_factory_settings(use_empty=True)
     bpy.ops.import_scene.gltf(filepath=str(source))
     # The glTF importer creates a hidden BoneShape mesh for rig handles. It is
@@ -127,7 +135,7 @@ def main():
     # native clips keep the original five-pose check.
     library_manifest = source.with_name(args.actor + "-clips.json")
     library_clips = [clip["name"] for clip in json.loads(library_manifest.read_text(encoding="utf-8"))["libraryClips"]] if library_manifest.exists() else []
-    for clip in [*exporter.ACTORS[args.actor]["clips"], *library_clips]:
+    for clip in [*exporter.ACTORS[args.actor]["clips"], *library_clips, *[c for c in args.extra_clips.split(',') if c]]:
         start, end = activate_clip(clip)
         samples = []
         first_points = None
@@ -162,8 +170,9 @@ def main():
                "libraryClips": len(library_clips)}
     output.with_suffix(".json").write_text(json.dumps(receipt, indent=2) + "\n", encoding="utf-8")
     if args.preview:
-        start, end = activate_clip("idle")
-        scene.frame_set(int(start))
+        start, end = activate_clip(args.preview_clip)
+        frame=start+(end-start)*args.preview_fraction
+        scene.frame_set(int(frame),subframe=frame%1)
         render_preview(output.with_suffix(".png"), args.actor)
     print("HMH_ACTOR_REIMPORT_RECEIPT=" + str(output.with_suffix(".json")))
 

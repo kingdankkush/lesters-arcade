@@ -1110,3 +1110,20 @@ html[data-debug-hud="1"] .hmh-controls-hint { display: none !important; }
   #hmhHud .hmh-hud-utility { gap:4px; }
   #hmhHud .hmh-reboot-dash-status { font-size:8px; padding:4px; }
 }
+.hmh-death-recap{position:fixed;inset:0;z-index:30;display:grid;place-items:center;padding:20px;background:radial-gradient(ellipse at center,#07131a20,#050c15bd);color:#f8ead3;pointer-events:none}
+.hmh-death-recap[hidden]{display:none}
+body:has(.hmh-death-recap:not([hidden])) .hmh-touch-controls,
+body:has(.hmh-death-recap:not([hidden])) .hmh-controls-hint{visibility:hidden;pointer-events:none}
+.hmh-death-panel{width:min(490px,100%);max-height:calc(100dvh - 40px);overflow-y:auto;touch-action:pan-y;box-sizing:border-box;padding:30px;border:1px solid #bc956862;border-radius:18px;background:linear-gradient(135deg,#19303aec,#111b25f7);box-shadow:0 20px 75px #0007,inset 0 1px #ebd6af25;text-align:center;pointer-events:auto}
+.hmh-death-eyebrow{font:700 10px/1.5 system-ui;letter-spacing:.17em;color:#c0a17e}
+.hmh-death-panel h1{margin:12px 0;font:900 clamp(32px,7vw,58px)/1.05 system-ui;letter-spacing:.035em;color:#f3d1a8;text-shadow:0 3px 25px #ed955030}
+.hmh-death-cause{font:14px/1.6 system-ui;color:#e4d7c6;min-height:22px}
+.hmh-death-report{display:flex;align-items:center;gap:24px;margin:24px 0;text-align:left}
+.hmh-death-grade{width:110px;flex-shrink:0;display:grid;justify-items:center;border:1px solid #d2ac7760;border-radius:12px;padding:18px 0;background:radial-gradient(ellipse at top,#deb47e24,transparent 75%)}
+.hmh-death-grade strong{font:900 70px/.95 system-ui;color:#f2d5a0;text-shadow:0 0 20px #f5b36338}
+.hmh-death-grade span{margin-top:12px;font:700 9px/1.5 system-ui;letter-spacing:.14em;color:#c3b79e}
+.hmh-death-stats{flex:1;margin:0;display:grid;gap:11px}.hmh-death-stats div{display:flex;justify-content:space-between;gap:10px}.hmh-death-stats dt{font:12px/1.5 system-ui;color:#a5babb}.hmh-death-stats dd{margin:0;font:700 16px/1.2 system-ui;font-variant-numeric:tabular-nums;color:#f1e7d4}
+.hmh-death-note{font:10px/1.6 system-ui;color:#9caeb0}.hmh-death-panel button{margin-top:12px;min-height:44px;width:100%}
+.hmh-death-sources{font:11px/1.6 system-ui;color:#c5aaa0;overflow-wrap:anywhere}
+.hmh-death-recap[data-phase=beat] .hmh-death-report,.hmh-death-recap[data-phase=beat] .hmh-death-note,.hmh-death-recap[data-phase=beat] .hmh-death-sources{visibility:hidden}
+@media(max-width:540px){.hmh-death-panel{padding:23px 18px}.hmh-death-report{gap:16px}.hmh-death-grade{width:85px}.hmh-death-grade strong{font-size:60px}.hmh-death-stats dt{font-size:11px}.hmh-death-stats dd{font-size:15px}}

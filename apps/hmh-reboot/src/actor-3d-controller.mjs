@@ -14,6 +14,16 @@ export const ACTOR3D_BOSS_IDS = Object.freeze(['boss-rug-pull-baron', 'boss-51-f
 export const ACTOR3D_BOSS_CLIPS = Object.freeze(['idle', 'run', 'tell', 'attack', 'attack-2', 'super-tell', 'super', 'hit', 'stagger', 'death']);
 const BOSS_LOOP_CLIPS = new Set(['idle', 'run']);
 
+// Only this family has a second authored native clip. Stable presentation
+// identity picks it without advancing any gameplay or cosmetic RNG stream.
+export function selectActor3dEnemyDeathClip(actorId, id) {
+  if (actorId !== 'bagholder-rusher') return 'death';
+  let hash = 2166136261;
+  const key = String(id);
+  for (let i=0;i<key.length;i++) hash = Math.imul(hash ^ key.charCodeAt(i),16777619);
+  return (hash & 1) ? 'death-side' : 'death';
+}
+
 // District bosses render ahead of ordinary enemies (boss priority, like the
 // Liquidator). Input rows are detached presentation records:
 // { id, actorId, active, visible, alpha, x, y, z, bodyHeight?, pose: { state, direction, phaseTick|tick }, originals }.
@@ -122,7 +132,7 @@ export function createActor3dPresentationEntries(hero, enemies, boss = null, max
     // event lasts six ticks; /60 displayed only the first tenth of its pose.
     const pose = enemy.pose, time = Math.max(0, pose.phaseTick ?? pose.tick ?? 0) / (pose.state === 'hit' ? 6 : 60);
     entries.push({ descriptor: { id: `enemy:${enemy.id}`, actorId: enemy.actorId, x: enemy.x, y: enemy.y, z: enemy.z,
-      heading: (2 - (pose.direction ?? 0)) * Math.PI / 4, clip: pose.state,
+      heading: (2 - (pose.direction ?? 0)) * Math.PI / 4, clip: pose.state === 'death' ? selectActor3dEnemyDeathClip(enemy.actorId,enemy.id) : pose.state,
       clipTimeSeconds: ['idle', 'run'].includes(pose.state) ? time % 1 : Math.min(1, time), pixelsPerMetre }, originals: enemy.originals });
   }
   // Retired bodies are presentation records, never living simulation actors.
@@ -138,7 +148,7 @@ export function createActor3dPresentationEntries(hero, enemies, boss = null, max
   for(const {corpse} of fallen) {
     if(entries.length >= maxActors) break;
     entries.push({descriptor:{id:`corpse:${corpse.id}`,actorId:corpse.actorId,x:corpse.x,y:corpse.y,z:corpse.z ?? 0,
-      heading:(2-corpse.pose.direction)*Math.PI/4,clip:'death',clipTimeSeconds:Math.min(1,corpse.pose.tick/60),pixelsPerMetre},originals:corpse.originals});
+      heading:(2-corpse.pose.direction)*Math.PI/4,clip:selectActor3dEnemyDeathClip(corpse.actorId,corpse.id),clipTimeSeconds:Math.min(1,corpse.pose.tick/60),pixelsPerMetre},originals:corpse.originals});
   }
   return entries;
 }
