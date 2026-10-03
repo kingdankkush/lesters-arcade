@@ -15,6 +15,7 @@ import { ROAD_RECIPES } from '../apps/hmh-reboot/src/world-v2-area-art-schema.mj
 
 const kit = JSON.parse(fs.readFileSync(new URL('../apps/portal/assets/generated/hmh-reboot-tripo-props-hd/hmh-tripo-props-hd.json', import.meta.url), 'utf8'));
 const tileManifest = JSON.parse(fs.readFileSync(new URL('../apps/portal/assets/generated/hmh-terrain-tiles/hmh-terrain-tiles.json', import.meta.url), 'utf8'));
+const surfaceManifest = JSON.parse(fs.readFileSync(new URL('../apps/portal/assets/generated/hmh-terrain-tiles/world-v2-surfaces.json', import.meta.url), 'utf8'));
 const tileRoot = new URL('../apps/portal/assets/generated/hmh-terrain-tiles/', import.meta.url);
 const world = createGreyboxWorld();
 const sizeFor = url => { const file = url.split('/').at(-1); if (file.startsWith('tripo-props-hd-')) return file.includes('@0.5x') ? [1024, 1024] : [2048, 2048]; if (file.includes('-fringe') || file.includes('rock-face')) return file.includes('@0.5x') ? [256, 64] : [512, 128]; return file.includes('@0.5x') ? [256, 256] : [512, 512]; };
@@ -23,7 +24,7 @@ const loader = log => async url => { log.push(url); const [width, height] = size
 test('every district has a two-material ground pair whose grain tiles exist at full and half resolution with measured means', () => {
   const areaIds = world.areas.map(a => a.id).sort();
   assert.deepEqual(Object.keys(DISTRICT_TERRAIN).sort(), areaIds, 'all ten districts are assigned');
-  const manifestTiles = new Set(tileManifest.materials.map(m => m.id));
+  const manifestTiles = new Set([...tileManifest.materials, ...surfaceManifest.materials].map(m => m.id));
   for (const [areaId, terrain] of Object.entries(DISTRICT_TERRAIN)) {
     assert.ok(terrain.materials.length >= 2 && terrain.materials.length <= 3, areaId);
     assert.equal(new Set(terrain.materials).size, terrain.materials.length, `${areaId} materials are distinct`);
@@ -52,7 +53,7 @@ test('ground.terrain validates its materials, the generic district plans and the
   assert.throws(() => validateAreaArtPlan({ ...shell, ground: { ...shell.ground, terrain: { materials: ['meadow', 'meadow'] } } }, kit), /repeat/);
   const ok = validateAreaArtPlan({ ...shell, ground: { ...shell.ground, terrain: { materials: ['meadow', 'earth'], blend: 0.4 } } }, kit);
   assert.deepEqual(ok.terrain, { materials: ['meadow', 'earth'], seed: 'mweb-meadows', blend: 0.4, patch: 800, value: 0.14, extras: [], slots: {} });
-  assert.deepEqual(ok.tiles, ['crushed-ore', 'forest-floor', 'ledge-top', 'packed-earth']);
+  assert.deepEqual(ok.tiles, ['surface-earth', 'surface-grass', 'surface-gravel', 'surface-stone']);
   for (const area of world.areas) {
     const plan = createDistrictTerrainArtPlan(world, area.id), again = createDistrictTerrainArtPlan(createGreyboxWorld(), area.id);
     assert.equal(JSON.stringify(plan), JSON.stringify(again), `${area.id} terrain plan is deterministic`);

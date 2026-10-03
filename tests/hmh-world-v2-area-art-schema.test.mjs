@@ -17,7 +17,7 @@ test('a minimal valid plan validates to a frozen summary with page and byte budg
   assert.equal(summary.schema, AREA_ART_SCHEMA);
   assert.deepEqual(summary.pages, ['tripo-props-hd-plants-00.webp']);
   assert.deepEqual(summary.sources, ['b1-04']);
-  assert.deepEqual(summary.tiles, ['forest-floor']);
+  assert.deepEqual(summary.tiles, ['surface-grass']);
   assert.equal(summary.budget.decodedBytes, 16777216);
   assert.equal(summary.budget.halfDecodedBytes, 4194304);
   assert.equal(summary.budget.encodedBytes, kit.pages.find(p => p.image === 'tripo-props-hd-plants-00.webp').encodedBytes);

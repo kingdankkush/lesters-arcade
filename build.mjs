@@ -80,6 +80,11 @@ function createHmhPixiPlugin({ externalizeRuntimeImports }) {
     setup(buildApi) {
       buildApi.onResolve({ filter: /^pixi\.js$/ }, (args) => {
         const importer = args.importer.replaceAll('\\', '/');
+        // The optional shader lives in dist/chunks, rather than beside the
+        // STACKED entry. Resolve its vendor independently of the chunk hash.
+        if (externalizeRuntimeImports && importer.endsWith('/apps/stacked/src/render/luminous-journey-view.mjs')) {
+          return { path: '../stacked/stacked-pixi-v1.js', external: true };
+        }
         if (externalizeRuntimeImports && importer.includes('/apps/stacked/src/')) {
           return { path: './stacked-pixi-v1.js', external: true };
         }

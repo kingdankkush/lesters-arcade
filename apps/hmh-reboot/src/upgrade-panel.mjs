@@ -84,6 +84,7 @@ export function createUpgradePanel({
   let selectionLatched = false;
   let gamepadFrame = 0;
   let pollGeneration = 0;
+  let paintedOfferKey = null;
   const upgradeOpen = () => !elements.upgradePanel.hidden && upgradeCards.length > 0;
   const armUpgrade = (index) => {
     if (!upgradeCards.length) return;
@@ -190,6 +191,7 @@ export function createUpgradePanel({
     upgradeCards = [];
     armedIndex = -1;
     selectionLatched = false;
+    paintedOfferKey = null;
     elements.upgradePanel.hidden = true;
     elements.upgradeChoices.replaceChildren();
   };
@@ -198,6 +200,17 @@ export function createUpgradePanel({
     // rerolledSlot: the card slot a re-roll just replaced; focus moves to the
     // new card and the live region names it.
     showUpgrade(snapshot, { rerolledSlot = null } = {}) {
+      const compactUpgradeLayout = documentRef.defaultView?.matchMedia?.('(max-width: 600px)').matches ?? false;
+      // Repeated projection of one offer must retain focus, expanded details,
+      // the confirmation latch and the controller's held-button release edge.
+      // This cache never enters progression state or run evidence.
+      const offerKey = Number.isInteger(snapshot.offersOpened) ? JSON.stringify([
+        snapshot.offersOpened, snapshot.rerolls, snapshot.level, snapshot.pendingLevels,
+        snapshot.offerKind, snapshot.sealsFound, snapshot.pendingChoices,
+        snapshot.evolutions, compactUpgradeLayout,
+      ]) : null;
+      if (offerKey !== null && offerKey === paintedOfferKey && upgradeOpen()) return;
+      paintedOfferKey = offerKey;
       clearUpgradeListeners();
       elements.pausePanel.hidden = true;
       elements.menu.setAttribute('aria-expanded', 'false');
@@ -209,7 +222,6 @@ export function createUpgradePanel({
       upgradeCards = [];
       armedIndex = -1;
       selectionLatched = false;
-      const compactUpgradeLayout = documentRef.defaultView?.matchMedia?.('(max-width: 600px)').matches ?? false;
       let index = 0;
       for (const choice of snapshot.pendingChoices) {
         const card = resolveUpgradeCardPresentation(choice, index);

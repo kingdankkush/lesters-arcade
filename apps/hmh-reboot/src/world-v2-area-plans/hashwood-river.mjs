@@ -6,6 +6,7 @@
 //
 // Page budget: plants-00 + structures-01 (+ shared props-00).
 import { freezeDeep } from '../value-guards.mjs';
+import { appendCentrePockets } from './centre-pockets.mjs';
 import { pointInPolygon, stableUnit, DISTRICT_TERRAIN } from '../world-v2-area-art-schema.mjs';
 import { createAreaPlanContext, CANOPY_HEIGHTS } from './plan-support.mjs';
 
@@ -108,5 +109,6 @@ export function createHashwoodRiverArtPlan(world) {
   for (const [x, y, source, height, flip] of [[-1760, -1660, 'b2-73', 68, false], [1820, -930, 'b2-73', 64, true], [-1850, 1900, 'b2-73', 70, false], [1860, -1860, 'b2-74', 116, false], [-1900, 320, 'b2-74', 110, true], [1900, 1900, 'b2-74', 120, false], [300, -1300, 'b2-73', 62, true]]) {
     if (guard.clear(cx + x, cy + y, 30)) prop(source, cx + x, cy + y, height, { flip, tint: 0xd6c7a7 });
   }
+  appendCentrePockets({world,area,plan});
   return freezeDeep(plan);
 }

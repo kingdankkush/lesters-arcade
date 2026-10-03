@@ -3,7 +3,8 @@ import { computeLayout } from '../../../portal/src/stacked-layout.mjs';
 import { createStackedBoardView } from './board-view.mjs';
 import { createLayerStack } from './layers.mjs';
 import { applyRootFit, fitRootToViewport } from './root-fit.mjs';
-import { createStackedAtmosphere, STACKED_EPOCHS } from './atmosphere.mjs';
+import { STACKED_EPOCHS } from './atmosphere.mjs';
+import { createQuietBackdrop } from './quiet-backdrop.mjs';
 import { createGameplayFeedback } from './gameplay-feedback.mjs';
 import { createBoardFeedback } from './board-feedback.mjs';
 import { createBoardParticles, mobilePresentation } from './gameplay-particles.mjs';
@@ -15,7 +16,7 @@ import { createBoardMotionView } from './board-motion.mjs';
 import { PIECE_COLORS } from './board-view.mjs';
 import { createVisualizerGovernor, deviceStartTier } from './visualizer-governor.mjs';
 
-export function createStackedRenderer({ app, stageElement, geometry, Container, Graphics, Text, onFrameReleased = () => {}, startTier = deviceStartTier, createAtmosphere = createStackedAtmosphere, isMobile = () => mobilePresentation({width:globalThis.innerWidth,coarsePointer:globalThis.matchMedia?.('(pointer: coarse)').matches}) }) {
+export function createStackedRenderer({ app, stageElement, geometry, Container, Graphics, Text, onFrameReleased = () => {}, startTier = deviceStartTier, createAtmosphere = createQuietBackdrop, isMobile = () => mobilePresentation({width:globalThis.innerWidth,coarsePointer:globalThis.matchMedia?.('(pointer: coarse)').matches}) }) {
   const tree = createLayerStack({ stage: app.stage, Container, Graphics });
   let atmosphere=null, particles=null, pieceFx=null, mobile=null, atmosphereFactory=createAtmosphere;
   const board = createStackedBoardView({ index: 0, cells: 10, rows: 24, frame: 'wide', geometry, Container, Graphics, Text, onFrameReleased });
@@ -44,7 +45,7 @@ export function createStackedRenderer({ app, stageElement, geometry, Container, 
     if(nextMobile!==mobile) {
       mobile=nextMobile;
       atmosphere?.destroy(); atmosphere=null;
-      atmosphere=createPresentationAtmosphere(atmosphereFactory,{layer:tree.layers.layerParticleFar,sceneLayer:tree.layers.layerBackdrop,Container,Graphics,Text,mobile},{fallback:createStackedAtmosphere,onFallback:()=>{atmosphereFactory=createStackedAtmosphere;stageElement.dataset.livingJourneyStatus='fallback';}});
+      atmosphere=createPresentationAtmosphere(atmosphereFactory,{layer:tree.layers.layerParticleFar,sceneLayer:tree.layers.layerBackdrop,renderer:app.renderer,Container,Graphics,Text,mobile},{fallback:createQuietBackdrop,onFallback:error=>{atmosphereFactory=createQuietBackdrop;stageElement.dataset.livingJourneyStatus='fallback';stageElement.dataset.livingJourneyReason=String(error?.message??'unsupported graphics');}});
       particles?.destroy(); particles=createBoardParticles({board,Graphics,geometry,mobile});
       // ST-N03 piece presentation (hold, level, ledger, perfect, top-out, danger, lock thud).
       pieceFx?.destroy(); pieceFx=createBoardPiecePresentation({board,Graphics,mobile});

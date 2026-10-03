@@ -12,6 +12,7 @@ export function createLivingJourney({seed=0x4c544332}={}) {
   const go=reason=>{state.from=state.to;index=(index+1)%deck.length;state.to=deck[index];state.mix=0;state.portalRadius=.06;state.phase='portal';state.reason=reason;state.transitionCount+=1;portalProgress=0;changedAtBeat=beats;pending=null;};
   return {
     state,deck,
+    nextScene(){if(portalProgress===1)go('manual');else pending='manual';},
     update({now,bpm=120,lines=0,combo=0,danger=0,reducedMotion=false}={}) {
       const validTime=Number.isFinite(now);
       const dt=validTime&&previousTime!==null?Math.max(0,Math.min(.1,(now-previousTime)/1000)):0;

@@ -167,3 +167,7 @@ button:focus-visible,select:focus-visible,.replay-timeline:focus-visible{outline
 @media(orientation:portrait){.ranked-help{max-width:290px;font-size:11px;line-height:1.45}.ranked-help[open] .ranked-help-body{max-height:34dvh;overflow-y:auto}}
 @media(max-height:450px){.ranked-help{margin-top:4px;font-size:9px;line-height:1.3}.ranked-help summary{min-height:32px;padding:2px 0;font-size:7px}}
 @media(max-height:260px){.ranked-help{display:none}}
+.sfx-volume{display:flex;align-items:center;flex-wrap:wrap;gap:.6rem;flex:1 1 100%;padding:.6rem .8rem;color:#f0e7ce;font-size:.85rem;background:#112a35;border:1px solid #9b855745;border-radius:10px;}
+.sfx-volume output{margin-left:auto;font-variant-numeric:tabular-nums;}
+.sfx-volume input{flex:1 1 100%;width:100%;min-width:0;accent-color:#dabb76;}
+.sfx-volume input:focus-visible{outline:2px solid #e7cc8d;outline-offset:4px;}

@@ -9,6 +9,7 @@ const sources = {
   'stacked-sim.mjs': 'import { seed } from "./seeded-rng.mjs"; import { scale } from "./stacked-contracts.mjs"; export const tick = seed + scale;',
   'seeded-rng.mjs': 'export const seed = 1;',
   'stacked-contracts.mjs': 'export const scale = 65536;',
+  'stacked-ledger-rules.mjs': 'import { scale } from "./stacked-contracts.mjs"; export const interval = scale;',
 };
 async function inspect(overrides = {}) {
   assert.equal(typeof gate.auditStackedPurity, 'function', 'gate must expose the testable AST/import-graph audit');
@@ -23,11 +24,11 @@ async function inspect(overrides = {}) {
   } finally { await rm(root, { recursive: true, force: true }); }
 }
 
-test('purity audit accepts current canonical graph and reports all three audited modules', async () => {
+test('purity audit accepts current canonical graph and reports all four audited modules', async () => {
   assert.equal(typeof gate.auditStackedPurity, 'function');
   const result = await gate.auditStackedPurity();
   assert.equal(result.ok, true, JSON.stringify(result));
-  assert.equal(result.files.length, 3);
+  assert.equal(result.files.length, 4);
 });
 test('comments, JSDoc, strings and non-reference property keys do not create impurity', async () => {
   const result = await inspect({ 'stacked-sim.mjs': sources['stacked-sim.mjs'] + '\n/** performance documented Date **/\nconst words = "window document Math.random **"; const data = { document: 1 };' });
@@ -55,7 +56,7 @@ for (const source of ['const M = Math; export const value = M.random();', 'const
     assert.equal((await inspect({ 'stacked-sim.mjs': source })).ok, false);
   });
 }
-for (const file of ['seeded-rng.mjs', 'stacked-contracts.mjs']) {
+for (const file of ['seeded-rng.mjs', 'stacked-contracts.mjs', 'stacked-ledger-rules.mjs']) {
   test(`purity audit does not exempt the imported ${file}`, async () => {
     assert.equal((await inspect({ [file]: 'export const value = Date.now();' })).ok, false);
   });

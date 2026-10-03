@@ -1059,3 +1059,46 @@ html[data-debug-hud="1"] .hmh-controls-hint { display: none !important; }
 .hmh-pickup-banner[data-kind="secret"] strong { color: #ffe27a; }
 @media (max-width: 600px) { .hmh-pickup-banner { top: clamp(76px, 15%, 120px); } }
 @media (prefers-reduced-motion: reduce) { .hmh-pickup-banner { transition: none; transform: translate(-50%, 0); } }
+
+/* 2.2: keep one armed-weapon control; the wheel owns the full inventory. */
+#hmhHud.hmh-run-rail { gap:3px; padding:5px 7px; }
+#hmhHud .hmh-hud-row--vitals { display:grid; grid-template-columns:minmax(108px,1.5fr) repeat(4,minmax(34px,.55fr)) minmax(64px,1fr); gap:3px; align-items:center; }
+#hmhHud .hmh-run-stat { min-width:0; padding:0 5px; }
+#hmhHud .hmh-run-stat span { font-size:9px; letter-spacing:.03em; }
+#hmhHud .hmh-run-stat strong { font-size:13px; line-height:1.1; }
+#hmhHud .hmh-run-stat--wide { display:grid; gap:3px; min-width:0; }
+#hmhHud .hmh-run-stat--wide span { overflow:hidden; white-space:nowrap; text-overflow:ellipsis; }
+#hmhHud .hmh-hud-pilot { min-width:0; padding:0 6px 0 0; gap:5px; }
+#hmhHud .hmh-hud-crest { width:24px; height:24px; border-radius:7px; font-size:10px; }
+#hmhHud .hmh-hud-health { display:grid; min-width:0; gap:3px; flex:1; }
+#hmhHud .hmh-hud-health-head { font-size:9px; }
+#hmhHud .hmh-hud-health-head strong { font-size:12px; }
+#hmhHud .hmh-hud-health-track { height:6px; min-width:0; }
+#hmhHud .hmh-hud-arsenal { display:none; }
+#hmhHud .hmh-hud-row--loadout { flex-wrap:nowrap; align-items:center; }
+#hmhHud .hmh-hud-weapon { flex:1 1 auto; min-width:0; min-height:44px; padding:0 8px 0 0; gap:6px; }
+#hmhHud .hmh-hud-ring { width:28px; height:28px; }
+#hmhHud .hmh-hud-ring-core { width:22px; height:22px; }
+#hmhHud .hmh-hud-ring-core::after { font-size:8px; }
+#hmhHud .hmh-hud-weapon-body { display:flex; align-items:center; gap:7px; min-width:0; flex:1; }
+#hmhHud #hmhHudWeaponName { min-width:0; font-size:12px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+#hmhHud .hmh-hud-ammo-line { margin-left:auto; }
+#hmhHud .hmh-hud-utility { gap:7px; }
+#hmhHud .hmh-reboot-dash-status { min-width:0; padding:4px 6px; font-size:9px; }
+#hmhHud .hmh-hud-frag { gap:2px; }
+#hmhHud .hmh-hud-pips--frag b { height:9px; width:6px; }
+@media(max-width:600px) {
+  #hmhHud .hmh-hud-row--vitals { grid-template-columns:minmax(88px,1.3fr) repeat(4,minmax(29px,.5fr)) minmax(57px,1fr); gap:2px; }
+  #hmhHud .hmh-run-stat { padding:0 3px; }
+  #hmhHud .hmh-run-stat span { font-size:7.5px; }
+  #hmhHud .hmh-run-stat strong { font-size:11px; }
+  #hmhHud .hmh-hud-health-head span { display:none; }
+  #hmhHud .hmh-hud-health { display:flex; align-items:center; gap:4px; }
+  #hmhHud .hmh-hud-pips--ammo { display:none; }
+  #hmhHud #hmhHudWeaponName { font-size:10px; }
+  #hmhHud .hmh-hud-ammo-bar { max-width:34px; min-width:22px; }
+  #hmhHud .hmh-hud-weapon { padding-right:4px; }
+  #hmhHud .hmh-hud-weapon-body { gap:4px; }
+  #hmhHud .hmh-hud-utility { gap:4px; }
+  #hmhHud .hmh-reboot-dash-status { font-size:8px; padding:4px; }
+}

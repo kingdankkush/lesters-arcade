@@ -5,11 +5,12 @@ import { parse } from 'acorn';
 import { resolveStaticModuleSpecifier } from './stacked-contract-audit.mjs';
 
 const defaultRoot = fileURLToPath(new URL('..', import.meta.url));
-const moduleNames = ['stacked-sim.mjs', 'seeded-rng.mjs', 'stacked-contracts.mjs'];
+const moduleNames = ['stacked-sim.mjs', 'seeded-rng.mjs', 'stacked-contracts.mjs', 'stacked-ledger-rules.mjs'];
 const allowedEdges = new Map([
-  ['stacked-sim.mjs', new Set(['./seeded-rng.mjs', './stacked-contracts.mjs'])],
+  ['stacked-sim.mjs', new Set(['./seeded-rng.mjs', './stacked-contracts.mjs', './stacked-ledger-rules.mjs'])],
   ['seeded-rng.mjs', new Set()],
   ['stacked-contracts.mjs', new Set()],
+  ['stacked-ledger-rules.mjs', new Set(['./stacked-contracts.mjs'])],
 ]);
 const ambientNames = new Set([
   'Date', 'performance', 'window', 'document', 'navigator', 'globalThis', 'global',

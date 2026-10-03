@@ -12,6 +12,7 @@
 // bunker shell (b1-46) lives on structures-00, so villas use the canopy shell
 // (b2-64) only.
 import { freezeDeep } from '../value-guards.mjs';
+import { appendCentrePockets } from './centre-pockets.mjs';
 import { DISTRICT_TERRAIN } from '../world-v2-area-art-schema.mjs';
 import { createAreaPlanContext } from './plan-support.mjs';
 import { placeOnBank, placeEdgeWoodland, placeAlongPolygonEdges, placeLine } from './plan-lines.mjs';
@@ -82,5 +83,6 @@ export function createSilverCoastArtPlan(world) {
   for (const [x, y, source, height, flip] of [[1260, 380, 'b1-19', 80, false], [1260, 820, 'b2-49', 32, true], [700, -150, 'b2-49', 32, false], [1550, 130, 'b2-49', 32, true]]) if (guard.clear(cx + x, cy + y, 22)) prop(source, cx + x, cy + y, height, { flip, tint: 0xdedcd4 });
   // Restrained villas on the closed land beyond the north and east edges.
   placeEdgeWoodland(context, { key: 'coast-villas', sources: ['b2-64', 'b2-71', 'b2-64', 'b1-53'], perSide: 9, drift: 120, sides: [1, 2], height: (source, side, n, v) => (source === 'b2-64' ? 300 : source === 'b2-71' ? 300 : 220) * (0.9 + 0.2 * v), tint: 0xe6e2d6 });
+  appendCentrePockets({world,area,plan});
   return freezeDeep(plan);
 }

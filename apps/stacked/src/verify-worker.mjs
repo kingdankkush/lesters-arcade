@@ -1,8 +1,9 @@
 import { replayStackedRun } from '../../portal/src/stacked-sim.mjs';
 import { STACKED_MAX_TICKS } from '../../portal/src/stacked-contracts.mjs';
+import { validStackedGameVersion } from '../../portal/src/stacked-ledger-rules.mjs';
 
 const REQUEST_KEYS = Object.freeze(['requestId', 'evidence', 'expectedSeed', 'maxTicks', 'config']);
-const CONFIG_KEYS = Object.freeze(['startLevel', 'buildHash', 'seasonId']);
+const CONFIG_KEYS = Object.freeze(['startLevel', 'buildHash', 'seasonId', 'gameVersion']);
 const REQUEST_ID_PATTERN = /^[a-z0-9][a-z0-9:_-]{0,63}$/;
 const BUILD_HASH_PATTERN = /^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$/;
 const SEASON_ID_PATTERN = /^[a-z0-9][a-z0-9-]{1,63}$/;
@@ -27,6 +28,7 @@ const validateConfig = (value) => {
     if (key === 'startLevel' && (!Number.isInteger(entry) || entry < 1 || entry > 15)) throw new Error('invalid config');
     if (key === 'buildHash' && (typeof entry !== 'string' || !BUILD_HASH_PATTERN.test(entry))) throw new Error('invalid config');
     if (key === 'seasonId' && (typeof entry !== 'string' || !SEASON_ID_PATTERN.test(entry))) throw new Error('invalid config');
+    if (key === 'gameVersion' && !validStackedGameVersion(entry)) throw new Error('invalid config');
     config[key] = entry;
   }
   return Object.freeze(config);

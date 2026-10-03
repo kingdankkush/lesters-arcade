@@ -8,6 +8,7 @@
 // (b2-80); the kit has no headstone or lantern. Traffic masts (b2-52) are
 // omitted as lanterns: a signal mast in a cemetery reads as a road prop.
 import { freezeDeep } from '../value-guards.mjs';
+import { appendCentrePockets } from './centre-pockets.mjs';
 import { DISTRICT_TERRAIN } from '../world-v2-area-art-schema.mjs';
 import { createAreaPlanContext, CANOPY_HEIGHTS } from './plan-support.mjs';
 import { placeLine, placeOnBank, placeEdgeWoodland, placeAlongPolygonEdges } from './plan-lines.mjs';
@@ -88,5 +89,6 @@ export function createHollowPinesArtPlan(world) {
   for (const [x, y, source, height, flip] of [[1420, 470, 'b2-79', 56, false], [1430, 700, 'b2-79', 52, true], [880, 440, 'b2-73', 52, false]]) {
     if (guard.clear(cx + x, cy + y, 24)) prop(source, cx + x, cy + y, height, { flip, tint: 0xc4c0b8 });
   }
+  appendCentrePockets({world,area,plan});
   return freezeDeep(plan);
 }

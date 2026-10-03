@@ -17,7 +17,8 @@ export const AREA_ART_ID = 'world-v2-area-art/v1';
 const SHADOW_TINT = 0x03070b;
 // Shared key from the screen upper left: contact shadows lean down-right.
 const SHADOW_LEAN = Object.freeze({ x: 0.1, y: 0.05 });
-const DETAIL_FRAMES = Object.freeze({ 'detail:grass': { x: 0, y: 0, w: 180, h: 122, anchor: { x: 0.53, y: 0.73 }, scale: 0.34 }, 'detail:aggregate': { x: 0, y: 160, w: 224, h: 96, anchor: { x: 0.5, y: 0.5 }, scale: 0.42 } });
+import { MEADOW_DETAIL_FRAMES, AREA_ART_MEADOW_DETAIL_PAGE } from './world-v2-area-art-schema.mjs';
+const DETAIL_FRAMES = Object.freeze({ ...MEADOW_DETAIL_FRAMES, 'detail:grass': { x: 0, y: 0, w: 180, h: 122, anchor: { x: 0.53, y: 0.73 }, scale: 0.34 }, 'detail:aggregate': { x: 0, y: 160, w: 224, h: 96, anchor: { x: 0.5, y: 0.5 }, scale: 0.42 } });
 
 const scaleMatrix = s => ({ a: s, b: 0, c: 0, d: s, tx: 0, ty: 0 });
 // Tiles decode at 512 px (full) or 256 px (@0.5x); fills map world units per
@@ -342,7 +343,7 @@ export function createAreaArt({ world, areaId, plan, kit = null, loadTexture, te
   // should be on screen waits for the next gate.
   const GATE = 48; let gateX = NaN, gateY = NaN, gateZoom = NaN, gateW = NaN, gateH = NaN; const paddedView = { width: 0, height: 0 };
   let host = null, depthKey = y => y;
-  let detailTexture = null, pageTextures = new Map(), controlTexture = null, terrainField = null, terrainMesh = null;
+  let detailTexture = null, meadowDetailTexture = null, pageTextures = new Map(), controlTexture = null, terrainField = null, terrainMesh = null;
   const overlays = new Map();
   const signTextures = new Map(), fogCards = [];
   let fogTexture = null, fogFrame = 0, fogStatic = true;
@@ -419,6 +420,7 @@ export function createAreaArt({ world, areaId, plan, kit = null, loadTexture, te
         jobs.push(buildTerrainFieldAsync({ summary: { ...summary, bounds: terrainBounds() }, world, size: terrainFieldSize ?? (ratio === 0.5 ? 256 : 384) }, { signal }).then(field => { if (!field || disposed) return null; terrainField = field; return createControlTexture(field); }).then(result => { const pair = result && result.control ? result : result ? { control: result, light: result } : null; if (disposed) { pair?.control.destroy(true); if (pair && pair.light !== pair.control) pair.light.destroy(true); return; } controlTexture = pair; if (pair) terrainField = { ...terrainField, fieldBytes: terrainField.data.length + (terrainField.extra?.length ?? 0), data: null, extra: null }; }));
       }
       if (summary.detailPage) jobs.push(acquire(AREA_ART_DETAIL_ROOT + AREA_ART_DETAIL_PAGE).then(texture => { detailTexture = texture; }));
+      if (summary.nativeMeadowDetails) jobs.push(acquire(AREA_ART_DETAIL_ROOT + (ratio===0.5 ? AREA_ART_MEADOW_DETAIL_PAGE.replace('.webp','@0.5x.webp') : AREA_ART_MEADOW_DETAIL_PAGE)).then(texture => { meadowDetailTexture=texture; }));
       const results = await Promise.allSettled(jobs);
       const failure = results.find(result => result.status === 'rejected');
       if (failure) throw failure.reason;
@@ -578,15 +580,19 @@ export function createAreaArt({ world, areaId, plan, kit = null, loadTexture, te
   // Overlaps resolve dirt under gravel under paved; cracks go on top of all cores.
   const roadsByRank = () => [...summary.roads].sort((a, b) => ROAD_RECIPES[a.kind].rank - ROAD_RECIPES[b.kind].rank);
   function paintDecals(target, decals) {
-    if (!decals.length || !detailTexture) return;
+    if (!decals.length) return;
     const textures = new Map();
     for (const decal of decals) {
       const spec = DETAIL_FRAMES[decal.source];
+      const page = spec.nativeMeadow ? meadowDetailTexture : detailTexture;
+      if (!page) continue;
+      const frameRatio = spec.nativeMeadow ? ratio : 1;
       let texture = textures.get(decal.source);
-      if (!texture) { texture = new Texture({ source: detailTexture.source, frame: new Rectangle(spec.x, spec.y, spec.w, spec.h) }); textures.set(decal.source, texture); painted.push({ removeFromParent() {}, destroy: () => texture.destroy(false) }); }
+      if (!texture) { texture = new Texture({ source: page.source, frame: new Rectangle(spec.x*frameRatio, spec.y*frameRatio, spec.w*frameRatio, spec.h*frameRatio) }); textures.set(decal.source, texture); painted.push({ removeFromParent() {}, destroy: () => texture.destroy(false) }); }
       const sprite = new Sprite({ texture });
       sprite.anchor.set(spec.anchor.x, spec.anchor.y); sprite.position.set(decal.x, decal.y);
-      sprite.scale.set((decal.flip ? -1 : 1) * spec.scale * decal.scale, spec.scale * decal.scale); sprite.rotation = decal.rotation; sprite.alpha = decal.alpha; sprite.tint = decal.tint;
+      sprite.label = `area-detail-${decal.id}`;
+      sprite.scale.set((decal.flip ? -1 : 1) * spec.scale * decal.scale/frameRatio, spec.scale * decal.scale/frameRatio); sprite.rotation = decal.rotation; sprite.alpha = decal.alpha; sprite.tint = decal.tint;
       target.addChild(sprite); painted.push(sprite);
     }
   }
@@ -1173,7 +1179,7 @@ export function createAreaArt({ world, areaId, plan, kit = null, loadTexture, te
     for (const node of solidNodes) { try { evict(node); } catch {} } solidNodes.length = 0; for (const record of solidRecords) record.node = null; solidRecords.length = 0;
     for (const node of painted) { try { node.removeFromParent?.(); node.destroy?.({ children: true }); } catch {} } painted.length = 0;
     for (const entry of frames.values()) entry.texture.destroy(false); frames.clear(); live.clear();
-    for (const url of owned) cache.release(url); owned.length = 0; tiles.clear(); overlays.clear(); pageTextures.clear(); detailTexture = null;
+    for (const url of owned) cache.release(url); owned.length = 0; tiles.clear(); overlays.clear(); pageTextures.clear(); detailTexture = null; meadowDetailTexture = null;
     for (const texture of signTextures.values()) { try { texture?.destroy(true); } catch {} } signTextures.clear(); fogCards.length = 0; try { fogTexture?.destroy(true); } catch {} fogTexture = null;
     for (const body of waterBodies) { try { body.texture?.destroy(true); } catch {} } waterBodies.length = 0; waterMeshes.length = 0; surfaceNodes.length = 0;
     try { controlTexture?.control.destroy(true); if (controlTexture && controlTexture.light !== controlTexture.control) controlTexture.light.destroy(true); } catch {} controlTexture = null; terrainMesh = null;

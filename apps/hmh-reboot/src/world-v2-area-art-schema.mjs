@@ -3,6 +3,7 @@
 // touches Pixi, the network or the simulation. Everything here is
 // projection-only: a plan cannot add a blocker, surface, objective or rule.
 import { freezeDeep } from './value-guards.mjs';
+import { SURFACE_TILE_MEANS } from './world-v2-surface-materials.mjs';
 
 export const AREA_ART_SCHEMA = 'hmh-area-art-plan/v1';
 export const AREA_ART_KIT_ROOT = '/assets/generated/hmh-reboot-tripo-props-hd/';
@@ -10,6 +11,13 @@ export const AREA_ART_KIT_MANIFEST = 'hmh-tripo-props-hd.json';
 export const AREA_ART_KIT_PIPELINE = 'hmh-tripo-static-props-hd/v1';
 export const AREA_ART_TILE_ROOT = '/assets/generated/hmh-terrain-tiles/';
 export const AREA_ART_DETAIL_ROOT = '/assets/generated/hmh-art-target/';
+export const AREA_ART_MEADOW_DETAIL_PAGE = 'meadow-ground-details.webp';
+export const MEADOW_DETAIL_FRAMES = Object.freeze({
+  'detail:meadow-grass': {x:0,y:0,w:256,h:256,anchor:{x:0.5,y:0.5},scale:0.32,nativeMeadow:true},
+  'detail:meadow-clover': {x:256,y:0,w:256,h:256,anchor:{x:0.5,y:0.5},scale:0.32,nativeMeadow:true},
+  'detail:meadow-flowers': {x:512,y:0,w:256,h:256,anchor:{x:0.5,y:0.5},scale:0.32,nativeMeadow:true},
+  'detail:meadow-pebbles': {x:768,y:0,w:256,h:256,anchor:{x:0.5,y:0.5},scale:0.32,nativeMeadow:true},
+});
 export const AREA_ART_DETAIL_PAGE = 'ground-details.webp';
 export const AREA_ART_KIT_PAGE_BUDGET = 2;
 // The props page dresses every road, so it is resident world-wide and does not
@@ -31,27 +39,34 @@ export const SOLID_STYLES = Object.freeze(['card', 'bank', 'stakes', 'crates', '
 // `tile`/`base`/`tint`/`alpha`/`scale` keep the plain Graphics fill used for
 // solids and for zones outside an area's splat material set.
 export const AREA_ART_TILE_MEANS = freezeDeep({
+  ...SURFACE_TILE_MEANS,
   'forest-floor': [75, 75, 53], 'packed-earth': [132, 109, 75], 'crushed-ore': [103, 109, 108], 'ledge-top': [89, 80, 65], 'red-rock': [143, 98, 70],
   'wet-bank': [78, 78, 60], 'industrial-slab': [116, 118, 108], 'bridge-deck': [111, 85, 56], road: [65, 69, 64], 'shallow-water': [34, 123, 140], water: [27, 100, 127],
 });
 export const AREA_ART_GRAIN_SIZE = 160;
-const defineMaterial = (color, grain, legacy) => ({ color, grain, tile: grain[0].tile, scale: grain[0].size / 512, base: color, tint: 0xffffff, alpha: 0.55, ...legacy });
+// Keep the original-map terrain immutable. The ten-area painter uses a quiet
+// authored relief layer instead of amplifying the legacy uniform speckle.
+const SURFACE_TILES = Object.freeze({ 'forest-floor': 'surface-grass', 'packed-earth': 'surface-earth', 'crushed-ore': 'surface-gravel', 'ledge-top': 'surface-stone', 'wet-bank': 'surface-mud', 'industrial-slab': 'surface-paving', road: 'surface-asphalt' });
+const defineMaterial = (color, sourceGrain, legacy) => {
+  const grain = sourceGrain.map((layer, i) => SURFACE_TILES[layer.tile] ? { ...layer, tile: SURFACE_TILES[layer.tile], gain: Math.min(layer.gain, i === 0 ? 0.95 : 0.4) } : layer);
+  return { color, grain, tile: grain[0].tile, scale: grain[0].size / 512, base: color, tint: 0xffffff, alpha: 0.55, ...legacy };
+};
 export const AREA_ART_MATERIALS = freezeDeep({
   grass: defineMaterial(0x6f7d5f, [{ tile: 'forest-floor', size: 160, gain: 2.6 }, { tile: 'forest-floor', size: 520, gain: 2.6, rot: true }]),
   meadow: defineMaterial(0x78836b, [{ tile: 'forest-floor', size: 160, gain: 2.6 }, { tile: 'ledge-top', size: 620, gain: 0.3, lum: true, rot: true }]),
   earth: defineMaterial(0x786750, [{ tile: 'packed-earth', size: 160, gain: 2.4 }, { tile: 'crushed-ore', size: 540, gain: 0.38, lum: true, rot: true }], { alpha: 0.7 }),
   dirt: defineMaterial(0x62533f, [{ tile: 'packed-earth', size: 150, gain: 2.4 }, { tile: 'ledge-top', size: 480, gain: 0.38, lum: true, rot: true }], { alpha: 0.7 }),
   gravel: defineMaterial(0x8f8a7b, [{ tile: 'crushed-ore', size: 150, gain: 1.2 }, { tile: 'crushed-ore', size: 420, gain: 0.6, rot: true }]),
-  sand: defineMaterial(0xb8ac8f, [{ tile: 'packed-earth', size: 150, gain: 2 }, { tile: 'crushed-ore', size: 600, gain: 0.35, lum: true, rot: true }]),
-  wetsand: defineMaterial(0x9b957b, [{ tile: 'packed-earth', size: 150, gain: 2 }, { tile: 'crushed-ore', size: 500, gain: 0.42, lum: true, rot: true }]),
+  sand: defineMaterial(0xb8ac8f, [{ tile: 'surface-sand', size: 150, gain: 0.95 }, { tile: 'crushed-ore', size: 600, gain: 0.35, lum: true, rot: true }]),
+  wetsand: defineMaterial(0x9b957b, [{ tile: 'surface-sand', size: 150, gain: 0.8 }, { tile: 'crushed-ore', size: 500, gain: 0.3, lum: true, rot: true }]),
   shallows: defineMaterial(0x406764, [{ tile: 'shallow-water', size: 200, gain: 0.8 }, { tile: 'shallow-water', size: 560, gain: 0.5, rot: true }]),
   rock: defineMaterial(0x767970, [{ tile: 'ledge-top', size: 160, gain: 0.62 }, { tile: 'ledge-top', size: 480, gain: 0.34, rot: true }], { alpha: 0.8 }),
   scree: defineMaterial(0x84867f, [{ tile: 'crushed-ore', size: 140, gain: 0.8 }, { tile: 'ledge-top', size: 400, gain: 0.4, lum: true, rot: true }]),
-  marsh: defineMaterial(0x586451, [{ tile: 'wet-bank', size: 160, gain: 2.8 }, { tile: 'forest-floor', size: 520, gain: 3, rot: true }], { alpha: 0.7 }),
+  marsh: defineMaterial(0x586451, [{ tile: 'wet-bank', size: 160, gain: 2.8 }, { tile: 'wet-bank', size: 520, gain: 0.4, rot: true }], { alpha: 0.7 }),
   peat: defineMaterial(0x494d3f, [{ tile: 'wet-bank', size: 150, gain: 2.8 }, { tile: 'ledge-top', size: 460, gain: 0.38, lum: true, rot: true }]),
-  moss: defineMaterial(0x4f5f47, [{ tile: 'wet-bank', size: 160, gain: 2.8 }, { tile: 'forest-floor', size: 480, gain: 3, rot: true }]),
-  forest: defineMaterial(0x56634e, [{ tile: 'forest-floor', size: 160, gain: 2.6 }, { tile: 'ledge-top', size: 560, gain: 0.4, lum: true, rot: true }], { alpha: 0.65 }),
-  needles: defineMaterial(0x575466, [{ tile: 'packed-earth', size: 150, gain: 2.4 }, { tile: 'ledge-top', size: 500, gain: 0.42, lum: true, rot: true }]),
+  moss: defineMaterial(0x4f5f47, [{ tile: 'wet-bank', size: 160, gain: 2.8 }, { tile: 'wet-bank', size: 480, gain: 0.4, rot: true }]),
+  forest: defineMaterial(0x56634e, [{ tile: 'surface-litter', size: 160, gain: 0.95 }, { tile: 'ledge-top', size: 560, gain: 0.4, lum: true, rot: true }], { alpha: 0.65 }),
+  needles: defineMaterial(0x575466, [{ tile: 'surface-needles', size: 150, gain: 0.95 }, { tile: 'ledge-top', size: 500, gain: 0.4, lum: true, rot: true }]),
   paving: defineMaterial(0x91948c, [{ tile: 'industrial-slab', size: 220, gain: 1.6 }, { tile: 'crushed-ore', size: 600, gain: 0.4, lum: true, rot: true }], { alpha: 0.8 }),
   masonry: defineMaterial(0x7b7c70, [{ tile: 'industrial-slab', size: 180, gain: 1.6 }, { tile: 'ledge-top', size: 460, gain: 0.38, lum: true, rot: true }], { alpha: 0.8 }),
   asphalt: defineMaterial(0x474c4a, [{ tile: 'road', size: 160, gain: 2.8 }, { tile: 'crushed-ore', size: 520, gain: 0.22, lum: true, rot: true }], { alpha: 0.85 }),
@@ -249,7 +264,7 @@ export function validateAreaArtPlan(plan, kit) {
   }
   const decals = (ground.decals ?? []).map((decal, i) => {
     const name = `ground.decals[${i}]`;
-    if (!['detail:grass', 'detail:aggregate'].includes(decal.source)) fail(`${name}.source must be a ground detail frame`);
+    if (!['detail:grass', 'detail:aggregate'].includes(decal.source) && !Object.hasOwn(MEADOW_DETAIL_FRAMES,decal.source)) fail(`${name}.source must be a ground detail frame`);
     const at = point(decal, name); inside(at, name);
     return { id: decal.id, source: decal.source, ...at, scale: decal.scale === undefined ? 1 : positive(decal.scale, `${name}.scale`), rotation: decal.rotation === undefined ? 0 : finite(decal.rotation, `${name}.rotation`), alpha: decal.alpha === undefined ? 0.8 : clampUnit(decal.alpha, `${name}.alpha`), tint: optionalTint(decal.tint, `${name}.tint`), flip: decal.flip === true };
   });
@@ -330,11 +345,13 @@ export function validateAreaArtPlan(plan, kit) {
   const grainMaterials = new Set([...(terrain?.materials ?? []), ...(terrain?.extras ?? []), ...solids.flatMap(solid => [solid.roof, solid.wall].filter(Boolean)), ...roads.flatMap(road => [ROAD_RECIPES[road.kind].core, ROAD_RECIPES[road.kind].shoulder])]);
   const tiles = [...new Set([...materials].flatMap(id => grainMaterials.has(id) ? AREA_ART_MATERIALS[id].grain.map(layer => layer.tile) : [AREA_ART_MATERIALS[id].tile]))].sort();
   const overlays = solids.some(solid => ['bank', 'mass'].includes(solid.style)) ? [AREA_ART_ROCK_FACE] : [];
+  const nativeMeadowDetails = decals.some(decal=>Object.hasOwn(MEADOW_DETAIL_FRAMES,decal.source));
+  const detailPage = decals.some(decal=>!Object.hasOwn(MEADOW_DETAIL_FRAMES,decal.source));
   return freezeDeep({
     schema: AREA_ART_SCHEMA, areaId: plan.areaId, roadsPlan, bounds, pages: plan.pages.slice(), sources: [...sources].sort(), materials: [...materials].sort(), tiles,
-    detailPage: decals.length > 0, base, terrain, overlays, signs, fog, zones, trails, decals, roads, props, solids,
+    detailPage, nativeMeadowDetails, base, terrain, overlays, signs, fog, zones, trails, decals, roads, props, solids,
     counts: { zones: zones.length, trails: trails.length, decals: decals.length, roads: roads.length, props: props.length, solids: solids.length, signs: signs.length, fog: fog.length },
-    budget: { kitPages: plan.pages.length, exclusiveKitPages: exclusivePages.length, kitPageBudget: budget, encodedBytes, decodedBytes, halfEncodedBytes, halfDecodedBytes, tilePages: tiles.length * 2 + overlays.length + (decals.length ? 1 : 0) + (terrain ? 1 : 0), tileDecodedBytes: tiles.length * (512 * 512 * 4 + 512 * 128 * 4) + overlays.length * 512 * 128 * 4 + (decals.length ? 256 * 256 * 4 : 0) + (terrain ? 2 * 384 * 384 * 4 : 0) },
+    budget: { kitPages: plan.pages.length, exclusiveKitPages: exclusivePages.length, kitPageBudget: budget, encodedBytes, decodedBytes, halfEncodedBytes, halfDecodedBytes, tilePages: tiles.length * 2 + overlays.length + (detailPage ? 1 : 0) + (nativeMeadowDetails ? 1 : 0) + (terrain ? 1 : 0), tileDecodedBytes: tiles.length * (512 * 512 * 4 + 512 * 128 * 4) + overlays.length * 512 * 128 * 4 + (detailPage ? 256 * 256 * 4 : 0) + (nativeMeadowDetails ? 1024 * 256 * 4 : 0) + (terrain ? 2 * 384 * 384 * 4 : 0) },
   });
 }
 function clampRange(value, min, max, name) { finite(value, name); if (value < min || value > max) fail(`${name} must be within ${min}..${max}`); return value; }

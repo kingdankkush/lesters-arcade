@@ -1570,8 +1570,8 @@ async function mountStackedSession() {
     mount: dom.officialCombatMount, session: boundSession, search: bootRuntimeSearch, startLevel, settlementLive: SETTLEMENT_LIVE,
     profile: { displayName: profile ? resolveDisplayName(profile, connectedWallet) : 'Guest', locale: document.documentElement.lang || 'en' },
     settings: { ...readStackedSettings(window.localStorage, Boolean(gameSettings.reduceMotion)), ...childCosmetics('stacked') }, music: arcadeMusicAudio(),
-    onReady() { combat.active = true; combat.gameOver = false; combat.paused = false; },
-    onState(value) { runMusic.observe(value); combat.paused = value.paused; combat.active = ['running', 'paused', 'ready'].includes(value.status); combat.gameOver = value.status === 'terminal'; combat.score = value.score; },
+    onReady() { combat.active = true; combat.gameOver = false; combat.paused = false; syncCombatOverlay(); },
+    onState(value) { const wasPaused=combat.paused; runMusic.observe(value); combat.paused = value.paused; combat.active = ['running', 'paused', 'ready'].includes(value.status); combat.gameOver = value.status === 'terminal'; combat.score = value.score; if(wasPaused!==combat.paused)syncCombatOverlay(); },
     onResult(result) {
       combat.active = false; combat.gameOver = true;
       if (!dom.officialGameStateCopy) return;
@@ -3599,9 +3599,9 @@ function syncCombatOverlay() {
   renderArcadeMusicPlayer();
   const menuOwnsFocus = !combat.pendingBegin && Boolean(combat.paused || combat.gameOver || combat.levelUpPaused);
   document.body.classList.toggle('hide-rotate-hint', menuOwnsFocus);
-  // Chikun owns its pause UI and result lifecycle. Shared music controls must
+  // Embedded cabinets own their pause UI and result lifecycle. Music controls must
   // not create the legacy combat menu over the child iframe.
-  if (chikunActive) {
+  if (chikunActive || stackedHost) {
     if (dom.combatMenuPanel) dom.combatMenuPanel.hidden = true;
     return;
   }

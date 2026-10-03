@@ -1,0 +1,33 @@
+{
+  "schema": "native-meadow-details/v1",
+  "generator": "Blender native meshes",
+  "scriptSha256": "15fd528808ed853ecccc1483bab1162ae87907f0f696f2333ffd5e391dfa4352",
+  "frames": [
+    "grass",
+    "clover",
+    "flowers",
+    "pebbles"
+  ],
+  "frameSize": 256,
+  "maxPlantHeightMetres": 0.16,
+  "files": [
+    {
+      "file": "meadow-ground-details.webp",
+      "size": [
+        1024,
+        256
+      ],
+      "bytes": 91170,
+      "sha256": "f1d94056aa588666c9c166a0d2a90ecc0ef5b287d71f21dae062bdc1ad84da63"
+    },
+    {
+      "file": "meadow-ground-details@0.5x.webp",
+      "size": [
+        512,
+        128
+      ],
+      "bytes": 29192,
+      "sha256": "e4a8d795856d3a82ef2c13d97b5ea209414acd1a2748900cfca2a7b72faf6458"
+    }
+  ]
+}

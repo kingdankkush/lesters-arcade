@@ -32,6 +32,66 @@ export function heroClipProp(name) {
   return heroClipInfo(name)?.prop ?? 'blaster';
 }
 
+// Read-only event projection into the existing library. No timers are written
+// back to gameplay; these clocks come from observed shot/reload/mission state.
+export function selectHeroActor3dClip(hero) {
+  const { action, actionTick = 0, weaponId, shotAge, reloadProgress, missionGesture, missionTick, velocity, heading } = hero;
+  if (['death', 'hurt', 'dash', 'melee', 'grenade'].includes(action)) return null;
+  if (action === 'interact') {
+    const clip = { lever:'interact-lever', crank:'interact-valve', press:'interact-button', kneel:'interact-door' }[missionGesture];
+    return clip ? { clip, clipTick:Math.max(0, Number.isFinite(missionTick) ? missionTick : actionTick) } : null;
+  }
+  if (Number.isFinite(reloadProgress) && reloadProgress > 0 && reloadProgress < 1) {
+    const clip = weaponId === 'coin-blaster' ? 'reload-pistol' : ['launcher-rig','bear-market-burner','lightning-ledger'].includes(weaponId) ? 'reload-heavy' : 'reload-long';
+    return { clip, clipTick:reloadProgress * heroClipInfo(clip).frames };
+  }
+  const fire = { 'scatter-shotgun':'fire-shotgun', 'auto-miner':'fire-rifle', 'hash-rail':'fire-rifle', 'forked-standard':'fire-rifle',
+    'lightning-ledger':'fire-heavy', 'bear-market-burner':'fire-heavy', 'launcher-rig':'fire-launcher' }[weaponId];
+  if (fire && Number.isFinite(shotAge) && shotAge >= 0 && shotAge < heroClipInfo(fire).frames) return { clip:fire, clipTick:shotAge };
+  if (action === 'aim' && hero.moving && [velocity?.x, velocity?.y, heading].every(Number.isFinite) && Math.hypot(velocity.x,velocity.y) > 1) {
+    const forward = velocity.x*Math.cos(heading)+velocity.y*Math.sin(heading);
+    const side = -velocity.x*Math.sin(heading)+velocity.y*Math.cos(heading);
+    const clip = forward < -Math.abs(side)*.7 ? 'back-pedal' : Math.abs(side) > Math.abs(forward)*1.3 ? side > 0 ? 'strafe-r' : 'strafe-l' : 'run';
+    return { clip, clipTick:Math.max(0, actionTick) };
+  }
+  return null;
+}
+
+// Short authored accents observe existing locomotion; they never accelerate,
+// stop or rotate the actor. Action clocks are global only for idle/aim/run,
+// so combat, cover and traversal reset this small presentation history.
+export function createHeroMovementPicker({actorId} = {}) {
+  let previous = null, active = null;
+  const reset = () => { previous = null; active = null; };
+  return Object.freeze({reset, observe(hero) {
+    const tick = hero?.actionTick, heading = hero?.heading;
+    const authored = hero ? selectHeroActor3dClip(hero) : null;
+    if (hero?.actorId !== actorId || !HERO_ACTOR_IDS.includes(actorId)
+      || !['idle','aim','run'].includes(hero.action) || hero.clip !== undefined
+      || !Number.isInteger(tick) || tick < 0 || !Number.isFinite(heading)
+      || (authored && authored.clip !== 'run')) { reset(); return null; }
+    const moving = !!hero.moving;
+    if (!previous || tick < previous.tick || tick - previous.tick > 30) {
+      previous = {tick,moving,heading}; active = null; return null;
+    }
+    let next = null;
+    if (moving !== previous.moving) next = moving ? 'run-start' : 'run-stop';
+    else if (!moving && !active) {
+      const delta = Math.atan2(Math.sin(heading-previous.heading),Math.cos(heading-previous.heading));
+      if (Math.abs(delta) >= Math.PI/3) next = Math.abs(delta) >= Math.PI*.75 ? 'pivot' : delta > 0 ? 'turn-r' : 'turn-l';
+    }
+    if (next) { active = {clip:next,startTick:tick}; previous.heading = heading; }
+    previous.tick = tick; previous.moving = moving;
+    if (moving) previous.heading = heading;
+    if (active) {
+      const local = tick-active.startTick;
+      if (local < heroClipInfo(active.clip).frames) return {clip:active.clip,tick:local};
+      active = null; previous.heading = heading;
+    }
+    return null;
+  }});
+}
+
 // Picks one of the hero's four idle fidgets after the hero has stood still for
 // delayTicks, using a presentation-only hash (never the simulation's streams).
 // Any non-idle observation cancels the fidget instantly. Deterministic for a

@@ -5,6 +5,7 @@ import { loadRagdollArt, createChikunRagdoll, drawChikunRagdoll } from './ragdol
 import { createChikunCharacter, chikunCoatFilter, chikunTrailParticles, CHIKUN_FLOURISHES, milestoneFlourish } from './character.mjs';
 import { createChikunWorld, drawChikunObstacle } from './world.mjs';
 import { createChikunAudio } from './audio.mjs';
+import {sceneBus} from './scene-bus.mjs';
 import { isChikunCoinFeedbackEnabled } from './coin-feedback.mjs';
 import {drawCourseV2,drawCourseV2Obstacle} from './course-v2-view.mjs';
 import {COURSE_V2_EVIDENCE} from '../../portal/src/chikun-course-v2-runtime.mjs';
@@ -69,6 +70,8 @@ const pauseButton = document.querySelector('#pauseButton');
 const resumeButton = document.querySelector('#resumeButton');
 const pauseExitButton = document.querySelector('#pauseExitButton');
 const pauseMuteButton = document.querySelector('#pauseMuteButton');
+const sfxVolumeInput = document.querySelector('#sfxVolume');
+const sfxVolumeValue = document.querySelector('#sfxVolumeValue');
 const pauseFullscreenButton = document.querySelector('#pauseFullscreenButton');
 const muteButton = document.querySelector('#muteButton');
 const fullscreenButton = document.querySelector('#fullscreenButton');
@@ -91,7 +94,6 @@ const modeTease = document.querySelector('#modeTease');
 
 const STEP_MS = 1000 / CHIKUN_FIXED_STEP_HZ;
 const MAX_CATCH_UP_STEPS = 4;
-const MAX_AUDIO_VOICES = 8;
 const MAX_RUN_TICKS = CHIKUN_FIXED_STEP_HZ * 60 * 60;
 const coastSprite = new Image();
 const fallSprite = new Image();
@@ -146,6 +148,8 @@ let runtime = null;
 let phase = 'waiting';
 let paused = false;
 let muted = false;
+let sfxVolume = 1;
+try { const stored=localStorage.getItem('chikun-sfx-volume-v1');if(stored!==null&&Number.isFinite(Number(stored)))sfxVolume=Math.max(0,Math.min(1,Number(stored))); } catch {}
 let flapQueued = false;
 let glideHeld=false;
 const courseTwoRequested=new URLSearchParams(window.location.search).get('course')==='2';
@@ -154,8 +158,6 @@ let accumulator = 0;
 let previousFrameAt = 0;
 let latestSnapshot = null;
 let lastStateTick = -1;
-let audioContext = null;
-const activeAudioVoices = new Set();
 let disposed = false;
 let calloutTimer = null;
 let previousCoins = 0;
@@ -190,6 +192,12 @@ shell.dataset.obstacleLoops = 'disabled';
 const obstaclePresentation = startChikunObstaclePresentation({
   ...obstacleOptions, onStatus: status => { if (!disposed) shell.dataset.obstacleLoops = status; },
 });
+let obstacleKit=null;
+shell.dataset.obstacleKit='loading';
+import('./obstacle-kit.mjs').then(module=>{
+  if(disposed)return;
+  obstacleKit=module.createChikunObstacleKit({tier:module.selectChikunObstacleKitTier({phone:window.innerWidth<700||flightViewport.portrait,density:window.devicePixelRatio||1}),onStatus:status=>{if(!disposed)shell.dataset.obstacleKit=status;}});
+}).catch(()=>{if(!disposed)shell.dataset.obstacleKit='fallback';});
 shell.dataset.coinFeedback = 'disabled';
 if (isChikunCoinFeedbackEnabled(new URLSearchParams(window.location.search))) {
   shell.dataset.coinFeedback = 'loading';
@@ -356,30 +364,7 @@ function tone(frequency, duration = 0.08, gainValue = 0.035, type = 'triangle', 
   if (muted) return;
   const cue = ({420:'launch',96:'impact',560:'flap',880:'coin',1040:'near',660:'pass'})[frequency];
   if (cue && flightAudio.play(cue, { pitch })) return;
-  try {
-    if (activeAudioVoices.size >= MAX_AUDIO_VOICES) return;
-    const AudioContextCtor = globalThis.AudioContext ?? globalThis.webkitAudioContext;
-    if (!AudioContextCtor) return;
-    audioContext ??= new AudioContextCtor();
-    if (audioContext.state === 'suspended') audioContext.resume?.();
-    const oscillator = audioContext.createOscillator();
-    const gain = audioContext.createGain();
-    const voice = { oscillator, gain };
-    oscillator.addEventListener('ended', () => {
-      activeAudioVoices.delete(voice);
-      try { oscillator.disconnect(); gain.disconnect(); } catch { /* already released */ }
-    }, { once: true });
-    oscillator.type = type;
-    oscillator.frequency.value = frequency * pitch;
-    gain.gain.setValueAtTime(gainValue, audioContext.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.0001, audioContext.currentTime + duration);
-    oscillator.connect(gain).connect(audioContext.destination);
-    oscillator.start();
-    // Counted only once the node is actually running: a throw before this point
-    // would otherwise strand the voice in the set and silence audio at the cap.
-    activeAudioVoices.add(voice);
-    oscillator.stop(audioContext.currentTime + duration);
-  } catch { /* audio is optional */ }
+  flightAudio.playLegacyTone(frequency,duration,gainValue,type,pitch);
 }
 
 function loadGhostForSeed(seed) {
@@ -454,6 +439,9 @@ function renderModeTease() {
 function syncAudioControl() {
   const disabled = muted;
   flightAudio.setEnabled(!disabled);
+  flightAudio.setVolume(sfxVolume);
+  if(sfxVolumeInput)sfxVolumeInput.value=String(Math.round(sfxVolume*100));
+  if(sfxVolumeValue)sfxVolumeValue.textContent=`${Math.round(sfxVolume*100)}%`;
   muteButton.disabled = false;
   muteButton.textContent = disabled ? '×' : '♪';
   muteButton.setAttribute('aria-pressed', String(disabled));
@@ -654,13 +642,13 @@ function drawSky(snapshot) {
 
 function drawFork(fork) {
   if(drawCourseV2Obstacle(ctx,fork,courseTwoArt))return;
-  if(fork.family)drawGroundObstacle(ctx, fork, latestSnapshot?.tick ?? 0, reduceMotion(), obstaclePresentation);
+  if(fork.family)drawGroundObstacle(ctx, fork, latestSnapshot?.tick ?? 0, reduceMotion(), obstaclePresentation,obstacleKit);
   else drawChikunObstacle(ctx, fork, latestSnapshot?.tick ?? 0, reduceMotion());
 }
 
 function drawChikun(snapshot) {
   const menuPosition = flightViewport.portrait ? {x: flightViewport.left + flightViewport.width / 2, y: 155, size: 280} : null;
-  const characterOptions = { phase, terminalAge, flapAge, flapVelocity, event: flightEvent, eventAge: flightEventAge, idleTime, menuPosition, reduceMotion: reduceMotion(), seek: Boolean(replayPlayback && !replayPlaying), cosmetics: cosmetics() };
+  const characterOptions = { phase, terminalAge, flapAge, flapVelocity, event: flightEvent, eventAge: flightEventAge, idleTime, menuPosition, reduceMotion: reduceMotion(), seek: Boolean(replayPlayback && !replayPlaying), cosmetics: cosmetics(),lightRig:sceneBus.rig };
   if(ragdoll && phase==='game-over' && !replayPlayback && !reduceMotion()){
     // Defeat handoff: the hit pose recoils for one beat while the ragdoll fades in over it.
     const handoff = Math.min(1, terminalAge / RAGDOLL_HANDOFF_SECONDS);
@@ -887,10 +875,6 @@ function handleParentMessage(event) {
     disposed = true;
     phase = 'disposed';
     if (calloutTimer !== null) clearTimeout(calloutTimer);
-    for (const voice of activeAudioVoices) {
-      try { voice.oscillator.stop(); voice.oscillator.disconnect(); voice.gain.disconnect(); } catch { /* already released */ }
-    }
-    activeAudioVoices.clear();
     ragdoll?.dispose();
     flightCharacter.dispose();
     flightWorld.dispose();
@@ -898,10 +882,9 @@ function handleParentMessage(event) {
     window.removeEventListener('resize', resizeFlightViewport);
     positiveCoinFeedback?.overlay.dispose();
     obstaclePresentation.dispose();
+    obstacleKit?.dispose();
     courseTwoArt?.dispose();
     flightAudio.dispose();
-    audioContext?.close?.();
-    audioContext = null;
     port.onmessage = null;
     port.close?.();
   }
@@ -943,6 +926,11 @@ resumeButton.addEventListener('click', () => togglePause('user', false));
 pauseExitButton.addEventListener('click', () => send('game:exit-request', {}));
 muteButton.addEventListener('click', toggleMute);
 pauseMuteButton.addEventListener('click', toggleMute);
+sfxVolumeInput?.addEventListener('input',()=>{
+  sfxVolume=Math.max(0,Math.min(1,Number(sfxVolumeInput.value)/100));
+  try{localStorage.setItem('chikun-sfx-volume-v1',String(sfxVolume));}catch{}
+  syncAudioControl();
+});
 document.querySelector('#pauseMusicButton').addEventListener('click', async () => {
   if(document.fullscreenElement)await document.exitFullscreen?.();
   send('game:music-request', {});
@@ -1039,6 +1027,9 @@ renderModeTease();
 if (globalThis.__CHIKUN_QA__ && typeof globalThis.__CHIKUN_QA__ === 'object') {
   globalThis.__CHIKUN_QA__.peek = () => latestSnapshot;
   globalThis.__CHIKUN_QA__.region = () => flightWorld.regionState();
+  // Renderer review seam: paints supplied geometry on a supplied canvas only.
+  // It cannot step or replace runtime snapshots, inputs, score or evidence.
+  globalThis.__CHIKUN_QA__.paintObstacle = (targetCtx,obstacle,tick=0,reduced=false) => drawGroundObstacle(targetCtx,obstacle,tick,reduced,obstaclePresentation,obstacleKit);
 }
 syncAudioControl();
 syncFullscreenControl();

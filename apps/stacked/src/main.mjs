@@ -37,7 +37,7 @@ const EFFECT_HINTS = {
   standard: 'Recommended. Your music world, backdrop scenes that change with the song, and a board that glows with the music.',
   full: 'Everything at full strength. Reduced flashes still softens bright moments.',
 };
-const WORLD_HINTS = {journey:'Follow the six zones. Every clear reshapes your world.',living:'Nine ocean creatures swim to your music, scatter on clears, then take a new form.',aurora:'Bass moves the curtains. Clears send a wave through the light.',orbit:'Beats expand the orbits. Combos widen the constellation.',spectrum:'Low and high notes shape the towers. Drops and clears push them outward.'};
+const WORLD_HINTS = {journey:'Travel between worlds through automatic music portals.',living:'Slow prismatic currents flow through a luminous field.',aurora:'Layered curtains of light drift across a starry sky.',orbit:'A glowing nebula surrounds a cosmic orbit.',spectrum:'Soft spectral ribbons follow the music.',tunnel:'Fly forward through a twisting tunnel of light.',particles:'Drift through layered stars and luminous clouds.',horizon:'A quiet dusk sky above mist-covered silhouettes.',matrix:'Falling digital rain flows through a glowing code field.'};
 const SAVE_NOTE = 'Changes save automatically on this device. Every setting here is allowed in Ranked.';
 const SAVE_FAILED = 'Couldn’t save on this device. Your changes still apply to this run.';
 const effectRadios = () => [$('effectsOff'), $('effectsCalm'), $('effectsStandard'), $('effectsFull')];
@@ -80,6 +80,8 @@ function syncPreferences() {
   $('visualizerSelect').value = settings.video.visualizer??'journey';
   $('visualizerSelect').disabled=false;
   if(livingJourneyActive)$('visualizerSelect').options[0].textContent='Living journey · automatic worlds';
+  $('nextWorldButton').hidden=!livingJourneyActive;
+  $('nextWorldButton').disabled=settings.video.visualizer!=='journey'||preset==='off'||settings.accessibility.reduceMotion;
   for (const tile of [$('freeModeTile'), $('rankedModeTile')]) tile.setAttribute('aria-current', String(tile.dataset.mode === init?.mode));
   $('volumeRange').value = String(Math.round((settings.audio.sfxVolume ?? 0) * 100));
   showVolume();
@@ -224,7 +226,7 @@ async function boot() {
   if (disposed) return;
   stage.dataset.livingJourneyStatus=journey.status;livingJourneyActive=!!journey.factory;
   sfxImpl = sounds.createStackedSoundEffects(); soundForStep = sounds.stackedSoundForStep;
-  preview = createVisualizerPreview($('visualizerPreview'));
+  preview = createVisualizerPreview($('visualizerPreview'),{source:()=>app?.canvas});
   haptics = createStackedHaptics({ getSettings: () => settings });
   run = createStackedPlaySession({ ...init.session, mode: init.mode, startLevel: settings.startLevel }); run.pause();
   app = new Application();
@@ -294,6 +296,7 @@ $('settingsTile').addEventListener('click', () => {
   if (panel.open) overlay.querySelector('input[name=effectsPreset]:checked')?.focus();
 });
 $('preferencePanel').addEventListener('toggle', mirrorSettingsTile);
+$('nextWorldButton').addEventListener('click',()=>{if(livingJourneyActive&&settings.video.visualizer==='journey'&&!settings.accessibility.reduceMotion)renderer?.nextScene();});
 $('scoresTile').addEventListener('click', () => {
   const shelf = $('scoreShelf'), open = shelf.hidden;
   if (open) {

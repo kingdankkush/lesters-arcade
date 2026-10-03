@@ -15,8 +15,10 @@ export {
   ParticleContainer,
   Rectangle,
   RenderTexture,
+  Shader,
   Sprite,
   Text,
   Texture,
   TilingSprite,
+  UniformGroup,
 } from 'pixi.js';

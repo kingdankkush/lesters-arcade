@@ -1,0 +1,438 @@
+{
+  "pipeline": "hmh-world-v2-authored-surfaces/v1",
+  "authority": "presentation-only",
+  "size": 512,
+  "materials": [
+    {
+      "id": "surface-grass",
+      "mean": [
+        127.783,
+        127.793,
+        127.762
+      ],
+      "assets": [
+        {
+          "file": "surface-grass.png",
+          "width": 512,
+          "height": 512,
+          "bytes": 35025,
+          "sha256": "49573c29dad0824592eaa32528c7132b63685fc980e5051b5fe76859ad868ce5"
+        },
+        {
+          "file": "surface-grass@0.5x.webp",
+          "width": 256,
+          "height": 256,
+          "bytes": 1562,
+          "sha256": "e0e9e7b86672e05154b4fd9fd15e16cd9f03ad5d2ad7b9e9d2f9f09aba182fbc"
+        },
+        {
+          "file": "surface-grass-fringe.png",
+          "width": 512,
+          "height": 128,
+          "bytes": 9981,
+          "sha256": "c0fcec783b5c6e36accc70c25862698efcc4fb426d23d4369c48774a5e42c4e1"
+        },
+        {
+          "file": "surface-grass-fringe@0.5x.webp",
+          "width": 256,
+          "height": 64,
+          "bytes": 1154,
+          "sha256": "237e6998d597a28c1aa41a2db3ca8b5cf87d352c094bd3435e9e75db75c6fcf8"
+        }
+      ],
+      "metrics": {
+        "neighborLumaDelta": 0.4159,
+        "wrapLumaDelta": 0.1878,
+        "lumaRange": 33.33
+      }
+    },
+    {
+      "id": "surface-earth",
+      "mean": [
+        126.205,
+        126.205,
+        126.205
+      ],
+      "assets": [
+        {
+          "file": "surface-earth.png",
+          "width": 512,
+          "height": 512,
+          "bytes": 32300,
+          "sha256": "d43de00ea9d71c86ae18eafc53e5ddd95e34f195961044c7127c814413392f09"
+        },
+        {
+          "file": "surface-earth@0.5x.webp",
+          "width": 256,
+          "height": 256,
+          "bytes": 1306,
+          "sha256": "598f0e379095cf19729c116b6bd38fac7a270f96f9335db82034dcae1af052b2"
+        },
+        {
+          "file": "surface-earth-fringe.png",
+          "width": 512,
+          "height": 128,
+          "bytes": 8790,
+          "sha256": "47a12b418da586bdca6b45f2ca01121312b06e2162a58b6a829121339b98fe86"
+        },
+        {
+          "file": "surface-earth-fringe@0.5x.webp",
+          "width": 256,
+          "height": 64,
+          "bytes": 1044,
+          "sha256": "c72091531c5f930b68076d0df245d5b5a9495990e0e17863a0b609f2f3e07019"
+        }
+      ],
+      "metrics": {
+        "neighborLumaDelta": 0.1703,
+        "wrapLumaDelta": 0.0254,
+        "lumaRange": 45.0
+      }
+    },
+    {
+      "id": "surface-gravel",
+      "mean": [
+        130.811,
+        130.811,
+        130.811
+      ],
+      "assets": [
+        {
+          "file": "surface-gravel.png",
+          "width": 512,
+          "height": 512,
+          "bytes": 37480,
+          "sha256": "86902d7c5f73172cc33e6fd91659cd66048af843847e8483e4943beba9e1af04"
+        },
+        {
+          "file": "surface-gravel@0.5x.webp",
+          "width": 256,
+          "height": 256,
+          "bytes": 2038,
+          "sha256": "9097cf549f341db89f06f4000d762e3164c108e9eccf059606f48c05dbefbe9a"
+        },
+        {
+          "file": "surface-gravel-fringe.png",
+          "width": 512,
+          "height": 128,
+          "bytes": 10793,
+          "sha256": "5883d1e813660f7fdee31528b06f657fcd9a1c81ab398451d1ec7893379b0003"
+        },
+        {
+          "file": "surface-gravel-fringe@0.5x.webp",
+          "width": 256,
+          "height": 64,
+          "bytes": 1354,
+          "sha256": "5057c348d849f51cf21dcbe51b8cc257f06b8d68dcf79c7af1714afc5b20f27f"
+        }
+      ],
+      "metrics": {
+        "neighborLumaDelta": 0.3065,
+        "wrapLumaDelta": 0.123,
+        "lumaRange": 45.0
+      }
+    },
+    {
+      "id": "surface-sand",
+      "mean": [
+        128.867,
+        128.867,
+        128.867
+      ],
+      "assets": [
+        {
+          "file": "surface-sand.png",
+          "width": 512,
+          "height": 512,
+          "bytes": 36220,
+          "sha256": "8b4a5b720df32b1028e5e7f474b080d7e673d7fe5d79f60bf6ad078abfbf2993"
+        },
+        {
+          "file": "surface-sand@0.5x.webp",
+          "width": 256,
+          "height": 256,
+          "bytes": 1438,
+          "sha256": "47bae772068a7b10488555b5ca877a6f6191ba487ac319e68dbe9a5e50a0f372"
+        },
+        {
+          "file": "surface-sand-fringe.png",
+          "width": 512,
+          "height": 128,
+          "bytes": 9288,
+          "sha256": "42dc237e9104dd9593d9c77a2d06626d6d47537c5eb2134ca286c1d81945cf11"
+        },
+        {
+          "file": "surface-sand-fringe@0.5x.webp",
+          "width": 256,
+          "height": 64,
+          "bytes": 1316,
+          "sha256": "7491325b3ab58a64ad1dc5cc82855074fcfbc1528dafc6a8dd85f9ad58c9acbf"
+        }
+      ],
+      "metrics": {
+        "neighborLumaDelta": 0.1972,
+        "wrapLumaDelta": 0.1523,
+        "lumaRange": 45.0
+      }
+    },
+    {
+      "id": "surface-stone",
+      "mean": [
+        131.552,
+        131.552,
+        131.552
+      ],
+      "assets": [
+        {
+          "file": "surface-stone.png",
+          "width": 512,
+          "height": 512,
+          "bytes": 30428,
+          "sha256": "50efb50d9f4626631b050d6dfcfc8152466c3afa97af4d74b36d405c5af14092"
+        },
+        {
+          "file": "surface-stone@0.5x.webp",
+          "width": 256,
+          "height": 256,
+          "bytes": 1172,
+          "sha256": "07ccd484ff8aeb7253bbd71dc96b6324974b8e1b912e9fb6c04f7fe5a14d3039"
+        },
+        {
+          "file": "surface-stone-fringe.png",
+          "width": 512,
+          "height": 128,
+          "bytes": 7929,
+          "sha256": "e4bdf412d6a93ceb8cf1692e42e63637d9c90c9af44b7c2e3ce351d6ee9a14d2"
+        },
+        {
+          "file": "surface-stone-fringe@0.5x.webp",
+          "width": 256,
+          "height": 64,
+          "bytes": 826,
+          "sha256": "7b3ddb40e13ebad671ea4b300a5260aa28d2179b3f49d636e9298835c57e20d5"
+        }
+      ],
+      "metrics": {
+        "neighborLumaDelta": 0.1482,
+        "wrapLumaDelta": 0.0469,
+        "lumaRange": 32.0
+      }
+    },
+    {
+      "id": "surface-mud",
+      "mean": [
+        134.997,
+        134.997,
+        134.997
+      ],
+      "assets": [
+        {
+          "file": "surface-mud.png",
+          "width": 512,
+          "height": 512,
+          "bytes": 34928,
+          "sha256": "cec72bd008a64f76836d7c76e4480dc8beac44229e2bcdbceeaad94ef92f74aa"
+        },
+        {
+          "file": "surface-mud@0.5x.webp",
+          "width": 256,
+          "height": 256,
+          "bytes": 1378,
+          "sha256": "579d99e1d672541a2f77ae97614096a7a9a019e640f38bf5dac302115052e8f6"
+        },
+        {
+          "file": "surface-mud-fringe.png",
+          "width": 512,
+          "height": 128,
+          "bytes": 9391,
+          "sha256": "c76d7492d10e4cc63b9ae40efe5a9541d8c0dce960c9f463ce412382d7d9ae7c"
+        },
+        {
+          "file": "surface-mud-fringe@0.5x.webp",
+          "width": 256,
+          "height": 64,
+          "bytes": 1130,
+          "sha256": "d8a5ee6033fda63b66ba070a19bd0e79d8a15a7e9042b03307177f42cba04367"
+        }
+      ],
+      "metrics": {
+        "neighborLumaDelta": 0.182,
+        "wrapLumaDelta": 0.0156,
+        "lumaRange": 46.0
+      }
+    },
+    {
+      "id": "surface-paving",
+      "mean": [
+        128.279,
+        128.279,
+        128.279
+      ],
+      "assets": [
+        {
+          "file": "surface-paving.png",
+          "width": 512,
+          "height": 512,
+          "bytes": 30653,
+          "sha256": "b28ee0e5a89b99300b5594c8b9c92fd40fe98c1c2704c6fb1cb9ea4d554ee5f1"
+        },
+        {
+          "file": "surface-paving@0.5x.webp",
+          "width": 256,
+          "height": 256,
+          "bytes": 1476,
+          "sha256": "89ac433216b2c934fe2d54c4ab9c5c1b1d2ffd2a3e8a2e5c6ec41cc954044418"
+        },
+        {
+          "file": "surface-paving-fringe.png",
+          "width": 512,
+          "height": 128,
+          "bytes": 8321,
+          "sha256": "ac22e31b0536f07ea04e4761f2f5506124178d199921aec298e2696685e42a8e"
+        },
+        {
+          "file": "surface-paving-fringe@0.5x.webp",
+          "width": 256,
+          "height": 64,
+          "bytes": 1222,
+          "sha256": "3912485a11d9e56e7ded9ba968a4b9890da820aade5574e707dafdd67e93c897"
+        }
+      ],
+      "metrics": {
+        "neighborLumaDelta": 0.3168,
+        "wrapLumaDelta": 0.0234,
+        "lumaRange": 35.0
+      }
+    },
+    {
+      "id": "surface-asphalt",
+      "mean": [
+        125.286,
+        125.286,
+        125.286
+      ],
+      "assets": [
+        {
+          "file": "surface-asphalt.png",
+          "width": 512,
+          "height": 512,
+          "bytes": 29181,
+          "sha256": "4bde89c279e217138492590659c15d8ebea14c9159f7907a4464a790db90be9a"
+        },
+        {
+          "file": "surface-asphalt@0.5x.webp",
+          "width": 256,
+          "height": 256,
+          "bytes": 1108,
+          "sha256": "497e1f3066088a628bd9eff727fe88041388aeaf6f3af407858753a034816434"
+        },
+        {
+          "file": "surface-asphalt-fringe.png",
+          "width": 512,
+          "height": 128,
+          "bytes": 7233,
+          "sha256": "00a18ddd1a4475856e347c4e19c2e08e55e56d76f25ca005f86be8356520bb18"
+        },
+        {
+          "file": "surface-asphalt-fringe@0.5x.webp",
+          "width": 256,
+          "height": 64,
+          "bytes": 916,
+          "sha256": "d96a4d329896827467ec04d0f7b7a403570459e88252dbdea80ee7848901b5e9"
+        }
+      ],
+      "metrics": {
+        "neighborLumaDelta": 0.1271,
+        "wrapLumaDelta": 0.0215,
+        "lumaRange": 28.0
+      }
+    },
+    {
+      "id": "surface-litter",
+      "mean": [
+        128.196,
+        128.196,
+        128.196
+      ],
+      "assets": [
+        {
+          "file": "surface-litter.png",
+          "width": 512,
+          "height": 512,
+          "bytes": 35227,
+          "sha256": "2c596e2e362b241fd11880fbd5fcd078f799ff4095fd10044da046ad18331c2b"
+        },
+        {
+          "file": "surface-litter@0.5x.webp",
+          "width": 256,
+          "height": 256,
+          "bytes": 1772,
+          "sha256": "f03cdc70cfe447f9e149f1f2964dae10664cd3683b06abf6808c69b11b6d2889"
+        },
+        {
+          "file": "surface-litter-fringe.png",
+          "width": 512,
+          "height": 128,
+          "bytes": 9227,
+          "sha256": "4825914d5288af874c1106a4af1548e1e42c69cabe7f4ab57d01bdea9a6f1623"
+        },
+        {
+          "file": "surface-litter-fringe@0.5x.webp",
+          "width": 256,
+          "height": 64,
+          "bytes": 968,
+          "sha256": "7f66e919e5fe7b70a894075d8bd9536e5126894c55ae953ca59fffc1afdacfd7"
+        }
+      ],
+      "metrics": {
+        "neighborLumaDelta": 0.2441,
+        "wrapLumaDelta": 0.0938,
+        "lumaRange": 40.0
+      }
+    },
+    {
+      "id": "surface-needles",
+      "mean": [
+        129.05,
+        129.05,
+        129.05
+      ],
+      "assets": [
+        {
+          "file": "surface-needles.png",
+          "width": 512,
+          "height": 512,
+          "bytes": 37401,
+          "sha256": "19499ab4bddec7f88322ed59c5f3527232d852e5d8269650c7bceacf1a0979d7"
+        },
+        {
+          "file": "surface-needles@0.5x.webp",
+          "width": 256,
+          "height": 256,
+          "bytes": 1588,
+          "sha256": "2eaaebacab21a0a426e05a7443053b5f6e4e450d4420125ea0d1ef13fe800385"
+        },
+        {
+          "file": "surface-needles-fringe.png",
+          "width": 512,
+          "height": 128,
+          "bytes": 9811,
+          "sha256": "cb6f15ed37982b0e9f5b1e9ac29401a8b7b69454dd5f9174c93bfa721b1c6064"
+        },
+        {
+          "file": "surface-needles-fringe@0.5x.webp",
+          "width": 256,
+          "height": 64,
+          "bytes": 960,
+          "sha256": "ef2041c4c2260d07022456cc619eb57a7de7a40373953b243dee8ce6ea0df1c8"
+        }
+      ],
+      "metrics": {
+        "neighborLumaDelta": 0.3732,
+        "wrapLumaDelta": 0.1729,
+        "lumaRange": 31.0
+      }
+    }
+  ],
+  "encodedBytes": 455335
+}

@@ -1,4 +1,5 @@
 // Native Blender clips are presentation only. Canonical flight never reads this module.
+import {createChikunCharacterLighting} from './character-lighting.mjs';
 export const GROUND_CLIPS = Object.freeze(['walk','run','jump','hurdle_jump','high_jump','jump_flight','land','land_roll','land_slide','ground_impact','idle']);
 // One-shot hits per obstacle family (2026-09-16 sheet pass); the prone 'impact' stays the generic fallback.
 export const CHIKUN_HIT_CLIPS = Object.freeze(['hit_tree','hit_storm','hit_drone','hit_bird','hit_wall']);
@@ -244,6 +245,7 @@ export function createChikunCharacter({characterId='chikun-original',onProgress=
   const composite=document.createElement('canvas'),outgoing=document.createElement('canvas');
   composite.width=composite.height=outgoing.width=outgoing.height=character.frameSize;
   const mixCtx=composite.getContext('2d'),oldCtx=outgoing.getContext('2d');
+  const lighting=createChikunCharacterLighting();
   let loading=null,finished=false;
   // Hat anchors: the crest top of each sheet frame, found once from its red
   // crest pixels on a half-size probe and cached per image.
@@ -367,11 +369,11 @@ export function createChikunCharacter({characterId='chikun-original',onProgress=
       ctx.save();ctx.translate(x+recoil.x,y+bob);ctx.rotate(tilt+sway+lean.x);
       ctx.translate(0,anchor);ctx.scale(sx,sy);ctx.translate(0,-anchor);
       ctx.filter=chikunCoatFilter(options.cosmetics);
-      ctx.drawImage(composite,-size/2,-size/2,size,size);ctx.filter='none';
+      lighting.draw(ctx,composite,-size/2,-size/2,size,size,hero?null:options.lightRig);ctx.filter='none';
       if(head){const k=size/192;drawChikunHat(ctx,hat,-size/2+head.x*k,-size/2+(head.y+HAT_SINK)*k,3*k);}
       ctx.restore();
       return true;
     },
-    dispose(){closed=true;images.clear();poster.src='';composite.width=outgoing.width=0;},
+    dispose(){closed=true;images.clear();poster.src='';composite.width=outgoing.width=0;lighting.dispose();},
   };
 }

@@ -22,7 +22,7 @@ export function decodeActor3dGlb(bytes) {
     else throw new Error('unsupported GLB chunk');
     offset += 8 + length;
   }
-  requireValue(json?.asset?.version === '2.0' && bin && !json.extensionsRequired?.length, 'embedded uncompressed pilot required');
+  requireValue(json?.asset?.version === '2.0' && bin && (json.extensionsRequired ?? []).every(name=>name==='EXT_texture_webp'), 'embedded uncompressed pilot required');
   requireValue(json.buffers?.length === 1 && integer(json.buffers[0].byteLength, 1) && json.buffers[0].byteLength <= bin.byteLength, 'declared buffer length');
   requireValue([...json.buffers, ...json.images ?? []].every(item => !item.uri), 'external dependencies forbidden');
   for (const buffer of json.bufferViews ?? []) {
@@ -119,17 +119,37 @@ export function decodeActor3dGlb(bytes) {
   let pixels = 0;
   requireValue(json.images?.length > 0 && json.images.length <= 12, 'bounded pilot texture count');
   const images = json.images.map(image => {
-    const buffer = json.bufferViews[image.bufferView]; requireValue(buffer && image.mimeType === 'image/png', 'embedded pilot PNG required');
+    const buffer = json.bufferViews[image.bufferView]; requireValue(buffer && ['image/png','image/webp'].includes(image.mimeType), 'embedded pilot image required');
     const start = buffer.byteOffset ?? 0;
-    requireValue(buffer.byteLength >= 24 && bin.getUint32(start, false) === 0x89504e47 && bin.getUint32(start + 4, false) === 0x0d0a1a0a
-      && bin.getUint32(start + 12, false) === 0x49484452, 'pilot texture header');
-    const width = bin.getUint32(start + 16, false), height = bin.getUint32(start + 20, false);
+    let width, height;
+    if (image.mimeType === 'image/png') {
+      requireValue(buffer.byteLength >= 24 && bin.getUint32(start, false) === 0x89504e47 && bin.getUint32(start + 4, false) === 0x0d0a1a0a
+        && bin.getUint32(start + 12, false) === 0x49484452, 'pilot texture header');
+      width = bin.getUint32(start + 16, false); height = bin.getUint32(start + 20, false);
+    } else {
+      requireValue(buffer.byteLength >= 25 && bin.getUint32(start,false) === 0x52494646 && bin.getUint32(start+8,false) === 0x57454250
+        && bin.getUint32(start+4,true)+8 === buffer.byteLength
+        && bin.getUint32(start+16,true)+20+(bin.getUint32(start+16,true)&1) === buffer.byteLength, 'pilot WebP header');
+      const kind = bin.getUint32(start+12,false);
+      // Our generated tier uses one static frame. Reject extended containers:
+      // their canvas header alone cannot bound the embedded frame allocation.
+      if (kind === 0x5650384c) { // VP8L: lossless packed dimensions.
+        requireValue(bin.getUint8(start+20) === 0x2f && (bin.getUint32(start+21,true)>>>29) === 0, 'pilot lossless WebP header');
+        const bits = bin.getUint32(start+21,true);
+        width = (bits&0x3fff)+1; height = ((bits>>>14)&0x3fff)+1;
+      } else {
+        requireValue(kind === 0x56503820 && buffer.byteLength >= 30 && (bin.getUint8(start+20)&1) === 0 && bin.getUint8(start+23) === 0x9d
+          && bin.getUint8(start+24) === 1 && bin.getUint8(start+25) === 0x2a, 'pilot lossy WebP header');
+        width = bin.getUint16(start+26,true)&0x3fff; height = bin.getUint16(start+28,true)&0x3fff;
+      }
+    }
     pixels += width * height;
     requireValue(width > 0 && height > 0 && width <= 1024 && height <= 1024 && pixels <= 6_000_000, 'bounded pilot texture dimensions');
-    return { mimeType: image.mimeType, data: new Uint8Array(bytes, bin.byteOffset + (buffer.byteOffset ?? 0), buffer.byteLength) };
+    return { mimeType: image.mimeType, width, height, data: new Uint8Array(bytes, bin.byteOffset + (buffer.byteOffset ?? 0), buffer.byteLength) };
   });
   requireValue(json.textures?.length > 0 && json.textures.length <= 12, 'bounded pilot texture bindings');
-  for (const texture of json.textures) requireValue(integer(texture.source) && images[texture.source], 'pilot texture image reference');
+  const textures = json.textures.map(texture => ({...texture,source:texture.extensions?.EXT_texture_webp?.source ?? texture.source}));
+  for (const texture of textures) requireValue(integer(texture.source) && images[texture.source], 'pilot texture image reference');
   for (const material of json.materials) {
     const pbr = material.pbrMetallicRoughness ?? {}, factor = pbr.baseColorFactor ?? [1, 1, 1, 1];
     requireValue(factor.length === 4 && factor.every(value => Number.isFinite(value) && value >= 0 && value <= 1)
@@ -139,7 +159,7 @@ export function decodeActor3dGlb(bytes) {
       requireValue(integer(info.index) && json.textures[info.index] && (info.texCoord ?? 0) === 0 && !info.extensions?.KHR_texture_transform, 'pilot material texture reference');
     }
   }
-  return { nodes, parents, order, skins, primitives, clips, images, materials: json.materials ?? [], textures: json.textures ?? [] };
+  return { nodes, parents, order, skins, primitives, clips, images, materials: json.materials ?? [], textures };
 }
 
 export function createActor3dPoseWorkspace(asset) {

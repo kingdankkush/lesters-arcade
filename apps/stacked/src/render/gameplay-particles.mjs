@@ -101,10 +101,18 @@ export function createGameplayParticles({ geometry, mobile = false }) {
 
 export function createBoardParticles({ board, Graphics, geometry, mobile }) {
   const particles=createGameplayParticles({geometry,mobile});
-  const shard=new Graphics().rect(-1,-.55,2,1.1).fill(0xffffff);
+  // Shared luminous fragment geometry. The soft halo is baked into this one
+  // context, rather than allocating a filter/texture for every particle.
+  const shard=new Graphics().circle(0,0,2.5).fill({color:0xffffff,alpha:.035})
+    .circle(0,0,1.65).fill({color:0xffffff,alpha:.11})
+    .rect(-1,-.55,2,1.1).fill(0xffffff);
   const context=shard.context;
   const visuals=Array.from({length:particles.state.capacity},(_,i)=>i?shard.clone():shard);
-  const bands=Array.from({length:4},()=>new Graphics().rect(0,0,1,1).fill(0xffffff));
+  const bands=Array.from({length:4},()=>{
+    const burst=new Graphics();
+    for(let i=5;i>0;i--)burst.ellipse(0,0,1+i*.1,.35+i*.1).fill({color:0xffffff,alpha:.035});
+    burst.ellipse(0,0,1,.14).fill({color:0xffffff,alpha:.45});return burst;
+  });
   const glows=particles.state.glows.map(()=>new Graphics());
   for(const node of [...visuals,...bands,...glows]) { node.visible=false; board.layers.effectLayer.addChild(node); }
   return {
@@ -140,11 +148,11 @@ export function createBoardParticles({ board, Graphics, geometry, mobile }) {
       for(let i=0;i<4;i++) {
         const band=bands[i]; band.visible=i<s.clearTier&&age>=0&&age<.5&&!settings.accessibility.reduceMotion;
         if(!band.visible) continue;
-        const width=320*Math.min(1,.2+age*3.5);
-        band.position.set(offset+(320-width)/2,(19-s.rows[i])*32+16);
-        band.scale.set(width,settings.accessibility.reduceFlash?1:2);
-        band.alpha=(1-age/.5)*(settings.accessibility.reduceFlash?.16:.28)*intensityFor(settings);
-        band.tint=0xb8f5ff;
+        const width=160*Math.min(1,.3+age*3.5);
+        band.position.set(offset+160,(19-s.rows[i])*32+16);
+        band.scale.set(width,8+s.clearTier*3+age*18);
+        band.alpha=(1-age/.5)*(settings.accessibility.reduceFlash?.22:.38)*intensityFor(settings);
+        band.tint=i%2?0xd5adff:0x8dedff;
       }
       return s;
     },

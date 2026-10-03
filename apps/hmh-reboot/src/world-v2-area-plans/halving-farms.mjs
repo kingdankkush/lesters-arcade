@@ -4,6 +4,7 @@
 // landmark, a rutted track ending at the barn threshold and woodland beyond the
 // field edges. Frozen data only; no blocker, surface, objective or rule is added.
 import { freezeDeep } from '../value-guards.mjs';
+import { appendCentrePockets } from './centre-pockets.mjs';
 import { stableUnit, DISTRICT_TERRAIN } from '../world-v2-area-art-schema.mjs';
 import { createAreaPlanContext, CANOPY_HEIGHTS } from './plan-support.mjs';
 import { placeLine, placeEdgeWoodland } from './plan-lines.mjs';
@@ -112,5 +113,6 @@ export function createHalvingFarmsArtPlan(world) {
   for (const [p, x, y, rx, ry] of [[0, 0, 1650, 500, 200], [1, 1450, -1750, 420, 160], [2, -1700, 1550, 220, 300], [3, 1700, 500, 160, 300], [4, -400, -1700, 260, 120]]) scatter({ key: `tuft-${p}`, x: cx + x, y: cy + y, rx, ry, count: 18, radius: 8, place: (px, py, n, v) => {
     plan.ground.decals.push({ id: `tuft-${p}-${n}`, source: 'detail:grass', x: px, y: py, scale: 0.9 + v * 0.5, rotation: 0, alpha: 0.7, tint: 0xd2d0a0, flip: n % 2 === 1 });
   } });
+  appendCentrePockets({world,area,plan});
   return freezeDeep(plan);
 }

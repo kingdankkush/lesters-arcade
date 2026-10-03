@@ -1,4 +1,5 @@
 import { SeededRng, createSeededSubstreams } from './seeded-rng.mjs';
+import { resolveStackedLedgerPacing, stackedGarbageIntervalTicks } from './stacked-ledger-rules.mjs';
 import {
   BOARD_WIDTH, BOARD_ROWS, BOARD_VISIBLE_ROWS, STACKED_MAX_TICKS,
   STACKED_GRAVITY_Q16, STACKED_Q16_SCALE, GRAVITY_LEVEL_CAP, LOCK_LEVEL_CAP,
@@ -7,9 +8,7 @@ import {
   STACKED_MAX_PIECES, STACKED_MAX_LINES, STACKED_MAX_QUAD_CLEARS, STACKED_MAX_SCORE,
   STACKED_MAX_INPUT_TRANSITIONS, STACKED_EVIDENCE_CODEC_VERSION, STACKED_FIXED_STEP_HZ,
   STACKED_CLEAR_SCORES, STACKED_MINI_SPIN_SCORES, STACKED_FULL_SPIN_SCORES,
-  PERFECT_CLEAR_BONUS, GARBAGE_START_TICK, GARBAGE_INTERVAL_START_TICKS,
-  GARBAGE_INTERVAL_STEP_TICKS, GARBAGE_INTERVAL_STEP_PERIOD_TICKS,
-  GARBAGE_INTERVAL_FLOOR_TICKS, GARBAGE_PENDING_MAX,
+  PERFECT_CLEAR_BONUS, GARBAGE_PENDING_MAX,
   GARBAGE_HOLE_REPEAT_NUM, GARBAGE_HOLE_REPEAT_DEN,
   HASHPOWER_PER_CLEAR, HASHPOWER_MAX, REORG_COST_PERIOD_TICKS, REORG_COST_MAX,
   STACKED_ZONE_IDS, STACKED_RESULT_TUPLE_TAG, STACKED_GAME_ID, STACKED_SEASON_ID,
@@ -122,11 +121,8 @@ export function levelForLines(startLevel, lines) {
   return Math.min(STACKED_LEVEL_CAP, startLevel + Math.floor(lines / 10));
 }
 
-export function garbageIntervalTicks(tick) {
-  if (!Number.isInteger(tick) || tick < 0) throw new RangeError('tick must be a non-negative integer');
-  if (tick < GARBAGE_START_TICK) return Number.POSITIVE_INFINITY;
-  const steps = Math.floor((tick - GARBAGE_START_TICK) / GARBAGE_INTERVAL_STEP_PERIOD_TICKS);
-  return Math.max(GARBAGE_INTERVAL_FLOOR_TICKS, GARBAGE_INTERVAL_START_TICKS - GARBAGE_INTERVAL_STEP_TICKS * steps);
+export function garbageIntervalTicks(tick, gameVersion) {
+  return stackedGarbageIntervalTicks(tick, resolveStackedLedgerPacing(gameVersion === undefined ? {} : {gameVersion}));
 }
 
 export function reorgCost(tick) {
@@ -458,10 +454,11 @@ function createStackedRuntimeInternal(
 ) {
   const safeSeed=normalizeSeed(seed);
   if (!Number.isInteger(maxTicks)||maxTicks<1||maxTicks>STACKED_MAX_TICKS) throw new RangeError('maxTicks out of range');
-  const keys=Object.keys(config); if(keys.some((key)=>!['startLevel','buildHash','seasonId'].includes(key))) throw new TypeError('unsupported config key');
+  const keys=Object.keys(config); if(keys.some((key)=>!['startLevel','buildHash','seasonId','gameVersion'].includes(key))) throw new TypeError('unsupported config key');
   const startLevel=config.startLevel ?? 1; if(!Number.isInteger(startLevel)||startLevel<1||startLevel>15) throw new RangeError('startLevel out of range');
   const buildHash=config.buildHash ?? 'stacked-local'; if(typeof buildHash!=='string'||!/^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$/.test(buildHash)) throw new TypeError('buildHash out of range');
   const seasonId=config.seasonId ?? STACKED_SEASON_ID; if(typeof seasonId!=='string'||!/^[a-z0-9][a-z0-9-]{1,63}$/.test(seasonId)) throw new TypeError('seasonId out of range');
+  const ledgerPacing = resolveStackedLedgerPacing(config);
   const streams = createSeededSubstreams(safeSeed, ['bag', 'garbage', 'zone']);
   const bagRng = streams.bag;
   const garbageRng = streams.garbage;
@@ -739,6 +736,8 @@ function createStackedRuntimeInternal(
     appendU32Le(bytes, transitionCount);
     appendU32Le(bytes, encodedEvidenceBytes);
     bytes.push(terminalReason === null ? 0 : STACKED_TERMINAL_REASONS.indexOf(terminalReason) + 1);
+    // New rules get a state-hash domain marker; old bytes remain unchanged.
+    if (ledgerPacing.id !== 'legacy') bytes.push(0x4c,0x45,0x44,0x02);
     return bytes;
   };
   const stateHash=()=>fnv1a32Bytes(canonicalStateBytes());
@@ -837,7 +836,7 @@ function createStackedRuntimeInternal(
     }
     prevMask = mask;
     if (encodedEvidenceBytes >= STACKED_MAX_EVIDENCE_BYTES) terminalReason = 'evidence-ceiling';
-    if (!terminalReason && tick === GARBAGE_START_TICK) garbageTimerTicks = GARBAGE_INTERVAL_START_TICKS;
+    if (!terminalReason && tick === ledgerPacing.startTick) garbageTimerTicks = ledgerPacing.intervalStart;
     else if (!terminalReason && garbageTimerTicks > 0) {
       garbageTimerTicks -= 1;
       if (garbageTimerTicks === 0) {
@@ -845,7 +844,7 @@ function createStackedRuntimeInternal(
         garbagePending.push(lastGarbageHole);
         garbageGroups += 1;
         if (garbagePending.length > GARBAGE_PENDING_MAX) terminalReason = 'garbage-out';
-        else garbageTimerTicks = garbageIntervalTicks(tick);
+        else garbageTimerTicks = stackedGarbageIntervalTicks(tick, ledgerPacing);
       }
     }
     if (!terminalReason) {

@@ -6,7 +6,7 @@
 // navigation, spawning or results. Lives in the lazy area-art chunk.
 import { pointInPolygon, distanceToSegment, distanceToPolyline, polygonBounds, rectVertices } from './world-v2-area-art-schema.mjs';
 
-export const TERRAIN_FIELD_ID = 'world-v2-terrain-field/v1';
+export const TERRAIN_FIELD_ID = 'world-v2-terrain-field/v2';
 const HARD_MATERIALS = new Set(['asphalt', 'paving', 'masonry', 'boardwalk']);
 export const TERRAIN_LIGHT_RANGE = Object.freeze({ low: 0.55, high: 1.2 });
 const LIGHT_NEUTRAL = (1 - TERRAIN_LIGHT_RANGE.low) / (TERRAIN_LIGHT_RANGE.high - TERRAIN_LIGHT_RANGE.low);
@@ -53,7 +53,7 @@ function* terrainFieldSteps({ summary, world, size = 512 } = {}, rowsPerStep = I
   const zones = summary.zones.map(zone => ({ ...zone, slot: slot(zone.material), box: inflated(polygonBounds(zone.vertices), zone.feather * 2.2) }));
   const trails = summary.trails.map(trail => ({ ...trail, slot: slot(trail.material), box: inflated(polygonBounds(trail.points), trail.width + trail.halo * 2 + 80) }));
   const roads = world.roads.map(road => ({ points: road.points, half: road.width / 2, box: inflated(polygonBounds(road.points), road.width / 2 + 260) }));
-  const blockers = world.pieces.filter(piece => piece.blocker && !piece.visible.artPlanId && !piece.visible.guardOf && piece.visible.height > 30).map(piece => { const vertices = piece.blocker.shape.vertices, h = piece.visible.height; return { vertices, h, radius: Math.max(24, Math.min(110, h * 0.45)), box: inflated(polygonBounds(vertices), Math.max(140, h * 0.8)) }; }).filter(entry => !(entry.box.maxX < reach.minX || entry.box.minX > reach.maxX || entry.box.maxY < reach.minY || entry.box.minY > reach.maxY));
+  const blockers = world.pieces.filter(piece => piece.blocker && !piece.visible.artPlanId && !piece.visible.guardOf && piece.visible.height > 30).map(piece => { const vertices = piece.blocker.shape.vertices, h = piece.visible.height, radius = Math.max(24, Math.min(110, h * 0.45)); return { vertices, h, radius, box: inflated(polygonBounds(vertices), Math.max(radius * 4, h * 1.55)) }; }).filter(entry => !(entry.box.maxX < reach.minX || entry.box.minX > reach.maxX || entry.box.maxY < reach.minY || entry.box.minY > reach.maxY));
   const trees = summary.props.filter(prop => prop.height >= 150).map(prop => { const r = prop.height * 0.5, cx = prop.x + prop.height * 0.14, cy = prop.y - prop.groundZ + prop.height * 0.05; return { cx, cy, r, box: { minX: cx - r, minY: cy - r, maxX: cx + r, maxY: cy + r } }; });
   const blendEdge = 1 - terrain.blend;
   let o = 0;
@@ -68,7 +68,9 @@ function* terrainFieldSteps({ summary, world, size = 512 } = {}, rowsPerStep = I
       const w = [0, 0, 0, 0, 0];
       // Macro patches of the secondary material, organic at the patch scale.
       w[1] = smooth(blendEdge - 0.1, blendEdge + 0.1, fbm(x, y, terrain.patch, 3, seed));
-      let value = (fbm(x, y, 1500, 2, seed + 3) - 0.5) * 2 * terrain.value, ao = 0, dust = 0;
+      // Store a normalized macro/mid signal. The shader applies the authored
+      // biome strength once; applying it here too erased almost all variation.
+      let value = (fbm(x, y, 1500, 2, seed + 3) - 0.5) + (fbm(x, y, 360, 2, seed + 23) - 0.5) * 0.28, ao = 0, dust = 0;
       for (const zone of rowZones) {
         if (!contains(zone.box, x, y)) continue;
         // Built surfaces keep a near-straight kerb; natural ground wanders.
@@ -82,10 +84,11 @@ function* terrainFieldSteps({ summary, world, size = 512 } = {}, rowsPerStep = I
         // patchy wear factor keep the worn path from reading as a ruled stripe.
         // Plank and paved walks are built: straight, unworn, near-straight edge.
         const built = HARD_MATERIALS.has(trail.material);
-        const mx = built ? 0 : (fbm(x, y, 460, 2, seed + 11) - 0.5) * 110, my = built ? 0 : (fbm(x, y, 460, 2, seed + 13) - 0.5) * 110;
+        const meander = Math.min(24, trail.width * 0.4);
+        const mx = built ? 0 : (fbm(x, y, 460, 2, seed + 11) - 0.5) * meander, my = built ? 0 : (fbm(x, y, 460, 2, seed + 13) - 0.5) * meander;
         const d = distanceToPolyline(x + mx, y + my, trail.points), e = trail.width / 2;
-        const wear = built ? 1 : 0.55 + 0.45 * smooth(0.3, 0.7, fbm(x, y, 260, 2, seed + 17));
-        const wt = smooth(e + trail.halo, e * 0.3, d + wobble * e * (built ? 0.3 : 2.2)) * wear;
+        const wear = built ? 1 : 0.85 + 0.15 * smooth(0.3, 0.7, fbm(x, y, 260, 2, seed + 17));
+        const wt = smooth(e + trail.halo, e * 0.35, d + wobble * e * (built ? 0.15 : 0.4)) * wear;
         if (wt <= 0) continue;
         if (trail.slot === 0) { for (let k = 1; k < 5; k++) w[k] *= 1 - wt; } else { w[trail.slot] += (1 - w[trail.slot]) * wt; for (let k = trail.slot + 1; k < 5; k++) w[k] *= 1 - wt; }
         value -= wt * 0.06;
@@ -103,8 +106,11 @@ function* terrainFieldSteps({ summary, world, size = 512 } = {}, rowsPerStep = I
         const d = signedDistance(x, y, blocker.vertices);
         let cast = 0;
         const sx = x - blocker.h * 0.22, sy = y - blocker.h * 0.42;
-        if (pointInPolygon(sx, sy, blocker.vertices)) cast = 1; else cast = Math.exp(-signedDistance(sx, sy, blocker.vertices) / (blocker.h * 0.35));
-        ao += 0.5 * Math.exp(-d / blocker.radius) + 0.28 * cast;
+        const castDistance = Math.max(0, signedDistance(sx, sy, blocker.vertices)), castRadius = blocker.h * 0.35;
+        cast = Math.exp(-castDistance / castRadius) * (1 - smooth(castRadius * 2, castRadius * 3, castDistance));
+        // Every influence reaches zero before its box ends. The box is only
+        // a culling accelerator, never a visible rectangular shadow mask.
+        ao += 0.5 * Math.exp(-d / blocker.radius) * (1 - smooth(blocker.radius * 3, blocker.radius * 4, d)) + 0.28 * cast;
       }
       for (const tree of rowTrees) {
         if (!contains(tree.box, x, y)) continue;

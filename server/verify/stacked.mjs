@@ -9,6 +9,8 @@ import { assertStackedEvidenceHeader, decodeStackedBase64 } from '../../apps/por
 import { STACKED_MAX_EVIDENCE_BYTES, STACKED_MAX_TICKS } from '../../apps/portal/src/stacked-contracts.mjs';
 import { sha256BytesHex } from '../../apps/portal/src/ranked-identity.mjs';
 import { buildVerifiedRun, invalid, isPlainObject, rejected } from './verified-run.mjs';
+import { GAME_VERSION } from '../../apps/portal/src/version-tracking.mjs';
+import { validStackedGameVersion, stackedGameVersionFromBuildHash, resolveStackedLedgerPacing } from '../../apps/portal/src/stacked-ledger-rules.mjs';
 
 export const STACKED_GAME_ID = 'stacked';
 export const STACKED_EVIDENCE_ENCODING = 'stacked-sic1+base64';
@@ -59,7 +61,29 @@ export async function verifiedRunFromStackedTuple({ identity, tuple, sic1, diges
 
 // → Promise<VerifiedRun | { ok:false, status, error, detail? }>
 // `identity` is the canonical identity (with version and sessionKey).
-export async function verifyStackedRun({ identity, evidence, nowMs }) {
+// A MAC binds a client's label but does not certify that its rules shipped.
+// This server-only factory captures a trusted deployment ceiling once; no
+// request, ticket or stored identity may override it. Tests may bind an isolated
+// candidate verifier without changing the production release constants.
+export function createStackedVerifier({deployedGameVersion = GAME_VERSION} = {}) {
+  if (!validStackedGameVersion(deployedGameVersion)) throw new TypeError('invalid deployed STACKED game version');
+  resolveStackedLedgerPacing({gameVersion:deployedGameVersion});
+  const ceiling = deployedGameVersion.split('.').map(Number);
+  return async function verifyStackedRun({ identity, evidence, nowMs }) {
+  let version;
+  try {
+    version = stackedGameVersionFromBuildHash(identity?.buildHash);
+    if (version) {
+      const parts = version.split('.').map(Number);
+      for (let i=0;i<3;i++) {
+        if (parts[i]>ceiling[i]) return invalid('unsupported-game-version');
+        if (parts[i]<ceiling[i]) break;
+      }
+    }
+    resolveStackedLedgerPacing({buildHash:identity.buildHash});
+  } catch {
+    return invalid('unsupported-game-version');
+  }
   const decoded = decodeStackedEvidence(evidence);
   if (!decoded.ok) return decoded.failure;
   const { bytes } = decoded;
@@ -78,7 +102,10 @@ export async function verifyStackedRun({ identity, evidence, nowMs }) {
     return rejected('replay-rejected', { detail: 'the replay tuple does not match the session binding' });
   }
   return verifiedRunFromStackedTuple({ identity, tuple, sic1: evidence.sic1, digest: await sha256BytesHex(bytes), nowMs });
+  };
 }
+
+export const verifyStackedRun = createStackedVerifier();
 
 // Stored evidence text → the §5.1 evidence object (reverifyStoredRun).
 export function parseStackedEvidenceText(text) {

@@ -34,8 +34,16 @@ function drawMino(graphic, { x, y, kind, alpha = 1, size = CELL_PX - 2, patterne
     if (outlined) {
       graphic.clear().roundRect(1, 1, size, size, 5).fill({color:drawn,alpha:.08}).stroke({color:0xd3faff,alpha:.85,width:2.4});
     } else {
-    graphic.clear().roundRect(1, 1, size, size, 5).fill({ color: drawn, alpha }).stroke({ color: 0xffffff, alpha: alpha * 0.32, width: 1 });
-    graphic.rect(4, 3, Math.max(2,size-6), 2).fill({color:0xffffff,alpha:alpha*.2});
+    // Cached bevel and soft outer radiance: jewel-like cells, no per-frame blur
+    // target, and pattern/ledger cues remain readable on the luminous face.
+    graphic.clear().roundRect(-2,-2,size+6,size+6,7).fill({color:drawn,alpha:alpha*.055});
+    graphic.roundRect(0,0,size+2,size+2,5).fill({color:shadeColor(drawn,-.55),alpha});
+    graphic.roundRect(1,1,size,size,5).fill({color:drawn,alpha:alpha*.94}).stroke({color:drawn,alpha:alpha*.22,width:4});
+    graphic.roundRect(3,3,Math.max(3,size-4),Math.max(3,size*.43),3).fill({color:0xffffff,alpha:alpha*.13});
+    graphic.roundRect(5,6,Math.max(2,size-10),Math.max(2,size-12),3).fill({color:shadeColor(drawn,.2),alpha:alpha*.5});
+    graphic.rect(4,3,Math.max(2,size-6),1.5).fill({color:0xffffff,alpha:alpha*.65});
+    graphic.rect(3,5,1.5,Math.max(2,size-10)).fill({color:0xffffff,alpha:alpha*.3});
+    graphic.rect(5,size-2,Math.max(2,size-8),1.5).fill({color:shadeColor(drawn,-.5),alpha:alpha*.7});
     // Ledger rows carry a shape cue, not just a colour: two ledger rulings.
     if (kind === 'garbage' && !patterned) for (const at of [.42, .66]) graphic.rect(5, Math.round(size*at), Math.max(2,size-8), 2).fill({color:0x071321,alpha:alpha*.5});
     if (patterned) {

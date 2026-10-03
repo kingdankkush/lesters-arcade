@@ -3,6 +3,7 @@
 // oak on the relay green, wildflower beds and meadow grass detail. Frozen data
 // only; no blocker, surface, objective or rule is added.
 import { freezeDeep } from '../value-guards.mjs';
+import { appendCentrePockets } from './centre-pockets.mjs';
 import { stableUnit, DISTRICT_TERRAIN } from '../world-v2-area-art-schema.mjs';
 import { createAreaPlanContext, CANOPY_HEIGHTS } from './plan-support.mjs';
 
@@ -66,5 +67,6 @@ export function createMwebMeadowsArtPlan(world) {
   tufts.forEach(([x, y, rx, ry], p) => scatter({ key: `tuft-${p}`, x: cx + x, y: cy + y, rx, ry, count: 22, radius: 8, place: (px, py, n, v) => {
     plan.ground.decals.push({ id: `tuft-${p}-${n}`, source: 'detail:grass', x: px, y: py, scale: 0.9 + v * 0.5, rotation: 0, alpha: 0.72, tint: 0xc8d2a0, flip: n % 2 === 1 });
   } }));
+  appendCentrePockets({world,area,plan});
   return freezeDeep(plan);
 }

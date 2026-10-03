@@ -1,0 +1,686 @@
+{
+  "schema": 1,
+  "kind": "derived-low-download-texture-tier",
+  "geometryChanged": false,
+  "rigChanged": false,
+  "animationChanged": false,
+  "paidGeneration": false,
+  "actors": {
+    "lit-commando": {
+      "file": "lit-commando.glb.gz",
+      "compressedBytes": 1175798,
+      "glbBytes": 2465332,
+      "sourceBytes": 8656592,
+      "sourceSha256": "ca6e03503a9e24203ae87be09b3b2508e80a2de6cc625eb9dbd6c2646b155e5d",
+      "sha256": "e04b51e8f2af8d7f2de7f5a39eaebe7a4c896cceb90a3c916d3210c591078656",
+      "glbSha256": "d8f533da0bc9cfc4b799e440930a7bf57299b4e684e017850cf9a7dbe17040cb",
+      "baseEdge": 512,
+      "materialEdge": 128,
+      "images": [
+        {
+          "index": 0,
+          "role": "normal-or-material",
+          "sourceSize": [
+            512,
+            512
+          ],
+          "size": [
+            128,
+            128
+          ],
+          "bytes": 6370
+        },
+        {
+          "index": 1,
+          "role": "base",
+          "sourceSize": [
+            512,
+            512
+          ],
+          "size": [
+            512,
+            512
+          ],
+          "bytes": 59650
+        },
+        {
+          "index": 2,
+          "role": "normal-or-material",
+          "sourceSize": [
+            512,
+            512
+          ],
+          "size": [
+            128,
+            128
+          ],
+          "bytes": 8142
+        },
+        {
+          "index": 3,
+          "role": "normal-or-material",
+          "sourceSize": [
+            1024,
+            1024
+          ],
+          "size": [
+            128,
+            128
+          ],
+          "bytes": 4420
+        },
+        {
+          "index": 4,
+          "role": "base",
+          "sourceSize": [
+            1024,
+            1024
+          ],
+          "size": [
+            512,
+            512
+          ],
+          "bytes": 78240
+        },
+        {
+          "index": 5,
+          "role": "normal-or-material",
+          "sourceSize": [
+            1024,
+            1024
+          ],
+          "size": [
+            128,
+            128
+          ],
+          "bytes": 8854
+        },
+        {
+          "index": 6,
+          "role": "normal-or-material",
+          "sourceSize": [
+            512,
+            512
+          ],
+          "size": [
+            128,
+            128
+          ],
+          "bytes": 5982
+        },
+        {
+          "index": 7,
+          "role": "base",
+          "sourceSize": [
+            512,
+            512
+          ],
+          "size": [
+            512,
+            512
+          ],
+          "bytes": 68214
+        },
+        {
+          "index": 8,
+          "role": "normal-or-material",
+          "sourceSize": [
+            512,
+            512
+          ],
+          "size": [
+            128,
+            128
+          ],
+          "bytes": 2796
+        },
+        {
+          "index": 9,
+          "role": "normal-or-material",
+          "sourceSize": [
+            512,
+            512
+          ],
+          "size": [
+            128,
+            128
+          ],
+          "bytes": 2510
+        },
+        {
+          "index": 10,
+          "role": "base",
+          "sourceSize": [
+            512,
+            512
+          ],
+          "size": [
+            512,
+            512
+          ],
+          "bytes": 41316
+        },
+        {
+          "index": 11,
+          "role": "normal-or-material",
+          "sourceSize": [
+            512,
+            512
+          ],
+          "size": [
+            128,
+            128
+          ],
+          "bytes": 8504
+        }
+      ]
+    },
+    "lilly": {
+      "file": "lilly.glb.gz",
+      "compressedBytes": 1492144,
+      "glbBytes": 2996836,
+      "sourceBytes": 8415092,
+      "sourceSha256": "65f10bae22e2ff6fcca45c19ff68940302b57ea8fad370aaa4f0507ffad3056c",
+      "sha256": "4e1a032e7b120d7392b79e8d7ae4d1c5ee2dda18b7766e3255429b648d89fe7c",
+      "glbSha256": "e7f379c7432685fd0ab51f8daa16538276437e8cbe26d0ae330cd22af8954b85",
+      "baseEdge": 448,
+      "materialEdge": 128,
+      "images": [
+        {
+          "index": 0,
+          "role": "normal-or-material",
+          "sourceSize": [
+            512,
+            512
+          ],
+          "size": [
+            128,
+            128
+          ],
+          "bytes": 6370
+        },
+        {
+          "index": 1,
+          "role": "base",
+          "sourceSize": [
+            512,
+            512
+          ],
+          "size": [
+            448,
+            448
+          ],
+          "bytes": 50018
+        },
+        {
+          "index": 2,
+          "role": "normal-or-material",
+          "sourceSize": [
+            512,
+            512
+          ],
+          "size": [
+            128,
+            128
+          ],
+          "bytes": 8142
+        },
+        {
+          "index": 3,
+          "role": "normal-or-material",
+          "sourceSize": [
+            512,
+            512
+          ],
+          "size": [
+            128,
+            128
+          ],
+          "bytes": 5982
+        },
+        {
+          "index": 4,
+          "role": "base",
+          "sourceSize": [
+            512,
+            512
+          ],
+          "size": [
+            448,
+            448
+          ],
+          "bytes": 52900
+        },
+        {
+          "index": 5,
+          "role": "normal-or-material",
+          "sourceSize": [
+            512,
+            512
+          ],
+          "size": [
+            128,
+            128
+          ],
+          "bytes": 2796
+        },
+        {
+          "index": 6,
+          "role": "normal-or-material",
+          "sourceSize": [
+            1024,
+            1024
+          ],
+          "size": [
+            128,
+            128
+          ],
+          "bytes": 2010
+        },
+        {
+          "index": 7,
+          "role": "base",
+          "sourceSize": [
+            1024,
+            1024
+          ],
+          "size": [
+            448,
+            448
+          ],
+          "bytes": 51746
+        },
+        {
+          "index": 8,
+          "role": "normal-or-material",
+          "sourceSize": [
+            1024,
+            1024
+          ],
+          "size": [
+            128,
+            128
+          ],
+          "bytes": 6334
+        },
+        {
+          "index": 9,
+          "role": "normal-or-material",
+          "sourceSize": [
+            512,
+            512
+          ],
+          "size": [
+            128,
+            128
+          ],
+          "bytes": 2510
+        },
+        {
+          "index": 10,
+          "role": "base",
+          "sourceSize": [
+            512,
+            512
+          ],
+          "size": [
+            448,
+            448
+          ],
+          "bytes": 32632
+        },
+        {
+          "index": 11,
+          "role": "normal-or-material",
+          "sourceSize": [
+            512,
+            512
+          ],
+          "size": [
+            128,
+            128
+          ],
+          "bytes": 8504
+        }
+      ]
+    },
+    "lit-valkyrie": {
+      "file": "lit-valkyrie.glb.gz",
+      "compressedBytes": 1477679,
+      "glbBytes": 2890224,
+      "sourceBytes": 8888720,
+      "sourceSha256": "f083aad5501e18a85b7e5dd6b8407aa35da4d9954dedf66af4bffab0f1c27548",
+      "sha256": "8f91b40444dc82cea1859c89685ce3b3724e082856288823d537ae3d917a90c9",
+      "glbSha256": "1886b6948da768418d46b8dcd5d4bb88c446fbd5231ba12f21f9061816d53bcc",
+      "baseEdge": 448,
+      "materialEdge": 128,
+      "images": [
+        {
+          "index": 0,
+          "role": "normal-or-material",
+          "sourceSize": [
+            512,
+            512
+          ],
+          "size": [
+            128,
+            128
+          ],
+          "bytes": 6370
+        },
+        {
+          "index": 1,
+          "role": "base",
+          "sourceSize": [
+            512,
+            512
+          ],
+          "size": [
+            448,
+            448
+          ],
+          "bytes": 50018
+        },
+        {
+          "index": 2,
+          "role": "normal-or-material",
+          "sourceSize": [
+            512,
+            512
+          ],
+          "size": [
+            128,
+            128
+          ],
+          "bytes": 8142
+        },
+        {
+          "index": 3,
+          "role": "normal-or-material",
+          "sourceSize": [
+            512,
+            512
+          ],
+          "size": [
+            128,
+            128
+          ],
+          "bytes": 5982
+        },
+        {
+          "index": 4,
+          "role": "base",
+          "sourceSize": [
+            512,
+            512
+          ],
+          "size": [
+            448,
+            448
+          ],
+          "bytes": 52900
+        },
+        {
+          "index": 5,
+          "role": "normal-or-material",
+          "sourceSize": [
+            512,
+            512
+          ],
+          "size": [
+            128,
+            128
+          ],
+          "bytes": 2796
+        },
+        {
+          "index": 6,
+          "role": "normal-or-material",
+          "sourceSize": [
+            1024,
+            1024
+          ],
+          "size": [
+            128,
+            128
+          ],
+          "bytes": 5136
+        },
+        {
+          "index": 7,
+          "role": "base",
+          "sourceSize": [
+            1024,
+            1024
+          ],
+          "size": [
+            448,
+            448
+          ],
+          "bytes": 71554
+        },
+        {
+          "index": 8,
+          "role": "normal-or-material",
+          "sourceSize": [
+            1024,
+            1024
+          ],
+          "size": [
+            128,
+            128
+          ],
+          "bytes": 5898
+        },
+        {
+          "index": 9,
+          "role": "normal-or-material",
+          "sourceSize": [
+            512,
+            512
+          ],
+          "size": [
+            128,
+            128
+          ],
+          "bytes": 2510
+        },
+        {
+          "index": 10,
+          "role": "base",
+          "sourceSize": [
+            512,
+            512
+          ],
+          "size": [
+            448,
+            448
+          ],
+          "bytes": 32632
+        },
+        {
+          "index": 11,
+          "role": "normal-or-material",
+          "sourceSize": [
+            512,
+            512
+          ],
+          "size": [
+            128,
+            128
+          ],
+          "bytes": 8504
+        }
+      ]
+    },
+    "lester-original": {
+      "file": "lester-original.glb.gz",
+      "compressedBytes": 1467566,
+      "glbBytes": 2687348,
+      "sourceBytes": 8278220,
+      "sourceSha256": "df2a09642967196960d98825189cdcb611b0ecc91f820a37331276be0fbc779b",
+      "sha256": "88089fb111aa7de42d9a6971aa33df40ca5994d3b55d298e29f3febd5d06603f",
+      "glbSha256": "23789c0fc34d4d8bca7d781719556ef0e05f934da39bdb2f5aa9c8b16734d6bd",
+      "baseEdge": 512,
+      "materialEdge": 128,
+      "images": [
+        {
+          "index": 0,
+          "role": "normal-or-material",
+          "sourceSize": [
+            512,
+            512
+          ],
+          "size": [
+            128,
+            128
+          ],
+          "bytes": 6370
+        },
+        {
+          "index": 1,
+          "role": "base",
+          "sourceSize": [
+            512,
+            512
+          ],
+          "size": [
+            512,
+            512
+          ],
+          "bytes": 59650
+        },
+        {
+          "index": 2,
+          "role": "normal-or-material",
+          "sourceSize": [
+            512,
+            512
+          ],
+          "size": [
+            128,
+            128
+          ],
+          "bytes": 8142
+        },
+        {
+          "index": 3,
+          "role": "normal-or-material",
+          "sourceSize": [
+            512,
+            512
+          ],
+          "size": [
+            128,
+            128
+          ],
+          "bytes": 5982
+        },
+        {
+          "index": 4,
+          "role": "base",
+          "sourceSize": [
+            512,
+            512
+          ],
+          "size": [
+            512,
+            512
+          ],
+          "bytes": 68214
+        },
+        {
+          "index": 5,
+          "role": "normal-or-material",
+          "sourceSize": [
+            512,
+            512
+          ],
+          "size": [
+            128,
+            128
+          ],
+          "bytes": 2796
+        },
+        {
+          "index": 6,
+          "role": "normal-or-material",
+          "sourceSize": [
+            1024,
+            1024
+          ],
+          "size": [
+            128,
+            128
+          ],
+          "bytes": 3012
+        },
+        {
+          "index": 7,
+          "role": "base",
+          "sourceSize": [
+            1024,
+            1024
+          ],
+          "size": [
+            512,
+            512
+          ],
+          "bytes": 68332
+        },
+        {
+          "index": 8,
+          "role": "normal-or-material",
+          "sourceSize": [
+            1024,
+            1024
+          ],
+          "size": [
+            128,
+            128
+          ],
+          "bytes": 5938
+        },
+        {
+          "index": 9,
+          "role": "normal-or-material",
+          "sourceSize": [
+            512,
+            512
+          ],
+          "size": [
+            128,
+            128
+          ],
+          "bytes": 2510
+        },
+        {
+          "index": 10,
+          "role": "base",
+          "sourceSize": [
+            512,
+            512
+          ],
+          "size": [
+            512,
+            512
+          ],
+          "bytes": 41316
+        },
+        {
+          "index": 11,
+          "role": "normal-or-material",
+          "sourceSize": [
+            512,
+            512
+          ],
+          "size": [
+            128,
+            128
+          ],
+          "bytes": 8504
+        }
+      ]
+    }
+  }
+}

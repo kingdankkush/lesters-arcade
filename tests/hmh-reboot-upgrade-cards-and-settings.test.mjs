@@ -283,6 +283,51 @@ const upgradeSnapshot = (ids) => ({
   pendingChoices: ids.map((id) => ({ ...RUN_UPGRADE_CATALOG[id], nextRank: 1 })),
 });
 
+test('repainting one real offer retains focused card, expanded details and controller release edge', () => {
+  let pad = { buttons: [{ pressed: true }], axes: [0] };
+  const { documentRef, elements, runFrame, pendingFrames } = fakeCockpitDocument({ gamepads: () => [pad], compact: true });
+  const selected = [];
+  const ui = createUpgradePanel({ documentRef, onSelectUpgrade: id => selected.push(id) });
+  const snapshot = { ...upgradeSnapshot(['proof-of-work', 'diamond-hands']), offersOpened: 1, rerolls: 0, level: 2, offerKind: 'level' };
+  ui.showUpgrade(snapshot);
+  documentRef.dispatch('keydown', { code: 'ArrowRight' });
+  const button = documentRef.activeElement;
+  const details = elements.get('hmhUpgradeChoices').querySelectorAll('details')[1];
+  details.open = true;
+  runFrame(0);
+  ui.showUpgrade(structuredClone(snapshot));
+  assert.ok(documentRef.activeElement === button, 'duplicate paint must not reset armed card');
+  assert.ok(elements.get('hmhUpgradeChoices').querySelectorAll('details')[1] === details);
+  assert.equal(details.open, true);
+  assert.equal(pendingFrames(), 1);
+  pad = { buttons: [{ pressed: false }], axes: [0] };
+  runFrame(16);
+  assert.deepEqual(selected, ['diamond-hands'], 'the held A release survives duplicate painting');
+  ui.showUpgrade(structuredClone(snapshot));
+  button.dispatch('click');
+  assert.deepEqual(selected, ['diamond-hands'], 'a duplicate paint cannot clear the confirmation latch');
+  ui.destroy();
+});
+
+test('new offer and changed reroll rebuild cards; hiding resets the presentation cache', () => {
+  const { documentRef, elements } = fakeCockpitDocument();
+  const ui = createUpgradePanel({ documentRef });
+  const snapshot = { ...upgradeSnapshot(['proof-of-work', 'diamond-hands']), offersOpened: 1, rerolls: 0, level: 2, offerKind: 'level' };
+  ui.showUpgrade(snapshot);
+  const first = elements.get('hmhUpgradeChoices').children[0];
+  ui.showUpgrade({ ...snapshot, offersOpened: 2 });
+  assert.notEqual(elements.get('hmhUpgradeChoices').children[0], first);
+  const next = elements.get('hmhUpgradeChoices').children[0];
+  ui.showUpgrade({ ...snapshot, offersOpened: 2, rerolls: 1, pendingChoices: upgradeSnapshot(['cold-storage', 'diamond-hands']).pendingChoices }, { rerolledSlot: 0 });
+  assert.notEqual(elements.get('hmhUpgradeChoices').children[0], next);
+  assert.equal(documentRef.activeElement.dataset.upgradeId, 'cold-storage');
+  const rerolled = elements.get('hmhUpgradeChoices').children[0];
+  ui.hideUpgrade();
+  ui.showUpgrade(snapshot);
+  assert.notEqual(elements.get('hmhUpgradeChoices').children[0], rerolled);
+  ui.destroy();
+});
+
 test('K-3 live pause help retains mouse and alternate bindings after controls render and rebind', () => {
   const { documentRef, elements } = fakeCockpitDocument();
   const ui = createCockpitUi({ documentRef });

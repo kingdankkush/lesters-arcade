@@ -7,6 +7,7 @@
 // or rule. The rope crossing in the brief is not authored geometry, so no
 // span card is placed.
 import { freezeDeep } from '../value-guards.mjs';
+import { appendCentrePockets } from './centre-pockets.mjs';
 import { DISTRICT_TERRAIN } from '../world-v2-area-art-schema.mjs';
 import { createAreaPlanContext } from './plan-support.mjs';
 import { placeLine, placeOnBank, placeEdgeWoodland, placeAlongPolygonEdges } from './plan-lines.mjs';
@@ -76,5 +77,6 @@ export function createLedgerRidgeArtPlan(world) {
   for (const [x, y, source, height, flip] of [[-1730, -1080, 'b2-79', 54, false], [-1290, -1080, 'b1-16', 52, true], [-1760, -900, 'b2-79', 50, true]]) {
     if (guard.clear(cx + x, cy + y, 20)) prop(source, cx + x, cy + y, height, { flip, tint: 0xc8c2b4 });
   }
+  appendCentrePockets({world,area,plan});
   return freezeDeep(plan);
 }

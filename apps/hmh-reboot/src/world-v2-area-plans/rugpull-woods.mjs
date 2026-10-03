@@ -2,6 +2,7 @@
 // pockets off the trails, HD camp cards on the existing solids. Frozen data
 // only; the plan never adds a blocker, surface, objective or rule.
 import { freezeDeep } from '../value-guards.mjs';
+import { appendCentrePockets } from './centre-pockets.mjs';
 import { pointInPolygon, stableUnit, DISTRICT_TERRAIN } from '../world-v2-area-art-schema.mjs';
 import { createAreaPlanContext, CANOPY_HEIGHTS } from './plan-support.mjs';
 
@@ -77,5 +78,6 @@ export function createRugpullWoodsArtPlan(world) {
   for (const [x, y, source, height, flip] of [[1220, -520, 'b1-17', 46, false], [1300, 420, 'b1-18', 62, true], [560, 560, 'b1-17', 44, true], [1260, -80, 'b1-18', 58, false]]) {
     if (guard.clear(cx + x, cy + y, 24)) prop(source, cx + x, cy + y, height, { flip, tint: 0xd9d2c2, shadow: true });
   }
+  appendCentrePockets({world,area,plan});
   return freezeDeep(plan);
 }

@@ -1,0 +1,243 @@
+{
+  "schema": "chikun-obstacle-kit-v1",
+  "source": "Authored native Blender geometry, no downloaded or generated paid art",
+  "assets": {
+    "pipe": {
+      "frames": 1,
+      "columns": 1,
+      "fps": 12,
+      "tiers": {
+        "low": {
+          "file": "pipe-low.webp",
+          "width": 56,
+          "height": 111,
+          "frameWidth": 56,
+          "frameHeight": 111,
+          "bytes": 3016,
+          "sha256": "b2b20a5fda0e64b9cd232911be96c65dbb2f028f5a7572546cdb30a9b5524fc4"
+        },
+        "medium": {
+          "file": "pipe-medium.webp",
+          "width": 112,
+          "height": 223,
+          "frameWidth": 112,
+          "frameHeight": 223,
+          "bytes": 5026,
+          "sha256": "b5f82064234995028e9f06e354cf539f9dec82ece3309ff3d4520c4467eed7bb"
+        }
+      },
+      "sourceSha256": "32b2e806046a255c51711785315a87ae9b6e95ac7c2edc0161caefbfa8538998"
+    },
+    "drone": {
+      "frames": 8,
+      "columns": 4,
+      "fps": 12,
+      "tiers": {
+        "low": {
+          "file": "drone-low.webp",
+          "width": 260,
+          "height": 40,
+          "frameWidth": 65,
+          "frameHeight": 20,
+          "bytes": 9008,
+          "sha256": "7958664733b892bf1ecf3e940dad51121c9232a739e6ed2b90f9526f51599374"
+        },
+        "medium": {
+          "file": "drone-medium.webp",
+          "width": 520,
+          "height": 82,
+          "frameWidth": 130,
+          "frameHeight": 41,
+          "bytes": 15144,
+          "sha256": "0b9d1e2b7ac62d182ee68e91b765670813d9e11ad56563c30da62829fb2bb3ea"
+        }
+      },
+      "sourceSha256": "3810833ee2c1fd587762316f6909a7394ece597f49b3084d39f1290594fb4285"
+    },
+    "canopy": {
+      "frames": 8,
+      "columns": 4,
+      "fps": 12,
+      "tiers": {
+        "low": {
+          "file": "canopy-low.webp",
+          "width": 512,
+          "height": 402,
+          "frameWidth": 128,
+          "frameHeight": 201,
+          "bytes": 102656,
+          "sha256": "ee221e0c6eb9af1a64579e4a74f533ff64d1e65adaa0f13420fc87d76b6d35fe"
+        },
+        "medium": {
+          "file": "canopy-medium.webp",
+          "width": 1024,
+          "height": 804,
+          "frameWidth": 256,
+          "frameHeight": 402,
+          "bytes": 192828,
+          "sha256": "3bd9d1a6945bc4071edec26c19a674be6bd43307ca9b14b3c24144e92b86103f"
+        }
+      },
+      "sourceSha256": "4569c3321cb7a785ba6562e1ea9aa7b560c290881c3e1e5b3f4f5028bf8f36e5"
+    },
+    "storm": {
+      "frames": 8,
+      "columns": 4,
+      "fps": 12,
+      "tiers": {
+        "low": {
+          "file": "storm-low.webp",
+          "width": 512,
+          "height": 420,
+          "frameWidth": 128,
+          "frameHeight": 210,
+          "bytes": 180322,
+          "sha256": "4995ca68d255d6ea5bd3d260e3062bf1f73594886a24956cd976803d3be72dc5"
+        },
+        "medium": {
+          "file": "storm-medium.webp",
+          "width": 1024,
+          "height": 842,
+          "frameWidth": 256,
+          "frameHeight": 421,
+          "bytes": 293052,
+          "sha256": "d4c573a061c6b2cfe5ee87d514b0e1255779798c172a13da893c575df7546f17"
+        }
+      },
+      "sourceSha256": "732d76c0510b2638e330734f159ea90360abd21e804bc82bbee9325b435ddbb5"
+    },
+    "waterfall": {
+      "frames": 8,
+      "columns": 4,
+      "fps": 12,
+      "tiers": {
+        "low": {
+          "file": "waterfall-low.webp",
+          "width": 700,
+          "height": 230,
+          "frameWidth": 175,
+          "frameHeight": 115,
+          "bytes": 46846,
+          "sha256": "af9fd77e3fff19cb83920acd1cb521bb76c53b0dd4eb727ba968f1695841a2c5"
+        },
+        "medium": {
+          "file": "waterfall-medium.webp",
+          "width": 1400,
+          "height": 462,
+          "frameWidth": 350,
+          "frameHeight": 231,
+          "bytes": 86058,
+          "sha256": "771b1d03ca034799726874c36743fc72c91590c96cc018f8594cb7280a6b6adc"
+        }
+      },
+      "sourceSha256": "5f3b3b4203406604fa0fd2cff484b696d2dda84770a010484322ccdd424852df"
+    },
+    "gap-lip": {
+      "frames": 1,
+      "columns": 1,
+      "fps": 12,
+      "tiers": {
+        "low": {
+          "file": "gap-lip-low.webp",
+          "width": 26,
+          "height": 53,
+          "frameWidth": 26,
+          "frameHeight": 53,
+          "bytes": 1698,
+          "sha256": "05c223ce76ae4345286a359f266a26af00f6b88ecc35181182f3905d2c20387c"
+        },
+        "medium": {
+          "file": "gap-lip-medium.webp",
+          "width": 53,
+          "height": 107,
+          "frameWidth": 53,
+          "frameHeight": 107,
+          "bytes": 2556,
+          "sha256": "56c407d9ead2bd8be79e4ca138dc65b030ec420293342b0c1612ff223704c7ec"
+        }
+      },
+      "sourceSha256": "8632de5920a1b439ca50bf3d9640e2deb0e0f6d51438d1233f8efc3536a58a50"
+    },
+    "town": {
+      "frames": 3,
+      "columns": 3,
+      "fps": 12,
+      "variation": "static-designs",
+      "tiers": {
+        "low": {
+          "file": "town-low.webp",
+          "width": 270,
+          "height": 192,
+          "frameWidth": 90,
+          "frameHeight": 192,
+          "bytes": 11958,
+          "sha256": "1f8cb6560c12634cd4052ad46934c11e3cef7aba793015446288b78c020f9c40"
+        },
+        "medium": {
+          "file": "town-medium.webp",
+          "width": 543,
+          "height": 384,
+          "frameWidth": 181,
+          "frameHeight": 384,
+          "bytes": 35588,
+          "sha256": "1b5ad73cee3b7aced275b060ea0bd08e5b1f9191d09493b7d00b0d38d24ad4e5"
+        }
+      },
+      "sourceSha256": "6f38867416708237d2cc147e7be8b94b083f567dcbf07b05bf28ff77d231ee29"
+    },
+    "city": {
+      "frames": 3,
+      "columns": 3,
+      "fps": 12,
+      "variation": "static-designs",
+      "tiers": {
+        "low": {
+          "file": "city-low.webp",
+          "width": 270,
+          "height": 192,
+          "frameWidth": 90,
+          "frameHeight": 192,
+          "bytes": 11336,
+          "sha256": "5c49f4621510171b89fd3ef1f8e1cd7d61d8f629c637c36e3b1ad7d95aaeeb10"
+        },
+        "medium": {
+          "file": "city-medium.webp",
+          "width": 543,
+          "height": 384,
+          "frameWidth": 181,
+          "frameHeight": 384,
+          "bytes": 28614,
+          "sha256": "18b61d4d9c7046df3e85ae9490ed2164a3a903b5da8fa3e5538ea970fce18f97"
+        }
+      },
+      "sourceSha256": "eaeaa1e95a6f9a28959ded7db1f6ac1e37e32c700f3a5b5bc1b77a9bb2c24f03"
+    },
+    "suburb": {
+      "frames": 3,
+      "columns": 3,
+      "fps": 12,
+      "variation": "static-designs",
+      "tiers": {
+        "low": {
+          "file": "suburb-low.webp",
+          "width": 288,
+          "height": 176,
+          "frameWidth": 96,
+          "frameHeight": 176,
+          "bytes": 12014,
+          "sha256": "cd89dec8546f3255d92941584c5552e5b76e248d66e3b10bafbdfe68d47446cf"
+        },
+        "medium": {
+          "file": "suburb-medium.webp",
+          "width": 576,
+          "height": 353,
+          "frameWidth": 192,
+          "frameHeight": 353,
+          "bytes": 26732,
+          "sha256": "c98b7a2cc1f8bdd8c357302bad9d5301a268b5e9f6c876aa3965048a13932dc5"
+        }
+      },
+      "sourceSha256": "7d4906b87158c0f7d33637a220c1ae062c15d2ae749b093f5b338469a5bedc05"
+    }
+  }
+}

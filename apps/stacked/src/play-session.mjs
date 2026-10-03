@@ -1,10 +1,10 @@
 import { createStackedRuntime, createStackedInputRecorder } from '../../portal/src/stacked-sim.mjs';
 
 // Owns committed input/time only. Audio, rendering and wall clocks never enter this module.
-export function createStackedPlaySession({ seed, mode, startLevel = 1, buildHash = 'stacked-local', seasonId = 'stacked-season-preview-1' }) {
+export function createStackedPlaySession({ seed, mode, startLevel = 1, buildHash = 'stacked-local', seasonId = 'stacked-season-preview-1', gameVersion }) {
   if (!['free', 'ranked'].includes(mode)) throw new TypeError('Unknown play mode');
   if (mode === 'ranked' && startLevel !== 1) throw new Error('Ranked starts at level 1');
-  const config = { startLevel, buildHash, seasonId };
+  const config = { startLevel, buildHash, seasonId, ...(gameVersion === undefined ? {} : {gameVersion}) };
   let runtime = createStackedRuntime({ seed, config });
   let recorder = createStackedInputRecorder({ seed });
   let snapshot = runtime.snapshot(), paused = false, assisted = false, spawnTick = 0;

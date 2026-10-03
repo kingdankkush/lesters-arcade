@@ -1,7 +1,7 @@
-// Default-off quality-bounded actors. Owns presentation displays and visibility
+// Quality-bounded actors. Owns presentation displays and visibility
 // only; its backend receives detached frozen projections, never simulation.
 import { createActor3dProjection, createActor3dPilotSession, createLiquidator3dEntries } from './actor-3d-projection.mjs';
-import { HERO_ACTOR_IDS, createIdleFidgetPicker, heroClipTime, heroHasClip } from './actor-3d-clips.mjs';
+import { HERO_ACTOR_IDS, createIdleFidgetPicker, createHeroMovementPicker, heroClipTime, heroHasClip, selectHeroActor3dClip } from './actor-3d-clips.mjs';
 
 // Lazy chunk: the six 2.0 enemies register here (GLB + manifest under
 // hmh-actor-3d-pilot/) without touching the initial bundle or the legacy tables.
@@ -41,6 +41,15 @@ export function createDistrictBoss3dEntries(bosses, pixelsPerMetre = 40) {
 export const ACTOR3D_HERO_WEAPON_IDS = Object.freeze(['coin-blaster', 'scatter-shotgun', 'auto-miner', 'hash-rail', 'lightning-ledger', 'bear-market-burner', 'forked-standard', 'launcher-rig']);
 
 export const ACTOR3D_QUALITY_LIMITS = Object.freeze({ low: 8, medium: 24, high: 64 });
+// This policy lives in the lazy chunk. Hardware hints only choose presentation;
+// unsupported WebGL contexts are still rejected before any GLB fetch.
+export function resolveActor3dDeliveryPolicy({ switchValue, quality, profileId, hardwareConcurrency, saveData = false } = {}) {
+  const qualityTier = profileId === 'desktop' && Object.hasOwn(ACTOR3D_QUALITY_LIMITS, quality) ? quality
+    : profileId === 'desktop' ? 'medium' : 'low';
+  const reason = switchValue === '0' || quality === 'sprites' ? 'opt-out'
+    : switchValue !== '1' && (saveData || (Number.isFinite(hardwareConcurrency) && hardwareConcurrency <= 2)) ? 'device-budget' : 'default';
+  return Object.freeze({ enabled:reason === 'default', qualityTier, reason });
+}
 const actorLimit = value => {
   if (!Number.isInteger(value) || value < 2 || value > ACTOR3D_QUALITY_LIMITS.high) throw new TypeError('bounded actor limit required');
   return value;
@@ -87,11 +96,13 @@ function supported(renderer, canvas) {
 export function createActor3dPresentationEntries(hero, enemies, boss = null, maxActors = ACTOR3D_QUALITY_LIMITS.medium, focus = hero, districtBosses = null) {
   actorLimit(maxActors);
   const entries = [], pixelsPerMetre = Number.isFinite(hero?.bodyHeight) && hero.bodyHeight > 0 ? hero.bodyHeight / 2.1 : 40;
-  if (HERO_ACTOR_IDS.includes(hero?.actorId) && ACTOR3D_HERO_WEAPON_IDS.includes(hero.weaponId) && hero.action !== 'interact') {
+  const authored = hero ? selectHeroActor3dClip(hero) : null;
+  if (HERO_ACTOR_IDS.includes(hero?.actorId) && ACTOR3D_HERO_WEAPON_IDS.includes(hero.weaponId) && (hero.action !== 'interact' || authored)) {
     // Existing states map exactly as before; a named library clip (cover, traversal,
     // fidget...) is selected only when it exists for this hero and carries its own tick.
     let clip = hero.action === 'aim' && hero.moving ? 'run' : hero.action, tick = hero.actionTick;
-    if (heroHasClip(hero.actorId, hero.clip) && Number.isFinite(hero.clipTick)) { clip = hero.clip; tick = hero.clipTick; }
+    if (authored && heroHasClip(hero.actorId, authored.clip)) { clip = authored.clip; tick = authored.clipTick; }
+    if (hero.action !== 'death' && heroHasClip(hero.actorId, hero.clip) && Number.isFinite(hero.clipTick)) { clip = hero.clip; tick = hero.clipTick; }
     entries.push({ descriptor: { id: 'hero', actorId: hero.actorId, x: hero.x, y: hero.y, z: hero.z, heading: hero.heading,
       bodyTint: hero.bodyTint, weaponTint: hero.weaponTint, weaponId: hero.weaponId,
       clip, clipTimeSeconds: heroClipTime(clip, tick), pixelsPerMetre }, originals: hero.originals });
@@ -124,10 +135,11 @@ export function createActor3dPilotController({ renderer, canvas, qualityTier = '
   // Idle fidgets are chosen by a presentation hash after 4 s of standing still and
   // cancelled the instant the hero does anything else. Never simulation RNG.
   const fidgets = fidgetPicker ?? createIdleFidgetPicker({ actorId: selectedHero, ...(presentationRandom ? { random: presentationRandom } : {}) });
+  const movement = createHeroMovementPicker({actorId:selectedHero});
   const abort = new AbortController();
   const hidden = new Map(); let disposed = false, backend = null;
   const restore = () => { for (const [display, record] of hidden) if (!display.destroyed) display.renderable = record.value; hidden.clear(); };
-  const session = createActor3dPilotSession({ enabled: true, supported: supported(renderer, canvas), createBackend: async () => (backend = await backendFactory({ signal: abort.signal, maxActors, heroActorId: selectedHero })), attachDisplay,
+  const session = createActor3dPilotSession({ enabled: true, supported: supported(renderer, canvas), createBackend: async () => (backend = await backendFactory({ signal: abort.signal, maxActors, qualityTier:tier, heroActorId: selectedHero })), attachDisplay,
     onFallback: reason => { abort.abort(); restore(); onTelemetry({ status: 'fallback', count: 0, reason }); } });
   const lost = () => session.handleContextLoss();
   canvas?.addEventListener('webglcontextlost', lost);
@@ -155,13 +167,15 @@ export function createActor3dPilotController({ renderer, canvas, qualityTier = '
     },
     updateGame(hero, enemies, camera, viewport, boss = null, districtBosses = null) {
       try {
-        const fidget = fidgets.observe({ tick: hero?.actionTick, idle: hero?.actorId === selectedHero && hero.action === 'idle' && !hero.moving && hero.clip === undefined });
-        const presented = fidget ? { ...hero, clip: fidget.clip, clipTick: fidget.tick } : hero;
+        const accent = movement.observe(hero);
+        const fidget = fidgets.observe({ tick: hero?.actionTick, idle: !accent && hero?.actorId === selectedHero && hero.action === 'idle' && !hero.moving && hero.clip === undefined && !selectHeroActor3dClip(hero) });
+        const chosen = accent ?? fidget;
+        const presented = chosen ? { ...hero, clip: chosen.clip, clipTick: chosen.tick } : hero;
         return controller.update(createActor3dPresentationEntries(presented, enemies, boss, maxActors, hero ?? camera, districtBosses).filter(entry => entry.descriptor.id !== 'hero' || entry.descriptor.actorId === selectedHero), camera, viewport);
       } catch { restore(); session.handleFailure(); return false; }
     },
     dispose() {
-      if (disposed) return; disposed = true; abort.abort(); restore(); session.dispose(); canvas?.removeEventListener('webglcontextlost', lost);
+      if (disposed) return; disposed = true; movement.reset(); abort.abort(); restore(); session.dispose(); canvas?.removeEventListener('webglcontextlost', lost);
     },
   };
   return Object.freeze(controller);

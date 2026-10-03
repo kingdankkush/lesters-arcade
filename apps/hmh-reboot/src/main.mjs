@@ -1046,14 +1046,17 @@ async function boot() {
   ]);
   worldDepthLayer.attach(actorVisual, heldWeaponLayer, bossVisual);
   dataset.actor3dStatus = 'disabled';
-  // Opening proof: the exact switch is default-off; accepted sprites remain
-  // authoritative until a supported, fully loaded backend draws this frame.
-  if (runtimeParams.get('actor3dPilot') === '1') {
+  // Default delivery stays lazy. Sprites own every pending/unsupported frame;
+  // the exact opt-out avoids even loading the optional renderer chunk.
+  if (runtimeParams.get('actor3dPilot') !== '0' && runtimeParams.get('actor3dQuality') !== 'sprites') {
     dataset.actor3dStatus = 'loading';
-    import('./actor-3d-controller.mjs').then(({ createActor3dPilotController }) => {
+    import('./actor-3d-controller.mjs').then(({ createActor3dPilotController, resolveActor3dDeliveryPolicy }) => {
       if (actor3dDisposed) return;
+      const policy = resolveActor3dDeliveryPolicy({ switchValue:runtimeParams.get('actor3dPilot'), quality:runtimeParams.get('actor3dQuality'),
+        profileId:performanceProfile.id, hardwareConcurrency:navigator.hardwareConcurrency, saveData:navigator.connection?.saveData });
+      if (!policy.enabled) { dataset.actor3dStatus = 'disabled'; dataset.actor3dReason = policy.reason; return; }
       actor3dPilot = createActor3dPilotController({ renderer: app.renderer, canvas: app.canvas,
-        qualityTier: runtimeParams.get('actor3dQuality') ?? (performanceProfile.id === 'desktop' ? 'medium' : 'low'),
+        qualityTier: policy.qualityTier,
         heroActorId: productionHeroId,
         attachDisplay: display => { world.addChild(display); worldDepthLayer.attach(display); },
         onTelemetry: report => { dataset.actor3dStatus = report.status; dataset.actor3dCount = String(report.count); dataset.actor3dReason = report.reason ?? ''; if (report.qualityTier) { dataset.actor3dQuality = report.qualityTier; dataset.actor3dLimit = String(report.maxActors); } },
@@ -2986,7 +2989,8 @@ async function boot() {
                   : productionAction === 'hurt' ? playerHitAge
                     : productionAction === 'interact' ? (missionClip.mode === 'quick' ? interactionAge : Math.min(interactionAge, 9)) : visualTick;
         const activeWeaponId = weaponLoadout ? getActiveWeaponState(weaponLoadout).id : null;
-        actor3dHeroAction = productionAction; actor3dHeroTick = productionActionTick;
+        actor3dHeroAction = productionAction === 'aim' && motion.locomotion !== 'moving' && !aimIntent?.fire ? 'idle' : productionAction;
+        actor3dHeroTick = productionActionTick;
         productionHeroDisplay.container.heldWeapons?.request(activeWeaponId);
         productionHeroDisplay.applyPose({
           weaponId: activeWeaponId,
@@ -3248,6 +3252,11 @@ async function boot() {
         actor3dPilot.updateGame(productionHeroDisplay ? { actorId: productionHeroId, weaponId: heldWeapon?.id,
           x: renderState.x, y: renderState.y, z: renderState.z, heading: Math.atan2(heldAim.y, heldAim.x),
           action: actor3dHeroAction, actionTick: actor3dHeroTick, moving: motion?.locomotion === 'moving',
+          velocity:{x:motion?.vx ?? 0,y:motion?.vy ?? 0},
+          shotAge:lastWeaponFire?.weaponId === heldWeapon?.id ? bossVisualTick-lastWeaponFire.tick : null,
+          reloadProgress:heldWeapon?.reloadCompleteTick != null ? (bossVisualTick-heldWeapon.reloadStartedTick)/Math.max(1,heldWeapon.reloadCompleteTick-heldWeapon.reloadStartedTick) : 0,
+          missionGesture:missionState?.operating?.clip,
+          missionTick:missionState?.operating ? bossVisualTick-missionState.operating.sinceTick : null,
           ...tenAreaRun?.heroClip(bossVisualTick),
           bodyTint: actor3dHeroFlash !== 0xffffff ? actor3dHeroFlash : settings.cosmetics?.heroTint,
           weaponTint: actor3dHeroFlash !== 0xffffff ? actor3dHeroFlash : settings.cosmetics?.weaponTint,

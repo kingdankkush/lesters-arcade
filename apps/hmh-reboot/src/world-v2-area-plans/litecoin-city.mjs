@@ -11,6 +11,7 @@
 // Page budget: structures-00 + structures-01 (+ shared props-00). City has no
 // foliage page, so it has no street trees (a known gap, see ART-AREAS-A.md).
 import { freezeDeep } from '../value-guards.mjs';
+import { appendCentrePockets } from './centre-pockets.mjs';
 import { stableUnit, DISTRICT_TERRAIN, distanceToPolyline } from '../world-v2-area-art-schema.mjs';
 import { createAreaPlanContext } from './plan-support.mjs';
 import { placeEdgeWoodland, placeLine } from './plan-lines.mjs';
@@ -110,8 +111,15 @@ export function createLitecoinCityArtPlan(world) {
   }
   // Skyline rows on the closed land beyond the west, east and north edges.
   placeEdgeWoodland(context, { key: 'city-edge', sources: EDGE_BUILDINGS, perSide: 11, drift: 110, sides: [0, 1, 2], height: (source, side, n, v) => EDGE_HEIGHTS[source] * (0.9 + 0.2 * v), tint: 0xc4c8c8 });
-  // Extra density: a second, taller rank on the north commercial roof frames the cluster.
-  for (const [x, y, source, height] of [[600, -1520 + 60, 'b1-12', 520], [1100, -1520 + 60, 'b1-52', 500], [1600, -1520 + 60, 'b1-12', 540]]) {
+  // The north edge's shed and neighbouring apartment previously interpenetrated.
+  // Use a modest apartment height where the narrow closed strip cannot seat
+  // a larger footprint. This is scenery on closed land, with no prop collider.
+  const cornerApartment = plan.props.find(p => p.source === 'b1-12' && p.y < area.bounds.minY && p.x < cx && p.x > cx - 600);
+  if (cornerApartment) {
+    cornerApartment.height = 240;
+  }
+  // A separate front rank leaves visible lanes between all nine roof footprints.
+  for (const [x, y, source, height] of [[600, -780, 'b1-12', 520], [1100, -780, 'b1-52', 500], [1600, -780, 'b1-12', 540]]) {
     const roof = supportAt(cx + x, cy + y);
     if (roof?.id === `${area.id}-north-commercial-block`) prop(source, cx + x, cy + y, height * (0.95 + 0.1 * stableUnit('roof', x)), { groundZ: roof.visible.height, tint: 0xc8cccc });
   }
@@ -127,5 +135,6 @@ export function createLitecoinCityArtPlan(world) {
     const [anchor, height, maxWidth] = SIGN_FIT[slot.carrier];
     plan.signs.push({ id: `sign-${slot.slot}`, ...(slot.pieceId ? { pieceId: slot.pieceId } : { propId: `${CITY_SIGN_PREFIX}${slot.slot}` }), text: sign.text, anchor, height, maxWidth, panel: CITY_SIGN_STYLE.panel, ink: CITY_SIGN_STYLE.text });
   }
+  appendCentrePockets({world,area,plan});
   return freezeDeep(plan);
 }

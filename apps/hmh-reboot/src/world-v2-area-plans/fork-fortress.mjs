@@ -10,6 +10,7 @@
 // the court's open floor), so every large building card still sits on real
 // collision. The bunker door is a sealed card: it implies no interaction.
 import { freezeDeep } from '../value-guards.mjs';
+import { appendCentrePockets } from './centre-pockets.mjs';
 import { DISTRICT_TERRAIN } from '../world-v2-area-art-schema.mjs';
 import { createAreaPlanContext } from './plan-support.mjs';
 import { placeLine, placeOnBank, placeEdgeWoodland, placeAlongPolygonEdges } from './plan-lines.mjs';
@@ -91,5 +92,6 @@ export function createForkFortressArtPlan(world) {
   for (const [x, y, source, height, flip] of [[-1420, 1300, 'b1-17', 48, false], [-1380, 1820, 'b1-19', 70, true], [-700, 1300, 'b1-41', 76, false]]) {
     if (guard.clear(cx + x, cy + y, 20)) prop(source, cx + x, cy + y, height, { flip, tint: FORTRESS_IRON_TINT });
   }
+  appendCentrePockets({world,area,plan});
   return freezeDeep(plan);
 }

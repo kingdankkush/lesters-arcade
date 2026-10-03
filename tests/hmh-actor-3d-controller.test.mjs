@@ -9,6 +9,22 @@ const canvas = () => { const events = new Map(); return { addEventListener: (nam
 const backend = () => ({ created: [], removed: [], disposed: 0, frames: [], createDisplay(id) { const display = { id }; this.created.push(display); return display; },
   beginFrame(frame) { this.frames.push(frame); }, renderActor() {}, removeDisplay(display) { this.removed.push(display); }, dispose() { this.disposed++; } });
 
+test('normal game updates deliver start/stop accents without obscuring authored combat or cover',async()=>{
+  const gpu=backend(), idleObservations=[];
+  const controller=module.createActor3dPilotController({renderer:renderer(),canvas:canvas(),backendFactory:()=>gpu,
+    fidgetPicker:{observe(input){idleObservations.push(input.idle);return null;},reset(){}}});
+  await controller.start();
+  const base={actorId:'lit-commando',weaponId:'coin-blaster',x:0,y:0,z:0,heading:0,action:'idle',actionTick:100,moving:false,velocity:{x:0,y:0},originals:[]};
+  const draw=fields=>{const hero=Object.freeze({...base,...fields}),before=JSON.stringify(hero);assert.equal(controller.updateGame(hero,[],camera,view),true);assert.equal(JSON.stringify(hero),before);return gpu.frames.at(-1)[0];};
+  assert.equal(draw({}).clip,'idle');
+  assert.equal(draw({action:'aim',moving:true,velocity:{x:240,y:0},actionTick:101}).clip,'run-start');
+  assert.equal(draw({action:'aim',moving:true,velocity:{x:240,y:0},actionTick:115}).clip,'run');
+  assert.equal(draw({actionTick:116}).clip,'run-stop');assert.equal(idleObservations.at(-1),false);
+  assert.equal(draw({clip:'cover-idle-short',clipTick:3,actionTick:117}).clip,'cover-idle-short');
+  assert.equal(draw({action:'death',actionTick:3}).clip,'death');
+  controller.dispose();
+});
+
 test('unsupported depth contexts fall back before assets or shader code are loaded', async () => {
   assert.equal(typeof module.createActor3dPilotController, 'function'); let loads = 0; const reports = [];
   const controller = module.createActor3dPilotController({ renderer: renderer(false), canvas: canvas(), onTelemetry: report => reports.push(report), backendFactory: () => { loads++; return backend(); } });
@@ -239,22 +255,24 @@ test('all exact native enemy identities retain sprites until ready and after rem
 
 test('actual optional backend serializes archetype loads, isolates failure and closes late decoded images', async () => {
   const {readFileSync}=await import('node:fs'),vm=await import('node:vm');
+  const {loadActor3dBytes}=await import('../apps/hmh-reboot/src/actor-3d-download.mjs');
   const source=readFileSync(new URL('../apps/hmh-reboot/src/actor-3d-pixi.mjs',import.meta.url),'utf8');
   const code=source.slice(source.indexOf('export async function createActor3dPixiBackend')).replace('export ','');
-  const urls=[],closed=[],textures=[];let waitingResolve,hold=false;
-  const context=vm.createContext({Blob,Promise,vertex:'',fragment:'',ACTOR3D_ENEMY_IDS:module.ACTOR3D_ENEMY_IDS,ACTOR3D_BOSS_IDS:module.ACTOR3D_BOSS_IDS,
+  const urls=[],closed=[],textures=[],decodes=[];let waitingResolve,hold=false;
+  const context=vm.createContext({Blob,Promise,loadActor3dBytes,vertex:'',fragment:'',ACTOR3D_ENEMY_IDS:module.ACTOR3D_ENEMY_IDS,ACTOR3D_BOSS_IDS:module.ACTOR3D_BOSS_IDS,
     createActor3dDepthRegistry:module.createActor3dDepthRegistry,State:class{},
     GlProgram:{from:()=>({destroy(){}})},RenderTexture:{create:()=>({destroy(){}})},
     Texture:{from:bitmap=>{const t={source:{},destroy(){textures.push(bitmap.id);}};return t;}},
-    Shader:class{destroy(){}},decodeActor3dGlb:()=>({images:[{data:new Uint8Array([1]),mimeType:'image/png'}],primitives:[]}),createActor3dJointBounds:()=>[],
+    Shader:class{destroy(){}},decodeActor3dGlb:()=>({images:[{data:new Uint8Array([1]),mimeType:'image/png',width:1024,height:512}],primitives:[]}),createActor3dJointBounds:()=>[],
   });vm.runInContext(code,context);
   const render={texture:{bind(){}},shader:{bind(){},resetState(){}},gl:{NO_ERROR:0,getError:()=>0,getParameter:()=>({}),getProgramParameter:()=>true}};
   let imageId=0;
-  const gpu=await context.createActor3dPixiBackend({renderer:render,heroActorId:null,
+  const gpu=await context.createActor3dPixiBackend({renderer:render,heroActorId:null,qualityTier:'low',
     fetchAsset:async url=>{urls.push(url);if(url.includes('validator-cultist'))throw Error('missing optional model');return {ok:true,arrayBuffer:async()=>new ArrayBuffer(1)};},
-    decodeImage:async()=>{const id=++imageId;if(hold)return new Promise(resolve=>{waitingResolve=()=>resolve({id,close(){closed.push(id);}});});return {id,close(){closed.push(id);}};},
+    decodeImage:async(_blob,options)=>{decodes.push(options);const id=++imageId;if(hold)return new Promise(resolve=>{waitingResolve=()=>resolve({id,close(){closed.push(id);}});});return {id,close(){closed.push(id);}};},
   });
   assert.equal(urls.length,2);assert.equal(gpu.prepareActor('bagholder-rusher'),true);
+  assert.ok(decodes.every(options=>options.resizeWidth===512&&options.resizeHeight===256), 'low-tier startup respects the 512 edge and source aspect ratio');
   assert.equal(gpu.prepareActor('validator-cultist'),false);
   for(let i=0;i<12;i++)await Promise.resolve();
   assert.equal(gpu.prepareActor('validator-cultist'),false);assert.equal(gpu.prepareActor('bagholder-rusher'),true);
@@ -264,5 +282,6 @@ test('actual optional backend serializes archetype loads, isolates failure and c
   assert.equal(typeof waitingResolve,'function');assert.equal(urls.filter(x=>x.includes('forkrunner')).length,1);assert.ok(!urls.some(x=>x.includes('gas-bomber')));
   gpu.dispose();waitingResolve();for(let i=0;i<20;i++)await Promise.resolve();
   assert.deepEqual(closed.sort(),[1,2,3]);assert.deepEqual(textures.sort(),[1,2]);
+  assert.ok(decodes.every(options=>options.resizeWidth===512&&options.resizeHeight===256), 'late archetypes use the same decoded texture tier');
   assert.ok(!urls.some(x=>x.includes('gas-bomber')));assert.equal(gpu.prepareActor('forkrunner'),false);gpu.dispose();
 });

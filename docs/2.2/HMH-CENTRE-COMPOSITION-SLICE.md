@@ -1,0 +1,33 @@
+# District centre composition and City roof placement
+
+Implemented locally in the 2.2 candidate; browser approval and release are pending.
+
+The normal landing screenshot showed why a new texture alone was insufficient: the 560-unit protected-spawn exclusion removed every nearby prop, leaving the entire first view empty. Simulation spawn exclusion remains unchanged. A separate presentation pass now places low walk-through garden pockets with 150 units of breathing room around the hero. Every pocket clears the actual roads, inspection routes, objective sites, water and solid geometry, including its painted footprint corners.
+
+All ten area plans retain their existing loaded kit pages. The first Meadows pass had 38 shrubs, brambles and flowers arranged into four asymmetric pockets. Actual game review rejected the thorn cages and white stone flower bases; the corrective native Meadow pass below replaces those 38 instances. Bayou follows its dry west bank; River uses ferns and scrub without transplanting riverbank iris into the clearing; Ridge dresses the top of its existing lower-cut ledge. The complete pass adds 310 presentation instances, no blockers, no simulation randomness and no changes to existing collision art identifiers.
+
+The current manifest-based building/building audit reproduced 19 City skyline overlaps. The six branded towers and three extra towers now occupy separate ranks on the same closed roof. A smaller north-edge apartment fits beside its neighbouring shed. Brand names remain driven by the same table; the tallest tower remains 660 units tall. Projected building/building footprint overlaps now total zero across the ten-area plans. This narrower count does **not** establish that the master guide's historical 48 building-versus-all-prop/shelf/water faults are all resolved.
+
+Validation: 43/43 focused composition, area-plan, terrain and collision-art checks passed. The generated prop-blocker module remains exactly current, all blocking cards retain their coverage, and the world data remains unchanged. The earlier four-tile lane-B assertion was updated to the actual five-tile/8 MiB limit already enforced elsewhere; the measured texture-memory cap was retained.
+
+Remaining: actual desktop and phone visual review; complete bespoke biome kits, centre landmarks, crop models, forest density, consistent building projection, cliff/ramp/seam assets, lighting and any separately versioned gameplay placement corrections. These pockets are a bounded foreground composition improvement, not final approval of world art.
+
+## Native Meadow correction — October 3
+
+Reviewed the actual normal-game desktop screenshot and original plant atlas. The large wire-like roots and pale slab flower bases did not fit the lush Meadow reference. Meadows arrival pockets now use four ground-hugging native Blender patches: grass, rounded clover leaves, restrained wildflowers and dark natural pebbles. Source geometry reaches at most 0.16 metres. None of these patches has a slab base or thorn cage. All other areas and collision source tables remain unchanged.
+
+`scripts/build-hmh-meadow-patches.py` reproduces the native geometry and tiered pack. Runtime files are `apps/portal/assets/generated/hmh-art-target/meadow-ground-details.webp`, its `@0.5x` tier and a measured receipt JSON. Only Meadows loads this separate detail page lazily. Full atlas: 1024×256, 91,170 encoded bytes / 1,048,576 decoded bytes. Phone: 512×128, 29,192 encoded bytes / 262,144 decoded bytes. Total Meadow ground budget is 7,733,248 decoded bytes, below 8 MiB. Alpha-zero pixels are cleaned and preserved exactly during WebP packing to avoid colored transparent-edge artifacts.
+
+Actual atlas pixels were inspected after one corrective bake for rounded leaves, darker stone and softer lighting. Blender 5.1.2 required its `BLENDER_EEVEE` engine identifier; the initial engine mismatch failed before rendering and was fixed. Native jobs held the shared heavy lock, exact owned children closed, and the owned lock was released. Source PNGs and the procedural .blend remain outside Git under the lead workspace's `outputs/native-meadow-patches/`.
+
+Final focused schema/renderer/composition/area-plan/collision/terrain checks: **56/56 passed**. A phone/full renderer check proves equal world size and proper private-atlas release. Actual new in-game screenshots, reference approval and the combined visual gate remain lead-owned and pending. No paid generation was used.
+
+## Portrait arrival composition correction — October 3
+
+The actual corrective-bake game screenshots removed the thorn cages but still showed an empty phone playfield. Measured normal Lilly framing is 414×896 CSS pixels at zoom 1.7655: approximately 234 world units wide. The four earlier beds were 300–355 world units sideways. A second issue multiplied native frame scale 0.32 by instance scale 0.34, shrinking a 256-pixel patch to 27.9 world units before accounting for transparent margins. A regression test reproduced **zero** native patches inside the portrait playfield before the correction.
+
+The existing atlas now paints 60 Meadow centre patches: 37 in the wider garden corners at scale 0.88, and 23 in four close, asymmetric beds at scale 0.84–1.0. Nineteen lie inside the measured portrait playfield acceptance rectangle. Patch frames now span 68.8–81.9 world units; grass and clover dominate, with restrained flowers and stones. The northern planting follows the relay path's east verge; southwest and southeast beds frame the southern lawn. The northwest return path remains empty. Colours, ground materials and atlas bytes are unchanged; no native rerender or paid generation was required.
+
+Only these low ground decals use a narrower presentation guard: the full unrotated sprite frame clears solids, water, road widths and a 20-unit margin beside inspection routes. Real objective/exit/entrance sites retain their 150-unit clearance. The noninteractive area-centre label is excluded from this guard; the central hero space retains 60 units of clearance at every frame corner (nearest patch centre is 112.6 units away). Simulation geometry, protected spawn radius, existing interactive placements and all other area plans are unchanged.
+
+The new phone-composition regression plus focused composition/schema/renderer/area-plan/collision/terrain checks passed **31/31** in the final correction run. World data remains byte-identical, and full/half texture tiers retain equal world sizes and the same 7,733,248-byte Meadow ground cap. **A fresh actual desktop/phone capture and visual approval remain pending with the lead.** This is a framing correction, not completion of the ten-area art kit or Hades-quality acceptance.

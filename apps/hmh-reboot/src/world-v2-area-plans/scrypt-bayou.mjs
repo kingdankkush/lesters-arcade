@@ -13,6 +13,7 @@
 // box culvert (b2-45). Fog cards are not a schema primitive (decals accept
 // only the ground detail frames); fog stays an open renderer hook.
 import { freezeDeep } from '../value-guards.mjs';
+import { appendCentrePockets } from './centre-pockets.mjs';
 import { DISTRICT_TERRAIN, stableUnit } from '../world-v2-area-art-schema.mjs';
 import { createAreaPlanContext, CANOPY_HEIGHTS } from './plan-support.mjs';
 import { placeOnBank, placeEdgeWoodland, placeAlongPolygonEdges } from './plan-lines.mjs';
@@ -87,5 +88,6 @@ export function createScryptBayouArtPlan(world) {
     const u = stableUnit('bayou-bank-fog', n);
     plan.ground.fog.push({ id: `fog-bank-${n}`, x: cx + x, y: cy + y, rx: 380 + u * 200, ry: 120 + u * 60, alpha: 0.14 + u * 0.08, tint: fogTint });
   }
+  appendCentrePockets({world,area,plan});
   return freezeDeep(plan);
 }

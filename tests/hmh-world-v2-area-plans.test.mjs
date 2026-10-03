@@ -47,7 +47,7 @@ function assertAreaPlacements(areaId, summary, { routeClearance = 64, siteCleara
     for (const { a, b } of segments) assert.ok(distanceToSegment(prop.x, prop.y, a, b) >= routeClearance, `${prop.id} clears inspection routes`);
     for (const road of world.roads) assert.ok(distanceToPolyline(prop.x, prop.y, road.points) >= road.width / 2, `${prop.id} clears ${road.id}`);
     for (const site of guarded) assert.ok(Math.hypot(site.x - prop.x, site.y - prop.y) >= siteClearance, `${prop.id} clears ${site.id}`);
-    assert.ok(Math.hypot(prop.x - world.spawn.x, prop.y - world.spawn.y) >= world.protectedSpawnRadius, `${prop.id} clears spawn`);
+    assert.ok(Math.hypot(prop.x - world.spawn.x, prop.y - world.spawn.y) >= (prop.id.startsWith('mweb-meadows-centre-') ? 150 : world.protectedSpawnRadius), `${prop.id} clears spawn`);
   }
   for (const zone of summary.zones) for (const v of zone.vertices) assert.ok(inside(v.x, v.y), `${zone.id} inside ${areaId}`);
   assert.ok(summary.terrain, `${areaId} carries the district terrain`);
@@ -117,12 +117,14 @@ test('MWEB Meadows follows brief 01 with homes, hedgerows, pickets, the old oak,
   assert.ok(summary.decals.length >= 120 && summary.decals.filter(d => d.source === 'detail:grass').length >= 100, 'meadow grass detail');
   const segments = routeSegments('mweb-meadows'), roads = world.roads.filter(r => r.fromAreaId === 'mweb-meadows' || r.toAreaId === 'mweb-meadows');
   for (const prop of [...summary.props, ...summary.decals]) {
+    const arrivalGround = prop.id.startsWith('mweb-meadows-centre-arrival-');
+    if(arrivalGround) assert.ok(prop.source.startsWith('detail:meadow-'),'the near-spawn exception is only for nonblocking native ground patches');
     assert.ok(prop.x >= meadows.bounds.minX && prop.x <= meadows.bounds.maxX && prop.y >= meadows.bounds.minY && prop.y <= meadows.bounds.maxY);
     assert.equal(inSolid(prop.x, prop.y), null, `${prop.id} outside blockers`);
     for (const { a, b } of segments) assert.ok(distanceToSegment(prop.x, prop.y, a, b) >= 60, `${prop.id} clears inspection routes`);
     for (const road of roads) assert.ok(distanceToPolyline(prop.x, prop.y, road.points) >= road.width / 2, `${prop.id} clears the road`);
-    assert.ok(Math.hypot(prop.x - world.spawn.x, prop.y - world.spawn.y) >= world.protectedSpawnRadius, `${prop.id} clears spawn`);
-    for (const site of sites('mweb-meadows')) assert.ok(Math.hypot(site.x - prop.x, site.y - prop.y) >= 150, `${prop.id} clears ${site.id}`);
+    assert.ok(Math.hypot(prop.x - world.spawn.x, prop.y - world.spawn.y) >= (arrivalGround ? 60 : prop.id.startsWith('mweb-meadows-centre-') ? 150 : world.protectedSpawnRadius), `${prop.id} clears spawn`);
+    for (const site of sites('mweb-meadows')) assert.ok(Math.hypot(site.x - prop.x, site.y - prop.y) >= (arrivalGround && site.kind==='area' ? 60 : 150), `${prop.id} clears ${site.id}`);
   }
   for (const zone of summary.zones) for (const v of zone.vertices) assert.ok(v.x >= meadows.bounds.minX && v.x <= meadows.bounds.maxX && v.y >= meadows.bounds.minY && v.y <= meadows.bounds.maxY);
 });
@@ -385,7 +387,7 @@ function assertGuardedProps(areaId, summary, plan, exempt = []) {
 }
 const laneB = [[createHollowPinesArtPlan, 'hollow-pines', HOLLOW_PINES_PAGES], [createLedgerRidgeArtPlan, 'ledger-ridge', LEDGER_RIDGE_PAGES], [createForkFortressArtPlan, 'fork-fortress', FORK_FORTRESS_PAGES]];
 
-test('lane B plans are deterministic, carry their district terrain, stay within two exclusive pages and four tiles, and leave the world untouched', () => {
+test('lane B plans are deterministic, carry their district terrain, stay within two exclusive pages and the ground memory budget, and leave the world untouched', () => {
   const before = JSON.stringify(world);
   for (const [make, areaId, pages] of laneB) {
     const plan = make(world), summary = validateAreaArtPlan(plan, kit);
@@ -397,7 +399,7 @@ test('lane B plans are deterministic, carry their district terrain, stay within 
     assert.equal(summary.budget.exclusiveKitPages, 2, areaId);
     assert.equal(summary.budget.decodedBytes, 3 * 16777216, areaId);
     assert.equal(summary.budget.halfDecodedBytes, 3 * 4194304, areaId);
-    assert.ok(summary.tiles.length <= 4, `${areaId} tiles ${summary.tiles.join(',')}`);
+    assert.ok(summary.tiles.length <= 5 && summary.budget.tileDecodedBytes <= 8 * 1024 * 1024, `${areaId} tiles ${summary.tiles.join(',')}`);
     for (const source of summary.sources) assert.notEqual(resolveKitItem(kit, source).class, 'pickups');
     assert.equal(make({ ...world, areas: [] }), null);
   }

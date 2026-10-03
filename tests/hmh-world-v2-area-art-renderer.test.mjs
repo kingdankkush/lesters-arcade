@@ -16,6 +16,7 @@ function sizeFor(url) {
   if (file.startsWith('tripo-props-hd-')) return file.includes('@0.5x') ? [1024, 1024] : [2048, 2048];
   if (file.endsWith('-fringe.png')) return [512, 128];
   if (file === 'ground-details.webp') return [256, 256];
+  if (file.startsWith('meadow-ground-details')) return file.includes('@0.5x') ? [512,128] : [1024,256];
   return [512, 512];
 }
 const loader = log => async url => { log.push(url); const [width, height] = sizeFor(url); return new Texture({ source: new TextureSource({ width, height }) }); };
@@ -25,6 +26,24 @@ test('multiplyTint composes plan and foliage tints channel-wise', () => {
   assert.equal(multiplyTint(0xffffff, 0x65735a), 0x65735a);
   assert.equal(multiplyTint(0x808080, 0xffffff), 0x808080);
   assert.equal(multiplyTint(0x000000, 0xabcdef), 0);
+});
+
+test('native Meadow detail frames keep identical world size at phone resolution and release their private atlas', async () => {
+  const widths=[];
+  for(const resolution of ['full','half']) {
+    const urls=[],cache=createAreaArtTextureCache({loadTexture:loader(urls)});
+    const art=createAreaArt({world,areaId:'mweb-meadows',plan:createMwebMeadowsArtPlan(world),kit,textureCache:cache,resolution});
+    await art.ready;
+    const ground=new Container();art.paintSurface({target:ground,surface:{id:'mweb-meadows-floor'}});
+    const native=ground.children.filter(c=>c.label?.startsWith('area-detail-mweb-meadows-centre-'));
+    assert.ok(native.length>=18);
+    assert.equal(native[0].texture.frame.width,resolution==='half'?128:256);
+    widths.push(native[0].width);
+    assert.equal(urls.filter(u=>u.includes('meadow-ground-details')).length,1);
+    assert.ok(urls.some(u=>u.endsWith(resolution==='half'?'meadow-ground-details@0.5x.webp':'meadow-ground-details.webp')));
+    art.dispose();assert.equal(cache.snapshot().urls.length,0);cache.dispose();ground.destroy({children:true});
+  }
+  assert.equal(widths[0],widths[1]);
 });
 
 test('the renderer loads only the pages and tiles its plan needs, paints, mounts and releases everything on dispose', async () => {

@@ -5,6 +5,7 @@ import { decodeActor3dGlb, createActor3dPoseWorkspace, evaluateActor3dPose,
   createActor3dJointBounds, projectActor3dBounds } from './actor-3d-model.mjs';
 import { createActor3dDepthRegistry, ACTOR3D_BOSS_IDS, ACTOR3D_ENEMY_IDS, ACTOR3D_HERO_WEAPON_IDS } from './actor-3d-controller.mjs';
 import { heroClipProp } from './actor-3d-clips.mjs';
+import { loadActor3dBytes } from './actor-3d-download.mjs';
 import { validateWeaponModelManifest, decodeWeaponGlb, createWeaponAttachment, weaponModelUrl, weaponSocketToModel, weaponModelToWorldOffset } from './weapon-model.mjs';
 
 const vertex = `#version 300 es
@@ -94,9 +95,12 @@ export function actor3dPrimitiveTint(name, projection) {
   return (weapon ? projection.weaponTint : projection.bodyTint) ?? 0xffffff;
 }
 
-export async function createActor3dPixiBackend({ renderer, signal, maxActors = 24, heroActorId = 'lit-commando', fetchAsset = fetch, decodeImage = createImageBitmap } = {}) {
+export async function createActor3dPixiBackend({ renderer, signal, maxActors = 24, qualityTier = 'medium', heroActorId = 'lit-commando', fetchAsset = fetch, decodeImage = createImageBitmap } = {}) {
   const assets = new Map(), ready = new Set(), pending = new Set(), failed = new Set(), live = new Set(), order = createActor3dDepthRegistry(maxActors); let bands = new Map(), disposed = false;
   let program = null, probeTarget = null, loadQueue = Promise.resolve();
+  // Low-tier uploads are quarter the texels of 1K source pages. GLB geometry
+  // and animation stay identical. This does not replace the pending mesh LOD pass.
+  const textureEdge = qualityTier === 'low' ? 512 : 1024;
   // Seated weapon models (2.0 weapons lane): one manifest, one GLB per gun,
   // fetched on first equip through the same serial queue. A failed weapon
   // leaves the sprite hero in charge of that gun and is never retried.
@@ -183,13 +187,14 @@ export async function createActor3dPixiBackend({ renderer, signal, maxActors = 2
   };
   const loadAsset = async id => {
       signal?.throwIfAborted(); if (disposed) throw new Error('disposed actor loader');
-      const response = await fetchAsset(`/assets/generated/hmh-actor-3d-pilot/${id}.glb`, { signal });
-      if (!response.ok) throw new Error('pilot asset unavailable');
-      const bytes = await response.arrayBuffer(); signal?.throwIfAborted(); if (disposed) throw new Error('disposed actor loader'); const model = decodeActor3dGlb(bytes);
+      const bytes = await loadActor3dBytes(id, {qualityTier,fetchAsset,signal});
+      signal?.throwIfAborted(); if (disposed) throw new Error('disposed actor loader'); const model = decodeActor3dGlb(bytes);
       const asset = { model, geometry: [], textures: [], bitmaps: [], envelopes: createActor3dJointBounds(model) };
       assets.set(id, asset);
       for (const image of model.images) {
-        const bitmap = await decodeImage(new Blob([image.data], { type: image.mimeType }));
+        const scale = Math.min(1, textureEdge / Math.max(image.width ?? textureEdge, image.height ?? textureEdge));
+        const options = scale < 1 ? { resizeWidth:Math.max(1,Math.round(image.width*scale)), resizeHeight:Math.max(1,Math.round(image.height*scale)), resizeQuality:'high' } : undefined;
+        const bitmap = await decodeImage(new Blob([image.data], { type: image.mimeType }), options);
         if (disposed || signal?.aborted) { bitmap.close(); throw new Error('disposed image decode'); }
         asset.bitmaps.push(bitmap);
         signal?.throwIfAborted();
