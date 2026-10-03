@@ -466,9 +466,9 @@ scenes with zero signature delta and no runtime errors. Fresh budgets:
 HMH 1,006,947 / 1,048,576 B; STACKED 583,383 / 607,000 B. Final full gate
 is pending; no production or physical-phone acceptance is claimed.
 
-No release commit, push, deployment or promotion yet. Full release gate,
-three-game local Ranked end-to-end checks, required visual comparison and live
-verification remain required for the completed-scope release. New HMH ruleset
+Completed-scope 2.2.0 is committed and published. Full local/cloud gates,
+three-game local Ranked end-to-end checks, required visual comparison and
+public runtime/screen verification pass; see the publication receipt below. New HMH ruleset
 corpus, real phone performance and final area/art acceptance remain requirements
 for the deferred full overhaul, not evidence already obtained by this bundle.
 Completed tests and browser evidence do not imply completion of this scope.
@@ -505,4 +505,12 @@ absent and released only its owned lock; both receipts are preserved in
 
 ## 2.2.0 completed-bundle certification
 
-Final full gate passes: 6934 tests, 6883 passing, exactly 51 retired exceptions, zero unexpected/cancelled/skipped/todo. Syntax, assets, contract checks and build complete in the same gate. Local Ranked passes 23/23 per game; all 12 legacy visual comparisons pass. Initial JavaScript: HMH 1,006,947 / 1,048,576 B; STACKED 583,383 / 607,000 B. Owned children closed before lock release. Certificate: docs/qa/completed-bundle-release-20261003-2.2.0.json. Deployment and public verification are pending. Physical XS Max performance, full world/character/courses/reward scope and all 34 master items remain open as documented above.
+Final full gate passes: 6934 tests, 6883 passing, exactly 51 retired exceptions, zero unexpected/cancelled/skipped/todo. Syntax, assets, contract checks and build complete in the same gate. Local Ranked passes 23/23 per game; all 12 legacy visual comparisons pass. Initial JavaScript: HMH 1,006,947 / 1,048,576 B; STACKED 583,383 / 607,000 B. Owned children closed before lock release. Certificate: docs/qa/completed-bundle-release-20261003-2.2.0.json. Deployment and public verification pass; see the publication receipt below. Physical XS Max performance, full world/character/courses/reward scope and all 34 master items remain open as documented above.
+
+## 2.2.0 publication receipt — 2026-10-03
+
+Source commit 7084be30f is live at https://lestersarcade.io. Preview dpl_8hZDBTk3GjPjBukzG9F8mZeZn2Y1; production dpl_Ggwhvvw96DTxqpA65ZiJ2qbrvAv5 (https://lesters-arcade-i9u2eqctw-justin-agent-projects.vercel.app). Production rebuild repeats the full passing 6,934-test gate with exactly 51 retired exceptions, syntax/assets/contracts/build checks and unchanged budgets. Public SW is lesters-arcade-v68-visual-refresh; /api/health is healthy 2.2.0. All 335 checked game/runtime/art file hashes match the certified local output. Initial raw comparison found Reown platform-generated chunk hashes differed; the failed receipt is retained. A separate published 123-module graph check returns 200 throughout and matches local code after normalizing only generated esbuild chunk filenames. No claim of raw wallet-library byte identity is made. Natural Free entry and full-resolution screenshots were inspected for all three games at desktop and phone viewports; no page errors and owned browser closure confirmed. This is not physical iPhone XS Max performance/soak acceptance. Full master world/character/courses/rewards and performance work remains open above.
+
+Dependency follow-up: npm reports two high findings in @vercel/og -> Sharp. Inspected card image inputs are fixed repo PNGs/catalogue badges; avatar validation does not call Sharp. The affected GIF/TIFF/VIPS/HEIF formats are not accepted in those paths. Preserve this assessment and schedule a separately certified dependency upgrade (GHSA-f88m-g3jw-g9cj, GHSA-rgj7-g3m4-5g8c); do not claim a clean dependency audit.
+
+Live screen-check corrections: early captures raced Chikun parent initialization and STACKED tutorial mounting; the failed and preliminary receipts remain preserved. Fresh checks wait for actual ready/running states before capture and pass all six game/view combinations. These were checker corrections, not additional runtime changes.

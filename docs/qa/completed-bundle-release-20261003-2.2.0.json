@@ -84,11 +84,142 @@
   },
   "physicalPhoneAccepted": false,
   "fullMasterAccepted": false,
-  "published": false,
+  "published": true,
   "rollback": {
     "url": "https://lesters-arcade-p379tvtiv-justin-agent-projects.vercel.app",
     "deploymentId": "dpl_6zB942hwkanPYs6cwbhP6foMF5DW",
     "version": "2.1.1"
   },
-  "evidenceRoot": "C:/Users/just_/Documents/Codex/2026-09-29/you-are-taking-over-as-lead/outputs/22-release"
+  "evidenceRoot": "C:/Users/just_/Documents/Codex/2026-09-29/you-are-taking-over-as-lead/outputs/22-release",
+  "deployment": {
+    "sourceCommit": "7084be30f",
+    "previewId": "dpl_8hZDBTk3GjPjBukzG9F8mZeZn2Y1",
+    "previewUrl": "https://lesters-arcade-pwqsuk69b-justin-agent-projects.vercel.app",
+    "productionId": "dpl_Ggwhvvw96DTxqpA65ZiJ2qbrvAv5",
+    "productionUrl": "https://lesters-arcade-i9u2eqctw-justin-agent-projects.vercel.app",
+    "site": "https://lestersarcade.io",
+    "verifiedAt": "2026-10-03T18:05:44.673Z"
+  },
+  "publicVerification": {
+    "files": 335,
+    "allHashesMatch": true,
+    "walletLibrary": {
+      "passed": true,
+      "files": 123,
+      "normalization": "Only generated eight-character esbuild chunk hashes in filenames are normalized; all other code bytes must match"
+    },
+    "health": {
+      "ok": true,
+      "healthy": true,
+      "version": "2.2.0",
+      "checkedAt": "2026-10-03T17:55:14.509Z",
+      "settlementReady": true,
+      "paused": false,
+      "degraded": false,
+      "degradedParts": [],
+      "relayer": {
+        "address": "0x494af36ea4958c417260faf3efb3b672b343eaf6",
+        "balanceWei": "193135804949792000",
+        "allowed": true,
+        "estimatedSettlesLeft": 40660
+      },
+      "queue": {
+        "pending": 0,
+        "signed": 0,
+        "submitted": 0,
+        "failed": 0,
+        "dead": 0,
+        "deadRequeueable": 0,
+        "oldestUnconfirmedAgeSeconds": null
+      },
+      "index": {
+        "cursorBlock": 57341510,
+        "headBlock": 57342592,
+        "lagBlocks": 1082
+      },
+      "crons": {
+        "indexChain": {
+          "lastOkAt": "2026-10-03T17:50:43.839Z",
+          "lastErrorAt": null,
+          "lastErrorCode": null,
+          "runs": 2463,
+          "failures": 0
+        },
+        "settleRetry": {
+          "lastOkAt": "2026-10-03T17:54:30.365Z",
+          "lastErrorAt": null,
+          "lastErrorCode": null,
+          "runs": 12314,
+          "failures": 0
+        },
+        "weeklyJackpot": {
+          "lastOkAt": "2026-10-03T17:50:17.137Z",
+          "lastErrorAt": null,
+          "lastErrorCode": null,
+          "runs": 2236,
+          "failures": 0
+        }
+      },
+      "baseFeeGwei": 0.01,
+      "jackpot": {
+        "configured": false,
+        "keeperAddress": null,
+        "keeperBalanceWei": null,
+        "paused": {
+          "env": false,
+          "onChain": null
+        },
+        "uiHidden": false,
+        "awaitingAdmin": 0,
+        "awaitingAdminOldestHours": null,
+        "claimPending": 0,
+        "failed": 0
+      }
+    }
+  },
+  "publicScreens": {
+    "scenes": [
+      {
+        "game": "Hard Money Heroes",
+        "label": "desktop",
+        "errors": []
+      },
+      {
+        "game": "Chikun's Escape",
+        "label": "desktop",
+        "errors": []
+      },
+      {
+        "game": "STACKED",
+        "label": "desktop",
+        "errors": []
+      },
+      {
+        "game": "Hard Money Heroes",
+        "label": "phone",
+        "errors": []
+      },
+      {
+        "game": "Chikun's Escape",
+        "label": "phone",
+        "errors": []
+      },
+      {
+        "game": "STACKED",
+        "label": "phone",
+        "errors": []
+      }
+    ],
+    "closure": true,
+    "physicalPhone": false
+  },
+  "dependencyFollowUp": {
+    "auditHigh": 2,
+    "chain": "@vercel/og 0.11.1 -> sharp 0.34.5",
+    "advisories": [
+      "https://github.com/advisories/GHSA-f88m-g3jw-g9cj",
+      "https://github.com/advisories/GHSA-rgj7-g3m4-5g8c"
+    ],
+    "assessment": "Card rendering receives only fixed repo PNG backgrounds/portraits and catalogue badge copies. Custom avatar validation stores allowed formats without Sharp. No untrusted GIF/TIFF/VIPS/HEIF input reaches the affected decoder in the inspected paths. Upgrade @vercel/og/Sharp in a separately certified maintenance slice; no assertion that the dependency audit is clean."
+  }
 }

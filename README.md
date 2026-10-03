@@ -1,4 +1,4 @@
-# Lester's Arcade — 2.2.0: completed visual refresh (release candidate)
+# Lester's Arcade — 2.2.0: completed visual refresh
 
 Hard Money Heroes renders its native 3D heroes, enemies and district bosses by default, with lighter phone hero geometry and sprite fallback. Movement and cover transitions blend; native enemy hits/corpses, a Bagholder side-fall, boss edge warnings and cover cues improve readability. Ground materials, forest-floor detail, Ridge cliffs, River/Bayou water and four timber/canvas structures replace selected older treatments. A Liquidated recap gives standalone Free play a clear ending.
 
@@ -6,7 +6,7 @@ Chikun's Escape gains native 3D-rendered rock, log, thorn, crate, Shiba, hurdle,
 
 This bundles completed features from the ongoing overhaul. Full district composition, remaining character content, course additions and physical iPhone XS Max performance/soaks remain open in [the progress guide](docs/2.2/PROGRESS.md). It is not completion of the full master overhaul or a claim of final AAA acceptance.
 
-Site/game version `2.2.0`; candidate cache marker `lesters-arcade-v68-visual-refresh`. Release checks and deployment are pending. HMH retains schema 8/map v2; previous runs keep their existing verification. No contract, fee, settlement or jackpot configuration changes. Continue on `fable/master-list-20260916` after verified publication.
+Site/game version `2.2.0`; cache marker `lesters-arcade-v68-visual-refresh`. Published and verified at https://lestersarcade.io on 2026-10-03 from release commit `7084be30f`. Local and cloud gates pass; public runtime hashes, health and six desktop/phone-viewport game screens were checked. HMH retains schema 8/map v2; previous runs keep their existing verification. No contract, fee, settlement or jackpot configuration changes. Continue on `fable/master-list-20260916`. Release evidence: [completed-bundle certificate](docs/qa/completed-bundle-release-20261003-2.2.0.json).
 
 ## How to play
 
@@ -179,8 +179,7 @@ Runtime source `6fe83eb693bda5c36cb77f995b88d244515365f8`; deployment `dpl_6bgHF
 
 **Production cache marker:** `lesters-arcade-v68-visual-refresh`
 
-This release target is pending promotion. The last verified public marker is
-`lesters-arcade-v67-level-one-only`; live verification will replace this note.
+Live version 2.2.0 and this marker were verified on 2026-10-03.
 
 # Lester's Arcade
 
