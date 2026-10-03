@@ -59,6 +59,9 @@ def derive(source_bytes, base_edge):
 
 def main():
     TARGET.mkdir(exist_ok=True)
+    existing = TARGET / "manifest.json"
+    if existing.exists() and json.loads(existing.read_text()).get("geometryChanged"):
+        raise RuntimeError("A mesh LOD is active. Rebuild with optimize-hmh-actor-mesh-tier.py; do not replace it with texture-only geometry.")
     entries = {}
     for hero in HEROES:
         source_bytes = (SOURCE / (hero + ".glb")).read_bytes()

@@ -18,7 +18,7 @@ const tileManifest = JSON.parse(fs.readFileSync(new URL('../apps/portal/assets/g
 const surfaceManifest = JSON.parse(fs.readFileSync(new URL('../apps/portal/assets/generated/hmh-terrain-tiles/world-v2-surfaces.json', import.meta.url), 'utf8'));
 const tileRoot = new URL('../apps/portal/assets/generated/hmh-terrain-tiles/', import.meta.url);
 const world = createGreyboxWorld();
-const sizeFor = url => { const file = url.split('/').at(-1); if (file.startsWith('tripo-props-hd-')) return file.includes('@0.5x') ? [1024, 1024] : [2048, 2048]; if (file.includes('-fringe') || file.includes('rock-face')) return file.includes('@0.5x') ? [256, 64] : [512, 128]; return file.includes('@0.5x') ? [256, 256] : [512, 512]; };
+const sizeFor = url => { const file = url.split('/').at(-1); if (file.startsWith('tripo-props-hd-')) return file.includes('@0.5x') ? [1024, 1024] : [2048, 2048]; if(file.startsWith('forest-ground-details')) return file.includes('@0.5x')?[512,128]:[1024,256]; if(file.startsWith('ridge-cliff-kit')) return file.includes('@0.5x')?[512,256]:[1024,512]; if (file.includes('-fringe') || file.includes('rock-face')) return file.includes('@0.5x') ? [256, 64] : [512, 128]; return file.includes('@0.5x') ? [256, 256] : [512, 512]; };
 const loader = log => async url => { log.push(url); const [width, height] = sizeFor(url); return new Texture({ source: new TextureSource({ width, height }) }); };
 
 test('every district has a two-material ground pair whose grain tiles exist at full and half resolution with measured means', () => {

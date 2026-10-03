@@ -83,7 +83,8 @@ test('Rugpull Woods roots trees on matching-height banks, keeps understory off t
   assert.equal(summary.budget.halfDecodedBytes, 3 * 4194304);
   const trees = summary.props.filter(p => p.height > 160), low = summary.props.filter(p => ['b1-01', 'b1-04', 'b1-02'].includes(p.source));
   assert.ok(trees.length > 60 && trees.length < 220, `${trees.length} trees`);
-  assert.ok(low.length > 150 && low.length < 270, `${low.length} understory`);
+  const floor=summary.decals.filter(d=>d.source.startsWith('detail:forest-'));
+  assert.ok(low.length+floor.length>250&&low.length+floor.length<400, `${low.length} upright + ${floor.length} low forest patches`);
   for (const tree of trees) { const bank = inSolid(tree.x, tree.y); assert.ok(bank && bank.visible.height === tree.groundZ, `tree ${tree.id} roots on a matching-height bank`); }
   for (const plant of low) {
     assert.equal(inSolid(plant.x, plant.y), null);
@@ -91,7 +92,7 @@ test('Rugpull Woods roots trees on matching-height banks, keeps understory off t
     for (const { a, b } of routeSegments('rugpull-woods')) assert.ok(distanceToSegment(plant.x, plant.y, a, b) >= 58 / 2 + 60, `understory ${plant.id} clears the trail`);
     for (const site of sites('rugpull-woods')) assert.ok(Math.hypot(site.x - plant.x, site.y - plant.y) >= 140);
   }
-  assert.ok(low.filter(p => Math.abs(p.x - woods.center.x) < 550 && Math.abs(p.y - woods.center.y) < 480).length >= 60, 'centre framing keeps planted pockets');
+  assert.ok([...low,...floor].filter(p => Math.abs(p.x - woods.center.x) < 550 && Math.abs(p.y - woods.center.y) < 480).length >= 60, 'centre framing keeps planted pockets');
   assert.ok(summary.trails.every(t => t.width >= 42 && t.width <= 58) && summary.trails.length === 30);
   const decorated = new Set(summary.solids.map(s => s.pieceId));
   for (const name of ['supply-tent', 'lookout-post', 'abandoned-store', 'abandoned-lean-to', 'east-palisade', 'south-windbreak', 'supply-stack']) assert.ok(decorated.has(`rugpull-woods-${name}`), name);

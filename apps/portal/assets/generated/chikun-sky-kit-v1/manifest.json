@@ -1,0 +1,173 @@
+{
+  "schema": "chikun-sky-kit-v1",
+  "frames": 8,
+  "columns": 4,
+  "fps": 12,
+  "assets": {
+    "hawk": {
+      "sourceSha256": "2f9acd63ce22fc55a9f8352d5adac8577c04f940a9270908d82e2c9ef0656517",
+      "sourceUnchanged": true,
+      "registration": {
+        "commonCrop": [
+          141,
+          21,
+          399,
+          201
+        ],
+        "gutter": 2,
+        "sourceWidth": 512,
+        "sourceHeight": 256
+      },
+      "tiers": {
+        "low": {
+          "file": "hawk-low.webp",
+          "width": 512,
+          "height": 128,
+          "frameWidth": 128,
+          "frameHeight": 64,
+          "bytes": 19416,
+          "sha256": "d56e56cd4726f6d1217751f2842b30a0ec0245c44bd9eaea129d243b8635eda1",
+          "poseHashes": [
+            "63ca71f01560034d4c734b8daec6e11b44e4a4058c5598246d5fd1e7099e44d5",
+            "d276a9a3f8cd292dc42689fbce35aa40b5e64865f4bf834eff8adc8dfe32b8b9",
+            "d99b960ec516fbb55643f3cc4b36ba1864d80c5bf6822aa40b83ced007b4aae3",
+            "0b4fab8b47cfa45d2e4414b21cb19daec4bca77d30e10ce942532fb9793f66a8",
+            "fc6f87300190f6aec816844e70efff5833cdf9bb8a2af63e30e4e6a066aafa90",
+            "893a64a65a9a4139e390091514487aa4ac92573a0df8a198939ab20f55024e20",
+            "d51311b6eff5aa2732c5c9b1317214c9a035a958e401b3d69fe633ac50037f7a",
+            "712f84a9ed8a0511cdb439416edba23c793fbba66b067871b63a1dd72be621b3"
+          ]
+        },
+        "medium": {
+          "file": "hawk-medium.webp",
+          "width": 768,
+          "height": 192,
+          "frameWidth": 192,
+          "frameHeight": 96,
+          "bytes": 32788,
+          "sha256": "a14c5b1683be412bfc16195590b01025b3e0df4a9ac448a29d3af23fa44d9ea2",
+          "poseHashes": [
+            "79e34a8ff769746da69272b23378ef8f749b3828bb8b67c669341001d6a410bd",
+            "e4f2e9244811abf13ae0018e648f5cf49314f90b3c27ecc102daafe3407a547c",
+            "49491e53a8e1e9c01a6c61453f7747dce04971297d91e5a745057cc9b99c1339",
+            "ea2d2191ef7a3fbdf4a0b51a1643b79830405b6216dab91205421f08159e94d4",
+            "b9836e765cb07bd1e0d6d72d298b12bfef4a70372be9e840bc183410227c3d6d",
+            "60209de3d238fd6943bcc28545ecd75fdfe712704d80ac4e52705cece40a5206",
+            "cf4d57e269d26533292fc8b3cce8bd9c21f0d6892dafc9d0f7f75fda2aeb43b4",
+            "cbe0e3f261e18a0cbe50d53b54f82806aca5b40cbe0e43f9f825ed025d67f201"
+          ]
+        }
+      }
+    },
+    "pelican": {
+      "sourceSha256": "35bc0adbf7b0ae471fae1aed35d3c9533f979517bf069f38354dbe85767c41a5",
+      "sourceUnchanged": true,
+      "registration": {
+        "commonCrop": [
+          88,
+          21,
+          399,
+          201
+        ],
+        "gutter": 2,
+        "sourceWidth": 512,
+        "sourceHeight": 256
+      },
+      "tiers": {
+        "low": {
+          "file": "pelican-low.webp",
+          "width": 512,
+          "height": 128,
+          "frameWidth": 128,
+          "frameHeight": 64,
+          "bytes": 19474,
+          "sha256": "2f5c877f2b3d7386dea192cf999d09770b8e2aaac8b4b3a374f7cc7e6d52bbc5",
+          "poseHashes": [
+            "e8a707172fbf3eb0b9f47eff992e0d9805cbbe22aab2e2acd52fc5fe0ff00890",
+            "934b807e866d798fb0297014c5c1097d9a0604bc4a4e2ded60b0d6e8086ba84b",
+            "64fd55cced23509e2f383e781f422dc5b1db9fadd31db3155d78dc54b77b5cec",
+            "1fea03bea92f4214dc523eda6c3a733d7648f97b0659d5ace45f82f5183e103d",
+            "ec1fac7d33cc67aae7bffd3ba4de02773de600c0b232fadfea9929248bb095f3",
+            "641aab3e1f13978abf7c1484973e8effad8380a84731e5fc90144f87ad3426e4",
+            "4d3272002fb2d7cd5eee56d1da46b4ef5668081acb1a2bdb4064024882c93131",
+            "8aa09ed99d0127cb5d1deef5d436eaacd6662a3fad0c2513b0a564b75a6815aa"
+          ]
+        },
+        "medium": {
+          "file": "pelican-medium.webp",
+          "width": 768,
+          "height": 192,
+          "frameWidth": 192,
+          "frameHeight": 96,
+          "bytes": 32946,
+          "sha256": "34ab186f1c94d09942bbea26ce4d221b8475d4fddae55a375d77bf5c1b80280d",
+          "poseHashes": [
+            "a6c47e57f4fb5170f9b6d368529775460281a6212d8992a3776c239c306847b4",
+            "2343209cf361a204912e30b13c83c70546a73d09192b3d3cc5978ea1052dbdf2",
+            "8097f8230c1c7fa7c70575d8cfc2ed87fd1ef51eb38897588a16491bc2bfc511",
+            "e8d669f857e0efe4c11d4de6f9ac369f1d4d3c4b7198ae90b37e293434f53eb8",
+            "cbec81ae2178e932d8a1731e315fa0a9e614863e0a682042fca9fee5b0d414ef",
+            "2a2f7b46fd7a110448ae815c56a7d62008add84a52d46788849f1a606f15a0a9",
+            "9f908ab6c15db25adc1bca0b0cb9ed0d3c5b62408e8cd9a7e552fbccc840c28c",
+            "c961cf56043d2f57765b5f4a9e8e1d18eb8d988f299b2d2c17264802a4525fb3"
+          ]
+        }
+      }
+    },
+    "plane": {
+      "sourceSha256": "f29a8c83dcc48ab30c07ffa881dbd3e289d6f66d6cec25ecca3b0ea305ed91d4",
+      "sourceUnchanged": true,
+      "registration": {
+        "commonCrop": [
+          61,
+          68,
+          436,
+          202
+        ],
+        "gutter": 2,
+        "sourceWidth": 512,
+        "sourceHeight": 256
+      },
+      "tiers": {
+        "low": {
+          "file": "plane-low.webp",
+          "width": 512,
+          "height": 96,
+          "frameWidth": 128,
+          "frameHeight": 48,
+          "bytes": 20804,
+          "sha256": "43d4a40f04bc1744a5a3491a0428dec05e8502a67e493bd1aff5ca7326df4450",
+          "poseHashes": [
+            "9816aa4ca4fa2ede170e8e25119c966eda36fa2d27cfa94fcb3b5a55421ec785",
+            "2e436301a12c5e406b10d3ddd0fd43b6905f001a19b85fbf9d26bfb120e48160",
+            "5d7c2e0db598ea2f66d5d1364a88993f972c248808a219e6bbe12b29831f5a6b",
+            "7eeb2f2b3144c827b4c1aa68185e8680b5f5692d4a81cc05d3799a2c73849c17",
+            "e4f9a60fb2bcb21f8b8fbaa316268f61c01d723ae726b277b7b30d583ec350ef",
+            "180c8c337b5f5bd12b50c655949153a1352453613907abf6d2f970bbcc386c0a",
+            "ee46f54aa776a0a667f591ae0d1d83982dbc239c2cc227aaf8ed1e8b3b1cf281",
+            "06904ab84f74eec005123da69cef5166b9a5b0afd7f57116e086ff25f0d13ddb"
+          ]
+        },
+        "medium": {
+          "file": "plane-medium.webp",
+          "width": 1024,
+          "height": 192,
+          "frameWidth": 256,
+          "frameHeight": 96,
+          "bytes": 46922,
+          "sha256": "1ecdee5ef3eaf6b405c048474028cdbd4e1678454c8d20fc08d5534f6f3cccaf",
+          "poseHashes": [
+            "b8e03bfad0eba84c28860de177062ba2de5ac58ea5944a0e806a65ba28e5e854",
+            "400983b369135678a3740c03088af2cb6c806836262d3343c121bf9b728a4276",
+            "f9a3f522166945d551a24a3a7d4d0b14a0db1034b1b73ed7c0873b1545eeee30",
+            "2716e74205ed08e55a46434f7b8eb0f4dd65e5a44921b34aacc16779d8216bdc",
+            "c43bda9b162a976bd0f7ecfbbb05e022850c4e2f74a98f16e1274c7118ead307",
+            "6dbf11dac0595a90b422270e5fb70e0b9ac65defdcfc862e43d5db7c14582efb",
+            "0721c0db2838f2a5014896f82dc78356fad064832268481927772e6586acb5c7",
+            "02f4a17bdca54bad4d9b3f0710238d2d0e3a7a028d96470b146c46d3595c4581"
+          ]
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,132 @@
+{
+  "schema": "chikun-ground-loop-kit-v1",
+  "names": [
+    "shiba",
+    "hurdle"
+  ],
+  "frames": 8,
+  "fps": 12,
+  "tiers": {
+    "medium": {
+      "file": "loops-medium.webp",
+      "width": 2048,
+      "height": 256,
+      "frameWidth": 256,
+      "frameHeight": 128,
+      "bytes": 119972,
+      "decodedBytes": 2097152,
+      "sha256": "24027a936d09013d7915b4ada0e397291dec7f6546acd994cc2aaa75804407f2",
+      "poseHashes": [
+        [
+          "b85b52f16f7eab959ae186f93e3742576d2a3b31bf8784fa83a6bf4bc35949fe",
+          "0e30b619d7a0e48379af94b4ec741af85595b06405a4cdd67541058df78c6197",
+          "c7c9dd8f0aef4243ab6b808fc55afa7582ad4bce1ee4b70952c825d2b46fb3ca",
+          "073d6263bbbe58b775b2c79ca867e22add8f2e755c0af1ba3c6b9f2db556b78f",
+          "bba2f52a8fed9bd4aeafcf2106650f6896e4a322c15f40acba306e466b16cf1e",
+          "172c40c9586d69e0e8bd10a3a57ab0c41975efd40024d8c7e8f99e925796a13b",
+          "cbb4341d0c30455608734d9b945b416ebca2b3cd8a5c8f980f706ddca644c1e0",
+          "868ba09f68a646381a799b2d0e380b92e493e1d945a61f8ccc0a0772166c9f11"
+        ],
+        [
+          "03dc62cd413c205ab7c570e304f34062ad37c649cb02a5c526a20a1364c89373",
+          "351c6300f57f2433f5d8e44eb4020c568e3a32d18171187ee9abe6efb43ce091",
+          "1f6d33aa9623b9db681a219f03eb0eb34b7842bdb1944e7a1cf1c594a7382846",
+          "58a7759454eb4ce69da2d8c16a7c7b807b3b5eb7f2d700925334a72ba0822b65",
+          "5d2807efa153dfa7991aa53410f2bef0e5aa0714c8fa0919e9bda05ef4c57c31",
+          "5ae5e79998a93a3106133aeb6ae6e278aeefcb16cd8543fe8c5e3a890f6fe78e",
+          "24e5be7ad8305310a0a397f72f5efba7fe7a2ce2a2ca302532ba3d98c0718c61",
+          "b7a8b3e9a0ba3e35aa711621cb7bbec242c383e6d0fc926406ac7fae68afd17a"
+        ]
+      ]
+    },
+    "low": {
+      "file": "loops-low.webp",
+      "width": 1024,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 64,
+      "bytes": 51614,
+      "decodedBytes": 524288,
+      "sha256": "3773788ad776afd800c679d03b93d81845f1964c1dcac05580693c72ad63b4a9",
+      "poseHashes": [
+        [
+          "d2a72bfd661d0cd190fb08534d54f2e8fabedbe3c40a26966f6ce10d5d88bcd6",
+          "a08f6a2612b104de8207d8787ff1f402bba7cd2804311f466932f634feb8744d",
+          "568456faf759f1b6f996c64bf403d5d917188a361ad1374ced66ec2399a63a42",
+          "bccd58436acdac8212c5ed101e59a6909d818e0184d35cdd5de25de013c0dae0",
+          "2cf23a2639427354dbf3eae795e7e03ed7aea81adebdbdfb6cd1fd47d275edce",
+          "e5e558eb27c15b579c7119661ec1d7175cff017a8e2ef39ae7c4b4a6014fcf30",
+          "499595bce329d713c3b1a0dd376c5ffa63ca55764428aa571ffdc54d549624f0",
+          "c99938769ab6f5171579b3be254cc164c5b67dff36911479b85a39c375add7b1"
+        ],
+        [
+          "0de47d4de9d4ce2cf79834ae60a5680ccf4a1e03c693225eaaa36e8ba5627743",
+          "8e597ac5e3399080396b472e6ea85e77ba4d33f9c0295da82f6fe9c67f2e61be",
+          "c6b25fe1011808cd746639d7dcd50079a4d0b3a2d561b7cf77a099d3917ccae0",
+          "b0684e53482204cab7a04c45df17c50a75d968844b197e9c3504abdeb175b879",
+          "1fb4b7555e65d6de5233f840022f04921e4dfa1bb839d6a375cb36ad9cfa4ff5",
+          "0b4fb93a6c944f8689cb4912da4ea014461e77456895057d8e54d61309f5bed4",
+          "0c4fca2b3fcc39d094b39b276e4233243734a6e3416c18d447910525f8a9eded",
+          "d2f9fea591214c51e8007862e4b7106dad42ca12393344cc2349d6bb141d161e"
+        ]
+      ]
+    }
+  },
+  "crops": [
+    {
+      "name": "shiba",
+      "commonCrop": [
+        79,
+        15,
+        414,
+        240
+      ]
+    },
+    {
+      "name": "hurdle",
+      "commonCrop": [
+        94,
+        54,
+        434,
+        243
+      ]
+    }
+  ],
+  "native": {
+    "schema": "chikun-ground-loop-native-v1",
+    "assets": [
+      {
+        "name": "shiba",
+        "sourceSha256": "93da994632c4c6e35bc4a65829d3ef0178a8c182eccbb5b4aece6e8e1fba9c55",
+        "sourceUnchanged": true,
+        "derivedSource": "shiba-refined.blend",
+        "renderHashes": [
+          "7f05fb56de1ca77f854df9e4112015d880a7f2d6303520df6f8c6ca743c30e01",
+          "118248d16162dc6aaa6a665017ac412ea089a46b519ddfd4a2285dfd436f8375",
+          "4fff67c14a66a676b4da8c451947f384ca73410db655cdd37c626219474ef273",
+          "f141b331abd3a528ed18ba107212984c98d34b2747cbe12d0a01fcd2d22d4164",
+          "4df45f780e70ee1a2ad441797a6ecdc617bd1f2ea4818f090c56d0e24ed89199",
+          "33e9f8c385d219fcddd59cfc2b65267f02e7b90cfc67f2b192698b3ae024f1ff",
+          "4ef40865e7effdeac3082af9b4410ee0897d926013f5792dacefa6b6ee6dcbc4",
+          "d87771e3f6ccadfda5d924afc5275b05e585925384692158234f6ca8303a5667"
+        ]
+      },
+      {
+        "name": "hurdle",
+        "sourceSha256": "d20db9511c608f66f2a15c5dd0d27e7fc544ebac4584003aedf3b85d3b90d992",
+        "sourceUnchanged": true,
+        "derivedSource": "hurdle-refined.blend",
+        "renderHashes": [
+          "944edeaa6a1108420c8f216f60e0a1bf76a522e419648a04b440007f20b98dc2",
+          "79bcc94620c753babbc035b5d8f89e12201cdfc233a190c66cd71c495cb28c9b",
+          "bbd943ed39a0da0f0e78fd6fd1fdcd2450e328a6cf146a638cd9a3765eec6085",
+          "00fc25a247db9f03b6c117a699c71c129e8dc071387c6f1f40af35bd123e01ba",
+          "bc13f2e80a8695594d02e3a3c977d282877c3215f4fec89d119781df3d881e18",
+          "5a9dd71de6c90e7e990c7643221dba85f20a6b22021ef2fa9e72f0435afe0933",
+          "f8d13caec795644cea84fd53bc917779bf46f6d5e2f2070a7726775fbe8099ca",
+          "2d1c097b6d944d6c4d44c88932b0252c1e3a8d2099aa84d008b6b15151b96eb6"
+        ]
+      }
+    ]
+  }
+}

@@ -12,6 +12,7 @@ export function createPortalRouteController({
   windowRef = globalThis.window,
   documentRef = globalThis.document,
   getConnected = () => false,
+  canOpenGameId = () => true,
   setStep,
   getSelectedGameId,
   setSelectedGameId,
@@ -75,10 +76,14 @@ export function createPortalRouteController({
 
   function applyLocation() {
     if (!windowRef?.location) return;
-    const { step, gameSlug, wallet = null } = viewForPath(windowRef.location.pathname, {
+    let { step, gameSlug, wallet = null } = viewForPath(windowRef.location.pathname, {
       connected: Boolean(getConnected()),
     });
-    if (gameSlug) setSelectedGameId(gameIdForSlug(gameSlug));
+    if (gameSlug) {
+      const gameId = gameIdForSlug(gameSlug);
+      if (canOpenGameId(gameId)) setSelectedGameId(gameId);
+      else step = 'cabinet-select';
+    }
     setViewedWallet(step === 'profile' ? wallet : null);
     suppressRouteSync = true;
     setStep(step);

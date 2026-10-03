@@ -17,7 +17,7 @@ import { createCorpseClock, corpsePresentation, pruneCorpseCapacity } from './co
 import { createAimState, resolveAimIntent } from './aim.mjs';
 import { createHmhChildBridge } from './bridge.mjs';
 import { WORLD_DECAL_URL, drawWorldDecals } from './world-decals.mjs';
-import { impactSprayAngles, weaponRecoilShake } from './combat-feedback.mjs';
+import { impactShardVertices, impactSprayAngles, weaponRecoilShake } from './combat-feedback.mjs';
 import { HMH_WEAPON_SFX, weaponFireCueId, weaponFireGain } from './weapon-audio.mjs';
 import { COLLECTIBLE_EFFECTS, createCollectibleState, getCollectibleSnapshot, stepCollectibles } from './collectible-system.mjs';
 import { createBearMarketBurnerEvent } from './bear-market-burner-event.mjs';
@@ -297,7 +297,7 @@ let applyLiquidatorDamage, createLiquidatorBoss, getLiquidatorVulnerability,
 // their locks, and the geometry kit's dodge predicate.
 let createBossSlots, stepBossSlots, bossZoneArming, bossDirectorOverlay, directorBankFull, insertBossAdds, defeatBossSlot,
   consumeGoldenParachute, bossHudState, forceBossStart, BOSS_LOCK_BLOCKERS = Object.freeze([]), insideBossArena, bossShapeDodgeDanger;
-let creatureAnimationTick, creatureIdPhase, liquidatorPose, renderLiquidatorTelegraph;
+let creatureAnimationTick, creatureIdPhase, liquidatorPose, renderLiquidatorTelegraph, createBossTelegraphTexture, createLowHealthVignette;
 let refreshWorldDesignGateNavigation, buildWorldDesignHazardHits;
 // Mission core v2 (design package S1.4): the objective simulation.
 let createMissionState, stepMissionObjectives, settleMissionObjective, missionDockStep, missionActiveBlockers, missionSealTargets,
@@ -345,7 +345,8 @@ function loadLazyRuntimeModules() {
     import('./cockpit-ui.mjs'),
     import('./world-production-art.mjs'),
     import('./authored-prop-layout.mjs'),
-  ]).then(([boss, creature, telegraph, interactions, life, pacing, nativeAssets, briefing, panel, content, mission, slots, arenas, geometry, drops, effects, prisoners, v7, cockpitUi, worldArt, propLayout]) => {
+    import('./low-health-vignette.mjs'),
+  ]).then(([boss, creature, telegraph, interactions, life, pacing, nativeAssets, briefing, panel, content, mission, slots, arenas, geometry, drops, effects, prisoners, v7, cockpitUi, worldArt, propLayout, vignette]) => {
     // 2.1.0: the official ten-area Level 1 records schema 8 through the same
     // accumulator path; its lazy context hands the same API (run-summary-v8.mjs).
     summaryV7 = HMH_WORLD_CONTEXT?.runSummary ?? v7;
@@ -362,7 +363,8 @@ function loadLazyRuntimeModules() {
     ({ BOSS_LOCK_BLOCKERS, insideBossArena } = arenas);
     ({ bossShapeDodgeDanger } = geometry);
     ({ creatureAnimationTick, creatureIdPhase, liquidatorPose } = creature);
-    ({ renderLiquidatorTelegraph } = telegraph);
+    ({ renderLiquidatorTelegraph, createBossTelegraphTexture } = telegraph);
+    ({ createLowHealthVignette } = vignette);
     ({ refreshWorldDesignGateNavigation, buildWorldDesignHazardHits } = interactions);
     ({ createMissionState, stepMissionObjectives, settleMissionObjective, missionDockStep, missionActiveBlockers, missionSealTargets,
       applyMissionSealDamage, missionHiddenSecretProps } = mission);
@@ -399,10 +401,8 @@ function firstInteractiveFrame() {
 }
 // How long the authored hurt frames stay up after the player takes a hit.
 const PLAYER_HURT_POSE_TICKS = 14;
-// Full-screen damage flash duration, and the health fraction below which the
-// low-health vignette starts bleeding in.
+// Full-screen damage flash duration. The lazy soft vignette owns its threshold.
 const PLAYER_DAMAGE_FLASH_TICKS = 10;
-const LOW_HEALTH_VIGNETTE_THRESHOLD = 0.35;
 // Camera shake is projection-only: it offsets the world render container,
 // never simulation state. 2.1: trauma-squared (hmh-feel.mjs, shared module).
 const MAX_ACTIVE_GRENADES = 16;
@@ -697,6 +697,9 @@ async function boot() {
           cockpit?.destroy();
           upgradePanel?.destroy();
           hud?.destroy();
+          lowHealthVignette.dispose();
+          bossEdgeWarning?.dispose();
+          bossTelegraphTexture?.destroy(true);
           stopCurrentSession();
           silverPresentation?.destroy();
           app.destroy(true);
@@ -863,6 +866,8 @@ async function boot() {
   const projectileImpacts = new Graphics();
   const grenadeVisuals = new Graphics();
   const combatVisuals = new Graphics();
+  const coverVisuals = new Graphics();
+  const coverBadge = document.getElementById('hmhCoverStatus');
   const pickupSignals = new Graphics();
   let pickupPresentation = null;
   let pickupPresentationRequested = false;
@@ -891,6 +896,8 @@ async function boot() {
   // Screen-space layer for health pips, the boss bar, damage flash, and the
   // low-health vignette. Kept out of `world` so it never scrolls or scales.
   const overlayVisuals = new Graphics();
+  const lowHealthVignette = createLowHealthVignette({ SpriteClass: Sprite, TextureClass: Texture,
+    createCanvas: () => document.createElement('canvas') });
   const enemyVisuals = new Container();
   // Enemies must sort by screen depth so a southern body draws in front.
   enemyVisuals.sortableChildren = true;
@@ -902,6 +909,8 @@ async function boot() {
   const enemyVisualFacing = new Map();
   const enemyDeathMarkers = new Map();
   const bossTelegraphs = new Graphics();
+  const bossTelegraphTexture = createBossTelegraphTexture({ TextureClass: Texture,
+    createCanvas: () => document.createElement('canvas') });
   // Cycle 074 (E-4): elite ground rings. A world layer above the tell
   // telegraphs and under the bodies so the ring reads as sitting on the ground
   // beneath the body it belongs to. Redrawn every frame from projection state.
@@ -994,7 +1003,7 @@ async function boot() {
   bossLabel.visible = false;
   // Combat VFX draw above the actor: muzzle flashes spawn 28 units along the
   // aim vector, which lands on top of the sprite when aiming north.
-  world.addChild(backdrop, worldProduction.root, worldDecalLayer, worldLife.ground, groundShadowLayer, authoredPropLayer, grid, debugLabels, shadow, enemyTelegraphs, bossTelegraphs, eliteGroundLayer, enemyVisuals, enemyDeathVisuals, bossVisual, aimLine, projectileTrails, grenadeVisuals, actorVisual, heldWeaponLayer, worldDepthLayer, combatVisuals, weaponVfxLayer, projectileImpacts, atmosphereLayer, worldLife.overlay, collisionDebug, label);
+  world.addChild(backdrop, worldProduction.root, worldDecalLayer, worldLife.ground, groundShadowLayer, authoredPropLayer, grid, debugLabels, shadow, enemyTelegraphs, bossTelegraphs, eliteGroundLayer, enemyVisuals, enemyDeathVisuals, bossVisual, aimLine, projectileTrails, grenadeVisuals, actorVisual, heldWeaponLayer, worldDepthLayer, coverVisuals, combatVisuals, weaponVfxLayer, projectileImpacts, atmosphereLayer, worldLife.overlay, collisionDebug, label);
   world.addChildAt(pickupSignals, world.children.indexOf(authoredPropLayer));
   const goreGround = new Graphics(), goreAir = new Graphics();
   world.addChildAt(goreGround, world.children.indexOf(groundShadowLayer));
@@ -1007,6 +1016,7 @@ async function boot() {
   let enemyHitFeedback = null, enemyHitFeedbackRequested = false;
   const enemyHitFeedbackById = new Map();
   app.stage.addChild(world, atmosphereTint, overlayVisuals, bossLabel);
+  if (lowHealthVignette.display) app.stage.addChildAt(lowHealthVignette.display, app.stage.getChildIndex(overlayVisuals));
   // The static ground (and the decals on it) is drawn once around the camera
   // and translated; only its animated pass draws every frame. Projection only.
   const worldBake = (await staticWorldBakeModule).createStaticWorldBake({
@@ -1938,6 +1948,7 @@ async function boot() {
   // Cycle 074 game feel: encounter framing ease state and the level-up beat
   // stamped on the resume path. Both are render-side only.
   let framingState = createEncounterFramingState();
+  let bossEdgeWarning = null, bossEdgeWarningRequested = false;
   let lastLevelUpBeat = null;
   // 2.1 feel layer (lazy chunk): trauma-squared shake. Every impulse adds
   // trauma; the frame loop reads the decayed offset. Presentation only.
@@ -2281,7 +2292,7 @@ async function boot() {
       renderAuthoredCollision(view);
       const groundScreen = worldToScreen(getGroundContact(renderState), camera, view);
       const screen = worldToScreen(renderState, camera, view);
-      wipe(enemyTelegraphs, bossTelegraphs, eliteGroundLayer, overlayVisuals);
+      wipe(enemyTelegraphs, bossTelegraphs, coverVisuals, eliteGroundLayer, overlayVisuals);
       bossVisual.visible = false;
       if (releaseTelemetryEnabled) {
         dataset.gasCanisterProgress = '';
@@ -2365,7 +2376,7 @@ async function boot() {
       }
       // Ten-area contextual prompts (presentation only): a small pulsing ring
       // on the cover spot or ledge the hero could take from here.
-      tenAreaRun?.drawPrompts(bossTelegraphs, { hero: actor, radius: playerBody?.radius, project: (point) => worldToScreen(point, camera, view), zoom: camera.zoom, tick: bossVisualTick, dataset });
+      tenAreaRun?.drawPrompts(bossTelegraphs, { hero: actor, radius: playerBody?.radius, project: (point) => worldToScreen(point, camera, view), zoom: camera.zoom, tick: bossVisualTick, dataset, coverBadge, coverGraphics: coverVisuals, reduceMotion: settings.reduceMotion });
     if (liquidatorBoss && (liquidatorBoss.active || bossVisualTick < bossDeathVisualUntilTick)) {
         const bossY = interpolateStep(bossPreviousY, liquidatorBoss.y, renderAlpha);
         const bossScreen = worldToScreen({ x: interpolateStep(bossPreviousX, liquidatorBoss.x, renderAlpha), y: bossY, z: liquidatorBoss.groundZ }, camera, view);
@@ -2405,6 +2416,8 @@ async function boot() {
             tick: bossVisualTick,
             phaseIndex: liquidatorBoss.phaseIndex,
             floor: liquidatorBoss.arena.bounds,
+            dangerTexture: bossTelegraphTexture,
+            reduceFlash: settings.reduceFlash,
           });
           bossTelegraphPrimitiveCount += telegraphReport.primitiveCount;
         }
@@ -2845,6 +2858,9 @@ async function boot() {
               gore: settings.gore,
             });
             const zoom = camera.zoom;
+            if (age < 3 && !burst.splash) placeWeaponGlow(center.x, center.y,
+              (event.critical ? 14 : 9) * zoom, burst.ringColor,
+              (settings.reduceFlash ? .16 : .38) * (1 - age / 3));
             if (burst.splash) {
               combatVisuals.ellipse(center.x, center.y, burst.ringRadius * 2.2 * zoom, burst.ringRadius * 0.75 * zoom)
                 .stroke({ color: burst.ringColor, width: burst.ringWidth, alpha: burst.ringAlpha });
@@ -2866,9 +2882,9 @@ async function boot() {
             for (const angle of sprayAngles) {
               const inner = (6 + age * 2) * zoom;
               const outer = inner + (burst.sparkLength + age * 1.5) * zoom;
-              combatVisuals.moveTo(center.x + Math.cos(angle) * inner, center.y + Math.sin(angle) * inner + drop * 0.5)
-                .lineTo(center.x + Math.cos(angle) * outer, center.y + Math.sin(angle) * outer + drop)
-                .stroke({ color: burst.sparkColor, width: burst.sparkWidth, alpha: burst.sparkAlpha });
+              combatVisuals.poly(impactShardVertices({ x: center.x, y: center.y,
+                angle, inner, outer, drop, width: burst.sparkWidth * zoom }), true)
+                .fill({ color: burst.sparkColor, alpha: burst.sparkAlpha });
             }
           } else if (event.type === 'enemy-attack') {
             combatVisuals.circle(center.x, center.y, 18 + age * 2.2)
@@ -3264,7 +3280,7 @@ async function boot() {
         } : null;
         actor3dPilot.updateGame(productionHeroDisplay ? { actorId: productionHeroId, weaponId: heldWeapon?.id,
           x: renderState.x, y: renderState.y, z: renderState.z, heading: Math.atan2(heldAim.y, heldAim.x),
-          action: actor3dHeroAction, actionTick: actor3dHeroTick, moving: motion?.locomotion === 'moving',
+          action: actor3dHeroAction, actionTick: actor3dHeroTick, presentationTick:visualTick, moving: motion?.locomotion === 'moving',
           velocity:{x:motion?.vx ?? 0,y:motion?.vy ?? 0},
           shotAge:lastWeaponFire?.weaponId === heldWeapon?.id ? bossVisualTick-lastWeaponFire.tick : null,
           reloadProgress:heldWeapon?.reloadCompleteTick != null ? (bossVisualTick-heldWeapon.reloadStartedTick)/Math.max(1,heldWeapon.reloadCompleteTick-heldWeapon.reloadStartedTick) : 0,
@@ -3325,15 +3341,31 @@ async function boot() {
           .fill({ color: 0xff3355, alpha: 0.26 * (1 - damageAge / PLAYER_DAMAGE_FLASH_TICKS) });
       }
       const healthRatio = maxPlayerHealth > 0 ? playerHealth / maxPlayerHealth : 1;
-      if (healthRatio < LOW_HEALTH_VIGNETTE_THRESHOLD) {
-        const intensity = (1 - healthRatio / LOW_HEALTH_VIGNETTE_THRESHOLD) * 0.3;
-        const band = Math.max(40, Math.min(view.width, view.height) * 0.16);
-        overlayVisuals.rect(0, 0, view.width, band).fill({ color: 0xff2d4f, alpha: intensity * 0.55 });
-        overlayVisuals.rect(0, view.height - band, view.width, band).fill({ color: 0xff2d4f, alpha: intensity * 0.55 });
-        overlayVisuals.rect(0, 0, band, view.height).fill({ color: 0xff2d4f, alpha: intensity * 0.45 });
-        overlayVisuals.rect(view.width - band, 0, band, view.height).fill({ color: 0xff2d4f, alpha: intensity * 0.45 });
+      lowHealthVignette.update({ healthRatio, width: view.width, height: view.height });
+      // An edge warning preserves the real pointer/camera transform. Moving a
+      // boss-framing camera here would change the next mouse aim snapshot.
+      if (liquidatorBoss?.active && !bossEdgeWarningRequested) {
+        bossEdgeWarningRequested = true;
+        void import('./boss-edge-warning.mjs').then(module => {
+          if (artTargetDisposed || app.stage.destroyed) return;
+          bossEdgeWarning = module.createBossEdgeWarning({ ContainerClass: Container, GraphicsClass: Graphics, TextClass: Text, announce: setAccessibleCombatStatus,
+            documentRef: document, windowRef: window, controlsRoot: stageElement, touchEnabled: touchUiEnabled });
+          app.stage.addChild(bossEdgeWarning.display);
+        }).catch(() => { if (debugGridEnabled || releaseTelemetryEnabled) dataset.bossEdgeWarningStatus = 'unavailable'; });
+      }
+      if (bossEdgeWarning) {
+        const warning = bossEdgeWarning.update({ boss: playerHealth > 0 ? liquidatorBoss : null, hero: renderState, view, tick: bossVisualTick, zoom: camera.zoom,
+          bodyHeight: productionHeroDisplay?.minimumBodyHeight ?? 84, reduceMotion: settings.reduceMotion,
+          project: point => worldToScreen(point, camera, view) });
+        if (debugGridEnabled || releaseTelemetryEnabled) {
+          dataset.bossEdgeWarningStatus = warning.visible ? warning.kind : 'hidden';
+          dataset.bossEdgeWarningProgress = warning.visible ? warning.progress.toFixed(3) : '0';
+        }
       }
       if (debugGridEnabled || releaseTelemetryEnabled) {
+        dataset.lowHealthVignetteAlpha = String(lowHealthVignette.display?.alpha ?? 0);
+        dataset.bossTelegraphMaterial = bossTelegraphTexture ? 'grain-v1' : 'solid-fallback';
+        dataset.bossTelegraphDrawInstructions = String(bossTelegraphs.context.instructions.length);
         telemetryWriter({
           LEVEL_ONE_WORLD,
           MAX_ACTIVE_PROJECTILES,
@@ -3530,9 +3562,11 @@ async function boot() {
     framingState = createEncounterFramingState();
     lastLevelUpBeat = null;
     hmhFeel?.reset();
+    bossEdgeWarning?.reset();
     bossMusicDuckWanted = false;
     world.position.set(0, 0);
     overlayVisuals.clear();
+    lowHealthVignette.update({ healthRatio: 1 });
     lastMeleeAttack = null;
     lastGrenadeThrow = null;
     lastGrenadeDetonation = null;
@@ -3627,6 +3661,7 @@ async function boot() {
     if (TEN_AREA_COMBAT) for (const wallId of TEN_AREA_COMBAT.closedBossWalls(bossSlots)) refreshWorldDesignGateNavigation(navGrid, BOSS_LOCK_WORLD, queryGround, wallId, LEVEL_ONE_WORLD.collisionBlockers);
     bossSlots=createBossSlots({ seed: payload.session.seed, ...(HMH_WORLD_CONTEXT.gameplay ? { definitions: HMH_WORLD_CONTEXT.gameplay.bossDefinitions } : {}) });
     tenAreaRun = TEN_AREA_COMBAT?.createRun() ?? null;
+    if (coverBadge) coverBadge.hidden = true;
     // Smoke tooling (evidenceSafe, never Ranked): a court's boss is ready at tick 120.
     if (evidenceGameplayEnabled && TEN_AREA_COMBAT) TEN_AREA_COMBAT.evidenceReady(runtimeParams.get('tenAreaEvidence'), bossSlots);
     worldDestructibleState=createWorldDestructibles();

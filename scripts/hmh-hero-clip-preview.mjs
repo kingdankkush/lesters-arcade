@@ -3,7 +3,7 @@
 // software rasteriser; a readability check for authored poses, never game art.
 //   node scripts/hmh-hero-clip-preview.mjs --hero lilly [--time 0.25 --time 0.5 --time 0.75] [--size 200] [--columns 4] [--clips a,b]
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
-import { deflateSync } from 'node:zlib';
+import { deflateSync, gunzipSync } from 'node:zlib';
 import { decodeActor3dGlb, evaluateActor3dPose } from '../apps/hmh-reboot/src/actor-3d-model.mjs';
 import { actor3dPrimitiveVisible } from '../apps/hmh-reboot/src/actor-3d-pixi.mjs';
 
@@ -15,8 +15,9 @@ const times = options('--time').map(Number); if (!times.length) times.push(.25, 
 const root = new URL('../', import.meta.url);
 const manifest = JSON.parse(readFileSync(new URL(`apps/portal/assets/generated/hmh-actor-3d-pilot/${hero}-clips.json`, root)));
 const only = option('--clips', null)?.split(',');
-const clips = manifest.libraryClips.map(clip => clip.name).filter(name => !only || only.includes(name));
-const bytes = readFileSync(new URL(`apps/portal/assets/generated/hmh-actor-3d-pilot/${hero}.glb`, root));
+const clips = [...manifest.nativeClips,...manifest.libraryClips].map(clip => clip.name).filter(name => only ? only.includes(name) : manifest.libraryClips.some(clip=>clip.name===name));
+const input = new URL(option('--asset',`apps/portal/assets/generated/hmh-actor-3d-pilot/${hero}.glb`), root);
+const packed = readFileSync(input), bytes=input.pathname.endsWith('.gz') ? gunzipSync(packed) : packed;
 const asset = decodeActor3dGlb(bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength));
 
 // Orthographic three-quarter view from front-right, 35 degrees above the ground (glTF Y up, -Z forward... hero faces +Z after export).
@@ -105,6 +106,6 @@ clips.forEach((clip, index) => {
   drawText(sheet, width, x0 + 3, y0 + 2, `${clip} t=${times.join('/')}`);
 });
 const outDir = new URL('docs/2.0/receipts/hmh-hero-clips-20260930/', root); mkdirSync(outDir, { recursive: true });
-const output = new URL(`${hero}-clip-contact-sheet-runtime${only ? '-' + only.join('_') : ''}.png`, outDir);
+const output = option('--output',null) ? new URL(option('--output',null),root) : new URL(`${hero}-clip-contact-sheet-runtime${only ? '-' + only.join('_') : ''}.png`, outDir);
 writeFileSync(output, png(width, height, sheet));
 console.log(`HMH_RUNTIME_CLIP_SHEET=${output.pathname} ${width}x${height} ${clips.length} clips`);

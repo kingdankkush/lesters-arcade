@@ -23,6 +23,7 @@ import {
   traversalInvulnerability,
 } from './traversal-system.mjs';
 import { isWorldV2PointClear } from './world-v2-runtime-world.mjs';
+import { createCoverReadability } from './cover-readability.mjs';
 
 // --- New enemies ------------------------------------------------------------
 
@@ -312,6 +313,7 @@ export function createWorldV2MovementRun({ faces, markers }) {
   const tally = { leaves: 0, coverKills: 0, coverDamageReduced: 0 };
   // Presentation memo only: which named clip is showing and since when.
   const shown = { clip: null, startTick: 0, holdUntil: -1 };
+  let coverReadability = null;
   const run = {
     cover,
     traversal,
@@ -396,13 +398,15 @@ export function createWorldV2MovementRun({ faces, markers }) {
     },
     // Presentation: a small pulsing ground ring per prompt, drawn into the
     // caller's per-frame graphics.
-    drawPrompts(graphics, { hero, radius, project, zoom, tick, dataset = null }) {
+    drawPrompts(graphics, { hero, radius, project, zoom, tick, dataset = null, coverBadge = null, coverGraphics = graphics, reduceMotion = false }) {
+      coverReadability ??= createCoverReadability({ badge: coverBadge });
+      coverReadability.draw({ graphics: coverGraphics, cover, hero, project, zoom });
       const rings = run.prompts(hero, radius);
       // Read-only telemetry for browser evidence.
       if (dataset) Object.assign(dataset, { tenAreaCover: cover.pose, tenAreaTraversal: traversal.pose, tenAreaPrompts: rings.map((ring) => ring.kind).join(','), tenAreaHero: `${Math.round(hero.x)},${Math.round(hero.y)}` });
       for (const ring of rings) {
         const at = project(ring);
-        const pulse = 0.55 + 0.45 * Math.sin(((tick % 60) / 60) * Math.PI * 2);
+        const pulse = reduceMotion ? .55 : 0.55 + 0.45 * Math.sin(((tick % 60) / 60) * Math.PI * 2);
         const r = 15 * zoom;
         graphics.ellipse(at.x, at.y, r, r * 0.5).stroke({ color: 0x080d12, width: 4, alpha: 0.5 })
           .ellipse(at.x, at.y, r, r * 0.5).stroke({ color: ring.kind.startsWith('cover') ? 0x7fe7ff : 0xffd166, width: 2, alpha: 0.45 + pulse * 0.4 });

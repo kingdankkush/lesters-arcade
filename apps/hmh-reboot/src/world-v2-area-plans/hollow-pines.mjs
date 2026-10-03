@@ -9,6 +9,7 @@
 // omitted as lanterns: a signal mast in a cemetery reads as a road prop.
 import { freezeDeep } from '../value-guards.mjs';
 import { appendCentrePockets } from './centre-pockets.mjs';
+import { appendForestFloor } from './forest-floor.mjs';
 import { DISTRICT_TERRAIN } from '../world-v2-area-art-schema.mjs';
 import { createAreaPlanContext, CANOPY_HEIGHTS } from './plan-support.mjs';
 import { placeLine, placeOnBank, placeEdgeWoodland, placeAlongPolygonEdges } from './plan-lines.mjs';
@@ -30,19 +31,19 @@ export function createHollowPinesArtPlan(world) {
   const { x: cx, y: cy } = area.center;
   plan.ground.base = { surfaceId: `${area.id}-floor`, material: 'needles' };
   plan.ground.terrain = { ...DISTRICT_TERRAIN[area.id] };
-  // Settled gravel on the public walk, bare earth on the outer service loop,
+  // Settled gravel on the public walk, softer worn gravel on the service loop,
   // exposed stone around the dead tree and the crypt, scree along the walls.
   plan.ground.zones.push(
     { id: 'cemetery-court', material: 'scree', feather: 90, alpha: 0.35, vertices: [point(-760, -700), point(760, -700), point(760, 700), point(-760, 700)] },
     { id: 'dead-tree-ground', material: 'rock', feather: 110, alpha: 0.55, vertices: [point(-360, -1640), point(360, -1640), point(420, -1060), point(-420, -1060)] },
     { id: 'crypt-yard', material: 'rock', feather: 90, alpha: 0.45, vertices: [point(-1700, -1560), point(-1150, -1560), point(-1150, -1000), point(-1700, -1000)] },
-    { id: 'maintenance-yard', material: 'dirt', feather: 70, alpha: 0.5, vertices: [point(880, 330), point(1420, 330), point(1420, 880), point(880, 880)] },
+    { id: 'maintenance-yard', material: 'gravel', feather: 70, alpha: 0.5, vertices: [point(880, 330), point(1420, 330), point(1420, 880), point(880, 880)] },
     { id: 'west-gate', material: 'gravel', feather: 60, alpha: 0.5, vertices: [point(-980, -150), point(-620, -150), point(-620, 150), point(-980, 150)] },
     { id: 'east-gate', material: 'gravel', feather: 60, alpha: 0.5, vertices: [point(620, -150), point(980, -150), point(980, 150), point(620, 150)] },
   );
   for (const segment of routeSegments) {
     const service = segment.routeId === `${area.id}-outer-service-path`;
-    plan.ground.trails.push({ id: `trail-${plan.ground.trails.length}`, material: service ? 'dirt' : 'gravel', points: [segment.a, segment.b], width: segment.kind === 'main' ? 50 : 38, halo: 16 });
+    plan.ground.trails.push({ id: `trail-${plan.ground.trails.length}`, material: 'gravel', points: [segment.a, segment.b], width: segment.kind === 'main' ? 50 : 38, halo: service ? 24 : 16 });
   }
   // The giant dead tree: the dead oak scaled up on the faceted root volume,
   // which hides its own greybox box so only the trunk and roots read.
@@ -90,5 +91,6 @@ export function createHollowPinesArtPlan(world) {
     if (guard.clear(cx + x, cy + y, 24)) prop(source, cx + x, cy + y, height, { flip, tint: 0xc4c0b8 });
   }
   appendCentrePockets({world,area,plan});
+  appendForestFloor({world,area,plan});
   return freezeDeep(plan);
 }

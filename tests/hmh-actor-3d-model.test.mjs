@@ -4,6 +4,47 @@ import { createHash } from 'node:crypto';
 import test from 'node:test';
 const NEW_ENEMY_IDS = ['tollkeeper', 'money-printer', 'pump-and-dump-bloater', 'hodl-revenant', 'rug-puller', 'oracle-marksman'];
 const model = await import('../apps/hmh-reboot/src/actor-3d-model.mjs').catch(() => ({}));
+
+// A one-joint rig isolates transition correctness from export and texture costs.
+const transitionRig = () => {
+  const identity = new Float32Array([1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1]);
+  const track = (path, values) => ({node:0,path,width:path==='rotation'?4:3,time:new Float32Array([0,1]),value:new Float32Array([...values,...values]),interpolation:'LINEAR'});
+  return {nodes:[{translation:[0,0,0],rotation:[0,0,0,1],scale:[1,1,1]}],order:[0],parents:[-1],skins:[{joints:[0],inverseBind:identity}],clips:new Map([
+    ['idle',{duration:1,tracks:[]}],
+    ['run',{duration:1,tracks:[track('translation',[8,0,0]),track('rotation',[0,0,1,0])]}],
+    ['cover',{duration:1,tracks:[track('translation',[4,-2,0]),track('rotation',[0,0,0,-1])]}],
+  ])};
+};
+
+test('native transition samples interpolate joint TRS, remain orthonormal and finish exactly', () => {
+  const asset=transitionRig(), pose=model.createActor3dPoseWorkspace(asset), state=model.createActor3dTransitionState(asset);
+  const sample=(clip,tick,blend=4)=>model.evaluateActor3dTransitionPose(asset,clip,.5,tick,blend,pose,state)[0];
+  sample('idle',10); assert.equal(sample('run',11)[12],0);
+  const mid=sample('run',13); assert.equal(mid[12],4);
+  assert.ok(Math.abs(Math.hypot(mid[0],mid[1],mid[2])-1)<1e-6,'rotation blending must not collapse a joint');
+  assert.equal(sample('run',15)[12],8);
+  assert.deepEqual(Array.from(sample('run',16)),Array.from(model.evaluateActor3dPose(asset,'run',.5)[0]));
+});
+
+test('native transitions freeze on repeated ticks, retarget from the drawn pose and reset on rollback or long gaps', () => {
+  const asset=transitionRig(), original=JSON.stringify(asset.nodes), pose=model.createActor3dPoseWorkspace(asset), state=model.createActor3dTransitionState(asset);
+  const sample=(clip,tick,blend=4)=>Array.from(model.evaluateActor3dTransitionPose(asset,clip,.5,tick,blend,pose,state)[0]);
+  sample('idle',10); sample('run',11); const mid=sample('run',13);
+  assert.deepEqual(sample('run',13),mid,'paused render must not advance');
+  assert.deepEqual(sample('cover',13),mid,'retargeting must begin from the currently drawn pose');
+  assert.equal(sample('cover',15)[12],4);
+  assert.deepEqual(sample('idle',2),Array.from(model.evaluateActor3dPose(asset,'idle',.5)[0]));
+  assert.deepEqual(sample('run',50),Array.from(model.evaluateActor3dPose(asset,'run',.5)[0]));
+  assert.equal(JSON.stringify(asset.nodes),original,'asset bind transforms remain immutable');
+});
+
+test('zero-duration priority transitions interrupt immediately and quaternion sign aliases take the short path', () => {
+  const asset=transitionRig(), pose=model.createActor3dPoseWorkspace(asset), state=model.createActor3dTransitionState(asset);
+  const sample=(clip,tick,blend=4)=>model.evaluateActor3dTransitionPose(asset,clip,.5,tick,blend,pose,state)[0];
+  sample('idle',10); sample('cover',11); const mid=sample('cover',13);
+  assert.equal(mid[0],1); assert.equal(mid[5],1,'q and -q must represent the same rotation throughout');
+  assert.deepEqual(Array.from(sample('run',14,0)),Array.from(model.evaluateActor3dPose(asset,'run',.5)[0]));
+});
 const bytesFor = id => {
   const bytes = readFileSync(new URL(`../apps/portal/assets/generated/hmh-actor-3d-pilot/${id}.glb`, import.meta.url));
   return bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength);

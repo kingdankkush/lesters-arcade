@@ -4379,6 +4379,7 @@ const portalRouteController = createPortalRouteController({
   windowRef: window,
   documentRef: document,
   getConnected: () => Boolean(connectedWallet),
+  canOpenGameId: (gameId) => LESTERS_ARCADE_V2_APP_SHELL.cabinets.some(cabinet => cabinet.gameId === gameId && cabinetPlayableInCurrentMode(cabinet)),
   setStep: (step) => { officialAppStep = step; },
   getSelectedGameId: () => selectedGameId,
   setSelectedGameId: (gameId) => { selectedGameId = gameId; },

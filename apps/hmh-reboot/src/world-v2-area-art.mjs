@@ -10,15 +10,15 @@ import { Container, Graphics, Sprite, Texture, Rectangle, Mesh, Shader, GlProgra
 import { createGreyboxPropResidency } from './dev/greybox-prop-residency.mjs';
 import { AREA_ART_KIT_ROOT, AREA_ART_KIT_MANIFEST, AREA_ART_TILE_ROOT, AREA_ART_DETAIL_ROOT, AREA_ART_DETAIL_PAGE, AREA_ART_MATERIALS, AREA_ART_TILE_MEANS, ROAD_RECIPES, FOLIAGE_TINT_RULES, validateAreaArtPlan, resolveKitItem, seatCardAnchorY, seatSolidCardY, ribbonPolygon, offsetPolygon, polygonBounds, rectVertices, pointInPolygon, stableUnit } from './world-v2-area-art-schema.mjs';
 import { buildTerrainFieldAsync, TERRAIN_LIGHT_RANGE, valueNoise } from './world-v2-terrain-field.mjs';
-import { WATER_PALETTES, RAISED_KITS, RAISED_KIT_BY_AREA, WATER_FRAGMENT, RAISED_VERTEX, RAISED_FRAGMENT, buildShoreField, buildRaisedSurfaces, waterOutline, isRaisedPiece, rockFaceVariant, createSolidOcclusionIndex, createWalkwayPropFilter } from './world-v2-area-surfaces.mjs';
+import { WATER_PALETTES, RAISED_KITS, RAISED_KIT_BY_AREA, WATER_FRAGMENT, RAISED_VERTEX, RAISED_FRAGMENT, buildShoreField, packShoreFieldRGBA, buildRaisedSurfaces, waterOutline, isRaisedPiece, rockFaceVariant, createSolidOcclusionIndex, createWalkwayPropFilter } from './world-v2-area-surfaces.mjs';
 export { validateAreaArtPlan, createPlacementGuard, AREA_ART_SCHEMA, AREA_ART_MATERIALS } from './world-v2-area-art-schema.mjs';
 
 export const AREA_ART_ID = 'world-v2-area-art/v1';
 const SHADOW_TINT = 0x03070b;
 // Shared key from the screen upper left: contact shadows lean down-right.
 const SHADOW_LEAN = Object.freeze({ x: 0.1, y: 0.05 });
-import { MEADOW_DETAIL_FRAMES, AREA_ART_MEADOW_DETAIL_PAGE, AREA_ART_RIDGE_CLIFF_PAGE, RIDGE_CLIFF_FRAMES } from './world-v2-area-art-schema.mjs';
-const DETAIL_FRAMES = Object.freeze({ ...MEADOW_DETAIL_FRAMES, 'detail:grass': { x: 0, y: 0, w: 180, h: 122, anchor: { x: 0.53, y: 0.73 }, scale: 0.34 }, 'detail:aggregate': { x: 0, y: 160, w: 224, h: 96, anchor: { x: 0.5, y: 0.5 }, scale: 0.42 } });
+import { MEADOW_DETAIL_FRAMES, FOREST_DETAIL_FRAMES, AREA_ART_FOREST_DETAIL_PAGE, AREA_ART_MEADOW_DETAIL_PAGE, AREA_ART_RIDGE_CLIFF_PAGE, RIDGE_CLIFF_FRAMES } from './world-v2-area-art-schema.mjs';
+const DETAIL_FRAMES = Object.freeze({ ...MEADOW_DETAIL_FRAMES, ...FOREST_DETAIL_FRAMES, 'detail:grass': { x: 0, y: 0, w: 180, h: 122, anchor: { x: 0.53, y: 0.73 }, scale: 0.34 }, 'detail:aggregate': { x: 0, y: 160, w: 224, h: 96, anchor: { x: 0.5, y: 0.5 }, scale: 0.42 } });
 
 const scaleMatrix = s => ({ a: s, b: 0, c: 0, d: s, tx: 0, ty: 0 });
 // Tiles decode at 512 px (full) or 256 px (@0.5x); fills map world units per
@@ -349,8 +349,8 @@ function defaultFogTexture() {
 function defaultShoreTexture(field) {
   if (typeof document === 'undefined') return null;
   const canvas = document.createElement('canvas'); canvas.width = field.width; canvas.height = field.height;
-  const context = canvas.getContext('2d'), image = context.createImageData(field.width, field.height), out = image.data;
-  for (let i = 0; i < field.data.length; i++) { const v = field.data[i], o = i * 4; out[o] = out[o + 1] = out[o + 2] = v; out[o + 3] = 255; }
+  const context = canvas.getContext('2d'), image = context.createImageData(field.width, field.height);
+  image.data.set(packShoreFieldRGBA(field));
   context.putImageData(image, 0, 0);
   const texture = Texture.from(canvas);
   texture.source.style.addressMode = 'clamp-to-edge'; texture.source.style.update();
@@ -373,7 +373,7 @@ export function createAreaArt({ world, areaId, plan, kit = null, loadTexture, te
   // should be on screen waits for the next gate.
   const GATE = 48; let gateX = NaN, gateY = NaN, gateZoom = NaN, gateW = NaN, gateH = NaN; const paddedView = { width: 0, height: 0 };
   let host = null, depthKey = y => y;
-  let detailTexture = null, meadowDetailTexture = null, ridgeCliffTexture = null, pageTextures = new Map(), controlTexture = null, terrainField = null, terrainMesh = null;
+  let detailTexture = null, meadowDetailTexture = null, forestDetailTexture = null, ridgeCliffTexture = null, pageTextures = new Map(), controlTexture = null, terrainField = null, terrainMesh = null;
   const overlays = new Map();
   const signTextures = new Map(), fogCards = [];
   let fogTexture = null, fogFrame = 0, fogStatic = true;
@@ -440,9 +440,10 @@ export function createAreaArt({ world, areaId, plan, kit = null, loadTexture, te
         jobs.push(acquire(AREA_ART_TILE_ROOT + tileFile(tile)).then(texture => { if (texture) { texture.source.style.addressMode = 'repeat'; texture.source.style.update(); tiles.set(tile, texture); } }));
       }
       for (const piece of waterPieces) {
-        const field = buildShoreField(waterOutline(piece), { unitsPerTexel: ratio === 0.5 ? 16 : 8 });
+        const palette=WATER_PALETTES[areaId]??WATER_PALETTES.default;
+        const field = buildShoreField(waterOutline(piece), { unitsPerTexel: ratio === 0.5 ? 16 : 8,flow:palette.flow });
         let texture = null; try { texture = createShoreTexture(field) ?? null; } catch { texture = null; }
-        waterBodies.push({ piece, field: { ...field, data: null, bytes: field.data.length }, texture, palette: WATER_PALETTES[areaId] ?? WATER_PALETTES.default });
+        waterBodies.push({ piece, field: { ...field, data: null, flowData:null, bytes: field.data.length+field.flowData.length, gpuBytes:field.width*field.height*4 }, texture, palette });
       }
       for (const overlay of summary.overlays) jobs.push(acquire(AREA_ART_TILE_ROOT + tileFile(overlay)).then(texture => { if (texture) { texture.source.style.addressMode = 'repeat'; texture.source.style.update(); overlays.set(overlay, texture); } }));
       if (summary.terrain) {
@@ -451,6 +452,11 @@ export function createAreaArt({ world, areaId, plan, kit = null, loadTexture, te
       }
       if (summary.detailPage) jobs.push(acquire(AREA_ART_DETAIL_ROOT + AREA_ART_DETAIL_PAGE).then(texture => { detailTexture = texture; }));
       if (summary.nativeMeadowDetails) jobs.push(acquire(AREA_ART_DETAIL_ROOT + (ratio===0.5 ? AREA_ART_MEADOW_DETAIL_PAGE.replace('.webp','@0.5x.webp') : AREA_ART_MEADOW_DETAIL_PAGE)).then(texture => { meadowDetailTexture=texture; }));
+      if(summary.nativeForestDetails)jobs.push(acquire(AREA_ART_DETAIL_ROOT+(ratio===0.5?AREA_ART_FOREST_DETAIL_PAGE.replace('.webp','@0.5x.webp'):AREA_ART_FOREST_DETAIL_PAGE)).then(texture=>{
+        if(!texture)return;
+        if(texture.source.pixelWidth!==1024*ratio||texture.source.pixelHeight!==256*ratio)throw new Error('native forest-floor atlas decoded at the wrong size');
+        forestDetailTexture=texture;
+      }));
       if(summary.nativeRidgeCliffs) jobs.push(acquire(AREA_ART_DETAIL_ROOT+(ratio===0.5?AREA_ART_RIDGE_CLIFF_PAGE.replace('.webp','@0.5x.webp'):AREA_ART_RIDGE_CLIFF_PAGE)).then(texture=>{
         if(!texture)return;
         if(texture.source.pixelWidth!==1024*ratio || texture.source.pixelHeight!==512*ratio) throw new Error('native Ridge cliff atlas decoded at the wrong size');
@@ -619,9 +625,9 @@ export function createAreaArt({ world, areaId, plan, kit = null, loadTexture, te
     const textures = new Map();
     for (const decal of decals) {
       const spec = DETAIL_FRAMES[decal.source];
-      const page = spec.nativeMeadow ? meadowDetailTexture : detailTexture;
+      const page = spec.nativeForest ? forestDetailTexture : spec.nativeMeadow ? meadowDetailTexture : detailTexture;
       if (!page) continue;
-      const frameRatio = spec.nativeMeadow ? ratio : 1;
+      const frameRatio = spec.nativeForest ? ratio*unitsPerPixel(page) : spec.nativeMeadow ? ratio : 1;
       let texture = textures.get(decal.source);
       if (!texture) { texture = new Texture({ source: page.source, frame: new Rectangle(spec.x*frameRatio, spec.y*frameRatio, spec.w*frameRatio, spec.h*frameRatio) }); textures.set(decal.source, texture); painted.push({ removeFromParent() {}, destroy: () => texture.destroy(false) }); }
       const sprite = new Sprite({ texture });
@@ -727,6 +733,7 @@ export function createAreaArt({ world, areaId, plan, kit = null, loadTexture, te
       uField: { value: new Float32Array([f.minX, f.minY, 1 / (f.maxX - f.minX), 1 / (f.maxY - f.minY)]), type: 'vec4<f32>' },
       uWater: { value: new Float32Array([0, ratio === 0.5 ? 0 : 1, f.depth, f.bank]), type: 'vec4<f32>' },
       uFlow: { value: new Float32Array([fx * k, fy * k, fx, fy]), type: 'vec4<f32>' },
+      uOptics:{value:new Float32Array(p.optics),type:'vec4<f32>'},
       uShallow: { value: new Float32Array(rgb(p.shallow)), type: 'vec3<f32>' }, uDeep: { value: new Float32Array(rgb(p.deep)), type: 'vec3<f32>' },
       uSky: { value: new Float32Array(rgb(p.sky)), type: 'vec3<f32>' }, uFoam: { value: new Float32Array(rgb(p.foam)), type: 'vec3<f32>' }, uBank: { value: new Float32Array(rgb(p.bank)), type: 'vec3<f32>' },
     };
@@ -1246,7 +1253,7 @@ export function createAreaArt({ world, areaId, plan, kit = null, loadTexture, te
     for (const node of solidNodes) { try { evict(node); } catch {} } solidNodes.length = 0; for (const record of solidRecords) record.node = null; solidRecords.length = 0;
     for (const node of painted) { try { node.removeFromParent?.(); node.destroy?.({ children: true }); } catch {} } painted.length = 0;
     for (const entry of frames.values()) entry.texture.destroy(false); frames.clear(); live.clear();
-    for (const url of owned) cache.release(url); owned.length = 0; tiles.clear(); overlays.clear(); pageTextures.clear(); detailTexture = null; meadowDetailTexture = null; ridgeCliffTexture=null;
+    for (const url of owned) cache.release(url); owned.length = 0; tiles.clear(); overlays.clear(); pageTextures.clear(); detailTexture = null; meadowDetailTexture = null; forestDetailTexture=null; ridgeCliffTexture=null;
     for (const texture of signTextures.values()) { try { texture?.destroy(true); } catch {} } signTextures.clear(); fogCards.length = 0; try { fogTexture?.destroy(true); } catch {} fogTexture = null;
     for (const body of waterBodies) { try { body.texture?.destroy(true); } catch {} } waterBodies.length = 0; waterMeshes.length = 0; surfaceNodes.length = 0;
     try { controlTexture?.control.destroy(true); if (controlTexture && controlTexture.light !== controlTexture.control) controlTexture.light.destroy(true); } catch {} controlTexture = null; terrainMesh = null;

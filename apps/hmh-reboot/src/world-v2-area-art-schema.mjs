@@ -12,6 +12,8 @@ export const AREA_ART_KIT_PIPELINE = 'hmh-tripo-static-props-hd/v1';
 export const AREA_ART_TILE_ROOT = '/assets/generated/hmh-terrain-tiles/';
 export const AREA_ART_DETAIL_ROOT = '/assets/generated/hmh-art-target/';
 export const AREA_ART_MEADOW_DETAIL_PAGE = 'meadow-ground-details.webp';
+export const AREA_ART_FOREST_DETAIL_PAGE = 'forest-ground-details.webp';
+export const FOREST_DETAIL_FRAMES = Object.freeze(Object.fromEntries(['leaf-litter','needle-bed','fern-bed','moss-root'].map((name,i)=>[`detail:forest-${name}`,{x:i*256,y:0,w:256,h:256,anchor:{x:.5,y:.5},scale:.32,nativeForest:true}])));
 export const AREA_ART_RIDGE_CLIFF_PAGE = 'ridge-cliff-kit.webp';
 export const RIDGE_CLIFF_FRAMES = freezeDeep({
   fractured:{x:0,y:0,w:512,h:192}, shelves:{x:512,y:0,w:512,h:192},
@@ -273,7 +275,7 @@ export function validateAreaArtPlan(plan, kit) {
   }
   const decals = (ground.decals ?? []).map((decal, i) => {
     const name = `ground.decals[${i}]`;
-    if (!['detail:grass', 'detail:aggregate'].includes(decal.source) && !Object.hasOwn(MEADOW_DETAIL_FRAMES,decal.source)) fail(`${name}.source must be a ground detail frame`);
+    if (!['detail:grass', 'detail:aggregate'].includes(decal.source) && !Object.hasOwn(MEADOW_DETAIL_FRAMES,decal.source) && !Object.hasOwn(FOREST_DETAIL_FRAMES,decal.source)) fail(`${name}.source must be a ground detail frame`);
     const at = point(decal, name); inside(at, name);
     return { id: decal.id, source: decal.source, ...at, scale: decal.scale === undefined ? 1 : positive(decal.scale, `${name}.scale`), rotation: decal.rotation === undefined ? 0 : finite(decal.rotation, `${name}.rotation`), alpha: decal.alpha === undefined ? 0.8 : clampUnit(decal.alpha, `${name}.alpha`), tint: optionalTint(decal.tint, `${name}.tint`), flip: decal.flip === true };
   });
@@ -355,12 +357,13 @@ export function validateAreaArtPlan(plan, kit) {
   const tiles = [...new Set([...materials].flatMap(id => grainMaterials.has(id) ? AREA_ART_MATERIALS[id].grain.map(layer => layer.tile) : [AREA_ART_MATERIALS[id].tile]))].sort();
   const overlays = solids.some(solid => ['bank', 'mass'].includes(solid.style)) ? [AREA_ART_ROCK_FACE] : [];
   const nativeMeadowDetails = decals.some(decal=>Object.hasOwn(MEADOW_DETAIL_FRAMES,decal.source));
-  const detailPage = decals.some(decal=>!Object.hasOwn(MEADOW_DETAIL_FRAMES,decal.source));
+  const nativeForestDetails = decals.some(decal=>Object.hasOwn(FOREST_DETAIL_FRAMES,decal.source));
+  const detailPage = decals.some(decal=>!Object.hasOwn(MEADOW_DETAIL_FRAMES,decal.source)&&!Object.hasOwn(FOREST_DETAIL_FRAMES,decal.source));
   return freezeDeep({
     schema: AREA_ART_SCHEMA, areaId: plan.areaId, roadsPlan, bounds, pages: plan.pages.slice(), sources: [...sources].sort(), materials: [...materials].sort(), tiles,
-    detailPage, nativeMeadowDetails, nativeRidgeCliffs, base, terrain, overlays, signs, fog, zones, trails, decals, roads, props, solids,
+    detailPage, nativeMeadowDetails, nativeForestDetails, nativeRidgeCliffs, base, terrain, overlays, signs, fog, zones, trails, decals, roads, props, solids,
     counts: { zones: zones.length, trails: trails.length, decals: decals.length, roads: roads.length, props: props.length, solids: solids.length, signs: signs.length, fog: fog.length },
-    budget: { kitPages: plan.pages.length, exclusiveKitPages: exclusivePages.length, kitPageBudget: budget, encodedBytes, decodedBytes, halfEncodedBytes, halfDecodedBytes, tilePages: tiles.length * 2 + overlays.length + (detailPage ? 1 : 0) + (nativeMeadowDetails ? 1 : 0) + (nativeRidgeCliffs ? 1 : 0) + (terrain ? 1 : 0), tileDecodedBytes: tiles.length * (512 * 512 * 4 + 512 * 128 * 4) + overlays.length * 512 * 128 * 4 + (detailPage ? 256 * 256 * 4 : 0) + (nativeMeadowDetails ? 1024 * 256 * 4 : 0) + (nativeRidgeCliffs ? 1024 * 512 * 4 : 0) + (terrain ? 2 * 384 * 384 * 4 : 0) },
+    budget: { kitPages: plan.pages.length, exclusiveKitPages: exclusivePages.length, kitPageBudget: budget, encodedBytes, decodedBytes, halfEncodedBytes, halfDecodedBytes, tilePages: tiles.length * 2 + overlays.length + (detailPage ? 1 : 0) + (nativeMeadowDetails ? 1 : 0) + (nativeForestDetails ? 1 : 0) + (nativeRidgeCliffs ? 1 : 0) + (terrain ? 1 : 0), tileDecodedBytes: tiles.length * (512 * 512 * 4 + 512 * 128 * 4) + overlays.length * 512 * 128 * 4 + (detailPage ? 256 * 256 * 4 : 0) + (nativeMeadowDetails ? 1024 * 256 * 4 : 0) + (nativeForestDetails ? 1024 * 256 * 4 : 0) + (nativeRidgeCliffs ? 1024 * 512 * 4 : 0) + (terrain ? 2 * 384 * 384 * 4 : 0) },
   });
 }
 function clampRange(value, min, max, name) { finite(value, name); if (value < min || value > max) fail(`${name} must be within ${min}..${max}`); return value; }

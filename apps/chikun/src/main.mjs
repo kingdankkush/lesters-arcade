@@ -126,7 +126,10 @@ let ragdoll = null;
 const RAGDOLL_HANDOFF_SECONDS = 0.22;
 let goreEnabled = true;
 try { goreEnabled = localStorage.getItem('chikun-gore-v1') !== 'off'; } catch {}
-loadGroundArt(); loadRagdollArt();
+const nativeSkyNames=['hawk','pelican','plane'];
+const nativeGroundNames=['rock','log','thorn','crate'];
+const nativeLoopNames=['shiba','hurdle'];
+loadGroundArt({exclude:[...nativeSkyNames,...nativeGroundNames,...nativeLoopNames]}); loadRagdollArt();
 const speedValue = document.querySelector('#speedValue');
 const routeReadout = document.querySelector('#routeReadout');
 const goreButton = document.querySelector('#goreButton');
@@ -175,6 +178,10 @@ let ghostTrack = null;
 let replayPlayback = null;
 let replayPlaying = false;
 let positiveCoinFeedback = null;
+let gamepadInput = null, gamepadGlideHeld = false;
+import('./gamepad-input.mjs').then(({ createChikunGamepadInput }) => {
+  if (!disposed) gamepadInput = createChikunGamepadInput();
+}).catch(() => {});
 // Course-two art is projection only and loads lazily, only while course two is active.
 let courseTwoArt = null;
 function loadCourseTwoArt() {
@@ -198,6 +205,27 @@ import('./obstacle-kit.mjs').then(module=>{
   if(disposed)return;
   obstacleKit=module.createChikunObstacleKit({tier:module.selectChikunObstacleKitTier({phone:window.innerWidth<700||flightViewport.portrait,density:window.devicePixelRatio||1}),onStatus:status=>{if(!disposed)shell.dataset.obstacleKit=status;}});
 }).catch(()=>{if(!disposed)shell.dataset.obstacleKit='fallback';});
+let skyKit=null;
+shell.dataset.skyKit='loading';
+const skyStatus=status=>{if(disposed)return;shell.dataset.skyKit=status;if(status==='fallback')loadGroundArt({only:nativeSkyNames});};
+import('./sky-kit.mjs').then(module=>{
+ if(disposed)return;
+ skyKit=module.createChikunSkyKit({tier:module.selectChikunSkyTier({phone:window.innerWidth<700||flightViewport.portrait,density:window.devicePixelRatio||1}),onStatus:skyStatus});
+}).catch(()=>skyStatus('fallback'));
+let groundObstacleKit=null;
+shell.dataset.groundObstacleKit='loading';
+const groundKitStatus=status=>{if(disposed)return;shell.dataset.groundObstacleKit=status;if(status==='fallback')loadGroundArt({only:nativeGroundNames});};
+import('./ground-obstacle-kit.mjs').then(module=>{
+ if(disposed)return;
+ groundObstacleKit=module.createChikunGroundObstacleKit({tier:module.selectChikunGroundObstacleTier({phone:window.innerWidth<700||flightViewport.portrait,density:window.devicePixelRatio||1}),onStatus:groundKitStatus});
+}).catch(()=>groundKitStatus('fallback'));
+let groundLoopKit=null;
+shell.dataset.groundLoopKit='loading';
+const groundLoopStatus=status=>{if(disposed)return;shell.dataset.groundLoopKit=status;if(status==='fallback')loadGroundArt({only:nativeLoopNames});};
+import('./ground-loop-kit.mjs').then(module=>{
+ if(disposed)return;
+ groundLoopKit=module.createChikunGroundLoopKit({tier:window.innerWidth<700||flightViewport.portrait||(window.devicePixelRatio||1)<=1?'low':'medium',onStatus:groundLoopStatus});
+}).catch(()=>groundLoopStatus('fallback'));
 shell.dataset.coinFeedback = 'disabled';
 if (isChikunCoinFeedbackEnabled(new URLSearchParams(window.location.search))) {
   shell.dataset.coinFeedback = 'loading';
@@ -474,6 +502,7 @@ function toggleFullscreen() {
 }
 
 function prepareRun() {
+  gamepadInput?.reset(); gamepadGlideHeld = false;
   positiveCoinFeedback?.tracker.reset(); positiveCoinFeedback?.overlay.reset();
   ragdoll?.dispose(); ragdoll = null;
   terminalAge = 0; flapAge = Infinity; flightEventAge = Infinity; flightEvent = '';
@@ -642,7 +671,7 @@ function drawSky(snapshot) {
 
 function drawFork(fork) {
   if(drawCourseV2Obstacle(ctx,fork,courseTwoArt))return;
-  if(fork.family)drawGroundObstacle(ctx, fork, latestSnapshot?.tick ?? 0, reduceMotion(), obstaclePresentation,obstacleKit);
+  if(fork.family)drawGroundObstacle(ctx, fork, latestSnapshot?.tick ?? 0, reduceMotion(), obstaclePresentation,obstacleKit,skyKit,groundObstacleKit,groundLoopKit);
   else drawChikunObstacle(ctx, fork, latestSnapshot?.tick ?? 0, reduceMotion());
 }
 
@@ -752,6 +781,18 @@ function showUnfinishedRun() {
 }
 
 function stepFrame(now) {
+  if (gamepadInput && !disposed) {
+    let pads = null;
+    try { pads = navigator.getGamepads?.(); } catch {}
+    const control = gamepadInput.sample(pads, { enabled: document.visibilityState !== 'hidden' && document.hasFocus() });
+    gamepadGlideHeld = control.glide && phase === 'running' && !paused;
+    if (control.pause && phase === 'running') togglePause('user');
+    else if (control.flap) {
+      if (phase === 'running' && paused) togglePause('user');
+      else if (phase === 'ready' || (phase === 'running' && !paused)) queueFlap();
+      else if (phase === 'game-over' && !resultOverlay.classList.contains('is-hidden')) restartButton.click();
+    }
+  }
   if (!previousFrameAt) previousFrameAt = now;
   const elapsed = Math.min(100, Math.max(0, now - previousFrameAt));
   previousFrameAt = now;
@@ -773,7 +814,7 @@ function stepFrame(now) {
       while (accumulator >= STEP_MS && !runtime.terminal && steps < MAX_CATCH_UP_STEPS) {
         if (flapQueued) { flapAge = 0; flapVelocity = latestSnapshot?.chikun?.velocityY ?? 0; }
         const beforePowers=latestSnapshot?.powers;
-        latestSnapshot = runtime.step({ flap: flapQueued,glide:courseTwoActive()&&glideHeld });
+        latestSnapshot = runtime.step({ flap: flapQueued,glide:courseTwoActive()&&(glideHeld||gamepadGlideHeld) });
         const afterPowers=latestSnapshot.powers;
         if(afterPowers&&beforePowers){
           if(afterPowers.shieldsUsed>beforePowers.shieldsUsed){showCallout('Shield saved you!');flightAudio.play('impact');spawnVfx('near-miss');}
@@ -883,6 +924,9 @@ function handleParentMessage(event) {
     positiveCoinFeedback?.overlay.dispose();
     obstaclePresentation.dispose();
     obstacleKit?.dispose();
+    skyKit?.dispose();
+    groundObstacleKit?.dispose();
+    groundLoopKit?.dispose();
     courseTwoArt?.dispose();
     flightAudio.dispose();
     port.onmessage = null;
@@ -1010,10 +1054,12 @@ restartButton.addEventListener('click', () => {
   send('game:restart-request', {});
 });
 document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'hidden') { gamepadInput?.reset(); gamepadGlideHeld = false; }
   if (document.visibilityState === 'hidden' && phase === 'running' && !paused) togglePause('visibility', true);
   else if (document.visibilityState === 'visible') { accumulator = 0; previousFrameAt = performance.now(); }
 });
 window.addEventListener('blur', () => {
+  gamepadInput?.reset(); gamepadGlideHeld = false;
   glideHeld=false;
   flapQueued = false;
   if (phase === 'running' && !paused) togglePause('visibility', true);
@@ -1029,7 +1075,7 @@ if (globalThis.__CHIKUN_QA__ && typeof globalThis.__CHIKUN_QA__ === 'object') {
   globalThis.__CHIKUN_QA__.region = () => flightWorld.regionState();
   // Renderer review seam: paints supplied geometry on a supplied canvas only.
   // It cannot step or replace runtime snapshots, inputs, score or evidence.
-  globalThis.__CHIKUN_QA__.paintObstacle = (targetCtx,obstacle,tick=0,reduced=false) => drawGroundObstacle(targetCtx,obstacle,tick,reduced,obstaclePresentation,obstacleKit);
+  globalThis.__CHIKUN_QA__.paintObstacle = (targetCtx,obstacle,tick=0,reduced=false) => drawGroundObstacle(targetCtx,obstacle,tick,reduced,obstaclePresentation,obstacleKit,skyKit,groundObstacleKit,groundLoopKit);
 }
 syncAudioControl();
 syncFullscreenControl();

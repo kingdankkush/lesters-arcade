@@ -17,6 +17,7 @@ function sizeFor(url) {
   if (file.endsWith('-fringe.png')) return [512, 128];
   if (file === 'ground-details.webp') return [256, 256];
   if (file.startsWith('meadow-ground-details')) return file.includes('@0.5x') ? [512,128] : [1024,256];
+  if (file.startsWith('forest-ground-details')) return file.includes('@0.5x') ? [512,128] : [1024,256];
   return [512, 512];
 }
 const loader = log => async url => { log.push(url); const [width, height] = sizeFor(url); return new Texture({ source: new TextureSource({ width, height }) }); };
@@ -54,7 +55,7 @@ test('the renderer loads only the pages and tiles its plan needs, paints, mounts
   await art.ready;
   assert.deepEqual(urls.filter(u => u.includes('tripo-props-hd-')).sort(), plan.pages.map(p => `/assets/generated/hmh-reboot-tripo-props-hd/${p}`).sort());
   for (const tile of art.summary.tiles) { assert.ok(urls.includes(`/assets/generated/hmh-terrain-tiles/${tile}.png`)); assert.ok(urls.includes(`/assets/generated/hmh-terrain-tiles/${tile}-fringe.png`)); }
-  assert.ok(!urls.some(u => u.includes('pickups') || u.includes('ground-details')), 'no pickup page or unused detail page');
+  assert.ok(!urls.some(u => u.includes('pickups') || u.endsWith('/ground-details.webp')), 'no pickup page or unused generic detail page');
   const ground = new Container(), depth = new Container();
   assert.equal(art.claimsSurface('rugpull-woods-floor'), true);
   assert.equal(art.claimsSurface('mweb-meadows-floor'), false);

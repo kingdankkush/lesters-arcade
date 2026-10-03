@@ -1,0 +1,45 @@
+{
+  "schema": "native-forest-floor/v1",
+  "source": "archived B1-04 fern mesh, B1-50 bark material, native leaf/needle/moss geometry",
+  "sources": [
+    {
+      "name": "04 - Fern Cluster - Textured Master.blend",
+      "sha256": "c52842ed67e23cc4dd91bbe1102c4072896be7e376d50e4fa49eb6ebce061f52"
+    },
+    {
+      "name": "50 - Stylized Layered Evergreen Tree - Textured Master.blend",
+      "sha256": "3ab71d16794ec08530ee04707c2408245113a5c147ae9b8a0ac306d224e66ca5"
+    }
+  ],
+  "scriptSha256": "65df0c6286773d5fa8446ba97578e87c3089864e1fdc714043d652951f8d5a6b",
+  "frames": [
+    "leaf-litter",
+    "needle-bed",
+    "fern-bed",
+    "moss-root"
+  ],
+  "frameSize": 256,
+  "maxHeightMetres": 0.18,
+  "files": [
+    {
+      "file": "forest-ground-details.webp",
+      "size": [
+        1024,
+        256
+      ],
+      "bytes": 117552,
+      "decodedBytes": 1048576,
+      "sha256": "7a32c5cb6dc880a2de63b8e578a65d7c85070b6278f65d3f9b27e2a3ba207419"
+    },
+    {
+      "file": "forest-ground-details@0.5x.webp",
+      "size": [
+        512,
+        128
+      ],
+      "bytes": 37794,
+      "decodedBytes": 262144,
+      "sha256": "f3abba3f7dacd1ebc7303b0d83ed885e58d33104f743112152db4ff7087fb871"
+    }
+  ]
+}

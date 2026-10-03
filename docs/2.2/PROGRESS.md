@@ -209,18 +209,18 @@ the preserve-power curve remain pending.
 
 | Item | Status / work still required |
 | --- | --- |
-| 1 | Default 3D and all four low download tiers browser checked; mesh LOD, quality governor and phone performance open. |
-| 2 | New surface materials checked; full biome terrain/edge variation open. |
+| 1 | Default 3D, native hero crossfades and genuine four-hero low mesh LOD delivered; low textured silhouettes checked at desktop/phone viewports. Quality governor, full clip polish and physical-phone performance remain open. |
+| 2 | New surface materials and native Pines/Woods floor beds delivered and inspected at desktop/phone viewports; full biome terrain/edges/composition remain open. |
 | 3 | Ridge native face/lip/foot kit desktop/phone-viewport reviewed; other cliff, ramp, pillar and deck work pending. |
 | 4 | Ground shadow cutoff corrected; full light rig/local pools/fog pending. |
-| 5 | Flow/depth/foam water and sea coast rules pending. |
+| 5 | Existing River/Bayou flow/depth/foam/caustics/glints browser reviewed; Coast sea, banks and physical-phone proof pending. |
 | 6 | Centre identity composition in progress; all ten final kits pending. |
 | 7 | Collision-consistent building overlap/placement corrections pending. |
-| 8 | Combat FX/telegraph/boss camera polish pending. |
+| 8 | Filled impact fragments, textured projected boss fields/safe cutouts, soft low-health component and visible boss edge warnings delivered; natural low-health/charge capture, gore and full boss framing remain open. |
 | 9 | Existing 3D identities activated; distinct models/full boss/enemy clips pending. |
-| 10 | Six obstacle assets/four loops and nine facade designs delivered; remaining obstacles/owl and full scene acceptance open. |
-| 11 | Existing start/stop/turn/pivot clips wired; dedicated walk and tested speed/turn rules pending. |
-| 12 | Existing cover clips routed; full pose/action and HUD cue acceptance pending. |
+| 10 | Six larger obstacle assets/four loops, nine facades, three eight-pose sky sheets, four static ground props and Shiba/hurdle loops delivered; ground trees/owl/course content and full scene/phone acceptance remain open. |
+| 11 | Existing start/stop/turn/pivot clips wired with native hero TRS crossfades; dedicated walk and tested speed/turn rules pending. |
+| 12 | Existing cover clips routed; shield badge/active edge checked in actual desktop/phone views with entry/exit. Full cover action polish/gamepad button remain open. |
 | 13 | Visibility-aware aim/spawn fairness versioned rules pending. |
 | 14 | Typed pickup respawn versioned rules pending. |
 | 15 | Preserve-power progression smoothing, rarity/cards/rerolls pending. |
@@ -234,27 +234,180 @@ the preserve-power curve remain pending.
 | 23 | HMH double pause, music continuity/manual pause and map disclosure corrected and browser checked; child transport bridge and gamepad/menu completion pending. |
 | 24 | Repeated-offer repaint corrected; new cards/briefing art and merged intro pending. |
 | 25 | Uniform three-cabinet menu/gamepad audit pending. |
-| 26 | Audio master + actor environment light delivered; haptics/controller/death polish pending. |
+| 26 | Audio master/environment light and standard-controller jump/glide/pause adapter delivered; synthetic browser lifecycle and v5/v6 byte-parity checked. Physical controller/haptics/typed deaths remain open. |
 | 27 | Modern STACKED visuals and phone music access in review; more tracks/themes pending. |
 | 28 | HMH haptic intensity pending. |
 | 29 | Physical phone, long soak/heavy scene acceptance and governor proof pending. |
 | 30 | Ten-area production visual gate coverage pending. |
 | 31 | Summary forgery/verifier r4 work pending; no untested verifier weakening. |
-| 32 | Bug register pending systematic reproduction/correction. |
+| 32 | Repeated offers and coming-soon deep links corrected; both future routes and all three playable routes browser checked at desktop/phone viewports. Other recorded bugs remain open. |
 | 33 | Legacy fallback/repository budget/error tracking cleanup pending. |
 | 34 | Weapons/prisoners/audio/accessibility/achievement remainder pending. |
 
-## Release readiness
+## Third visual batch — 2026-10-03
+
+Native hero TRS crossfades now soften movement, cover, reload, interaction and
+fidget changes. Combat/hurt/death interrupt immediately, repeated paused ticks
+freeze, and rollback resets. No model bytes or per-frame arrays were added;
+only one bounded hero transform snapshot is allocated. This does not add the
+missing dedicated walk or second enemy deaths.
+
+Existing River/Bayou water now uses shore-tangent current in unused channels
+of its existing distance texture, layered wave normals, quieter shallow
+caustics, depth absorption, foam/wet edges and directional glints. Actual first
+captures failed art acceptance: caustics were too large/uniform and the water
+looked grey. The corrective pass was rebuilt and reviewed in both desktop and
+phone viewports. Geometry, palettes, GPU texture allocation and frozen phone
+motion policy stayed intact. Coast sea/banks remain separately unfinished.
+
+Chikun's hawk, pelican and plane have refined native eight-pose loops, with
+distinct compressed frames at both tiers. Six WebPs total **172,350 B**;
+decoded sheets **720,896 B phone / 1,966,080 B full**. Superseded static assets
+are skipped on successful load. Natural guest Free entry proves actual kit
+loading; a separately labelled runtime-painter gallery inspects all three.
+This does not prove natural encounters in every region or typed death quality.
+
+Combat markers now use real projected ground footprints, capsule ends, actual
+annular/safe-sector cutouts and reusable grain. Independent review caught an
+empty second Pixi stroke and excessive ring instructions; both were corrected,
+with actual GraphicsContext coverage. Impact fragments are filled chips; low
+health has a bounded soft radial component. A 60-second natural Free observation
+did **not** reach its warning threshold. The failed job/receipt remains intact;
+the in-game low-health screenshot is still unobserved, not claimed as passed.
+Details: `HMH-COMBAT-READABILITY-SLICE.md`.
+
+Combined targeted regressions: **180/180 passed**. Fresh build/browser job:
+**eight desktop/phone viewport scenes pass**, no page errors, owned Chrome and
+server closure confirmed. HMH initial including shared **1,005,148 / 1,048,576 B**;
+STACKED **583,177 / 607,000 B**. Required `visual:reboot`: **12 retired-map scenes
+unchanged**, zero comparison delta and no errors. Those legacy scenes do not
+certify the new ten-area world; the new area captures are recorded separately.
+Evidence: root `outputs/22-water-combat-sky/review.json` and full-resolution PNGs.
+
+One extra positive bug fix guards coming-soon deep links before selecting an
+unsupported runtime. `/play/mweb-invaders` and the analogous future cabinet
+return to cabinet browsing; playable cabinet and wallet gates are unchanged.
+**23/23 focused route regressions passed**. Browser acceptance for this newer
+source change remains pending, so it is a newer candidate than the art build.
+
+Live baseline rechecked at **2026-10-03 15:22 UTC**: healthy **2.1.1**, cache
+`lesters-arcade-v67-level-one-only`; fetched integration is still
+`fbbc594baa06bc022518ec77c1723b492a11f42a`. No deployment or release bump occurred.
+Genuine low hero mesh LOD and native forest-floor variation have now been
+delivered for final runtime review. Failed scratch LOD silhouette gates were
+corrected before publishing the candidate; generated/native sources remain
+outside Git. Mesh/animation integrity is covered by 11 focused checks, with
+typed geometry buffers 42–44% smaller and roughly 51% fewer triangles. Four
+low hero downloads total 3,868,467 B. Desktop textured capture preserves the
+recognizable silhouettes; physical phone FPS and full clip quality stay open.
+
+The forest page is 1 MiB full / 256 KiB half, with 71 Pines and 188 Woods low
+beds. Existing blocking-card identities and entire patch/route/solid/water
+clearance are checked. Ground allocation remains 7,733,248 B Pines / 6,422,528 B
+Woods. Actual desktop centres were inspected: a better initial litter and
+understory layer, not final composed forest areas. Full canopy, landmarks,
+ruins, terrain transitions and area acceptance are still required.
+
+Visible cover now reads existing 60%/40% directional damage reduction in a
+shield badge and highlights the current wall edge. Tests first, 42/42 focused
+checks passed and independent review found no concrete blocker. Actual desktop
+entry/exit worked; the first edge was occluded by the wall. Its corrected
+layer and phone layout are awaiting a fresh browser review. Source details in
+`HMH-COVER-READABILITY-SLICE.md`.
+
+### Third-batch closeout — actual runtime review
+
+The follow-up **26-scene desktop/phone-viewport job passed**, including Pines
+and Woods, all four genuine low hero downloads, cover entry/exit, both future
+cabinet links and all three playable links, and Chikun's ground kit. All four
+textured low heroes retain recognizable silhouettes in the actual renderer;
+this accepts the reduced geometry slice, not every clip or physical-device FPS.
+Forest-floor review accepts an initial litter/understory improvement; sparse
+centre composition and missing landmarks still prevent whole-area acceptance.
+
+Cover's first layer correction exposed a second real defect: Pixi interpreted
+a typed polygon buffer as a point object, compiling undefined coordinates.
+A reusable plain array fixes it; actual compiled-shape coverage first failed,
+then passed. The fresh focused browser job confirms the edge is visible,
+the shield fits both HUDs, and movement-only exit clears it. The brown walls
+remain unfinished world art.
+
+Chikun now replaces all six old ground prop painters. Rock/log/thorn/crate use
+one refined native page; Shiba/hurdle use a second page with eight poses each.
+Shiba tail/ear/breath and hurdle loose wrap move cosmetically; rigid collision,
+draw dimensions and existing Shiba bounce stay unchanged. The six runtime
+painters and ready status were inspected at both viewports. The review gallery
+is labelled presentation-only and its phone overlay stretches vertically; it
+does not certify natural encounters in every region. Native-page decoded
+subtotal is **4,786,376 B low / 18,264,156 B medium**, excluding region scenery,
+characters, trees and remaining fallback assets. Ground trees and owl/course
+content remain open. Details: `CHIKUN-GROUND-OBSTACLE-KIT-SLICE.md` and
+`CHIKUN-SHIBA-HURDLE-LOOP-SLICE.md`.
+
+The boss edge warning is now visible in the real Baron court at desktop and
+phone viewports, inside the HUD/touch safe region. Locked charge origin and
+countdown are unit checked; a natural charge-warning capture remains open.
+Full boss camera framing remains open: camera reframing changes mouse aim,
+while a separate aiming camera visibly misses the cursor. No such workaround
+was adopted. The later versioned encounter/input design must resolve this.
+
+Chikun's lazy standard-controller adapter reuses existing flap/glide booleans.
+Independent review caught a focus-gap edge: background RAF may stop before
+sampling disabled input. Synchronous blur/hidden resets fix it. Both actual
+browser layouts pass synthetic A jump, Start pause/resume, frozen paused tick,
+and held A across a zero-disabled-frame blur without a false resume. Current
+v6 and historical v5 keyboard/controller equivalents have byte-identical
+canonical replay/results. No physical controller claim. Details:
+`CHIKUN-CONTROLLER-SLICE.md`.
+
+The final focused browser job passes **eight scenes**, with no page errors and
+owned browser/server closure. Its first attempt failed because the helper read
+`vy` instead of the real snapshot's `velocityY`; the unchanged build passed
+after correcting the helper. Earlier helper failures for a wrong spawn field
+and future-cabinet slug are retained too. Latest built candidate: HMH initial
+including shared **1,005,973 / 1,048,576 B**, STACKED **583,177 / 607,000 B**.
+Targeted final component suite: **26/26 pass**; prior wider slice suites remain
+recorded above. No ruleset, version, settlement or production changes.
+
+Final syntax registry passes **1,474 JS modules + 188 Python scripts**. The
+first required visual comparison found one intentional change: the new boss
+edge warning in `combat-engaged-desktop` (mean delta .24, maximum 33, sixteen
+signature cells); enemy crops are unchanged and all twelve scenes have no
+runtime errors. The other eleven scenes pass (mobile mean .01/max 2, others
+zero). Current desktop combat and phone frames were inspected; reviewed
+baseline acceptance and a fresh comparison are in progress. The failed first
+receipt is preserved as root `outputs/22-wave-checks-20261003-preaccept.json`.
+
+Closeout: reviewed baseline acceptance and fresh comparison both passed, with
+all twelve legacy scenes unchanged and no runtime errors; exact metrics are
+preserved in the timestamped `22-wave-checks-*` receipts. These scenes still do
+not certify the ten-area world. The final focused integration suite passes
+**106/106 cases** across all new modules, native asset integrity, actor
+transitions, replay-equivalent input and routes. All owned heavy-job children
+closed before releasing the lock. This is a feature checkpoint, not the full
+release gate or physical-device acceptance.
+
+Evidence: root `outputs/22-forest-lod-cover-routes/`, including timestamped
+receipts (the newest `review.json` is the focused follow-up, not the 26-scene
+job). Next valuable art slice: replace the spawn/Baron brown placeholder bars
+without changing their authoritative blockers; then continue full district
+composition, missing character/death content and the remaining master items.
+
+## Release readiness (current)
 
 No release commit, push, deployment or promotion yet. Full release gate,
 three-game local Ranked end-to-end checks, new HMH ruleset corpus, real phone
 performance, final area/art acceptance and live verification remain required.
 Completed tests and browser evidence do not imply completion of this scope.
+All 34 master items remain partially delivered or open; none is declared
+fully accepted by this batch. Latest build budgets are recorded in the
+third-batch closeout above. The previous evidence below is historical and
+does not replace certification of the newest candidate.
 
 Owned local browser jobs use the shared heavy lock and confirm Chrome/server
 closure before releasing it. Root workspace evidence:
 `outputs/22-first-wave/review.json` and full-resolution game screenshots.
-Latest combined browser pass: all three games desktop/phone viewport ready,
+First-wave combined browser pass: all three games desktop/phone viewport ready,
 natural Free entry for STACKED/Chikun, default HMH 3D delivery, music pause
 access and owned browser/server closure. Physical-device acceptance is open.
 Measured build: HMH initial including shared 1,004,154 / 1,048,576 B;

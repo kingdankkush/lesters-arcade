@@ -6,9 +6,9 @@ import {rgba} from './light-rig.mjs';
 const TAU=Math.PI*2;
 const propNames=['willow','cherry','maple','oak','rock','log','crate','hurdle','thorn','shiba','hawk','eagle','pelican','plane'];
 const art=new Map();
-export function loadGroundArt(){
+export function loadGroundArt({exclude=[],only=null}={}){
  if(typeof Image==='undefined')return Promise.resolve();
- return Promise.allSettled(propNames.filter(n=>!art.has(n)).map(async name=>{const img=new Image();img.src='/assets/generated/chikun-ground-props-v1/'+name+'.webp';try{await img.decode();art.set(name,img);}catch{}}));
+ return Promise.allSettled(propNames.filter(n=>!art.has(n)&&!exclude.includes(n)&&(!only||only.includes(n))).map(async name=>{const img=new Image();img.src='/assets/generated/chikun-ground-props-v1/'+name+'.webp';try{await img.decode();art.set(name,img);}catch{}}));
 }
 // Terrain strips per region (RGB so the blend between regions costs nothing).
 const colors={
@@ -125,8 +125,8 @@ function shapeFallback(ctx,o){
  ctx.fillStyle=o.family==='tree'?'#507642':'#a59572';ctx.strokeStyle=ctx.fillStyle;
  for(const s of o.shapes){if(s.type==='rect')ctx.fillRect(s.x,s.y,s.width,s.height);else if(s.type==='circle'){ctx.beginPath();ctx.arc(s.x,s.y,s.radius,0,TAU);ctx.fill();}else{ctx.lineWidth=s.radius*2;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(s.ax,s.ay);ctx.lineTo(s.bx,s.by);ctx.stroke();}}ctx.lineCap='butt';
 }
-export function drawGroundObstacle(ctx,o,tick=0,reduced=false,obstaclePresentation=null,obstacleKit=null){
- if(obstacleKit?.draw(ctx,o,tick,reduced)){
+export function drawGroundObstacle(ctx,o,tick=0,reduced=false,obstaclePresentation=null,obstacleKit=null,skyKit=null,groundObstacleKit=null,groundLoopKit=null){
+ if(skyKit?.draw(ctx,o,tick,reduced)||groundObstacleKit?.draw(ctx,o)||groundLoopKit?.draw(ctx,o,tick,reduced)||obstacleKit?.draw(ctx,o,tick,reduced)){
   if(!o.coin.collected)drawGroundCoin(ctx,o.coin,tick,reduced);
   return;
  }

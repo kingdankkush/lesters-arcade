@@ -105,7 +105,7 @@ export function createActor3dPresentationEntries(hero, enemies, boss = null, max
     if (hero.action !== 'death' && heroHasClip(hero.actorId, hero.clip) && Number.isFinite(hero.clipTick)) { clip = hero.clip; tick = hero.clipTick; }
     entries.push({ descriptor: { id: 'hero', actorId: hero.actorId, x: hero.x, y: hero.y, z: hero.z, heading: hero.heading,
       bodyTint: hero.bodyTint, weaponTint: hero.weaponTint, weaponId: hero.weaponId,
-      clip, clipTimeSeconds: heroClipTime(clip, tick), pixelsPerMetre }, originals: hero.originals });
+      clip, clipTimeSeconds: heroClipTime(clip, tick), presentationTick:hero.presentationTick, pixelsPerMetre }, originals: hero.originals });
   }
   entries.push(...createLiquidator3dEntries(boss));
   for (const entry of createDistrictBoss3dEntries(districtBosses, pixelsPerMetre)) if (entries.length < maxActors) entries.push(entry);

@@ -1,0 +1,102 @@
+{
+  "schema": "chikun-ground-obstacle-kit-v1",
+  "names": [
+    "rock",
+    "log",
+    "thorn",
+    "crate"
+  ],
+  "tiers": {
+    "medium": {
+      "file": "ground-medium.webp",
+      "width": 1024,
+      "height": 512,
+      "frameWidth": 512,
+      "frameHeight": 256,
+      "decodedBytes": 2097152,
+      "bytes": 146698,
+      "sha256": "4b06f08d097eeb6e980e09cbd7ce3a49a1c6df83a5c718206ea2f8c29ff3af69"
+    },
+    "low": {
+      "file": "ground-low.webp",
+      "width": 512,
+      "height": 256,
+      "frameWidth": 256,
+      "frameHeight": 128,
+      "decodedBytes": 524288,
+      "bytes": 57758,
+      "sha256": "e146d073eed6baf88c3d8cd9e8ac4b0f5f4145e8b4661351bbb800f4e5031a63"
+    }
+  },
+  "native": {
+    "schema": "chikun-ground-obstacle-native-v1",
+    "assets": [
+      {
+        "name": "rock",
+        "sourceSha256": "c58c4a7da8ff280921d8e53b738a128996476db6573338fb7ae1c5fc341d0266",
+        "sourceUnchanged": true,
+        "derivedSource": "rock-refined.blend",
+        "renderSha256": "8d1df2b3d01517d9d87e82dcb586c845184f7b092d565c03f10a2d876f94fed9"
+      },
+      {
+        "name": "log",
+        "sourceSha256": "e3e583a6d065d9fb15c5446146369d8f0c1064d1e83c85fe21abb109acf17962",
+        "sourceUnchanged": true,
+        "derivedSource": "log-refined.blend",
+        "renderSha256": "c155894e4560a0b8e546718f0433e3a25eb647293c3b35bf4662f271c7bec8ca"
+      },
+      {
+        "name": "thorn",
+        "sourceSha256": "9ccd011697b5a918fbba030fcc1da397eea3ff5160a7a5928a8d9708f0d4e1b0",
+        "sourceUnchanged": true,
+        "derivedSource": "thorn-refined.blend",
+        "renderSha256": "835508adb7943e2deb0195b9b0ea8f9fd3f50b0f6d8b0b512f3fe760c2db2817"
+      },
+      {
+        "name": "crate",
+        "sourceSha256": "647582fa283966295376b8af5c125597485a5676421aed4cc34a92342c3e84b1",
+        "sourceUnchanged": true,
+        "derivedSource": "crate-refined.blend",
+        "renderSha256": "0fde639fa42a91bfe0b0d5ab97893fbe0f40987e28b60845b324e09ab6df469a"
+      }
+    ]
+  },
+  "crops": [
+    {
+      "name": "rock",
+      "alphaBounds": [
+        138,
+        92,
+        626,
+        343
+      ]
+    },
+    {
+      "name": "log",
+      "alphaBounds": [
+        93,
+        58,
+        677,
+        309
+      ]
+    },
+    {
+      "name": "thorn",
+      "alphaBounds": [
+        138,
+        124,
+        665,
+        314
+      ]
+    },
+    {
+      "name": "crate",
+      "alphaBounds": [
+        203,
+        33,
+        538,
+        342
+      ]
+    }
+  ]
+}

@@ -43,6 +43,7 @@ const newBoss = (overrides = {}) => createLiquidatorBoss({ arena: ARENA, startTi
 const hero = (x, y) => ({ x, y, groundZ: 0, vx: 0, vy: 0 });
 
 class RecordingGraphics {
+  cut() { this.calls.push(['cut']); return this; }
   constructor() { this.calls = []; }
   moveTo(...args) { this.#record('moveTo', args); return this; }
   lineTo(...args) { this.#record('lineTo', args); return this; }

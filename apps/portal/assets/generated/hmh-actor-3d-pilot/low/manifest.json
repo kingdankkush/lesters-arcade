@@ -1,19 +1,19 @@
 {
-  "schema": 1,
-  "kind": "derived-low-download-texture-tier",
-  "geometryChanged": false,
+  "schema": 2,
+  "kind": "derived-low-mesh-and-texture-tier",
+  "geometryChanged": true,
   "rigChanged": false,
   "animationChanged": false,
   "paidGeneration": false,
   "actors": {
     "lit-commando": {
       "file": "lit-commando.glb.gz",
-      "compressedBytes": 1175798,
-      "glbBytes": 2465332,
+      "compressedBytes": 842649,
+      "glbBytes": 1954348,
       "sourceBytes": 8656592,
       "sourceSha256": "ca6e03503a9e24203ae87be09b3b2508e80a2de6cc625eb9dbd6c2646b155e5d",
-      "sha256": "e04b51e8f2af8d7f2de7f5a39eaebe7a4c896cceb90a3c916d3210c591078656",
-      "glbSha256": "d8f533da0bc9cfc4b799e440930a7bf57299b4e684e017850cf9a7dbe17040cb",
+      "sha256": "f67791f864714d5b0ba3d33ecbe6bce982b02bfc9b3c1610073cccc2100db988",
+      "glbSha256": "15c62376a1b5e18f8c633a7be40223a6b1ab3ae1e349f8a7a34edd08a6767ee0",
       "baseEdge": 512,
       "materialEdge": 128,
       "images": [
@@ -173,16 +173,55 @@
           ],
           "bytes": 8504
         }
+      ],
+      "geometry": [
+        {
+          "mesh": "Lit Commando | Coin Blaster - Textured Handgun",
+          "sourceTriangles": 2500,
+          "triangles": 1000,
+          "vertices": 1426
+        },
+        {
+          "mesh": "Lit Commando | lower-body",
+          "sourceTriangles": 8000,
+          "triangles": 2999,
+          "vertices": 2617
+        },
+        {
+          "mesh": "Lit Commando | Throw Release Palm",
+          "sourceTriangles": 396,
+          "triangles": 396,
+          "vertices": 391
+        },
+        {
+          "mesh": "Lit Commando | torso-head",
+          "sourceTriangles": 11996,
+          "triangles": 6036,
+          "vertices": 5271
+        },
+        {
+          "mesh": "Litecoin Knife | Textured Melee Knife",
+          "sourceTriangles": 1499,
+          "triangles": 600,
+          "vertices": 902
+        },
+        {
+          "mesh": "Satoshi Frag | Textured Held Grenade",
+          "sourceTriangles": 1500,
+          "triangles": 1500,
+          "vertices": 1834,
+          "preserved": true
+        }
       ]
     },
     "lilly": {
       "file": "lilly.glb.gz",
-      "compressedBytes": 1492144,
-      "glbBytes": 2996836,
+      "compressedBytes": 1014100,
+      "glbBytes": 2221940,
       "sourceBytes": 8415092,
       "sourceSha256": "65f10bae22e2ff6fcca45c19ff68940302b57ea8fad370aaa4f0507ffad3056c",
-      "sha256": "4e1a032e7b120d7392b79e8d7ae4d1c5ee2dda18b7766e3255429b648d89fe7c",
-      "glbSha256": "e7f379c7432685fd0ab51f8daa16538276437e8cbe26d0ae330cd22af8954b85",
+      "sha256": "2a5fd7534d7c0705cc2f1fcfecd0fff875371f00b01662ed30973466192466cf",
+      "glbSha256": "6fa6f8cd1eec555f8456e913961f760a62fec9fbee4972fe76c20c79e7e6b850",
       "baseEdge": 448,
       "materialEdge": 128,
       "images": [
@@ -342,16 +381,56 @@
           ],
           "bytes": 8504
         }
+      ],
+      "geometry": [
+        {
+          "mesh": "Lilly | coin-blaster",
+          "sourceTriangles": 2500,
+          "triangles": 1000,
+          "vertices": 1434
+        },
+        {
+          "mesh": "Lilly | litecoin-knife",
+          "sourceTriangles": 1000,
+          "triangles": 400,
+          "vertices": 665
+        },
+        {
+          "mesh": "Lilly | lower-body",
+          "sourceTriangles": 8000,
+          "triangles": 2999,
+          "vertices": 2969
+        },
+        {
+          "mesh": "Lilly | satoshi-frag-held",
+          "sourceTriangles": 999,
+          "triangles": 999,
+          "vertices": 1328,
+          "preserved": true
+        },
+        {
+          "mesh": "Lilly | satoshi-frag-released",
+          "sourceTriangles": 999,
+          "triangles": 999,
+          "vertices": 1328,
+          "preserved": true
+        },
+        {
+          "mesh": "Lilly | torso-head",
+          "sourceTriangles": 13998,
+          "triangles": 6999,
+          "vertices": 7065
+        }
       ]
     },
     "lit-valkyrie": {
       "file": "lit-valkyrie.glb.gz",
-      "compressedBytes": 1477679,
-      "glbBytes": 2890224,
+      "compressedBytes": 1008380,
+      "glbBytes": 2152516,
       "sourceBytes": 8888720,
       "sourceSha256": "f083aad5501e18a85b7e5dd6b8407aa35da4d9954dedf66af4bffab0f1c27548",
-      "sha256": "8f91b40444dc82cea1859c89685ce3b3724e082856288823d537ae3d917a90c9",
-      "glbSha256": "1886b6948da768418d46b8dcd5d4bb88c446fbd5231ba12f21f9061816d53bcc",
+      "sha256": "9bcbe505174edb4b68d528fdece785ede1023f54886d7bcad6c6bb1805c18c15",
+      "glbSha256": "a1d9205e5c12129efcf69cbbd08d66e6ed400da06266a31ce04406dc7989c04c",
       "baseEdge": 448,
       "materialEdge": 128,
       "images": [
@@ -511,16 +590,56 @@
           ],
           "bytes": 8504
         }
+      ],
+      "geometry": [
+        {
+          "mesh": "Lit Valkyrie | coin-blaster",
+          "sourceTriangles": 2500,
+          "triangles": 1000,
+          "vertices": 1416
+        },
+        {
+          "mesh": "Lit Valkyrie | litecoin-knife",
+          "sourceTriangles": 1000,
+          "triangles": 400,
+          "vertices": 667
+        },
+        {
+          "mesh": "Lit Valkyrie | lower-body",
+          "sourceTriangles": 7997,
+          "triangles": 3000,
+          "vertices": 2682
+        },
+        {
+          "mesh": "Lit Valkyrie | satoshi-frag-held",
+          "sourceTriangles": 999,
+          "triangles": 999,
+          "vertices": 1334,
+          "preserved": true
+        },
+        {
+          "mesh": "Lit Valkyrie | satoshi-frag-released",
+          "sourceTriangles": 999,
+          "triangles": 999,
+          "vertices": 1334,
+          "preserved": true
+        },
+        {
+          "mesh": "Lit Valkyrie | torso-head",
+          "sourceTriangles": 13999,
+          "triangles": 7000,
+          "vertices": 6861
+        }
       ]
     },
     "lester-original": {
       "file": "lester-original.glb.gz",
-      "compressedBytes": 1467566,
-      "glbBytes": 2687348,
+      "compressedBytes": 1003338,
+      "glbBytes": 1981108,
       "sourceBytes": 8278220,
       "sourceSha256": "df2a09642967196960d98825189cdcb611b0ecc91f820a37331276be0fbc779b",
-      "sha256": "88089fb111aa7de42d9a6971aa33df40ca5994d3b55d298e29f3febd5d06603f",
-      "glbSha256": "23789c0fc34d4d8bca7d781719556ef0e05f934da39bdb2f5aa9c8b16734d6bd",
+      "sha256": "b2caf2da7f2105adc731b26ace57c96e3de8fd53662dd196ceb43f8f9e21a629",
+      "glbSha256": "8288449393559c55b6ca9c71cf8d790795e354c05c639dc75f2ff97fca659065",
       "baseEdge": 512,
       "materialEdge": 128,
       "images": [
@@ -679,6 +798,46 @@
             128
           ],
           "bytes": 8504
+        }
+      ],
+      "geometry": [
+        {
+          "mesh": "Lester Original | coin-blaster",
+          "sourceTriangles": 2500,
+          "triangles": 1000,
+          "vertices": 1430
+        },
+        {
+          "mesh": "Lester Original | litecoin-knife",
+          "sourceTriangles": 1000,
+          "triangles": 400,
+          "vertices": 660
+        },
+        {
+          "mesh": "Lester Original | lower-body",
+          "sourceTriangles": 7999,
+          "triangles": 2999,
+          "vertices": 2640
+        },
+        {
+          "mesh": "Lester Original | satoshi-frag-held",
+          "sourceTriangles": 999,
+          "triangles": 999,
+          "vertices": 1324,
+          "preserved": true
+        },
+        {
+          "mesh": "Lester Original | satoshi-frag-released",
+          "sourceTriangles": 999,
+          "triangles": 999,
+          "vertices": 1324,
+          "preserved": true
+        },
+        {
+          "mesh": "Lester Original | torso-head",
+          "sourceTriangles": 13999,
+          "triangles": 6999,
+          "vertices": 5247
         }
       ]
     }

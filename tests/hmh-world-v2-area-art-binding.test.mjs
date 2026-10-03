@@ -10,7 +10,7 @@ import { worldDepthKey } from '../apps/hmh-reboot/src/world-depth.mjs';
 const kit = JSON.parse(fs.readFileSync(new URL('../apps/portal/assets/generated/hmh-reboot-tripo-props-hd/hmh-tripo-props-hd.json', import.meta.url), 'utf8'));
 const mainSource = fs.readFileSync(new URL('../apps/hmh-reboot/src/main.mjs', import.meta.url), 'utf8');
 const DISTRICTS = ['fork-fortress', 'halving-farms', 'hashwood-river', 'hollow-pines', 'ledger-ridge', 'litecoin-city', 'mweb-meadows', 'rugpull-woods', 'scrypt-bayou', 'silver-coast'];
-const sizeFor = url => { const file = url.split('/').at(-1); if (file.startsWith('tripo-props-hd-')) return file.includes('@0.5x') ? [1024, 1024] : [2048, 2048]; if (file.startsWith('ridge-cliff-kit')) return file.includes('@0.5x') ? [512, 256] : [1024, 512]; if (file.endsWith('-fringe.png')) return [512, 128]; if (file === 'ground-details.webp') return [256, 256]; return [512, 512]; };
+const sizeFor = url => { const file = url.split('/').at(-1); if (file.startsWith('tripo-props-hd-')) return file.includes('@0.5x') ? [1024, 1024] : [2048, 2048]; if (file.startsWith('forest-ground-details')) return file.includes('@0.5x') ? [512,128] : [1024,256]; if (file.startsWith('ridge-cliff-kit')) return file.includes('@0.5x') ? [512, 256] : [1024, 512]; if (file.endsWith('-fringe.png')) return [512, 128]; if (file === 'ground-details.webp') return [256, 256]; return [512, 512]; };
 function fixture({ resolution = 'full' } = {}) {
   const loaded = [], unloaded = [];
   const host = new Container(), before = new Container(), attached = new Set();

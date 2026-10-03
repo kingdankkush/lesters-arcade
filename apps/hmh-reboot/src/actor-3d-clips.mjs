@@ -32,6 +32,20 @@ export function heroClipProp(name) {
   return heroClipInfo(name)?.prop ?? 'blaster';
 }
 
+const BLENDED_CATEGORIES = new Set(['movement','cover','fidget','interaction','reload']);
+const IMMEDIATE_CLIPS = new Set(['hurt','death','dash','melee','grenade','pistol-fire','cover-hit']);
+const NATIVE_LOCOMOTION = new Set(['idle','aim','run']);
+export function heroClipBlendTicks(previous, next) {
+  const incoming=heroClipInfo(next), outgoing=heroClipInfo(previous);
+  if (previous === next || !incoming || !outgoing) return 0;
+  // Contact, damage and evasions take ownership on their actual event frame.
+  if (IMMEDIATE_CLIPS.has(next)
+    || next.includes('fire') || next.startsWith('hit-') || next.startsWith('death-')) return 0;
+  const nativeLocomotion=NATIVE_LOCOMOTION.has(next);
+  if (!nativeLocomotion && !BLENDED_CATEGORIES.has(incoming.category) && !next.startsWith('reload-')) return 0;
+  return Math.min(12,Math.max(incoming.blendIn,outgoing.blendOut) || (nativeLocomotion ? 4 : 0));
+}
+
 // Read-only event projection into the existing library. No timers are written
 // back to gameplay; these clocks come from observed shot/reload/mission state.
 export function selectHeroActor3dClip(hero) {

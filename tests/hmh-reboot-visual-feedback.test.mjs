@@ -32,7 +32,7 @@ test('kills, impacts, and player damage each have a distinct visual response', a
   assert.match(source, /type: 'kill'/, 'a defeat must emit a kill event');
   assert.match(source, /event\.type === 'kill'/, 'the kill event must be rendered');
   assert.match(source, /PLAYER_DAMAGE_FLASH_TICKS/, 'player damage needs a bounded screen flash');
-  assert.match(source, /LOW_HEALTH_VIGNETTE_THRESHOLD/, 'low health needs a persistent vignette');
+  assert.match(source, /lowHealthVignette\.update\(\{ healthRatio/, 'low health reaches the soft persistent vignette');
   assert.ok(source.includes('death.graphic.alpha = corpse.alpha'), 'bounded corpse fade reaches its actual display');
 });
 

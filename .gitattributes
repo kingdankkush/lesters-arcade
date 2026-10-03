@@ -148,6 +148,9 @@ apps/portal/assets/generated/hmh-art-target/*.webp filter=lfs diff=lfs merge=lfs
 # Tiered Chikun eagle runtime animation
 apps/portal/assets/generated/chikun-obstacle-loop-v1/*.webp filter=lfs diff=lfs merge=lfs -text
 apps/portal/assets/generated/chikun-obstacle-kit-v1/*.webp filter=lfs diff=lfs merge=lfs -text
+apps/portal/assets/generated/chikun-sky-kit-v1/*.webp filter=lfs diff=lfs merge=lfs -text
+apps/portal/assets/generated/chikun-ground-obstacle-kit-v1/*.webp filter=lfs diff=lfs merge=lfs -text
+apps/portal/assets/generated/chikun-ground-loop-kit-v1/*.webp filter=lfs diff=lfs merge=lfs -text
 
 # Authored ten-area ground bakes; legacy terrain source proofs remain untouched.
 apps/portal/assets/generated/hmh-terrain-tiles/surface-*.png filter=lfs diff=lfs merge=lfs -text

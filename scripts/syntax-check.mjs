@@ -20,6 +20,26 @@ const root = fileURLToPath(new URL('..', import.meta.url));
 
 // Every .mjs / .js module that must parse cleanly (node --check).
 const NODE_CHECK_FILES = [
+  'apps/chikun/src/ground-loop-kit.mjs',
+  'tests/chikun-ground-loop-kit.test.mjs',
+  'apps/hmh-reboot/src/boss-edge-warning.mjs',
+  'tests/hmh-boss-edge-warning.test.mjs',
+  'apps/chikun/src/gamepad-input.mjs',
+  'apps/chikun/src/ground-obstacle-kit.mjs',
+  'tests/chikun-gamepad-input.test.mjs',
+  'tests/chikun-ground-obstacle-kit.test.mjs',
+  'apps/hmh-reboot/src/cover-readability.mjs',
+  'tests/hmh-cover-readability.test.mjs',
+  'apps/hmh-reboot/src/world-v2-area-plans/forest-floor.mjs',
+  'tests/hmh-forest-floor-kit.test.mjs',
+  'scripts/hmh-actor-low-mesh-protection.mjs',
+  'tests/hmh-actor-low-mesh.test.mjs',
+  'apps/hmh-reboot/src/low-health-vignette.mjs',
+  'tests/hmh-low-health-vignette.test.mjs',
+  'tests/hmh-boss-telegraph-polish.test.mjs',
+  'tests/hmh-water-flow-material.test.mjs',
+  'apps/chikun/src/sky-kit.mjs',
+  'tests/chikun-sky-kit.test.mjs',
   'tests/hmh-ridge-native-cliff-kit.test.mjs',
   'apps/stacked/src/render/quiet-backdrop.mjs',
   'tests/stacked-quiet-backdrop.test.mjs',
@@ -1482,6 +1502,15 @@ const NODE_CHECK_FILES = [
 
 // Every Python script that must compile (python -m py_compile).
 const PY_COMPILE_FILES = [
+  'scripts/chikun-blender/build-chikun-ground-loop-kit.py',
+  'scripts/chikun-blender/pack-chikun-ground-loop-kit.py',
+  'scripts/chikun-blender/build-chikun-ground-obstacle-kit.py',
+  'scripts/chikun-blender/pack-chikun-ground-obstacle-kit.py',
+  'scripts/build-hmh-forest-floor.py',
+  'scripts/hmh-blender/build-hmh-low-mesh.py',
+  'scripts/optimize-hmh-actor-mesh-tier.py',
+  'scripts/chikun-blender/build-chikun-sky-kit.py',
+  'scripts/chikun-blender/pack-chikun-sky-kit.py',
   'scripts/build-hmh-ridge-cliff-kit.py',
   'scripts/build-chikun-course-two-art.py',
   'scripts/run-arcade-cabinets.py',

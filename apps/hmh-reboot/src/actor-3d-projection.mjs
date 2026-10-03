@@ -23,13 +23,15 @@ export function createActor3dProjection(actor, camera, viewport) {
   const position = Object.freeze({ x: finite(actor?.x, 'x'), y: finite(actor?.y, 'y'), z: finite(actor?.z ?? 0, 'z') });
   const clipTimeSeconds = finite(actor?.clipTimeSeconds ?? 0, 'clipTimeSeconds');
   if (clipTimeSeconds < 0) throw new TypeError('clipTimeSeconds must be non-negative');
+  const presentationTick=actor?.presentationTick == null ? null : finite(actor.presentationTick,'presentationTick');
+  if (presentationTick !== null && presentationTick < 0) throw new TypeError('presentationTick must be non-negative');
   const screen = worldToScreen(position, camera, viewport);
   finite(screen.x, 'screen x'); finite(screen.y, 'screen y');
   const projection = Object.freeze({
     id: identity(actor?.id, 'id'), actorId: identity(actor?.actorId, 'actorId'), position,
     screen: Object.freeze(screen), bodyTint: tint(actor?.bodyTint), weaponTint: tint(actor?.weaponTint),
     depth: worldDepthKey(position.y), heading: finite(actor?.heading ?? 0, 'heading'),
-    clip: identity(actor?.clip ?? 'idle', 'clip'), clipTimeSeconds,
+    clip: identity(actor?.clip ?? 'idle', 'clip'), clipTimeSeconds, presentationTick,
     pixelsPerMetre: finite(actor?.pixelsPerMetre ?? 40, 'pixelsPerMetre'),
     zoom: finite(camera?.zoom ?? 1, 'zoom'),
     // Presentation identity of the held weapon (2.0 weapons lane); the

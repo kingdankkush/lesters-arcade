@@ -11,13 +11,15 @@ const manifest=JSON.parse(readFileSync(new URL('low/manifest.json',directory),'u
 const sha=bytes=>createHash('sha256').update(bytes).digest('hex');
 const buffer=bytes=>bytes.buffer.slice(bytes.byteOffset,bytes.byteOffset+bytes.byteLength);
 
-for(const [hero,row] of Object.entries(manifest.actors)) test(`${hero} low download is under 1.5 MB with identical geometry, rig and all 80 clip poses`,()=>{
+for(const [hero,row] of Object.entries(manifest.actors)) test(`${hero} low download is under 1.5 MB with reduced geometry, exact rig and all 80 clip poses`,()=>{
   const original=readFileSync(new URL(`${hero}.glb`,directory)),packed=readFileSync(new URL(`low/${row.file}`,directory)),raw=gunzipSync(packed);
   assert.equal(sha(original),row.sourceSha256); assert.equal(sha(packed),row.sha256); assert.equal(sha(raw),row.glbSha256);
   assert.equal(packed.length,row.compressedBytes); assert.equal(raw.length,row.glbBytes); assert.ok(packed.length<=1_500_000);
   assert.deepEqual(ACTOR3D_LOW_ASSETS[hero],{file:row.file,compressedBytes:row.compressedBytes,glbBytes:row.glbBytes});
   const high=decodeActor3dGlb(buffer(original)),low=decodeActor3dGlb(buffer(raw));
-  assert.deepEqual(low.primitives,high.primitives); assert.deepEqual(low.nodes,high.nodes); assert.deepEqual(low.skins,high.skins);
+  assert.equal(manifest.geometryChanged,true);
+  assert.deepEqual(low.primitives.map(p=>({mesh:p.nodeName,triangles:p.indices.length/3,vertices:p.positions.length/3})),row.geometry.map(p=>({mesh:p.mesh,triangles:p.triangles,vertices:p.vertices})));
+  assert.deepEqual(low.nodes,high.nodes); assert.deepEqual(low.skins,high.skins);
   assert.deepEqual(low.clips,high.clips); assert.equal(low.clips.size,80);
   for(const clip of low.clips.keys()) for(const t of [0,.5,1]) assert.deepEqual(evaluateActor3dPose(low,clip,t),evaluateActor3dPose(high,clip,t));
   assert.deepEqual(low.images.map(image=>[image.width,image.height]),row.images.map(image=>image.size));

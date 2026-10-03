@@ -72,3 +72,104 @@ failed receipts remain intact; `outputs/22-hmh-second/animation-observations.jso
 records the independent observations. These are delivery checks, not acceptance
 of final enemy animation quality, new clip sets, frame time or physical-phone
 performance. Latest combined source regressions pass 88/88.
+
+## Native hero transition polish (2026-10-03, candidate)
+
+The four hero exports contain 80 authored clips each, including start/stop,
+strafe, back-pedal, turn/pivot, cover, interaction and four identity-specific
+fidgets. They do not contain a dedicated walk clip. Ordinary enemies still
+have six clips and one death; district bosses have ten, including stagger and
+supers. This slice adds no new clips or procedural substitute poses.
+
+The native renderer now crossfades between eligible hero poses using the
+authored blend metadata (2–6 ticks in the selected clips; native idle/aim/run
+use four ticks). It interpolates local joint translation/scale and shortest-path
+quaternion rotation before evaluating the skin, avoiding shrinking limbs from
+matrix interpolation. Retargeting snapshots the currently drawn pose. One
+absolute presentation tick travels through the existing hero render input;
+repeated paused ticks freeze blending, and rollback or gaps above 30 ticks
+reset directly to the selected pose. Hurt, death, dash, melee, grenade and all
+fire/contact clips interrupt immediately. Enemy/boss pose timing is unchanged.
+
+Only the hero allocates a transition snapshot, once per display: 1,200 bytes
+of typed transform storage for Commando/Valkyrie/Lester, 1,280 for Lilly,
+plus small node/state wrappers. Crossfade sampling adds no per-frame arrays
+or model/texture downloads. Snapshot references release with the display;
+existing fallback, disposal and context-loss ownership remain intact.
+
+Validation: new behavior tests first failed, then 67/67 focused model,
+projection, controller and hero-library regressions passed. The final contact
+priority addition passed its six targeted cases. Native model pose receipts,
+bounds, exact asset identity and ownership tests remain green. Browser visual
+acceptance and performance measurements belong to the lead's combined pass;
+neither is claimed here. Movement acceleration and a true walk tier remain
+separate versioned gameplay work, as do authored enemy death variations.
+
+## Actual low mesh LOD (2026-10-03, textured runtime silhouettes reviewed)
+
+The low tier now has genuinely reduced skinned geometry, retaining the existing
+low WebP texture sizes. Medium/high retain the classic GLBs byte-for-byte.
+
+| Hero | Classic → low triangles | Classic → low vertices | Low download | Classic → low GPU geometry buffer bytes |
+|---|---:|---:|---:|---:|
+| Commando | 25,891 → 12,531 | 21,519 → 12,441 | 842,649 | 1,876,866 → 1,070,466 |
+| Lilly | 27,496 → 13,396 | 25,645 → 14,789 | 1,014,100 | 2,216,576 → 1,263,496 |
+| Valkyrie | 27,494 → 13,398 | 24,574 → 14,294 | 1,008,380 | 2,130,884 → 1,223,908 |
+| Lester | 27,496 → 13,396 | 22,345 → 12,625 | 1,003,338 | 1,952,576 → 1,090,376 |
+
+These are typed attribute/index buffer sums, including the renderer's tangent
+buffer, not total GPU memory or measured FPS. Texture RGBA allocations remain
+4,718,592 bytes for Commando/Lester and 3,735,552 for Lilly/Valkyrie, before
+mipmaps. The four low downloads total 3,868,467 bytes. No new paid assets.
+
+The native scratch exporter imports the accepted GLB with equivalent vertices
+welded, preserving corner UVs/normals. It protects head/hand skin regions and
+animated extrema measured from all 80 clips at five sample times. Protected
+vertices must still match the source coordinates within 0.00001 metres after
+import. Lower bodies target 3k triangles; torso/head 6k Commando/7k others.
+Small held/released grenade meshes are retained verbatim. Geometry is repacked
+into the original nodes, skin/inverse binds and animation binary streams;
+scratch Blender animations/bone transforms are never adopted.
+
+Failures were caught before publication: initial masks selected collapses
+rather than protecting vertices, and disconnected GLB split vertices made
+some reduced bodies visibly fragmented despite acceptable bounds. Inverted
+protection masks, animated-extrema protection and welded import fixed those
+issues. Tiny grenade reductions failed their strict silhouette checks, so
+those original meshes were preserved instead of loosening the gate.
+
+The existing runtime CPU preview now accepts an alternate asset and output.
+Side-by-side idle/run/short-cover sheets were inspected for all four heroes;
+the corrected low silhouettes retain gear, long coat, hair and mascot head.
+These flat-shaded untextured sheets prove shape only. Root subsequently checked
+all four actual low downloads and textured silhouettes in desktop and phone
+viewports, with ready actor status and no page errors. Recognizable gear,
+coat, hair and head remain intact. This accepts the reduced-geometry slice;
+full clip/face/material polish and physical-device performance remain open.
+
+Tests: 11/11 download/LOD cases pass, with genuinely reduced triangle/vertex
+counts, exact original node/skin/80 animation tracks and sampled palettes,
+four normalized influences, finite UVs/unit normals, and per-mesh animated
+bounds within 3.5% of source scale at five times per clip. All source hashes
+are unchanged. Download corruption/abort/classic fallback checks still pass.
+The complete asset set and lazy registry were published together only after
+scratch integrity checks; the texture-only generator now refuses to overwrite
+an active mesh LOD.
+
+Regeneration (native work under the shared heavy lock): run
+`scripts/hmh-actor-low-mesh-protection.mjs`; for each hero run Blender with
+`scripts/hmh-blender/build-hmh-low-mesh.py -- --hero <id>`, then bundled Python
+`scripts/optimize-hmh-actor-mesh-tier.py --hero <id>`. Test the scratch directory
+with `HMH_LOW_MESH_DIR=.tmp/hmh-low-mesh`, inspect the alternate-asset preview,
+then publish all four together with the mesh-tier script's `--publish`.
+Repacking reconstructs the texture input from the unchanged classic asset,
+so a later run never measures or simplifies an already reduced low tier.
+# Boss offscreen warning — 2026-10-03
+
+Master item 8 now has a lazy screen-space warning for an active boss wholly outside the actual viewport and, with priority, an unseen **locked charge origin** during its existing tell. The filled human/bolt icon, directional arrow, countdown and clock ring read authoritative pending attack geometry/ticks; they do not move the camera, modify aim, spawn anything, or change damage/RNG/evidence. Union geometry is bounded to four nested levels and sixteen children; at most 32 pending attacks are inspected. A real partially visible body does not claim to be offscreen. Resolved tells disappear immediately. Reduced motion adds no pulsing or autonomous motion; the informational clock advances only with existing simulation ticks and freezes with pause.
+
+The label/icon footprint reserves 50px around a measured HUD/touch safe rectangle. HUD/control/browser-chrome measurements occur at most once per simulation second or on resize/restart; short fully occluded viewports suppress the warning. The desktop objective band keeps a 96px bottom reserve. Warning reset, death, boss withdrawal and disposal clear ownership. Accessibility announces each warning rather than every countdown frame. Telemetry exposes only `bossEdgeWarningStatus` and `bossEdgeWarningProgress` under existing evidence/debug gating; no runtime debug object is published.
+
+**Full dual-body boss camera framing remains open.** Actual `InputState.snapshot` maps the pointer through the same render camera (`screenToGround`); moving/zooming it changes the next shot direction. Reproduced at 414×896, hero (1000,1000), pointer (300,350): baseline camera (1000,1000), zoom .9 yields aim (.6884,-.7254); midpoint camera (1120,1000), zoom .65 yields (.8676,-.4972). Keeping a separate legacy input camera preserves aim but projects that world target at (196.17,377.22), visibly missing the cursor. That workaround was rejected. With 600 world units of horizontal separation plus hero/boss extents, a 414px viewport cannot retain the current approximately 72px mobile hero and show both complete bodies. A later camera design requires explicitly accepted input semantics or a separately versioned encounter-distance change. This warning improves the unseen-origin tell; it does not claim the requested always-visible boss body is complete.
+
+Validation: new warning tests first failed on the absent module, then 9/9 passed, including real Pixi compiled polygon shapes (plain reusable numeric arrays, not typed-array instructions), locked origin/countdown, actual body visibility, bounded safe geometry, unchanged input/state, paused reduced-motion drawing, DOM extent cache, reset/disposal. Warning + existing input/world-space suites: **61/61 pass**. Syntax checks pass. Source module 8,082 bytes; standalone esbuild-minified 4,458 bytes / gzip 2,242 bytes (measurement only, actual combined initial/chunk budgets remain the parent build's authority). No art download or native job. Root inspected the actual Baron-court boss warning at desktop and phone viewports, with no page errors and HUD/touch clearance. A natural charge countdown capture remains open; physical iPhone performance remains unproven. Evidence: root `outputs/22-forest-lod-cover-routes/boss-edge-*` and focused receipt.

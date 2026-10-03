@@ -7,6 +7,14 @@ const actor = () => ({ id: 'hero', actorId: 'lit-commando', x: 100, y: 220, z: 1
 const camera = { x: 50, y: 100, groundZ: 0, zoom: 2, shakeX: 0, shakeY: 0 };
 const viewport = { width: 800, height: 600 };
 
+test('the optional frozen presentation clock remains detached from simulation state', () => {
+  const source={...actor(),presentationTick:241};
+  assert.equal(module.createActor3dProjection(source,camera,viewport).presentationTick,241);
+  assert.equal(module.createActor3dProjection(actor(),camera,viewport).presentationTick,null);
+  source.presentationTick=242;
+  assert.throws(()=>module.createActor3dProjection({...source,presentationTick:-1},camera,viewport),/presentationTick/);
+});
+
 test('the 3D pilot is default-off and enabled only by its exact explicit switch', () => {
   assert.equal(typeof module.isActor3dPilotEnabled, 'function');
   for (const query of ['', '?actor3dPilot=0', '?actor3dPilot=true', '?productionPilot=1']) {

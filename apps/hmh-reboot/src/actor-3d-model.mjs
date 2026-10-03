@@ -193,12 +193,15 @@ function sample(track, time, out) {
   norm = Math.sqrt(norm); requireValue(norm > 0, 'rotation norm'); for (let i = 0; i < 4; i++) out[i] /= norm;
 }
 
-export function evaluateActor3dPose(asset, clipName, timeSeconds, workspace = createActor3dPoseWorkspace(asset)) {
+function samplePose(asset, clipName, timeSeconds, workspace) {
   const clip = asset.clips.get(clipName); requireValue(clip, 'unknown actor clip');
   requireValue(Number.isFinite(timeSeconds) && timeSeconds >= 0, 'finite pose time required');
   const time = Math.min(timeSeconds, clip.duration);
   for (let i = 0; i < asset.nodes.length; i++) for (const field of ['translation', 'rotation', 'scale']) workspace.transforms[i][field].set(asset.nodes[i][field]);
   for (const track of clip.tracks) sample(track, time, workspace.transforms[track.node][track.path]);
+}
+
+function finishPose(asset, workspace) {
   for (const i of asset.order) {
     if (asset.nodes[i].matrix) workspace.local[i].set(asset.nodes[i].matrix); else compose(workspace.local[i], workspace.transforms[i]);
     if (asset.parents[i] < 0) workspace.world[i].set(workspace.local[i]); else multiply(workspace.world[i], workspace.world[asset.parents[i]], workspace.local[i]);
@@ -208,6 +211,50 @@ export function evaluateActor3dPose(asset, clipName, timeSeconds, workspace = cr
     for (let j = 0; j < skin.joints.length; j++) multiply(workspace.palettes[i].subarray(j * 16, j * 16 + 16), workspace.world[skin.joints[j]], skin.inverseBind.subarray(j * 16, j * 16 + 16));
   }
   return workspace.palettes;
+}
+
+export function evaluateActor3dPose(asset, clipName, timeSeconds, workspace = createActor3dPoseWorkspace(asset)) {
+  samplePose(asset, clipName, timeSeconds, workspace);
+  return finishPose(asset, workspace);
+}
+
+// One bounded snapshot per display, allocated once. Blend local joint TRS,
+// never skinning matrices: matrix lerps shrink limbs during large rotations.
+export function createActor3dTransitionState(asset) {
+  return { clip:null, lastTick:null, startTick:0, duration:0,
+    source:asset.nodes.map(() => ({translation:new Float32Array(3),rotation:new Float32Array(4),scale:new Float32Array(3)})) };
+}
+
+export function evaluateActor3dTransitionPose(asset, clipName, timeSeconds, tick, blendTicks, workspace, state) {
+  requireValue(Number.isFinite(tick) && tick >= 0 && Number.isInteger(blendTicks) && blendTicks >= 0 && blendTicks <= 12,'bounded transition clock');
+  const reset=state.lastTick === null || tick < state.lastTick || tick-state.lastTick > 30;
+  if (reset) { state.clip=clipName; state.duration=0; }
+  else if (state.clip !== clipName) {
+    for(let i=0;i<asset.nodes.length;i++) {
+      const source=state.source[i], drawn=workspace.transforms[i];
+      source.translation.set(drawn.translation); source.rotation.set(drawn.rotation); source.scale.set(drawn.scale);
+    }
+    state.clip=clipName; state.startTick=tick; state.duration=blendTicks;
+  }
+  state.lastTick=tick;
+  samplePose(asset,clipName,timeSeconds,workspace);
+  const fraction=state.duration ? Math.min(1,(tick-state.startTick)/state.duration) : 1;
+  if (fraction < 1) for(let i=0;i<asset.nodes.length;i++) {
+    const from=state.source[i], to=workspace.transforms[i];
+    for(let axis=0;axis<3;axis++) {
+      to.translation[axis]=from.translation[axis]+(to.translation[axis]-from.translation[axis])*fraction;
+      to.scale[axis]=from.scale[axis]+(to.scale[axis]-from.scale[axis])*fraction;
+    }
+    let dot=0; for(let axis=0;axis<4;axis++) dot+=from.rotation[axis]*to.rotation[axis];
+    const sign=dot<0 ? -1 : 1, angle=Math.acos(Math.min(1,Math.abs(dot))), sine=Math.sin(angle);
+    const first=sine>1e-6 ? Math.sin((1-fraction)*angle)/sine : 1-fraction;
+    const second=sine>1e-6 ? Math.sin(fraction*angle)/sine : fraction;
+    let norm=0;
+    for(let axis=0;axis<4;axis++) { to.rotation[axis]=first*from.rotation[axis]+second*to.rotation[axis]*sign; norm+=to.rotation[axis]**2; }
+    norm=Math.sqrt(norm); requireValue(norm>0,'transition rotation norm');
+    for(let axis=0;axis<4;axis++) to.rotation[axis]/=norm;
+  }
+  return finishPose(asset,workspace);
 }
 
 export function projectActor3dPoint([x, y, z], { heading = Math.PI / 2, pixelsPerMetre = 40 } = {}) {

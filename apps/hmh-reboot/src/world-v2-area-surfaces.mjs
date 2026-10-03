@@ -14,9 +14,9 @@ export const WATER_DEPTH = 199;
 // Subdued green-grey water per area palette (bible section 4): never the
 // cyan pickup band. `flow` is the drift direction and speed in units per second.
 export const WATER_PALETTES = Object.freeze({
-  'scrypt-bayou': Object.freeze({ shallow: 0x55634f, deep: 0x26383a, sky: 0x9aa9a2, foam: 0xc9cbbb, bank: 0x1d211a, flow: Object.freeze({ x: 0, y: 1, speed: 5 }) }),
-  'hashwood-river': Object.freeze({ shallow: 0x5c7066, deep: 0x2a4547, sky: 0xa3b3b0, foam: 0xd8d5c6, bank: 0x1c2119, flow: Object.freeze({ x: 1, y: 0, speed: 18 }) }),
-  default: Object.freeze({ shallow: 0x587068, deep: 0x2e4a4a, sky: 0xa3b3b0, foam: 0xd8d5c6, bank: 0x1d211b, flow: Object.freeze({ x: 1, y: 0, speed: 8 }) }),
+  'scrypt-bayou': Object.freeze({ shallow: 0x55634f, deep: 0x26383a, sky: 0x9aa9a2, foam: 0xc9cbbb, bank: 0x1d211a, flow: Object.freeze({ x: 0, y: 1, speed: 5 }), optics:Object.freeze([3.3,0.24,0.10,0.17]) }),
+  'hashwood-river': Object.freeze({ shallow: 0x5c7066, deep: 0x2a4547, sky: 0xa3b3b0, foam: 0xd8d5c6, bank: 0x1c2119, flow: Object.freeze({ x: 1, y: 0, speed: 18 }), optics:Object.freeze([5.6,0.38,0.18,0.24]) }),
+  default: Object.freeze({ shallow: 0x587068, deep: 0x2e4a4a, sky: 0xa3b3b0, foam: 0xd8d5c6, bank: 0x1d211b, flow: Object.freeze({ x: 1, y: 0, speed: 8 }), optics:Object.freeze([4.4,0.30,0.14,0.20]) }),
 });
 
 // Deck/ramp/bridge material by district (bible: timber where the brief is
@@ -34,27 +34,45 @@ export const RAISED_KIT_BY_AREA = Object.freeze({
   'hashwood-river': 'stone', 'hollow-pines': 'stone', 'ledger-ridge': 'timber', 'fork-fortress': 'stone', 'rugpull-woods': 'timber',
 });
 
-function signedDistance(x, y, vertices) {
-  let best = Infinity;
-  for (let i = 0, n = vertices.length; i < n; i++) best = Math.min(best, distanceToSegment(x, y, vertices[i], vertices[(i + 1) % n]));
-  return pointInPolygon(x, y, vertices) ? best : -best;
+function shoreSample(x,y,vertices,fx,fy) {
+  let best=Infinity,tx=fx,ty=fy;
+  for(let i=0;i<vertices.length;i++) {
+    const a=vertices[i],b=vertices[(i+1)%vertices.length],d=distanceToSegment(x,y,a,b);
+    if(d<best) {best=d;const length=Math.hypot(b.x-a.x,b.y-a.y)||1;tx=(b.x-a.x)/length;ty=(b.y-a.y)/length;}
+  }
+  if(tx*fx+ty*fy<0) {tx=-tx;ty=-ty;}
+  const inside=pointInPolygon(x,y,vertices),distance=inside?best:-best;
+  // Near-shore drift bends along its nearest bank; the open channel gradually
+  // returns to its district's authored current. Only presentation data.
+  const bend=Math.exp(-Math.max(0,distance)/90)*0.82;
+  const vx=fx*(1-bend)+tx*bend,vy=fy*(1-bend)+ty*bend,length=Math.hypot(vx,vy)||1;
+  return {distance,fx:vx/length,fy:vy/length};
 }
 export const waterOutline = piece => (piece.visible.vertices ?? rectVertices(piece.visible.bounds)).map(({ x, y }) => ({ x, y }));
 
 // R = signed distance to the waterline mapped from [-bank, depth] to 0..255
 // (positive inside the water). Deterministic pure data; one byte per texel.
-export function buildShoreField(vertices, { unitsPerTexel = 8, bank = WATER_BANK, depth = WATER_DEPTH } = {}) {
+export function buildShoreField(vertices, { unitsPerTexel = 8, bank = WATER_BANK, depth = WATER_DEPTH, flow = {x:1,y:0} } = {}) {
+  if(!Number.isFinite(flow.x)||!Number.isFinite(flow.y)||Math.hypot(flow.x,flow.y)===0) throw new TypeError('finite nonzero presentation flow required');
+  const flowLength=Math.hypot(flow.x,flow.y),fx=flow.x/flowLength,fy=flow.y/flowLength;
   const b = polygonBounds(vertices), minX = b.minX - bank, minY = b.minY - bank;
   const width = Math.max(2, Math.ceil((b.maxX + bank - minX) / unitsPerTexel)), height = Math.max(2, Math.ceil((b.maxY + bank - minY) / unitsPerTexel));
-  const data = new Uint8Array(width * height), range = bank + depth;
+  const data = new Uint8Array(width * height), flowData=new Uint8Array(width*height*2), range = bank + depth;
   for (let j = 0; j < height; j++) {
     const y = minY + (j + 0.5) * unitsPerTexel;
     for (let i = 0; i < width; i++) {
-      const x = minX + (i + 0.5) * unitsPerTexel, d = Math.max(-bank, Math.min(depth, signedDistance(x, y, vertices)));
-      data[j * width + i] = Math.round((d + bank) / range * 255);
+      const x = minX + (i + 0.5) * unitsPerTexel, sample=shoreSample(x,y,vertices,fx,fy),d=Math.max(-bank,Math.min(depth,sample.distance)),index=j*width+i;
+      data[index] = Math.round((d + bank) / range * 255);
+      flowData[index*2]=Math.round((sample.fx*.5+.5)*255);flowData[index*2+1]=Math.round((sample.fy*.5+.5)*255);
     }
   }
-  return Object.freeze({ width, height, unitsPerTexel, minX, minY, maxX: minX + width * unitsPerTexel, maxY: minY + height * unitsPerTexel, bank, depth, data });
+  return Object.freeze({ width, height, unitsPerTexel, minX, minY, maxX: minX + width * unitsPerTexel, maxY: minY + height * unitsPerTexel, bank, depth, data, flowData });
+}
+
+export function packShoreFieldRGBA(field) {
+  const packed=new Uint8Array(field.width*field.height*4);
+  for(let i=0;i<field.data.length;i++) {const j=i*4;packed[j]=field.data[i];packed[j+1]=field.flowData[i*2];packed[j+2]=field.flowData[i*2+1];packed[j+3]=255;}
+  return packed;
 }
 
 // ---- raised walkable surfaces ----
@@ -179,62 +197,93 @@ float hash2(vec2 p) { vec3 q = fract(vec3(p.xyx) * 0.1031); q += dot(q, q.yzx + 
 float vnoise(vec2 p) { vec2 i = floor(p), f = fract(p), u = f * f * (3.0 - 2.0 * f);
   return mix(mix(hash2(i), hash2(i + vec2(1.0, 0.0)), u.x), mix(hash2(i + vec2(0.0, 1.0)), hash2(i + vec2(1.0, 1.0)), u.x), u.y); }
 float fbm2(vec2 p) { return vnoise(p) * 0.62 + vnoise(p * 2.13 + 17.0) * 0.38; }`;
-// Water: shore-field depth tint, two drifting ripple octaves (one on the
-// half tier, frozen under reduced motion), a perturbed sky gradient, bank
-// occlusion, a broken foam line at the waterline and a wet band on the land.
-// Premultiplied out; opaque inside the water.
+// Water: shore-aligned flow, layered analytic wave normals, depth absorption,
+// shallow caustics, directional glints and broken foam/wet-bank edges.
+// The existing half tier and reduced motion retain a frozen material phase.
+// Premultiplied output; opaque inside the unchanged authored water geometry.
 export const WATER_FRAGMENT = `#version 300 es
 precision highp float;
 in vec2 vWorld;
 out vec4 finalColor;
 uniform sampler2D uShore;
-uniform vec4 uField; uniform vec4 uWater; uniform vec4 uFlow;
+uniform vec4 uField; uniform vec4 uWater; uniform vec4 uFlow; uniform vec4 uOptics;
 uniform vec3 uShallow; uniform vec3 uDeep; uniform vec3 uSky; uniform vec3 uFoam; uniform vec3 uBank;
 uniform vec4 uColor; uniform vec4 uWorldColorAlpha;
 ${NOISE_GLSL}
-// Quintic value noise on rotated lattices: no grid-aligned blocks in the
-// lit wavelets.
-float qnoise(vec2 p) { vec2 i = floor(p), f = fract(p), u = f * f * f * (f * (f * 6.0 - 15.0) + 10.0);
-  return mix(mix(hash2(i), hash2(i + vec2(1.0, 0.0)), u.x), mix(hash2(i + vec2(0.0, 1.0)), hash2(i + vec2(1.0, 1.0)), u.x), u.y); }
-const mat2 R1 = mat2(0.98, -0.2, 0.2, 0.98), R2 = mat2(0.96, 0.28, -0.28, 0.96);
-// Wavelets in flow-aligned coordinates (along, across), stretched along the
-// current and drifting with it.
-float ripple(vec2 p, float t) {
-  vec2 q = vec2(dot(p, uFlow.zw), dot(p, vec2(-uFlow.w, uFlow.z)));
-  float drift = length(uFlow.xy) * 88.0 * t;
-  float h = qnoise(R1 * vec2((q.x - drift) / 96.0, q.y / 38.0)) * 0.6 + qnoise(R2 * vec2((q.x - drift * 1.4) / 47.0, q.y / 21.0) + 7.0) * 0.4;
-  if (uWater.y > 0.5) h = h * 0.75 + qnoise(R1 * vec2((q.x - drift * 2.0) / 21.0, q.y / 12.0) + vec2(5.0, 9.0)) * 0.25;
-  return h;
+// Analytic derivatives avoid three repeated noise evaluations per pixel.
+// Crossed directions and layered scales produce broad current swells
+// with smaller wavelets, rather than translating a flat noise sheet.
+vec3 waterWaveSample(vec2 p) {
+  vec2 flow = uFlow.zw, across = vec2(-flow.y, flow.x);
+  vec2 a = normalize(flow * 0.24 + across * 0.97);
+  vec2 b = normalize(flow * 0.47 - across * 0.88);
+  float pa = dot(p, a) * 0.071;
+  float pb = dot(p, b) * 0.137 + 2.3;
+  float height = sin(pa) + sin(pb) * 0.35;
+  vec2 slope = a * cos(pa) * 0.071 + b * cos(pb) * 0.04795;
+  if (uWater.y > 0.5) {
+    vec2 c = normalize(flow * 0.91 + across * 0.42);
+    float pc = dot(p, c) * 0.283 + 4.1;
+    height += sin(pc) * 0.075;
+    slope += c * cos(pc) * 0.021225;
+  }
+  return vec3(slope, height);
 }
+vec3 waterWaves(vec2 p, vec2 flow, float t) {
+  // Two staggered flow phases crossfade before either UV displacement resets.
+  // This bounds the warp in a long run and keeps its reset invisible.
+  float phaseA = fract(t / 12.0), phaseB = fract(t / 12.0 + 0.5);
+  float weightA = 1.0 - abs(phaseA * 2.0 - 1.0);
+  vec2 drift = flow * length(uFlow.xy) * 88.0 * 12.0;
+  return mix(waterWaveSample(p - drift * phaseB), waterWaveSample(p - drift * phaseA), weightA);
+}
+float waterCaustics(vec2 p, float t) {
+  // Small interrupted light flecks belong to the submerged bank, never a
+  // bright regular web draped across the open-water surface.
+  float a = sin(p.x * 0.265 + sin(p.y * 0.171 + t * 0.31));
+  float b = sin(p.y * 0.287 + sin(p.x * 0.193 - t * 0.23));
+  float flecks = pow(max(0.0, 1.0 - abs((a + b) * 0.5)), 18.0);
+  return flecks * smoothstep(0.27, 0.70, vnoise(p / 43.0 + 9.0));
+}
+float waterDepthFactor(float d) { return 1.0 - exp(-d / 68.0); }
+float waterCausticMask(float d) { return 1.0 - smoothstep(12.0, 62.0, d); }
 void main() {
   float range = uWater.z + uWater.w;
-  float sd = texture(uShore, (vWorld - uField.xy) * uField.zw).r * range - uWater.w;
+  vec3 shore = texture(uShore, (vWorld - uField.xy) * uField.zw).rgb;
+  float sd = shore.r * range - uWater.w;
+  vec2 flow = normalize(shore.gb * 2.0 - 1.0);
   float d = sd + (fbm2(vWorld / 64.0 + 3.0) - 0.5) * 22.0;
   if (d < -uWater.w + 2.0) discard;
   if (d < 0.0) {
     float wet = smoothstep(-uWater.w, 0.0, d);
     float a = wet * wet * 0.55;
-    finalColor = vec4(uBank * a, a) * uColor * uWorldColorAlpha;
+    float sheen = smoothstep(-18.0, -1.0, d) * 0.025;
+    finalColor = vec4((uBank + uSky * sheen) * a, a) * uColor * uWorldColorAlpha;
     return;
   }
   float t = uWater.x;
-  float h0 = ripple(vWorld, t), hx = ripple(vWorld + vec2(5.0, 0.0), t), hy = ripple(vWorld + vec2(0.0, 5.0), t);
-  vec2 n = vec2(h0 - hx, h0 - hy) * 3.0;
-  float depth = smoothstep(0.0, uWater.z, d);
+  vec3 wave = waterWaves(vWorld - uField.xy, flow, t);
+  vec3 normal = normalize(vec3(-wave.xy * uOptics.x, 1.0));
+  float depth = waterDepthFactor(d);
   vec3 col = mix(uShallow, uDeep, depth);
-  // Slow current streaks along the flow.
-  vec2 q = vec2(dot(vWorld, uFlow.zw), dot(vWorld, vec2(-uFlow.w, uFlow.z)));
-  col *= 0.95 + 0.08 * fbm2(vec2(q.x / 420.0 - t * 0.04, q.y / 70.0));
-  // Wavelets lit from the upper-left key, shadowed on the far side.
-  col *= 1.0 + clamp(-n.x * 0.55 - n.y * 0.75, -1.0, 1.0) * 0.3;
-  // Sky reflection: broad gradient bent by the ripple normal, stronger in deep water.
-  float sky = clamp(0.45 - n.y * 2.4 + n.x * 0.8 + (fbm2(vWorld / 900.0) - 0.5) * 0.7, 0.0, 1.0);
-  col = mix(col, uSky, sky * (0.07 + 0.14 * depth));
-  // Soft glints toward the upper-left key (full tier only).
-  col += uSky * smoothstep(0.5, 0.95, -n.x * 0.8 - n.y * 0.6 + 0.35) * 0.07 * uWater.y;
+  vec2 q = vec2(dot(vWorld - uField.xy - uFlow.xy * 88.0 * t, uFlow.zw), dot(vWorld - uField.xy, vec2(-uFlow.w, uFlow.z)));
+  col *= 0.94 + 0.12 * fbm2(vec2(q.x / 460.0, q.y / 86.0));
+  vec3 key = normalize(vec3(-0.38, -0.48, 0.82));
+  col *= 0.64 + 0.44 * max(0.0, dot(normal, key));
+  float fresnel = 0.025 + 0.16 * pow(1.0 - normal.z, 2.0);
+  vec3 reflection = uSky * (0.74 + 0.26 * fbm2(vWorld / 760.0 + normal.xy * 1.8));
+  col = mix(col, reflection, fresnel + depth * 0.025);
+  vec3 halfVector = normalize(key + vec3(0.0, 0.0, 1.0));
+  float specular = pow(max(0.0, dot(normal, halfVector)), mix(56.0, 96.0, uWater.y));
+  col += uSky * specular * uOptics.w * (0.32 + 0.68 * depth);
+  // Refracted light fades before deep water; it never paints the land band.
+  float caustic = waterCaustics(q, t) * waterCausticMask(d);
+  col += vec3(0.14, 0.17, 0.10) * caustic * uOptics.z;
   // Bank occlusion just inside the waterline.
   col *= 0.74 + 0.26 * smoothstep(0.0, 38.0, d);
-  float foam = (1.0 - smoothstep(0.5, 7.0 + 7.0 * fbm2(vWorld / 40.0), d)) * (0.1 + 0.3 * smoothstep(0.5, 0.78, fbm2(vWorld / 15.0 + uFlow.xy * t * 3.0)));
+  float edge = 1.0 - smoothstep(1.0, 12.0 + wave.z * 1.8, d);
+  float breakup = smoothstep(0.35, 0.73, fbm2(q / vec2(48.0, 22.0) + 7.0));
+  float foam = edge * (0.22 + 0.78 * breakup) * uOptics.y;
   col = mix(col, uFoam, foam);
   finalColor = vec4(clamp(col, 0.0, 1.0), 1.0) * uColor * uWorldColorAlpha;
 }`;

@@ -29,6 +29,22 @@ const controller = await import('../apps/hmh-reboot/src/actor-3d-controller.mjs'
 const pixi = await import('../apps/hmh-reboot/src/actor-3d-pixi.mjs').catch(() => ({}));
 const model = await import('../apps/hmh-reboot/src/actor-3d-model.mjs').catch(() => ({}));
 
+test('hero transitions use authored blend timing but primary combat and unknown clips stay immediate', () => {
+  assert.equal(clips.heroClipBlendTicks('idle','run'),4);
+  assert.equal(clips.heroClipBlendTicks('run','run-stop'),2);
+  assert.equal(clips.heroClipBlendTicks('run-stop','idle'),3);
+  assert.equal(clips.heroClipBlendTicks('aim','cover-idle-short'),4);
+  assert.equal(clips.heroClipBlendTicks('idle','fidget-sip-coffee'),6);
+  for(const name of ['hurt','death','dash','melee','grenade','pistol-fire','fire-rifle','cover-peek-fire-l','cover-hit','hit-front','not-authored']) assert.equal(clips.heroClipBlendTicks('run',name),0,name);
+  assert.equal(clips.heroClipBlendTicks('idle','idle'),0);
+});
+
+test('absolute hero presentation tick survives authored clip-local clock selection', () => {
+  const row=controller.createActor3dPresentationEntries({actorId:'lit-commando',weaponId:'coin-blaster',action:'aim',actionTick:180,moving:true,
+    x:0,y:0,z:0,heading:0,presentationTick:180,clip:'run-start',clipTick:3,originals:[]},[])[0].descriptor;
+  assert.equal(row.clip,'run-start'); assert.equal(row.clipTimeSeconds,3/14); assert.equal(row.presentationTick,180);
+});
+
 for (const hero of HEROES) test(`${hero} clip manifest is complete, typed and describes the shipped GLB bytes`, () => {
   const manifest = json(new URL(`${hero}-clips.json`, directory));
   const bytes = readFileSync(new URL(manifest.file, directory));

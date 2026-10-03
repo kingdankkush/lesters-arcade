@@ -4,7 +4,7 @@ import { readFileSync } from 'node:fs';
 
 import { createPortalRouteController } from '../apps/portal/src/routes/portal-route-controller.mjs';
 
-function harness({ pathname = '/', connected = false } = {}) {
+function harness({ pathname = '/', connected = false, canOpenGameId } = {}) {
   const listeners = new Map();
   const pushes = [];
   const scrolls = [];
@@ -29,6 +29,7 @@ function harness({ pathname = '/', connected = false } = {}) {
     windowRef,
     documentRef,
     getConnected: () => connected,
+    canOpenGameId,
     getStep: () => state.step,
     setStep: (step) => { state.step = step; },
     getSelectedGameId: () => state.gameId,
@@ -44,6 +45,17 @@ function harness({ pathname = '/', connected = false } = {}) {
   });
   return { controller, windowRef, documentRef, listeners, pushes, scrolls, state, calls };
 }
+
+test('a coming-soon deep link browses cabinets without selecting an unsupported game', () => {
+  for (const pathname of ['/play/mweb-invaders','/games/litvm-legends','/play/mweb-invaders/game-session-1']) {
+    const h=harness({pathname,connected:true,canOpenGameId:id=>['lester-blaster','chikun','stacked'].includes(id)});
+    h.controller.applyLocation();
+    assert.equal(h.state.step,'cabinet-select');
+    assert.equal(h.state.gameId,'lester-blaster');
+    assert.equal(h.calls.render,1);
+    assert.equal(h.pushes.length,0,'back/forward does not create a navigation loop');
+  }
+});
 
 test('route controller writes canonical play paths and owns view transition effects', () => {
   const h = harness({ pathname: '/games' });

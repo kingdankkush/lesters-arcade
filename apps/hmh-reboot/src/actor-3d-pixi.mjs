@@ -1,10 +1,10 @@
 // Bounded GLB pilot inside Pixi's own WebGL Mesh pipe. One container per
 // actor enters the existing RenderLayer; there is no overlay canvas/context.
 import { Bounds, Container, Geometry, GlProgram, Mesh, RenderTexture, Shader, State, Texture, UniformGroup } from 'pixi.js';
-import { decodeActor3dGlb, createActor3dPoseWorkspace, evaluateActor3dPose,
+import { decodeActor3dGlb, createActor3dPoseWorkspace, evaluateActor3dPose, createActor3dTransitionState, evaluateActor3dTransitionPose,
   createActor3dJointBounds, projectActor3dBounds } from './actor-3d-model.mjs';
 import { createActor3dDepthRegistry, ACTOR3D_BOSS_IDS, ACTOR3D_ENEMY_IDS, ACTOR3D_HERO_WEAPON_IDS } from './actor-3d-controller.mjs';
-import { heroClipProp } from './actor-3d-clips.mjs';
+import { heroClipProp, heroClipBlendTicks } from './actor-3d-clips.mjs';
 import { loadActor3dBytes } from './actor-3d-download.mjs';
 import { validateWeaponModelManifest, decodeWeaponGlb, createWeaponAttachment, weaponModelUrl, weaponSocketToModel, weaponModelToWorldOffset } from './weapon-model.mjs';
 
@@ -124,6 +124,7 @@ export async function createActor3dPixiBackend({ renderer, signal, maxActors = 2
     if (display.pilotId === 'hero') heroMuzzle = null;
     dropWeaponMesh(display);
     for (const primitive of display.children) primitive.shader.destroy();
+    display.pilotPose=null; display.pilotTransition=null;
     display.destroy({ children: true });
   };
   const dispose = () => { if (disposed) return; disposed = true; for (const display of [...live]) removeDisplay(display); for (const asset of assets.values()) disposeAsset(asset); assets.clear(); for (const weapon of weapons.values()) disposeWeapon(weapon); weapons.clear(); order.clear(); probeTarget?.destroy(true); program?.destroy(); };
@@ -259,6 +260,7 @@ export async function createActor3dPixiBackend({ renderer, signal, maxActors = 2
       const asset = assets.get(projection.actorId); if (!asset) throw new Error('unreviewed pilot actor');
       if (!display.pilotAsset) {
         display.pilotAsset = asset; display.pilotPose = createActor3dPoseWorkspace(asset.model);
+        if (projection.id === 'hero') display.pilotTransition=createActor3dTransitionState(asset.model);
         display.pilotUniforms = new UniformGroup({
           uJoints: { value: new Float32Array(32 * 16), type: 'mat4x4<f32>', size: 32 },
           uView: { value: new Float32Array(4), type: 'vec4<f32>' }, uDepthHalfWidth: { value: 0, type: 'f32' },
@@ -282,7 +284,10 @@ export async function createActor3dPixiBackend({ renderer, signal, maxActors = 2
         }
       }
       if (display.pilotAsset !== asset) throw new Error('pilot actor identity immutable');
-      const palette = evaluateActor3dPose(asset.model, projection.clip, projection.clipTimeSeconds, display.pilotPose)[0];
+      const palette = projection.id === 'hero' && projection.presentationTick !== null
+        ? evaluateActor3dTransitionPose(asset.model,projection.clip,projection.clipTimeSeconds,projection.presentationTick,
+          heroClipBlendTicks(display.pilotTransition.clip,projection.clip),display.pilotPose,display.pilotTransition)[0]
+        : evaluateActor3dPose(asset.model, projection.clip, projection.clipTimeSeconds, display.pilotPose)[0];
       const uniforms = display.pilotUniforms.uniforms, yaw = Math.PI / 2 - projection.heading, band = bands.get(projection.id);
       uniforms.uJoints.set(palette); uniforms.uView.set([Math.cos(yaw), Math.sin(yaw), projection.pixelsPerMetre * projection.zoom, band.center]); uniforms.uDepthHalfWidth = band.halfWidth;
       display.pilotUniforms.update(); display.position.set(projection.screen.x, projection.screen.y);

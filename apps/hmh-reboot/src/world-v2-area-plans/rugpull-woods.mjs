@@ -3,6 +3,7 @@
 // only; the plan never adds a blocker, surface, objective or rule.
 import { freezeDeep } from '../value-guards.mjs';
 import { appendCentrePockets } from './centre-pockets.mjs';
+import { appendForestFloor } from './forest-floor.mjs';
 import { pointInPolygon, stableUnit, DISTRICT_TERRAIN } from '../world-v2-area-art-schema.mjs';
 import { createAreaPlanContext, CANOPY_HEIGHTS } from './plan-support.mjs';
 
@@ -79,5 +80,6 @@ export function createRugpullWoodsArtPlan(world) {
     if (guard.clear(cx + x, cy + y, 24)) prop(source, cx + x, cy + y, height, { flip, tint: 0xd9d2c2, shadow: true });
   }
   appendCentrePockets({world,area,plan});
+  appendForestFloor({world,area,plan});
   return freezeDeep(plan);
 }

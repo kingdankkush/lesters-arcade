@@ -61,3 +61,16 @@ export function impactSprayAngles({ seed, direction, count }) {
   }
   return angles;
 }
+
+// A filled chip instead of a hairline stroke. The pointed ends and broad
+// shoulders retain impact direction while reading at phone resolution.
+export function impactShardVertices({ x, y, angle, inner, outer, width, drop = 0 }) {
+  const ux = Math.cos(angle), uy = Math.sin(angle);
+  const middle = inner + (outer - inner) * .35;
+  const mx = x + ux * middle, my = y + uy * middle + drop * .675;
+  const shoulder = width * .75;
+  return [x + ux * inner, y + uy * inner + drop * .5,
+    mx + uy * shoulder, my - ux * shoulder,
+    x + ux * outer, y + uy * outer + drop,
+    mx - uy * shoulder, my + ux * shoulder];
+}

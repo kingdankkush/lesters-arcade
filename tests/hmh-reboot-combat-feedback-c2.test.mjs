@@ -7,6 +7,7 @@ import {
   weaponRecoilShake,
   impactSprayAngles,
   IMPACT_SPRAY_CONE,
+  impactShardVertices,
 } from '../apps/hmh-reboot/src/combat-feedback.mjs';
 
 const mainSource = readFileSync(
@@ -25,6 +26,17 @@ const mainSource = readFileSync(
 // damage, AI, spawning, RNG or progression.
 
 const WEAPONS = Object.freeze(['coin-blaster', 'scatter-shotgun', 'auto-miner', 'launcher-rig']);
+
+test('filled impact fragments have a broad shoulder, tapered tip and follow travel and gravity', () => {
+  const v = impactShardVertices({ x: 10, y: 20, angle: 0, inner: 6, outer: 22, width: 4, drop: 8 });
+  assert.equal(v.length, 8);
+  assert.deepEqual(v.slice(0,2), [16,24]);
+  assert.deepEqual(v.slice(4,6), [32,28]);
+  assert.ok(v[3] < 26 && v[7] > 26, 'visible shoulders straddle the shard centre');
+  const vertical = impactShardVertices({ x: 0, y: 0, angle: Math.PI / 2, inner: 0, outer: 10, width: 3, drop: 0 });
+  assert.ok(Math.abs(vertical[4]) < 1e-9); assert.equal(vertical[5],10);
+  assert.deepEqual(v, impactShardVertices({ x: 10, y: 20, angle: 0, inner: 6, outer: 22, width: 4, drop: 8 }));
+});
 
 test('every weapon declares a recoil shake magnitude', () => {
   for (const weaponId of WEAPONS) {
